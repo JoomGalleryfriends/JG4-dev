@@ -1,6 +1,6 @@
 # JoomGallery v4.x (Development)
 
-Development branch of the JoomGallery component for Joomla! 4.
+Development repository of the JoomGallery component for Joomla! 4.
 
 **Project-Website:**
 https://www.en.joomgalleryfriends.net/
