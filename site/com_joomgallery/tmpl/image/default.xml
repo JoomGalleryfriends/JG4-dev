@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="Single Image View" option="View">
+      <message>
+        <![CDATA[Display a single image with information]]>
+      </message>
+    </layout>
+    <fields name="request">
+        <fieldset name="request" >
+            <field name="id"
+                   type="sql"
+                   query="SELECT `id`,`imgtitle` FROM #__joomgallery ORDER BY `id`"
+                   key_field="id"
+                   value_field="imgtitle"
+                   label="COM_JOOMGALLERY_COMMON_IMAGE"
+                   require="true" >
+            </field>
+        </fieldset>
+    </fields>
+</metadata>

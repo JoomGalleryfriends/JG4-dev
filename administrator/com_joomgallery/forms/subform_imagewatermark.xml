@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset>
+    <field name="jg_watermarkpos"
+           type="list"
+           groupByFieldset="false"
+           default="9"
+           label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARK_POSITION"
+           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARK_POSITION_LONG" >
+        <option value="1">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_TOP_LEFT</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_TOP_CENTER</option>
+        <option value="3">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_TOP_RIGHT</option>
+        <option value="4">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_MIDDLE_LEFT</option>
+        <option value="5">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_MIDDLE_CENTER</option>
+        <option value="6">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_MIDDLE_RIGHT</option>
+        <option value="7">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_BOTTOM_LEFT</option>
+        <option value="8">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_BOTTOM_CENTER</option>
+        <option value="9">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_BOTTOM_RIGHT</option>
+    </field>
+
+    <field name="jg_watermarkzoom"
+           type="list"
+           groupByFieldset="false"
+           default="0"
+           label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKZOOM"
+           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKZOOM_LONG" >
+        <option value="0">COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKNORESIZE</option>
+        <option value="1">COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKHEIGHT</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKWIDTH</option>
+    </field>
+
+    <field name="jg_watermarksize"
+           type="number"
+           groupByFieldset="false"
+           default="15"
+           filter="int"
+           min="1"
+           max="100"
+           step="1"
+           label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKSIZE"
+           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKSIZE_LONG" />
+
+    <field name="jg_watermarkopacity"
+           type="number"
+           groupByFieldset="false"
+           default="80"
+           filter="int"
+           min="1"
+           max="100"
+           step="1"
+           label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKOPACITY"
+           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKOPACITY_LONG" />
+  </fieldset>
+</form>

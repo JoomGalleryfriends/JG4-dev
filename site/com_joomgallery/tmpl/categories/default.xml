@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="List of Categories" option="View">
+    <message>
+      <![CDATA[Shows a list of categories like the Category Manager]]>
+    </message>
+	</layout>
+</metadata>
