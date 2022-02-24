@@ -37,14 +37,14 @@ interface UploaderServiceInterface
    *
 	 * @since  4.0.0
 	 */
-	public function createUploader($uploadMethod,): void;
+	public function createUploader($uploadMethod): void;
 
 	/**
 	 * Returns the Uploader helper class.
 	 *
-	 * @return  UploadInterface
+	 * @return  UploaderInterface
 	 *
 	 * @since  4.0.0
 	 */
-	public function getUploader(): UploadInterface;
+	public function getUploader(): UploaderInterface;
 }

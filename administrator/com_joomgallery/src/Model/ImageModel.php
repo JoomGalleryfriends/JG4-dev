@@ -23,6 +23,7 @@ use Joomla\CMS\Object\CMSObject;
 use Joomla\Registry\Registry;
 use \Joomla\CMS\Helper\TagsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Image model.
@@ -30,7 +31,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImageModel extends AdminModel
+class ImageModel extends JoomAdminModel
 {
 	/**
 	 * @var    string  The prefix to use with controller messages.
@@ -296,8 +297,8 @@ class ImageModel extends AdminModel
 		PluginHelper::importPlugin($this->events_map['save']);
 
 		// Allow an exception to be thrown.
-		// try
-		// {
+		try
+		{
 			// Load the row if saving an existing record.
 			if($pk > 0)
 			{
@@ -312,20 +313,25 @@ class ImageModel extends AdminModel
       // Create filename and image types
       // Modify form data based on image metadata
       $uploader = JoomHelper::getService('uploader', array('html'));
-      $output   = array('debug' => '', 'msg' => '');
 
-      if(!$uploader->upload($data, $output))
+      if(!$uploader->upload($data))
       {
-        $this->setError($output['debug']);
+        $this->setError($this->component->getDebug());
 
         return false;
       }
 
       // Output messages
-      $app->enqueueMessage($output['msg']);
+      if(\count($this->component->getWarning()) > 1)
+      {
+        $this->component->printWarning();
+      }
 
       // Output debug data
-      $app->enqueueMessage($output['debug'], 'warning');
+      if(\count($this->component->getDebug()) > 1)
+      {
+        $this->component->printDebug();
+      }
 
 			// Bind the data.
 			if(!$table->bind($data))
@@ -373,14 +379,14 @@ class ImageModel extends AdminModel
 
 			// Trigger the after save event.
 			$app->triggerEvent($this->event_after_save, array($context, $table, $isNew, $data));
-		// }
-		// catch (\Exception $e)
-		// {
-    //   $uploader->rollback($data['filename']);
-		// 	$this->setError($e->getMessage());
+		}
+		catch (\Exception $e)
+		{
+      $uploader->rollback($data['filename']);
+			$this->setError($e->getMessage());
 
-		// 	return false;
-		// }
+			return false;
+		}
 
 		if(isset($table->$key))
 		{
@@ -533,6 +539,14 @@ class ImageModel extends AdminModel
 					}
 
           // Delete corresponding imagetypes
+          $manager = JoomHelper::getService('ImageManager');
+
+          if(!$manager->deleteImages($table->filename, $table->catid))
+          {
+            $this->setError($this->component->getDebug());
+
+            return false;
+          }
 
           // Delete corresponding comments
 
@@ -625,6 +639,18 @@ class ImageModel extends AdminModel
 				return false;
 			}
 		}
+
+    // Output messages
+    if(\count($this->component->getWarning()) > 1)
+    {
+      $this->component->printWarning();
+    }
+
+    // Output debug data
+    if(\count($this->component->getDebug()) > 1)
+    {
+      $this->component->printDebug();
+    }
 
 		// Clear the component's cache
 		$this->cleanCache();

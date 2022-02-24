@@ -104,60 +104,6 @@ abstract class Uploader implements UploaderInterface
   }
 
   /**
-	 * Method to get the debug output string.
-	 *
-	 * @return  void
-	 *
-	 * @since  4.0.0
-	 */
-	public function getDebug(): string
-  {
-    return $this->jg->getDebug();
-  }
-
-  /**
-	 * Method to get the warning output string.
-	 *
-	 * @return  void
-	 *
-	 * @since  4.0.0
-	 */
-	public function getWarning(): string
-  {
-    return $this->jg->getWarning();
-  }
-
-  /**
-   * Add text to the debugoutput
-   *
-   * @param   string   $txt        Text to add to the debugoutput
-   * @param   bool     $new_line   True to add text to a new line (default: true)
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-  */
-  protected function addDebug($txt, $new_line=true)
-  {
-    $this->jg->addDebug($txt, $new_line);
-  }
-
-  /**
-   * Add text to the warningoutput
-   *
-   * @param   string   $txt        Text to add to the warningoutput
-   * @param   bool     $new_line   True to add text to a new line (default: true)
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-  */
-  protected function addWarning($txt, $new_line=true)
-  {
-    $this->jg->addWarning($txt, $new_line);
-  }
-
-  /**
    * Rollback an erroneous upload
    *
    * @param   string  $filename    Filename of the image
@@ -182,11 +128,11 @@ abstract class Uploader implements UploaderInterface
         $return = JFile::delete($path);
         if($return)
         {
-          $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_LOCAL_'.\strtoupper($key).'DEL_OK'));
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_LOCAL_'.\strtoupper($key).'DEL_OK'));
         }
         else
         {
-          $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_LOCAL_'.\strtoupper($key).'DEL_NOK'));
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_LOCAL_'.\strtoupper($key).'DEL_NOK'));
         }
       }
     }
@@ -201,11 +147,11 @@ abstract class Uploader implements UploaderInterface
           $return = $this->jg->getFilesystem()->deleteFile($path);
           if($return)
           {
-            $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_STORAGE_'.\strtoupper($key).'DEL_OK'));
+            $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_STORAGE_'.\strtoupper($key).'DEL_OK'));
           }
           else
           {
-            $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_STORAGE_'.\strtoupper($key).'DEL_NOK'));
+            $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_STORAGE_'.\strtoupper($key).'DEL_NOK'));
           }
         }
       }
@@ -362,7 +308,7 @@ abstract class Uploader implements UploaderInterface
     if(!($tag == 'jpg' || $tag == 'jpeg' || $tag == 'jpe' || $tag == 'jfif'))
     {
       // Check for the right file-format, else throw warning
-      $this->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_WRONGFILEFORMAT'));
+      $this->jg->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_WRONGFILEFORMAT'));
 
       return true;
     }
@@ -424,7 +370,7 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            $this->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', $source_name));
+            $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', $source_name));
             continue 2;
           }          
           break;
@@ -438,7 +384,7 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            $this->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', Text::_('COM_JOOMGALLERY_META_COMMENT')));
+            $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', Text::_('COM_JOOMGALLERY_META_COMMENT')));
             continue 2;
           }
           break;
@@ -469,7 +415,7 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            $this->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', $source_name));
+            $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', $source_name));
             continue 2;
           }
           break;
@@ -488,7 +434,7 @@ abstract class Uploader implements UploaderInterface
       else
       {
         $data[$replaceinfo->target] = $filter->clean($source_value, 'string');
-        $this->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_' . \strtoupper($replaceinfo->target)));
+        $this->jg->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_' . \strtoupper($replaceinfo->target)));
       }
     }
 

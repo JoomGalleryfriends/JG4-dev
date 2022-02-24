@@ -61,7 +61,7 @@ class ImageMgr implements ImageMgrInterface
     foreach($imagetypes as $key => $config)
     {
       // Create the IMGtools service
-      $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor', array($this->debugoutput)));
+      $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
 
       // Only proceed if imagetype is active
       if($config->params->jg_imgtype != 1)
@@ -69,12 +69,12 @@ class ImageMgr implements ImageMgrInterface
         continue;
       }
 
+      // Debug info
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $config->typename));
+
       // Read source image
       if(!$this->jg->getIMGtools()->read($source))
       {
-        // Read out debugoutput from IMGtools service
-        $this->jg->addDebug($this->jg->getIMGtools()->debugoutput);
-
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
 
@@ -108,10 +108,7 @@ class ImageMgr implements ImageMgrInterface
       {
         // Yes
         if(!$this->jg->getIMGtools()->orient())
-        {
-          // Read out debugoutput from IMGtools service
-          $this->jg->addDebug($this->jg->getIMGtools()->debugoutput);
-  
+        {  
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
   
@@ -130,9 +127,6 @@ class ImageMgr implements ImageMgrInterface
                                              $config->params->jg_imgtypesharpen)
           )
         {
-          // Read out debugoutput from IMGtools service
-          $this->jg->addDebug($this->jg->getIMGtools()->debugoutput);
-
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
 
@@ -153,9 +147,6 @@ class ImageMgr implements ImageMgrInterface
                                                 $config->params->jg_imgtypewtmsettings->jg_watermarkopacity)
           )
         {
-          // Read out debugoutput from IMGtools service
-          $this->jg->addDebug($this->jg->getIMGtools()->debugoutput);
-
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
 
@@ -168,29 +159,21 @@ class ImageMgr implements ImageMgrInterface
 
       if(!$this->jg->getIMGtools()->write($file, $config->params->jg_imgtypequality))
       {
-        // Read out debugoutput from IMGtools service
-        $this->jg->addDebug($this->jg->getIMGtools()->debugoutput);
-
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
 
         return false;
       }
 
-      // Read out debugoutput from IMGtools service
-      $this->jg->addDebug($this->jg->getIMGtools()->debugoutput);
-
       // Destroy the IMGtools service
       $this->jg->delIMGtools();
     }
-
-    // Delete original image if needed
 
     return true;
   }
 
   /**
-   * Creates image types
+   * Deletes image types
    *
    * @param   string    $filename   The file name for the created files
    * @param   integer   $catid      The id of the corresponding category
@@ -201,6 +184,31 @@ class ImageMgr implements ImageMgrInterface
    */
   public function deleteImages($filename, $catid): bool
   {
+    // Get all imagetypes
+    $imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
+
+    // Loop through all imagetypes
+    foreach($imagetypes as $key => $config)
+    {
+      // Get image file name
+      $file = $this->getImgPath($config->typename, $catid, $filename);
+
+      // Create filesystem service
+      $this->jg->createFilesystem('localhost');
+
+      // Delete imagetype
+      if(!$this->jg->getFilesystem()->deleteFile($this->jg->getFilesystem()->get('local_root') . $file))
+      {
+        // Deletion failed
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
+
+        return false;
+      }
+    }
+
+    // Deletion successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
+
     return true;
   }
 

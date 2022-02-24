@@ -151,7 +151,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Analysis and validation of the source image
     if($this->analyse($file, $is_stream) == false)
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_INVALID_IMAGE_FILE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_INVALID_IMAGE_FILE'));
 
       return false;
     }
@@ -167,7 +167,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check GD installation
     if(!\function_exists('imagecreate'))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_NOT_INSTALLED'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_NOT_INSTALLED'));
       $this->rollback($file, '', true);
 
       return false;
@@ -176,7 +176,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for supportet imge files
     if(!\in_array($this->src_type, $this->supported_types))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
 
       return false;
     }
@@ -202,13 +202,13 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->res_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_READING_ERROR'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_READING_ERROR'));
       $this->rollback($file, '', true);
 
       return false;
     }
 
-    $this->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', 'GD'));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', 'GD'));
 
     return true;
   }
@@ -253,7 +253,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       else
       {
         // unsupported file type
-        $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
 
         return false;
       }
@@ -359,7 +359,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
       if(!$success)
       {
-        $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_COPYING', $file).' '.Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_COPYING', $file).' '.Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS'));
 
         return false;
       }
@@ -391,7 +391,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
         if(!$meta_success)
         {
-          $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_COPY_METADATA'));
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_COPY_METADATA'));
           $this->rollback('', $file);
 
           return false;
@@ -421,7 +421,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
         if(!$meta_success)
         {
-          $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_COPY_METADATA'));
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_COPY_METADATA'));
           $this->rollback($this->src_file, $file);
 
           return false;
@@ -432,7 +432,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if(!$success || !$this->checkValidImage($file))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_OUTPUT_IMAGE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_OUTPUT_IMAGE'));
       $this->rollback($this->src_file, $file);
 
       return false;
@@ -478,7 +478,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       else
       {
         // unsupported file type
-        $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
 
         return false;
       }
@@ -522,7 +522,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->res_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_OUTPUT_IMAGE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_OUTPUT_IMAGE'));
       $this->rollback('', '');
 
       return false;
@@ -584,7 +584,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($method == 0 || ($this->res_imginfo['width'] <= $width && $this->res_imginfo['height'] <= $height))
     {
       // Nothing to do
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_NOT_NEEDED'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_NOT_NEEDED'));
       $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
       return true;
@@ -598,7 +598,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Generate informations about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_GD_SUPPORTED_TYPES'));
       $this->rollback('', '');
 
       return false;
@@ -611,7 +611,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
       $this->rollback('', '');
 
       return false;
@@ -621,17 +621,17 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     switch($method)
     {
       case 1:
-        $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_HEIGHT'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_HEIGHT'));
         break;
       case 2:
-        $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_WIDTH'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_WIDTH'));
         break;
       case 3:
-        $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_MAX'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_MAX'));
         break;
       case 4:
         // Free resizing and cropping
-        $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_CROP'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_CROP'));
         break;
       default:
         break;
@@ -662,7 +662,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_RESIZE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_RESIZE'));
       $this->rollback('', '');
 
       return false;
@@ -684,7 +684,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_RESIZE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_RESIZE'));
       $this->rollback('', '');
 
       return false;
@@ -701,14 +701,14 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       // Check for failures
       if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
       {
-        $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_RESIZE'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_RESIZE'));
         $this->rollback('', '');
 
         return false;
       }
     }
 
-    $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_SUCCESSFUL'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_SUCCESSFUL'));
 
     // switch manipulated to true
     $this->manipulated = true;
@@ -746,7 +746,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($angle == 0)
     {
       // Nothing to do
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ROTATE_NOT_NEEDED'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ROTATE_NOT_NEEDED'));
       $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
       return true;
@@ -772,7 +772,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
 
       return false;
     }
@@ -802,7 +802,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ROTATE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ROTATE'));
       $this->rollback('', '');
 
       return false;
@@ -818,18 +818,18 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       $this->dst_imginfo['height']     = imagesy($this->dst_frames[$key]['image']);
     }
 
-    $this->addDebug(Text::sprintf('COM_JOOMGALLERY_ROTATE_BY_ANGLE', $this->dst_imginfo['angle']));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ROTATE_BY_ANGLE', $this->dst_imginfo['angle']));
 
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ROTATE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ROTATE'));
       $this->rollback('', '');
 
       return false;
     }
 
-    $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ROTATE_SUCCESSFUL'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ROTATE_SUCCESSFUL'));
 
     // switch manipulated to true
     $this->manipulated = true;
@@ -867,7 +867,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($direction == 0)
     {
       // Nothing to do
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_FLIP_NOT_NEEDED'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_FLIP_NOT_NEEDED'));
       $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
       return true;
@@ -910,7 +910,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
 
       return false;
     }
@@ -940,7 +940,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_FLIP'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_FLIP'));
       $this->rollback('', '');
 
       return false;
@@ -954,19 +954,19 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         $this->dst_frames[$key]['image'] = $this->imageFlip_GD($this->src_frames[$key]['image'], $this->dst_imginfo['flip']);
       }
 
-      $this->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
     }
 
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_FLIP'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_FLIP'));
       $this->rollback('', '');
 
       return false;
     }
 
-    $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_FLIP_SUCCESSFUL'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_FLIP_SUCCESSFUL'));
 
     // switch manipulated to true
     $this->manipulated = true;
@@ -1002,7 +1002,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!isset($this->metadata['exif']['IFD0']['Orientation']))
     {
       // Nothing to do
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_AUTOORIENT_ONLY_JPG'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_AUTOORIENT_ONLY_JPG'));
       $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
       return true;
@@ -1048,7 +1048,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ORIENT'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ORIENT'));
       $this->rollback('', '');
 
       return false;
@@ -1063,7 +1063,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         $this->dst_frames[$key]['image'] = $this->imageFlip_GD($this->src_frames[$key]['image'], $this->dst_imginfo['flip']);
       }
 
-      $this->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
     }
     else
     {
@@ -1075,7 +1075,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
           $this->src_frames[$key]['image'] = $this->imageFlip_GD($this->src_frames[$key]['image'], $this->dst_imginfo['flip']);
         }
 
-        $this->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
       }
 
       // ... and rotating
@@ -1088,19 +1088,19 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         $this->dst_imginfo['height']     = imagesy($this->dst_frames[$key]['image']);
       }
 
-      $this->addDebug(Text::sprintf('COM_JOOMGALLERY_ROTATE_BY_ANGLE', $this->dst_imginfo['angle']));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ROTATE_BY_ANGLE', $this->dst_imginfo['angle']));
     }
 
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ORIENT'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_ORIENT'));
       $this->rollback('', '');
 
       return false;
     }
 
-    $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ORIENT_SUCCESSFUL'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ORIENT_SUCCESSFUL'));
 
     // switch manipulated to true
     $this->manipulated = true;
@@ -1153,7 +1153,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Checks if watermark file is existent
     if(!\file_exists($wtm_file))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_WATERMARK_NOT_EXIST'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_WATERMARK_NOT_EXIST'));
 
       return false;
     }
@@ -1167,7 +1167,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Analysis and validation of the source watermark-image
     if(!($this->src_imginfo = $this->analyse($wtm_file)))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_INVALID_IMAGE_FILE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_INVALID_IMAGE_FILE'));
 
       return false;
     }
@@ -1188,14 +1188,14 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
       $this->rollback('', '');
 
       return false;
     }
 
     // Create debugoutput
-    $this->addDebug(Text::_('COM_JOOMGALLERY_WATERMARKING'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_WATERMARKING'));
 
     // Create GD Object of the watermark file
     $this->src_frames = $this->imageCreateFrom_GD($wtm_file, $this->src_imginfo);
@@ -1208,7 +1208,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
       $this->rollback('', '');
 
       return false;
@@ -1236,7 +1236,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
       $this->rollback('', '');
 
       return false;
@@ -1269,13 +1269,13 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for failures
     if($this->checkError($this->src_frames))
     {
-      $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
       $this->rollback('', '');
 
       return false;
     }
 
-    $this->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_WATERMARKING_SUCCESSFUL'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_WATERMARKING_SUCCESSFUL'));
 
     // switch manipulated to true
     $this->manipulated = true;

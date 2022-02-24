@@ -31,44 +31,37 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 	 * Method to upload a new image.
 	 *
    * @param   array    $data    form data (as reference)
-   * @param   array    $output  output data in the form array('debug'=>'','msg'=>'')
    *
 	 * @return  bool     True on success, false otherwise
 	 *
 	 * @since  4.0.0
 	 */
-	public function upload(&$data, $output=array('debug'=>'','msg'=>'')): bool
+	public function upload(&$data): bool
   {
     $app  = Factory::getApplication();
     $user = Factory::getUser();
 
-    // Initialise outputs
-    if(\key_exists('debug', $output))
+    foreach($data['images'] as $i => $image)
     {
-      $this->debugoutput   = $output['debug'];
-    }
-    if(\key_exists('msg', $output))
-    {
-      $this->warningoutput   = $output['msg'];
-    }
-
-    $this->addDebug('<strong>___'.Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_DEBUG_HEADING').'___</strong>');
-
-    foreach ($data['images'] as $i => $image)
-    {
-      $this->addDebug('<hr />', false);
-      $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_POSITION', $i + 1));
+      if(\count($data['images']) > 1)
+      {
+        if($i >= 1)
+        {
+          $this->jg->addDebug('<hr>');
+        }        
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_POSITION', $i + 1));
+      }
 
       // Check for upload error codes
       if($image['error'] > 0)
       {
         if($image['error'] == 4)
         {
-          $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_FILE_NOT_UPLOADED'));
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_FILE_NOT_UPLOADED'));
 
           continue;
         }
-        $this->addDebug($this->checkError($image['error']));
+        $this->jg->addDebug($this->checkError($image['error']));
         $this->error = true;
 
         continue;
@@ -81,7 +74,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       if($is_site && $counter > ($this->jg->getConfig()->get('jg_maxuserimage') - 1) && $user->get('id'))
       {
         $timespan = $this->jg->getConfig()->get('jg_maxuserimage_timespan');
-        $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_MAY_ADD_MAX_OF', $this->jg->getConfig()->get('jg_maxuserimage'), $timespan > 0 ? Text::plural('COM_JOOMGALLERY_UPLOAD_NEW_IMAGE_MAXCOUNT_TIMESPAN', $timespan) : ''));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_MAY_ADD_MAX_OF', $this->jg->getConfig()->get('jg_maxuserimage'), $timespan > 0 ? Text::plural('COM_JOOMGALLERY_UPLOAD_NEW_IMAGE_MAXCOUNT_TIMESPAN', $timespan) : ''));
 
         break;
       }
@@ -97,12 +90,12 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       $img_name                         = $image['name'];
       $img_size                         = $image['size'];
 
-      $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_FILENAME', $img_name));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_FILENAME', $img_name));
 
       // Image size must not exceed the setting in backend if we are in frontend
       if($is_site && $img_size > $this->jg->getConfig()->get('jg_maxfilesize'))
       {
-        $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_MAX_ALLOWED_FILESIZE', $this->jg->getConfig()->get('jg_maxfilesize')));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_MAX_ALLOWED_FILESIZE', $this->jg->getConfig()->get('jg_maxfilesize')));
         $this->error  = true;
 
         continue;
@@ -113,7 +106,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 
       if( !\in_array(strtoupper($tag), $this->jg->supported_types) || strlen($this->img_paths['local']['temp']) == 0 || $this->img_paths['local']['temp'] == 'none' )
       {
-        $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_TYPE'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_TYPE'));
         $this->error  = true;
 
         continue;
@@ -145,11 +138,11 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       {
         if($is_site)
         {
-          $this->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_INVALID_FILENAME'));
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_INVALID_FILENAME'));
         }
         else
         {
-          $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_ERROR_INVALID_FILENAME', $newfilename, $oldfilename));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_ERROR_INVALID_FILENAME', $newfilename, $oldfilename));
         }
         $this->error = true;
 
@@ -175,7 +168,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       $return = JFile::upload($this->img_paths['local']['temp'], $this->img_paths['local']['original']);
       if(!$return)
       {
-        $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_MOVING', $this->img_paths['local']['original'] .' '. Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS')));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_MOVING', $this->img_paths['local']['original'] .' '. Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS')));
         $this->rollback($data['filename']);
         $this->error = true;
 
@@ -185,7 +178,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       // Set permissions of uploaded file
       $return = JPath::setPermissions($this->img_paths['local']['original'], '0644', null);
 
-      $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_COMPLETE', filesize($this->img_paths['local']['original']) / 1000));      
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_COMPLETE', filesize($this->img_paths['local']['original']) / 1000));      
 
       // Override form data with image metadata
       $this->overrideData($data, $this->img_paths['local']['original']);
@@ -226,14 +219,14 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       //   $this->jg->getMessenger()->send($message);
       // }
 
-      $this->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IMAGE_SUCCESSFULLY_ADDED'));
-      $this->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_NEW_FILENAME', $newfilename));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IMAGE_SUCCESSFULLY_ADDED'));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_NEW_FILENAME', $newfilename));
 
       $app->triggerEvent('onJoomAfterUpload', array($data));
       $counter++;
     }
 
-    $this->addDebug('<hr />');
+    $this->jg->addDebug('<hr />');
 
     // Reset user states
     $this->resetUserStates();

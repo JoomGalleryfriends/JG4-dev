@@ -383,21 +383,6 @@ abstract class IMGtools implements IMGtoolsInterface
   //////////////////////////////////////////////////
 
   /**
-   * Add text to the debugoutput
-   *
-   * @param   string   $txt        Text to add to the debugoutput
-   * @param   bool     $new_line   True to add text to a new line (default: true)
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-  */
-  protected function addDebug($txt, $new_line=true)
-  {
-    $this->jg->addDebug($txt, $new_line);
-  }
-
-  /**
    * Clears the class variables and bring it back to default
    *
    * @return  boolean   true on success, false otherwise
