@@ -40,7 +40,7 @@ https://docs.joomla.org/Setting_up_your_workstation_for_Joomla_development
    - plugins/finder/joomgallerycategories
    - plugins/finder/joomgalleryimages
    - plugins/privacy/joomgalleryimages
-   - plugins/privacy/webservices/joomgallery
+   - plugins/webservices/joomgallery
 4. Create symbolic links from those folders to the corresponding folders within the checked out copy of your component
 5. Remove the installed component language files within your Joomla installation
    - administrator/language/en-GB/com_joomgallery.ini
