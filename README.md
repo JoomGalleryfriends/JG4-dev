@@ -31,7 +31,7 @@ https://docs.joomla.org/Setting_up_your_workstation_for_Joomla_development
 - https://desktop.github.com/ (Windows and macOS)
 
 **Recommendet approach for proper versioning with Git:**
-1. Checkout the dev-branch into a folder of your choice
+1. Checkout the repo into a folder of your choice
 2. Download the source code of the dev-branch as zip file and install it on Joomla
 3. Remove the installed component folders within your Joomla installation
    - administrator/components/com_joomgallery
