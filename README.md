@@ -8,6 +8,9 @@ https://www.en.joomgalleryfriends.net/
 **Support-Forum:**
 https://www.forum.joomgalleryfriends.net
 
+**Projekt-Management:**
+https://github.com/orgs/JoomGalleryfriends/projects/1 (Access only for Team-Members)
+
 ## Want to contribute?
 
 JoomGallery is an OpenSource project and is developed by users for users. So if you are using JoomGallery feel free to contribute to the project...
