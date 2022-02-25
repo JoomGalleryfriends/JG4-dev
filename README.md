@@ -8,8 +8,11 @@ https://www.en.joomgalleryfriends.net/
 **Support-Forum:**
 https://www.forum.joomgalleryfriends.net
 
-**Projekt-Management:**
+**Project-Management:**
 https://github.com/orgs/JoomGalleryfriends/projects/1 (Access only for Team-Members)
+
+**Project Prsesentation:**
+https://docs.google.com/presentation/d/1kXGfGRrHswU0M3yh0zUvOwW1fYqB07cksHzNxzcEyxI
 
 ## Want to contribute?
 
