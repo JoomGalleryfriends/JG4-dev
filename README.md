@@ -11,7 +11,7 @@ https://www.forum.joomgalleryfriends.net
 **Project-Management:**
 https://github.com/orgs/JoomGalleryfriends/projects/1 (Access only for Team-Members)
 
-**Project Prsesentation:**
+**Project Presentation:**
 https://docs.google.com/presentation/d/1kXGfGRrHswU0M3yh0zUvOwW1fYqB07cksHzNxzcEyxI
 
 ## Want to contribute?
