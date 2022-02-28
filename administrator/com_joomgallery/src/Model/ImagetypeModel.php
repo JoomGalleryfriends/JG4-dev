@@ -119,16 +119,16 @@ class ImagetypeModel extends JoomAdminModel
     $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 		$table = $this->getTable();
 
-		if ($pk > 0 || \is_array($pk))
+		if($pk > 0 || \is_array($pk))
 		{
 			// Attempt to load the row.
 			$return = $table->load($pk);
 
 			// Check for a table object error.
-			if ($return === false)
+			if($return === false)
 			{
 				// If there was no underlying error, then the false means there simply was not a row in the db for this $pk.
-				if (!$table->getError())
+				if(!$table->getError())
 				{
 					// Create new row
           $table->load(0);

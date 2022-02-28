@@ -47,7 +47,7 @@ class TimecreatedField extends FormField
 
 		$time_created = $this->value;
 
-		if (!strtotime($time_created))
+		if(!strtotime($time_created))
 		{
 			$time_created = Factory::getDate('now', Factory::getConfig()->get('offset'))->toSql(true);
 			$html[]       = '<input type="hidden" name="' . $this->name . '" value="' . $time_created . '" />';
@@ -55,7 +55,7 @@ class TimecreatedField extends FormField
 
 		$hidden = (boolean) $this->element['hidden'];
 
-		if ($hidden == null || !$hidden)
+		if($hidden == null || !$hidden)
 		{
 			$jdate       = new Date($time_created);
 			$pretty_date = $jdate->format(Text::_('DATE_FORMAT_LC2'));

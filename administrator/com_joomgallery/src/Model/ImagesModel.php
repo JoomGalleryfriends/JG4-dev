@@ -40,7 +40,7 @@ class ImagesModel extends ListModel
 	*/
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields']))
+		if(empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
 				'ordering', 'a.ordering',
@@ -185,6 +185,7 @@ class ImagesModel extends ListModel
 
 		// Filtering access
 		$filter_access = $this->state->get("filter.access");
+    
 		if($filter_access !== null && !empty($filter_access))
 		{
 			$query->where("a.`access` = '".$db->escape($filter_access)."'");

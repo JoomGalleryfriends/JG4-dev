@@ -48,7 +48,7 @@ class TimeupdatedField extends FormField
 		$old_time_updated = $this->value;
 		$hidden           = (boolean) $this->element['hidden'];
 
-		if ($hidden == null || !$hidden)
+		if($hidden == null || !$hidden)
 		{
 			if (!strtotime($old_time_updated))
 			{

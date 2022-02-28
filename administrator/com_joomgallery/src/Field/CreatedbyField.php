@@ -46,7 +46,7 @@ class CreatedbyField extends FormField
 		// Load user
 		$user_id = $this->value;
 
-		if ($user_id)
+		if($user_id)
 		{
 			$user = Factory::getUser($user_id);
 		}
@@ -56,7 +56,7 @@ class CreatedbyField extends FormField
 			$html[] = '<input type="hidden" name="' . $this->name . '" value="' . $user->id . '" />';
 		}
 
-		if (!$this->hidden)
+		if(!$this->hidden)
 		{
 			$html[] = "<div>" . $user->name . " (" . $user->username . ")</div>";
 		}

@@ -74,7 +74,7 @@ class NestedparentField extends ListField
 		// Pad the option text with spaces using depth level as a multiplier.
 		for ($i = 0, $n = count($options); $i < $n; $i++)
 		{
-				$options[$i]->text = str_repeat('- ', $options[$i]->level) . $options[$i]->text;
+			$options[$i]->text = str_repeat('- ', $options[$i]->level) . $options[$i]->text;
 		}
 
 		// Merge any additional options in the XML definition.

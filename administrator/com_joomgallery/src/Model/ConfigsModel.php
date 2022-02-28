@@ -40,7 +40,7 @@ class ConfigsModel extends ListModel
 	*/
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields']))
+		if(empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
 				'id', 'a.id',

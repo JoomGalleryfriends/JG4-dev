@@ -176,7 +176,7 @@ class TagModel extends JoomAdminModel
         // Trigger the before save event.
         $result = $this->app->triggerEvent($this->event_before_save, array($context, &$table, true, $table));
 
-        if (in_array(false, $result, true) || !$table->store())
+        if(in_array(false, $result, true) || !$table->store())
         {
           throw new \Exception($table->getError());
         }

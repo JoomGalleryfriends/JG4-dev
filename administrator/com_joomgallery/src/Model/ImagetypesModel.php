@@ -70,7 +70,7 @@ class ImagetypesModel extends ListModel
 	{
 		$items = parent::getItems();
 
-    foreach ($items as $key => $item)
+    foreach($items as $key => $item)
     {
       if(property_exists($item, 'params')) 
 		  {

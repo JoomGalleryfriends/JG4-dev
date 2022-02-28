@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="4.0" method="upgrade">
     <name>com_joomgallery</name>
-    <creationDate>2021-12-27</creationDate>
+    <creationDate>2022-01-01</creationDate>
     <copyright>2008 - 2022  JoomGallery::ProjectTeam</copyright>
     <license>GNU General Public License version 2 or later</license>
     <author>JoomGallery::ProjectTeam</author>
@@ -50,8 +50,6 @@
 
     <languages folder="site/com_joomgallery/languages">
         <language tag="en-GB">en-GB/com_joomgallery.ini</language>
-        <language tag="en-GB">en-GB/com_joomgallery.exif.ini</language>
-        <language tag="en-GB">en-GB/com_joomgallery.iptc.ini</language>
     </languages>
 
     <administration>
@@ -78,6 +76,8 @@
         <languages folder="administrator/com_joomgallery/languages">
 			      <language tag="en-GB">en-GB/com_joomgallery.ini</language>
 			      <language tag="en-GB">en-GB/com_joomgallery.sys.ini</language>
+            <language tag="en-GB">en-GB/com_joomgallery.exif.ini</language>
+            <language tag="en-GB">en-GB/com_joomgallery.iptc.ini</language>
         </languages>
     </administration>
 

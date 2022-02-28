@@ -44,7 +44,8 @@ class ModifiedbyField extends \Joomla\CMS\Form\FormField
 		$html   = array();
 		$user   = Factory::getUser();
 		$html[] = '<input type="hidden" name="' . $this->name . '" value="' . $user->id . '" />';
-		if (!$this->hidden)
+    
+		if(!$this->hidden)
 		{
 			$html[] = "<div>" . $user->name . " (" . $user->username . ")</div>";
 		}

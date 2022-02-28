@@ -82,7 +82,7 @@ class CategoryModel extends AdminModel
 		// Get the form.
 		$form = $this->loadForm('com_joomgallery.category', 'category', array('control' => 'jform', 'load_data' => $loadData ));	
 
-		if (empty($form))
+		if(empty($form))
 		{
 			return false;
 		}
@@ -106,13 +106,13 @@ class CategoryModel extends AdminModel
       $context    = $this->option . '.' . $this->name;
       $app        = Factory::getApplication();
 
-      if (\array_key_exists('tags', $data) && \is_array($data['tags']))
+      if(\array_key_exists('tags', $data) && \is_array($data['tags']))
       {
         $table->newTags = $data['tags'];
       }
 
-      $key = $table->getKeyName();
-      $pk = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
+      $key   = $table->getKeyName();
+      $pk    = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
       $isNew = true;
 
       // Include the plugins for the save events.
@@ -122,52 +122,52 @@ class CategoryModel extends AdminModel
       try
       {
           // Load the row if saving an existing record.
-          if ($pk > 0)
+          if($pk > 0)
           {
-              $table->load($pk);
-              $isNew = false;
+            $table->load($pk);
+            $isNew = false;
           }
 
-          if ($table->parent_id != $data['parent_id'] || $data['id'] == 0)
+          if($table->parent_id != $data['parent_id'] || $data['id'] == 0)
           {
-              $table->setLocation($data['parent_id'], 'last-child');
+            $table->setLocation($data['parent_id'], 'last-child');
           }
 
           // Bind the data.
-          if (!$table->bind($data))
+          if(!$table->bind($data))
           {
-              $this->setError($table->getError());
+            $this->setError($table->getError());
 
-              return false;
+            return false;
           }
 
           // Prepare the row for saving
           $this->prepareTable($table);
 
           // Check the data.
-          if (!$table->check())
+          if(!$table->check())
           {
-              $this->setError($table->getError());
+            $this->setError($table->getError());
 
-              return false;
+            return false;
           }
 
           // Trigger the before save event.
           $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
-          if (\in_array(false, $result, true))
+          if(\in_array(false, $result, true))
           {
-              $this->setError($table->getError());
+            $this->setError($table->getError());
 
-              return false;
+            return false;
           }
 
           // Store the data.
-          if (!$table->store())
+          if(!$table->store())
           {
-              $this->setError($table->getError());
+            $this->setError($table->getError());
 
-              return false;
+            return false;
           }
 
           // Clean the cache.
@@ -176,21 +176,21 @@ class CategoryModel extends AdminModel
           // Trigger the after save event.
           $app->triggerEvent($this->event_after_save, array($context, $table, $isNew, $data));
       }
-      catch (\Exception $e)
+      catch(\Exception $e)
       {
-          $this->setError($e->getMessage());
+        $this->setError($e->getMessage());
 
-          return false;
+        return false;
       }
 
-      if (isset($table->$key))
+      if(isset($table->$key))
       {
-          $this->setState($this->getName() . '.id', $table->$key);
+        $this->setState($this->getName() . '.id', $table->$key);
       }
 
       $this->setState($this->getName() . '.new', $isNew);
 
-      if ($this->associationsContext && Associations::isEnabled() && !empty($data['associations']))
+      if($this->associationsContext && Associations::isEnabled() && !empty($data['associations']))
       {
         $associations = $data['associations'];
 
@@ -299,12 +299,14 @@ class CategoryModel extends AdminModel
 	public function rebuild()
 	{
 		$table = $this->getTable();
-		if (!$table->rebuild())
+
+		if(!$table->rebuild())
 		{
 			$this->setError($table->getError());
 
 			return false;
 		}
+    
 		$this->cleanCache();
 
 		return true;

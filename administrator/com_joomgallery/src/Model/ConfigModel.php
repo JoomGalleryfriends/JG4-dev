@@ -122,7 +122,8 @@ class ConfigModel extends JoomAdminModel
       {
         // Search the corresponding entry in the old config values
         $i = \null;
-        foreach ($old_staticprocessing as $c => $staticp)
+
+        foreach($old_staticprocessing as $c => $staticp)
         {
           if($staticp->jg_imgtypename == $imagetype->typename)
           {
@@ -281,7 +282,7 @@ class ConfigModel extends JoomAdminModel
     $imagetypes_arr = $mod_items->getItems();
 
     // update/add used imagetypes
-    foreach ($data['jg_staticprocessing'] as $staticprocessing)
+    foreach($data['jg_staticprocessing'] as $staticprocessing)
     {      
       // load data
       $imagetype_data = $model->getItem(array('typename' => $staticprocessing['jg_imgtypename']));
@@ -312,7 +313,7 @@ class ConfigModel extends JoomAdminModel
       $model->save((array) $imagetype_data);
 
       // unset this used imagetypes from array
-      foreach ($imagetypes_arr as $key => $imagetype)
+      foreach($imagetypes_arr as $key => $imagetype)
       {
         if ($imagetype->typename == $staticprocessing['jg_imgtypename'])
         {
@@ -323,7 +324,7 @@ class ConfigModel extends JoomAdminModel
 
     // delete unused imagetypes
     $forbidden = array('original', 'detail', 'thumbnail');
-    foreach ($imagetypes_arr as $imagetype)
+    foreach($imagetypes_arr as $imagetype)
     {
       if(\in_array($imagetype->typename, $forbidden))
       {
