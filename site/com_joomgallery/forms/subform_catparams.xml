@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset>
+    <field name="allow_download"
+           groupByFieldset="false"
+           default="-1"
+           type="radio"
+           class="btn-group btn-group-yesno"
+           label="COM_JOOMGALLERY_CATMAN_ALLOW_DOWNLOAD"
+           description="COM_JOOMGALLERY_CATMAN_ALLOW_DOWNLOAD_TIP">
+      <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
+      <option value="0">JNO</option>
+      <option value="1">JYES</option>
+    </field>
+
+    <field name="allow_comment"
+           groupByFieldset="false"
+           default="-1"
+           type="radio"
+           class="btn-group btn-group-yesno"
+           label="COM_JOOMGALLERY_CATMAN_ALLOW_COMMENT"
+           description="COM_JOOMGALLERY_CATMAN_ALLOW_COMMENT_TIP">
+      <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
+      <option value="0">JNO</option>
+      <option value="1">JYES</option>
+    </field>
+
+    <field name="allow_rating"
+           groupByFieldset="false"
+           default="-1"
+           type="radio"
+           class="btn-group btn-group-yesno"
+           label="COM_JOOMGALLERY_CATMAN_ALLOW_RATING"
+           description="COM_JOOMGALLERY_CATMAN_ALLOW_RATING_TIP">
+      <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
+      <option value="0">JNO</option>
+      <option value="1">JYES</option>
+    </field>
+
+    <field name="allow_watermark"
+           groupByFieldset="false"
+           default="-1"
+           type="radio"
+           class="btn-group btn-group-yesno"
+           label="COM_JOOMGALLERY_CATMAN_ALLOW_WATERMARK"
+           description="COM_JOOMGALLERY_CATMAN_ALLOW_WATERMARK_TIP">
+      <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
+      <option value="0">JNO</option>
+      <option value="1">JYES</option>
+    </field>
+
+    <field name="allow_watermark_download"
+           groupByFieldset="false"
+           default="-1"
+           type="radio"
+           class="btn-group btn-group-yesno"
+           label="COM_JOOMGALLERY_CATMAN_ALLOW_WATERMARK_DOWNLOAD"
+           description="COM_JOOMGALLERY_CATMAN_ALLOW_WATERMARK_DOWNLOAD_TIP">
+      <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
+      <option value="0">JNO</option>
+      <option value="1">JYES</option>
+    </field>
+  </fieldset>
+</form>

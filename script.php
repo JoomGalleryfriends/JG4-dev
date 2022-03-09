@@ -1,0 +1,733 @@
+<?php
+/**
+******************************************************************************************
+**   @version    4.0.0                                                                  **
+**   @package    com_joomgallery                                                        **
+**   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
+**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 2 or later                          **
+*****************************************************************************************/
+
+define('MODIFIED', 1);
+define('NOT_MODIFIED', 2);
+
+defined('_JEXEC') or die();
+
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Installer\Installer;
+use \Joomla\CMS\Installer\InstallerScript;
+use \Joomla\CMS\Filesystem\File;
+use \Joomla\CMS\Filesystem\Folder;
+
+/**
+ * Install method
+ * is called by the installer of Joomla!
+ *
+ * @return  void
+ * @since   4.0.0
+ */
+class com_joomgalleryInstallerScript extends InstallerScript
+{
+	/**
+	 * The title of the component (printed on installation and uninstallation messages)
+	 *
+	 * @var string
+	 */
+	protected $extension = 'JoomGallery';
+
+  /**
+	 * Minimum PHP version required to install the extension
+	 *
+	 * @var    string
+	 * @since  3.6
+	 */
+	protected $minimumPhp = '7.3.0';
+
+	/**
+	 * Minimum Joomla! version required to install the extension
+	 *
+	 * @var    string
+	 * @since  3.6
+	 */
+	protected $minimumJoomla = '4.0.0';
+
+  /**
+   * Release code of the currently installed version
+   *
+   * @var string
+   */
+  protected $act_code = '';
+
+  /**
+   * Release code of the new version to be installed
+   *
+   * @var string
+   */
+  protected $new_code = '';
+
+
+	/**
+	 * Method called before install/update the component. Note: This method won't be called during uninstall process.
+	 *
+	 * @param   string $type   Type of process [install | update]
+	 * @param   mixed  $parent Object who called this method
+	 *
+	 * @return boolean True if the process should continue, false otherwise
+   * @throws Exception
+	 */
+	public function preflight($type, $parent)
+	{
+		$result = parent::preflight($type, $parent);
+
+		if (!$result)
+		{
+			return $result;
+		}
+
+    if ($type == 'update')
+    {
+      // save release code information
+      //-------------------------------
+      if (File::exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml'))
+      {
+        $xml = simplexml_load_file(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml');
+        $this->act_code = $xml->version;
+      }
+      else
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Unable to read JoomGallery manifest XML file.'), 'note');
+      }
+
+      $this->new_code    = $parent->getManifest()->version;
+    }
+
+		// logic for preflight before install
+		return $result;
+	}
+
+	/**
+	 * Method to install the component
+	 *
+	 * @param   mixed $parent Object who called this method.
+	 *
+	 * @return void
+	 *
+	 * @since 0.2b
+	 */
+	public function install($parent)
+	{
+    $app = Factory::getApplication();
+    $act_version = explode('.',$this->act_code);
+    $new_version = explode('.',$this->new_code);
+
+    $install_message = $this->getInstallerMSG($act_version, $new_version, 'install');
+
+    // Create default Category
+    if(!$this->addDefaultCategory())
+    {
+      $app->enqueueMessage(Text::_('Unable to create default category', 'error'));
+    }
+
+    // Create image types
+    $img_types = array('original'  => array('path' => '/images/joomgallery/originals', 'alias' => 'orig'),
+                       'detail'    => array('path' => '/images/joomgallery/details', 'alias' => 'det'),
+                       'thumbnail' => array('path' => '/images/joomgallery/thumbnails', 'alias' => 'thumb')
+                      );
+    $this->count = 0;
+    foreach ($img_types as $key => $type)
+    {
+      // Create default Image types records
+      if(!$this->addDefaultIMGtype($key, $type['alias'], $type['path']))
+      {
+        $app->enqueueMessage(Text::_('Unable to create image type: '.$key, 'error'));
+      }
+
+      // Create default Image types directories
+      if(!Folder::create(JPATH_ROOT.$type['path'].'/uncategorised'))
+      {
+        $app->enqueueMessage(Text::_('Unable to create image directory for image type: ').$key, 'error');
+      }
+      $this->count = $this->count + 1;
+    }
+
+    // Create default Configuration-Set
+    if(!$this->addDefaultConfig())
+    {
+      $app->enqueueMessage(Text::_('Unable to create default configuration set', 'error'));
+    }
+
+		$this->installPlugins($parent);
+		$this->installModules($parent);
+    ?>
+
+    <div class="text-center">
+      <img src="../media/com_joomgallery/images/joom_logo.png" alt="JoomGallery Logo">
+      <p></p>
+      <div class="alert alert-light">
+        <h3>JoomGallery <?php echo $parent->getManifest()->version;?> was installed successfully.</h3>
+        <p>You may now start using JoomGallery or download specific language files afore:</p>
+        <p>
+          <a title="Start" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#">
+            Start now!</a>
+          <a title="Languages" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#">
+            Languages</a>
+        </p>
+        <?php if ($install_message != '') : ?>
+          <div><?php echo $install_message;?></div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <?php
+	}
+
+  /**
+	 * Method to update the component
+	 *
+	 * @param   mixed $parent Object who called this method.
+	 *
+	 * @return void
+	 */
+	public function update($parent)
+	{
+    $act_version = explode('.',$this->act_code);
+    $new_version = explode('.',$this->new_code);
+
+    $update_message = $this->getInstallerMSG($act_version, $new_version, 'update');
+
+		$this->installPlugins($parent);
+		$this->installModules($parent);
+    ?>
+
+    <div class="text-center">
+      <img src="../media/com_joomgallery/images/joom_logo.png" alt="JoomGallery Logo">
+      <p></p>
+      <div class="alert alert-light">
+        <h3>JoomGallery was updated to version <?php echo $parent->getManifest()->version; ?> successfully.</h3>
+        <p>
+          <button class="btn btn-small btn-info" data-toggle="modal" data-target="#jg-changelog-popup"><i class="icon-list"></i> Changelog</button>
+        </p>
+        <p>You may now start using JoomGallery or download specific language files afore:</p>
+        <p>
+          <a title="Start" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#">
+            Start now!</a>
+          <a title="Languages" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#">
+            Languages</a>
+        </p>
+        <?php if ($update_message != '') : ?>
+          <div><?php echo $update_message;?></div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <div id="jg-changelog-popup" class="modal fade" tabindex="-1" aria-labelledby="PopupChangelogModalLabel">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 id="PopupChangelogModalLabel" class="modal-title">Changelog</h5>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+          </div>
+          <div class="modal-body">
+            <iframe class="iframe" frameborder="0" src="<?php echo Route::_('index.php?option=com_joomgallery&controller=changelog&tmpl=component'); ?>" height="400px" width="100%"></iframe>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" data-dismiss="modal"><?php echo Text::_('JTOOLBAR_CLOSE'); ?></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <?php
+	}
+
+	/**
+	 * Method to uninstall the component
+	 *
+	 * @param   mixed $parent Object who called this method.
+	 *
+	 * @return void
+	 */
+	public function uninstall($parent)
+	{
+    $app = Factory::getApplication();
+    $act_version = explode('.',$this->act_code);
+    $new_version = explode('.',$this->new_code);
+
+    $uninstall_message = $this->getInstallerMSG($act_version, $new_version, 'uninstall');
+
+		$this->uninstallPlugins($parent);
+		$this->uninstallModules($parent);
+
+    // Delete directories
+    if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
+    {
+      $app->enqueueMessage(Text::_('Unable to delete image directory (/images/joomgallery)'), 'error');
+    }
+    ?>
+
+    <div class="text-center">
+      <div class="alert alert-light">
+        <h3>JoomGallery was uninstalled successfully!</h3>
+        <p>Please remember to remove your images folders manually if you didn't use JoomGallery's default directories.</p>
+
+        <?php if ($uninstall_message != '') : ?>
+          <div><?php echo $uninstall_message;?></div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <?php
+	}
+
+  /**
+	 * Add a category to the ´#__joomgallery_categories´ table
+   *
+	 * @return  bool  true on success
+	 */
+	public function addDefaultCategory()
+	{
+    $db = Factory::getDbo();
+
+    Table::addIncludePath(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+    JLoader::register('\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+
+    $table = Table::getInstance('CategoryTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
+
+    $data = array();
+    $data["id"] = NULL;
+    $data["asset_id"] = NULL;
+    $data["parent_id"] = 1;
+    $data["level"] = 1;
+    $data["path"] = "uncategorised";
+    $data["title"] = "Uncategorised";
+    $data["alias"] = "uncategorised";
+    $data["description"] = "";
+    $data["access"] = 1;
+    $data["published"] = 1;
+    $data["params"] = '{"allow_download":"-1","allow_comment":"-1","allow_rating":"-1","allow_watermark":"-1","allow_watermark_download":"-1"}';
+    $data["language"] = "*";
+    $data["metadesc"] = "";
+    $data["metakey"] = "";
+
+    if (!$table->bind($data))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind category'), 'error');
+
+      return false;
+    }
+    if (!$table->store($data))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store category'), 'error');
+
+      return false;
+    }
+
+    // Set level and parent_id
+    $fields = array(
+      $db->quoteName('parent_id') . ' = ' . $db->quote($data['parent_id']),
+      $db->quoteName('level') . ' = ' . $db->quote($data['level'])
+    );
+    $conditions = array (
+      $db->quoteName('alias') . ' = ' . $db->quote($data['alias'])
+    );
+    // insert to database
+    $query = $db->getQuery(true);
+    $query->update($db->quoteName('#__joomgallery_categories'))->set($fields)->where($conditions);
+    $db->setQuery($query);
+    $db->execute();
+
+    return true;
+  }
+
+  /**
+	 * Add a category to the ´#__joomgallery_configs´ table
+   *
+	 * @return  bool  true on success
+	 */
+	public function addDefaultConfig()
+	{
+    $db = Factory::getDbo();
+
+    Table::addIncludePath(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+    JLoader::register('\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\ConfigTable', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+
+    $table = Table::getInstance('ConfigTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
+
+    $data = array();
+    $data["id"] = NULL;
+    $data["asset_id"] = NULL;
+    $data["group_id"] = 1;
+    $data["title"] = 'Global Configuration';
+    $data["published"] = 1;
+    $data["ordering"] = 0;
+    $data["checked_out"] = 0;
+    $data["created_by"] = 0;
+    $data["modified_by"] = 0;
+    $data["jg_filenamereplace"] = 'Š|S, Œ|O, Ž|Z, š|s, œ|oe, ž|z, Ÿ|Y, ¥|Y, µ|u, À|A, Á|A, Â|A, Ã|A, Ä|AE, Å|A, Æ|A, Ç|C, È|E, É|E, Ê|E, Ë|E, Ì|I, Í|I, Î|I, Ï|I, Ð|D, Ñ|N, Ò|O, Ó|O, Ô|O, Õ|O, Ö|OE, Ø|O, Ù|U, Ú|U, Û|U, Ü|UE, Ý|Y, à|a, á|a, â|a, ã|a, ä|ae, å|a, æ|a, ç|c, è|e, é|e, ê|e, ë|e';
+    $data["jg_replaceinfo"] = '[]';
+    $data["jg_staticprocessing"] = '{"jg_staticprocessing0":{"jg_imgtype":"1","jg_imgtypename":"original","jg_imgtypepath":"/images/joomgallery/originals","jg_imgtyperesize":"0","jg_imgtypewidth":"","jg_imgtypeheight":"","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":100,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":[]},"jg_staticprocessing1":{"jg_imgtype":"1","jg_imgtypename":"detail","jg_imgtypepath":"/images/joomgallery/details","jg_imgtyperesize":"3","jg_imgtypewidth":1000,"jg_imgtypeheight":1000,"jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"0","jg_imgtypequality":80,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":[]},"jg_staticprocessing2":{"jg_imgtype":"1","jg_imgtypename":"thumbnail","jg_imgtypepath":"/images/joomgallery/thumbnails","jg_imgtyperesize":"4","jg_imgtypewidth":250,"jg_imgtypeheight":250,"jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"1","jg_imgtypequality":60,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":[]}}';
+    $data["jg_dynamicprocessing"] = '[]';
+    $data["jg_imgprocessor"] = 'gd';
+    $data["jg_maxusercat"] = 10;
+    $data["jg_maxuserimage"] = 500;
+    $data["jg_maxuserimage_timespan"] = 0;
+    $data["jg_maxfilesize"] = 2000000;
+    $data["jg_maxuploadfields"] = 3;
+    $data["jg_maxvoting"] = 5;
+
+    if (!$table->bind($data))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind category'), 'error');
+
+      return false;
+    }
+    if (!$table->store($data))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store category'), 'error');
+
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+	 * Add a category to the ´#__joomgallery_img_types´ table
+   *
+   * @param   string $type Image type name
+   * @param   string $type Image type alias
+   * @param   string $path Path for the image type
+   *
+	 * @return  bool  true on success
+	 */
+	public function addDefaultIMGtype($type, $alias, $path)
+	{
+    $db = Factory::getDbo();
+
+    switch($type)
+    {
+      case 'detail':
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"3","jg_imgtypewidth":"1000","jg_imgtypeheight":"1000","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"0","jg_imgtypequality":"80","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
+        break;
+
+      case 'thumbnail':
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"4","jg_imgtypewidth":"250","jg_imgtypeheight":"250","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"1","jg_imgtypequality":"60","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
+        break;
+      
+      default:
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"0","jg_imgtypewidth":"","jg_imgtypeheight":"","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":"100","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
+        break;
+    }
+
+    $record = new stdClass();
+    $record->typename = $type;
+    $record->type_alias = $alias;
+    $record->path = $path;
+    $record->params = $params;
+    $record->ordering = $this->count;
+
+    // Insert the object into the user profile table.
+    if(!$db->insertObject('#__joomgallery_img_types', $record))
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+	/**
+	 * Installs plugins for this component
+	 *
+	 * @param   mixed $parent Object who called the install/update method
+	 *
+	 * @return void
+	 */
+	private function installPlugins($parent)
+	{
+		$installation_folder = $parent->getParent()->getPath('source');
+		$app                 = Factory::getApplication();
+
+		/* @var $plugins SimpleXMLElement */
+		if (method_exists($parent, 'getManifest'))
+		{
+			$plugins = $parent->getManifest()->plugins;
+		}
+		else
+		{
+			$plugins = $parent->get('manifest')->plugins;
+		}
+
+		if (count($plugins->children()))
+		{
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true);
+
+			foreach ($plugins->children() as $plugin)
+			{
+				$pluginName  = (string) $plugin['plugin'];
+				$pluginGroup = (string) $plugin['group'];
+				$path        = $installation_folder . '/plugins/' . $pluginGroup . '/' . $pluginName;
+				$installer   = new Installer;
+
+				if (!$this->isAlreadyInstalled('plugin', $pluginName, $pluginGroup))
+				{
+					$result = $installer->install($path);
+				}
+				else
+				{
+					$result = $installer->update($path);
+				}
+
+				if ($result)
+				{
+					$app->enqueueMessage('Plugin ' . $pluginName . ' was installed successfully');
+				}
+				else
+				{
+					$app->enqueueMessage('There was an issue installing the plugin ' . $pluginName,
+						'error');
+				}
+
+				$query
+					->clear()
+					->update('#__extensions')
+					->set('enabled = 1')
+					->where(
+						array(
+							'type LIKE ' . $db->quote('plugin'),
+							'element LIKE ' . $db->quote($pluginName),
+							'folder LIKE ' . $db->quote($pluginGroup)
+						)
+					);
+				$db->setQuery($query);
+				$db->execute();
+			}
+		}
+	}
+
+	/**
+	 * Check if an extension is already installed in the system
+	 *
+	 * @param   string $type   Extension type
+	 * @param   string $name   Extension name
+	 * @param   mixed  $folder Extension folder(for plugins)
+	 *
+	 * @return boolean
+	 */
+	private function isAlreadyInstalled($type, $name, $folder = null)
+	{
+		$result = false;
+
+		switch ($type)
+		{
+			case 'plugin':
+				$result = file_exists(JPATH_PLUGINS . '/' . $folder . '/' . $name);
+				break;
+			case 'module':
+				$result = file_exists(JPATH_SITE . '/modules/' . $name);
+				break;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Installs plugins for this component
+	 *
+	 * @param   mixed $parent Object who called the install/update method
+	 *
+	 * @return void
+	 */
+	private function installModules($parent)
+	{
+		$installation_folder = $parent->getParent()->getPath('source');
+		$app                 = Factory::getApplication();
+
+		if (method_exists($parent, 'getManifest'))
+		{
+			$modules = $parent->getManifest()->modules;
+		}
+		else
+		{
+			$modules = $parent->get('manifest')->modules;
+		}
+
+		if (!empty($modules))
+		{
+
+			if (count($modules->children()))
+			{
+				foreach ($modules->children() as $module)
+				{
+					$moduleName = (string) $module['module'];
+					$path       = $installation_folder . '/modules/' . $moduleName;
+					$installer  = new Installer;
+
+					if (!$this->isAlreadyInstalled('module', $moduleName))
+					{
+						$result = $installer->install($path);
+					}
+					else
+					{
+						$result = $installer->update($path);
+					}
+
+					if ($result)
+					{
+						$app->enqueueMessage('Module ' . $moduleName . ' was installed successfully');
+					}
+					else
+					{
+						$app->enqueueMessage('There was an issue installing the module ' . $moduleName,
+							'error');
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Uninstalls plugins
+	 *
+	 * @param   mixed $parent Object who called the uninstall method
+	 *
+	 * @return void
+	 */
+	private function uninstallPlugins($parent)
+	{
+		$app     = Factory::getApplication();
+
+		if (method_exists($parent, 'getManifest'))
+		{
+			$plugins = $parent->getManifest()->plugins;
+		}
+		else
+		{
+			$plugins = $parent->get('manifest')->plugins;
+		}
+
+		if (count($plugins->children()))
+		{
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true);
+
+			foreach ($plugins->children() as $plugin)
+			{
+				$pluginName  = (string) $plugin['plugin'];
+				$pluginGroup = (string) $plugin['group'];
+				$query
+					->clear()
+					->select('extension_id')
+					->from('#__extensions')
+					->where(
+						array(
+							'type LIKE ' . $db->quote('plugin'),
+							'element LIKE ' . $db->quote($pluginName),
+							'folder LIKE ' . $db->quote($pluginGroup)
+						)
+					);
+				$db->setQuery($query);
+				$extension = $db->loadResult();
+
+				if (!empty($extension))
+				{
+					$installer = new Installer;
+					$result    = $installer->uninstall('plugin', $extension);
+
+					if ($result)
+					{
+						$app->enqueueMessage('Plugin ' . $pluginName . ' was uninstalled successfully');
+					}
+					else
+					{
+						$app->enqueueMessage('There was an issue uninstalling the plugin ' . $pluginName,
+							'error');
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Uninstalls plugins
+	 *
+	 * @param   mixed $parent Object who called the uninstall method
+	 *
+	 * @return void
+	 */
+	private function uninstallModules($parent)
+	{
+		$app = Factory::getApplication();
+
+		if (method_exists($parent, 'getManifest'))
+		{
+			$modules = $parent->getManifest()->modules;
+		}
+		else
+		{
+			$modules = $parent->get('manifest')->modules;
+		}
+
+		if (!empty($modules))
+		{
+
+			if (count($modules->children()))
+			{
+				$db    = Factory::getDbo();
+				$query = $db->getQuery(true);
+
+				foreach ($modules->children() as $plugin)
+				{
+					$moduleName = (string) $plugin['module'];
+					$query
+						->clear()
+						->select('extension_id')
+						->from('#__extensions')
+						->where(
+							array(
+								'type LIKE ' . $db->quote('module'),
+								'element LIKE ' . $db->quote($moduleName)
+							)
+						);
+					$db->setQuery($query);
+					$extension = $db->loadResult();
+
+					if (!empty($extension))
+					{
+						$installer = new Installer;
+						$result    = $installer->uninstall('module', $extension);
+
+						if ($result)
+						{
+							$app->enqueueMessage('Module ' . $moduleName . ' was uninstalled successfully');
+						}
+						else
+						{
+							$app->enqueueMessage('There was an issue uninstalling the module ' . $moduleName,
+								'error');
+						}
+					}
+				}
+			}
+		}
+	}
+
+  /**
+   * Generates post installer messages.
+   *
+   * @param  array   $act_version     Array with the currently installled version code
+   * @param  array   $new_version     Array with the version code the package will be updated to
+   * @param  string  $methode         install, uninstall, update
+   *
+   * @return string html string of the message
+   */
+  private function getInstallerMSG($act_version, $new_version, $methode)
+  {
+    $msg = '';
+
+    return $msg;
+  }
+}

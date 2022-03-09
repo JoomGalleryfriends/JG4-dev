@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
+  <fieldset>
+    <field name="ordering"/>
+
+    <field name="id"
+           type="text"
+           readonly="true"
+           class="readonly"
+           label="COM_JOOMGALLERY_IMGMAN_IMAGE_ID" />
+
+    <field name="checked_out"
+           type="hidden"
+           filter="unset" />
+
+    <field name="hits"
+           default="0"
+           label="JGLOBAL_HITS"
+           hidden="true" />
+
+    <field name="downloads"
+           default="0"
+           label="COM_JOOMGALLERY_COMMON_DOWNLOADS"
+           hidden="true" />
+
+    <field name="imgvotes"
+           default="0"
+           label="COM_JOOMGALLERY_COMMON_VOTES"
+           hidden="true" />
+
+    <field name="imgvotesum"
+           default="0"
+           label="COM_JOOMGALLERY_COMMON_VOTESUM"
+           hidden="true" />
+
+    <field name="approved"
+           default="0"
+           label="COM_JOOMGALLERY_FORM_LBL_IMAGE_APPROVED"
+           hidden="true" />
+
+    <field name="useruploaded"
+           default="0"
+           label="COM_JOOMGALLERY_FORM_LBL_IMAGE_USERUPLOADED"
+           hidden="true" />
+
+    <field name="imgtitle"
+           type="text"
+           maxlength="255"
+           filter="safehtml"
+           required="true"
+           label="COM_JOOMGALLERY_COMMON_TITLE"
+           message="COM_JOOMGALLERY_COMMON_ALERT_IMAGE_MUST_HAVE_TITLE" />
+
+    <field name="alias"
+           type="text"
+           class="inputbox"
+           generator="imgtitle"
+           label="COM_JOOMGALLERY_COMMON_ALIAS"
+           description="COM_JOOMGALLERY_IMGMAN_ALIAS_TIP"
+           maxlength="255" />
+
+    <field name="catid"
+           type="foreignkey"
+           label="COM_JOOMGALLERY_COMMON_CATEGORY"
+           default=""
+           input_type="list"
+           table="#__joomgallery_categories"
+           key_field="id"
+           translate="true"
+           value_field="title"
+           required="true"
+           message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY" />
+
+    <field name="published"
+           type="radio"
+           class="btn-group"
+           default="0"
+           size="1"
+           label="COM_JOOMGALLERY_COMMON_PUBLISHED">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field name="imgauthor"
+           type="text"
+           maxlength="50"
+           filter="string"
+           label="COM_JOOMGALLERY_COMMON_AUTHOR"
+           description="COM_JOOMGALLERY_IMGMAN_AUTHOR_TIP" />
+
+    <field name="language"
+           type="language"
+           client="administrator"
+           label="JGRID_HEADING_LANGUAGE" />
+
+    <field name="imgtext"
+           type="editor"
+           rows="250"
+           buttons="true"
+           filter="JComponentHelper::filterText"
+           label="COM_JOOMGALLERY_COMMON_DESCRIPTION" />
+
+    <field name="access"
+           type="accesslevel"
+           label="COM_JOOMGALLERY_COMMON_ACCESS"
+           description="COM_JOOMGALLERY_IMGMAN_ACCESS_TIP" />
+
+    <field name="hidden"
+           type="radio"
+           default="0"
+           class="btn-group"
+           label="COM_JOOMGALLERY_IMGMAN_HIDDEN"
+           description="COM_JOOMGALLERY_IMGMAN_HIDDEN_TIP">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field name="featured"
+           type="radio"
+           default="0"
+           class="btn-group"
+           label="COM_JOOMGALLERY_COMMON_FEATURED"
+           description="COM_JOOMGALLERY_IMGMAN_FEATURED_TIP">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field name="created_time"
+           type="timecreated"
+           class="readonly"
+           readonly="true"
+           label="JGLOBAL_FIELD_CREATED_LABEL" />
+
+    <field name="created_by"
+           type="createdby"
+           label="JGLOBAL_FIELD_CREATED_BY_LABEL"
+           description="JGLOBAL_FIELD_CREATED_BY_DESC" />
+
+    <field name="modified_time"
+           type="timeupdated"
+           label="JGLOBAL_FIELD_MODIFIED_LABEL" />
+
+    <field name="modified_by"
+           type="modifiedby"
+           label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
+           description="JGLOBAL_FIELD_MODIFIED_BY_DESC" />
+
+    <field name="metadesc"
+           type="textarea"
+           filter="safehtml"
+           rows="5"
+           cols="40"
+           default=""
+           label="COM_JOOMGALLERY_COMMON_METADESC"
+           description="COM_JOOMGALLERY_COMMON_METADESC_TIP"
+    />
+
+    <field name="metakey"
+           type="textarea"
+           filter="string"
+           rows="5"
+           cols="40"
+           default=""
+           label="COM_JOOMGALLERY_COMMON_METAKEYS"
+           description="COM_JOOMGALLERY_COMMON_METAKEYS_TIP"
+    />
+
+    <field name="robots"
+           type="list"
+           default="0"
+           label="JFIELD_METADATA_ROBOTS_LABEL">
+        <option value="0">JGLOBAL_USE_GLOBAL</option>
+        <option value="1">index, follow</option>
+        <option value="2">noindex, follow</option>
+        <option value="3">index, nofollow</option>
+        <option value="4">noindex, nofollow</option>
+    </field>
+
+    <field name="image"
+           type="file"
+           accept="image/*"
+           size="10485760"
+           label="COM_JOOMGALLERY_COMMON_IMAGE" />
+
+    <field name="MAX_FILE_SIZE"
+           type="hidden"
+           default="10485760"
+        />
+
+    <field name="filename"
+           type="hidden"
+           filter="stirng" />
+
+    <field name="imgdate"
+           type="calendar"
+           format="%Y-%m-%d"
+           timeformat="24"
+           filter="server_utc"
+           translateformat="false"
+           showtime="false"
+           singleheader="false"
+           todaybutton="true"
+           weeknumbers="false"
+           filltable="false"
+           default="1900-01-01 00:00:00"
+           label="COM_JOOMGALLERY_COMMON_IMGDATE"
+           description="COM_JOOMGALLERY_IMGMAN_IMGDATE_DESC" />
+
+    <field name="imgmetadata"
+           type="editor"
+           editor="codemirror"
+           buttons="false"
+           filter="JComponentHelper::filterText"
+           label="COM_JOOMGALLERY_IMGMAN_IMGMETADATA"
+           description="COM_JOOMGALLERY_IMGMAN_IMGMETADATA_DESC" />
+
+    <field name="params"
+           type="subform"
+           formsource="administrator/components/com_joomgallery/forms/subform_imageparams.xml"
+           layout="joomla.form.field.subform.default"
+           label="COM_JOOMGALLERY_COMMON_PARAMETERS" />
+
+    <field name="version_note"
+           type="text"
+           label="JGLOBAL_FIELD_VERSION_NOTE_LABEL"
+           description="JGLOBAL_FIELD_VERSION_NOTE_DESC"
+           class="inputbox"
+           size="45"
+           labelclass="control-label" />
+  </fieldset>
+  <fieldset name="accesscontrol">
+    <field name="asset_id"
+           type="hidden"
+           filter="unset" />
+
+    <field name="rules"
+           type="rules"
+           label="JFIELD_RULES_LABEL"
+           translate_label="false"
+           filter="rules"
+           validate="rules"
+           class="inputbox"
+           component="com_joomgallery"
+           section="image" />
+  </fieldset>
+</form>

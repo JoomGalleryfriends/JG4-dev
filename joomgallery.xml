@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4.0" method="upgrade">
+    <name>com_joomgallery</name>
+    <creationDate>2022-01-01</creationDate>
+    <copyright>2008 - 2022  JoomGallery::ProjectTeam</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <author>JoomGallery::ProjectTeam</author>
+    <authorEmail>team@joomgalleryfriends.net</authorEmail>
+    <authorUrl>https://www.joomgalleryfriends.net/</authorUrl>
+    <version>4.0.0</version>
+    <description>JoomGallery 4, a native gallery component for Joomla! 4.x </description>
+    <namespace path="src">Joomgallery\Component\Joomgallery</namespace>
+
+    <scriptfile>script.php</scriptfile>
+
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/update.mysql.utf8.sql</file>
+        </sql>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    <api>
+      <files folder="webservices">
+        <folder>src</folder>
+      </files>
+    </api>
+
+    <files folder="site/com_joomgallery">
+        <folder>src</folder>
+        <folder>forms</folder>
+        <folder>tmpl</folder>
+    </files>
+
+    <media destination="com_joomgallery" folder="media/com_joomgallery">
+        <folder>css</folder>
+        <folder>js</folder>
+        <folder>images</folder>
+        <filename>joomla.asset.json</filename>
+    </media>
+
+    <languages folder="site/com_joomgallery/languages">
+        <language tag="en-GB">en-GB/com_joomgallery.ini</language>
+    </languages>
+
+    <administration>
+        <menu>COM_JOOMGALLERY</menu>
+        <submenu>
+            <menu link="option=com_joomgallery&amp;view=images" view="images" alt="Joomgallery/Images">COM_JOOMGALLERY_IMAGE_MANAGER</menu>
+            <menu link="option=com_joomgallery&amp;view=categories" view="categories" alt="Joomgallery/Categories">COM_JOOMGALLERY_CATEGORY_MANAGER</menu>
+            <menu link="option=com_joomgallery&amp;view=configs" view="configs" alt="Joomgallery/Configs">COM_JOOMGALLERY_CONFIGURATION_MANAGER</menu>
+            <menu link="option=com_joomgallery&amp;view=faulties" view="faulties" alt="Joomgallery/Maintenance">COM_JOOMGALLERY_MAINTENANCE_MANAGER</menu>
+            <menu link="option=com_joomgallery&amp;view=tags" view="tags" alt="Joomgallery/Tags">COM_JOOMGALLERY_TAGS_MANAGER</menu>
+        </submenu>
+        <files folder="administrator/com_joomgallery">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+            <folder>services</folder>
+            <folder>presets</folder>
+            <folder>sql</folder>
+            <folder>includes</folder>
+            <folder>layouts</folder>
+        </files>
+        <languages folder="administrator/com_joomgallery/languages">
+			      <language tag="en-GB">en-GB/com_joomgallery.ini</language>
+			      <language tag="en-GB">en-GB/com_joomgallery.sys.ini</language>
+            <language tag="en-GB">en-GB/com_joomgallery.exif.ini</language>
+            <language tag="en-GB">en-GB/com_joomgallery.iptc.ini</language>
+        </languages>
+    </administration>
+
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+
+    <plugins>
+        <plugin group="finder" plugin="joomgalleryimages"/>
+        <plugin group="privacy" plugin="joomgalleryimages"/>
+        <plugin group="webservices" plugin="joomgallery"/>
+        <plugin group="finder" plugin="joomgallerycategories"/>
+        <plugin group="webservices" plugin="joomgallery"/>
+    </plugins>
+
+    <updateservers>
+        <server type="extension" priority="1" name="JoomGallery Update Service">https://www.joomgalleryfriends.net/components/com_newversion/xml/extensions3.xml</server>
+    </updateservers>
+</extension>
