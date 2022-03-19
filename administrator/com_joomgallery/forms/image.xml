@@ -60,14 +60,10 @@
            maxlength="255" />
 
     <field name="catid"
-           type="foreignkey"
-           label="COM_JOOMGALLERY_COMMON_CATEGORY"
+           type="categoryedit"
+           label="JCATEGORY"
            default=""
-           input_type="list"
-           table="#__joomgallery_categories"
-           key_field="id"
-           translate="true"
-           value_field="title"
+           show_root="false"
            required="true"
            message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY" />
 
