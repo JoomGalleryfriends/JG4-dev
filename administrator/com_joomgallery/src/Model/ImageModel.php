@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\MVC\Model\AdminModel;
@@ -22,6 +23,7 @@ use \Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Object\CMSObject;
 use Joomla\Registry\Registry;
 use \Joomla\CMS\Helper\TagsHelper;
+use Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
@@ -292,6 +294,12 @@ class ImageModel extends JoomAdminModel
 		$key = $table->getKeyName();
 		$pk = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
 		$isNew = true;
+
+    // Change language to 'All' if multilangugae is not enabled
+    if (!Multilanguage::isEnabled())
+		{
+			$data['language'] = '*';
+		}
 
 		// Include the plugins for the save events.
 		PluginHelper::importPlugin($this->events_map['save']);
@@ -683,5 +691,27 @@ class ImageModel extends JoomAdminModel
 				$table->ordering = $max + 1;
 			}
 		}
+	}
+
+  /**
+	 * Allows preprocessing of the JForm object.
+	 *
+	 * @param   Form    $form   The form object
+	 * @param   array   $data   The data to be merged into the form object
+	 * @param   string  $group  The plugin group to be executed
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function preprocessForm(Form $form, $data, $group = 'joomgallery')
+	{
+		if (!Multilanguage::isEnabled())
+		{
+			$form->setFieldAttribute('language', 'type', 'hidden');
+			$form->setFieldAttribute('language', 'default', '*');
+		}
+
+		parent::preprocessForm($form, $data, $group);
 	}
 }
