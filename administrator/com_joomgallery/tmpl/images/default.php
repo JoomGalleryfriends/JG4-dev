@@ -68,7 +68,7 @@ if ($saveOrder)
 							<?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_FIELD_ID_LABEL', 'a.id', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'JCATEGORY', 'a.catid', $listDirn, $listOrder); ?>
+							<?php echo HTMLHelper::_('searchtools.sort',  'JCATEGORY', 'cattitle', $listDirn, $listOrder); ?>
 						</th>
 						<th class='left'>
 							<?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
@@ -150,7 +150,7 @@ if ($saveOrder)
 								<?php echo $item->id; ?>
 							</td>
 							<td>
-								<?php echo $item->catid; ?>
+								<?php echo $item->cattitle; ?>
 							</td>
 							<td>
 								<?php if (isset($item->checked_out) && $item->checked_out && ($canEdit || $canChange)) : ?>
@@ -204,9 +204,8 @@ if ($saveOrder)
 
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
-				<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
 				<?php echo HTMLHelper::_('form.token'); ?>
-			</div>
+			</div> 
 		</div>
 	</div>
 </form>

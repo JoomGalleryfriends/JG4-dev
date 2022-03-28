@@ -47,7 +47,7 @@ class ImagesModel extends JoomListModel
 				'useruploaded', 'a.useruploaded',
 				'imgtitle', 'a.imgtitle',
 				'alias', 'a.alias',
-				'catid', 'a.catid',
+				'cattitle', 'a.cattitle',
 				'published', 'a.published',
 				'imgauthor', 'a.imgauthor',
 				'language', 'a.language',
@@ -85,10 +85,10 @@ class ImagesModel extends JoomListModel
 	 *
 	 * @throws Exception
 	 */
-	protected function populateState($ordering = null, $direction = null)
+	protected function populateState($ordering = 'a.id', $direction = 'ASC')
 	{
 		// List state information.
-		parent::populateState('id', 'ASC');
+		parent::populateState($ordering, $direction);
 
 		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $context);
@@ -134,6 +134,7 @@ class ImagesModel extends JoomListModel
 	 */
 	protected function getListQuery()
 	{
+
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -145,9 +146,10 @@ class ImagesModel extends JoomListModel
 		// Join over the users for the checked out user
 		$query->select("uc.name AS uEditor");
 		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
+    
 		// Join over the foreign key 'catid'
-		$query->select('`#__joomgallery_categories_3681153`.`title` AS categories_fk_value_3681153');
-		$query->join('LEFT', '#__joomgallery_categories AS #__joomgallery_categories_3681153 ON #__joomgallery_categories_3681153.`id` = a.`catid`');
+		$query->select('`category`.title AS `cattitle`');
+		$query->join('LEFT', '#__joomgallery_categories AS category ON `category`.id = a.`catid`');
 
 		// Join over the access level field 'access'
 		$query->select('`access`.title AS `access`');
@@ -187,12 +189,13 @@ class ImagesModel extends JoomListModel
 		}
 
 		// Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering', 'id');
+		$orderCol  = $this->state->get('list.ordering', 'a.id'); 
 		$orderDirn = $this->state->get('list.direction', 'ASC');
 
 		if($orderCol && $orderDirn)
 		{
-			$query->order($db->escape($orderCol . ' ' . $orderDirn));
+      $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
+			//$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		}
 
 		return $query;
@@ -206,35 +209,6 @@ class ImagesModel extends JoomListModel
 	public function getItems()
 	{
 		$items = parent::getItems();
-
-		foreach($items as $oneItem)
-		{
-			if(isset($oneItem->catid))
-			{
-				$values    = explode(',', $oneItem->catid);
-				$textValue = array();
-
-				foreach($values as $value)
-				{
-					$db    = Factory::getDbo();
-					$query = $db->getQuery(true);
-					$query
-						->select('`#__joomgallery_categories_3681153`.`title`')
-						->from($db->quoteName('#__joomgallery_categories', '#__joomgallery_categories_3681153'))
-						->where($db->quoteName('#__joomgallery_categories_3681153.id') . ' = '. $db->quote($db->escape($value)));
-
-					$db->setQuery($query);
-					$results = $db->loadObject();
-
-					if($results)
-					{
-						$textValue[] = $results->title;
-					}
-				}
-
-				$oneItem->catid = !empty($textValue) ? implode(', ', $textValue) : $oneItem->catid;
-			}
-		}
 
 		return $items;
 	}
