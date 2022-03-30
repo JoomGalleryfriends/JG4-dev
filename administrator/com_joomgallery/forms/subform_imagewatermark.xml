@@ -38,7 +38,8 @@
            max="100"
            step="1"
            label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKSIZE"
-           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKSIZE_LONG" />
+           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKSIZE_LONG"
+           showon="jg_watermarkzoom:1,2" />
 
     <field name="jg_watermarkopacity"
            type="number"

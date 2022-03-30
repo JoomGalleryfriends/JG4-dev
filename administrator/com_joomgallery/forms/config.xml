@@ -90,6 +90,7 @@
 
       <field name="jg_use_real_paths"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="0"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_PD_USE_REAL_PATHS"
@@ -100,6 +101,7 @@
 
       <field name="jg_checkupdate"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_PD_CHECKUPDATE"
@@ -112,6 +114,7 @@
     <fieldset type="tab" name="general-upload" label="COM_JOOMGALLERY_ACTION_UPLOAD">
       <field name="jg_filenamewithjs"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_RP_FILENAME_WITHJS"
@@ -149,6 +152,7 @@
 
       <field name="jg_useorigfilename"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="0"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_COMMON_ORIGINAL_FILENAME"
@@ -169,6 +173,7 @@
 
       <field name="jg_filenamenumber"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_BU_FILENAMENUMBER"
@@ -190,6 +195,7 @@
 
       <field name="jg_fastgd2creation"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_IP_FAST_GD2_THUMBCREATION"
@@ -212,15 +218,16 @@
              type="subform"
              min="3"
              multiple="true"
+             buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
-             layout="joomla.form.field.subform.repeatable-table"
+             layout="joomla.form.field.subform.repeatable"
              label="COM_JOOMGALLERY_CONFIG_GS_IP_STATICPROCESSING" />
 
       <field name="jg_dynamicprocessing"
              type="subform"
              multiple="true"
              formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
-             layout="joomla.form.field.subform.repeatable-table"
+             layout="joomla.form.field.subform.repeatable"
              label="COM_JOOMGALLERY_CONFIG_GS_IP_DYNAMICPROCESSING" />
     </fieldset>
 
@@ -267,6 +274,7 @@
 
       <field name="jg_msg_zipdownload"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="0"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_ZIPDOWNLOAD"
@@ -297,6 +305,7 @@
 
       <field name="jg_msg_comment_toowner"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="0"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_COMMENT_TOOWNER"
@@ -327,6 +336,7 @@
 
       <field name="jg_msg_report_toowner"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="0"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_REPORT_TOOWNER"
@@ -347,6 +357,7 @@
 
       <field name="jg_msg_global_from"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="0"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_UPLOAD_RECIPIENTS"
@@ -359,66 +370,74 @@
 
   <fieldset type="tab" name="user" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_USER_SETTINGS">
     <fieldset type="tab" name="user-general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
-        <field name="jg_userspace"
-              type="radio"
-              default="1"
-              class="btn-group"
-              label="COM_JOOMGALLERY_CONFIG_UR_UU_USERSPACE"
-              description="COM_JOOMGALLERY_CONFIG_UR_UU_USERSPACE_LONG" >
-          <option value="0">JNO</option>
-          <option value="1">JYES</option>
-        </field>
+      <field name="jg_userspace"
+             type="radio"
+             layout="joomla.form.field.radio.switcher"
+             default="1"
+             class="btn-group"
+             label="COM_JOOMGALLERY_CONFIG_UR_UU_USERSPACE"
+             description="COM_JOOMGALLERY_CONFIG_UR_UU_USERSPACE_LONG" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
 
-        <field name="jg_approve"
-              type="radio"
-              default="0"
-              class="btn-group"
-              label="COM_JOOMGALLERY_CONFIG_UR_UU_APPROVAL_NEEDED"
-              description="COM_JOOMGALLERY_CONFIG_UR_UU_APPROVAL_NEEDED_LONG" >
-          <option value="0">JNO</option>
-          <option value="1">JYES</option>
-        </field>
+      <field name="jg_approve"
+             type="radio"
+             layout="joomla.form.field.radio.switcher"
+             default="0"
+             class="btn-group"
+             label="COM_JOOMGALLERY_CONFIG_UR_UU_APPROVAL_NEEDED"
+             description="COM_JOOMGALLERY_CONFIG_UR_UU_APPROVAL_NEEDED_LONG"
+             showon="jg_userspace:1" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
 
-        <field name="jg_maxusercat"
-              type="number"
-              filter="int"
-              default="10"
-              min="1"
-              step="1"
-              label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_USERCATS"
-              description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_USERCATS_LONG" />
+      <field name="jg_maxusercat"
+             type="number"
+             filter="int"
+             default="10"
+             min="1"
+             step="1"
+             label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_USERCATS"
+             description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_USERCATS_LONG"
+             showon="jg_userspace:1" />
 
-        <field name="jg_maxuserimage"
-              type="number"
-              default="500"
-              filter="int"
-              min="1"
-              step="1"
-              label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES"
-              description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_LONG" />
+      <field name="jg_maxuserimage"
+             type="number"
+             default="500"
+             filter="int"
+             min="1"
+             step="1"
+             label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES"
+             description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_LONG"
+             showon="jg_userspace:1" />
 
-        <field name="jg_maxuserimage_timespan"
-              type="number"
-              filter="int"
-              min="0"
-              step="1"
-              default="0"
-              label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_TIMESPAN"
-              description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_TIMESPAN_LONG" />
+      <field name="jg_maxuserimage_timespan"
+             type="number"
+             filter="int"
+             min="0"
+             step="1"
+             default="0"
+             label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_TIMESPAN"
+             description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_TIMESPAN_LONG"
+             showon="jg_userspace:1" />
 
-        <field name="jg_maxfilesize"
-              type="number"
-              default="2000000"
-              filter="int"
-              min="1"
-              step="1"
-              label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_FILESIZE"
-              description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_FILESIZE_LONG" />
+      <field name="jg_maxfilesize"
+             type="number"
+             default="2000000"
+             filter="int"
+             min="1"
+             step="1"
+             label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_FILESIZE"
+             description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_FILESIZE_LONG"
+             showon="jg_userspace:1" />
     </fieldset>
 
     <fieldset type="tab" name="user-upload" label="COM_JOOMGALLERY_ACTION_UPLOAD">
       <field name="jg_newpiccopyright"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_COPYRIGHT"
@@ -441,6 +460,7 @@
 
       <field name="jg_useruploadsingle"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_SINGLE"
@@ -456,10 +476,12 @@
              min="1"
              step="1"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_UPLOADFIELDS"
-             description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_UPLOADFIELDS_LONG" />
+             description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_UPLOADFIELDS_LONG"
+             showon="jg_useruploadsingle:1" />
 
       <field name="jg_useruploadajax"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_AJAX"
@@ -470,6 +492,7 @@
 
       <field name="jg_useruploadbatch"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_BATCH"
@@ -480,6 +503,7 @@
 
       <field name="jg_special_upload"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_SPECIAL_GIF_UPLOAD"
@@ -490,6 +514,7 @@
 
       <field name="jg_newpicnote"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOADNOTE"
@@ -513,6 +538,7 @@
     <fieldset type="tab" name="user-download" label="COM_JOOMGALLERY_CONFIG_UR_UD_USER_DOWNLOAD_SETTINGS">
       <field name="jg_download"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD"
@@ -523,10 +549,12 @@
 
       <field name="jg_download_hint"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD_HINT"
-             description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD_HINT_LONG" >
+             description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD_HINT_LONG"
+             showon="jg_download:1" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
       </field>
@@ -535,7 +563,8 @@
              type="list"
              default="2"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADFILE"
-             description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADFILE_LONG" >
+             description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADFILE_LONG"
+             showon="jg_download:1" >
         <option value="0">COM_JOOMGALLERY_CONFIG_UR_UD_DETAIL_ONLY</option>
         <option value="1">COM_JOOMGALLERY_CONFIG_UR_UD_ORIGINAL_ONLY</option>
         <option value="2">COM_JOOMGALLERY_CONFIG_UR_UD_DETAIL_IFNO_ORIGINAL</option>
@@ -543,10 +572,12 @@
 
       <field name="jg_downloadwithwatermark"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADWITHWATERMARK"
-             description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADWITHWATERMARK_LONG" >
+             description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADWITHWATERMARK_LONG"
+             showon="jg_download:1" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
       </field>
@@ -555,6 +586,7 @@
     <fieldset type="tab" name="user-ratings" label="COM_JOOMGALLERY_CONFIG_UR_TAB_RATING_SETTINGS">
       <field name="jg_showrating"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_RATING"
@@ -570,23 +602,27 @@
              min="1"
              step="1"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_HIGHEST_RATING"
-             description="COM_JOOMGALLERY_CONFIG_UR_RT_HIGHEST_RATING_LONG" />
+             description="COM_JOOMGALLERY_CONFIG_UR_RT_HIGHEST_RATING_LONG" 
+             showon="jg_showrating:1" />
 
       <field name="jg_ratingcalctype"
              type="list"
              default="0"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE"
-             description="COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE_LONG" >
+             description="COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE_LONG"
+             showon="jg_showrating:1" >
         <option value="0">COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE_STANDARD</option>
         <option value="1">COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE_BAYES1</option>
       </field>
 
       <field name="jg_votingonlyonce"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_VOTING_ONLY_ONCE"
-             description="COM_JOOMGALLERY_CONFIG_UR_RT_VOTING_ONLY_ONCE_LONG" >
+             description="COM_JOOMGALLERY_CONFIG_UR_RT_VOTING_ONLY_ONCE_LONG"
+             showon="jg_showrating:1" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
       </field>
@@ -595,6 +631,7 @@
     <fieldset type="tab" name="user-reports" label="COM_JOOMGALLERY_CONFIG_UR_RP_REPORTS_SETTINGS">
       <field name="jg_report_images"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_RP_REPORT_IMAGES"
@@ -605,6 +642,7 @@
 
       <field name="jg_report_hint"
              type="radio"
+             layout="joomla.form.field.radio.switcher"
              default="1"
              class="btn-group"
              label="COM_JOOMGALLERY_CONFIG_UR_RP_REPORT_HINT"

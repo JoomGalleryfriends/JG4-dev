@@ -3,6 +3,7 @@
   <fieldset>
     <field name="jg_imgtype"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            groupByFieldset="false"
            default="1"
            class="btn-group"
@@ -13,26 +14,41 @@
 
     <field name="jg_imgtypename"
            type="text"
+           required="true"
            groupByFieldset="false"
            maxlength="255"
            filter="word"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPENAME"
            description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPENAME_LONG" />
 
+    <field name="jg_showoptions"
+           type="text"
+           layout="joomla.form.field.radio.switcher"
+           groupByFieldset="false"
+           default="1"
+           label="COM_JOOMGALLERY_CONFIG_SHOWOPTIONS"
+           description="COM_JOOMGALLERY_CONFIG_SHOWOPTIONS_LONG" >
+        <option value="0">JHIDE</option>
+        <option value="1">JSHOW</option>
+    </field>
+
     <field name="jg_imgtypepath"
            type="text"
            groupByFieldset="false"
            maxlength="100"
            filter="string"
+           required="true"
            label="COM_JOOMGALLERY_COMMON_IMAGE_PATH"
-           description="COM_JOOMGALLERY_COMMON_IMAGE_PATH_LONG" />
+           description="COM_JOOMGALLERY_COMMON_IMAGE_PATH_LONG"
+           showon="jg_showoptions:1" />
 
     <field name="jg_imgtyperesize"
            type="list"
            groupByFieldset="false"
            default="0"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_RESIZING"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_RESIZING_LONG" >
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_RESIZING_LONG"
+           showon="jg_showoptions:1" >
         <option value="0">JNO</option>
         <option value="1">COM_JOOMGALLERY_CONFIG_COMMON_SAMEHIGHT</option>
         <option value="2">COM_JOOMGALLERY_CONFIG_COMMON_SAMEWIDTH</option>
@@ -44,28 +60,31 @@
            type="number"
            groupByFieldset="false"
            filter="int"
-           min=""
-           max=""
+           min="1"
+           max="99999"
            step="1"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_WIDTH"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_WIDTH_LONG" />
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_WIDTH_LONG"
+           showon="jg_showoptions:1[AND]jg_imgtyperesize:1,2,3,4" />
 
     <field name="jg_imgtypeheight"
            type="number"
            groupByFieldset="false"
            filter="int"
-           min=""
-           max=""
+           min="1"
+           max="99999"
            step="1"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_HEIGHT"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_HEIGHT_LONG" />
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_HEIGHT_LONG"
+           showon="jg_showoptions:1[AND]jg_imgtyperesize:1,2,3,4" />
 
     <field name="jg_cropposition"
            type="list"
            groupByFieldset="false"
            default="2"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITION"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITION_LONG" >
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITION_LONG"
+           showon="jg_showoptions:1[AND]jg_imgtyperesize:4" >
         <option value="0">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONLU</option>
         <option value="1">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONRU</option>
         <option value="2">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONC</option>
@@ -75,33 +94,39 @@
 
     <field name="jg_imgtypeorinet"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            groupByFieldset="false"
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_AUTOROT"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_AUTOROT_LONG" >
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_AUTOROT_LONG"
+           showon="jg_showoptions:1" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
 
     <field name="jg_imgtypeanim"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            groupByFieldset="false"
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_KEEPANIM"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_KEEPANIM_LONG">
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_KEEPANIM_LONG"
+           showon="jg_showoptions:1" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
 
     <field name="jg_imgtypesharpen"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            groupByFieldset="false"
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_SHARPEN"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_SHARPEN_LONG">
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPE_SHARPEN_LONG"
+           showon="jg_showoptions:1" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -115,15 +140,18 @@
            max="100"
            step="1"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGE_QUALITY"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGE_QUALITY_LONG" />
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGE_QUALITY_LONG"
+           showon="jg_showoptions:1" />
 
     <field name="jg_imgtypewatermark"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            groupByFieldset="false"
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_CONFIG_DV_GS_ADD_WATERMARK"
-           description="COM_JOOMGALLERY_CONFIG_DV_GS_ADD_WATERMARK_NO" >
+           description="COM_JOOMGALLERY_CONFIG_DV_GS_ADD_WATERMARK_NO"
+           showon="jg_showoptions:1" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -132,10 +160,12 @@
            type="subform"
            groupByFieldset="false"
            max="1"
-           multiple="true"
+           multiple="false"
+           buttons="remove"
            formsource="administrator/components/com_joomgallery/forms/subform_imagewatermark.xml"
            layout="joomla.form.field.subform.repeatable"
            label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPENAME_WATERMARK"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPENAME_WATERMARK_LONG" />
+           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGETYPENAME_WATERMARK_LONG"
+           showon="jg_showoptions:1[AND]jg_imgtypewatermark:1" />
   </fieldset>
 </form>

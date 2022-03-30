@@ -21,7 +21,7 @@ use \Joomla\CMS\Language\Text;
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
-	 ->useScript('form.validate');
+   ->useScript('form.validate');
 HTMLHelper::_('bootstrap.tooltip');
 
 // Import CSS
@@ -33,11 +33,11 @@ $wa->useStyle('com_joomgallery.admin');
     action="<?php echo Route::_('index.php?option=com_joomgallery&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" enctype="multipart/form-data" name="adminForm" id="config-form" class="form-validate form-horizontal">
 
-    <div class="row-fluid">
-      <div class="span6 form-horizontal">
+    <div class="row">
+      <div class="col-lg-6 form-horizontal">
         <?php echo $this->form->renderField('title'); ?>
       </div>
-      <div class="span6 form-horizontal">
+      <div class="col-lg-6 form-horizontal">
         <?php echo $this->form->renderField('group_id'); ?>
       </div>
     </div>
