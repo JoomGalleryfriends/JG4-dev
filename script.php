@@ -81,8 +81,19 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     if(!\defined('_JOOM_OPTION'))
     {
-      $temp_dir = $parent->getParent()->getPath('source');
-      require_once $temp_dir.DIRECTORY_SEPARATOR.'administrator'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
+      if($type == 'install' || $type == 'update')
+      {
+        // use new uploaded defines.php
+        $temp_dir = $parent->getParent()->getPath('source');
+        $defines  = $temp_dir.DIRECTORY_SEPARATOR.'administrator'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
+      }
+      else
+      {
+        // use old defines.php
+        $defines = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
+      }
+      
+      require_once $defines;
     }
 
 		$result = parent::preflight($type, $parent);
@@ -92,7 +103,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			return $result;
 		}
 
-    if ($type == 'update')
+    if($type == 'update')
     {
       // save release code information
       //-------------------------------
