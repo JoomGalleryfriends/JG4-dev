@@ -291,10 +291,21 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     $db = Factory::getDbo();
 
-    Table::addIncludePath(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
-    JLoader::register('\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+    $path       = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'CategoryTable.php';
+    $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable';
 
-    $table = Table::getInstance('CategoryTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
+    require_once $path;
+
+    if(class_exists($tableClass))
+    {
+      $table = new $tableClass($db);
+    }
+    else
+    {
+      //Log::add('Error load configuration table.', 8, 'JoomGallery');
+
+      return false;
+    }
 
     $data = array();
     $data["id"] = NULL;
@@ -314,13 +325,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if (!$table->bind($data))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Error bind category'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default category'), 'error');
 
       return false;
     }
     if (!$table->store($data))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Error store category'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default category'), 'error');
 
       return false;
     }
@@ -351,10 +362,21 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     $db = Factory::getDbo();
 
-    Table::addIncludePath(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
-    JLoader::register('\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\ConfigTable', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+    $path       = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'ConfigTable.php';
+    $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\ConfigTable';
 
-    $table = Table::getInstance('ConfigTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
+    require_once $path;
+
+    if(class_exists($tableClass))
+    {
+      $table = new $tableClass($db);
+    }
+    else
+    {
+      //Log::add('Error load configuration table.', 8, 'JoomGallery');
+
+      return false;
+    }
 
     $data = array();
     $data["id"] = NULL;

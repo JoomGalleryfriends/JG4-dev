@@ -372,10 +372,17 @@ class CategoryTable extends Table implements VersionableTableInterface
       ->set('lft = 0')
       ->set('rgt = 1')
       ->set('level = 0')
+      ->set('path = ' . $db->quote(''))
       ->set('title = ' . $db->quote('Root'))
       ->set('alias = ' . $db->quote('root'))
+      ->set('description = ' . $db->quote(''))
       ->set('access = 1')
-      ->set('path = ' . $db->quote(''));
+      ->set('published = 1')
+      ->set('params = ' . $db->quote(''))
+      ->set('language = ' . $db->quote('*'))
+      ->set('metadesc = ' . $db->quote(''))
+      ->set('metakey = ' . $db->quote(''));
+      
       $db->setQuery($query);
 
       if(!$db->execute())
