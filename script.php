@@ -16,7 +16,6 @@ defined('_JEXEC') or die();
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Installer\Installer;
 use \Joomla\CMS\Installer\InstallerScript;
 use \Joomla\CMS\Filesystem\File;
@@ -308,7 +307,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     }
     else
     {
-      //Log::add('Error load configuration table.', 8, 'JoomGallery');
+      Factory::getApplication()->enqueueMessage(Text::_('Error load category table'), 'error');
 
       return false;
     }
@@ -379,7 +378,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     }
     else
     {
-      //Log::add('Error load configuration table.', 8, 'JoomGallery');
+      Factory::getApplication()->enqueueMessage(Text::_('Error load configs table'), 'error');
 
       return false;
     }
@@ -458,7 +457,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $record->ordering = $this->count;
 
     // Insert the object into the user profile table.
-    if(!$db->insertObject('#__joomgallery_img_types', $record))
+    if(!$db->insertObject(_JOOM_TABLE_IMG_TYPES, $record))
     {
       return false;
     }
