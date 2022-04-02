@@ -40,30 +40,21 @@ class com_joomgalleryInstallerScript extends InstallerScript
   /**
 	 * Minimum PHP version required to install the extension
 	 *
-	 * @var    string
-	 * @since  3.6
+	 * @var  string
 	 */
-	protected $minimumPhp = '7.3.0';
-
-	/**
-	 * Minimum Joomla! version required to install the extension
-	 *
-	 * @var    string
-	 * @since  3.6
-	 */
-	protected $minimumJoomla = '4.0.0';
+	protected $minPhp = '7.3.0';
 
   /**
    * Release code of the currently installed version
    *
-   * @var string
+   * @var  string
    */
   protected $act_code = '';
 
   /**
    * Release code of the new version to be installed
    *
-   * @var string
+   * @var  string
    */
   protected $new_code = '';
 
@@ -79,6 +70,22 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function preflight($type, $parent)
 	{
+    // Only proceed if Joomla version is correct
+    if(version_compare(JVERSION, '5.0.0', '<') || version_compare(JVERSION, '4.0.0', '>='))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('JoomGallery 4.x is only compatible to Joomla! 4.x'), 'error');
+
+      return false;
+    }
+
+    // Only proceed if PHP version is correct
+    if(version_compare(PHP_VERSION, $this->minPhp, '<='))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('JoomGallery 4.x is only compatible to PHP versions greater than %s', $this->minPhp), 'error');
+
+      return false;
+    }
+
     if(!\defined('_JOOM_OPTION'))
     {
       if($type == 'install' || $type == 'update')
