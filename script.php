@@ -80,6 +80,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function preflight($type, $parent)
 	{
+    if(!\defined('_JOOM_OPTION'))
+    {
+      $temp_dir = $parent->getParent()->getPath('source');
+      require_once $temp_dir.DIRECTORY_SEPARATOR.'administrator'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
+    }
+
 		$result = parent::preflight($type, $parent);
 
 		if (!$result)
@@ -346,7 +352,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     );
     // insert to database
     $query = $db->getQuery(true);
-    $query->update($db->quoteName('#__joomgallery_categories'))->set($fields)->where($conditions);
+    $query->update($db->quoteName(_JOOM_TABLE_CATEGORIES))->set($fields)->where($conditions);
     $db->setQuery($query);
     $db->execute();
 
