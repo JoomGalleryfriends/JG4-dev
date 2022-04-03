@@ -39,7 +39,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 	 *
 	 * @param   string  $field  Name of the field
 	 *
-	 * @return bool True if unique
+	 * @return  bool    True if unique
 	 */
 	private function isUnique ($field)
 	{
@@ -66,7 +66,9 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function __construct(DatabaseDriver $db)
 	{
 		$this->typeAlias = 'com_joomgallery.category';
-		parent::__construct('#__joomgallery_categories', 'id', $db);
+
+		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
+
 		$this->setColumnAlias('published', 'state');
 		$this->getRootId();
 	}
@@ -181,13 +183,10 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-		if(!Factory::getUser()->authorise('core.admin', 'com_joomgallery.category.' . $array['id']))
+		if(!Factory::getUser()->authorise('core.admin', 'com_joomgallery.category.'.$array['id']))
 		{
-			$actions         = Access::getActionsFromFile(
-				JPATH_ADMINISTRATOR . '/components/com_joomgallery/access.xml',
-				"/access/section[@name='category']/"
-			);
-			$default_actions = Access::getAssetRules('com_joomgallery.category.' . $array['id'])->getData();
+			$actions         = Access::getActionsFromFile(JPATH_ADMINISTRATOR.'/components/com_joomgallery/access.xml', "/access/section[@name='category']/");
+			$default_actions = Access::getAssetRules('com_joomgallery.category.'.$array['id'])->getData();
 			$array_jaccess   = array();
 
 			foreach($actions as $action)
@@ -323,7 +322,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 		$assetParentId = $assetParent->getRootId();
 
 		// The item has the component as asset-parent
-		$assetParent->loadByName('com_joomgallery');
+		$assetParent->loadByName(_JOOM_OPTION);
 
 		// Return the found asset-parent-id
 		if($assetParent->id)
@@ -359,7 +358,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 
     $checkQuery = $db->getQuery(true);
     $checkQuery->select('*');
-    $checkQuery->from('#__joomgallery_categories');
+    $checkQuery->from(_JOOM_TABLE_CATEGORIES);
     $checkQuery->where('level = 0');
 
     $db->setQuery($checkQuery);
@@ -367,7 +366,7 @@ class CategoryTable extends Table implements VersionableTableInterface
     if(empty($db->loadAssoc()))
     {
       $query = $db->getQuery(true)
-      ->insert('#__joomgallery_categories')
+      ->insert(_JOOM_TABLE_CATEGORIES)
       ->set('parent_id = 0')
       ->set('lft = 0')
       ->set('rgt = 1')
