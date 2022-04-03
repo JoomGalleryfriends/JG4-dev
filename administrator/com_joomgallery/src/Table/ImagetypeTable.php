@@ -13,18 +13,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table as Table;
-use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\Filesystem\File;
-use \Joomla\Registry\Registry;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomla\CMS\Helper\ContentHelper;
 
 /**
  * Imagetype table
@@ -41,8 +33,9 @@ class ImagetypeTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = 'com_joomgallery.imagetype';
-		parent::__construct('#__joomgallery_img_types', 'id', $db);
+		$this->typeAlias = _JOOM_OPTION.'.imagetype';
+
+		parent::__construct(_JOOM_TABLE_IMG_TYPES, 'id', $db);
 	}
 
 	/**
@@ -123,7 +116,7 @@ class ImagetypeTable extends Table
 		$assetParentId = $assetParent->getRootId();
 
 		// The item has the component as asset-parent
-		$assetParent->loadByName('com_joomgallery');
+		$assetParent->loadByName(_JOOM_OPTION);
 
 		// Return the found asset-parent-id
 		if($assetParent->id)

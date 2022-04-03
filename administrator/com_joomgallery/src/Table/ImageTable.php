@@ -13,18 +13,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table as Table;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\Filesystem\File;
 use \Joomla\Registry\Registry;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomla\CMS\Helper\ContentHelper;
 
 /**
  * Image table
@@ -39,7 +34,7 @@ class ImageTable extends Table implements VersionableTableInterface
 	 *
 	 * @param   string  $field  Name of the field
 	 *
-	 * @return bool True if unique
+	 * @return  bool    True if unique
 	 */
 	private function isUnique ($field)
 	{
@@ -65,10 +60,11 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = 'com_joomgallery.image';
-		parent::__construct('#__joomgallery', 'id', $db);
-		$this->setColumnAlias('published', 'state');
+		$this->typeAlias = _JOOM_OPTION.'.image';
 
+		parent::__construct(_JOOM_TABLE_IMAGES, 'id', $db);
+
+		$this->setColumnAlias('published', 'state');
 	}
 
 	/**
@@ -164,25 +160,7 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
 		// Support for multiple field: robots
-		if(isset($array['robots']))
-		{
-			if(is_array($array['robots']))
-			{
-				$array['robots'] = implode(',',$array['robots']);
-			}
-			elseif(strpos($array['robots'], ',') != false)
-			{
-				$array['robots'] = explode(',',$array['robots']);
-			}
-			elseif(strlen($array['robots']) == 0)
-			{
-				$array['robots'] = '';
-			}
-		}
-		else
-		{
-			$array['robots'] = '';
-		}
+		$array['robots'] = $this->multipleFieldSupport($array['robots']);
 
 		// Support for empty date field: imgdate
 		if($array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
@@ -205,10 +183,10 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-		if(!Factory::getUser()->authorise('core.admin', 'com_joomgallery.image.' . $array['id']))
+		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.image.' . $array['id']))
 		{
-			$actions         = Access::getActionsFromFile(JPATH_ADMINISTRATOR . '/components/com_joomgallery/access.xml', "/access/section[@name='image']/");
-			$default_actions = Access::getAssetRules('com_joomgallery.image.' . $array['id'])->getData();
+			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='image']/");
+			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.image.' . $array['id'])->getData();
 			$array_jaccess   = array();
 
 			foreach($actions as $action)
@@ -344,7 +322,7 @@ class ImageTable extends Table implements VersionableTableInterface
 		$assetParentId = $assetParent->getRootId();
 
 		// The item has the component as asset-parent
-		$assetParent->loadByName('com_joomgallery');
+		$assetParent->loadByName(_JOOM_OPTION);
 
 		// Return the found asset-parent-id
 		if($assetParent->id)
@@ -354,7 +332,6 @@ class ImageTable extends Table implements VersionableTableInterface
 
 		return $assetParentId;
 	}
-
 
   /**
    * Delete a record by id
@@ -369,5 +346,37 @@ class ImageTable extends Table implements VersionableTableInterface
     $result = parent::delete($pk);
 
     return $result;
+  }
+
+  /**
+   * Support for multiple field
+   *
+   * @param   mixed  $fieldData  Field data
+   *
+   * @return  mixed
+   */
+  protected function multipleFieldSupport($fieldData)
+  {
+    if(isset($fieldData))
+		{
+			if(is_array($fieldData))
+			{
+				$fieldData = implode(',',$fieldData);
+			}
+			elseif(strpos($fieldData, ',') != false)
+			{
+				$fieldData = explode(',',$fieldData);
+			}
+			elseif(strlen($fieldData) == 0)
+			{
+				$fieldData = '';
+			}
+		}
+		else
+		{
+			$fieldData = '';
+		}
+
+    return $fieldData;
   }
 }

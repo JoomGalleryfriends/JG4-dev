@@ -13,18 +13,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table as Table;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
-use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\Filesystem\File;
 use \Joomla\Registry\Registry;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomla\CMS\Helper\ContentHelper;
 
 /**
  * Tag table
@@ -41,8 +35,10 @@ class TagTable extends Table implements VersionableTableInterface
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = 'com_joomgallery.tag';
-		parent::__construct('#__joomgallery_tags', 'id', $db);
+		$this->typeAlias = _JOOM_OPTION.'.tag';
+
+		parent::__construct(_JOOM_TABLE_TAGS, 'id', $db);
+
 		$this->setColumnAlias('published', 'state');
 
 	}
@@ -115,10 +111,10 @@ class TagTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-		if(!Factory::getUser()->authorise('core.admin', 'com_joomgallery.tag.' . $array['id']))
+		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.tag.' . $array['id']))
 		{
-			$actions         = Access::getActionsFromFile(JPATH_ADMINISTRATOR . '/components/com_joomgallery/access.xml',	"/access/section[@name='tag']/");
-			$default_actions = Access::getAssetRules('com_joomgallery.tag.' . $array['id'])->getData();
+			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml',	"/access/section[@name='tag']/");
+			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.tag.'.$array['id'])->getData();
 			$array_jaccess   = array();
 
 			foreach($actions as $action)
@@ -236,7 +232,7 @@ class TagTable extends Table implements VersionableTableInterface
 		$assetParentId = $assetParent->getRootId();
 
 		// The item has the component as asset-parent
-		$assetParent->loadByName('com_joomgallery');
+		$assetParent->loadByName(_JOOM_OPTION);
 
 		// Return the found asset-parent-id
 		if($assetParent->id)

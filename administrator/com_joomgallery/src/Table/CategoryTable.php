@@ -13,18 +13,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Nested as Table;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\Filesystem\File;
 use \Joomla\Registry\Registry;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomla\CMS\Helper\ContentHelper;
 
 /**
  * Category table
@@ -65,7 +60,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = 'com_joomgallery.category';
+		$this->typeAlias = _JOOM_OPTION.'.category';
 
 		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
 
@@ -102,27 +97,6 @@ class CategoryTable extends Table implements VersionableTableInterface
 		$date = Factory::getDate();
 		$task = Factory::getApplication()->input->get('task');
 
-		// Support for alias field: alias
-		if(empty($array['alias']))
-		{
-			if(empty($array['title']))
-			{
-				$array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
-			}
-			else
-			{
-				if(Factory::getConfig()->get('unicodeslugs') == 1)
-				{
-					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
-				}
-				else
-				{
-					$array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
-				}
-			}
-		}
-
-
 		if($array['id'] == 0)
 		{
 			$array['created_time'] = $date->toSql();
@@ -148,26 +122,28 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['modified_time'] = $date->toSql();
 		}
 
+    // Support for alias field: alias
+		if(empty($array['alias']))
+		{
+			if(empty($array['title']))
+			{
+				$array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
+			}
+			else
+			{
+				if(Factory::getConfig()->get('unicodeslugs') == 1)
+				{
+					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
+				}
+				else
+				{
+					$array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
+				}
+			}
+		}
+
 		// Support for multiple field: robots
-		if(isset($array['robots']))
-		{
-			if(is_array($array['robots']))
-			{
-				$array['robots'] = implode(',',$array['robots']);
-			}
-			elseif(strpos($array['robots'], ',') != false)
-			{
-				$array['robots'] = explode(',',$array['robots']);
-			}
-			elseif(strlen($array['robots']) == 0)
-			{
-				$array['robots'] = '';
-			}
-		}
-		else
-		{
-			$array['robots'] = '';
-		}
+		$array['robots'] = $this->multipleFieldSupport($array['robots']);
 
 		if(isset($array['params']) && is_array($array['params']))
 		{
@@ -183,10 +159,10 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-		if(!Factory::getUser()->authorise('core.admin', 'com_joomgallery.category.'.$array['id']))
+		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.category.'.$array['id']))
 		{
-			$actions         = Access::getActionsFromFile(JPATH_ADMINISTRATOR.'/components/com_joomgallery/access.xml', "/access/section[@name='category']/");
-			$default_actions = Access::getAssetRules('com_joomgallery.category.'.$array['id'])->getData();
+			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='category']/");
+			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.category.'.$array['id'])->getData();
 			$array_jaccess   = array();
 
 			foreach($actions as $action)
@@ -411,5 +387,37 @@ class CategoryTable extends Table implements VersionableTableInterface
     }
 
     return $rootId;
+  }
+
+  /**
+   * Support for multiple field
+   *
+   * @param   mixed  $fieldData  Field data
+   *
+   * @return  mixed
+   */
+  protected function multipleFieldSupport($fieldData)
+  {
+    if(isset($fieldData))
+		{
+			if(is_array($fieldData))
+			{
+				$fieldData = implode(',',$fieldData);
+			}
+			elseif(strpos($fieldData, ',') != false)
+			{
+				$fieldData = explode(',',$fieldData);
+			}
+			elseif(strlen($fieldData) == 0)
+			{
+				$fieldData = '';
+			}
+		}
+		else
+		{
+			$fieldData = '';
+		}
+
+    return $fieldData;
   }
 }

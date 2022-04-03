@@ -12,6 +12,8 @@
 defined('_JEXEC') or die;
 
 define('_JOOM_OPTION',               'com_joomgallery');
+define('_JOOM_PATH_ADMIN',           JPATH_ADMINISTRATOR.'/components/com_joomgallery');
+define('_JOOM_PATH_SITE',            JPATH_SITE.'/components/com_joomgallery');
 define('_JOOM_TABLE_IMAGES',         '#__joomgallery');
 define('_JOOM_TABLE_CATEGORIES',     '#__joomgallery_categories');
 define('_JOOM_TABLE_CONFIGS',        '#__joomgallery_configs');
