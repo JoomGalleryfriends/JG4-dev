@@ -38,7 +38,7 @@ class ImageModel extends JoomAdminModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $text_prefix = \strtoupper(_JOOM_OPTION);
+	protected $text_prefix = _JOOM_OPTION_UC;
 
 	/**
 	 * @var    string  Alias to manage history control
