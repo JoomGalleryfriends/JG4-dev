@@ -71,7 +71,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	public function preflight($type, $parent)
 	{
     // Only proceed if Joomla version is correct
-    if(version_compare(JVERSION, '5.0.0', '<') || version_compare(JVERSION, '4.0.0', '>='))
+    if(version_compare(JVERSION, '5.0.0', '>=') || version_compare(JVERSION, '4.0.0', '<'))
     {
       Factory::getApplication()->enqueueMessage(Text::_('JoomGallery 4.x is only compatible to Joomla! 4.x'), 'error');
 
