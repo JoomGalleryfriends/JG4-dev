@@ -87,55 +87,55 @@ class ConfigTable extends Table implements VersionableTableInterface
 		}
 
 		// Support for multiple field: jg_uploadorder
-    $array['jg_uploadorder'] = $this->multipleFieldSupport($array['jg_uploadorder']);
+    $this->multipleFieldSupport($array, 'jg_uploadorder');
 
 		// Support for multiple field: jg_delete_original
-		$array['jg_delete_original'] = $this->multipleFieldSupport($array['jg_delete_original']);
+		$this->multipleFieldSupport($array, 'jg_delete_original');
 
 		// Support for multiple field: jg_imgprocessor
-		$array['jg_imgprocessor'] = $this->multipleFieldSupport($array['jg_imgprocessor']);
+		$this->multipleFieldSupport($array, 'jg_imgprocessor');
 
 		// Support for multiple field: jg_msg_upload_type
-		$array['jg_msg_upload_type'] = $this->multipleFieldSupport($array['jg_msg_upload_type']);
+		$this->multipleFieldSupport($array, 'jg_msg_upload_type');
 
 		// Support for multiple field: jg_msg_upload_recipients
-		$array['jg_msg_upload_recipients'] = $this->multipleFieldSupport($array['jg_msg_upload_recipients']);
+		$this->multipleFieldSupport($array, 'jg_msg_upload_recipients');
 
 		// Support for multiple field: jg_msg_download_type
-		$array['jg_msg_download_type'] = $this->multipleFieldSupport($array['jg_msg_download_type']);
+		$this->multipleFieldSupport($array, 'jg_msg_download_type');
 
 		// Support for multiple field: jg_msg_download_recipients
-		$array['jg_msg_download_recipients'] = $this->multipleFieldSupport($array['jg_msg_download_recipients']);
+		$this->multipleFieldSupport($array, 'jg_msg_download_recipients');
 
 		// Support for multiple field: jg_msg_comment_type
-		$array['jg_msg_comment_type'] = $this->multipleFieldSupport($array['jg_msg_comment_type']);
+		$this->multipleFieldSupport($array, 'jg_msg_comment_type');
 
 		// Support for multiple field: jg_msg_comment_recipients
-		$array['jg_msg_comment_recipients'] = $this->multipleFieldSupport($array['jg_msg_comment_recipients']);
+		$this->multipleFieldSupport($array, 'jg_msg_comment_recipients');
 
 		// Support for multiple field: jg_msg_report_type
-		$array['jg_msg_report_type'] = $this->multipleFieldSupport($array['jg_msg_report_type']);
+		$this->multipleFieldSupport($array, 'jg_msg_report_type');
 
 		// Support for multiple field: jg_msg_report_recipients
-		$array['jg_msg_report_recipients'] = $this->multipleFieldSupport($array['jg_msg_report_recipients']);
+		$this->multipleFieldSupport($array, 'jg_msg_report_recipients');
 
 		// Support for multiple field: jg_msg_rejectimg_type
-		$array['jg_msg_rejectimg_type'] = $this->multipleFieldSupport($array['jg_msg_rejectimg_type']);
+		$this->multipleFieldSupport($array, 'jg_msg_rejectimg_type');
 
 		// Support for multiple field: group_id
-		$array['group_id'] = $this->multipleFieldSupport($array['group_id']);
+		$this->multipleFieldSupport($array, 'group_id');
 
 		// Support for multiple field: jg_uploaddefaultcat
-		$array['jg_uploaddefaultcat'] = $this->multipleFieldSupport($array['jg_uploaddefaultcat']);		
+		$this->multipleFieldSupport($array, 'jg_uploaddefaultcat');
 
 		// Support for multiple field: jg_redirect_after_upload
-		$array['jg_redirect_after_upload'] = $this->multipleFieldSupport($array['jg_redirect_after_upload']);
+		$this->multipleFieldSupport($array, 'jg_redirect_after_upload');
 
 		// Support for multiple field: jg_downloadfile
-		$array['jg_downloadfile'] = $this->multipleFieldSupport($array['jg_downloadfile']);
+		$this->multipleFieldSupport($array, 'jg_downloadfile');
     
     // Support for multiple field: jg_ratingcalctype
-		$array['jg_ratingcalctype'] = $this->multipleFieldSupport($array['jg_ratingcalctype']);   
+		$this->multipleFieldSupport($array, 'jg_ratingcalctype');
     
     if($array['jg_maxusercat'] === '')
 		{
@@ -355,32 +355,31 @@ class ConfigTable extends Table implements VersionableTableInterface
   /**
    * Support for multiple field
    *
-   * @param   mixed  $fieldData  Field data
+   * @param   array   $data       Form data
+   * @param   string  $fieldName  Name of the field
    *
-   * @return  mixed
+   * @return  void
    */
-  protected function multipleFieldSupport($fieldData)
+  protected function multipleFieldSupport(&$data, $fieldName)
   {
-    if(isset($fieldData))
+    if(isset($data[$fieldName]))
 		{
-			if(is_array($fieldData))
+			if(is_array($data[$fieldName]))
 			{
-				$fieldData = implode(',',$fieldData);
+				$data[$fieldName] = implode(',',$data[$fieldName]);
 			}
-			elseif(strpos($fieldData, ',') != false)
+			elseif(strpos($data[$fieldName], ',') != false)
 			{
-				$fieldData = explode(',',$fieldData);
+				$data[$fieldName] = explode(',',$data[$fieldName]);
 			}
-			elseif(strlen($fieldData) == 0)
+			elseif(strlen($data[$fieldName]) == 0)
 			{
-				$fieldData = '';
+				$data[$fieldName] = '';
 			}
 		}
 		else
 		{
-			$fieldData = '';
+			$data[$fieldName] = '';
 		}
-
-    return $fieldData;
   }
 }

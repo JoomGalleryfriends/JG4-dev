@@ -160,7 +160,7 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
 		// Support for multiple field: robots
-		$array['robots'] = $this->multipleFieldSupport($array['robots']);
+		$this->multipleFieldSupport($array, 'robots');
 
 		// Support for empty date field: imgdate
 		if($array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
@@ -351,32 +351,31 @@ class ImageTable extends Table implements VersionableTableInterface
   /**
    * Support for multiple field
    *
-   * @param   mixed  $fieldData  Field data
+   * @param   array   $data       Form data
+   * @param   string  $fieldName  Name of the field
    *
-   * @return  mixed
+   * @return  void
    */
-  protected function multipleFieldSupport($fieldData)
+  protected function multipleFieldSupport(&$data, $fieldName)
   {
-    if(isset($fieldData))
+    if(isset($data[$fieldName]))
 		{
-			if(is_array($fieldData))
+			if(is_array($data[$fieldName]))
 			{
-				$fieldData = implode(',',$fieldData);
+				$data[$fieldName] = implode(',',$data[$fieldName]);
 			}
-			elseif(strpos($fieldData, ',') != false)
+			elseif(strpos($data[$fieldName], ',') != false)
 			{
-				$fieldData = explode(',',$fieldData);
+				$data[$fieldName] = explode(',',$data[$fieldName]);
 			}
-			elseif(strlen($fieldData) == 0)
+			elseif(strlen($data[$fieldName]) == 0)
 			{
-				$fieldData = '';
+				$data[$fieldName] = '';
 			}
 		}
 		else
 		{
-			$fieldData = '';
+			$data[$fieldName] = '';
 		}
-
-    return $fieldData;
   }
 }
