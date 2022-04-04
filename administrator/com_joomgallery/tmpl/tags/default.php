@@ -11,7 +11,6 @@
 // No direct access
 defined('_JEXEC') or die;
 
-
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
@@ -19,6 +18,7 @@ use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Language\Multilanguage;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
 HTMLHelper::_('bootstrap.tooltip');
@@ -27,7 +27,7 @@ HTMLHelper::_('behavior.multiselect');
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
-    ->useScript('com_joomgallery.admin');
+   ->useScript('com_joomgallery.admin');
 
 $user      = Factory::getUser();
 $userId    = $user->get('id');
@@ -77,9 +77,11 @@ if ($saveOrder)
 						<th class='left'>
 							<?php echo HTMLHelper::_('searchtools.sort',  'JSTATUS', 'a.published', $listDirn, $listOrder); ?>
 						</th>
-						<th class='left'>
-							<?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_LANGUAGE', 'a.language', $listDirn, $listOrder); ?>
-						</th>
+            <?php if (Multilanguage::isEnabled()) : ?>
+              <th class='left'>
+                <?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_LANGUAGE', 'a.language', $listDirn, $listOrder); ?>
+              </th>
+            <?php endif; ?>
 					</tr>
 					</thead>
 					<tfoot>
@@ -145,10 +147,11 @@ if ($saveOrder)
 							<td>
 								<?php echo $item->published; ?>
 							</td>
-							<td>
-								<?php echo $item->language; ?>
-							</td>
-
+              <?php if (Multilanguage::isEnabled()) : ?>
+                <td>
+                  <?php echo $item->language; ?>
+                </td>
+              <?php endif; ?>
 						</tr>
 					<?php endforeach; ?>
 					</tbody>
