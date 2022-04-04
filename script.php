@@ -81,7 +81,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if PHP version is correct
     if(version_compare(PHP_VERSION, $this->minPhp, '<='))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('JoomGallery 4.x is only compatible to PHP versions greater than %s', $this->minPhp), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('JoomGallery 4.x is only compatible to PHP versions greater than 7.3. Your PHP version is %s.', $this->minPhp), 'error');
 
       return false;
     }
