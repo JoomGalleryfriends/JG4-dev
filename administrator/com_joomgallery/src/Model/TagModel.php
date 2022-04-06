@@ -15,10 +15,12 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 use \Joomla\CMS\Helper\TagsHelper;
+use Joomla\CMS\Language\Multilanguage;
+use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Tag model.
@@ -222,4 +224,46 @@ class TagModel extends JoomAdminModel
 			}
 		}
 	}
+
+  /**
+	 * Allows preprocessing of the JForm object.
+	 *
+	 * @param   Form    $form   The form object
+	 * @param   array   $data   The data to be merged into the form object
+	 * @param   string  $group  The plugin group to be executed
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function preprocessForm(Form $form, $data, $group = 'joomgallery')
+	{
+		if (!Multilanguage::isEnabled())
+		{
+			$form->setFieldAttribute('language', 'type', 'hidden');
+			$form->setFieldAttribute('language', 'default', '*');
+		}
+
+		parent::preprocessForm($form, $data, $group);
+	}
+
+  /**
+   * Method to save the form data.
+   *
+   * @param   array  $data  The form data.
+   *
+   * @return  boolean  True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function save($data)
+  {
+    // Change language to 'All' if multilangugae is not enabled
+    if (!Multilanguage::isEnabled())
+    {
+      $data['language'] = '*';
+    }
+
+    return parent::save($data);
+  }
 }

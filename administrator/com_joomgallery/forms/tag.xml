@@ -36,7 +36,10 @@
     <field name="language"
            type="language"
            client="administrator"
-           label="JGRID_HEADING_LANGUAGE" />
+           label="JGRID_HEADING_LANGUAGE"
+           >
+           <option value="*">JALL</option>
+		</field>
 
     <field name="description"
            type="editor"
