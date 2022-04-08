@@ -61,7 +61,7 @@ class TagsController extends AdminController
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
 		}
 
-		$this->setRedirect('index.php?option=com_joomgallery&view=tags');
+		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=tags');
 	}
 
 	/**

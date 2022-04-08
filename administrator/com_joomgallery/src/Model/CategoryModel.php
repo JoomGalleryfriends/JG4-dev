@@ -9,17 +9,17 @@
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
+
 // No direct access.
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
-use Joomla\CMS\Form\Form;
+use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
-use \Joomla\CMS\MVC\Model\AdminModel;
-use \Joomla\CMS\Helper\TagsHelper;
-use Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\Language\Multilanguage;
+use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Category model.
@@ -27,21 +27,21 @@ use Joomla\CMS\Language\Multilanguage;
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoryModel extends AdminModel
+class CategoryModel extends JoomAdminModel
 {
 	/**
 	 * @var    string  The prefix to use with controller messages.
 	 *
 	 * @since  4.0.0
 	 */
-	protected $text_prefix = 'COM_JOOMGALLERY';
+	protected $text_prefix = _JOOM_OPTION_UC;
 
 	/**
 	 * @var    string  Alias to manage history control
 	 *
 	 * @since  4.0.0
 	 */
-	public $typeAlias = 'com_joomgallery.category';
+	public $typeAlias = _JOOM_OPTION.'.category';
 
 	/**
 	 * @var    null  Item data
@@ -82,7 +82,7 @@ class CategoryModel extends AdminModel
 		$app = Factory::getApplication();
 
 		// Get the form.
-		$form = $this->loadForm('com_joomgallery.category', 'category', array('control' => 'jform', 'load_data' => $loadData ));	
+		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));	
 
 		if(empty($form))
 		{
@@ -329,7 +329,7 @@ class CategoryModel extends AdminModel
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = Factory::getApplication()->getUserState('com_joomgallery.edit.category.data', array());
+		$data = Factory::getApplication()->getUserState(_JOOM_OPTION.'.edit.category.data', array());
 
 		if(empty($data))
 		{
@@ -398,7 +398,7 @@ class CategoryModel extends AdminModel
 		$user = Factory::getUser();
 
 		// Access checks.
-		if(!$user->authorise('core.create', 'com_joomgallery'))
+		if(!$user->authorise('core.create', _JOOM_OPTION))
 		{
 			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
 		}
@@ -464,7 +464,7 @@ class CategoryModel extends AdminModel
 			if(@$table->ordering === '')
 			{
 				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__joomgallery_categories');
+				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_CATEGORIES);
 
 				$max             = $db->loadResult();
 				$table->ordering = $max + 1;

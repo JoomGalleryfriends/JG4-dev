@@ -9,16 +9,14 @@
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
+
 // No direct access.
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use Joomla\Registry\Registry;
 use \Joomla\CMS\Plugin\PluginHelper;
-use \Joomla\CMS\Helper\TagsHelper;
-use \Joomla\CMS\Form\Form;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 use stdClass;
@@ -36,14 +34,14 @@ class ConfigModel extends JoomAdminModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $text_prefix = 'COM_JOOMGALLERY';
+	protected $text_prefix = _JOOM_OPTION_UC;
 
 	/**
 	 * @var    string  Alias to manage history control
 	 *
 	 * @since  4.0.0
 	 */
-	public $typeAlias = 'com_joomgallery.config';
+	public $typeAlias = _JOOM_OPTION.'.config';
 
 	/**
 	 * @var    null  Item data
@@ -81,7 +79,7 @@ class ConfigModel extends JoomAdminModel
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
-		$form = $this->loadForm('com_joomgallery.config', 'config', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm($this->typeAlias, 'config', array('control' => 'jform', 'load_data' => $loadData));
 
 		if(empty($form))
 		{
@@ -101,7 +99,7 @@ class ConfigModel extends JoomAdminModel
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_joomgallery.edit.config.data', array());
+		$data = $this->app->getUserState(_JOOM_OPTION.'.edit.config.data', array());
 
 		if(empty($data))
 		{
@@ -155,29 +153,6 @@ class ConfigModel extends JoomAdminModel
       // Set replaced jg_staticprocessing data
       $data->jg_staticprocessing = \json_encode((object) $new_staticprocessing);
 
-			// // Support for multiple or not foreign key fields
-      // $form   = Form::getInstance('com_joomgallery.config', JPATH_COMPONENT_ADMINISTRATOR . '/forms/config.xml');
-      // $fields = $form->getXml()->xpath("//field[@type='list']");
-
-      // foreach ($fields as $key => $field)
-      // {
-      //   $fieldname = (string) $field->attributes()->{'name'};
-        
-      //   $array = array();
-
-      //   foreach((array) $data->{$fieldname} as $value)
-      //   {
-      //     if(!is_array($value))
-      //     {
-      //       $array[] = $value;
-      //     }
-      //   }
-
-      //   if(!empty($array))
-      //   {
-      //     $data->{$fieldname} = $array;
-      //   }
-      // }
 		}
 
 		return $data;
@@ -217,7 +192,7 @@ class ConfigModel extends JoomAdminModel
 	public function duplicate(&$pks)
 	{
 		// Access checks.
-		if(!$this->user->authorise('core.create', 'com_joomgallery'))
+		if(!$this->user->authorise('core.create', _JOOM_OPTION))
 		{
 			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
 		}
@@ -359,7 +334,7 @@ class ConfigModel extends JoomAdminModel
 			if (@$table->ordering === '')
 			{
 				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__joomgallery_configs');
+				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_CONFIGS);
         
 				$max             = $db->loadResult();
 				$table->ordering = $max + 1;

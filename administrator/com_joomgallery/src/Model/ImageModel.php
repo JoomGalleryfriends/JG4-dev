@@ -18,12 +18,10 @@ use \Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
-use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\Utilities\ArrayHelper;
-use Joomla\CMS\Object\CMSObject;
-use Joomla\Registry\Registry;
-use \Joomla\CMS\Helper\TagsHelper;
-use Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\Object\CMSObject;
+use \Joomla\Registry\Registry;
+use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
@@ -40,14 +38,14 @@ class ImageModel extends JoomAdminModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $text_prefix = 'COM_JOOMGALLERY';
+	protected $text_prefix = _JOOM_OPTION_UC;
 
 	/**
 	 * @var    string  Alias to manage history control
 	 *
 	 * @since  4.0.0
 	 */
-	public $typeAlias = 'com_joomgallery.image';
+	public $typeAlias = _JOOM_OPTION.'.image';
 
 	/**
 	 * @var    null  Item data
@@ -88,7 +86,7 @@ class ImageModel extends JoomAdminModel
 		$app = Factory::getApplication();
 
 		// Get the form.
-		$form = $this->loadForm('com_joomgallery.image', 'image',	array('control' => 'jform',	'load_data' => $loadData));
+		$form = $this->loadForm($this->typeAlias, 'image',	array('control' => 'jform',	'load_data' => $loadData));
 
 		if(empty($form))
 		{
@@ -108,7 +106,7 @@ class ImageModel extends JoomAdminModel
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = Factory::getApplication()->getUserState('com_joomgallery.edit.image.data', array());
+		$data = Factory::getApplication()->getUserState(_JOOM_OPTION.'.edit.image.data', array());
 
 		if(empty($data))
 		{
@@ -208,7 +206,7 @@ class ImageModel extends JoomAdminModel
 		$user = Factory::getUser();
 
 		// Access checks.
-		if(!$user->authorise('core.create', 'com_joomgallery'))
+		if(!$user->authorise('core.create', _JOOM_OPTION))
 		{
 			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
 		}
@@ -316,7 +314,7 @@ class ImageModel extends JoomAdminModel
 			}
 
       // Save form data in session
-      $app->setUserState('com_joomgallery.image.upload', $data);
+      $app->setUserState(_JOOM_OPTION.'.image.upload', $data);
 
       // Create filename and image types
       // Modify form data based on image metadata
@@ -685,7 +683,7 @@ class ImageModel extends JoomAdminModel
 			if(@$table->ordering === '')
 			{
 				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__joomgallery');
+				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_IMAGES);
         
 				$max             = $db->loadResult();
 				$table->ordering = $max + 1;

@@ -61,7 +61,7 @@ class FaultiesController extends AdminController
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
 		}
 
-		$this->setRedirect('index.php?option=com_joomgallery&view=faulties');
+		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=faulties');
 	}
 
 	/**

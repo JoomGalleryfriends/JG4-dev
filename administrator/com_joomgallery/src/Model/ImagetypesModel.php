@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\Model\ListModel;
+use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
  * Methods supporting a list of Image types records.
@@ -21,7 +21,7 @@ use \Joomla\CMS\MVC\Model\ListModel;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImagetypesModel extends ListModel
+class ImagetypesModel extends JoomListModel
 {
 	/**
 	* Constructor.
@@ -51,7 +51,7 @@ class ImagetypesModel extends ListModel
 
 		// Select the required fields from the table.
 		$query->select('a.*');
-		$query->from($db->quoteName('#__joomgallery_img_types', 'a'));
+		$query->from($db->quoteName(_JOOM_TABLE_IMG_TYPES, 'a'));
 
 		// Add the list ordering clause.
     $orderDirn = $this->state->get('list.direction', 'ASC');
