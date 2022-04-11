@@ -2165,14 +2165,14 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       \imagefilter($srcIm, IMG_FILTER_COLORIZE, 0, 0, 0, 127 * ((100 - $pct) / 100));
     }
 
-    if(\function_exists('imagecopyresampled'))
-    {
-      \imagecopyresampled($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $srcW, $srcH);
-    }
-    else
-    {
+    // if(\function_exists('imagecopyresampled'))
+    // {
+    //   \imagecopyresampled($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $srcW, $srcH);
+    // }
+    // else
+    // {
       \imagecopy($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH);
-    }
+    // }
 
     return true;
   }
