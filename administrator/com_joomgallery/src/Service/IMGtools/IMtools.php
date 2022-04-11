@@ -574,7 +574,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
     else
     {
-      if($this->dst_imginfo['angle'] == 0 && $this->dst_imginfo['flip'] == 'none')
+      if($angle == 0 && $this->dst_imginfo['flip'] == 'none')
       {
         // Nothing to do
         $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY'));
@@ -776,7 +776,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if(isset($this->commands['strip']))
     {
       $commands .= $this->commands['strip'];
-    }   
+    }
+
+    if(isset($this->commands['rotate']))
+    {
+      $commands .= $this->commands['rotate'];
+    }
 
     if(isset($this->commands['crop']))
     {
