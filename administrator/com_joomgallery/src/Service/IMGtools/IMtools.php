@@ -195,6 +195,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function write($file, $quality=100): bool
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+
     // Define image type to write
     $path_parts = \pathinfo($file);
     $type = $path_parts['extension'];
@@ -326,7 +332,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->clearVariables();
 
     return true;
-  }
+  } 
 
   /**
    * Output image as string (stream)
@@ -342,6 +348,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function stream($quality=100, $html=true, $type=false): string
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+
     // Define image type to write
     if($type)
     {
@@ -427,6 +439,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function resize($method, $width, $height, $cropposition=2, $unsharp=false): bool
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+
     // Prepare working area (imginfo)
     $this->src_imginfo = $this->res_imginfo;
 
@@ -547,6 +565,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function rotate($angle, $auto_orient = false): bool
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+
     // Prepare working area (imginfo)
     $this->src_imginfo = $this->res_imginfo;
 
@@ -627,6 +651,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function flip($direction): bool
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+
     // Prepare working area (imginfo)
     $this->src_imginfo = $this->res_imginfo;
 
@@ -714,6 +744,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function orient(): bool
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+
     $this->auto_orient = true;
 
     return true;
@@ -737,6 +773,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function watermark($wtm_file, $wtm_pos, $wtm_resize, $wtm_newSize, $opacity): bool
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+    
     // Ensure that the watermark path is valid and clean
     $wtm_file = Path::clean($wtm_file);
     if(!\file_exists($wtm_file))
