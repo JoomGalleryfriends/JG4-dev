@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Filesystem\File;
-use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsInterface;
@@ -102,36 +101,36 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->commands = array();
 
     // Check, if exec command is available
-    $disabled_functions = explode(',', ini_get('disabled_functions'));
+    $disabled_functions = \explode(',', \ini_get('disabled_functions'));
     foreach($disabled_functions as $disabled_function)
     {
-      if(trim($disabled_function) == 'exec')
+      if(\trim($disabled_function) == 'exec')
       {
-        $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_EXEC_DISABLED').'<br />';
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_EXEC_DISABLED'));
 
         return false;
       }
     }
 
     // Check availability and version of ImageMagick
-    @exec(trim($this->impath).'convert -version', $output_convert);
-    @exec(trim($this->impath).'magick -version', $output_magick);
+    @\exec(\trim($this->impath).'convert -version', $output_convert);
+    @\exec(\trim($this->impath).'magick -version', $output_magick);
 
     if($output_magick)
     {
       // use new version (>= v7.x) if available
-      $this->convert_path = trim($this->impath).'magick convert';
+      $this->convert_path = \trim($this->impath).'magick convert';
     }
     else
     {
       if($output_convert)
       {
         // otherwise use old version (<= v6.x)
-        $this->convert_path = trim($this->impath).'convert';
+        $this->convert_path = \trim($this->impath).'convert';
       }
       else
       {
-        $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND').'<br />';
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
 
         return false;
       }
@@ -152,13 +151,13 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     if($is_stream && $base64)
     {
-      $file = base64_decode($file);
+      $file = \base64_decode($file);
     }
 
     // Analysis and validation of the source image
     if($this->analyse($file, $is_stream) == false)
     {
-      $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_FILE').'<br />';
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_FILE'));
 
       return false;
     }
@@ -177,23 +176,23 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->commands['strip'] = ' -strip';
     }
 
-    $this->debugoutput .= 'Image processor: ImageMagick<br/>';
+    $this->jg->addDebug('Image processor: ImageMagick<br/>');
 
     return true;
   }
 
   /**
    * Write image to file
-   * Supported image-types: depending on IM version
+   * Supported image-types: jpg,png,gif
    *
    * @param   string  $file     Path to destination file
-   * @param   int     $quality  Quality of the resized image (1-100)
+   * @param   int     $quality  Quality of the resized image (1-100, default: 100)
    *
    * @return  bool    True on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function write($file, $quality): bool
+  public function write($file, $quality=100): bool
   {
     // Define image type to write
     $type = \strtoupper(\explode('.',$file,-1));
@@ -214,7 +213,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       $this->commands['auto-orient'] = ' -auto-orient';
 
-      $this->debugoutput .= Text::_('COM_JOOMGALLERY_AUTOORIENT_IMAGE').'<br />';
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_AUTOORIENT_IMAGE'));
     }
 
     if($this->auto_orient && $this->method == 3)
@@ -239,7 +238,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $filecheck  = true;
 
     // execute the resize
-    @exec($convert, $dummy, $return_var);
+    @\exec($convert, $dummy, $return_var);
 
     // Check that the resized image is valid
     if(!$this->checkValidImage($file))
@@ -250,12 +249,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Workaround for servers with wwwrun problem
     if($return_var != 0 || !$filecheck)
     {
-      $dir = dirname($file);
+      $dir = \dirname($file);
       //JoomFile::chmod($dir, '0777', true);
       Path::setPermissions(Path::clean($dir), null, '0777');
 
       // Execute the resize
-      @exec($convert, $dummy, $return_var);
+      @\exec($convert, $dummy, $return_var);
 
       //JoomFile::chmod($dir, '0755', true);
       Path::setPermissions(Path::clean($dir), null, '0755');
@@ -268,7 +267,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->debugoutput .= Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');').'<br />';
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
         $this->rollback($this->src_file, $file);
 
         return false;
@@ -285,35 +284,35 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    * Output image as string (stream)
    * Supported image-types: ??
    *
-   * @param   int     $quality  Quality of the resized image (1-100)
+   * @param   int     $quality  Quality of the resized image (1-100, default: 100)
+   * @param   bool    $html     Return html string for direct output (default: true)
    * @param   string  $type     Set image type to write (default: same as source)
-   * @param   bool    $base64   True if output string gets base64 decoded
    *
-   * @return  string  image stream
+   * @return  string  base64 encoded image string or html string
    *
    * @since   4.0.0
    */
-  public function stream($quality, $type=false, $base64 = false): string
+  public function stream($quality=100, $html=true, $type=false): string
   {
     return 'Not yet implemented';
   }
 
   /**
    * Resize image
-   * Supported image-types: depending on IM version
+   * Supported image-types: ??
    *
    * @param   int     $method         Resize to 0:noresize,1:height,2:width,3:proportional,4:crop
    * @param   int     $width          Width to resize
    * @param   int     $height         Height to resize
    * @param   int     $cropposition   Image section to be used for cropping (if settings=3)
-   *                                  (0:upperleft,1:upperright,2:center,3:lowerleft,4:lowerright)
-   * @param   bool    $unsharp        true=sharpen the image during procession
+   *                                  (0:upperleft,1:upperright,2:center,3:lowerleft,4:lowerright) default:2
+   * @param   bool    $unsharp        true=sharpen the image during procession (default:false)
    *
    * @return  boolean True on success, false otherwise
    *
    * @since   1.0.0
    */
-  public function resize($method, $width, $height, $cropposition, $unsharp): bool
+  public function resize($method, $width, $height, $cropposition=2, $unsharp=false): bool
   {
     // Prepare working area (imginfo)
     $this->src_imginfo = $this->res_imginfo;
@@ -345,7 +344,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     if($noResize)
     {
-      $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_NOT_NECESSARY').'<br />';
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_NOT_NECESSARY'));
 
       return true;
     }
@@ -353,7 +352,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Generate informations about type, dimension and origin of resized image
     if(!($dst_imginfo = $this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
-      $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_GD_ONLY_JPG_PNG').'<br />';
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_GD_ONLY_JPG_PNG'));
 
       return false;
     }
@@ -362,17 +361,17 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     switch($method)
     {
       case 1:
-        $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_HEIGHT');
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_HEIGHT'));
         break;
       case 2:
-        $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_WIDTH');
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_WIDTH'));
         break;
       case 3:
-        $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_MAX');
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_MAX'));
         break;
       case 4:
         // Free resizing and cropping
-        $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_CROP');
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_TO_CROP'));
         break;
       default:
         break;
@@ -441,7 +440,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($angle == 0 && !$auto_orient)
     {
       // Nothing to do
-      $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY').'<br />';
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY'));
 
       return true;
     }
@@ -454,7 +453,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->dst_imginfo['offset_y']    =  0;
 
     // Get rotation angle
-    if($auto_orient && isset(self::$src_imginfo['exif']['IFD0']['Orientation']))
+    if($auto_orient && isset($this->src_imginfo['exif']['IFD0']['Orientation']))
     {
       $this->auto_orient = true;
     }
@@ -463,7 +462,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if($this->dst_imginfo['angle'] == 0 && $this->dst_imginfo['flip'] == 'none')
       {
         // Nothing to do
-        $this->debugoutput .= Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY').'<br />';
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY'));
 
         return true;
       }
@@ -502,6 +501,34 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   }
 
   /**
+   * Flip image
+   * Supported image-types: jpg,png,gif
+   *
+   * @param   int     $direction       Direction to flip the image (0:none,1:horizontal,2:vertical,3:both)
+   *
+   * @return  bool    True on success, false otherwise (false, if no flipping is needed)
+   *
+   * @since   4.0.0
+   */
+  public function flip($direction): bool
+  {
+    return true;
+  }
+
+  /**
+   * Auto orientation of the image based on EXIF meta data
+   * Supported image-types: jpg
+   *
+   * @return  bool    True on success, false otherwise (true, if no orientation is needed)
+   *
+   * @since   4.0.0
+   */
+  public function orient(): bool
+  {
+    return true;
+  }
+
+  /**
    * Add watermark to an image
    * Supported image-types: ??
    *
@@ -525,7 +552,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Checks if watermark file is existent
     if(!File::exists($wtm_file))
     {
-      $this->debugoutput .= Text::_('COM_JOOMGALLERY_COMMON_ERROR_WATERMARK_NOT_EXIST');
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_WATERMARK_NOT_EXIST'));
 
       return false;
     }
@@ -533,7 +560,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Analysis and validation of the source watermark-image
     if(!($this->src_imginfo = $this->analyse($wtm_file)))
     {
-      $this->debugoutput .= Text::_('COM_JOOMGALLERY_COMMON_OUTPUT_INVALID_WTM_FILE').'<br />';
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_OUTPUT_INVALID_WTM_FILE'));
 
       return false;
     }
@@ -542,7 +569,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $position = $this->getWatermarkingInfo($this->res_imginfo, $wtm_pos, $wtm_resize, $wtm_newSize);
 
     // Create debugoutput
-    $this->debugoutput .= Text::_('COM_JOOMGALLERY_COMMON_OUTPUT_WATERMARK_IMAGE');
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_OUTPUT_WATERMARK_IMAGE'));
 
     // Set watermark hint
     $this->watermarking = true;
@@ -577,47 +604,51 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     return true;
   }
 
+  //////////////////////////////////////////////////
+  //   Protected functions with basic features.
+  //////////////////////////////////////////////////
+
   protected function assemble($file): string
   {
     // assemble the commands
     $commands = '';
 
-    if(\isset($this->commands['coalesce']))
+    if(isset($this->commands['coalesce']))
     {
       $commands .= $this->commands['coalesce'];
     }
 
-    if(\isset($this->commands['auto-orient']))
+    if(isset($this->commands['auto-orient']))
     {
       $commands .= $this->commands['auto-orient'];
     }
 
-    if(\isset($this->commands['repage']))
+    if(isset($this->commands['repage']))
     {
       $commands .= $this->commands['repage'];
     }
 
-    if(\isset($this->commands['strip']))
+    if(isset($this->commands['strip']))
     {
       $commands .= $this->commands['strip'];
     }
 
-    if(\isset($this->commands['crop']))
+    if(isset($this->commands['crop']))
     {
       $commands .= $this->commands['crop'];
     }
 
-    if(\isset($this->commands['resize']))
+    if(isset($this->commands['resize']))
     {
       $commands .= $this->commands['resize'];
     }
 
-    if(\isset($this->commands['quality']))
+    if(isset($this->commands['quality']))
     {
       $commands .= $this->commands['quality'];
     }
 
-    if(\isset($this->commands['unsharp']))
+    if(isset($this->commands['unsharp']))
     {
       $commands .= $this->commands['unsharp'];
     }

@@ -60,16 +60,17 @@ interface IMGtoolsInterface
 
   /**
    * Output image as string (stream)
-   * Supported image-types: jpg,png,gif
+   * Supported image-types: ??
    *
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
+   * @param   bool    $html     Return html string for direct output (default: true)
    * @param   string  $type     Set image type to write (default: same as source)
    *
-   * @return  string  base64 encoded image string
+   * @return  string  base64 encoded image string or html string
    *
    * @since   4.0.0
    */
-  public function stream($quality=100, $type=false): string;
+  public function stream($quality=100, $html=true, $type=false): string;
 
   /**
    * Validation and analysis of an image-file
