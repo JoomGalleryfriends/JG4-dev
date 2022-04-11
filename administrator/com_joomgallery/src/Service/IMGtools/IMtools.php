@@ -493,7 +493,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->src_imginfo['animation']  && !$this->keep_anim)
     {
       // If resizing an animation but not preserving the animation, consider only first frame
-      $this->src_file = $this->src_file.'[0]';
+      $this->onlyFirstFrame();
     }
     else
     {
@@ -563,7 +563,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->dst_imginfo['height']      = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
     $this->dst_imginfo['orientation'] = $this->src_imginfo['orientation'];
     $this->dst_imginfo['offset_x']    = 0;
-    $this->dst_imginfo['offset_y']    =  0;
+    $this->dst_imginfo['offset_y']    = 0;
 
     // Get rotation angle
     if($auto_orient && isset($this->src_imginfo['exif']['IFD0']['Orientation']))
@@ -589,7 +589,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->src_imginfo['animation']  && !$this->keep_anim)
     {
       // If resizing an animation but not preserving the animation, consider only first frame
-      $this->src_file = $this->src_file.'[0]';
+      $this->onlyFirstFrame();
     }
     else
     {
@@ -603,7 +603,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$this->auto_orient && $this->dst_imginfo['angle'] > 0)
     {
       $this->commands['rotate'] = ' -rotate "-'.$angle.'"';
-      $this->debugoutput = Text::sprintf('COM_JOOMGALLERY_ROTATE_BY_ANGLE', $angle).'<br />';
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ROTATE_BY_ANGLE', $angle));
     }
 
     // Clean up working area (imginfo)
@@ -627,7 +627,79 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function flip($direction): bool
   {
-    $this->jg->addDebug('IMGtools::flip not yet implemented for ImageMagick!');
+    // Prepare working area (imginfo)
+    $this->src_imginfo = $this->res_imginfo;
+
+    if($direction == 0)
+    {
+      // Nothing to do
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_FLIP_NOT_NEEDED'));
+
+      return true;
+    }
+
+    // Get info for destination frames
+    switch ($direction)
+    {
+      case 1:
+        $this->dst_imginfo['flip']  = 'horizontally';
+        break;
+
+      case 2:
+        $this->dst_imginfo['flip']  = 'vertically';
+        break;
+
+      case 3:
+        $this->dst_imginfo['flip']  = 'both';
+        break;
+
+      default:
+        $this->dst_imginfo['flip']  = 'none';
+        break;
+    }
+    $this->dst_imginfo['width']       = $this->dst_imginfo['src']['width'] = $this->src_imginfo['width'];
+    $this->dst_imginfo['height']      = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
+    $this->dst_imginfo['orientation'] = $this->src_imginfo['orientation'];
+    $this->dst_imginfo['offset_x']    = 0;
+    $this->dst_imginfo['offset_y']    = 0;
+    $this->dst_imginfo['angle']       = 0;
+    $this->dst_imginfo['quality']     = 100;
+
+    if($this->src_imginfo['animation']  && !$this->keep_anim)
+    {
+      // If resizing an animation but not preserving the animation, consider only first frame
+      $this->onlyFirstFrame();
+    }
+    else
+    {
+      if($this->src_imginfo['animation']  && $this->keep_anim && $this->src_type == 'GIF')
+      {
+        // If resizing an animation, use coalesce for better results
+        $this->commands['coalesce'] = ' -coalesce';
+      }
+    }
+
+    // Capture commands
+    $this->commands['flip'] = '';
+
+    if($this->dst_imginfo['flip'] == 'vertically' || $this->dst_imginfo['flip'] == 'both')
+    {
+      $this->commands['flip'] .= ' -flip';
+    }
+
+    if($this->dst_imginfo['flip'] == 'horizontally' || $this->dst_imginfo['flip'] == 'both')
+    {
+      $this->commands['flip'] .= ' -flop';
+    }
+
+    // Add debugoutput
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
+
+    // Clean up working area (imginfo)
+    $this->res_imginfo                = $this->src_imginfo;
+    $this->res_imginfo['width']       = $this->dst_imginfo['width'];
+    $this->res_imginfo['height']      = $this->dst_imginfo['height'];
+    $this->res_imginfo['orientation'] = $this->dst_imginfo['orientation'];
 
     return true;
   }
@@ -723,7 +795,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if($this->res_imginfo['animation'] && !$this->keep_anim)
       {
         // If resizing an animation but not preserving the animation, consider only first frame
-        $this->src_file = $this->src_file.'[0]';
+        $this->onlyFirstFrame();
       }
 
       // Resize watermark file
@@ -783,6 +855,11 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $commands .= $this->commands['rotate'];
     }
 
+    if(isset($this->commands['flip']))
+    {
+      $commands .= $this->commands['flip'];
+    }
+
     if(isset($this->commands['crop']))
     {
       $commands .= $this->commands['crop'];
@@ -813,11 +890,11 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    * Watermarking image and store it as temp file
    * Supported image-types: depending on IM version
    *
-   * @return  array   Paths to the created temp files
+   * @return  mixed   Paths to the created temp files on success, false otherwise
    *
    * @since   4.0.0
    */
-  protected function execWatermarking(): array
+  protected function execWatermarking()
   {
     // If we are manipulating a animated image and watermaks needs resize
     // do first a resize
@@ -983,5 +1060,19 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     unset($this->commands['wtm-resize']);
 
     return $tmp_file;
+  }
+
+  /**
+   * Add [0] to src_file path in order to process only
+   * the first image frame
+   *
+   * @since   4.0.0
+   */
+  protected function onlyFirstFrame(): void
+  {
+    if(\strpos($this->src_file, '[0]') === false)
+    {
+      $this->src_file = $this->src_file.'[0]';
+    }
   }
 }

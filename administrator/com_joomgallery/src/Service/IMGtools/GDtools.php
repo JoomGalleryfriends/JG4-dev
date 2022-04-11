@@ -904,11 +904,13 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         $this->dst_imginfo['flip']  = 'none';
         break;
     }
-    $this->dst_imginfo['width']    = $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
-    $this->dst_imginfo['height']   = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
-    $this->dst_imginfo['offset_x'] = 0;
-    $this->dst_imginfo['offset_y'] = 0;
-    $this->dst_imginfo['angle']    = 0;
+    $this->dst_imginfo['width']       = $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
+    $this->dst_imginfo['height']      = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
+    $this->dst_imginfo['orientation'] = $this->src_imginfo['orientation'];
+    $this->dst_imginfo['offset_x']    = 0;
+    $this->dst_imginfo['offset_y']    = 0;
+    $this->dst_imginfo['angle']       = 0;
+    $this->dst_imginfo['quality']     = 100;
 
     // Calculation for the amount of memory needed (in bytes, GD)
     $this->memory_needed = $this->calculateMemory($this->src_imginfo, $this->dst_imginfo, 'rotate');
