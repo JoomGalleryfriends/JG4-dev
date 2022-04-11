@@ -491,7 +491,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
     else
     {
-      if($this->src_imginfo['animation']  && $this->keep_anim && $this->src_imginfo['type'] == 'GIF')
+      if($this->src_imginfo['animation']  && $this->keep_anim && $this->src_type == 'GIF')
       {
         // If resizing an animation, use coalesce for better results
         $this->commands['coalesce'] = ' -coalesce';
@@ -587,7 +587,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
     else
     {
-      if($this->src_imginfo['animation']  && $this->keep_anim && $this->src_imginfo['type'] == 'GIF')
+      if($this->src_imginfo['animation']  && $this->keep_anim && $this->src_type == 'GIF')
       {
         // If resizing an animation, use coalesce for better results
         $this->commands['coalesce'] = ' -coalesce';
@@ -696,7 +696,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Set watermark hint
     $this->watermarking = true;
 
-    if($this->res_imginfo['animation'] && $this->keep_anim && $this->res_imginfo['type'] == 'GIF')
+    if($this->res_imginfo['animation'] && $this->keep_anim && $this->dst_type == 'GIF')
     {
       // TODO: resize of watermark when its animation
       // Positioning of the watermark
