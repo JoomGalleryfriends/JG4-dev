@@ -15,10 +15,11 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
-use \Joomla\CMS\Helper\TagsHelper;
 
 /**
  * Tag model.
@@ -33,14 +34,14 @@ class TagModel extends JoomAdminModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $text_prefix = 'COM_JOOMGALLERY';
+	protected $text_prefix = _JOOM_OPTION_UC;
 
 	/**
 	 * @var    string  Alias to manage history control
 	 *
 	 * @since  4.0.0
 	 */
-	public $typeAlias = 'com_joomgallery.tag';
+	public $typeAlias = _JOOM_OPTION.'.tag';
 
 	/**
 	 * @var    null  Item data
@@ -78,7 +79,7 @@ class TagModel extends JoomAdminModel
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
-		$form = $this->loadForm('com_joomgallery.tag', 'tag', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm($this->typeAlias, 'tag', array('control' => 'jform', 'load_data' => $loadData));
 
 		if(empty($form))
 		{
@@ -98,7 +99,7 @@ class TagModel extends JoomAdminModel
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = $this->app->getUserState('com_joomgallery.edit.tag.data', array());
+		$data = $this->app->getUserState(_JOOM_OPTION.'.edit.tag.data', array());
 
 		if(empty($data))
 		{
@@ -149,7 +150,7 @@ class TagModel extends JoomAdminModel
 	public function duplicate(&$pks)
 	{
 		// Access checks.
-		if(!$this->user->authorise('core.create', 'com_joomgallery'))
+		if(!$this->user->authorise('core.create', _JOOM_OPTION))
 		{
 			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
 		}
@@ -215,11 +216,53 @@ class TagModel extends JoomAdminModel
 			if(@$table->ordering === '')
 			{
 				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__joomgallery_tags');
+				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_TAGS);
         
 				$max             = $db->loadResult();
 				$table->ordering = $max + 1;
 			}
 		}
 	}
+
+  /**
+	 * Allows preprocessing of the JForm object.
+	 *
+	 * @param   Form    $form   The form object
+	 * @param   array   $data   The data to be merged into the form object
+	 * @param   string  $group  The plugin group to be executed
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function preprocessForm(Form $form, $data, $group = 'joomgallery')
+	{
+		if (!Multilanguage::isEnabled())
+		{
+			$form->setFieldAttribute('language', 'type', 'hidden');
+			$form->setFieldAttribute('language', 'default', '*');
+		}
+
+		parent::preprocessForm($form, $data, $group);
+	}
+
+  /**
+   * Method to save the form data.
+   *
+   * @param   array  $data  The form data.
+   *
+   * @return  boolean  True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function save($data)
+  {
+    // Change language to 'All' if multilangugae is not enabled
+    if (!Multilanguage::isEnabled())
+    {
+      $data['language'] = '*';
+    }
+
+    return parent::save($data);
+  }
 }

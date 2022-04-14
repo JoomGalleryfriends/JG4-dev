@@ -61,7 +61,7 @@ class CategoriesController extends AdminController
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
 		}
 
-		$this->setRedirect('index.php?option=com_joomgallery&view=categories');
+		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=categories');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class CategoriesController extends AdminController
 	public function rebuild()
 	{
 		$this->checkToken();
-		$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=categories', false));
+		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=categories', false));
 		$model = $this->getModel();
 
 		if($model->rebuild())

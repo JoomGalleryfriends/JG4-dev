@@ -295,7 +295,7 @@ class JoomHelper
     // Check whether the image shall be output through the PHP script or with its real path
     if($url)
     {
-      return  Route::_('index.php?option='._JOOM_OPTION.'&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
+      return  Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
     }
     else
     {

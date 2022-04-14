@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Object\CMSObject;
@@ -33,14 +32,14 @@ class ImagetypeModel extends JoomAdminModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $text_prefix = 'COM_JOOMGALLERY';
+	protected $text_prefix = _JOOM_OPTION_UC;
 
 	/**
 	 * @var    string  Alias to manage history control
 	 *
 	 * @since  4.0.0
 	 */
-	public $typeAlias = 'com_joomgallery.imagetype';
+	public $typeAlias = _JOOM_OPTION.'.imagetype';
 
 	/**
 	 * @var    null  Item data
@@ -78,7 +77,7 @@ class ImagetypeModel extends JoomAdminModel
 	public function getForm($data = array(), $loadData = true)
 	{
     // Get the form.
-		$form = $this->loadForm('com_joomgallery.imagetype', 'imagetype', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm($this->typeAlias, 'imagetype', array('control' => 'jform', 'load_data' => $loadData));
 
 		if(empty($form))
 		{
@@ -179,7 +178,7 @@ class ImagetypeModel extends JoomAdminModel
 			if(@$table->ordering === '')
 			{
 				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__joomgallery_img_types');
+				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_IMG_TYPES);
         
 				$max             = $db->loadResult();
 				$table->ordering = $max + 1;

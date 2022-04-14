@@ -12,8 +12,11 @@
 defined('_JEXEC') or die;
 
 define('_JOOM_OPTION',               'com_joomgallery');
+define('_JOOM_OPTION_UC',            'COM_JOOMGALLERY');
+define('_JOOM_PATH_ADMIN',           JPATH_ADMINISTRATOR.'/components/com_joomgallery');
+define('_JOOM_PATH_SITE',            JPATH_SITE.'/components/com_joomgallery');
 define('_JOOM_TABLE_IMAGES',         '#__joomgallery');
-define('_JOOM_TABLE_CATEGORIES',     '#__joomgallery_catgegories');
+define('_JOOM_TABLE_CATEGORIES',     '#__joomgallery_categories');
 define('_JOOM_TABLE_CONFIGS',        '#__joomgallery_configs');
 define('_JOOM_TABLE_FAULTIES',       '#__joomgallery_faulties');
 define('_JOOM_TABLE_MAINTENANCE',    '#__joomgallery_faulties');

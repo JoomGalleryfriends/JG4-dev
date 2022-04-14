@@ -61,7 +61,7 @@ class ImagesController extends AdminController
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
 		}
 
-		$this->setRedirect('index.php?option=com_joomgallery&view=images');
+		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=images');
 	}
 
 	/**

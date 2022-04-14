@@ -16,7 +16,6 @@ defined('_JEXEC') or die();
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Installer\Installer;
 use \Joomla\CMS\Installer\InstallerScript;
 use \Joomla\CMS\Filesystem\File;
@@ -41,30 +40,21 @@ class com_joomgalleryInstallerScript extends InstallerScript
   /**
 	 * Minimum PHP version required to install the extension
 	 *
-	 * @var    string
-	 * @since  3.6
+	 * @var  string
 	 */
-	protected $minimumPhp = '7.3.0';
-
-	/**
-	 * Minimum Joomla! version required to install the extension
-	 *
-	 * @var    string
-	 * @since  3.6
-	 */
-	protected $minimumJoomla = '4.0.0';
+	protected $minPhp = '7.3.0';
 
   /**
    * Release code of the currently installed version
    *
-   * @var string
+   * @var  string
    */
   protected $act_code = '';
 
   /**
    * Release code of the new version to be installed
    *
-   * @var string
+   * @var  string
    */
   protected $new_code = '';
 
@@ -80,6 +70,39 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function preflight($type, $parent)
 	{
+    // Only proceed if Joomla version is correct
+    if(version_compare(JVERSION, '5.0.0', '>=') || version_compare(JVERSION, '4.0.0', '<'))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('JoomGallery 4.x is only compatible to Joomla! 4.x'), 'error');
+
+      return false;
+    }
+
+    // Only proceed if PHP version is correct
+    if(version_compare(PHP_VERSION, $this->minPhp, '<='))
+    {
+      Factory::getApplication()->enqueueMessage(Text::sprintf('JoomGallery 4.x is only compatible to PHP versions greater than 7.3. Your PHP version is %s.', $this->minPhp), 'error');
+
+      return false;
+    }
+
+    if(!\defined('_JOOM_OPTION'))
+    {
+      if($type == 'install' || $type == 'update')
+      {
+        // use new uploaded defines.php
+        $temp_dir = $parent->getParent()->getPath('source');
+        $defines  = $temp_dir.DIRECTORY_SEPARATOR.'administrator'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
+      }
+      else
+      {
+        // use old defines.php
+        $defines = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
+      }
+      
+      require_once $defines;
+    }
+
 		$result = parent::preflight($type, $parent);
 
 		if (!$result)
@@ -87,7 +110,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			return $result;
 		}
 
-    if ($type == 'update')
+    if($type == 'update')
     {
       // save release code information
       //-------------------------------
@@ -291,10 +314,21 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     $db = Factory::getDbo();
 
-    Table::addIncludePath(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
-    JLoader::register('\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+    $path       = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'CategoryTable.php';
+    $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable';
 
-    $table = Table::getInstance('CategoryTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
+    require_once $path;
+
+    if(class_exists($tableClass))
+    {
+      $table = new $tableClass($db);
+    }
+    else
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error load category table'), 'error');
+
+      return false;
+    }
 
     $data = array();
     $data["id"] = NULL;
@@ -314,13 +348,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if (!$table->bind($data))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Error bind category'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default category'), 'error');
 
       return false;
     }
     if (!$table->store($data))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Error store category'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default category'), 'error');
 
       return false;
     }
@@ -335,7 +369,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     );
     // insert to database
     $query = $db->getQuery(true);
-    $query->update($db->quoteName('#__joomgallery_categories'))->set($fields)->where($conditions);
+    $query->update($db->quoteName(_JOOM_TABLE_CATEGORIES))->set($fields)->where($conditions);
     $db->setQuery($query);
     $db->execute();
 
@@ -351,10 +385,21 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     $db = Factory::getDbo();
 
-    Table::addIncludePath(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
-    JLoader::register('\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\ConfigTable', JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR);
+    $path       = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'ConfigTable.php';
+    $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\ConfigTable';
 
-    $table = Table::getInstance('ConfigTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
+    require_once $path;
+
+    if(class_exists($tableClass))
+    {
+      $table = new $tableClass($db);
+    }
+    else
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error load configs table'), 'error');
+
+      return false;
+    }
 
     $data = array();
     $data["id"] = NULL;
@@ -430,7 +475,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $record->ordering = $this->count;
 
     // Insert the object into the user profile table.
-    if(!$db->insertObject('#__joomgallery_img_types', $record))
+    if(!$db->insertObject(_JOOM_TABLE_IMG_TYPES, $record))
     {
       return false;
     }
