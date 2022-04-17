@@ -243,23 +243,6 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->commands['strip'] = ' -strip';
     }
 
-    // If there is watermarking perform this first
-    if($this->watermarking)
-    {
-      // Perform watermarking
-      $tmp_files = $this->execWatermarking();
-
-      if(!File::exists($tmp_files['dst_file']))
-      {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
-
-        return false;
-      }
-
-      // Overwrite src_file property
-      $this->src_file = $tmp_files['dst_file'];
-    }
-
     // assemble the shell command
     $convert = $this->assemble($file);
 
@@ -313,19 +296,36 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->jg->addDebug('<strong>Shell command:</strong><br />'.$convert);
     }
 
+    // If there is watermarking perform this last
+    if($this->watermarking)
+    {
+      // Perform watermarking
+      $wtm_files = $this->execWatermarking($file, $file);
+
+      if(!File::exists($wtm_files['dst_file']))
+      {
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
+
+        return false;
+      }
+
+      // Overwrite src_file property
+      $this->src_file = $wtm_files['dst_file'];
+    }
+
     // Debugoutput: success
     $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_MANIPULATION_SUCCESSFUL'));
 
-    // Delete watermarked temp file
-    if($this->watermarking && File::exists($tmp_files['dst_file']))
+    // Delete watermarked temp file if existing
+    if($this->watermarking && File::exists($wtm_files['dst_file']) && \strpos($wtm_files['dst_file'], 'tmp_wtm_img') !== false)
     {
-      File::delete($tmp_files['dst_file']);
+      File::delete($wtm_files['dst_file']);
     }
 
     // Delete resized watermark file
-    if($this->watermarking && File::exists($tmp_files['wtm_file']))
+    if($this->watermarking && File::exists($wtm_files['wtm_file']))
     {
-      File::delete($tmp_files['wtm_file']);
+      File::delete($wtm_files['wtm_file']);
     }
 
     // Clean up working area (frames and imginfo)
@@ -481,7 +481,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Generate informations about type, dimension and origin of resized image
-    if(!($dst_imginfo = $this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
+    if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
       $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_GD_ONLY_JPG_PNG'));
 
@@ -812,22 +812,22 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->src_type    = $tmp_src_type;
     $this->dst_type    = $tmp_src_type;
 
-    // Generate informations about type, dimension and origin of resized image
-    $position = $this->getWatermarkingInfo($this->res_imginfo, $wtm_pos, $wtm_resize, $wtm_newSize);
-
     // Create debugoutput
     $this->jg->addDebug(Text::_('COM_JOOMGALLERY_WATERMARKING'));
 
     // Set watermark hint
     $this->watermarking = true;
 
+    // Set watermarking settings
+    $this->wtm_imginfo = array('wtm_pos'=>$wtm_pos, 'wtm_resize'=>$wtm_resize, 'wtm_newSize'=>$wtm_newSize, 'imginfo'=>$this->src_imginfo);
+
     if($this->res_imginfo['animation'] && $this->keep_anim && $this->dst_type == 'GIF')
     {
       // Resize watermark file
-      $this->commands['wtm-resize'] = ' -resize "'.$this->dst_imginfo['width'].'x'.$this->dst_imginfo['height'].'" "'.$wtm_file.'" "{tmp_wtm_file}"';
+      $this->commands['wtm-resize'] = ' -resize "{widthxheight}" "'.$wtm_file.'" "{tmp_wtm_file}"';
 
       // Positioning of the watermark
-      $this->commands['wtm-pos'] = ' "'.$this->src_file.'" -coalesce -gravity "northwest" -geometry "+'.$position[0].'+'.$position[1].'" null:';
+      $this->commands['wtm-pos'] = ' "{src_file}" -coalesce -gravity "northwest" -geometry "{+position[0]+$position[1]}" null:';
 
       // copy watermark on top of image
       $this->commands['watermark'] = ' "{tmp_wtm_file}" -layers composite -layers optimize "{dst_file}"';
@@ -841,10 +841,10 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       }
 
       // Resize watermark file
-      $this->commands['wtm-resize'] = ' "'.$wtm_file.'" -resize "'.$this->dst_imginfo['width'].'x'.$this->dst_imginfo['height'].'"';
+      $this->commands['wtm-resize'] = ' "'.$wtm_file.'" -resize "{widthxheight}"';
 
       // Positioning of the watermark
-      $this->commands['wtm-pos'] = ' "'.$this->src_file.'" +swap -gravity "northwest" -geometry "+'.$position[0].'+'.$position[1].'"';
+      $this->commands['wtm-pos'] = ' "{src_file}" +swap -gravity "northwest" -geometry "{+position[0]+$position[1]}"';
 
       // copy watermark on top of image
       $this->commands['watermark'] = ' -define compose:args='.$opacity.',100 -compose dissolve -composite'.' "{dst_file}"';
@@ -929,15 +929,32 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   }
 
   /**
-   * Watermarking image and store it as temp file
+   * Watermarking an image and store it to the given path.
+   * -- A temporary watermarked image will be created if no path is given.
+   * -- The global source file is used if no source if given
    * Supported image-types: depending on IM version
+   * 
+   * @param   string   $src_file   File to be watermarked (default: $this->src_file)
+   * @param   string   $dst_file   Path where the watermarked file is stored (default: temp-file creation)
    *
-   * @return  mixed   Paths to the created temp files on success, false otherwise
+   * @return  mixed   Paths to the created files on success, false otherwise
    *
    * @since   4.0.0
    */
-  protected function execWatermarking()
+  protected function execWatermarking($src_file=false, $dst_file=false)
   {
+    // Check image availability
+    if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+    }
+
+    // Prepare working area (imginfo)
+    $this->src_imginfo = $this->wtm_imginfo['imginfo'];
+
+    // Generate informations about type, dimension and origin of watermark
+    $position = $this->getWatermarkingInfo($this->res_imginfo, $this->wtm_imginfo['wtm_pos'], $this->wtm_imginfo['wtm_resize'], $this->wtm_imginfo['wtm_newSize']);
+
     // If we are manipulating a animated image and watermaks needs resize
     // do first a resize
     $wtm_file = '';
@@ -951,28 +968,40 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     if(isset($this->commands['wtm-resize']))
     {
+      
+      $this->commands['wtm-resize'] = \str_replace('{widthxheight}', $this->dst_imginfo['width'].'x'.$this->dst_imginfo['height'], $this->commands['wtm-resize']);
       $commands .= $this->commands['wtm-resize'];
     }
 
     if(isset($this->commands['wtm-pos']))
     {
+      if(!$src_file)
+      {
+        // Use src_file if no other is given
+        $src_file   = $this->src_file; 
+      }
+
+      // Get watermarking source file
+      Path::clean($src_file);
+      $this->commands['wtm-pos'] = \str_replace('{src_file}', $src_file, $this->commands['wtm-pos']);
+      
+      $this->commands['wtm-pos'] = \str_replace('{+position[0]+$position[1]}', '+'.$position[0].'+'.$position[1], $this->commands['wtm-pos']);
+
       $commands .= $this->commands['wtm-pos'];
     }
 
-    if(isset($this->commands['auto-orient']))
-    {
-      $commands .= $this->commands['auto-orient'];
-
-      unset($this->commands['auto-orient']);
-    }
 
     if(isset($this->commands['watermark']))
     {
-      // Define temporary image file to be created
-      $tmp_folder = Factory::getApplication()->get('tmp_path');
-      $tmp_file   = $tmp_folder.'/tmp_wtm_img.'.\strtolower($this->src_type);
+      if(!$dst_file)
+      {
+        // Define temporary image file to be created
+        $tmp_folder = Factory::getApplication()->get('tmp_path');
+        $dst_file   = $tmp_folder.'/tmp_wtm_img.'.\strtolower($this->src_type); 
+      }
 
-      $this->commands['watermark'] = \str_replace('{dst_file}', $tmp_file, $this->commands['watermark']);
+      Path::clean($dst_file);
+      $this->commands['watermark'] = \str_replace('{dst_file}', $dst_file, $this->commands['watermark']);
 
       $commands .= $this->commands['watermark'];
     }
@@ -988,7 +1017,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     @\exec($convert, $dummy, $return_var);
 
     // Check that the resized image is valid
-    if(!$this->checkValidImage($tmp_file))
+    if(!$this->checkValidImage($dst_file))
     {
       $filecheck  = false;
     }
@@ -996,7 +1025,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Workaround for servers with wwwrun problem
     if($return_var != 0 || !$filecheck)
     {
-      $dir = \dirname($tmp_file);
+      $dir = \dirname($dst_file);
       //JoomFile::chmod($dir, '0777', true);
       Path::setPermissions(Path::clean($dir), null, '0777');
 
@@ -1007,7 +1036,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       Path::setPermissions(Path::clean($dir), null, '0755');
 
       // Check that the resized image is valid
-      if(!$this->checkValidImage($tmp_file))
+      if(!$this->checkValidImage($dst_file))
       {
         $filecheck = false;
       }
@@ -1015,7 +1044,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if($return_var != 0 || !$filecheck)
       {
         $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
-        $this->rollback($this->src_file, $tmp_file);
+        $this->rollback($this->src_file, $dst_file);
 
         return false;
       }
@@ -1027,7 +1056,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->jg->addDebug('<strong>Shell command (watermarking):</strong><br />'.$convert);
     }
 
-    return array('dst_file'=>$tmp_file, 'wtm_file'=>$wtm_file);
+    return array('dst_file'=>$dst_file, 'wtm_file'=>$wtm_file);
   }
 
   /**
@@ -1046,6 +1075,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     // Apply temp file to commands
     $this->commands['wtm-resize'] = \str_replace('{tmp_wtm_file}', $tmp_file, $this->commands['wtm-resize']);
+    $this->commands['wtm-resize'] = \str_replace('{widthxheight}', $this->dst_imginfo['width'].'x'.$this->dst_imginfo['height'], $this->commands['wtm-resize']);
     $this->commands['watermark'] = \str_replace('{tmp_wtm_file}', $tmp_file, $this->commands['watermark']);
 
     // Assembling the shell code for the resize with imagick
