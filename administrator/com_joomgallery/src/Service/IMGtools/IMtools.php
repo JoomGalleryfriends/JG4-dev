@@ -171,6 +171,8 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       // use new version (>= v7.x) if available
       $this->convert_path = \trim($this->impath).'magick convert';
+
+      $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output_magick[0]);
     }
     else
     {
@@ -178,6 +180,8 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       {
         // otherwise use old version (<= v6.x)
         $this->convert_path = \trim($this->impath).'convert';
+
+        $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output_convert[0]);
       }
       else
       {
@@ -227,7 +231,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->commands['strip'] = ' -strip';
     }
 
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', 'ImageMagick'));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', $version));
 
     return true;
   }
@@ -918,8 +922,6 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   {
     // Check availability and version of ImageMagick v7.x
     @\exec(\trim($this->impath).'magick -version', $output);
-
-    dump($output);
 
     if($output)
     {

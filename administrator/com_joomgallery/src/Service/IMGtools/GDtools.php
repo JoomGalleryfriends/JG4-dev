@@ -233,7 +233,8 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       return false;
     }
 
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', 'GD'));
+    // Add used image processor to debug
+    $this->info();
 
     return true;
   }
