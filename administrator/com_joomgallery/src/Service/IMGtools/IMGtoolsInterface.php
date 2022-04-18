@@ -32,6 +32,24 @@ interface IMGtoolsInterface
   public function __construct($keep_metadata, $keep_anim);
 
   /**
+   * Add information of currently used image processor to debug output
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function info(): void;
+
+  /**
+   * Add supported image types of currently used image processor to debug output
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function types(): void;
+
+  /**
    * Read image from file or image string (stream)
    * Supported image-types: ??
    *

@@ -50,6 +50,13 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   public $convert_path = '';
 
   /**
+   * List of all supportet image types (in uppercase)
+   *
+   * @var array
+   */
+  protected $supported_types = array();
+
+  /**
    * ImageMagick commands
    *
    * @var array
@@ -82,6 +89,49 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     parent::__construct($keep_metadata, $keep_anim);
 
     $this->impath = $impath;
+    $this->getTypes();
+  }
+
+  /**
+   * Add information of currently used image processor to debug output
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function info(): void
+  {
+    // Check availability and version of ImageMagick v7.x
+    @\exec(\trim($this->impath).'magick -version', $output);
+
+    if($output)
+    {
+      // new version (>= v7.x)
+      $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', $version));
+
+      return;
+    }
+    else
+    {
+      // Check availability and version of ImageMagick v6.x
+      @\exec(\trim($this->impath).'convert -version', $output);
+
+      if($output)
+      {
+        // old version (<= v6.x)
+        $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', $version));
+
+        return;
+      }
+      else
+      {
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+
+        return;
+      }
+    }
   }
 
   /**
@@ -856,6 +906,54 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   //////////////////////////////////////////////////
   //   Protected functions with basic features.
   //////////////////////////////////////////////////
+
+  /**
+   * Get supported image types
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  protected function getTypes()
+  {
+    // Check availability and version of ImageMagick v7.x
+    @\exec(\trim($this->impath).'magick -version', $output);
+
+    dump($output);
+
+    if($output)
+    {
+      // new version (>= v7.x)
+      $types = \str_replace('Delegates (built-in): ', '', $output[5]);
+      $types = \strtoupper($types);
+
+      $this->supported_types = \explode(' ', $types);
+
+      return;
+    }
+    else
+    {
+      // Check availability and version of ImageMagick v6.x
+      @\exec(\trim($this->impath).'convert -version', $output);
+
+      if($output)
+      {
+        // old version (<= v6.x)
+        $types = \str_replace(array('Delegates (built-in): ', ' '), array('',', '), $output[5]);
+        $types = \strtoupper($types);
+
+        $this->supported_types = \explode(' ', $types);
+
+        return;
+      }
+      else
+      {
+        $this->supported_types = array();
+
+        return;
+      }
+    }
+  }
 
   /**
    * Assemble the convert command

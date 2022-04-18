@@ -56,7 +56,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    *
    * @var array
    */
-  protected $supported_types = array('JPG', 'JPEG', 'JFIF', 'GIF', 'PNG');
+  protected $supported_types = array();
 
   /**
    * Holds the working GD-Objects (image) and its duration (hundredths of a second) of each frame
@@ -102,6 +102,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     parent::__construct($keep_metadata, $keep_anim);
 
     $this->fastgd2thumbcreation = $fastgd2thumbcreation;
+    $this->getTypes();
   }
 
   /**
@@ -115,6 +116,31 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 	{
     $this->deleteFrames_GD(array('src_frames', 'dst_frames', 'res_frames'));
 	}
+
+  /**
+   * Add information of currently used image processor to debug output
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function info(): void
+  {
+    if(\function_exists('gd_info'))
+    {
+      $version = \str_replace(array('bundled (', ')'), array('',''), gd_info()['GD Version']);
+      $version = 'GD '.$version;
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', $version));
+
+      return;
+    }
+    else
+    {
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+
+      return;
+    }
+  }
 
   /**
    * Read image from file or image string (stream)
@@ -1301,6 +1327,40 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
   //////////////////////////////////////////////////
   //   Protected functions with basic features.
   //////////////////////////////////////////////////
+
+  /**
+   * Get supported image types
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  protected function getTypes()
+  {
+    if(\function_exists('gd_info'))
+    {
+      $types = array();
+
+      foreach (gd_info() as $key => $value)
+      {
+        if($value === true)
+        {
+          $arr = \explode(' ', $key);
+
+          if(!\in_array($arr[0], $types))
+          {
+            \array_push($types, \strtoupper($arr[0]));
+          }          
+        }
+      }
+
+      $this->supported_types = $types;
+    }
+    else
+    {
+      $this->supported_types = array();
+    }
+  }
 
   /**
    * Calculates the amaount of memory (in bytes)

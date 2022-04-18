@@ -154,6 +154,21 @@ abstract class IMGtools implements IMGtoolsInterface
   }
 
   /**
+   * Add supported image types of currently used image processor to debug output
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function types(): void
+  {
+    $types = \implode(', ', $this->get('supported_types'));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_SUPPORTED_TYPES', $types));
+
+    return;
+  }
+
+  /**
    * Validation and analysis of an image-file
    *
    * @param   string   $img         Path to source file or image string
