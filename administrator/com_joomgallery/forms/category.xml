@@ -58,10 +58,9 @@
            description="COM_JOOMGALLERY_CATMAN_ALIAS_TIP" />
 
     <field name="parent_id"
-           type="nestedparent"
+           type="categoryedit"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_PARENT_CATEGORY"
-           table="#__joomgallery_categories" />
+           label="COM_JOOMGALLERY_COMMON_PARENT_CATEGORY" />
 
     <field name="published"
            type="radio"
