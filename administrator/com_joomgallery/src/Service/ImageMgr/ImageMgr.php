@@ -39,9 +39,9 @@ class ImageMgr implements ImageMgrInterface
   }
 
   /**
-   * Creates image types
+   * Creation of image types
    *
-   * @param   string    $source     The source file for which the thumbnail and the detail image shall be created
+   * @param   string    $source     The source file for which the image types shall be created
    * @param   string    $catid      The id of the corresponding category
    * @param   string    $filename   The file name for the created files
    * 
@@ -173,9 +173,9 @@ class ImageMgr implements ImageMgrInterface
   }
 
   /**
-   * Deletes image types
+   * Deletion of image types
    *
-   * @param   string    $filename   The file name for the created files
+   * @param   string    $filename   The file name of the files to be deleted
    * @param   integer   $catid      The id of the corresponding category
    * 
    * @return  bool      True on success, false otherwise
