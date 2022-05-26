@@ -25,9 +25,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\Filesyst
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
- * JoomGallery Filesystem Helper
+ * Filesystem Class (Local filesystem)
  *
- * Provides handling with the filesystem where the image files are stored
+ * Provides methods to handle the local filesystem to store the image files
  *
  * @package JoomGallery
  * @since   4.0.0

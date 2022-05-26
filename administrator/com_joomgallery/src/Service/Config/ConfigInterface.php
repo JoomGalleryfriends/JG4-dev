@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 \defined('JPATH_PLATFORM') or die;
 
 /**
-* Config Interface for the Configuration Helper
+* Interface for the configuration classes
 *
 * @since  4.0.0
 */

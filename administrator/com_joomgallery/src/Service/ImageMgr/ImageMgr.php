@@ -20,7 +20,12 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr\ImageMgrIn
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
-* Base class for the Image manager helper classes
+* Image manager Class
+*
+* Provides methods to handle image files and folders based ...
+* - ... on the current available image types (#_joomgallery_img_types)
+* - ... on the parameters from a specific configuration set (#_joomgallery_configs)
+* - ... on the base configs (configs.php)
 *
 * @since  4.0.0
 */

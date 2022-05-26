@@ -22,12 +22,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsIn
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
- * JoomGallery IMGtools Class
- * Class for image processing and metadata handling
+ * IMGtools Base Class
  *
  * @package JoomGallery
- *
- * @author  Manuel Häusler (tech.spuur@quickline.ch)
  *
  * @since   3.5.0
  */

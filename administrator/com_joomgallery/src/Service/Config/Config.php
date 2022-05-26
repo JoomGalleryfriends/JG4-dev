@@ -20,9 +20,9 @@ use \Joomla\CMS\User\UserHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 
 /**
- * JoomGallery Configuration Helper
+ * Configuration Class
  *
- * Provides handling with all configuration settings of the gallery
+ * Provides methods to handle configuration sets of the gallery
  *
  * @package JoomGallery
  * @since   1.5.5

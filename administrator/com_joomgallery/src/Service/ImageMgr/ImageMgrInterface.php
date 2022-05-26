@@ -13,7 +13,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr;
 \defined('JPATH_PLATFORM') or die;
 
 /**
-* Image manager Interface for the helper classes
+* Interface for the image manager classes
+*
+* Image manager classes provides methods to handle image files and folders
+* based on the current available image types (#_joomgallery_img_types)
 *
 * @since  4.0.0
 */

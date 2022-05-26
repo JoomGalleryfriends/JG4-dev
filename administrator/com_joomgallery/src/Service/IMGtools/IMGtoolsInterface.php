@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 \defined('JPATH_PLATFORM') or die;
 
 /**
-* Interface for the IMGtools helper class
+* Interface for the IMGtools class
 *
 * @since  4.0.0
 */

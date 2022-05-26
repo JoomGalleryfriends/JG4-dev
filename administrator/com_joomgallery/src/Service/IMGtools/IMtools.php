@@ -20,8 +20,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsIn
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtools as BaseIMGtools;
 
 /**
- * JoomGallery IMGtools Class
- * Class for image processing and metadata handling
+ * IMGtools Class (IM)
+ * 
+ * Provides methods to do image processing and metadata handling
  *
  * Image processor
  * IM: https://imagemagick.org/script/convert.php

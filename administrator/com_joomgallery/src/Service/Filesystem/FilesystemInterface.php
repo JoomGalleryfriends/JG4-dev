@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 \defined('JPATH_PLATFORM') or die;
 
 /**
-* Filesystem Interface for the Configuration Helper
+* Interface for the filesystem classes
 *
 * @since  4.0.0
 */
