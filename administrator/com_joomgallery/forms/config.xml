@@ -66,6 +66,14 @@
 
   <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
     <fieldset type="tab" name="general-general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
+      <field name="jg_filesystem"
+             type="list"
+             default="localhost"
+             global_only="true"
+             label="COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM"
+             description="COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM_LONG" >
+        <option value="localhost">COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM_LOCALHOST</option>
+      </field>
       <field name="jg_pathftpupload"
              type="text"
              default="administrator/components/com_joomgallery/temp/ftp_upload/"

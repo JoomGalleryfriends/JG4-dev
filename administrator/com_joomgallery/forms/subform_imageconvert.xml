@@ -25,6 +25,7 @@
            groupByFieldset="false"
            maxlength="100"
            filter="string"
+           global_only="true"
            label="COM_JOOMGALLERY_COMMON_IMAGE_PATH"
            description="COM_JOOMGALLERY_COMMON_IMAGE_PATH_LONG" />
 
