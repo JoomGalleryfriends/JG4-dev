@@ -11,5 +11,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
-// Supported: jpg, gif, png
-$supported_types = array('JPG', 'JPEG', 'JPE', 'JFIF', 'GIF', 'PNG');
+// Supported image file types
+$types      = array('JPG', 'JPEG', 'JPE', 'JFIF', 'GIF', 'PNG');
+
+// Supported filesystems
+$filesystem = array('localhost');
