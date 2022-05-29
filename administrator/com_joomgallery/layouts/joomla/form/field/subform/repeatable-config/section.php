@@ -53,23 +53,25 @@ extract($displayData);
   </td>
 	<?php if (!empty($buttons)) : ?>
 	<td>
-		<div class="btn-group">
-			<?php if (!empty($buttons['add'])) : ?>
-				<button type="button" class="group-add btn btn-sm btn-success" aria-label="<?php echo Text::_('JGLOBAL_FIELD_ADD'); ?>">
-					<span class="icon-plus" aria-hidden="true"></span>
-				</button>
-			<?php endif; ?>
-			<?php if (!empty($buttons['remove'])) : ?>
-				<button type="button" class="group-remove btn btn-sm btn-danger" aria-label="<?php echo Text::_('JGLOBAL_FIELD_REMOVE'); ?>">
-					<span class="icon-minus" aria-hidden="true"></span>
-				</button>
-			<?php endif; ?>
-			<?php if (!empty($buttons['move'])) : ?>
-				<button type="button" class="group-move btn btn-sm btn-primary" aria-label="<?php echo Text::_('JGLOBAL_FIELD_MOVE'); ?>">
-					<span class="icon-arrows-alt" aria-hidden="true"></span>
-				</button>
-			<?php endif; ?>
-		</div>
+    <?php if ($group != 'jg_staticprocessing0' && $group != 'jg_staticprocessing1' && $group != 'jg_staticprocessing2') : ?>
+      <div class="btn-group">
+        <?php if (!empty($buttons['add'])) : ?>
+          <button type="button" class="group-add btn btn-sm btn-success" aria-label="<?php echo Text::_('JGLOBAL_FIELD_ADD'); ?>">
+            <span class="icon-plus" aria-hidden="true"></span>
+          </button>
+        <?php endif; ?>
+        <?php if (!empty($buttons['remove'])) : ?>
+          <button type="button" class="group-remove btn btn-sm btn-danger" aria-label="<?php echo Text::_('JGLOBAL_FIELD_REMOVE'); ?>">
+            <span class="icon-minus" aria-hidden="true"></span>
+          </button>
+        <?php endif; ?>
+        <?php if (!empty($buttons['move'])) : ?>
+          <button type="button" class="group-move btn btn-sm btn-primary" aria-label="<?php echo Text::_('JGLOBAL_FIELD_MOVE'); ?>">
+            <span class="icon-arrows-alt" aria-hidden="true"></span>
+          </button>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
 	</td>
 	<?php endif; ?>
 
