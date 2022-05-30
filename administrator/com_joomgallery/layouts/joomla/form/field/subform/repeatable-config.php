@@ -42,6 +42,20 @@ if ($multiple)
 		->useScript('webcomponent.field-subform');
 }
 
+// Get input variables
+$input  = Factory::getApplication()->input;
+
+$option = $input->get('option');
+$view   = $input->get('view');
+$id     = $input->get('id',0,'integer');
+
+// Guess config id
+$is_global_config = false;
+if($option == 'com_joomgallery' && $view == 'config' && $id === 1)
+{
+  $is_global_config = true;
+}
+
 $class = $class ? ' ' . $class : '';
 
 // Build heading
@@ -103,7 +117,7 @@ Factory::getApplication()
 				<tbody class="subform-repeatable-container">
 				<?php
 				foreach ($forms as $k => $form) :
-            echo $this->sublayout('section', array('label' => $label, 'form' => $form, 'basegroup' => $fieldname, 'group' => $fieldname . $k, 'buttons' => $buttons));		
+            echo $this->sublayout('section', array('label' => $label, 'form' => $form, 'basegroup' => $fieldname, 'group' => $fieldname . $k, 'buttons' => $buttons, 'is_global_config' => $is_global_config));		
 				endforeach;
 				?>
 				</tbody>
@@ -111,7 +125,7 @@ Factory::getApplication()
 		</div>
 		<?php if ($multiple) : ?>
 		<template class="subform-repeatable-template-section hidden">
-			<?php echo trim($this->sublayout('section', array('label' => $label, 'form' => $tmpl, 'basegroup' => $fieldname, 'group' => $fieldname . 'X', 'buttons' => $buttons))); ?>
+			<?php echo trim($this->sublayout('section', array('label' => $label, 'form' => $tmpl, 'basegroup' => $fieldname, 'group' => $fieldname . 'X', 'buttons' => $buttons, 'is_global_config' => $is_global_config))); ?>
 		</template>
 		<?php endif; ?>
 	</joomla-field-subform>

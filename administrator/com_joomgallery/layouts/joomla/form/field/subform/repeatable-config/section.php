@@ -18,11 +18,12 @@ extract($displayData);
 /**
  * Layout variables
  * -----------------
- * @var   string  $label      The field label
- * @var   Form    $form       The form instance for render the section
- * @var   string  $basegroup  The base group name
- * @var   string  $group      Current group name
- * @var   array   $buttons    Array of the buttons that will be rendered
+ * @var   string  $label              The field label
+ * @var   Form    $form               The form instance for render the section
+ * @var   string  $basegroup          The base group name
+ * @var   string  $group              Current group name
+ * @var   array   $buttons            Array of the buttons that will be rendered
+ * @var   boolean $is_global_config   True if the global configuration is loaded in config.edit view
  */
 ?>
 

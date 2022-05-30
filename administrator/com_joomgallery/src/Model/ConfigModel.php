@@ -111,36 +111,19 @@ class ConfigModel extends JoomAdminModel
 			$data = $this->item;
 
       // Load imagetypes from database
-      $old_staticprocessing = \json_decode($data->jg_staticprocessing);
       $new_staticprocessing = array();
       $imagetypes           = JoomHelper::getRecords('imagetypes');
 
       // Replace jg_staticprocessing based on imagetypes
       foreach($imagetypes as $key => $imagetype)
       {
-        // Search the corresponding entry in the old config values
-        $i = \null;
-
-        foreach($old_staticprocessing as $c => $staticp)
+        // initialize stdClass object
+        if(!isset($new_staticprocessing['jg_staticprocessing'.$key]))
         {
-          if($staticp->jg_imgtypename == $imagetype->typename)
-          {
-            $i = $c;
-          }
+          $new_staticprocessing['jg_staticprocessing'.$key] = new stdClass();
         }
 
-        if(isset($old_staticprocessing->{$i}))
-        {
-          // Transfer old staticprocessing data 
-          $new_staticprocessing['jg_staticprocessing'.$key] = $old_staticprocessing->{$i};
-        }
-        else
-        {
-          // Initialize new staticprocessing data
-          $new_staticprocessing['jg_staticprocessing'.$key] = $this->newStaticprocessing();
-        }
-        
-        // Replace values
+        // create staticprocessing array
         $new_staticprocessing['jg_staticprocessing'.$key]->jg_imgtypename = $imagetype->typename;
         $new_staticprocessing['jg_staticprocessing'.$key]->jg_imgtypepath = $imagetype->path;
 
@@ -150,9 +133,8 @@ class ConfigModel extends JoomAdminModel
         }
       }
 
-      // Set replaced jg_staticprocessing data
+      // Set jg_staticprocessing data
       $data->jg_staticprocessing = \json_encode((object) $new_staticprocessing);
-
 		}
 
 		return $data;
@@ -249,20 +231,20 @@ class ConfigModel extends JoomAdminModel
 	 * @since   1.6
 	 */
 	public function save($data)
-	{  
+	{
     $mod_items = $this->component->getMVCFactory()->createModel('imagetypes');
     $model     = $this->component->getMVCFactory()->createModel('imagetype');
 
-    // get all existing imagetypes    
-    $imagetypes_arr = $mod_items->getItems();
+    // get all existing imagetypes in the database
+    $imagetypes_list = $mod_items->getItems();
+    $detail_path     = $imagetypes_list[1]->path;
 
-    // update/add used imagetypes
     foreach($data['jg_staticprocessing'] as $staticprocessing)
-    {      
+    {
       // load data
-      $imagetype_data = $model->getItem(array('typename' => $staticprocessing['jg_imgtypename']));
+      $imagetype_db = $model->getItem(array('typename' => $staticprocessing['jg_imgtypename']));
 
-      // check if forbidden imagetypes gets unabled
+      // check if forbidden imagetypes gets disables
       $forbidden = array('detail', 'thumbnail');
       if(\in_array($staticprocessing['jg_imgtypename'], $forbidden) && $staticprocessing['jg_imgtype'] != '1')
       {
@@ -273,44 +255,62 @@ class ConfigModel extends JoomAdminModel
       }
       
       // update data
-      $imagetype_data->typename = $staticprocessing['jg_imgtypename'];
-      $imagetype_data->path     = $staticprocessing['jg_imgtypepath'];
-      $imagetype_data->params   = $this->encodeParams($staticprocessing);
+      $imagetype_db->typename = $staticprocessing['jg_imgtypename'];
+      $imagetype_db->path     = $staticprocessing['jg_imgtypepath'];
+      $imagetype_db->params   = $this->encodeParams($staticprocessing);
 
-      if(\is_null($imagetype_data->id))
+      if(empty($imagetype_db->typename))
+      {
+        // we are currently handling a deleted imagetype
+        // skip he rest of the current loop iteration
+        continue;
+      }
+
+      if(\is_null($imagetype_db->id))
       {
         // prepare data to create new imagetype row
-        $imagetype_data->id       = 0;
-        $imagetype_data->ordering = '';
+        $imagetype_db->id       = 0;
+        $imagetype_db->ordering = '';
+        
+        if(empty($imagetype_db->path))
+        {
+          // create a default path for new imagetype row
+          $path_parts = \explode('/',$detail_path);
+          \array_pop($path_parts);
+
+          $imagetype_db->path = \implode('/',$path_parts).'/'.$imagetype_db->typename;
+        }
       }
 
       // save data
-      $model->save((array) $imagetype_data);
+      $model->save((array) $imagetype_db);
 
-      // unset this used imagetypes from array
-      foreach($imagetypes_arr as $key => $imagetype)
+      // unset current imagetype from imagetypes_db list
+      foreach($imagetypes_list as $key => $imagetype)
       {
         if ($imagetype->typename == $staticprocessing['jg_imgtypename'])
         {
-          unset($imagetypes_arr[$key]);
+          unset($imagetypes_list[$key]);
         }
       }
     }
 
-    // delete unused imagetypes
+    // delete unused imagetypes from db
     $forbidden = array('original', 'detail', 'thumbnail');
-    foreach($imagetypes_arr as $imagetype)
+    foreach($imagetypes_list as $imagetype_list)
     {
-      if(\in_array($imagetype->typename, $forbidden))
+      if(\in_array($imagetype_list->typename, $forbidden))
       {
         // not allowed to delete this imagetype
         $this->app->enqueueMessage('It is not allowed to delete this imagetype. Imagetype restored.');
       }
       else
       {
-        $model->delete($imagetype->id);
+        $model->delete($imagetype_list->id);
       }
     }
+
+    $data['jg_staticprocessing'] = '';
 
     return parent::save($data);
   }
