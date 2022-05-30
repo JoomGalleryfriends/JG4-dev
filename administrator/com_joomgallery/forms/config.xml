@@ -92,7 +92,7 @@
 
       <field name="jg_wmfile"
              type="media"
-             directory=""
+             directory="images/joomgallery"
              label="COM_JOOMGALLERY_CONFIG_GS_PD_WATERMARK_PATH"
              description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_WATERMARK_STORED" />
 
