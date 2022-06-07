@@ -25,6 +25,11 @@ extract($displayData);
  * @var   array   $buttons            Array of the buttons that will be rendered
  * @var   boolean $is_global_config   True if the global configuration is loaded in config.edit view
  */
+
+if($group == 'jg_staticprocessing1' || $group == 'jg_staticprocessing2')
+{
+  $form->setFieldAttribute('jg_imgtype','readonly',true);
+}
 ?>
 
 <tr class="subform-repeatable-group" data-base-name="<?php echo $basegroup; ?>" data-group="<?php echo $group; ?>">
