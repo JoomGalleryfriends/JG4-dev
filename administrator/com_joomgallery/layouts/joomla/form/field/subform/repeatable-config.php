@@ -79,6 +79,8 @@ foreach ($tmpl->getGroup('') as $field)
   $i++;
 }
 
+$sublayout = 'section-byfieldsets';
+
 // Label will not be shown for sections layout, so reset the margin left
 Factory::getApplication()
   ->getDocument()
@@ -99,7 +101,7 @@ Factory::getApplication()
 					<tr>
 						<?php echo $table_head; ?>
             <th scope="col">
-              <?php echo Text::_('Settings-Popup'); ?>
+              <?php echo Text::_('Settings'); ?>
             </th>
 						<?php if (!empty($buttons)) : ?>
 						<td style="width:8%;">
