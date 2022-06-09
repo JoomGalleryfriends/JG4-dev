@@ -8,7 +8,7 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-// No direct access
+// No direct access 
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\HTML\HTMLHelper;
@@ -34,9 +34,9 @@ $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
 $canOrder  = $user->authorise('core.edit.state', 'com_joomgallery');
-$saveOrder = $listOrder == 'a.ordering';
+$saveOrder = $listOrder == 'a.lft';
 
-if ($saveOrder)
+if ($saveOrder && !empty($this->items))
 {
 	$saveOrderingUrl = 'index.php?option=com_joomgallery&task=categories.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
 	HTMLHelper::_('draggablelist.draggable');
@@ -64,7 +64,10 @@ if ($saveOrder)
 							<?php echo HTMLHelper::_('searchtools.sort', '', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
 						</th>
 						<?php endif; ?>
-						
+
+            <th class="left">
+              <?php echo HTMLHelper::_('searchtools.sort', '', 'a.lft', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
+            </th>						
 						<th class='left'>
 							<?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_FIELD_ID_LABEL', 'a.id', $listDirn, $listOrder); ?>
 						</th>
@@ -131,6 +134,26 @@ if ($saveOrder)
 							<?php endif; ?>
 							</td>
 							<?php endif; ?>
+
+              <td>
+                <?php
+                $iconClass = '';
+                if (!$canChange)
+                {
+                  $iconClass = ' inactive';
+                }
+                elseif (!$saveOrder)
+                {
+                  $iconClass = ' inactive" title="' . Text::_('JORDERINGDISABLED');
+                }
+                ?>
+                <span class="sortable-handler<?php echo $iconClass ?>">
+                  <span class="icon-ellipsis-v"></span>
+                </span>
+                <?php if ($canChange && $saveOrder) : ?>
+                  <input type="text" class="hidden" name="order[]" size="5" value="<?php echo $item->lft; ?>">
+                <?php endif; ?>
+              </td>
 							
 							<td>
 								<?php echo $item->id; ?>
