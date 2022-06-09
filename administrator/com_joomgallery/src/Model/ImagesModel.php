@@ -14,6 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use Joomla\Database\ParameterType;
+use Joomla\Utilities\ArrayHelper;
 use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
@@ -152,7 +154,7 @@ class ImagesModel extends JoomListModel
 		$query->join('LEFT', '#__joomgallery_categories AS category ON `category`.id = a.`catid`');
 
 		// Join over the access level field 'access'
-		$query->select('`access`.title AS `access`');
+		$query->select('`access`.title AS `access`'); 
 		$query->join('LEFT', '#__viewlevels AS access ON `access`.id = a.`access`');
 
 		// Join over the user field 'created_by'
@@ -183,9 +185,16 @@ class ImagesModel extends JoomListModel
 		// Filtering access
 		$filter_access = $this->state->get("filter.access");
     
-		if($filter_access !== null && !empty($filter_access))
+    if (is_numeric($filter_access))
 		{
-			$query->where("a.`access` = '".$db->escape($filter_access)."'");
+			$filter_access = (int) $filter_access;
+			$query->where($db->quoteName('a.access') . ' = :access')
+				    ->bind(':access', $filter_access, ParameterType::INTEGER);
+		}
+		elseif (is_array($filter_access))
+		{
+			$filter_access = ArrayHelper::toInteger($filter_access);
+			$query->whereIn($db->quoteName('a.access'), $filter_access);
 		}
 
 		// Add the list ordering clause.
