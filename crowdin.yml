@@ -1,33 +1,21 @@
-"project_id_env": "CROWDIN_PROJECT_ID"
-"api_token_env": "CROWDIN_PERSONAL_TOKEN"
-"base_path": "/"
-"preserve_hierarchy": true
-"base_url": "https://joomla.crowdin.com"
-
-"files": [
-  {
-    "source": "/site/com_joomgallery/languages/en-GB/com_joomgallery.ini",
-    "translation": "/site/com_joomgallery/languages/%locale%/%original_file_name%",
-    "update_option": "update_as_unapproved"
-  },
-  {
-    "source": "/administrator/com_joomgallery/languages/en-GB/com_joomgallery.ini",
-    "translation": "/administrator/com_joomgallery/languages/%locale%/%original_file_name%",
-    "update_option": "update_as_unapproved"
-  },
-  {
-    "source": "/administrator/com_joomgallery/languages/en-GB/com_joomgallery.sys.ini",
-    "translation": "/administrator/com_joomgallery/languages/%locale%/%original_file_name%",
-    "update_option": "update_as_unapproved"
-  },
-  {
-    "source": "/administrator/com_joomgallery/languages/en-GB/com_joomgallery.exif.ini",
-    "translation": "/administrator/com_joomgallery/languages/%locale%/%original_file_name%",
-    "update_option": "update_as_unapproved"
-  },
-  {
-    "source": "/administrator/com_joomgallery/languages/en-GB/com_joomgallery.iptc.ini",
-    "translation": "/administrator/com_joomgallery/languages/%locale%/%original_file_name%",
-    "update_option": "update_as_unapproved"
-  }
-]
+project_id_env: CROWDIN_PROJECT_ID
+api_token_env: CROWDIN_PERSONAL_TOKEN
+base_path: /
+preserve_hierarchy: true
+base_url: 'https://joomla.crowdin.com'
+files:
+  - source: /site/com_joomgallery/languages/en-GB/com_joomgallery.ini
+    translation: /site/com_joomgallery/languages/%locale%/%original_file_name%
+    update_option: update_as_unapproved
+  - source: /administrator/com_joomgallery/languages/en-GB/com_joomgallery.ini
+    translation: /administrator/com_joomgallery/languages/%locale%/%original_file_name%
+    update_option: update_as_unapproved
+  - source: /administrator/com_joomgallery/languages/en-GB/com_joomgallery.sys.ini
+    translation: /administrator/com_joomgallery/languages/%locale%/%original_file_name%
+    update_option: update_as_unapproved
+  - source: /administrator/com_joomgallery/languages/en-GB/com_joomgallery.exif.ini
+    translation: /administrator/com_joomgallery/languages/%locale%/%original_file_name%
+    update_option: update_as_unapproved
+  - source: /administrator/com_joomgallery/languages/en-GB/com_joomgallery.iptc.ini
+    translation: /administrator/com_joomgallery/languages/%locale%/%original_file_name%
+    update_option: update_as_unapproved
