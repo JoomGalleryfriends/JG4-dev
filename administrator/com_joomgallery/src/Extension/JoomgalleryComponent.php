@@ -101,24 +101,5 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
     {
       require_once JPATH_ADMINISTRATOR . '/components/com_joomgallery/includes/defines.php';
     }
-
-    if(!isset($this->base_config) || empty($this->base_config))
-    {
-      $this->base_config = new JoomConfig();
-    }
-
-    if(!isset($this->supported_types) || empty($this->supported_types) || !isset($this->supported_filesystems) || empty($this->supported_filesystems))
-    {
-      require_once JPATH_ADMINISTRATOR . '/components/com_joomgallery/includes/supported.php';
-
-      if(!isset($this->supported_types))
-      {
-        $this->supported_types = $types;
-      }
-      if(!isset($this->supported_filesystems))
-      {
-        $this->supported_filesystems = $filesystem;
-      }
-    }
   }
 }

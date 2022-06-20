@@ -25,7 +25,6 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 * Provides methods to handle image files and folders based ...
 * - ... on the current available image types (#_joomgallery_img_types)
 * - ... on the parameters from the configuration set of the current user (#_joomgallery_configs)
-* - ... on the base configs (configs.php)
 *
 * @since  4.0.0
 */
@@ -63,19 +62,19 @@ class ImageMgr implements ImageMgrInterface
     $imagetypes = \array_reverse($imagetypes);
 
     // Loop through all imagetypes
-    foreach($imagetypes as $key => $config)
+    foreach($imagetypes as $key => $imagetype)
     {
       // Create the IMGtools service
       $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
 
       // Only proceed if imagetype is active
-      if($config->params->jg_imgtype != 1)
+      if($imagetype->params->jg_imgtype != 1)
       {
         continue;
       }
 
       // Debug info
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $config->typename));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $imagetype->typename));
 
       // Read source image
       if(!$this->jg->getIMGtools()->read($source))
@@ -83,11 +82,11 @@ class ImageMgr implements ImageMgrInterface
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
 
-        return false;
+        continue;
       }
 
       // Keep metadata only for original images
-      if($config->typename == 'original')
+      if($imagetype->typename == 'original')
       {
         $this->jg->getIMGtools()->keep_metadata = true;
       }
@@ -97,7 +96,7 @@ class ImageMgr implements ImageMgrInterface
       }
 
       // Do we need to keep animation?
-      if($config->params->jg_imgtypeanim == 1)
+      if($imagetype->params->jg_imgtypeanim == 1)
       {
         // Yes
         $this->jg->getIMGtools()->keep_anim = true;
@@ -109,7 +108,7 @@ class ImageMgr implements ImageMgrInterface
       }
 
       // Do we need to auto orient?
-      if($config->params->jg_imgtypeorinet == 1)
+      if($imagetype->params->jg_imgtypeorinet == 1)
       {
         // Yes
         if(!$this->jg->getIMGtools()->orient())
@@ -117,57 +116,56 @@ class ImageMgr implements ImageMgrInterface
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
   
-          return false;
+          continue;
         }
       }
 
       // Need for resize?
-      if($config->params->jg_imgtyperesize > 0)
+      if($imagetype->params->jg_imgtyperesize > 0)
       {
         // Yes
-        if(!$this->jg->getIMGtools()->resize($config->params->jg_imgtyperesize,
-                                             $config->params->jg_imgtypewidth,
-                                             $config->params->jg_imgtypeheight,
-                                             $config->params->jg_cropposition,
-                                             $config->params->jg_imgtypesharpen)
+        if(!$this->jg->getIMGtools()->resize($imagetype->params->jg_imgtyperesize,
+                                             $imagetype->params->jg_imgtypewidth,
+                                             $imagetype->params->jg_imgtypeheight,
+                                             $imagetype->params->jg_cropposition,
+                                             $imagetype->params->jg_imgtypesharpen)
           )
         {
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
 
-          return false;
+          continue;
         }
       }
 
       // Need for watermarking?
-      if($config->params->jg_imgtypewatermark == 1 && property_exists($config->params->jg_imgtypewtmsettings, 'jg_imgtypewtmsettings0'))
+      if($imagetype->params->jg_imgtypewatermark == 1 && property_exists($imagetype->params->jg_imgtypewtmsettings, 'jg_imgtypewtmsettings0'))
       {
         // Yes
-        $config->params->jg_imgtypewtmsettings = $config->params->jg_imgtypewtmsettings->jg_imgtypewtmsettings0;
+        $imagetype->params->jg_imgtypewtmsettings = $imagetype->params->jg_imgtypewtmsettings->jg_imgtypewtmsettings0;
         
         if(!$this->jg->getIMGtools()->watermark(JPATH_ROOT.\DIRECTORY_SEPARATOR.$this->jg->getConfig()->get('jg_wmfile'),
-                                                $config->params->jg_imgtypewtmsettings->jg_watermarkpos,
-                                                $config->params->jg_imgtypewtmsettings->jg_watermarkzoom,
-                                                $config->params->jg_imgtypewtmsettings->jg_watermarksize,
-                                                $config->params->jg_imgtypewtmsettings->jg_watermarkopacity)
+                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkpos,
+                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkzoom,
+                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarksize,
+                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkopacity)
           )
         {
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
 
-          return false;
+          continue;
         }
       }
 
       // Write image to file
-      $file = $this->getImgPath($config->typename, $catid, $filename);
-
-      if(!$this->jg->getIMGtools()->write($file, $config->params->jg_imgtypequality))
+      $file = $this->getImgPath($imagetype->typename, $catid, $filename);
+      if(!$this->jg->getIMGtools()->write($file, $imagetype->params->jg_imgtypequality))
       {
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
 
-        return false;
+        continue;
       }
 
       // Destroy the IMGtools service
@@ -228,7 +226,7 @@ class ImageMgr implements ImageMgrInterface
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $catid, $filename): mixed
+  public function getImgPath($type, $catid, $filename)
   {
     // get imagetype object
     $imagetype = JoomHelper::getRecord('imagetype', array('typename' => $type));
