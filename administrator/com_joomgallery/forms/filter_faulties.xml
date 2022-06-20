@@ -22,7 +22,8 @@
                label="COM_JOOMGALLERY_LIST_FULL_ORDERING"
                description="COM_JOOMGALLERY_LIST_FULL_ORDERING_DESC"
                onchange="this.form.submit();"
-               default="a.id DESC">
+               default="a.id ASC"
+               validate="options">
             <option value="">JGLOBAL_SORT_BY</option>
             <option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
             <option value="a.id DESC">JGRID_HEADING_ID_DESC</option>

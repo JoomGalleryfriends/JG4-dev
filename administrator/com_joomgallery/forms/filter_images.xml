@@ -23,17 +23,20 @@
 
         <field name="access"
                type="accesslevel"
-               label="JOPTION_FILTER_ACCESS"
-               description="JOPTION_FILTER_ACCESS_DESC"
+               label="JGRID_HEADING_ACCESS"
+               multiple="true"
+               layout="joomla.form.field.list-fancy-select"
+               hint="JOPTION_SELECT_ACCESS"
                onchange="this.form.submit();" />
     </fields>
 
-    <fields name="list">
+    <fields name="list"> 
         <field name="fullordering"
                type="list"
                label="JGLOBAL_SORT_BY"
                onchange="this.form.submit();"
-               default="a.ordering ASC" >
+               default="a.id DESC"
+			         validate="options" >
             <option value="">JGLOBAL_SORT_BY</option>
             <option value="a.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
             <option value="a.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
@@ -45,12 +48,12 @@
             <option value="a.featured DESC">JFEATURED_DESC</option>
             <option value="a.approved ASC">COM_JOOMGALLERY_COMMON_APPROVED_ASC</option>
             <option value="a.approved DESC">COM_JOOMGALLERY_COMMON_APPROVED_DESC</option>
-            <option value="category_name ASC">JCATEGORY_ASC</option>
-            <option value="category_name DESC">JCATEGORY_DESC</option>
-            <option value="access_level ASC">JGRID_HEADING_ACCESS_ASC</option>
-            <option value="access_level DESC">JGRID_HEADING_ACCESS_DESC</option>
-            <option value="a.owner ASC">COM_JOOMGALLERY_COMMON_OWNER_ASC</option>
-            <option value="a.owner DESC">COM_JOOMGALLERY_COMMON_OWNER_DESC</option>
+            <option value="cattitle ASC">JCATEGORY_ASC</option>
+            <option value="cattitle DESC">JCATEGORY_DESC</option>
+            <option value="a.access ASC">JGRID_HEADING_ACCESS_ASC</option>
+            <option value="a.access DESC">JGRID_HEADING_ACCESS_DESC</option>
+            <option value="a.created_by ASC">COM_JOOMGALLERY_COMMON_CREATEDBY_ASC</option>
+            <option value="a.created_by DESC">COM_JOOMGALLERY_COMMON_CREATEDBY_DESC</option>
             <option value="a.imgauthor ASC">JAUTHOR_ASC</option>
             <option value="a.imgauthor DESC">JAUTHOR_DESC</option>
             <option value="a.imgdate ASC">JDATE_ASC</option>
