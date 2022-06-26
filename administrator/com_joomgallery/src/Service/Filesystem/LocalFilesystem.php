@@ -25,9 +25,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\Filesyst
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
- * JoomGallery Filesystem Helper
+ * Filesystem Class (Local filesystem)
  *
- * Provides handling with the filesystem where the image files are stored
+ * Provides methods to handle the local filesystem to store the image files
  *
  * @package JoomGallery
  * @since   4.0.0
@@ -178,7 +178,7 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
   }
 
   /**
-   * Create a folder and all necessary parent folders.
+   * Create a folder and all necessary parent folders (local and storage).
    *
    * @param   string  $path   A path to create from the base path.
    *
@@ -192,7 +192,7 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
   }
 
   /**
-   * Moves a folder including all all files and subfolders
+   * Moves a folder including all all files and subfolders (local and storage).
    *
    * @param   string  $src    The path to the source folder.
    * @param   string  $dest   The path to the destination folder.
@@ -215,7 +215,7 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
   }
 
   /**
-   * Delete a folder including all all files and subfolders
+   * Delete a folder including all all files and subfolders (local and storage).
    *
    * @param   string  $path   The path to the folder to delete.
    *
@@ -229,7 +229,7 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
   }
 
   /**
-   * Checks a folder for existence.
+   * Checks a folder for existence  (local and storage).
    *
    * @param   string  $path      The path to the folder to check.
    * @param   bool    $files     True to return a list of files in the folder

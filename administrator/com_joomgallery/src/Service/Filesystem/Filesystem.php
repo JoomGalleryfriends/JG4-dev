@@ -19,7 +19,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\Filesyst
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
-* Base class for the Filesystem helper classes
+* Filesystem Base Class
+*
+* @package JoomGallery
 *
 * @since  4.0.0
 */

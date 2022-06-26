@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 \defined('JPATH_PLATFORM') or die;
 
 /**
-* Filesystem Interface for the Configuration Helper
+* Interface for the filesystem classes
 *
 * @since  4.0.0
 */
@@ -128,7 +128,7 @@ interface FilesystemInterface
   public function cleanFilename($file, $strip_ext=false, $replace_chars=''): mixed;
 
   /**
-   * Create a folder and all necessary parent folders.
+   * Create a folder and all necessary parent folders (local and storage).
    *
    * @param   string  $path   A path to create from the base path.
    *
@@ -139,7 +139,7 @@ interface FilesystemInterface
   public function createFolder($path): bool;
 
   /**
-   * Moves a folder including all all files and subfolders
+   * Moves a folder including all all files and subfolders (local and storage).
    *
    * @param   string  $src    The path to the source folder.
    * @param   string  $dest   The path to the destination folder.
@@ -152,7 +152,7 @@ interface FilesystemInterface
   public function moveFolder($src, $dest, $copy = false): bool;
 
   /**
-   * Delete a folder including all all files and subfolders
+   * Delete a folder including all files and subfolders (local and storage).
    *
    * @param   string  $path   The path to the folder to delete.
    *
@@ -163,7 +163,7 @@ interface FilesystemInterface
   public function deleteFolder($path): bool;
 
   /**
-   * Checks a folder for existence.
+   * Checks a folder for existence (local and storage).
    *
    * @param   string  $path      The path to the folder to check.
    * @param   bool    $files     True to return a list of files in the folder
