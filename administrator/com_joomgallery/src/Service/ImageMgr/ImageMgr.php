@@ -82,6 +82,9 @@ class ImageMgr implements ImageMgrInterface
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
 
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
         continue;
       }
 
@@ -115,6 +118,9 @@ class ImageMgr implements ImageMgrInterface
         {  
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
+
+          // Debug info
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
   
           continue;
         }
@@ -134,6 +140,9 @@ class ImageMgr implements ImageMgrInterface
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
 
+          // Debug info
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
           continue;
         }
       }
@@ -152,64 +161,99 @@ class ImageMgr implements ImageMgrInterface
           // Destroy the IMGtools service
           $this->jg->delIMGtools();
 
+          // Debug info
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
           continue;
         }
       }
 
-      // Write image to file
+      // Path to save image
       $file = $this->getImgPath($imagetype->typename, $catid, $filename);
+
+      // Create filesystem service
+      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+      // Create folders if not existent
+      $this->jg->getFilesystem()->createFolder(\dirname($file));
+
+      // Write image to file
       if(!$this->jg->getIMGtools()->write($file, $imagetype->params->jg_imgtypequality))
       {
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
 
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
         continue;
       }
+
+      // Upload image file to storage
+      $this->jg->getFilesystem()->uploadFile($file);
 
       // Destroy the IMGtools service
       $this->jg->delIMGtools();
     }
 
+    // Debug info
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
     return true;
   }
 
+  // /**
+  //  * Deletion of image types
+  //  *
+  //  * @param   string    $filename   The file name of the files to be deleted
+  //  * @param   integer   $catid      The id of the corresponding category
+  //  * 
+  //  * @return  bool      True on success, false otherwise
+  //  * 
+  //  * @since   4.0.0
+  //  */
+  // public function deleteImages($filename, $catid): bool
+  // {
+  //   // Get all imagetypes
+  //   $imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
+
+  //   // Loop through all imagetypes
+  //   foreach($imagetypes as $key => $config)
+  //   {
+  //     // Get image file name
+  //     $file = $this->getImgPath($config->typename, $catid, $filename);
+
+  //     // Create filesystem service
+  //     $this->jg->createFilesystem('localhost');
+
+  //     // Delete imagetype
+  //     if(!$this->jg->getFilesystem()->deleteFile($this->jg->getFilesystem()->get('local_root') . $file))
+  //     {
+  //       // Deletion failed
+  //       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
+
+  //       return false;
+  //     }
+  //   }
+
+  //   // Deletion successful
+  //   $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
+
+  //   return true;
+  // }
+
   /**
-   * Deletion of image types
+   * Creation of a category
    *
-   * @param   string    $filename   The file name of the files to be deleted
-   * @param   integer   $catid      The id of the corresponding category
+   * @param   string    $catname   The category name
+   * @param   integer   $catid     Id of the category to be created
    * 
    * @return  bool      True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function deleteImages($filename, $catid): bool
+  public function createCategory($catname, $catid): bool
   {
-    // Get all imagetypes
-    $imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
-
-    // Loop through all imagetypes
-    foreach($imagetypes as $key => $config)
-    {
-      // Get image file name
-      $file = $this->getImgPath($config->typename, $catid, $filename);
-
-      // Create filesystem service
-      $this->jg->createFilesystem('localhost');
-
-      // Delete imagetype
-      if(!$this->jg->getFilesystem()->deleteFile($this->jg->getFilesystem()->get('local_root') . $file))
-      {
-        // Deletion failed
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
-
-        return false;
-      }
-    }
-
-    // Deletion successful
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
-
     return true;
   }
 

@@ -57,7 +57,14 @@ class HtmlView extends JoomGalleryView
 		if(count($errors = $this->get('Errors')))
 		{
 			throw new \Exception(implode("\n", $errors));
-		}    
+		}
+    
+    // Test ImageMgr    
+    $this->component->createConfig();
+    $this->component->createImageManager();
+    $manager = $this->component->getImageManager();
+    $src     = \Joomla\CMS\Filesystem\Path::clean(JPATH_ROOT.'/images/testimg.jpg');
+    $manager->createImages($src, 3, 'myfilename.jpg');
 
 		$this->addToolbar();
 

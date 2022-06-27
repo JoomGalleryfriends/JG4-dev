@@ -35,17 +35,17 @@ interface ImageMgrInterface
    */
   public function createImages($source, $catid, $filename): bool;
 
-  /**
-   * Deletion of image types
-   *
-   * @param   string    $filename   The file name of the files to be deleted
-   * @param   integer   $catid      The id of the corresponding category
-   * 
-   * @return  bool      True on success, false otherwise
-   * 
-   * @since   4.0.0
-   */
-  public function deleteImages($filename, $catid): bool;
+  // /**
+  //  * Deletion of image types
+  //  *
+  //  * @param   string    $filename   The file name of the files to be deleted
+  //  * @param   integer   $catid      The id of the corresponding category
+  //  * 
+  //  * @return  bool      True on success, false otherwise
+  //  * 
+  //  * @since   4.0.0
+  //  */
+  // public function deleteImages($filename, $catid): bool;
 
   // /**
   //  * Checks image types for existence, validity and size
@@ -73,17 +73,17 @@ interface ImageMgrInterface
   //  */
   // public function moveImages($filename, $src_catid, $dest_catid, $copy): mixed;
 
-  // /**
-  //  * Creation of a category
-  //  *
-  //  * @param   string    $catname   The category name
-  //  * @param   integer   $catid     Id of the category to be created
-  //  * 
-  //  * @return  bool      True on success, false otherwise
-  //  * 
-  //  * @since   4.0.0
-  //  */
-  // public function createCategory($catname, $catid): bool;
+  /**
+   * Creation of a category
+   *
+   * @param   string    $catname   The category name
+   * @param   integer   $catid     Id of the category to be created
+   * 
+   * @return  bool      True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function createCategory($catname, $catid): bool;
 
   // /**
   //  * Deletion of a category
