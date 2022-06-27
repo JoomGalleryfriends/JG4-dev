@@ -24,7 +24,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 *
 * Provides methods to handle image files and folders based ...
 * - ... on the current available image types (#_joomgallery_img_types)
-* - ... on the parameters from the configuration set of the current user (#_joomgallery_configs)
+* - ... on the parameters from the configuration set of the current user (Config-Service)
+* - ... on the chosen filesystem (Filesystem-Service)
+* - ... on the chosen image processor (IMGtools-Service)
 *
 * @since  4.0.0
 */
