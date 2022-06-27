@@ -112,6 +112,12 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function moveFile($src, $dest, $copy = false): bool
   {
+    // complete source path
+    $src = $this->completePath($src);
+
+    // complete destination path
+    $dest = $this->completePath($dest);
+
     if($copy)
     {
       return JFile::copy($src, $dest);
@@ -133,6 +139,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function deleteFile($file): bool
   {
+    // complete file path
+    $file = $this->completePath($file);
+
     return JFile::delete($file);
   }
 
@@ -147,7 +156,10 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function checkFile($file): mixed
   {
-    if (file_exists($file))
+    // complete file path
+    $file = $this->completePath($file);
+
+    if(file_exists($file))
     {
       $info     = array();
       $img_info = getimagesize($file);
@@ -188,6 +200,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function createFolder($path): bool
   {
+    // complete folder path
+    $path = $this->completePath($path);
+
     return JFolder::create($path);
   }
 
@@ -204,6 +219,12 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function moveFolder($src, $dest, $copy = false): bool
   {
+    // complete source path
+    $src = $this->completePath($src);
+
+    // complete destination path
+    $dest = $this->completePath($dest);
+
     if($copy)
     {
       return JFolder::copy($src, $dest);
@@ -225,6 +246,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function deleteFolder($path): bool
   {
+    // complete folder path
+    $path = $this->completePath($path);
+
     return JFolder::delete($path);
   }
 
@@ -242,6 +266,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3): mixed
   {
+    // complete folder path
+    $path = $this->completePath($path);
+
     if (file_exists($path))
     {
       if ($files && !$folders)
@@ -279,6 +306,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function chmod($path, $val, $mode=true): bool
   {
+    // complete folder path
+    $path = $this->completePath($path);
+
     if($mode)
     {
       return JPath::setPermissions(JPath::clean($path), $val, null);
@@ -304,6 +334,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   private function listFolderTree($path, $filter, $maxLevel, $level = 0, $parent = 0): mixed
 	{
+    // complete folder path
+    $path = $this->completePath($path);
+    
     $dirs = array();
 
 		if ($level == 0)
@@ -335,5 +368,24 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
 		}
 
 		return $dirs;
+  }
+
+  /**
+   * Completes a path with the root if it does not already contain it.
+   *
+   * @param   string  $path      The path of the folder to read.
+   *
+   * @return  string  Completed path
+   *
+   * @since   4.0.0
+   */
+  private function completePath($path)
+  {
+    if(strpos($path, $this->root) === false)
+    {
+      $path = $this->root.\DIRECTORY_SEPARATOR.$path;
+    }
+
+    return JPath::clean($path);
   }
 }
