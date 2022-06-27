@@ -125,26 +125,31 @@ interface ImageMgrInterface
   // public function moveCategory($catid, $src_catid, $dest_catid, $copy): mixed;
 
   /**
-   * Returns the path to an image without root path.
+   * Returns the path to an image
    *
-   * @param   string  $type        The imagetype
-   * @param   string  $catid       The id of the corresponding category
-   * @param   string  $filename    The filename
+   * @param   string        $type        The imagetype
+   * @param   integer       $id          The id of the image (new image=0)
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
+   * @param   integer|bool  $catid       The id of the corresponding category
+   * @param   string|bool   $filename    The filename
    * 
    * @return  mixed   Path to the image on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $catid, $filename);
+  public function getImgPath($type, $id, $root=0, $catid=false, $filename=false);
 
   /**
    * Returns the path to a category without root path.
    *
-   * @param   string  $catid    The id of the category
+   * @param   string        $catid       The id of the category (new category=0)
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
+   * @param   integer|bool  $parent_id   The id of the parent category
+   * @param   string|bool   $catname     The category alias
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getCatPath($catid);
+  public function getCatPath($catid, $root=0, $parent_id=false, $catname=false);
 }

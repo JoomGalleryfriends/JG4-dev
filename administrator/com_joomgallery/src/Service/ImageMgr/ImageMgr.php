@@ -171,13 +171,22 @@ class ImageMgr implements ImageMgrInterface
       }
 
       // Path to save image
-      $file = $this->getImgPath($imagetype->typename, $catid, $filename);
+      $file = $this->getImgPath($imagetype->typename, 0, 0, $catid, $filename);
 
       // Create filesystem service
       $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
 
       // Create folders if not existent
-      $this->jg->getFilesystem()->createFolder(\dirname($file));
+      if(!$this->jg->getFilesystem()->createFolder(\dirname($file)))
+      {
+        // Destroy the IMGtools service
+        $this->jg->delIMGtools();
+
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', \basename(\dirname($file))));
+
+        continue;
+      }
 
       // Write image to file
       if(!$this->jg->getIMGtools()->write($file, $imagetype->params->jg_imgtypequality))
@@ -247,39 +256,72 @@ class ImageMgr implements ImageMgrInterface
   /**
    * Creation of a category
    *
-   * @param   string    $catname   The category name
-   * @param   integer   $catid     Id of the category to be created
+   * @param   string    $catname     The name of the folder to be created
+   * @param   integer   $parent_id   Id of the parent category
    * 
    * @return  bool      True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createCategory($catname, $catid): bool
+  public function createCategory($catname, $parent_id): bool
   {
+    // Category path
+    $path = $this->getCatPath(0, 0, $parent_id, $catname);
+
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Create folder if not existent
+    if(!$this->jg->getFilesystem()->createFolder($path))
+    {
+      // Debug info
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', $catname));
+
+      return false;
+    }
+
     return true;
   }
 
   /**
-   * Returns the path to an image without root path.
+   * Returns the path to an image
    *
-   * @param   string  $type        The imagetype
-   * @param   string  $catid       The id of the corresponding category
-   * @param   string  $filename    The filename
+   * @param   string        $type        The imagetype
+   * @param   integer       $id          The id of the image (new image=0)
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
+   * @param   integer|bool  $catid       The id of the corresponding category
+   * @param   string|bool   $filename    The filename
    * 
    * @return  mixed   Path to the image on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $catid, $filename)
+  public function getImgPath($type, $id, $root=0, $catid=false, $filename=false)
   {
     // get imagetype object
     $imagetype = JoomHelper::getRecord('imagetype', array('typename' => $type));
 
     if($imagetype === false)
     {
-      Factory::getApplication()->enqueueMessage('Imagetype not found!', 'error');
+      Factory::getApplication()->enqueueMessage(Text::_('Imagetype not found!'), 'error');
 
       return false;
+    }
+
+    if($catid == false || $filename == false && $id > 0)
+    {
+      // get image object
+      $img = JoomHelper::getRecord('image', $id);
+
+      if($img === false)
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Image not found. You have to create the image first before accessing it.'), 'error');
+
+        return false;
+      }
+
+      $catid    = $img->catid;
+      $filename = $img->filename;
     }
 
     // get corresponding category
@@ -287,13 +329,34 @@ class ImageMgr implements ImageMgrInterface
 
     if($cat === false)
     {
-      Factory::getApplication()->enqueueMessage('Category not found. Please create the category before uploading into this category.', 'error');
+      Factory::getApplication()->enqueueMessage(Text::_('Category not found. Please create the category before uploading into this category.'), 'error');
 
       return false;
     }
 
-    // Create the complete path
+    // create the path to image
     $path = $imagetype->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$filename;
+
+    // add root to path if needed
+    if($root > 0)
+    {
+      // create filesystem service
+      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+      switch($root)
+      {
+        case 1:
+          $path = $this->jg->getFilesystem()->get('local_root').\DIRECTORY_SEPARATOR.$path;
+          break;
+
+        case 2:
+          $path = $this->jg->getFilesystem()->get('root').\DIRECTORY_SEPARATOR.$path;
+          break;
+        
+        default:
+          break;
+      }
+    }
 
     return JPath::clean($path);
   }
@@ -301,24 +364,67 @@ class ImageMgr implements ImageMgrInterface
   /**
    * Returns the path to a category without root path.
    *
-   * @param   string  $catid    The id of the category
+   * @param   string        $catid       The id of the category (new category=0)
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
+   * @param   integer|bool  $parent_id   The id of the parent category
+   * @param   string|bool   $catname     The category alias
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getCatPath($catid)
+  public function getCatPath($catid, $root=0, $parent_id=false, $catname=false)
   {
-    // get category object
-    $cat = JoomHelper::getRecord('category', $catid);
-
-    if($cat === false)
+    if($catid > 0)
     {
-      Factory::getApplication()->enqueueMessage('Category not found. Please create the category before uploading into this category.', 'error');
+      // get category object
+      $cat = JoomHelper::getRecord('category', $catid);
 
-      return false;
+      if($cat === false)
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Category not found. Please create the category before uploading into this category.'), 'error');
+
+        return false;
+      }
+
+      $path = $cat->path;
+    }
+    else
+    {
+      // get parent category object
+      $parent_cat = JoomHelper::getRecord('category', $parent_id);
+
+      if($parent_cat === false)
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Category not found. Please create the category before uploading into this category.'), 'error');
+
+        return false;
+      }
+
+      $path = $parent_cat->path.\DIRECTORY_SEPARATOR.$catname;
+    }
+    
+    // add root to path if needed
+    if($root > 0)
+    {
+      // create filesystem service
+      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+      switch($root)
+      {
+        case 1:
+          $path = $this->jg->getFilesystem()->get('local_root').\DIRECTORY_SEPARATOR.$path;
+          break;
+
+        case 2:
+          $path = $this->jg->getFilesystem()->get('root').\DIRECTORY_SEPARATOR.$path;
+          break;
+        
+        default:
+          break;
+      }
     }
 
-    return JPath::clean($cat->path);
+    return JPath::clean($path);
   }
 }
