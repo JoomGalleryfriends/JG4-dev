@@ -46,17 +46,16 @@ interface ImageMgrInterface
    */
   public function deleteImages($id): bool;
 
-  // /**
-  //  * Checks image types for existence, validity and size
-  //  *
-  //  * @param   string    $filename   The file name of the files to be deleted
-  //  * @param   integer   $catid      The id of the corresponding category
-  //  * 
-  //  * @return  mixed     list of file sizes on success, false otherwise
-  //  * 
-  //  * @since   4.0.0
-  //  */
-  // public function checkImages($filename, $catid): mixed;
+  /**
+   * Checks image types for existence, validity and size
+   *
+   * @param   integer   $id    Id of the image to be checked
+   * 
+   * @return  mixed     list of filetype info on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function checkImages($id);
 
   // /**
   //  * Move image files from one category to another
@@ -96,17 +95,16 @@ interface ImageMgrInterface
    */
   public function deleteCategory($catid, $del_images=false): bool;
 
-  // /**
-  //  * Checks a category for existence, correct images and file path
-  //  *
-  //  * @param   string    $catname   The category name
-  //  * @param   integer   $catid     Id of the category to be checked
-  //  * 
-  //  * @return  mixed     list of file sizes on success, false otherwise
-  //  * 
-  //  * @since   4.0.0
-  //  */
-  // public function checkCategory($catname, $catid): mixed;
+  /**
+   * Checks a category for existence, correct images and file path
+   *
+   * @param   integer   $catid     Id of the category to be checked
+   * 
+   * @return  mixed     list of folder info on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function checkCategory($catid);
 
   // /**
   //  * Move category with all images from one parent category to another

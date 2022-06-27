@@ -236,14 +236,14 @@ class ImageMgr implements ImageMgrInterface
    */
   public function deleteImages($id): bool
   {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
     // Loop through all imagetypes
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
-      $file = $this->getImgPath($imagetype->typename, $id);
-
-      // Create filesystem service
-      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+      $file = $this->getImgPath($imagetype->typename, $id);      
 
       // Delete imagetype
       if(!$this->jg->getFilesystem()->deleteFile($file))
@@ -262,6 +262,35 @@ class ImageMgr implements ImageMgrInterface
   }
 
   /**
+   * Checks image types for existence, validity and size
+   *
+   * @param   integer   $id    Id of the image to be checked
+   * 
+   * @return  mixed     list of filetype info on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function checkImages($id)
+  {
+    $images = array();
+
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Loop through all imagetypes
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get image file name
+      $file = $this->getImgPath($imagetype->typename, $id);
+
+      // Get file info
+      $images[$imagetype->typename] = $this->jg->getFilesystem()->checkFile($file);
+    }
+
+    return $images;
+  }
+
+  /**
    * Creation of a category
    *
    * @param   string    $catname     The name of the folder to be created
@@ -273,14 +302,14 @@ class ImageMgr implements ImageMgrInterface
    */
   public function createCategory($catname, $parent_id): bool
   {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
     // Loop through all imagetypes
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Category path
       $path = $this->getCatPath(0, $imagetype->typename, 0, $parent_id, $catname);
-
-      // Create filesystem service
-      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
 
       // Create folder if not existent
       if(!$this->jg->getFilesystem()->createFolder($path))
@@ -350,9 +379,38 @@ class ImageMgr implements ImageMgrInterface
           return false;
         }
       }
-    }
+    } 
 
     return true;
+  }
+
+  /**
+   * Checks a category for existence, correct images and file path
+   *
+   * @param   integer   $catid     Id of the category to be checked
+   * 
+   * @return  mixed     list of folder info on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function checkCategory($catid)
+  {
+    $folders = array();
+
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Loop through all imagetypes
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get category path
+      $path = $this->getCatPath($catid, $imagetype->typename);
+
+      // Get folder info
+      $folders[$imagetype->typename] = $this->jg->getFilesystem()->checkFolder($path, true, true, 100);
+    }
+
+    return $folders;
   }
 
   /**

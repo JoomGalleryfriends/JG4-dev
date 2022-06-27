@@ -154,7 +154,7 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function checkFile($file): mixed
+  public function checkFile($file)
   {
     // complete file path
     $file = $this->completePath($file);
