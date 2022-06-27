@@ -136,4 +136,15 @@ interface ImageMgrInterface
    * @since   4.0.0
    */
   public function getImgPath($type, $catid, $filename);
+
+  /**
+   * Returns the path to a category without root path.
+   *
+   * @param   string  $catid    The id of the category
+   * 
+   * @return  mixed   Path to the category on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function getCatPath($catid);
 }

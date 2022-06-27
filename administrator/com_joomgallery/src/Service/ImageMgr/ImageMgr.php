@@ -139,11 +139,9 @@ class ImageMgr implements ImageMgrInterface
       }
 
       // Need for watermarking?
-      if($imagetype->params->jg_imgtypewatermark == 1 && property_exists($imagetype->params->jg_imgtypewtmsettings, 'jg_imgtypewtmsettings0'))
+      if($imagetype->params->jg_imgtypewatermark == 1)
       {
-        // Yes
-        $imagetype->params->jg_imgtypewtmsettings = $imagetype->params->jg_imgtypewtmsettings->jg_imgtypewtmsettings0;
-        
+        // Yes        
         if(!$this->jg->getIMGtools()->watermark(JPATH_ROOT.\DIRECTORY_SEPARATOR.$this->jg->getConfig()->get('jg_wmfile'),
                                                 $imagetype->params->jg_imgtypewtmsettings->jg_watermarkpos,
                                                 $imagetype->params->jg_imgtypewtmsettings->jg_watermarkzoom,
@@ -252,5 +250,29 @@ class ImageMgr implements ImageMgrInterface
     $path = $imagetype->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$filename;
 
     return JPath::clean($path);
+  }
+
+  /**
+   * Returns the path to a category without root path.
+   *
+   * @param   string  $catid    The id of the category
+   * 
+   * @return  mixed   Path to the category on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function getCatPath($catid)
+  {
+    // get category object
+    $cat = JoomHelper::getRecord('category', $catid);
+
+    if($cat === false)
+    {
+      Factory::getApplication()->enqueueMessage('Category not found. Please create the category before uploading into this category.', 'error');
+
+      return false;
+    }
+
+    return JPath::clean($cat->path);
   }
 }

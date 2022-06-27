@@ -57,7 +57,7 @@ class HtmlView extends JoomGalleryView
 		if(count($errors = $this->get('Errors')))
 		{
 			throw new \Exception(implode("\n", $errors));
-		}
+		}    
 
 		$this->addToolbar();
 
