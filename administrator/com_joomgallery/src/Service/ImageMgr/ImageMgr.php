@@ -225,42 +225,41 @@ class ImageMgr implements ImageMgrInterface
     return true;
   }
 
-  // /**
-  //  * Deletion of image types
-  //  *
-  //  * @param   string    $filename   The file name of the files to be deleted
-  //  * @param   integer   $catid      The id of the corresponding category
-  //  * 
-  //  * @return  bool      True on success, false otherwise
-  //  * 
-  //  * @since   4.0.0
-  //  */
-  // public function deleteImages($filename, $catid): bool
-  // {
-  //   // Loop through all imagetypes
-  //   foreach($this->imagetypes as $key => $config)
-  //   {
-  //     // Get image file name
-  //     $file = $this->getImgPath($config->typename, $catid, $filename);
+  /**
+   * Deletion of image types
+   *
+   * @param   integer   $id    The id of the image to be deleted
+   * 
+   * @return  bool      True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function deleteImages($id): bool
+  {
+    // Loop through all imagetypes
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get image file name
+      $file = $this->getImgPath($imagetype->typename, $id);
 
-  //     // Create filesystem service
-  //     $this->jg->createFilesystem('localhost');
+      // Create filesystem service
+      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
 
-  //     // Delete imagetype
-  //     if(!$this->jg->getFilesystem()->deleteFile($this->jg->getFilesystem()->get('local_root') . $file))
-  //     {
-  //       // Deletion failed
-  //       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
+      // Delete imagetype
+      if(!$this->jg->getFilesystem()->deleteFile($file))
+      {
+        // Deletion failed
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
 
-  //       return false;
-  //     }
-  //   }
+        return false;
+      }
+    }
 
-  //   // Deletion successful
-  //   $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', $filename, $config->typename));
+    // Deletion successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
 
-  //   return true;
-  // }
+    return true;
+  }
 
   /**
    * Creation of a category

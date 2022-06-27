@@ -35,17 +35,16 @@ interface ImageMgrInterface
    */
   public function createImages($source, $catid, $filename): bool;
 
-  // /**
-  //  * Deletion of image types
-  //  *
-  //  * @param   string    $filename   The file name of the files to be deleted
-  //  * @param   integer   $catid      The id of the corresponding category
-  //  * 
-  //  * @return  bool      True on success, false otherwise
-  //  * 
-  //  * @since   4.0.0
-  //  */
-  // public function deleteImages($filename, $catid): bool;
+  /**
+   * Deletion of image types
+   *
+   * @param   integer   $id    The id of the image to be deleted
+   * 
+   * @return  bool      True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function deleteImages($id): bool;
 
   // /**
   //  * Checks image types for existence, validity and size
