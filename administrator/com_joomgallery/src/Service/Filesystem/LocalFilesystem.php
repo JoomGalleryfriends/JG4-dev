@@ -264,12 +264,12 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3): mixed
+  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3)
   {
     // complete folder path
     $path = $this->completePath($path);
 
-    if (file_exists($path))
+    if(file_exists($path))
     {
       if ($files && !$folders)
       {
@@ -281,10 +281,14 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
         // list only folders
         return JFolder::listFolderTree($path,'',$maxLevel);
       }
-      else
+      elseif ($files && $folders)
       {
         // list files and folders
         return $this->listFolderTree($path,'',$maxLevel);
+      }
+      else
+      {
+        return true;
       }
     }
     else
@@ -332,38 +336,37 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    *
    * @since   4.0.0
    */
-  private function listFolderTree($path, $filter, $maxLevel, $level = 0, $parent = 0): mixed
-	{
-    // complete folder path
-    $path = $this->completePath($path);
-    
+  private function listFolderTree($path, $filter, $maxLevel, $level = 0, $parent = 0)
+	{    
     $dirs = array();
 
-		if ($level == 0)
+		if($level < $maxLevel)
 		{
-			$GLOBALS['_JFolder_folder_tree_index'] = 0;
-		}
+			if($level == 0)
+      {
+        $id = $GLOBALS['_JFolder_folder_tree_index'] = 0;
+      }
+      else
+      {
+        $id = ++$GLOBALS['_JFolder_folder_tree_index'];
+      }      
 
-		if ($level < $maxLevel)
-		{
-			$folders    = JFolder::folders($path, $filter);
-			$pathObject = new PathWrapper;
+      // Put folder info
+      $dirs['id']       = $id;
+      $dirs['name']     = \basename($path);
+      $dirs['fullname'] = JPath::clean($path);
+      $dirs['relname']  = \str_replace(JPATH_ROOT, '', JPath::clean($path));
+      $dirs['files']    = JFolder::files($path);
 
-			// First path, index foldernames
+      // Get list of subfolders
+      $folders          = JFolder::folders($path, $filter);
+
+			// Get subfolder info
 			foreach ($folders as $name)
 			{
-				$id = ++$GLOBALS['_JFolder_folder_tree_index'];
-				$fullName = $pathObject->clean($path . '/' . $name);
-				$dirs['name'] = array(
-            'id' => $id,
-            'parent' => $parent,
-            'name' => $name,
-            'fullname' => $fullName,
-            'relname' => str_replace(JPATH_ROOT, '', $fullName),
-            'files' => JFolder::files($fullName)
-				);
-				$dirs2 = $this->listFolderTree($fullName, $filter, $maxLevel, $level + 1, $id);
-				$dirs = array_merge($dirs, $dirs2);
+        $fullName = JPath::clean($path . '/' . $name);
+
+        $dirs['folders'][$name] = $this->listFolderTree($fullName, $filter, $maxLevel, $level + 1, $id);
 			}
 		}
 

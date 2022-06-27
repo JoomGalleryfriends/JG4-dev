@@ -38,7 +38,7 @@ interface ImageMgrInterface
   /**
    * Deletion of image types
    *
-   * @param   integer   $id    The id of the image to be deleted
+   * @param   integer   $id    Id of the image to be deleted
    * 
    * @return  bool      True on success, false otherwise
    * 
@@ -84,18 +84,17 @@ interface ImageMgrInterface
    */
   public function createCategory($catname, $catid): bool;
 
-  // /**
-  //  * Deletion of a category
-  //  *
-  //  * @param   string    $catname      The category name
-  //  * @param   integer   $catid        Id of the category to be deleted
-  //  * @param   bool      $del_images   True, if you want to delete even if there are still images in it (default: false) 
-  //  * 
-  //  * @return  bool      True on success, false otherwise
-  //  * 
-  //  * @since   4.0.0
-  //  */
-  // public function deleteCategory($catname, $catid, $del_images): bool;
+  /**
+   * Deletion of a category
+   *
+   * @param   integer   $catid        Id of the category to be deleted
+   * @param   bool      $del_images   True, if you want to delete even if there are still images in it (default: false)
+   * 
+   * @return  bool      True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function deleteCategory($catid, $del_images=false): bool;
 
   // /**
   //  * Checks a category for existence, correct images and file path

@@ -174,7 +174,7 @@ interface FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3): mixed;
+  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3);
 
   /**
    * Sets the permission of a given file or folder recursively.

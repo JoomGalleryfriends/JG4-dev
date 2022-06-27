@@ -296,6 +296,66 @@ class ImageMgr implements ImageMgrInterface
   }
 
   /**
+   * Deletion of a category
+   *
+   * @param   integer   $catid        Id of the category to be deleted
+   * @param   bool      $del_images   True, if you want to delete even if there are still images in it (default: false)
+   * 
+   * @return  bool      True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function deleteCategory($catid, $del_images=false): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Check if we are allowed to delete the category
+    if(!$del_images)
+    {
+      // Loop through all imagetypes
+      foreach($this->imagetypes as $key => $imagetype)
+      {
+        // Category path
+        $path  = $this->getCatPath($catid, $imagetype->typename);
+
+        // Available files and subfolders
+        $files = $this->jg->getFilesystem()->checkFolder($path, true, true, 1);
+
+        if(!empty($files['folders']) || !empty($files['files']))
+        {
+          // There are still images and subcategories available
+          // Deletion not allowed
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)));
+
+          return false;
+        }
+      }
+    }
+
+    // Loop through all imagetypes
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Category path
+      $path  = $this->getCatPath($catid, $imagetype->typename);
+
+      // Delete folder if existent
+      if($this->jg->getFilesystem()->checkFolder($path))
+      {
+        if(!$this->jg->getFilesystem()->deleteFolder($path))
+        {
+          // Debug info
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY', \basename($path)));
+
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Returns the path to an image
    *
    * @param   string        $type        The imagetype
