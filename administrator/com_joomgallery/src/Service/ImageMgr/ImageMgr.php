@@ -33,6 +33,20 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class ImageMgr implements ImageMgrInterface
 {
   /**
+   * Imagetypes from #__joomgallery_img_types
+   *
+   * @var array
+   */
+  protected $imagetypes = array();
+
+  /**
+   * Imagetypes dictionary
+   *
+   * @var array
+   */
+  protected $imagetypes_dict = array();
+
+  /**
    * Constructor
    *
    * @return  void
@@ -41,7 +55,11 @@ class ImageMgr implements ImageMgrInterface
    */
   public function __construct()
   {
+    // get component object
     $this->jg = JoomHelper::getComponent();
+
+    // get imagetypes
+    $this->getImagetypes();
   }
 
   /**
@@ -57,14 +75,8 @@ class ImageMgr implements ImageMgrInterface
    */
   public function createImages($source, $catid, $filename): bool
   {
-    // Get all imagetypes
-    $imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
-
-    // Sort imagetypes by id descending ()
-    $imagetypes = \array_reverse($imagetypes);
-
     // Loop through all imagetypes
-    foreach($imagetypes as $key => $imagetype)
+    foreach($this->imagetypes as $key => $imagetype)
     {
       // Create the IMGtools service
       $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
@@ -225,11 +237,8 @@ class ImageMgr implements ImageMgrInterface
   //  */
   // public function deleteImages($filename, $catid): bool
   // {
-  //   // Get all imagetypes
-  //   $imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
-
   //   // Loop through all imagetypes
-  //   foreach($imagetypes as $key => $config)
+  //   foreach($this->imagetypes as $key => $config)
   //   {
   //     // Get image file name
   //     $file = $this->getImgPath($config->typename, $catid, $filename);
@@ -265,19 +274,23 @@ class ImageMgr implements ImageMgrInterface
    */
   public function createCategory($catname, $parent_id): bool
   {
-    // Category path
-    $path = $this->getCatPath(0, 0, $parent_id, $catname);
-
-    // Create filesystem service
-    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
-
-    // Create folder if not existent
-    if(!$this->jg->getFilesystem()->createFolder($path))
+    // Loop through all imagetypes
+    foreach($this->imagetypes as $key => $imagetype)
     {
-      // Debug info
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', $catname));
+      // Category path
+      $path = $this->getCatPath(0, $imagetype->typename, 0, $parent_id, $catname);
 
-      return false;
+      // Create filesystem service
+      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+      // Create folder if not existent
+      if(!$this->jg->getFilesystem()->createFolder($path))
+      {
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', $catname));
+
+        return false;
+      }
     }
 
     return true;
@@ -298,16 +311,6 @@ class ImageMgr implements ImageMgrInterface
    */
   public function getImgPath($type, $id, $root=0, $catid=false, $filename=false)
   {
-    // get imagetype object
-    $imagetype = JoomHelper::getRecord('imagetype', array('typename' => $type));
-
-    if($imagetype === false)
-    {
-      Factory::getApplication()->enqueueMessage(Text::_('Imagetype not found!'), 'error');
-
-      return false;
-    }
-
     if($catid == false || $filename == false && $id > 0)
     {
       // get image object
@@ -335,7 +338,7 @@ class ImageMgr implements ImageMgrInterface
     }
 
     // create the path to image
-    $path = $imagetype->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$filename;
+    $path = $this->imagetypes[$this->imagetypes_dict[$type]]->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$filename;
 
     // add root to path if needed
     if($root > 0)
@@ -365,6 +368,7 @@ class ImageMgr implements ImageMgrInterface
    * Returns the path to a category without root path.
    *
    * @param   string        $catid       The id of the category (new category=0)
+   * @param   string|bool   $type        The imagetype
    * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
    * @param   integer|bool  $parent_id   The id of the parent category
    * @param   string|bool   $catname     The category alias
@@ -373,7 +377,7 @@ class ImageMgr implements ImageMgrInterface
    * 
    * @since   4.0.0
    */
-  public function getCatPath($catid, $root=0, $parent_id=false, $catname=false)
+  public function getCatPath($catid, $type=false, $root=0, $parent_id=false, $catname=false)
   {
     if($catid > 0)
     {
@@ -403,6 +407,12 @@ class ImageMgr implements ImageMgrInterface
 
       $path = $parent_cat->path.\DIRECTORY_SEPARATOR.$catname;
     }
+
+    // add imagetype to path if needed
+    if($type && \key_exists($type, $this->imagetypes_dict))
+    {
+      $path = $this->imagetypes[$this->imagetypes_dict[$type]]->path.\DIRECTORY_SEPARATOR.$path;
+    }
     
     // add root to path if needed
     if($root > 0)
@@ -426,5 +436,27 @@ class ImageMgr implements ImageMgrInterface
     }
 
     return JPath::clean($path);
+  }
+
+  /**
+   * Get all imagetypes and stores it to the class
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  private function getImagetypes()
+  {
+    // get all imagetypes
+    $this->imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
+
+    // sort imagetypes by id descending
+    $this->imagetypes = \array_reverse($this->imagetypes);
+
+    // create dictionary for imagetypes array
+    foreach ($this->imagetypes as $key => $imagetype)
+    {
+      $this->imagetypes_dict[$imagetype->typename] = $key;
+    }
   }
 }

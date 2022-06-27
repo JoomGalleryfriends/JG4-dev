@@ -143,6 +143,7 @@ interface ImageMgrInterface
    * Returns the path to a category without root path.
    *
    * @param   string        $catid       The id of the category (new category=0)
+   * @param   string|bool   $type        The imagetype
    * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
    * @param   integer|bool  $parent_id   The id of the parent category
    * @param   string|bool   $catname     The category alias
@@ -151,5 +152,5 @@ interface ImageMgrInterface
    * 
    * @since   4.0.0
    */
-  public function getCatPath($catid, $root=0, $parent_id=false, $catname=false);
+  public function getCatPath($catid, $type=false, $root=0, $parent_id=false, $catname=false);
 }
