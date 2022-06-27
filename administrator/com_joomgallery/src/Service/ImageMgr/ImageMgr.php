@@ -58,6 +58,9 @@ class ImageMgr implements ImageMgrInterface
     // get component object
     $this->jg = JoomHelper::getComponent();
 
+    // instantiate config service
+    $this->jg->createConfig();
+
     // get imagetypes
     $this->getImagetypes();
   }
