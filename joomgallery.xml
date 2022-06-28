@@ -37,7 +37,7 @@
 
     <files folder="site/com_joomgallery">
         <folder>forms</folder>
-		<folder>language</folder>
+        <folder>language</folder>
         <folder>src</folder>
         <folder>tmpl</folder>
     </files>
@@ -63,7 +63,7 @@
             <filename>config.xml</filename>
             <folder>forms</folder>
             <folder>includes</folder>
-			<folder>language</folder>
+            <folder>language</folder>
             <folder>layouts</folder>
             <folder>presets</folder>
             <folder>services</folder>
