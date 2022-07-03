@@ -188,4 +188,15 @@ interface FilesystemInterface
    * @since   4.0.0
    */
   public function chmod($path, $val, $mode=true): bool;
+
+  /**
+   * Copies an index.html file into a specified folder
+   *
+   * @param   string   $path    The path where the index.html should be created
+   * 
+   * @return  bool     True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function createIndexHtml($path): bool;
 }

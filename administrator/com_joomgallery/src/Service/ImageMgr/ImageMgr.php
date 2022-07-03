@@ -201,7 +201,7 @@ class ImageMgr implements ImageMgrInterface
       }
 
       // Path to save image
-      $file = $this->getImgPath($imagetype->typename, 0, 0, $catid, $filename);
+      $file = $this->getImgPath($imagetype->typename, 0, $catid, $filename, 0);
 
       // Create folders if not existent
       if(!$this->jg->getFilesystem()->createFolder(\dirname($file)))
@@ -243,13 +243,13 @@ class ImageMgr implements ImageMgrInterface
   /**
    * Deletion of image types
    *
-   * @param   integer   $id    The id of the image to be deleted
+   * @param   object|int|string    $img    Image object, image ID or image alias
    * 
-   * @return  bool      True on success, false otherwise
+   * @return  bool                 True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function deleteImages($id): bool
+  public function deleteImages($img): bool
   {
     // Create filesystem service
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
@@ -258,7 +258,7 @@ class ImageMgr implements ImageMgrInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
-      $file = $this->getImgPath($imagetype->typename, $id);      
+      $file = $this->getImgPath($imagetype->typename, $img);
 
       // Delete imagetype
       if(!$this->jg->getFilesystem()->deleteFile($file))
@@ -268,10 +268,10 @@ class ImageMgr implements ImageMgrInterface
 
         return false;
       }
-    }
 
-    // Deletion successful
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
+      // Deletion successful
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
+    }
 
     return true;
   }
@@ -279,13 +279,13 @@ class ImageMgr implements ImageMgrInterface
   /**
    * Checks image types for existence, validity and size
    *
-   * @param   integer   $id    Id of the image to be checked
+   * @param   object|int|string    $img    Image object, image ID or image alias
    * 
-   * @return  mixed     list of filetype info on success, false otherwise
+   * @return  mixed                list of filetype info on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function checkImages($id)
+  public function checkImages($img)
   {
     $images = array();
 
@@ -296,7 +296,7 @@ class ImageMgr implements ImageMgrInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
-      $file = $this->getImgPath($imagetype->typename, $id);
+      $file = $this->getImgPath($imagetype->typename, $img);
 
       // Get file info
       $images[$imagetype->typename] = $this->jg->getFilesystem()->checkFile($file);
@@ -431,113 +431,156 @@ class ImageMgr implements ImageMgrInterface
   /**
    * Returns the path to an image
    *
-   * @param   string        $type        The imagetype
-   * @param   integer       $id          The id of the image (new image=0)
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
-   * @param   integer|bool  $catid       The id of the corresponding category (default: false)
-   * @param   string|bool   $filename    The filename (default: false)
+   * @param   string                    $type      Imagetype
+   * @param   object|int|string         $img       Image object, image ID or image alias (new images: ID=0)
+   * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
+   * @param   string|bool               $filename  The filename (default: false)
+   * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
    * 
    * @return  mixed   Path to the image on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $id, $root=0, $catid=false, $filename=false)
+  public function getImgPath($type, $img, $catid=false, $filename=false, $root=0)
   {
-    if($catid == false || $filename == false && $id > 0)
+    if($catid === false || $filename === false)
     {
-      // get image object
-      $img = JoomHelper::getRecord('image', $id);
-
-      if($img === false)
+      // We got a valid image object
+      if(\is_object($img) && $img instanceof \Joomla\CMS\Object\CMSObject && isset($img->filename))
       {
-        Factory::getApplication()->enqueueMessage(Text::_('Image not found. You have to create the image first before accessing it.'), 'error');
+        $catid    = ($catid === false) ? $img->catid : $catid;
+        $filename = ($filename === false) ? $img->filename : $filename;
+      }
+      // We got a image ID or an alias
+      elseif((\is_numeric($img) && $img > 0) || (\is_string($img) && !$this->is_path($img)))
+      {
+        // Get image object
+        $img = JoomHelper::getRecord('image', $img);
+
+        if($img === false)
+        {
+          Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_GETIMGPATH', $img), 'error');
+
+          return false;
+        }
+
+        $catid    = ($catid === false) ? $img->catid : $catid;
+        $filename = ($filename === false) ? $img->filename : $filename;
+      }
+      // We got nothing to work with
+      else
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
 
         return false;
       }
-
-      $catid    = $img->catid;
-      $filename = $img->filename;
     }
 
-    // get corresponding category
-    $cat = JoomHelper::getRecord('category', $catid);
-
-    if($cat === false)
+    // Get corresponding category path
+    $catpath = $this->getCatPath($catid);
+    if($catpath === false)
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Category not found. Please create the category before uploading into this category.'), 'error');
-
       return false;
     }
 
-    // create the path to image
-    $path = $this->imagetypes[$this->imagetypes_dict[$type]]->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$filename;
+    // Create the path of the image
+    $path = $this->imagetypes[$this->imagetypes_dict[$type]]->path.\DIRECTORY_SEPARATOR.$catpath.\DIRECTORY_SEPARATOR.$filename;
 
     // add root to path if needed
     if($root > 0)
     {
-      // create filesystem service
-      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
-
-      switch($root)
-      {
-        case 1:
-          $path = $this->jg->getFilesystem()->get('local_root').\DIRECTORY_SEPARATOR.$path;
-          break;
-
-        case 2:
-          $path = $this->jg->getFilesystem()->get('root').\DIRECTORY_SEPARATOR.$path;
-          break;
-        
-        default:
-          break;
-      }
+      $path = $this->addRoot($root).\DIRECTORY_SEPARATOR.$path;
     }
 
     return JPath::clean($path);
-  }
+  } 
 
   /**
    * Returns the path to a category without root path.
    *
-   * @param   string        $catid       The id of the category (new category=0)
-   * @param   string|bool   $type        The imagetype (default: false)
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
-   * @param   integer|bool  $parent_id   The id of the parent category (default: false)
-   * @param   string|bool   $catname     The category alias (default: false)
+   * @param   object|int|string        $cat       Category object, category ID or category alias (new categories: ID=0)
+   * @param   string|bool              $type      Imagetype if needed in the path
+   * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
+   * @param   string|bool              $alias     The category alias (default: false)
+   * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
+   * 
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getCatPath($catid, $type=false, $root=0, $parent_id=false, $catname=false)
-  {
-    if($catid > 0)
+  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0)
+  { 
+    // We got a valid category object
+    if(\is_object($cat) && $cat instanceof \Joomla\CMS\Object\CMSObject && isset($cat->path))
+    {      
+      $path = $cat->path;
+    }
+    // We got a category path
+    elseif(\is_string($cat) && $this->is_path($cat))
     {
-      // get category object
-      $cat = JoomHelper::getRecord('category', $catid);
+      $path = $cat;
+    }
+    // We got a category ID or an alias
+    elseif((\is_numeric($cat) && $cat > 0) || \is_string($cat))
+    {      
+      if(\is_numeric($cat))
+      {
+        $cat = \intval($cat);
+      }
+
+      // Get the category object
+      $cat = JoomHelper::getRecord('category', $cat);
 
       if($cat === false)
       {
-        Factory::getApplication()->enqueueMessage(Text::_('Category not found. Please create the category before uploading into this category.'), 'error');
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_GETCATPATH', $cat), 'error');
 
         return false;
       }
 
       $path = $cat->path;
     }
+    // We got a parent category plus alias
+    elseif($parent && $alias)
+    {
+      // We got a valid parent category object
+      if(\is_object($parent) && $parent instanceof \Joomla\CMS\Object\CMSObject && isset($parent->path))
+      {
+        $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+      }
+      // We got a parent category path
+      elseif(\is_string($parent) && $this->is_path($parent))
+      {
+        $path = $parent.\DIRECTORY_SEPARATOR.$alias;
+      }
+      // We got a parent category ID or an alias
+      elseif(\is_numeric($parent) || \is_string($parent))
+      {
+        if(\is_numeric($parent))
+        {
+          $parent = \intval($parent);
+        }
+        
+        // Get the parent category object
+        $parent = JoomHelper::getRecord('category', $parent);
+
+        if($parent === false)
+        {
+          Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_GETCATPATH', $parent), 'error');
+
+          return false;
+        }
+
+        $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+      }
+    }
+    // We got nothing to work with
     else
     {
-      // get parent category object
-      $parent_cat = JoomHelper::getRecord('category', $parent_id);
+      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_GETPATH_NOQUERY', 'Category'), 'error');
 
-      if($parent_cat === false)
-      {
-        Factory::getApplication()->enqueueMessage(Text::_('Category not found. Please create the category before uploading into this category.'), 'error');
-
-        return false;
-      }
-
-      $path = $parent_cat->path.\DIRECTORY_SEPARATOR.$catname;
+      return false;
     }
 
     // add imagetype to path if needed
@@ -549,22 +592,7 @@ class ImageMgr implements ImageMgrInterface
     // add root to path if needed
     if($root > 0)
     {
-      // create filesystem service
-      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
-
-      switch($root)
-      {
-        case 1:
-          $path = $this->jg->getFilesystem()->get('local_root').\DIRECTORY_SEPARATOR.$path;
-          break;
-
-        case 2:
-          $path = $this->jg->getFilesystem()->get('root').\DIRECTORY_SEPARATOR.$path;
-          break;
-        
-        default:
-          break;
-      }
+      $path = $this->addRoot($root).\DIRECTORY_SEPARATOR.$path;
     }
 
     return JPath::clean($path);
@@ -589,6 +617,63 @@ class ImageMgr implements ImageMgrInterface
     foreach ($this->imagetypes as $key => $imagetype)
     {
       $this->imagetypes_dict[$imagetype->typename] = $key;
+    }
+  }
+
+  /**
+   * Check if given string could be a path
+   * 
+   * @param   string    $string    String to check
+   * 
+   * @return  bool
+   * 
+   * @since   4.0.0
+   */
+  private function is_path($string)
+  {
+    $string = \strval($string);
+
+    // A valid path needs at least 5 chars (_ _ / _ _)
+    if(\strlen($string) < 5)
+    {
+      return false;
+    }
+
+    // A valid path needs at least one directory separator
+    if(strpos($string, '/') === false && strpos($string, \DIRECTORY_SEPARATOR) === false)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Create root path based on $whichRoot
+   * 
+   * @param   integer   $whichRoot    0:no root, 1:local root, 2:storage root
+   * 
+   * @return  string    Root path
+   * 
+   * @since   4.0.0
+   */
+  private function addRoot($whichRoot)
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Create root path
+    switch($whichRoot)
+    {
+      case 1:
+        return $this->jg->getFilesystem()->get('local_root');
+        break;
+
+      case 2:
+        return $this->jg->getFilesystem()->get('root');
+      
+      default:
+        return '';
     }
   }
 }

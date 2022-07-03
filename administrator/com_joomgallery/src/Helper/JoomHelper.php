@@ -105,8 +105,8 @@ class JoomHelper
   /**
 	 * Returns a database record
    *
-   * @param   string          $name      The name of the record (available: category,image,tag)
-   * @param   int             $id        The id of the primary key
+   * @param   string          $name      The name of the record (available: category,image,tag, imagetype)
+   * @param   int|string      $id        The id of the primary key, the alias or the filename
    * @param   Object          $com_obj   JoomgalleryComponent object if available
 	 *
 	 * @return  CMSObject|bool  Object on success, false on failure.
@@ -119,9 +119,14 @@ class JoomHelper
 
     if(!\in_array($name, $availables))
     {
-      throw new \Exception('Please provide an available name of the record type.');
+      throw new \Exception('Please provide a valid the record type.');
 
       return false;
+    }
+
+    if(\is_string($id))
+    {
+      $id = self::getRecordIDbyAliasOrFilename($name, $id);
     }
 
     if($name != 'imagetype' || !\is_array($id))
@@ -151,7 +156,7 @@ class JoomHelper
     }
     else
     {
-      throw new \Exception('Please provide an ID.');
+      throw new \Exception('Please provide a valid record ID, alias or filename.');
 
       return false;
     }
@@ -307,5 +312,79 @@ class JoomHelper
 
       return Path::clean($path);
     }
+  }
+
+  /**
+	 * Returns a record ID based on a given alias
+   *
+   * @param   string      $record   The name of the record (available: category,image,tag,imagetype)
+   * @param   string      $name     The alias or the filename of the image
+	 *
+	 * @return  int|bool    Record ID on success, false otherwise.
+	 *
+	 * @since   4.0.0
+	 */
+  public static function getRecordIDbyAliasOrFilename($record, $name)
+  {
+    $tables = array('category'  => _JOOM_TABLE_CATEGORIES,
+                    'image'     => _JOOM_TABLE_IMAGES,
+                    'imagetype' => _JOOM_TABLE_IMG_TYPES,
+                   );
+    
+    // Does imagetype support alias
+    if(!\array_key_exists($record, $tables))
+    {
+      throw new \Exception('Record does not support alias.');
+
+      return false;
+    }
+
+    // Get alias row name
+    $row_name = 'alias';
+    $filename = false;
+    if($record == 'imagetype')
+    {
+      $row_name = 'type_alias';
+    }
+    elseif($record == 'image')
+    {
+      if(\strpos($name, '.') !== false)
+      {
+        // We assume that $name is a filename
+        $filename = true;
+        $row_name = 'filename';
+      }
+    }
+
+    // Create database connection
+    $db = Factory::getDbo();
+
+    // Create query
+    $query = $db->getQuery(true);
+    $query->select($db->quoteName('id'));
+    $query->from($db->quoteName($tables[$record]));
+
+    if(!$filename)
+    {
+      $query->where($db->quoteName($row_name) . " = " . $db->quote($name));
+    }
+    else
+    {
+      $query->where($db->quoteName($row_name) . " LIKE " . $db->quote($name));
+    }
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+
+    $result = $db->loadResult();
+
+    if($result)
+    {
+      return $result;
+    }
+    else
+    {
+      return false;
+    }     
   }
 }

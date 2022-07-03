@@ -38,24 +38,24 @@ interface ImageMgrInterface
   /**
    * Deletion of image types
    *
-   * @param   integer   $id    Id of the image to be deleted
+   * @param   object|int|string    $img    Image object, image ID or image alias
    * 
-   * @return  bool      True on success, false otherwise
+   * @return  bool                 True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function deleteImages($id): bool;
+  public function deleteImages($img): bool;
 
   /**
    * Checks image types for existence, validity and size
    *
-   * @param   integer   $id    Id of the image to be checked
+   * @param   object|int|string    $img    Image object, image ID or image alias
    * 
-   * @return  mixed     list of filetype info on success, false otherwise
+   * @return  mixed                list of filetype info on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function checkImages($id);
+  public function checkImages($img);
 
   // /**
   //  * Move image files from one category to another
@@ -123,30 +123,31 @@ interface ImageMgrInterface
   /**
    * Returns the path to an image
    *
-   * @param   string        $type        The imagetype
-   * @param   integer       $id          The id of the image (new image=0)
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
-   * @param   integer|bool  $catid       The id of the corresponding category (default: false)
-   * @param   string|bool   $filename    The filename (default: false)
+   * @param   string                    $type      Imagetype
+   * @param   object|int|string         $img       Image object, image ID or image alias (new images: ID=0)
+   * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
+   * @param   string|bool               $filename  The filename (default: false)
+   * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
    * 
    * @return  mixed   Path to the image on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $id, $root=0, $catid=false, $filename=false);
+  public function getImgPath($type, $img, $catid=false, $filename=false, $root=0);
 
   /**
    * Returns the path to a category without root path.
    *
-   * @param   string        $catid       The id of the category (new category=0)
-   * @param   string|bool   $type        The imagetype (default: false)
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
-   * @param   integer|bool  $parent_id   The id of the parent category (default: false)
-   * @param   string|bool   $catname     The category alias (default: false)
+   * @param   object|int|string        $cat       Category object, category ID or category alias (new categories: ID=0)
+   * @param   string|bool              $type      Imagetype if needed in the path
+   * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
+   * @param   string|bool              $alias     The category alias (default: false)
+   * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
+   * 
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getCatPath($catid, $type=false, $root=0, $parent_id=false, $catname=false);
+  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0);
 }

@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Filesystem\File as JFile;
+use \Joomla\CMS\Filesystem\Path as JPath;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\FilesystemInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -245,6 +246,25 @@ abstract class Filesystem implements FilesystemInterface
     {
       return true;
     }
+  }
+
+  /**
+   * Copies an index.html file into a specified folder
+   *
+   * @param   string   $path    The path where the index.html should be created
+   * 
+   * @return  bool     True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function createIndexHtml($path): bool
+  {
+    // Content
+    $html = '<html><body bgcolor="#FFFFFF"></body></html>';
+    // File path
+    $file = JPath::clean($path.\DIRECTORY_SEPARATOR.'index.html');
+
+    return \file_put_contents($file, $html);
   }
 
   /**
