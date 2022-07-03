@@ -25,15 +25,15 @@ interface ImageMgrInterface
   /**
    * Creation of image types
    *
-   * @param   string    $source     The source file for which the image types shall be created
-   * @param   string    $filename   The name for the files to be created
-   * @param   string    $catid      The id of the corresponding category (default: 2)
+   * @param   string               $source     Source file for which the image types shall be created
+   * @param   string               $filename   Name for the files to be created
+   * @param   object|int|string    $cat        Object, ID or alias of the corresponding category (default: 2)
    * 
-   * @return  bool      True on success, false otherwise
+   * @return  bool                 True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $catid=2): bool;
+  public function createImages($source, $filename, $cat=2): bool;
 
   /**
    * Deletion of image types
@@ -51,7 +51,7 @@ interface ImageMgrInterface
    *
    * @param   object|int|string    $img    Image object, image ID or image alias
    * 
-   * @return  mixed                list of filetype info on success, false otherwise
+   * @return  mixed                List of filetype info on success, false otherwise
    * 
    * @since   4.0.0
    */
@@ -74,37 +74,37 @@ interface ImageMgrInterface
   /**
    * Creation of a category
    *
-   * @param   string    $catname     The name of the folder to be created
-   * @param   integer   $parent_id   Id of the parent category (default: 1)
+   * @param   string              $foldername   Name of the folder to be created
+   * @param   object|int|string   $parent       Object, ID or alias of the parent category (default: 1)
    * 
-   * @return  bool      True on success, false otherwise
+   * @return  bool                True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createCategory($catname, $parent_id=1): bool;
+  public function createCategory($foldername, $parent=1): bool;
 
   /**
    * Deletion of a category
    *
-   * @param   integer   $catid        Id of the category to be deleted
-   * @param   bool      $del_images   True, if you want to delete even if there are still images in it (default: false)
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be deleted
+   * @param   bool                $del_images   True, if you want to delete even if there are still images in it (default: false)
    * 
-   * @return  bool      True on success, false otherwise
+   * @return  bool                True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function deleteCategory($catid, $del_images=false): bool;
+  public function deleteCategory($cat, $del_images=false): bool;
 
   /**
    * Checks a category for existence, correct images and file path
    *
-   * @param   integer   $catid     Id of the category to be checked
+   * @param   object|int|string   $cat    Object, ID or alias of the category to be checked
    * 
-   * @return  mixed     list of folder info on success, false otherwise
+   * @return  mixed               List of folder info on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function checkCategory($catid);
+  public function checkCategory($cat);
 
   // /**
   //  * Move category with all images from one parent category to another
