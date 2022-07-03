@@ -336,6 +336,9 @@ class ImageMgr implements ImageMgrInterface
       }
     }
 
+    // Debug info
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_CATEGORY', $foldername));
+
     return true;
   }
 
@@ -394,7 +397,10 @@ class ImageMgr implements ImageMgrInterface
           return false;
         }
       }
-    } 
+    }
+
+    // Debug info
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_DELETE_CATEGORY', \basename($path)));
 
     return true;
   }
