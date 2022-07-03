@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path as JPath;
+use \Joomla\CMS\Filesystem\File as JFile;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr\ImageMgrInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -69,15 +70,29 @@ class ImageMgr implements ImageMgrInterface
    * Creation of image types
    *
    * @param   string    $source     The source file for which the image types shall be created
-   * @param   string    $catid      The id of the corresponding category
-   * @param   string    $filename   The file name for the created files
+   * @param   string    $filename   The name for the files to be created
+   * @param   string    $catid      The id of the corresponding category (default: 2)
    * 
    * @return  bool      True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createImages($source, $catid, $filename): bool
+  public function createImages($source, $filename, $catid=2): bool
   {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Fix filename
+    $filename = $this->jg->getFilesystem()->cleanFilename($filename, 1, JFile::getExt($source));
+
+    if(!$filename)
+    {
+      // Debug info
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CLEAN_FILENAME', \basename($source)));
+
+      return false;
+    }
+
     // Loop through all imagetypes
     foreach($this->imagetypes as $key => $imagetype)
     {
@@ -91,7 +106,7 @@ class ImageMgr implements ImageMgrInterface
       }
 
       // Debug info
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $imagetype->typename));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
 
       // Read source image
       if(!$this->jg->getIMGtools()->read($source))
@@ -188,9 +203,6 @@ class ImageMgr implements ImageMgrInterface
       // Path to save image
       $file = $this->getImgPath($imagetype->typename, 0, 0, $catid, $filename);
 
-      // Create filesystem service
-      $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
-
       // Create folders if not existent
       if(!$this->jg->getFilesystem()->createFolder(\dirname($file)))
       {
@@ -220,10 +232,10 @@ class ImageMgr implements ImageMgrInterface
 
       // Destroy the IMGtools service
       $this->jg->delIMGtools();
-    }
 
-    // Debug info
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+      // Debug info
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+    }    
 
     return true;
   }
@@ -296,14 +308,14 @@ class ImageMgr implements ImageMgrInterface
   /**
    * Creation of a category
    *
-   * @param   string    $catname     The name of the folder to be created
-   * @param   integer   $parent_id   Id of the parent category
+   * @param   string    $foldername  The name of the folder to be created
+   * @param   integer   $parent_id   Id of the parent category (default: 1)
    * 
    * @return  bool      True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createCategory($catname, $parent_id): bool
+  public function createCategory($foldername, $parent_id=1): bool
   {
     // Create filesystem service
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
@@ -312,13 +324,13 @@ class ImageMgr implements ImageMgrInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Category path
-      $path = $this->getCatPath(0, $imagetype->typename, 0, $parent_id, $catname);
+      $path = $this->getCatPath(0, $imagetype->typename, 0, $parent_id, $foldername);
 
       // Create folder if not existent
       if(!$this->jg->getFilesystem()->createFolder($path))
       {
         // Debug info
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', $catname));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', $foldername));
 
         return false;
       }
@@ -421,9 +433,9 @@ class ImageMgr implements ImageMgrInterface
    *
    * @param   string        $type        The imagetype
    * @param   integer       $id          The id of the image (new image=0)
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
-   * @param   integer|bool  $catid       The id of the corresponding category
-   * @param   string|bool   $filename    The filename
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
+   * @param   integer|bool  $catid       The id of the corresponding category (default: false)
+   * @param   string|bool   $filename    The filename (default: false)
    * 
    * @return  mixed   Path to the image on success, false otherwise
    * 
@@ -488,10 +500,10 @@ class ImageMgr implements ImageMgrInterface
    * Returns the path to a category without root path.
    *
    * @param   string        $catid       The id of the category (new category=0)
-   * @param   string|bool   $type        The imagetype
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
-   * @param   integer|bool  $parent_id   The id of the parent category
-   * @param   string|bool   $catname     The category alias
+   * @param   string|bool   $type        The imagetype (default: false)
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
+   * @param   integer|bool  $parent_id   The id of the parent category (default: false)
+   * @param   string|bool   $catname     The category alias (default: false)
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 

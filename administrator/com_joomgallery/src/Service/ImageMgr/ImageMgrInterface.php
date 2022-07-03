@@ -26,14 +26,14 @@ interface ImageMgrInterface
    * Creation of image types
    *
    * @param   string    $source     The source file for which the image types shall be created
-   * @param   string    $catid      The id of the corresponding category
-   * @param   string    $filename   The file name for the created files
+   * @param   string    $filename   The name for the files to be created
+   * @param   string    $catid      The id of the corresponding category (default: 2)
    * 
    * @return  bool      True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createImages($source, $catid, $filename): bool;
+  public function createImages($source, $filename, $catid=2): bool;
 
   /**
    * Deletion of image types
@@ -74,14 +74,14 @@ interface ImageMgrInterface
   /**
    * Creation of a category
    *
-   * @param   string    $catname   The category name
-   * @param   integer   $catid     Id of the category to be created
+   * @param   string    $catname     The name of the folder to be created
+   * @param   integer   $parent_id   Id of the parent category (default: 1)
    * 
    * @return  bool      True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createCategory($catname, $catid): bool;
+  public function createCategory($catname, $parent_id=1): bool;
 
   /**
    * Deletion of a category
@@ -125,9 +125,9 @@ interface ImageMgrInterface
    *
    * @param   string        $type        The imagetype
    * @param   integer       $id          The id of the image (new image=0)
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
-   * @param   integer|bool  $catid       The id of the corresponding category
-   * @param   string|bool   $filename    The filename
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
+   * @param   integer|bool  $catid       The id of the corresponding category (default: false)
+   * @param   string|bool   $filename    The filename (default: false)
    * 
    * @return  mixed   Path to the image on success, false otherwise
    * 
@@ -139,10 +139,10 @@ interface ImageMgrInterface
    * Returns the path to a category without root path.
    *
    * @param   string        $catid       The id of the category (new category=0)
-   * @param   string|bool   $type        The imagetype
-   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root)
-   * @param   integer|bool  $parent_id   The id of the parent category
-   * @param   string|bool   $catname     The category alias
+   * @param   string|bool   $type        The imagetype (default: false)
+   * @param   integer       $root        The root to use (0:no root, 1:local root, 2:storage root) (default: 0)
+   * @param   integer|bool  $parent_id   The id of the parent category (default: false)
+   * @param   string|bool   $catname     The category alias (default: false)
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 
