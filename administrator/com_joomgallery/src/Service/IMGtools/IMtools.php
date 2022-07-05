@@ -899,7 +899,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->commands['wtm-resize'] = ' "'.$wtm_file.'" -resize "{widthxheight}"';
 
       // Positioning of the watermark
-      $this->commands['wtm-pos'] = ' "{src_file}" +swap -coalesce -gravity "northwest" -geometry "{+position[0]+$position[1]}"';
+      $this->commands['wtm-pos'] = ' "{src_file}" +swap -gravity "northwest" -geometry "{+position[0]+$position[1]}"';
 
       // copy watermark on top of image
       $this->commands['watermark'] = ' -define compose:args='.$opacity.',100 -compose dissolve -composite'.' "{dst_file}"';
