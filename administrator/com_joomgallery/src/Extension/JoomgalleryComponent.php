@@ -12,6 +12,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Association\AssociationServiceInterface;
 use Joomla\CMS\Association\AssociationServiceTrait;
@@ -23,6 +25,7 @@ use Joomla\CMS\Extension\MVCComponent;
 use Joomla\CMS\HTML\HTMLRegistryAwareTrait;
 use Joomla\CMS\Tag\TagServiceTrait;
 use Psr\Container\ContainerInterface;
+use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomConfig;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\DebugTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceTrait;
@@ -97,13 +100,6 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
     if(!\defined('_JOOM_OPTION'))
     {
       require_once JPATH_ADMINISTRATOR . '/components/com_joomgallery/includes/defines.php';
-    }
-
-    if(!isset($this->supported_types) || empty($this->supported_types))
-    {
-      require_once JPATH_ADMINISTRATOR . '/components/com_joomgallery/includes/supportedtypes.php';
-
-      $this->supported_types = $supported_types;
     }
   }
 }

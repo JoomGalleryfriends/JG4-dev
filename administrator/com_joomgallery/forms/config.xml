@@ -66,6 +66,14 @@
 
   <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
     <fieldset type="tab" name="general-general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
+      <field name="jg_filesystem"
+             type="list"
+             default="localhost"
+             global_only="true"
+             label="COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM"
+             description="COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM_LONG" >
+        <option value="localhost">COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM_LOCALHOST</option>
+      </field>
       <field name="jg_pathftpupload"
              type="text"
              default="administrator/components/com_joomgallery/temp/ftp_upload/"
@@ -84,7 +92,7 @@
 
       <field name="jg_wmfile"
              type="media"
-             directory=""
+             directory="images/joomgallery"
              label="COM_JOOMGALLERY_CONFIG_GS_PD_WATERMARK_PATH"
              description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_WATERMARK_STORED" />
 
@@ -92,6 +100,7 @@
              type="radio"
              default="0"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_PD_USE_REAL_PATHS"
              description="COM_JOOMGALLERY_CONFIG_GS_PD_USE_REAL_PATHS_LONG" >
           <option value="0">JNO</option>
@@ -102,6 +111,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_PD_CHECKUPDATE"
              description="COM_JOOMGALLERY_CONFIG_GS_PD_CHECKUPDATE_LONG" >
           <option value="0">JNO</option>
@@ -114,6 +124,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_RP_FILENAME_WITHJS"
              description="COM_JOOMGALLERY_CONFIG_GS_RP_FILENAME_WITHJS_LONG" >
         <option value="0">JNO</option>
@@ -140,6 +151,7 @@
              type="radio"
              default="0"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACE_SHOWWARNING"
              description="COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACE_SHOWWARNING_LONG" >
         <option value="0">JNO</option>
@@ -151,6 +163,7 @@
              type="radio"
              default="0"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_COMMON_ORIGINAL_FILENAME"
              description="COM_JOOMGALLERY_CONFIG_COMMON_ORIGINAL_FILENAME_LONG" >
         <option value="0">JNO</option>
@@ -171,6 +184,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_BU_FILENAMENUMBER"
              description="COM_JOOMGALLERY_CONFIG_GS_BU_FILENAMENUMBER_LONG" >
         <option value="0">JNO</option>
@@ -192,6 +206,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_IP_FAST_GD2_THUMBCREATION"
              description="COM_JOOMGALLERY_CONFIG_GS_IP_FAST_GD2_THUMBCREATION_LONG"
              showon="jg_imgprocessor:gd" >
@@ -212,15 +227,17 @@
              type="subform"
              min="3"
              multiple="true"
+             buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
-             layout="joomla.form.field.subform.repeatable-table"
+             layout="joomla.form.field.subform.repeatable-config"
              label="COM_JOOMGALLERY_CONFIG_GS_IP_STATICPROCESSING" />
 
       <field name="jg_dynamicprocessing"
              type="subform"
              multiple="true"
+             buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
-             layout="joomla.form.field.subform.repeatable-table"
+             layout="joomla.form.field.subform.repeatable-config"
              label="COM_JOOMGALLERY_CONFIG_GS_IP_DYNAMICPROCESSING" />
     </fieldset>
 
@@ -269,6 +286,7 @@
              type="radio"
              default="0"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_ZIPDOWNLOAD"
              description="COM_JOOMGALLERY_CONFIG_GS_MS_ZIPDOWNLOAD_LOAD" >
         <option value="0">JNO</option>
@@ -299,6 +317,7 @@
              type="radio"
              default="0"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_COMMENT_TOOWNER"
              description="COM_JOOMGALLERY_CONFIG_GS_MS_COMMENT_TOOWNER_LONG" >
         <option value="0">JNO</option>
@@ -329,6 +348,7 @@
              type="radio"
              default="0"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_REPORT_TOOWNER"
              description="COM_JOOMGALLERY_CONFIG_GS_MS_REPORT_TOOWNER_LONG" >
         <option value="0">JNO</option>
@@ -349,6 +369,7 @@
              type="radio"
              default="0"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_GS_MS_UPLOAD_RECIPIENTS"
              description="COM_JOOMGALLERY_CONFIG_GS_MS_UPLOAD_RECIPIENTS_LONG" >
         <option value="0">JNO</option>
@@ -363,6 +384,7 @@
               type="radio"
               default="1"
               class="btn-group"
+              layout="joomla.form.field.radio.switcher"
               label="COM_JOOMGALLERY_CONFIG_UR_UU_USERSPACE"
               description="COM_JOOMGALLERY_CONFIG_UR_UU_USERSPACE_LONG" >
           <option value="0">JNO</option>
@@ -373,6 +395,8 @@
               type="radio"
               default="0"
               class="btn-group"
+              layout="joomla.form.field.radio.switcher"
+              showon="jg_userspace:1"
               label="COM_JOOMGALLERY_CONFIG_UR_UU_APPROVAL_NEEDED"
               description="COM_JOOMGALLERY_CONFIG_UR_UU_APPROVAL_NEEDED_LONG" >
           <option value="0">JNO</option>
@@ -385,6 +409,7 @@
               default="10"
               min="1"
               step="1"
+              showon="jg_userspace:1"
               label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_USERCATS"
               description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_USERCATS_LONG" />
 
@@ -394,6 +419,7 @@
               filter="int"
               min="1"
               step="1"
+              showon="jg_userspace:1"
               label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES"
               description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_LONG" />
 
@@ -403,6 +429,7 @@
               min="0"
               step="1"
               default="0"
+              showon="jg_userspace:1"
               label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_TIMESPAN"
               description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_IMAGES_TIMESPAN_LONG" />
 
@@ -412,6 +439,7 @@
               filter="int"
               min="1"
               step="1"
+              showon="jg_userspace:1"
               label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_FILESIZE"
               description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_FILESIZE_LONG" />
     </fieldset>
@@ -421,6 +449,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_COPYRIGHT"
              description="COM_JOOMGALLERY_CONFIG_UR_UU_COPYRIGHT_LONG" >
         <option value="0">JNO</option>
@@ -443,6 +472,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_SINGLE"
              description="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_SINGLE_LONG" >
         <option value="0">JNO</option>
@@ -455,6 +485,7 @@
              filter="int"
              min="1"
              step="1"
+             showon="jg_useruploadsingle:1"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_UPLOADFIELDS"
              description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_UPLOADFIELDS_LONG" />
 
@@ -462,6 +493,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_AJAX"
              description="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_AJAX_LONG" >
         <option value="0">JNO</option>
@@ -472,6 +504,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_BATCH"
              description="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOAD_BATCH_LONG" >
         <option value="0">JNO</option>
@@ -482,6 +515,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_SPECIAL_GIF_UPLOAD"
              description="COM_JOOMGALLERY_CONFIG_UR_UU_SPECIAL_GIF_UPLOAD_LONG" >
         <option value="0">JNO</option>
@@ -492,6 +526,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOADNOTE"
              description="COM_JOOMGALLERY_CONFIG_UR_UU_UPLOADNOTE_LONG" >
         <option value="0">JNO</option>
@@ -515,6 +550,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD"
              description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD_LONG" >
         <option value="0">JNO</option>
@@ -525,6 +561,8 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
+             showon="jg_download:1"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD_HINT"
              description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOAD_HINT_LONG" >
         <option value="0">JNO</option>
@@ -534,6 +572,7 @@
       <field name="jg_downloadfile"
              type="list"
              default="2"
+             showon="jg_download:1"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADFILE"
              description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADFILE_LONG" >
         <option value="0">COM_JOOMGALLERY_CONFIG_UR_UD_DETAIL_ONLY</option>
@@ -545,6 +584,8 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
+             showon="jg_download:1"
              label="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADWITHWATERMARK"
              description="COM_JOOMGALLERY_CONFIG_UR_UD_DOWNLOADWITHWATERMARK_LONG" >
         <option value="0">JNO</option>
@@ -557,6 +598,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_RATING"
              description="COM_JOOMGALLERY_CONFIG_UR_RT_RATING_LONG" >
         <option value="0">JNO</option>
@@ -569,12 +611,14 @@
              filter="int"
              min="1"
              step="1"
+             showon="jg_showrating:1"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_HIGHEST_RATING"
              description="COM_JOOMGALLERY_CONFIG_UR_RT_HIGHEST_RATING_LONG" />
 
       <field name="jg_ratingcalctype"
              type="list"
              default="0"
+             showon="jg_showrating:1"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE"
              description="COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE_LONG" >
         <option value="0">COM_JOOMGALLERY_CONFIG_UR_RT_CALC_TYPE_STANDARD</option>
@@ -585,6 +629,8 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
+             showon="jg_showrating:1"
              label="COM_JOOMGALLERY_CONFIG_UR_RT_VOTING_ONLY_ONCE"
              description="COM_JOOMGALLERY_CONFIG_UR_RT_VOTING_ONLY_ONCE_LONG" >
         <option value="0">JNO</option>
@@ -597,6 +643,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_RP_REPORT_IMAGES"
              description="COM_JOOMGALLERY_CONFIG_UR_RP_REPORT_IMAGES_LONG" >
         <option value="0">JNO</option>
@@ -607,6 +654,7 @@
              type="radio"
              default="1"
              class="btn-group"
+             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UR_RP_REPORT_HINT"
              description="COM_JOOMGALLERY_CONFIG_UR_RP_REPORT_HINT_LONG" >
         <option value="0">JNO</option>

@@ -184,6 +184,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
 		$this->installPlugins($parent);
 		$this->installModules($parent);
+
+    $this->copyWatermarkfile();
     ?>
 
     <div class="text-center">
@@ -411,9 +413,11 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["checked_out"] = 0;
     $data["created_by"] = 0;
     $data["modified_by"] = 0;
+    $data["jg_filesystem"] = 'localhost';
+    $data["jg_wmfile"] = 'images/joomgallery/watermark.png';
     $data["jg_filenamereplace"] = 'Š|S, Œ|O, Ž|Z, š|s, œ|oe, ž|z, Ÿ|Y, ¥|Y, µ|u, À|A, Á|A, Â|A, Ã|A, Ä|AE, Å|A, Æ|A, Ç|C, È|E, É|E, Ê|E, Ë|E, Ì|I, Í|I, Î|I, Ï|I, Ð|D, Ñ|N, Ò|O, Ó|O, Ô|O, Õ|O, Ö|OE, Ø|O, Ù|U, Ú|U, Û|U, Ü|UE, Ý|Y, à|a, á|a, â|a, ã|a, ä|ae, å|a, æ|a, ç|c, è|e, é|e, ê|e, ë|e';
     $data["jg_replaceinfo"] = '[]';
-    $data["jg_staticprocessing"] = '{"jg_staticprocessing0":{"jg_imgtype":"1","jg_imgtypename":"original","jg_imgtypepath":"/images/joomgallery/originals","jg_imgtyperesize":"0","jg_imgtypewidth":"","jg_imgtypeheight":"","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":100,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":[]},"jg_staticprocessing1":{"jg_imgtype":"1","jg_imgtypename":"detail","jg_imgtypepath":"/images/joomgallery/details","jg_imgtyperesize":"3","jg_imgtypewidth":1000,"jg_imgtypeheight":1000,"jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"0","jg_imgtypequality":80,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":[]},"jg_staticprocessing2":{"jg_imgtype":"1","jg_imgtypename":"thumbnail","jg_imgtypepath":"/images/joomgallery/thumbnails","jg_imgtyperesize":"4","jg_imgtypewidth":250,"jg_imgtypeheight":250,"jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"1","jg_imgtypequality":60,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":[]}}';
+    $data["jg_staticprocessing"] = '';
     $data["jg_dynamicprocessing"] = '[]';
     $data["jg_imgprocessor"] = 'gd';
     $data["jg_maxusercat"] = 10;
@@ -759,6 +763,34 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			}
 		}
 	}
+
+  /**
+	 * Copies watermark files to /images/joomgallery/..
+	 *
+	 * @return   bool  True on success, false otherwise
+	 */
+	private function copyWatermarkfile()
+	{
+    // Define paths
+    $files = array('watermark.png', 'logo.png');
+    $src   = JPATH_ROOT.'/media/com_joomgallery/images/';
+    $dst   = JPATH_ROOT.'/images/joomgallery/';
+
+    $error = false;
+
+    // Copy files
+    foreach ($files as $file)
+    {
+      if(!File::copy($src.$file, $dst.$file))
+      {
+        Factory::getApplication()->enqueueMessage('The image file ('.$file.') was not copied properly.', 'error');
+
+        $error = false;
+      }
+    }
+
+    return !$error;
+  }
 
   /**
    * Generates post installer messages.

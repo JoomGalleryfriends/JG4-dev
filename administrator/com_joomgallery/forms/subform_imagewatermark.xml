@@ -37,6 +37,7 @@
            min="1"
            max="100"
            step="1"
+           showon="jg_watermarkzoom:1,2"
            label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKSIZE"
            description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKSIZE_LONG" />
 

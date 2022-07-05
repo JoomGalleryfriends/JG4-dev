@@ -8,8 +8,13 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
+namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
+
 // No direct access
 defined('_JEXEC') or die;
 
-// Supported: jpg, gif, png
-$supported_types = array('JPG', 'JPEG', 'JPE', 'JFIF', 'GIF', 'PNG');
+class JoomConfig {
+  public $is_new     = true;
+  public $file_root  = '/images/joomgallery';
+  public $filesystem = 'localhost';
+}

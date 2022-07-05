@@ -44,10 +44,11 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-		$this->state     = $this->get('State');
-		$this->item      = $this->get('Item');
-		$this->form      = $this->get('Form');
-    $this->fieldsets = array();
+		$this->state            = $this->get('State');
+		$this->item             = $this->get('Item');
+		$this->form             = $this->get('Form');
+    $this->fieldsets        = array();
+    $this->is_global_config = ($this->item->id === 1) ? true : false;
     
     // Add options to the replaceinfo field
     $this->addReplaceinfoOptions();

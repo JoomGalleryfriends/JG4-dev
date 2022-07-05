@@ -114,4 +114,30 @@ class ConfigsController extends AdminController
 		// Close the application
 		Factory::getApplication()->close();
 	}
+
+  /**
+	 * Removes an item.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.6
+	 */
+	public function delete()
+	{
+    // Get items to remove from the request.
+		$cid = $this->input->get('cid', array(), 'array');    
+
+    if(\is_array($cid) && \in_array(1, $cid))
+    {
+      echo 'asd';
+      $glob_id = array_search(1, $cid);
+      unset($cid[$glob_id]);
+
+      $this->input->set('cid', $cid);
+
+      $this->setMessage(Text::_('Global Configuration can not be deleted!'), 'warning');
+    }    
+
+    return parent::delete();
+  }
 }

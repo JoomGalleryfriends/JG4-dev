@@ -12,6 +12,7 @@
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
@@ -33,11 +34,11 @@ $wa->useStyle('com_joomgallery.admin');
     action="<?php echo Route::_('index.php?option=com_joomgallery&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" enctype="multipart/form-data" name="adminForm" id="config-form" class="form-validate form-horizontal">
 
-    <div class="row-fluid">
-      <div class="span6 form-horizontal">
+    <div class="row">
+      <div class="col-lg-6 form-horizontal">
         <?php echo $this->form->renderField('title'); ?>
       </div>
-      <div class="span6 form-horizontal">
+      <div class="col-lg-6 form-horizontal">
         <?php echo $this->form->renderField('group_id'); ?>
       </div>
     </div>
@@ -69,7 +70,22 @@ $wa->useStyle('com_joomgallery.admin');
                           <div class="span10 form-horizontal">
                             <fieldset class="adminform">
                               <?php foreach ($this->getFieldset($fieldset_L3['this']->name) as $field) : ?>
-                                <?php echo $field->renderField(); ?>
+                                <?php
+                                  if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
+                                  {
+                                    $field_data = array(
+                                      'name' =>$field->name,
+                                      'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array())),
+                                      'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
+                                      'description' => Text::_('This setting is only editable in the Global Configuration.')
+                                    );
+                                    echo LayoutHelper::render('joomla.form.renderfield', $field_data);
+                                  }
+                                  else
+                                  {
+                                    echo $field->renderField();
+                                  }
+                                ?>
                               <?php endforeach; ?>
                             </fieldset>
                           </div>
@@ -87,7 +103,22 @@ $wa->useStyle('com_joomgallery.admin');
                   <div class="span10 form-horizontal">
                     <fieldset class="adminform">
                       <?php foreach ($this->getFieldset($fieldset_L2['this']->name) as $field) : ?>
-                        <?php echo $field->renderField(); ?>
+                        <?php
+                          if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
+                          {
+                            $field_data = array(
+                              'name' =>$field->name,
+                              'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array())),
+                              'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
+                              'description' => Text::_('This setting is only editable in the Global Configuration.')
+                            );
+                            echo LayoutHelper::render('joomla.form.renderfield', $field_data);
+                          }
+                          else
+                          {
+                            echo $field->renderField();
+                          }
+                        ?>
                       <?php endforeach; ?>
                     </fieldset>
                   </div>
@@ -105,7 +136,22 @@ $wa->useStyle('com_joomgallery.admin');
             <div class="span10 form-horizontal">
               <fieldset class="adminform">
                 <?php foreach ($this->getFieldset($fieldset_L1['this']->name) as $field) : ?>
-                  <?php echo $field->renderField(); ?>
+                  <?php
+                    if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
+                    {
+                      $field_data = array(
+                        'name' =>$field->name,
+                        'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array())),
+                        'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
+                        'description' => Text::_('This setting is only editable in the Global Configuration.')
+                      );
+                      echo LayoutHelper::render('joomla.form.renderfield', $field_data);
+                    }
+                    else
+                    {
+                      echo $field->renderField();
+                    }
+                  ?>
                 <?php endforeach; ?>
               </fieldset>
             </div>
