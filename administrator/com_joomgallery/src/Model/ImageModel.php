@@ -316,33 +316,33 @@ class ImageModel extends JoomAdminModel
       // Save form data in session
       $app->setUserState(_JOOM_OPTION.'.image.upload', $data);
 
-      // Create filename and image types
-      // Modify form data based on image metadata
-      $uploader = JoomHelper::getService('uploader', array('html'));
+      // // Create filename and image types
+      // // Modify form data based on image metadata
+      // $uploader = JoomHelper::getService('uploader', array('html'));
 
-      if(!$uploader->upload($data))
-      {
-        $this->setError($this->component->getDebug());
+      // if(!$uploader->upload($data))
+      // {
+      //   $this->setError($this->component->getDebug());
 
-        return false;
-      }
+      //   return false;
+      // }
 
-      // Output messages
-      if(\count($this->component->getWarning()) > 1)
-      {
-        $this->component->printWarning();
-      }
+      // // Output messages
+      // if(\count($this->component->getWarning()) > 1)
+      // {
+      //   $this->component->printWarning();
+      // }
 
-      // Output debug data
-      if(\count($this->component->getDebug()) > 1)
-      {
-        $this->component->printDebug();
-      }
+      // // Output debug data
+      // if(\count($this->component->getDebug()) > 1)
+      // {
+      //   $this->component->printDebug();
+      // }
 
 			// Bind the data.
 			if(!$table->bind($data))
 			{
-        $uploader->rollback($data['filename']);
+        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
@@ -354,7 +354,7 @@ class ImageModel extends JoomAdminModel
 			// Check the data.
 			if(!$table->check())
 			{
-        $uploader->rollback($data['filename']);
+        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
@@ -365,7 +365,7 @@ class ImageModel extends JoomAdminModel
 
 			if(\in_array(false, $result, true))
 			{
-        $uploader->rollback($data['filename']);
+        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
@@ -374,7 +374,7 @@ class ImageModel extends JoomAdminModel
 			// Store the data.
 			if(!$table->store())
 			{
-        $uploader->rollback($data['filename']);
+        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
@@ -388,7 +388,7 @@ class ImageModel extends JoomAdminModel
 		}
 		catch (\Exception $e)
 		{
-      $uploader->rollback($data['filename']);
+      //$uploader->rollback($data['filename']);
 			$this->setError($e->getMessage());
 
 			return false;
