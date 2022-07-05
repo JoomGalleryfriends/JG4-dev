@@ -8,19 +8,22 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr;
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
 \defined('JPATH_PLATFORM') or die;
 
 /**
-* Interface for the image manager classes
+* Interface for the file manager classes
 *
-* Image manager classes provides methods to handle image files and folders
-* based on the current available image types (#_joomgallery_img_types)
+* File manager classes provides methods to handle image files and folders based ...
+* - ... on the current available image types (#_joomgallery_img_types)
+* - ... on the parameters from the configuration set of the current user (Config-Service)
+* - ... on the chosen filesystem (Filesystem-Service)
+* - ... on the chosen image processor (IMGtools-Service)
 *
 * @since  4.0.0
 */
-interface ImageMgrInterface
+interface FileManagerInterface
 {
   /**
    * Creation of image types

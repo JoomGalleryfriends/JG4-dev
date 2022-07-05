@@ -8,7 +8,7 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr;
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
 \defined('_JEXEC') or die;
 
@@ -17,11 +17,11 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path as JPath;
 use \Joomla\CMS\Filesystem\File as JFile;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr\ImageMgrInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
-* Image manager Class
+* File manager Class
 *
 * Provides methods to handle image files and folders based ...
 * - ... on the current available image types (#_joomgallery_img_types)
@@ -31,7 +31,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 *
 * @since  4.0.0
 */
-class ImageMgr implements ImageMgrInterface
+class FileManager implements FileManagerInterface
 {
   /**
    * Imagetypes from #__joomgallery_img_types
