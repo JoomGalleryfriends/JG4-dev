@@ -130,7 +130,7 @@ class JoomHelper
       return $id;
     }
     // We got a record ID, an alias or a filename
-    elseif(!empty($id) && (\is_numeric($id) && $id > 0) || \is_string($id))
+    elseif(!empty($id) && ((\is_numeric($id) && $id > 0) || \is_string($id) || ($name == 'imagetype' && \is_array($id))))
     {
       if(\is_string($id) && (int) $id == 0)
       {
