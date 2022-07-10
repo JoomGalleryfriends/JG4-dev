@@ -193,17 +193,32 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    * Create a folder and all necessary parent folders (local and storage).
    *
    * @param   string  $path   A path to create from the base path.
+   * @param   bool    $index  True to create an index.html file (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function createFolder($path): bool
+  public function createFolder($path, $index=false): bool
   {
     // complete folder path
     $path = $this->completePath($path);
 
-    return JFolder::create($path);
+    // create folder
+    $folder = JFolder::create($path);
+    
+    // create index.html if needed
+    if($folder && $index)
+    {
+      if(!$this->createIndexHtml($path))
+      {
+        $this->deleteFolder($path);
+
+        return false;
+      }
+    }
+
+    return $folder;
   }
 
   /**

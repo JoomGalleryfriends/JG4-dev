@@ -131,12 +131,13 @@ interface FilesystemInterface
    * Create a folder and all necessary parent folders (local and storage).
    *
    * @param   string  $path   A path to create from the base path.
+   * @param   bool    $index  True to create an index.html file (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function createFolder($path): bool;
+  public function createFolder($path, $index=false): bool;
 
   /**
    * Moves a folder including all all files and subfolders (local and storage).
