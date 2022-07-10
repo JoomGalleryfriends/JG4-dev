@@ -112,6 +112,12 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function moveFile($src, $dest, $copy = false): bool
   {
+    // complete source path
+    $src = $this->completePath($src);
+
+    // complete destination path
+    $dest = $this->completePath($dest);
+
     if($copy)
     {
       return JFile::copy($src, $dest);
@@ -133,6 +139,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function deleteFile($file): bool
   {
+    // complete file path
+    $file = $this->completePath($file);
+
     return JFile::delete($file);
   }
 
@@ -145,9 +154,12 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function checkFile($file): mixed
+  public function checkFile($file)
   {
-    if (file_exists($file))
+    // complete file path
+    $file = $this->completePath($file);
+
+    if(file_exists($file))
     {
       $info     = array();
       $img_info = getimagesize($file);
@@ -181,14 +193,32 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    * Create a folder and all necessary parent folders (local and storage).
    *
    * @param   string  $path   A path to create from the base path.
+   * @param   bool    $index  True to create an index.html file (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function createFolder($path): bool
+  public function createFolder($path, $index=false): bool
   {
-    return JFolder::create($path);
+    // complete folder path
+    $path = $this->completePath($path);
+
+    // create folder
+    $folder = JFolder::create($path);
+    
+    // create index.html if needed
+    if($folder && $index)
+    {
+      if(!$this->createIndexHtml($path))
+      {
+        $this->deleteFolder($path);
+
+        return false;
+      }
+    }
+
+    return $folder;
   }
 
   /**
@@ -204,6 +234,12 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function moveFolder($src, $dest, $copy = false): bool
   {
+    // complete source path
+    $src = $this->completePath($src);
+
+    // complete destination path
+    $dest = $this->completePath($dest);
+
     if($copy)
     {
       return JFolder::copy($src, $dest);
@@ -225,6 +261,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function deleteFolder($path): bool
   {
+    // complete folder path
+    $path = $this->completePath($path);
+
     return JFolder::delete($path);
   }
 
@@ -240,9 +279,12 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3): mixed
+  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3)
   {
-    if (file_exists($path))
+    // complete folder path
+    $path = $this->completePath($path);
+
+    if(file_exists($path))
     {
       if ($files && !$folders)
       {
@@ -254,10 +296,14 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
         // list only folders
         return JFolder::listFolderTree($path,'',$maxLevel);
       }
-      else
+      elseif ($files && $folders)
       {
         // list files and folders
         return $this->listFolderTree($path,'',$maxLevel);
+      }
+      else
+      {
+        return true;
       }
     }
     else
@@ -279,6 +325,9 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    */
   public function chmod($path, $val, $mode=true): bool
   {
+    // complete folder path
+    $path = $this->completePath($path);
+
     if($mode)
     {
       return JPath::setPermissions(JPath::clean($path), $val, null);
@@ -302,38 +351,59 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
    *
    * @since   4.0.0
    */
-  private function listFolderTree($path, $filter, $maxLevel, $level = 0, $parent = 0): mixed
-	{
+  private function listFolderTree($path, $filter, $maxLevel, $level = 0, $parent = 0)
+	{    
     $dirs = array();
 
-		if ($level == 0)
+		if($level < $maxLevel)
 		{
-			$GLOBALS['_JFolder_folder_tree_index'] = 0;
-		}
+			if($level == 0)
+      {
+        $id = $GLOBALS['_JFolder_folder_tree_index'] = 0;
+      }
+      else
+      {
+        $id = ++$GLOBALS['_JFolder_folder_tree_index'];
+      }      
 
-		if ($level < $maxLevel)
-		{
-			$folders    = JFolder::folders($path, $filter);
-			$pathObject = new PathWrapper;
+      // Put folder info
+      $dirs['id']       = $id;
+      $dirs['name']     = \basename($path);
+      $dirs['fullname'] = JPath::clean($path);
+      $dirs['relname']  = \str_replace(JPATH_ROOT, '', JPath::clean($path));
+      $dirs['files']    = JFolder::files($path);
 
-			// First path, index foldernames
+      // Get list of subfolders
+      $folders          = JFolder::folders($path, $filter);
+
+			// Get subfolder info
 			foreach ($folders as $name)
 			{
-				$id = ++$GLOBALS['_JFolder_folder_tree_index'];
-				$fullName = $pathObject->clean($path . '/' . $name);
-				$dirs['name'] = array(
-            'id' => $id,
-            'parent' => $parent,
-            'name' => $name,
-            'fullname' => $fullName,
-            'relname' => str_replace(JPATH_ROOT, '', $fullName),
-            'files' => JFolder::files($fullName)
-				);
-				$dirs2 = $this->listFolderTree($fullName, $filter, $maxLevel, $level + 1, $id);
-				$dirs = array_merge($dirs, $dirs2);
+        $fullName = JPath::clean($path . '/' . $name);
+
+        $dirs['folders'][$name] = $this->listFolderTree($fullName, $filter, $maxLevel, $level + 1, $id);
 			}
 		}
 
 		return $dirs;
+  }
+
+  /**
+   * Completes a path with the root if it does not already contain it.
+   *
+   * @param   string  $path      The path of the folder to read.
+   *
+   * @return  string  Completed path
+   *
+   * @since   4.0.0
+   */
+  private function completePath($path)
+  {
+    if(strpos($path, $this->root) === false)
+    {
+      $path = $this->root.\DIRECTORY_SEPARATOR.$path;
+    }
+
+    return JPath::clean($path);
   }
 }
