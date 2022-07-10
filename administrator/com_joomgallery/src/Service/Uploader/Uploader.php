@@ -43,6 +43,13 @@ abstract class Uploader implements UploaderInterface
   protected $userStateKey = 'com_joomgallery.image.upload';
 
   /**
+   * Counter for the number of files alredy uploaded
+   *
+   * @var int
+   */
+  public $filecounter = 0;
+
+  /**
    * The ID of the category in which
    * the images shall be uploaded
    *
@@ -73,15 +80,6 @@ abstract class Uploader implements UploaderInterface
   protected $filesystem_type = 'localhost';
 
   /**
-   * Holds the paths to the image files for
-   * the different image types at local and
-   * storage filesystem
-   *
-   * @var array
-   */
-  protected $img_paths = array('local' => array('temp' => '', 'original' => ''), 'storage' => array());
-
-  /**
    * Constructor
    *
    * @return  void
@@ -98,212 +96,26 @@ abstract class Uploader implements UploaderInterface
     $this->error       = $app->getUserStateFromRequest($this->userStateKey.'.error', 'error', false, 'bool');
     $this->catid       = $app->getUserStateFromRequest($this->userStateKey.'.catid', 'catid', 0, 'int');
     $this->imgtitle    = $app->getUserStateFromRequest($this->userStateKey.'.imgtitle', 'imgtitle', '', 'string');
+    $this->filecounter = $app->getUserStateFromRequest($this->userStateKey.'.filecounter', 'filecounter', 0, 'post', 'int');
 
     $this->jg->addDebug($app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
     $this->jg->addWarning($app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
   }
 
   /**
-   * Rollback an erroneous upload
-   *
-   * @param   string  $filename    Filename of the image
-   * 
-   * @return  void
-   * 
-   * @since   1.0.0
-   */
-  public function rollback($filename)
-  {
-    // Create filesystem service
-    $this->jg->createFilesystem($this->filesystem_type);
-
-    // Get imagetypes
-    $imagetypes = JoomHelper::getRecords('imagetypes');
-
-    // Delete files in local image folders
-    foreach($this->img_paths['local'] as $key => $path)
-    {
-      if(!is_null($path) && JFile::exists($path))
-      {
-        $return = JFile::delete($path);
-        if($return)
-        {
-          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_LOCAL_'.\strtoupper($key).'DEL_OK'));
-        }
-        else
-        {
-          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_LOCAL_'.\strtoupper($key).'DEL_NOK'));
-        }
-      }
-    }
-
-    // Delete files in storage
-    if($this->filesystem_type !== 'localhost')
-    {
-      foreach($this->img_paths['storage'] as $key => $path)
-      {
-        if(!is_null($path) && $this->jg->getFilesystem()->checkFile($path))
-        {
-          $return = $this->jg->getFilesystem()->deleteFile($path);
-          if($return)
-          {
-            $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_STORAGE_'.\strtoupper($key).'DEL_OK'));
-          }
-          else
-          {
-            $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_RB_STORAGE_'.\strtoupper($key).'DEL_NOK'));
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * Returns the number of images of the current user
-   *
-   * @param   $userid  Id of the current user
-   *
-   * @return  int      The number of images of the current user
-   *
-   * @since   1.5.5
-   */
-  protected function getImageNumber($userid)
-  {
-    $db = Factory::getDbo();
-
-    $query = $db->getQuery(true)
-          ->select('COUNT(id)')
-          ->from(_JOOM_TABLE_IMAGES)
-          ->where('created_by = '.$userid);
-
-    $timespan = $this->jg->getConfig()->get('jg_maxuserimage_timespan');
-    if($timespan > 0)
-    {
-      $query->where('imgdate > (UTC_TIMESTAMP() - INTERVAL '. $timespan .' DAY)');
-    }
-
-    $db->setQuery($query);
-
-    return $db->loadResult();
-  }
-
-  /**
-   * Calculates the serial number for images file names and titles
-   *
-   * @return  int       New serial number
-   *
-   * @since   1.0.0
-   */
-  protected function getSerial()
-  {
-    static $picserial;
-
-    $app  = Factory::getApplication();
-
-    // Check if the initial value is already calculated
-    if(isset($picserial))
-    {
-      $picserial++;
-
-      // Store the next value in the session
-      $app->setUserState('joom.upload.filecounter', $picserial + 1);
-
-      return $picserial;
-    }
-
-    // Start value set in backend
-    $filecounter = $app->getUserStateFromRequest('joom.upload.filecounter', 'filecounter', 0, 'post', 'int');
-
-    // If there is no starting value set, disable numbering
-    if(!$filecounter)
-    {
-      return null;
-    }
-
-    // No negative starting value
-    if($filecounter < 0)
-    {
-      $picserial = 1;
-    }
-    else
-    {
-      $picserial = $filecounter;
-    }
-
-    return $picserial;
-  }
-
-  /**
-   * Generates filenames
-   * e.g. <Name/gen. Title>_<opt. Filecounter>_<Date>_<Random Number>.<Extension>
-   *
-   * @param   string    $filename     Original upload name e.g. 'malta.jpg'
-   * @param   string    $tag          File extension e.g. 'jpg'
-   * @param   int       $filecounter  Optinally a filecounter
-   *
-   * @return  string    The generated filename
-   *
-   * @since   1.0.0
-   */
-  protected function genFilename($filename, $tag, $filecounter = null)
-  {
-    $filedate = date('Ymd');
-
-    // Remove filetag = $tag incl '.'
-    // Only if exists in filename
-    if(stristr($filename, $tag))
-    {
-      $filename = substr($filename, 0, strlen($filename)-strlen($tag)-1);
-    }
-
-    // do
-    // {
-      mt_srand();
-      $randomnumber = mt_rand(1000000000, 2099999999);
-
-      $maxlen = 255 - 2 - strlen($filedate) - strlen($randomnumber) - (strlen($tag) + 1);
-      if(!is_null($filecounter))
-      {
-        $maxlen = $maxlen - (strlen($filecounter) + 1);
-      }
-      if(strlen($filename) > $maxlen)
-      {
-        $filename = substr($filename, 0, $maxlen);
-      }
-
-      // New filename
-      if(is_null($filecounter))
-      {
-        $newfilename = $filename.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
-      }
-      else
-      {
-        $newfilename = $filename.'_'.$filecounter.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
-      }
-    // }
-    // while(    JFile::exists($this->_ambit->getImg('orig_path', $newfilename, null, $this->catid))
-    //        || JFile::exists($this->_ambit->getImg('img_path', $newfilename, null, $this->catid))
-    //        || JFile::exists($this->_ambit->getImg('thumb_path', $newfilename, null, $this->catid))
-    //      );
-
-    return $newfilename;
-  }
-
-  /**
    * Override form data with image metadata
-   * according to configuration
+   * according to configuration. Step 2.
    *
-   * @param   array   $data     The form data (as a reference)
-   * @param   string  $image    The file name of the original image
+   * @param   array   $data       The form data (as a reference)
    * 
    * @return  bool    True on success, false otherwise
    * 
    * @since   1.5.7
    */
-  protected function overrideData($data, $image)
+  public function overrideMetaData(&$data): bool
   {
     // Get image extension
-    $tag = strtolower(JFile::getExt($image));
+    $tag = strtolower(JFile::getExt($this->src_file));
 
     if(!($tag == 'jpg' || $tag == 'jpeg' || $tag == 'jpe' || $tag == 'jfif'))
     {
@@ -317,7 +129,7 @@ abstract class Uploader implements UploaderInterface
     $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
 
     // Get image metadata (source)
-    $metadata = $this->jg->getIMGtools()->readMetadata($image);
+    $metadata = $this->jg->getIMGtools()->readMetadata($this->src_file);
 
     // Add image metadata to data
     $data['imgmetadata'] = \json_encode($metadata);
@@ -442,6 +254,156 @@ abstract class Uploader implements UploaderInterface
     $this->jg->delIMGtools();
 
     return true;
+  }
+
+  /**
+   * Rollback an erroneous upload
+   * 
+   * @param   ImageTable   $data_row     Image object
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function rollback($data_row)
+  {
+    // Create file manager service
+    $this->jg->createFileManager();
+
+    // Delete just created images
+    $this->jg->getFileManager()->deleteImages($data_row);
+
+    // Delete temp image
+    if(\file_exists($this->src_file))
+    {
+      JFile::delete($this->src_file);
+    }
+  }
+
+  /**
+   * Returns the number of images of the current user
+   *
+   * @param   $userid  Id of the current user
+   *
+   * @return  int      The number of images of the current user
+   *
+   * @since   1.5.5
+   */
+  protected function getImageNumber($userid)
+  {
+    $db = Factory::getDbo();
+
+    $query = $db->getQuery(true)
+          ->select('COUNT(id)')
+          ->from(_JOOM_TABLE_IMAGES)
+          ->where('created_by = '.$userid);
+
+    $timespan = $this->jg->getConfig()->get('jg_maxuserimage_timespan');
+    if($timespan > 0)
+    {
+      $query->where('imgdate > (UTC_TIMESTAMP() - INTERVAL '. $timespan .' DAY)');
+    }
+
+    $db->setQuery($query);
+
+    return $db->loadResult();
+  }
+
+  /**
+   * Calculates the serial number for images file names and titles
+   *
+   * @return  int       New serial number
+   *
+   * @since   1.0.0
+   */
+  protected function getSerial()
+  {
+    $app  = Factory::getApplication();
+
+    // Check if the initial value is already calculated
+    if(isset($this->filecounter))
+    {
+      $this->filecounter++;
+
+      // Store the next value in the session
+      $app->setUserState($this->userStateKey.'.filecounter', $this->filecounter + 1);
+
+      return $this->filecounter;
+    }
+
+    // If there is no starting value set, disable numbering
+    if(!$this->filecounter)
+    {
+      return null;
+    }
+
+    // No negative starting value
+    if($this->filecounter < 0)
+    {
+      $picserial = 1;
+    }
+    else
+    {
+      $picserial = $this->filecounter;
+    }
+
+    return $picserial;
+  }
+
+  /**
+   * Generates filenames
+   * e.g. <Name/gen. Title>_<opt. Filecounter>_<Date>_<Random Number>.<Extension>
+   *
+   * @param   string    $filename     Original upload name e.g. 'malta.jpg'
+   * @param   string    $tag          File extension e.g. 'jpg'
+   * @param   int       $filecounter  Optinally a filecounter
+   *
+   * @return  string    The generated filename
+   *
+   * @since   1.0.0
+   */
+  protected function genFilename($filename, $tag, $filecounter = null)
+  {
+    $filedate = date('Ymd');
+
+    // Remove filetag = $tag incl '.'
+    // Only if exists in filename
+    if(stristr($filename, $tag))
+    {
+      $filename = substr($filename, 0, strlen($filename)-strlen($tag)-1);
+    }
+
+    // do
+    // {
+      mt_srand();
+      $randomnumber = mt_rand(1000000000, 2099999999);
+
+      $maxlen = 255 - 2 - strlen($filedate) - strlen($randomnumber) - (strlen($tag) + 1);
+      if(!is_null($filecounter))
+      {
+        $maxlen = $maxlen - (strlen($filecounter) + 1);
+      }
+      if(strlen($filename) > $maxlen)
+      {
+        $filename = substr($filename, 0, $maxlen);
+      }
+
+      // New filename
+      if(is_null($filecounter))
+      {
+        $newfilename = $filename.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
+      }
+      else
+      {
+        $newfilename = $filename.'_'.$filecounter.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
+      }
+    // }
+    // while(    JFile::exists($this->_ambit->getImg('orig_path', $newfilename, null, $this->catid))
+    //        || JFile::exists($this->_ambit->getImg('img_path', $newfilename, null, $this->catid))
+    //        || JFile::exists($this->_ambit->getImg('thumb_path', $newfilename, null, $this->catid))
+    //      );
+
+    return $newfilename;
   }
 
   /**

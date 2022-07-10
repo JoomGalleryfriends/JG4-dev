@@ -266,7 +266,7 @@ class ImageModel extends JoomAdminModel
 	}
 
   /**
-	 * Method to save the form data.
+	 * Method to save image form data.
 	 *
 	 * @param   array  $data  The form data.
 	 *
@@ -308,7 +308,6 @@ class ImageModel extends JoomAdminModel
 			// Load the row if saving an existing record.
 			if($pk > 0)
 			{
-
 				$table->load($pk);
 				$isNew = false;
 			}
@@ -316,33 +315,29 @@ class ImageModel extends JoomAdminModel
       // Save form data in session
       $app->setUserState(_JOOM_OPTION.'.image.upload', $data);
 
-      // // Create filename and image types
-      // // Modify form data based on image metadata
-      // $uploader = JoomHelper::getService('uploader', array('html'));
+      // Create uploader service
+      $uploader = JoomHelper::getService('uploader', array('html'));
 
-      // if(!$uploader->upload($data))
-      // {
-      //   $this->setError($this->component->getDebug());
+      // Retrieve image
+      // (check upload, check user upload limit, create filename, onJoomBeforeSave)
+      if(!$uploader->retrieveImage($data))
+      {
+        $this->setError($this->component->getDebug());
 
-      //   return false;
-      // }
+        return false;
+      }
 
-      // // Output messages
-      // if(\count($this->component->getWarning()) > 1)
-      // {
-      //   $this->component->printWarning();
-      // }
+      // Override data with image metadata
+      if(!$uploader->overrideData($data))
+      {
+        $this->setError($this->component->getDebug());
 
-      // // Output debug data
-      // if(\count($this->component->getDebug()) > 1)
-      // {
-      //   $this->component->printDebug();
-      // }
+        return false;
+      }
 
-			// Bind the data.
+			// Bind data to table object
 			if(!$table->bind($data))
 			{
-        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
@@ -354,18 +349,39 @@ class ImageModel extends JoomAdminModel
 			// Check the data.
 			if(!$table->check())
 			{
-        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
 			}
+
+      // Create images
+      // (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
+      if(!$uploader->createImage($table))
+      {
+        $uploader->rollback();
+        $this->setError($this->component->getDebug());
+
+        return false;
+      }
+
+      // Output warning messages
+      if(\count($this->component->getWarning()) > 1)
+      {
+        $this->component->printWarning();
+      }
+
+      // Output debug data
+      if(\count($this->component->getDebug()) > 1)
+      {
+        $this->component->printDebug();
+      }
 
 			// Trigger the before save event.
 			$result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
 			if(\in_array(false, $result, true))
 			{
-        //$uploader->rollback($data['filename']);
+        $uploader->rollback();
 				$this->setError($table->getError());
 
 				return false;
@@ -374,7 +390,7 @@ class ImageModel extends JoomAdminModel
 			// Store the data.
 			if(!$table->store())
 			{
-        //$uploader->rollback($data['filename']);
+        $uploader->rollback();
 				$this->setError($table->getError());
 
 				return false;
@@ -388,7 +404,7 @@ class ImageModel extends JoomAdminModel
 		}
 		catch (\Exception $e)
 		{
-      //$uploader->rollback($data['filename']);
+      $uploader->rollback();
 			$this->setError($e->getMessage());
 
 			return false;
