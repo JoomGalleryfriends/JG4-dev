@@ -124,24 +124,31 @@ class JoomHelper
       return false;
     }
 
-    if(\is_string($id))
+    // We got a valid record object
+    if(\is_object($id) && $id instanceof \Joomla\CMS\Object\CMSObject && isset($id->id))
     {
-      $id = self::getRecordIDbyAliasOrFilename($name, $id);
+      return $id;
     }
-
-    if($name != 'imagetype' || !\is_array($id))
+    // We got a record ID, an alias or a filename
+    elseif(!empty($id) && (\is_numeric($id) && $id > 0) || \is_string($id))
     {
-      $id = intval($id);
-    }
+      if(\is_string($id))
+      {
+        $id = self::getRecordIDbyAliasOrFilename($name, $id);
+      }
 
-    if(!empty($id) && ($id > 0 || \is_array($id)))
-    {
-      // get the JoomgalleryComponent object if needed
+      if($name != 'imagetype' || !\is_array($id))
+      {
+        $id = intval($id);
+      }
+
+      // Get the JoomgalleryComponent object if needed
       if(!isset($com_obj) || !\strpos('JoomgalleryComponent', \get_class($com_obj)) === false)
       {
         $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
       }
 
+      // Create the model
       $model = $com_obj->getMVCFactory()->createModel($name);
 
       if(\is_null($model))
@@ -154,6 +161,7 @@ class JoomHelper
 
       return $return;
     }
+    // We got nothing to work with
     else
     {
       throw new \Exception('Please provide a valid record ID, alias or filename.');

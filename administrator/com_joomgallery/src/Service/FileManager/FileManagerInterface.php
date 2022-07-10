@@ -54,25 +54,36 @@ interface FileManagerInterface
    *
    * @param   object|int|string    $img    Image object, image ID or image alias
    * 
-   * @return  mixed                List of filetype info on success, false otherwise
+   * @return  array                List of filetype info
    * 
    * @since   4.0.0
    */
-  public function checkImages($img);
+  public function checkImages($img): array;
 
-  // /**
-  //  * Move image files from one category to another
-  //  *
-  //  * @param   string  $filename     The file name of the files to be deleted
-  //  * @param   string  $src_catid    Id of the source category
-  //  * @param   string  $dest_catid   Id of the destination category
-  //  * @param   bool    $copy         True, if you want to copy the images (default: false)
-  //  *
-  //  * @return  bool    true on success, false otherwise
-  //  *
-  //  * @since   4.0.0
-  //  */
-  // public function moveImages($filename, $src_catid, $dest_catid, $copy): mixed;
+  /**
+   * Move image files from one category to another
+   *
+   * @param   object|int|string    $img    Image object, image ID or image alias
+   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
+   * @param   bool                 $copy   True, if you want to copy the images (default: false)
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function moveImages($img, $dest, $copy=false): bool;
+
+  /**
+   * Copy image files from one category to another
+   *
+   * @param   object|int|string    $img    Image object, image ID or image alias
+   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function copyImages($img, $dest): bool;
 
   /**
    * Creation of a category
@@ -103,25 +114,36 @@ interface FileManagerInterface
    *
    * @param   object|int|string   $cat    Object, ID or alias of the category to be checked
    * 
-   * @return  mixed               List of folder info on success, false otherwise
+   * @return  array               List of folder info
    * 
    * @since   4.0.0
    */
-  public function checkCategory($cat);
+  public function checkCategory($cat): array;
 
-  // /**
-  //  * Move category with all images from one parent category to another
-  //  *
-  //  * @param   string  $catid        Id of the category to be moved
-  //  * @param   string  $src_catid    Id of the source parent category
-  //  * @param   string  $dest_catid   Id of the destination parent category
-  //  * @param   bool    $copy         True, if you want to copy the category (default: false)
-  //  *
-  //  * @return  bool    true on success, false otherwise
-  //  *
-  //  * @since   4.0.0
-  //  */
-  // public function moveCategory($catid, $src_catid, $dest_catid, $copy): mixed;
+  /**
+   * Copy category with all images from one parent category to another
+   *
+   * @param   object|int|string   $cat      Object, ID or alias of the category to be copied
+   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function copyCategory($cat, $dest): bool;
+
+  /**
+   * Move category with all images from one parent category to another
+   *
+   * @param   object|int|string   $cat      Object, ID or alias of the category to be moved
+   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   * @param   bool                $copy     True, if you want to copy the category (default: false)
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function moveCategory($cat, $dest, $copy=false): bool;
 
   /**
    * Returns the path to an image

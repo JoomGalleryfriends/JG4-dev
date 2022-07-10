@@ -94,6 +94,7 @@ class FileManager implements FileManagerInterface
     }
 
     // Loop through all imagetypes
+    $error = false;
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Create the IMGtools service
@@ -153,7 +154,8 @@ class FileManager implements FileManagerInterface
 
           // Debug info
           $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-  
+          $error = true;
+
           continue;
         }
       }
@@ -174,6 +176,7 @@ class FileManager implements FileManagerInterface
 
           // Debug info
           $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+          $error = true;
 
           continue;
         }
@@ -195,6 +198,7 @@ class FileManager implements FileManagerInterface
 
           // Debug info
           $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+          $error = true;
 
           continue;
         }
@@ -211,6 +215,7 @@ class FileManager implements FileManagerInterface
 
         // Debug info
         $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', \basename(\dirname($file))));
+        $error = true;
 
         continue;
       }
@@ -223,6 +228,7 @@ class FileManager implements FileManagerInterface
 
         // Debug info
         $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+        $error = true;
 
         continue;
       }
@@ -235,7 +241,12 @@ class FileManager implements FileManagerInterface
 
       // Debug info
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-    }    
+    }
+
+    if($error)
+    {
+      return false;
+    }
 
     return true;
   }
@@ -255,6 +266,7 @@ class FileManager implements FileManagerInterface
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
 
     // Loop through all imagetypes
+    $error = false;
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
@@ -265,12 +277,18 @@ class FileManager implements FileManagerInterface
       {
         // Deletion failed
         $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
+        $error = true;
 
-        return false;
+        continue;
       }
 
       // Deletion successful
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
+    }
+
+    if($error)
+    {
+      return false;
     }
 
     return true;
@@ -281,11 +299,11 @@ class FileManager implements FileManagerInterface
    *
    * @param   object|int|string    $img    Image object, image ID or image alias
    * 
-   * @return  mixed                List of filetype info on success, false otherwise
+   * @return  array                List of filetype info
    * 
    * @since   4.0.0
    */
-  public function checkImages($img)
+  public function checkImages($img): array
   {
     $images = array();
 
@@ -306,6 +324,89 @@ class FileManager implements FileManagerInterface
   }
 
   /**
+   * Move image files from one category to another
+   *
+   * @param   object|int|string    $img    Image object, image ID or image alias
+   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
+   * @param   bool                 $copy   True, if you want to copy the images (default: false)
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function moveImages($img, $dest, $copy=false): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Switch method
+    $method = 'MOVE';
+    if($copy)
+    {
+      $method = 'COPY';
+    }
+
+    // Loop through all imagetypes
+    $error = false;
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get image source path
+      $img_src = $this->getImgPath($imagetype->typename, $img);
+
+      // Get category destination path
+      $cat_dst = $this->getCatPath($dest, $imagetype->typename);
+
+      // Create image destination path
+      $img_dst = $cat_dst . '/' . \basename($img_src);
+
+      // Create folders if not existent
+      if(!$this->jg->getFilesystem()->createFolder(\dirname($img_dst)))
+      {
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', \basename(\dirname($img_dst))));
+        $error = true;
+
+        continue;
+      }
+
+      // Move imagetype
+      if(!$this->jg->getFilesystem()->moveFile($img_src, $img_dst, $copy))
+      {
+        // Moving failed
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
+        $error = true;
+
+        continue;
+      }
+
+      // Move successful
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
+    }
+
+    if($error)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Copy image files from one category to another
+   *
+   * @param   object|int|string    $img    Image object, image ID or image alias
+   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function copyImages($img, $dest): bool
+  {
+    return $this->moveImages($img, $dest, true);
+  }
+
+  /**
    * Creation of a category
    *
    * @param   string              $foldername   Name of the folder to be created
@@ -321,6 +422,7 @@ class FileManager implements FileManagerInterface
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
 
     // Loop through all imagetypes
+    $error = false;
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Category path
@@ -330,14 +432,20 @@ class FileManager implements FileManagerInterface
       if(!$this->jg->getFilesystem()->createFolder($path))
       {
         // Debug info
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', $foldername));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', \strtoupper($foldername)));
+        $error = true;
 
-        return false;
+        continue;
       }
     }
 
+    if($error)
+    {
+      return false;
+    }
+
     // Debug info
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_CATEGORY', $foldername));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_CATEGORY', \strtoupper($foldername)));
 
     return true;
   }
@@ -373,7 +481,7 @@ class FileManager implements FileManagerInterface
         {
           // There are still images and subcategories available
           // Deletion not allowed
-          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY_NOTEMPTY', \strtoupper(\basename($path))));
 
           return false;
         }
@@ -381,6 +489,7 @@ class FileManager implements FileManagerInterface
     }
 
     // Loop through all imagetypes
+    $error = false;
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Category path
@@ -392,15 +501,21 @@ class FileManager implements FileManagerInterface
         if(!$this->jg->getFilesystem()->deleteFolder($path))
         {
           // Debug info
-          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY', \basename($path)));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY', \strtoupper(\basename($path))));
+          $error = true;
 
-          return false;
+          continue;
         }
       }
     }
 
+    if($error)
+    {
+      return false;
+    }
+
     // Debug info
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_DELETE_CATEGORY', \basename($path)));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_DELETE_CATEGORY', \strtoupper(\basename($path))));
 
     return true;
   }
@@ -410,11 +525,11 @@ class FileManager implements FileManagerInterface
    *
    * @param   object|int|string   $cat    Object, ID or alias of the category to be checked
    * 
-   * @return  mixed               List of folder info on success, false otherwise
+   * @return  array               List of folder info
    * 
    * @since   4.0.0
    */
-  public function checkCategory($cat)
+  public function checkCategory($cat): array
   {
     $folders = array();
 
@@ -432,6 +547,79 @@ class FileManager implements FileManagerInterface
     }
 
     return $folders;
+  }
+
+  /**
+   * Move category with all images from one parent category to another
+   *
+   * @param   object|int|string   $cat      Object, ID or alias of the category to be moved
+   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   * @param   bool                $copy     True, if you want to copy the category (default: false)
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function moveCategory($cat, $dest, $copy=false): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Switch method
+    $method = 'MOVE';
+    if($copy)
+    {
+      $method = 'COPY';
+    }
+
+    // Loop through all imagetypes
+    $error = false;
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get category source path
+      $src_path = $this->getCatPath($cat, $imagetype->typename);
+
+      // Get path of target category
+      $cat_path = $this->getCatPath($dest, $imagetype->typename);
+
+      // Create category destination path
+      $dst_path = $cat_path . '/' . \basename($src_path);
+
+      // Move folder
+      if(!$this->jg->getFilesystem()->moveFolder($src_path, $dst_path, $copy))
+      {
+        // Moving failed
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \strtoupper(\basename($src_path))));
+        $error = true;
+
+        continue;
+      }
+    }
+
+    if($error)
+    {
+      return false;
+    }
+
+    // Move successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \strtoupper(\basename($src_path))));
+
+    return true;
+  }
+
+  /**
+   * Copy category with all images from one parent category to another
+   *
+   * @param   object|int|string   $cat      Object, ID or alias of the category to be copied
+   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function copyCategory($cat, $dest): bool
+  {
+    return $this->moveCategory($cat, $dest, true);
   }
 
   /**
@@ -457,7 +645,7 @@ class FileManager implements FileManagerInterface
         $catid    = ($catid === false) ? $img->catid : $catid;
         $filename = ($filename === false) ? $img->filename : $filename;
       }
-      // We got a image ID or an alias
+      // We got an image ID or an alias
       elseif((\is_numeric($img) && $img > 0) || (\is_string($img) && !$this->is_path($img)))
       {
         // Get image object
@@ -611,7 +799,7 @@ class FileManager implements FileManagerInterface
    * 
    * @since   4.0.0
    */
-  private function getImagetypes()
+  protected function getImagetypes()
   {
     // get all imagetypes
     $this->imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
@@ -635,7 +823,7 @@ class FileManager implements FileManagerInterface
    * 
    * @since   4.0.0
    */
-  private function is_path($string)
+  protected function is_path($string)
   {
     $string = \strval($string);
 
@@ -663,7 +851,7 @@ class FileManager implements FileManagerInterface
    * 
    * @since   4.0.0
    */
-  private function addRoot($whichRoot)
+  protected function addRoot($whichRoot)
   {
     // Create filesystem service
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
