@@ -16,9 +16,9 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader as BaseUploader;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
 * Uploader helper class (Single Upload)
@@ -46,7 +46,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     {
       if($this->filecounter >= 1)
       {
-        $this->jg->addDebug('<hr>');
+        $this->jg->addDebug('<hr />');
       }
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_POSITION', $this->filecounter + 1));
     }
@@ -68,6 +68,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       return false;
     }
 
+    // Get number of uploaded images of the current user
     $counter = $this->getImageNumber($user->get('id'));
     $is_site = $app->isClient('site');
 
@@ -84,6 +85,23 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     $this->src_name = $image['name'];
     $this->src_size = $image['size'];
 
+    // Get extension
+    $tag = strtolower(JFile::getExt($this->src_name));
+
+    // Get supported formats
+    $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
+    $supported_tags = $this->jg->getIMGtools()->get('supported_types');
+    $this->jg->delIMGtools();
+
+    // Check for supported image format
+    if(!\in_array(\strtoupper($tag), $supported_tags) || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
+    {
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_TYPE'));
+      $this->error  = true;
+
+      return false;
+    }
+
     $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_FILENAME', $this->src_name));
 
     // Image size must not exceed the setting in backend if we are in frontend
@@ -94,25 +112,6 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 
       return false;
     }
-
-    // Upload file to temp file
-    $this->src_file = JPath::clean(\dirname($this->src_tmp).\DIRECTORY_SEPARATOR.$this->src_name);
-    $return = JFile::upload($this->src_tmp, $this->src_file);
-    if(!$return)
-    {
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_MOVING', $this->src_file .' '. Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS')));
-      $this->rollback();
-      $this->error = true;
-
-      return false;
-    }
-
-    // Set permissions of uploaded file
-    $return = JPath::setPermissions($this->src_file, '0644', null);
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_COMPLETE', filesize($this->src_file) / 1000));      
-
-    // Get extension
-    $tag = strtolower(JFile::getExt($this->src_name));
 
     // Get filecounter
     $filecounter = null;
@@ -132,8 +131,8 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     }
     else
     {
-      $oldfilename = $this->imgtitle;
-      $newfilename = $this->jg->getFilesystem()->cleanFilename($this->imgtitle);
+      $oldfilename = $data['imgtitle'];
+      $newfilename = $this->jg->getFilesystem()->cleanFilename($data['imgtitle']);
     }
 
     // Check the new filename
@@ -156,11 +155,27 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     $data['filename'] = $this->genFilename($newfilename, $tag, $filecounter);
 
     // Trigger onJoomBeforeUpload
-    $plugins  = $app->triggerEvent('onJoomBeforeUpload', array($data));
+    $plugins  = $app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
     if(in_array(false, $plugins, true))
     {
       return false;
     }
+
+    // Upload file to temp file
+    $this->src_file = JPath::clean(\dirname($this->src_tmp).\DIRECTORY_SEPARATOR.$this->src_name);
+    $return = JFile::upload($this->src_tmp, $this->src_file);
+    if(!$return)
+    {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_MOVING', $this->src_file .' '. Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS')));
+      $this->rollback();
+      $this->error = true;
+
+      return false;
+    }
+
+    // Set permissions of uploaded file
+    $return = JPath::setPermissions($this->src_file, '0644', null);
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_COMPLETE', filesize($this->src_file) / 1000));
 
     return true;
   }
@@ -184,7 +199,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     }
 
     // Override form data with image metadata
-    return $this->overrideMetaData($data);
+    return parent::overrideData($data);
   }
 
   /**
@@ -199,14 +214,15 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 	 */
 	public function createImage($data_row): bool
   {
-    $app  = Factory::getApplication();
+    // Check if filename was set
+    if(!isset($data_row->filename) || !empty($data_row->filename))
+    {
+      throw new \Exception('Filename has to be set in image data. Run retrieveImage() method first.');
+    }
 
-    // Create image manager service
-    $this->jg->createFileManager();
+    // Create file manager service
+    $this->jg->createFileManager();    
     
-    // // Generate local file path of original image
-    // $this->img_paths['local']['original'] = JPath::clean($this->jg->getFilesystem()->get('local_root') . $this->jg->getImageManager()->getImgPath('original', $data['catid'], $data['filename']));
-
     // Create image types
     if(!$this->jg->getFileManager()->createImages($this->src_file, $data_row->filename, $data_row->catid))
     {
@@ -234,9 +250,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IMAGE_SUCCESSFULLY_ADDED'));
     $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_NEW_FILENAME', $data_row->filename));
 
-    $app->triggerEvent('onJoomAfterUpload', array($data_row));
-
-    $this->jg->addDebug('<hr />');
+    Factory::getApplication()->triggerEvent('onJoomAfterUpload', array($data_row));
 
     // Reset user states
     $this->resetUserStates();

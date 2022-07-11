@@ -69,11 +69,11 @@ interface UploaderInterface
   /**
    * Rollback an erroneous upload
    * 
-   * @param   ImageTable   $data_row     Image object
+   * @param   CMSObject   $data_row     Image object containing at least catid and filename (default: false)
    * 
    * @return  void
    * 
    * @since   4.0.0
    */
-  public function rollback($data_row);
+  public function rollback($data_row=false);
 }
