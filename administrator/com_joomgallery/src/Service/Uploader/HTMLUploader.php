@@ -215,7 +215,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 	public function createImage($data_row): bool
   {
     // Check if filename was set
-    if(!isset($data_row->filename) || !empty($data_row->filename))
+    if(!isset($data_row->filename) || empty($data_row->filename))
     {
       throw new \Exception('Filename has to be set in image data. Run retrieveImage() method first.');
     }
