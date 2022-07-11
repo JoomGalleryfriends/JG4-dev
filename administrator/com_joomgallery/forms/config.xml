@@ -82,20 +82,6 @@
              label="COM_JOOMGALLERY_CONFIG_GS_PD_FTPUPLOAD_PATH"
              description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_FOR_FTPUPLOAD" />
 
-      <field name="jg_pathtemp"
-             type="text"
-             default="administrator/components/com_joomgallery/temp/"
-             maxlength="100"
-             filter="string"
-             label="COM_JOOMGALLERY_CONFIG_GS_PD_TEMP_PATH"
-             description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_FOR_TEMP" />
-
-      <field name="jg_wmfile"
-             type="media"
-             directory="images/joomgallery"
-             label="COM_JOOMGALLERY_CONFIG_GS_PD_WATERMARK_PATH"
-             description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_WATERMARK_STORED" />
-
       <field name="jg_use_real_paths"
              type="radio"
              default="0"
@@ -120,25 +106,6 @@
     </fieldset>
 
     <fieldset type="tab" name="general-upload" label="COM_JOOMGALLERY_ACTION_UPLOAD">
-      <field name="jg_filenamewithjs"
-             type="radio"
-             default="1"
-             class="btn-group"
-             layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_GS_RP_FILENAME_WITHJS"
-             description="COM_JOOMGALLERY_CONFIG_GS_RP_FILENAME_WITHJS_LONG" >
-        <option value="0">JNO</option>
-        <option value="1">JYES</option>
-      </field>
-
-      <field name="jg_filenamereplace"
-             type="textarea"
-             default="Š|S, Œ|O, Ž|Z, š|s, œ|oe, ž|z, Ÿ|Y, ¥|Y, µ|u, À|A, Á|A, Â|A, Ã|A, Ä|AE, Å|A, Æ|A, Ç|C, È|E, É|E, Ê|E, Ë|E, Ì|I, Í|I, Î|I, Ï|I, Ð|D, Ñ|N, Ò|O, Ó|O, Ô|O, Õ|O, Ö|OE, Ø|O, Ù|U, Ú|U, Û|U, Ü|UE, Ý|Y, à|a, á|a, â|a, ã|a, ä|ae, å|a, æ|a, ç|c, è|e, é|e, ê|e, ë|e"
-             filter="string"
-             label="COM_JOOMGALLERY_CONFIG_GS_RP_FILENAME_REPLACE"
-             description="COM_JOOMGALLERY_CONFIG_GS_RP_FILENAME_REPLACE_LONG"
-             showon="jg_filenamewithjs:1" />
-
       <field name="jg_replaceinfo"
              type="subform"
              max="6"
@@ -222,6 +189,12 @@
              label="COM_JOOMGALLERY_CONFIG_GS_IP_PATH_TO_IMAGEMAGICK"
              description="COM_JOOMGALLERY_CONFIG_GS_IP_PATH_TO_IMAGEMAGICK_LONG"
              showon="jg_imgprocessor:im" />
+
+      <field name="jg_wmfile"
+             type="media"
+             directory="images/joomgallery"
+             label="COM_JOOMGALLERY_CONFIG_GS_PD_WATERMARK_PATH"
+             description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_WATERMARK_STORED" />
 
       <field name="jg_staticprocessing"
              type="subform"

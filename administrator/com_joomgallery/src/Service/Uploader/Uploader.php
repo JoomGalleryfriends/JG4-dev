@@ -17,6 +17,7 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
 use \Joomla\CMS\Filter\InputFilter;
+use \Joomla\CMS\Object\CMSObject;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -112,7 +113,7 @@ abstract class Uploader implements UploaderInterface
    * 
    * @since   1.5.7
    */
-  public function overrideMetaData(&$data): bool
+  public function overrideData(&$data): bool
   {
     // Get image extension
     $tag = strtolower(JFile::getExt($this->src_file));
@@ -135,7 +136,7 @@ abstract class Uploader implements UploaderInterface
     $data['imgmetadata'] = \json_encode($metadata);
 
     // Check if there is something to override
-    if(empty($this->jg->getConfig()->get('jg_replaceinfo')))
+    if(!\property_exists($this->jg->getConfig()->get('jg_replaceinfo'), 'jg_replaceinfo0'))
     {
       // Destroy the IMGtools service
       $this->jg->delIMGtools();
@@ -160,9 +161,9 @@ abstract class Uploader implements UploaderInterface
           // 'break' intentionally omitted
         case 'EXIF':
           // Get exif source attribute
-          if(isset($exif_config_array[$source_arr[0]]) && isset($exif_config_array[$source_arr[0]][$source_arr[1]]))
+          if(isset($exif_config_array[$source_array[0]]) && isset($exif_config_array[$source_array[0]][$source_array[1]]))
           {
-            $source = $exif_config_array[$source_arr[0]][$source_arr[1]];
+            $source = $exif_config_array[$source_array[0]][$source_array[1]];
           }
           else
           {
@@ -174,10 +175,10 @@ abstract class Uploader implements UploaderInterface
           $source_name      = $source['Name'];
 
           // Get matadata value
-          if(isset($metadata['exif'][$source_arr[0]]) && isset($metadata['exif'][$source_arr[0]][$source_attribute])
-              && !empty($metadata['exif'][$source_arr[0]][$source_attribute]))
+          if(isset($metadata['exif'][$source_array[0]]) && isset($metadata['exif'][$source_array[0]][$source_attribute])
+              && !empty($metadata['exif'][$source_array[0]][$source_attribute]))
           {
-            $source_value = $metadata['exif'][$source_arr[0]][$source_attribute];
+            $source_value = $metadata['exif'][$source_array[0]][$source_attribute];
           }
           else
           {
@@ -203,9 +204,9 @@ abstract class Uploader implements UploaderInterface
 
         case 'IPTC':
           // Get iptc source attribute
-          if(isset($iptc_config_array[$source_arr[0]]) && isset($iptc_config_array[$source_arr[0]][$source_arr[1]]))
+          if(isset($iptc_config_array[$source_array[0]]) && isset($iptc_config_array[$source_array[0]][$source_array[1]]))
           {
-            $source = $config_array[$source_arr[0]][$source_arr[1]];
+            $source = $iptc_config_array[$source_array[0]][$source_array[1]];
           }
           else
           {
@@ -217,7 +218,7 @@ abstract class Uploader implements UploaderInterface
           $source_name      = $source['Name'];
 
           // Adjust iptc source attribute
-          \str_replace(':', '#', $source_attribute);
+          $source_attribute = \str_replace(':', '#', $source_attribute);
 
           // Get matadata value 
           if(isset($metadata['iptc'][$source_attribute]) && !empty($metadata['iptc'][$source_attribute]))
@@ -259,25 +260,30 @@ abstract class Uploader implements UploaderInterface
   /**
    * Rollback an erroneous upload
    * 
-   * @param   ImageTable   $data_row     Image object
+   * @param   CMSObject   $data_row     Image object containing at least catid and filename (default: false)
    * 
    * @return  void
    * 
    * @since   4.0.0
    */
-  public function rollback($data_row)
+  public function rollback($data_row=false)
   {
-    // Create file manager service
-    $this->jg->createFileManager();
+    if($data_row)
+    {
+      // Create file manager service
+      $this->jg->createFileManager();
 
-    // Delete just created images
-    $this->jg->getFileManager()->deleteImages($data_row);
+      // Delete just created images
+      $this->jg->getFileManager()->deleteImages($data_row);
+    }
 
     // Delete temp image
-    if(\file_exists($this->src_file))
+    if(isset($this->src_file) && !empty($this->src_file) && \file_exists($this->src_file))
     {
       JFile::delete($this->src_file);
     }
+
+    $this->resetUserStates();
   }
 
   /**
@@ -373,35 +379,28 @@ abstract class Uploader implements UploaderInterface
       $filename = substr($filename, 0, strlen($filename)-strlen($tag)-1);
     }
 
-    // do
-    // {
-      mt_srand();
-      $randomnumber = mt_rand(1000000000, 2099999999);
+    mt_srand();
+    $randomnumber = mt_rand(1000000000, 2099999999);
 
-      $maxlen = 255 - 2 - strlen($filedate) - strlen($randomnumber) - (strlen($tag) + 1);
-      if(!is_null($filecounter))
-      {
-        $maxlen = $maxlen - (strlen($filecounter) + 1);
-      }
-      if(strlen($filename) > $maxlen)
-      {
-        $filename = substr($filename, 0, $maxlen);
-      }
+    $maxlen = 255 - 2 - strlen($filedate) - strlen($randomnumber) - (strlen($tag) + 1);
+    if(!is_null($filecounter))
+    {
+      $maxlen = $maxlen - (strlen($filecounter) + 1);
+    }
+    if(strlen($filename) > $maxlen)
+    {
+      $filename = substr($filename, 0, $maxlen);
+    }
 
-      // New filename
-      if(is_null($filecounter))
-      {
-        $newfilename = $filename.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
-      }
-      else
-      {
-        $newfilename = $filename.'_'.$filecounter.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
-      }
-    // }
-    // while(    JFile::exists($this->_ambit->getImg('orig_path', $newfilename, null, $this->catid))
-    //        || JFile::exists($this->_ambit->getImg('img_path', $newfilename, null, $this->catid))
-    //        || JFile::exists($this->_ambit->getImg('thumb_path', $newfilename, null, $this->catid))
-    //      );
+    // New filename
+    if(is_null($filecounter))
+    {
+      $newfilename = $filename.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
+    }
+    else
+    {
+      $newfilename = $filename.'_'.$filecounter.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
+    }
 
     return $newfilename;
   }
@@ -422,5 +421,29 @@ abstract class Uploader implements UploaderInterface
     $app->setUserState($this->userStateKey.'.error', false);
     $app->setUserState($this->userStateKey.'.debugoutput', null);
     $app->setUserState($this->userStateKey.'.warningoutput', null);
+  }
+
+  /**
+   * Creation of a temporary image object for the rollback
+   * 
+   * @param   array   $data      The form data
+   * 
+   * @return  CMSObject
+   * 
+   * @since   4.0.0
+   */
+  protected function tempImgObj($data)
+  {
+    if(!\key_exists('catid', $data) || !empty($data['catid']) || !\key_exists('filename', $data) || !empty($data['filename']))
+    {
+      throw new \Exception('Form data must have at least catid and filename');
+    }
+
+    $img = new CMSObject;
+
+    $img->set('catid', $data['catid']);
+    $img->set('filename', $data['filename']);
+
+    return $img;
   }
 }
