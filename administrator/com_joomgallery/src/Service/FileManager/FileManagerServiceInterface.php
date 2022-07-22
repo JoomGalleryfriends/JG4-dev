@@ -44,5 +44,5 @@ interface FileManagerServiceInterface
 	 *
 	 * @since  4.0.0
 	 */
-	public function getImageManager(): FileManagerInterface;
+	public function getFileManager(): FileManagerInterface;
 }

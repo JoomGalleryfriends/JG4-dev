@@ -35,12 +35,13 @@ interface UploaderInterface
    * (check upload, check user upload limit, create filename, onJoomBeforeUpload)
 	 *
    * @param   array    $data      Form data (as reference)
+   * @param   bool     $filename    True, if the filename has to be created (defaut: True)
    *
 	 * @return  bool     True on success, false otherwise
 	 *
 	 * @since  4.0.0
 	 */
-	public function retrieveImage(&$data): bool;
+	public function retrieveImage(&$data, $filename=True): bool;
 
   /**
    * Override form data with image metadata

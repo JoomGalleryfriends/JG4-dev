@@ -81,18 +81,29 @@ abstract class Uploader implements UploaderInterface
   protected $filesystem_type = 'localhost';
 
   /**
+   * Set to true if it is a multiple upload
+   *
+   * @var bool
+   */
+  protected $multiple = false;
+
+  /**
    * Constructor
+   * 
+   * @param   bool   $multiple     True, if it is a multiple upload  (default: false)
    *
    * @return  void
    *
    * @since   1.0.0
    */
-  public function __construct()
+  public function __construct($multiple=false)
   {
     $this->jg = JoomHelper::getComponent();
     $this->jg->createConfig();
 
     $app  = Factory::getApplication();
+
+    $this->multiple    = $multiple;
 
     $this->error       = $app->getUserStateFromRequest($this->userStateKey.'.error', 'error', false, 'bool');
     $this->catid       = $app->getUserStateFromRequest($this->userStateKey.'.catid', 'catid', 0, 'int');
@@ -354,55 +365,6 @@ abstract class Uploader implements UploaderInterface
     }
 
     return $picserial;
-  }
-
-  /**
-   * Generates filenames
-   * e.g. <Name/gen. Title>_<opt. Filecounter>_<Date>_<Random Number>.<Extension>
-   *
-   * @param   string    $filename     Original upload name e.g. 'malta.jpg'
-   * @param   string    $tag          File extension e.g. 'jpg'
-   * @param   int       $filecounter  Optinally a filecounter
-   *
-   * @return  string    The generated filename
-   *
-   * @since   1.0.0
-   */
-  protected function genFilename($filename, $tag, $filecounter = null)
-  {
-    $filedate = date('Ymd');
-
-    // Remove filetag = $tag incl '.'
-    // Only if exists in filename
-    if(stristr($filename, $tag))
-    {
-      $filename = substr($filename, 0, strlen($filename)-strlen($tag)-1);
-    }
-
-    mt_srand();
-    $randomnumber = mt_rand(1000000000, 2099999999);
-
-    $maxlen = 255 - 2 - strlen($filedate) - strlen($randomnumber) - (strlen($tag) + 1);
-    if(!is_null($filecounter))
-    {
-      $maxlen = $maxlen - (strlen($filecounter) + 1);
-    }
-    if(strlen($filename) > $maxlen)
-    {
-      $filename = substr($filename, 0, $maxlen);
-    }
-
-    // New filename
-    if(is_null($filecounter))
-    {
-      $newfilename = $filename.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
-    }
-    else
-    {
-      $newfilename = $filename.'_'.$filecounter.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
-    }
-
-    return $newfilename;
   }
 
   /**

@@ -28,16 +28,17 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader a
 class HTMLUploader extends BaseUploader implements UploaderInterface
 {
 	/**
-	 * Method to retrieve an uploaded image.
-   * (check upload, check user upload limit, create filename, metadata overrides, onJoomBeforeSave)
+	 * Method to retrieve an uploaded image. Step 1.
+   * (check upload, check user upload limit, create filename, onJoomBeforeUpload)
 	 *
-   * @param   array    $data      Form data (as reference)
+   * @param   array    $data        Form data (as reference)
+   * @param   bool     $filename    True, if the filename has to be created (defaut: True)
    *
 	 * @return  bool     True on success, false otherwise
 	 *
 	 * @since  4.0.0
 	 */
-	public function retrieveImage(&$data): bool
+	public function retrieveImage(&$data, $filename=True): bool
   {
     $app  = Factory::getApplication();
     $user = Factory::getUser();
@@ -113,46 +114,50 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       return false;
     }
 
-    // Get filecounter
-    $filecounter = null;
-    if($this->jg->getConfig()->get('jg_filenamenumber'))
+    if($filename)
     {
-      $filecounter = $this->getSerial();
-    }
-
-    // Create filesystem service
-    $this->jg->createFilesystem('localhost');
-
-    // Create new filename
-    if($this->jg->getConfig()->get('jg_useorigfilename'))
-    {
-      $oldfilename = $this->src_name;
-      $newfilename = $this->jg->getFilesystem()->cleanFilename($this->src_name);
-    }
-    else
-    {
-      $oldfilename = $data['imgtitle'];
-      $newfilename = $this->jg->getFilesystem()->cleanFilename($data['imgtitle']);
-    }
-
-    // Check the new filename
-    if($this->jg->getFilesystem()->checkFilename($oldfilename, $newfilename) == false)
-    {
-      if($is_site)
+      // Get filecounter
+      $filecounter = null;
+      if($this->multiple && $this->jg->getConfig()->get('jg_filenamenumber'))
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_INVALID_FILENAME'));
+        $filecounter = $this->getSerial();
+      }
+
+      // Create filesystem service
+      $this->jg->createFilesystem('localhost');
+
+      // Create new filename
+      if($this->jg->getConfig()->get('jg_useorigfilename'))
+      {
+        $oldfilename = $this->src_name;
+        $newfilename = $this->jg->getFilesystem()->cleanFilename($this->src_name);
       }
       else
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_ERROR_INVALID_FILENAME', $newfilename, $oldfilename));
+        $oldfilename = $data['imgtitle'];
+        $newfilename = $this->jg->getFilesystem()->cleanFilename($data['imgtitle']);
       }
-      $this->error = true;
 
-      return false;
-    }
+      // Check the new filename
+      if(!$this->jg->getFilesystem()->checkFilename($oldfilename, $newfilename))
+      {
+        if($is_site)
+        {
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_INVALID_FILENAME'));
+        }
+        else
+        {
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_ERROR_INVALID_FILENAME', $newfilename, $oldfilename));
+        }
+        $this->error = true;
 
-    // Generate image filename
-    $data['filename'] = $this->genFilename($newfilename, $tag, $filecounter);
+        return false;
+      }
+
+      // Generate image filename
+      $this->jg->createFileManager();
+      $data['filename'] = $this->jg->getFileManager()->genFilename($newfilename, $tag, $filecounter);
+    }    
 
     // Trigger onJoomBeforeUpload
     $plugins  = $app->triggerEvent('onJoomBeforeUpload', array($data['filename']));

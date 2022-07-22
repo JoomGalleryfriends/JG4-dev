@@ -45,34 +45,35 @@ trait UploaderServiceTrait
 		return $this->uploader;
 	}
 
-  /**
+    /**
 	 * Creates the Uploader helper class based on the selected upload method
 	 *
-   * @param   string  $uploadMethod  Name of the upload method to be used
+     * @param   string  $uploadMethod   Name of the upload method to be used
+	 * @param   bool    $multiple       True, if it is a multiple upload (default: false)
 	 *
-   * @return  void
-   *
+     * @return  void
+     *
 	 * @since  4.0.0
 	 */
-	public function createUploader($uploadMethod): void
+	public function createUploader($uploadMethod, $multiple=false): void
 	{
     switch ($uploadMethod)
     {
       case 'ajax':
-        $this->uploader = new AjaxUploader();
+        $this->uploader = new AjaxUploader($multiple);
         break;
 
       case 'batch':
-        $this->uploader = new BatchUploader();
+        $this->uploader = new BatchUploader($multiple);
         break;
 
       case 'FTP':
       case 'ftp':
-        $this->uploader = new FTPUploader();
+        $this->uploader = new FTPUploader($multiple);
         break;
 
       default:
-        $this->uploader = new HTMLUploader();
+        $this->uploader = new HTMLUploader($multiple);
         break;
     }
 
