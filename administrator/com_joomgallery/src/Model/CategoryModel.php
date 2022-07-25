@@ -18,7 +18,11 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Object\CMSObject;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Multilanguage;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
@@ -91,6 +95,169 @@ class CategoryModel extends JoomAdminModel
 
 		return $form;
 	}
+
+  /**
+	 * Method to delete one or more images.
+	 *
+	 * @param   array  &$pks  An array of record primary keys.
+	 *
+	 * @return  boolean  True if successful, false if an error occurs.
+	 *
+	 * @since   1.6
+	 */
+	public function delete(&$pks)
+	{
+		$pks   = ArrayHelper::toInteger((array) $pks);
+		$table = $this->getTable();
+
+    // Get recursive array from request
+    $rec_arr = Factory::getApplication()->input->get('recursive', array());
+
+		// Include the plugins for the delete events.
+		PluginHelper::importPlugin($this->events_map['delete']);
+
+		// Iterate the items to delete each one.
+		foreach($pks as $i => $pk)
+		{
+			if($table->load($pk))
+			{
+				if($this->canDelete($table)) 
+				{
+					$context = $this->option . '.' . $this->name;
+
+					// Trigger the before delete event.
+					$result = Factory::getApplication()->triggerEvent($this->event_before_delete, array($context, $table));
+
+					if(\in_array(false, $result, true))
+					{
+						$this->setError($table->getError());
+
+						return false;
+					}
+
+					// Create file manager service
+					$manager = JoomHelper::getService('FileManager');
+
+          // Decide if category with images can be deleted
+          $force_delete = false;
+          if(\in_array($pk, $rec_arr))
+          {
+            $force_delete = true;
+          }
+
+          // Delete corresponding folders
+					if(!$manager->deleteCategory($table, $force_delete))
+					{
+						$this->setError($this->component->getDebug());
+
+						return false;
+					}
+
+					// Multilanguage: if associated, delete the item in the _associations table
+					if($this->associationsContext && Associations::isEnabled())
+					{
+						$db = $this->getDbo();
+						$query = $db->getQuery(true)
+							->select(
+								[
+									'COUNT(*) AS ' . $db->quoteName('count'),
+									$db->quoteName('as1.key'),
+								]
+							)
+							->from($db->quoteName('#__associations', 'as1'))
+							->join('LEFT', $db->quoteName('#__associations', 'as2'), $db->quoteName('as1.key') . ' = ' . $db->quoteName('as2.key'))
+							->where(
+								[
+									$db->quoteName('as1.context') . ' = :context',
+									$db->quoteName('as1.id') . ' = :pk',
+								]
+							)
+							->bind(':context', $this->associationsContext)
+							->bind(':pk', $pk, ParameterType::INTEGER)
+							->group($db->quoteName('as1.key'));
+
+						$db->setQuery($query);
+						$row = $db->loadAssoc();
+
+						if(!empty($row['count']))
+						{
+							$query = $db->getQuery(true)
+								->delete($db->quoteName('#__associations'))
+								->where(
+									[
+										$db->quoteName('context') . ' = :context',
+										$db->quoteName('key') . ' = :key',
+									]
+								)
+								->bind(':context', $this->associationsContext)
+								->bind(':key', $row['key']);
+
+							if($row['count'] > 2)
+							{
+								$query->where($db->quoteName('id') . ' = :pk')
+									->bind(':pk', $pk, ParameterType::INTEGER);
+							}
+
+							$db->setQuery($query);
+							$db->execute();
+						}
+					}
+
+					if(!$table->delete($pk))
+					{
+						$this->setError($table->getError());
+
+						return false;
+					}
+
+					// Trigger the after event.
+					Factory::getApplication()->triggerEvent($this->event_after_delete, array($context, $table));
+				}
+				else
+				{
+					// Prune items that you can't change.
+					unset($pks[$i]);
+					$error = $this->getError();
+
+					if($error)
+					{
+						Log::add($error, Log::WARNING, 'jerror');
+
+						return false;
+					}
+					else
+					{
+						Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+
+						return false;
+					}
+				}
+			}
+			else
+			{
+				$this->setError($table->getError());
+
+				return false;
+			}
+		}
+
+		// Output messages
+		if(\count($this->component->getWarning()) > 1)
+		{
+			$this->component->printWarning();
+		}
+
+		// Output debug data
+		if(\count($this->component->getDebug()) > 1)
+		{
+			$this->component->printDebug();
+		}
+
+		// Clear the component's cache
+		$this->cleanCache();
+
+		return true;
+	}
 	
   /**
    * Method to save the form data.
@@ -102,19 +269,28 @@ class CategoryModel extends JoomAdminModel
    * @since   1.6
    */
   public function save($data)
-  {
+  { 
     $table      = $this->getTable();
     $context    = $this->option . '.' . $this->name;
     $app        = Factory::getApplication();
+    $isNew      = true;
+    $catMoved   = false;
+		$isCopy     = false;
 
-    if(\array_key_exists('tags', $data) && \is_array($data['tags']))
+    $key = $table->getKeyName();
+    $pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
+    
+    // Are we going to copy the image record?
+    if($app->input->get('task') == 'save2copy')
+		{
+			$isCopy = true;
+		}
+
+    // Create tags
+    if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
     {
       $table->newTags = $data['tags'];
-    }
-
-    $key   = $table->getKeyName();
-    $pk    = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
-    $isNew = true;
+    }    
 
     // Change language to 'All' if multilangugae is not enabled
     if (!Multilanguage::isEnabled())
@@ -133,6 +309,12 @@ class CategoryModel extends JoomAdminModel
         {
           $table->load($pk);
           $isNew = false;
+
+          // Check if the parent category was changed
+          if($table->parent_id != $data['parent_id'])
+          {
+            $catMoved = true;
+          }
         }
 
         if($table->parent_id != $data['parent_id'] || $data['id'] == 0)
@@ -140,37 +322,15 @@ class CategoryModel extends JoomAdminModel
           $table->setLocation($data['parent_id'], 'last-child');
         }
 
+        // Create file manager service
+				$manager = JoomHelper::getService('FileManager');
+
         // Bind the data.
         if(!$table->bind($data))
         {
           $this->setError($table->getError());
 
           return false;
-        }
-
-        // Create path if not available
-        if(empty($table->path))
-        {
-          // get the JoomgalleryComponent object if needed
-          if(!isset($com_obj) || !\strpos('JoomgalleryComponent', \get_class($com_obj)) === false)
-          {
-            $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
-          }
-
-          $parentcat_model = $com_obj->getMVCFactory()->createModel('category');
-
-          if(\is_null($parentcat_model))
-          {
-            throw new \Exception('Can not create new category model');
-          }
-
-          // Attempt to load the parent category.
-          $parentcat = $parentcat_model->getItem($table->parent_id);
-
-          if(isset($parentcat->path))
-          {
-            $table->path = $parentcat->path.'/'.$table->alias;
-          }
         }
 
         // Prepare the row for saving
@@ -183,6 +343,35 @@ class CategoryModel extends JoomAdminModel
 
           return false;
         }
+
+        // Create path if not available --> alias not yet generated!
+        if(empty($table->path))
+        {
+          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
+        }
+
+        // Handle folders if parent category was changed
+        if(!$isNew && $catMoved)
+			  {
+          // Move folder (including files and subfolders)
+					$manager->moveCategory($table, $data['parent_id']);
+
+          // Recreate category path
+          $table->path = $manager->getCatPath(0, false, $data['parent_id'], $data['alias']);
+        }
+
+        // Handle folders if record gets copied
+        if($isNew && $isCopy)
+        {
+          // Get source image id
+          $source_id = $app->input->get('origin_id', false, 'INT');
+
+          // Copy folder (including files and subfolders)
+          $manager->copyCategory($source_id, $table->path);
+        }
+
+        // Create folders
+        $manager->createCategory($table->alias, $table->parent_id);
 
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));

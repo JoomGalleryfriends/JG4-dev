@@ -306,7 +306,7 @@ class ImageModel extends JoomAdminModel
 		$isCopy      = false;
 
 		$key = $table->getKeyName();
-		$pk = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
+		$pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
 
 		// Are we going to copy the image record?
     	if($app->input->get('task') == 'save2copy')
@@ -635,7 +635,7 @@ class ImageModel extends JoomAdminModel
 		return true;
 	}
 
-  /**
+  	/**
 	 * Method to delete one or more images.
 	 *
 	 * @param   array  &$pks  An array of record primary keys.
