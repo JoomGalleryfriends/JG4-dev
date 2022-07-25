@@ -105,18 +105,13 @@ class HtmlView extends JoomGalleryView
 
 			$dropdown = $toolbar->dropdownButton('save2copy-group')
 				->text('JTOOLBAR_SAVE_AS_COPY')
-				->toggleSplit(false)
+				->toggleSplit(true)
 				->icon('fa fa-ellipsis-h')
-				->buttonClass('btn btn-action')
-				->listCheck(true);
+				->buttonClass('btn btn-action');
 
 			$childBar = $dropdown->getChildToolbar();
-
 			$childBar->save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
-
 			$childBar->save2copy('category.save2copy.recursive', 'JTOOLBAR_SAVE_AS_COPY_RECURSIVE');
-
-			//ToolbarHelper::custom('category.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 		}
 
 		if(empty($this->item->id))
