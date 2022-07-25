@@ -122,7 +122,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['modified_time'] = $date->toSql();
 		}
 
-    // Support for alias field: alias
+    	// Support for alias field: alias
 		if(empty($array['alias']))
 		{
 			if(empty($array['title']))
