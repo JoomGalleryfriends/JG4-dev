@@ -32,6 +32,13 @@ use \Joomla\CMS\Router\Route;
 class JoomHelper
 {
   /**
+   * List of available content types
+   *
+   * @var array
+   */
+  protected static $content_types = array('category', 'image', 'tag', 'imagetype');
+
+  /**
 	 * Gets the JoomGallery component object
 	 *
 	 * @return  Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
@@ -115,14 +122,8 @@ class JoomHelper
 	 */
   public static function getRecord($name, $id, $com_obj=null)
   {
-    $availables = array('category', 'image', 'tag', 'imagetype');
-
-    if(!\in_array($name, $availables))
-    {
-      throw new \Exception('Please provide a valid the record type.');
-
-      return false;
-    }
+    // Check if content type is available
+    self::isAvailable($name);
 
     // We got a valid record object
     if(\is_object($id) && $id instanceof \Joomla\CMS\Object\CMSObject && isset($id->id))
@@ -236,23 +237,39 @@ class JoomHelper
 
 	/**
 	 * Gets a list of the actions that can be performed.
+   * 
+   * @param   string  $type   The name of the content type of the item
+   * @param   int     $id     The item's id
 	 *
 	 * @return  CMSObject
 	 *
 	 * @since   4.0.0
 	 */
-	public static function getActions()
+	public static function getActions($type=null, $id=null)
 	{
-		$user   = Factory::getUser();
+    // Create asset name
+		$assetName = _JOOM_OPTION;
+    if($type)
+    {
+      // Check if content type is available
+      self::isAvailable($type);
+
+      $assetName .= '.'.$type;
+    }
+    if($id)
+    {
+      $assetName .= '.'.$id;
+    }
+
+    $user   = Factory::getUser(); 
 		$result = new CMSObject;
 
-		$assetName = 'com_joomgallery';
-
 		$actions = array(
-			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+			'core.admin', 'core.manage', 'joom.upload', 'joom.upload.inown', 'core.create', 'joom.create.inown',
+      'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
 		);
 
-		foreach ($actions as $action)
+		foreach($actions as $action)
 		{
 			$result->set($action, $user->authorise($action, $assetName));
 		}
@@ -394,5 +411,22 @@ class JoomHelper
     {
       return false;
     }     
+  }
+
+  /**
+	 * Checks if a specific content type is available
+   *
+   * @param   string    $name   Content type name
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+  protected static function isAvailable($name)
+  {
+    if(!\in_array($name, self::$content_types))
+    {
+      throw new \Exception(Text::_('Please provide a valid content type.'));
+    }
   }
 }
