@@ -16,7 +16,6 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\HTML\Helpers\Sidebar;
 use \Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -47,10 +46,10 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-    $this->items = $this->get('Items');
-		$this->state = $this->get('State');
-		$this->pagination = $this->get('Pagination');
-		$this->filterForm = $this->get('FilterForm');
+    $this->items         = $this->get('Items');
+		$this->state         = $this->get('State');
+		$this->pagination    = $this->get('Pagination');
+		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		// Check for errors.
@@ -75,7 +74,7 @@ class HtmlView extends JoomGalleryView
 	protected function addToolbar()
 	{
 		$state = $this->get('State');
-		$canDo = JoomHelper::getActions();
+		$canDo = JoomHelper::getActions('category');
 
 		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CATEGORY_MANAGER'), "folder-open");
 
@@ -103,11 +102,11 @@ class HtmlView extends JoomGalleryView
 
 			$childBar = $dropdown->getChildToolbar();
 
-			if(isset($this->items[0]->state))
+			if(isset($this->items[0]->published))
 			{
 				$childBar->publish('categories.publish')->listCheck(true);
 				$childBar->unpublish('categories.unpublish')->listCheck(true);
-				$childBar->archive('categories.archive')->listCheck(true);
+				//$childBar->archive('categories.archive')->listCheck(true);
 			}
 			elseif(isset($this->items[0]))
 			{
@@ -124,12 +123,12 @@ class HtmlView extends JoomGalleryView
 				->task('categories.duplicate')
 				->listCheck(true);
 
-			if(isset($this->items[0]->checked_out))
-			{
-				$childBar->checkin('categories.checkin')->listCheck(true);
-			}
+			// if(isset($this->items[0]->checked_out))
+			// {
+			// 	$childBar->checkin('categories.checkin')->listCheck(true);
+			// }
 
-			if(isset($this->items[0]->state))
+			if(isset($this->items[0]->published))
 			{
 				$childBar->trash('categories.trash')->listCheck(true);
 			}
@@ -143,9 +142,9 @@ class HtmlView extends JoomGalleryView
 		}
 
 		// Show trash and delete for components that uses the state field
-		if(isset($this->items[0]->state))
+		if(isset($this->items[0]->published))
 		{
-			if($this->state->get('filter.state') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
+			if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
 			{
 				$toolbar->delete('categories.delete')
 					->text('JTOOLBAR_EMPTY_TRASH')
