@@ -220,9 +220,16 @@ if ($saveOrder && !empty($this->items))
 				</table>
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
+        <input type="hidden" id="del_force" name="del_force" value="0"/>
 				<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
 				<?php echo HTMLHelper::_('form.token'); ?>
 			</div>
 		</div>
 	</div>
 </form>
+
+<?php if($this->deleteBtnJS) : ?>
+  <script>
+    <?php echo $this->deleteBtnJS; ?>
+  </script>
+<?php endif; ?>

@@ -28,7 +28,7 @@ use \Joomla\Registry\Registry;
  * @since   4.0.0
  */
 class CategoryTable extends Table implements VersionableTableInterface
-{
+{ 
 	/**
 	 * Check if a field is unique
 	 *
@@ -64,7 +64,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 
 		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
 
-		$this->setColumnAlias('published', 'state');
+		$this->setColumnAlias('published', 'published');
 		$this->getRootId();
 	}
 
