@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Filesystem\File as JFile;
+use \Joomla\CMS\Filesystem\Path as JPath;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\FilesystemInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -40,53 +41,54 @@ abstract class Filesystem implements FilesystemInterface
    * replace special chars defined in the configuration
    *
    * @param   string    $file            The file name
-   * @param   bool      $strip_ext       True for stripping the extension
+   * @param   integer   $with_ext        0: strip extension, 1: force extension, 2: leave it as it is (default: 2)
+   * @param   string    $use_ext         Extension to use if $file given without extension
    * @param   string    $replace_chars   Characters to be replaced
    *
    * @return  mixed     cleaned name on success, false otherwise
    *
    * @since   1.0.0
    */
-  public function cleanFilename($file, $strip_ext=false, $replace_chars=''): mixed
+  public function cleanFilename($file, $with_ext=2, $use_ext='jpg', $replace_chars='')
   {
     // Check if multibyte support installed
-    if(in_array ('mbstring', get_loaded_extensions()))
+    if(\in_array ('mbstring', \get_loaded_extensions()))
     {
       // Get the funcs from mb
-      $funcs = get_extension_funcs('mbstring');
-      if(in_array ('mb_detect_encoding', $funcs) && in_array ('mb_strtolower', $funcs))
+      $funcs = \get_extension_funcs('mbstring');
+      if(\in_array ('mb_detect_encoding', $funcs) && \in_array ('mb_strtolower', $funcs))
       {
         // Try to check if the name contains UTF-8 characters
-        $isUTF = mb_detect_encoding($file, 'UTF-8', true);
+        $isUTF = \mb_detect_encoding($file, 'UTF-8', true);
         if($isUTF)
         {
           // Try to lower the UTF-8 characters
-          $file = mb_strtolower($file, 'UTF-8');
+          $file = \mb_strtolower($file, 'UTF-8');
         }
         else
         {
           // Try to lower the one byte characters
-          $file = strtolower($file);
+          $file = \strtolower($file);
         }
       }
       else
       {
         // TODO mbstring loaded but no needed functions
         // --> server misconfiguration
-        $file = strtolower($file);
+        $file = \strtolower($file);
       }
     }
     else
     {
       // TODO no mbstring loaded, appropriate server for Joomla?
-      $file = strtolower($file);
+      $file = \strtolower($file);
     }
 
     // Replace special chars
     $filenamesearch  = array();
     $filenamereplace = array();
 
-    $items = explode(',', $replace_chars);
+    $items = \explode(',', $replace_chars);
     if($items != false)
     {
       // Contains pairs of <specialchar>|<replaced char(s)>
@@ -94,37 +96,37 @@ abstract class Filesystem implements FilesystemInterface
       {
         if(!empty($item))
         {
-          $workarray = explode('|', trim($item));
+          $workarray = \explode('|', \trim($item));
           if($workarray != false && isset($workarray[0]) && !empty($workarray[0]) && isset($workarray[1]) && !empty($workarray[1]))
           {
-            array_push($filenamesearch, preg_quote($workarray[0]));
-            array_push($filenamereplace, preg_quote($workarray[1]));
+            \array_push($filenamesearch, \preg_quote($workarray[0]));
+            \array_push($filenamereplace, \preg_quote($workarray[1]));
           }
         }
       }
     }
 
     // Replace whitespace with underscore
-    array_push($filenamesearch, '\s');
-    array_push($filenamereplace, '_');
+    \array_push($filenamesearch, '\s');
+    \array_push($filenamereplace, '_');
     // Replace slash with underscore
-    array_push($filenamesearch, '/');
-    array_push($filenamereplace, '_');
+    \array_push($filenamesearch, '/');
+    \array_push($filenamereplace, '_');
     // Replace backslash with underscore
-    array_push($filenamesearch, '\\\\');
-    array_push($filenamereplace, '_');
+    \array_push($filenamesearch, '\\\\');
+    \array_push($filenamereplace, '_');
     // Replace other stuff
-    array_push($filenamesearch, '[^a-z_0-9-]');
-    array_push($filenamereplace, '');
+    \array_push($filenamesearch, '[^a-z_0-9-]');
+    \array_push($filenamereplace, '');
 
     // Checks for different array-length
-    $lengthsearch  = count($filenamesearch);
-    $lengthreplace = count($filenamereplace);
+    $lengthsearch  = \count($filenamesearch);
+    $lengthreplace = \count($filenamereplace);
     if($lengthsearch > $lengthreplace)
     {
       while($lengthsearch > $lengthreplace)
       {
-        array_push($filenamereplace, '');
+        \array_push($filenamereplace, '');
         $lengthreplace = $lengthreplace + 1;
       }
     }
@@ -134,33 +136,20 @@ abstract class Filesystem implements FilesystemInterface
       {
         while($lengthreplace > $lengthsearch)
         {
-          array_push($filenamesearch, '');
+          \array_push($filenamesearch, '');
           $lengthsearch = $lengthsearch + 1;
         }
       }
     }
 
-    // Checks for extension
-    $extensions = JoomHelper::getComponent()->supported_types;
-    $extension  = false;
-    foreach ($extensions as $i => $ext)
-    {
-      $ext = '.'.\strtolower($ext);
-      if(\substr_count($file, $ext) != 0)
-      {
-        $extension = true;
-        // If extension found, break
-        break;
-      }
-    }
+    $detect_ext = JFile::getExt($file);
 
     // Replace extension if present
-    if($extension)
+    if($detect_ext)
     {
-      $fileextension        = JFile::getExt($file);
-      $fileextensionlength  = strlen($fileextension);
-      $filenamelength       = strlen($file);
-      $filename             = substr($file, -$filenamelength, -$fileextensionlength - 1);
+      $fileextensionlength  = \strlen($detect_ext);
+      $filenamelength       = \strlen($file);
+      $filename             = \substr($file, -$filenamelength, -$fileextensionlength - 1);
     }
     else
     {
@@ -172,19 +161,37 @@ abstract class Filesystem implements FilesystemInterface
     for($i = 0; $i < $lengthreplace; $i++)
     {
       $searchstring = '!'.$filenamesearch[$i].'+!i';
-      $filename     = preg_replace($searchstring, $filenamereplace[$i], $filename);
+      $filename     = \preg_replace($searchstring, $filenamereplace[$i], $filename);
     }
 
-    if($extension && !$strip_ext)
+    switch($with_ext)
     {
-      // Return filename with extension for regular upload
-      return $filename.'.'.$fileextension;
+      case 0:
+        // strip extension
+        break;
+
+      case 1:
+        // add extension
+        if($detect_ext)
+        {
+          $filename = $filename.'.'. \strtolower($detect_ext);
+        }
+        else
+        {
+          $filename = $filename.'.'. \strtolower($use_ext);
+        }
+        break;
+      
+      default:
+        // leave it as it is
+        if($detect_ext)
+        {
+          $filename = $filename.'.'. \strtolower($detect_ext);
+        }
+        break;
     }
-    else
-    {
-      // Return filename without extension for batchupload
-      return $filename;
-    }
+
+    return $filename;
   }
 
   /**
@@ -239,6 +246,25 @@ abstract class Filesystem implements FilesystemInterface
     {
       return true;
     }
+  }
+
+  /**
+   * Copies an index.html file into a specified folder
+   *
+   * @param   string   $path    The path where the index.html should be created
+   * 
+   * @return  bool     True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function createIndexHtml($path): bool
+  {
+    // Content
+    $html = '<html><body bgcolor="#FFFFFF"></body></html>';
+    // File path
+    $file = JPath::clean($path.\DIRECTORY_SEPARATOR.'index.html');
+
+    return \file_put_contents($file, $html);
   }
 
   /**

@@ -8,41 +8,41 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr;
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
 \defined('JPATH_PLATFORM') or die;
 
 /**
-* The Image manager service
+* The file manager service
 *
 * @since  4.0.0
 */
-interface ImageMgrServiceInterface
+interface FileManagerServiceInterface
 {
   /**
-	 * Storage for the Image manager class.
+	 * Storage for the file manager class.
 	 *
-	 * @var ImageMgrInterface
+	 * @var FileManagerInterface
 	 *
 	 * @since  4.0.0
 	 */
-	private $imageManager;
+	private $fileManager;
 
   /**
-	 * Creates the Image manager helper class
+	 * Creates the file manager helper class
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createImageManager(): void;
+	public function createFileManager(): void;
 
 	/**
-	 * Returns the Image manager helper class.
+	 * Returns the file manager helper class.
 	 *
-	 * @return  ImageMgrInterface
+	 * @return  FileManagerInterface
 	 *
 	 * @since  4.0.0
 	 */
-	public function getImageManager(): ImageMgrInterface;
+	public function getImageManager(): FileManagerInterface;
 }
