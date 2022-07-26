@@ -20,6 +20,7 @@ use \Joomla\CMS\HTML\Helpers\Sidebar;
 use \Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
+use stdClass;
 
 /**
  * View class for a list of Categories.
@@ -91,48 +92,70 @@ class HtmlView extends JoomGalleryView
 			}
 		}
 
-		if($canDo->get('core.edit.state')  || count($this->transitions))
+    if($canDo->get('core.delete'))
+    {
+      // Get infos for confirmation message
+      $counts = new stdClass;
+      foreach($this->items as $item)
+      {
+        $counts->{$item->id} = new stdClass;
+        $counts->{$item->id}->img_count = $item->img_count;
+        $counts->{$item->id}->child_count = $item->child_count;
+      }
+
+      $toolbar->delete('categories.delete')
+				->text('JTOOLBAR_DELETE')
+				->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_CATEGORIES'))
+				->listCheck(true);
+
+      // Add button javascript
+      $this->deleteBtnJS  = 'var counts = '. \json_encode($counts).';';
+      $this->deleteBtnJS .= 'jQuery(document).ready(function() {';
+      $this->deleteBtnJS .= '   document.querySelector("#adminForm").addEventListener("submit", function(event) {';
+      $this->deleteBtnJS .= '       event.preventDefault();';
+      $this->deleteBtnJS .= '       document.querySelector("#del_force").value = "1";';
+      $this->deleteBtnJS .= '       this.removeEventListener("submit", arguments.callee, false);';
+      $this->deleteBtnJS .= '       this.submit();';
+      $this->deleteBtnJS .= '   });';
+      $this->deleteBtnJS .= '});';      
+    }
+
+    if($canDo->get('core.edit.state')  || count($this->transitions))
 		{
-			$dropdown = $toolbar->dropdownButton('status-group')
-				->text('JTOOLBAR_CHANGE_STATUS')
+			$status_dropdown = $toolbar->dropdownButton('status-group')
+				->text('JTOOLBAR_PUBLISH')
 				->toggleSplit(false)
 				->icon('fas fa-ellipsis-h')
 				->buttonClass('btn btn-action')
 				->listCheck(true);
 
-			$childBar = $dropdown->getChildToolbar();
+			$status_childBar = $status_dropdown->getChildToolbar();
 
 			if(isset($this->items[0]->published))
 			{
-				$childBar->publish('categories.publish')->listCheck(true);
-				$childBar->unpublish('categories.unpublish')->listCheck(true);
-				//$childBar->archive('categories.archive')->listCheck(true);
+				$status_childBar->publish('categories.publish')->listCheck(true);
+				$status_childBar->unpublish('categories.unpublish')->listCheck(true);
 			}
-			elseif(isset($this->items[0]))
-			{
-				// If this component does not use state then show a direct delete button as we can not trash
-				$toolbar->delete('categories.delete')
-				->text('JTOOLBAR_EMPTY_TRASH')
-				->message('JGLOBAL_CONFIRM_DELETE')
-				->listCheck(true);
-			}
+		}
 
-			$childBar->standardButton('duplicate')
+    if($canDo->get('core.edit'))
+		{
+      $batch_dropdown = $toolbar->dropdownButton('batch-group')
+        ->text('JTOOLBAR_BATCH')
+        ->toggleSplit(false)
+        ->icon('fas fa-ellipsis-h')
+        ->buttonClass('btn btn-action')
+        ->listCheck(true);
+      
+      $batch_childBar = $batch_dropdown->getChildToolbar();
+
+      // Duplicate button inside batch dropdown
+      $batch_childBar->standardButton('duplicate')
 				->text('JTOOLBAR_DUPLICATE')
 				->icon('fas fa-copy')
 				->task('categories.duplicate')
 				->listCheck(true);
-
-			// if(isset($this->items[0]->checked_out))
-			// {
-			// 	$childBar->checkin('categories.checkin')->listCheck(true);
-			// }
-
-			if(isset($this->items[0]->published))
-			{
-				$childBar->trash('categories.trash')->listCheck(true);
-			}
-		}
+    }
 
 		if($canDo->get('core.admin'))
 		{

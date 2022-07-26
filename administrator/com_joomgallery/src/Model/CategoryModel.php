@@ -110,8 +110,8 @@ class CategoryModel extends JoomAdminModel
 		$pks   = ArrayHelper::toInteger((array) $pks);
 		$table = $this->getTable();
 
-    // Get recursive array from request
-    $rec_arr = Factory::getApplication()->input->get('recursive', array());
+    // Check if the deletion is forced
+    $force_delete = Factory::getApplication()->input->get('del_force', false, 'BOOL');
 
 		// Include the plugins for the delete events.
 		PluginHelper::importPlugin($this->events_map['delete']);
@@ -137,13 +137,6 @@ class CategoryModel extends JoomAdminModel
 
 					// Create file manager service
 					$manager = JoomHelper::getService('FileManager');
-
-          // Decide if category with images can be deleted
-          $force_delete = false;
-          if(\in_array($pk, $rec_arr))
-          {
-            $force_delete = true;
-          }
 
           // Delete corresponding folders
 					if(!$manager->deleteCategory($table, $force_delete))
