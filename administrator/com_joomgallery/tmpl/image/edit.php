@@ -151,6 +151,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 		</div>
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
+
 	<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
 	<?php /*<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />*/ ?>
 	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
@@ -207,8 +208,5 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
 
     let bsmodal = new bootstrap.Modal(document.getElementById('image-modal-box'), {keyboard: false});
     bsmodal.show();
-
-
-		console.log(typename);
 	};
 </script>
