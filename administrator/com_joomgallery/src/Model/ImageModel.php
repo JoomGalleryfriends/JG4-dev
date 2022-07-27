@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
@@ -148,7 +149,7 @@ class ImageModel extends JoomAdminModel
 	 */
 	public function getItem($pk = null) 
 	{
-    	$pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+    $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 		$table = $this->getTable();
 
 		if($pk > 0 || \is_array($pk))
@@ -250,6 +251,9 @@ class ImageModel extends JoomAdminModel
 
 				// Copy images
 				$manager->copyImages($table, $table->catid, $newFilename);
+
+        // Transfer new filename to table
+        $table->filename = $newFilename;
 
 				// Output warning messages
 				if(\count($this->component->getWarning()) > 1)
@@ -790,6 +794,135 @@ class ImageModel extends JoomAdminModel
 
 		return true;
 	}
+
+  /**
+	 * Method to change the state of one or more records.
+	 *
+   * @param   string   $type   Name of the state to be changed
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the state.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   1.6
+	 */
+	public function changeSate($type='publish', &$pks, $value = 1)
+	{
+		$user    = Factory::getUser();
+		$table   = $this->getTable();
+		$pks     = (array) $pks;
+		$context = $this->option . '.' . $this->name . '.' . $type;
+
+		// Include the plugins for the change of state event.
+		PluginHelper::importPlugin($this->events_map['change_state']);
+
+		// Access checks.
+		foreach($pks as $i => $pk)
+		{
+			$table->reset();
+
+			if($table->load($pk))
+			{
+				if(!$this->canEditState($table))
+				{
+					// Prune items that you can't change.
+					unset($pks[$i]);
+
+					Log::add(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+
+					return false;
+				}
+
+				// If the table is checked out by another user, drop it and report to the user trying to change its state.
+				if($table->hasField('checked_out') && $table->checked_out && ($table->checked_out != $user->id))
+				{
+					Log::add(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'), Log::WARNING, 'jerror');
+
+					// Prune items that you can't change.
+					unset($pks[$i]);
+
+					return false;
+				}
+
+        switch($type)
+        {
+          case 'feature':
+            $stateColumnName  = 'featured';
+            break;
+
+          case 'approve':
+            $stateColumnName  = 'approved';
+            break;
+          
+          case 'publish':
+          default:
+            $stateColumnName  = 'published';
+            break;
+        }
+
+				if(property_exists($table, $stateColumnName) && $table->get($stateColumnName, $value) == $value)
+				{
+					unset($pks[$i]);
+
+					continue;
+				}
+			}
+		}
+
+		// Check if there are items to change
+		if(!\count($pks))
+		{
+			return true;
+		}
+
+		// Trigger the before change state event.
+		$result = Factory::getApplication()->triggerEvent($this->event_before_change_state, array($context, $pks, $value));
+
+		if(\in_array(false, $result, true))
+		{
+			$this->setError($table->getError());
+
+			return false;
+		}
+
+		// Attempt to change the state of the records.
+		if (!$table->changeState($type, $pks, $value, $user->get('id')))
+		{
+			$this->setError($table->getError());
+
+			return false;
+		}
+
+		// Trigger the change state event.
+		$result = Factory::getApplication()->triggerEvent($this->event_change_state, array($context, $pks, $value));
+
+		if (\in_array(false, $result, true))
+		{
+			$this->setError($table->getError());
+
+			return false;
+		}
+
+		// Clear the component's cache
+		$this->cleanCache();
+
+		return true;
+	}
+
+  /**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   1.6
+	 */
+	public function publish(&$pks, $value = 1)
+	{
+    return $this->changeSate('publish', $pks, $value);
+  }
 
 	/**
 	 * Prepare and sanitise the table prior to saving.
