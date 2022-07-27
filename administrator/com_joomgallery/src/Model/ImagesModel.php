@@ -197,7 +197,7 @@ class ImagesModel extends JoomListModel
     $query->join('LEFT', $db->quoteName('#__users', 'uc'), $db->quoteName('uc.id') . ' = ' . $db->quoteName('a.checked_out'));
     
 		// Join over the foreign key 'catid'
-    $query->select($db->quoteName('category.title', 'cattitle'));
+    $query->select(array($db->quoteName('category.title', 'cattitle'), $db->quoteName('category.created_by', 'cat_uid')));
     $query->join('LEFT', $db->quoteName('#__joomgallery_categories', 'category'), $db->quoteName('category.id') . ' = ' . $db->quoteName('a.catid'));
 
 		// Join over the access level field 'access'
@@ -205,11 +205,11 @@ class ImagesModel extends JoomListModel
     $query->join('LEFT', $db->quoteName('#__viewlevels', 'access'), $db->quoteName('access.id') . ' = ' . $db->quoteName('a.access'));
 
 		// Join over the user field 'created_by'
-    $query->select($db->quoteName('ua.name', 'created_by'));
+    $query->select(array($db->quoteName('ua.name', 'created_by'), $db->quoteName('ua.id', 'created_by_id')));
     $query->join('LEFT', $db->quoteName('#__users', 'ua'), $db->quoteName('ua.id') . ' = ' . $db->quoteName('a.created_by'));
 
 		// Join over the user field 'modified_by'
-    $query->select($db->quoteName('um.name', 'modified_by'));
+    $query->select(array($db->quoteName('um.name', 'modified_by'), $db->quoteName('um.id', 'modified_by_id')));
     $query->join('LEFT', $db->quoteName('#__users', 'um'), $db->quoteName('um.id') . ' = ' . $db->quoteName('a.modified_by'));
 
     // Filter by access level.

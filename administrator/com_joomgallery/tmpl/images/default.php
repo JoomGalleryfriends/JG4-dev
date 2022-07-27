@@ -122,21 +122,13 @@ if ($saveOrder)
             </tfoot>
             <tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php endif; ?>>
             <?php foreach ($this->items as $i => $item) :
-              $ordering   = ($listOrder == 'a.ordering');
-
-              $canCreate  = $user->authorise('core.create', 'com_joomgallery');
-              $canEdit    = $user->authorise('core.edit', 'com_joomgallery');
-              $canCheckin = $user->authorise('core.manage', 'com_joomgallery');
-              $canChange  = $user->authorise('core.edit.state', 'com_joomgallery');
-
+              $ordering         = ($listOrder == 'a.ordering');
               $canEdit          = $user->authorise('core.edit',       'com_joomgallery.image.'.$item->id);
               $canCheckin       = $user->authorise('core.manage',     'com_joomgallery') || $item->checked_out == $userId || is_null($item->checked_out);
-              $canEditOwn       = $user->authorise('core.edit.own',   'com_joomgallery.image.'.$item->id) && $item->created_by == $userId;
+              $canEditOwn       = $user->authorise('core.edit.own',   'com_joomgallery.image.'.$item->id) && $item->created_by_id == $userId;
               $canChange        = $user->authorise('core.edit.state', 'com_joomgallery.image.'.$item->id) && $canCheckin;
               $canEditCat       = $user->authorise('core.edit',       'com_joomgallery.category.'.$item->catid);
-              //$canEditOwnCat    = $user->authorise('core.edit.own',   'com_joomgallery.category.'.$item->catid) && $item->category_uid == $userId;
-              //$canEditParCat    = $user->authorise('core.edit',       'com_joomgallery.category.'.$item->parent_category_id);
-              //$canEditOwnParCat = $user->authorise('core.edit.own',   'com_joomgallery.category.'.$item->parent_category_id) && $item->parent_category_uid == $userId;
+              $canEditOwnCat    = $user->authorise('core.edit.own',   'com_joomgallery.category.'.$item->catid) && $item->cat_uid == $userId;
               ?>
 
               <tr class="row<?php echo $i % 2; ?>">
@@ -266,7 +258,7 @@ if ($saveOrder)
                 </td>
                 <td class="small d-none d-md-table-cell">
                   <?php if ($item->created_by) : ?>
-                    <a href="<?php echo Route::_('index.php?option=com_users&task=user.edit&id=' . (int) $item->created_by); ?>">
+                    <a href="<?php echo Route::_('index.php?option=com_users&task=user.edit&id=' . (int) $item->created_by_id); ?>">
                       <?php echo $this->escape($item->created_by); ?>
                     </a>
                   <?php else : ?>
