@@ -49,7 +49,7 @@ class ImagesModel extends JoomListModel
 				'useruploaded', 'a.useruploaded',
 				'imgtitle', 'a.imgtitle',
 				'alias', 'a.alias',
-				'cattitle', 'a.cattitle',
+				'cattitle', 'cattitle',
 				'published', 'a.published',
 				'imgauthor', 'a.imgauthor',
 				'language', 'a.language',
@@ -89,19 +89,62 @@ class ImagesModel extends JoomListModel
 	 */
 	protected function populateState($ordering = 'a.id', $direction = 'ASC')
 	{
+    $app = Factory::getApplication();
+
+    $forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
+
+    // Adjust the context to support modal layouts.
+		if ($layout = $app->input->get('layout'))
+		{
+			$this->context .= '.' . $layout;
+		}
+
+    // Adjust the context to support forced languages.
+		if ($forcedLanguage)
+		{
+			$this->context .= '.' . $forcedLanguage;
+		}
+
+    $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$this->setState('filter.search', $search);
+
+		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
+
+		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
+		$this->setState('filter.language', $language);
+
+		$formSubmited = $app->input->post->get('form_submited');
+
+    // Gets the value of a user state variable and sets it in the session
+		$this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
+		$this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by');
+		$this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category');
+		//$this->getUserStateFromRequest($this->context . '.filter.tag', 'filter_tag', '');
+
+    if ($formSubmited)
+		{
+			$access = $app->input->post->get('access');
+			$this->setState('filter.access', $access);
+
+			$createdBy = $app->input->post->get('created_by');
+			$this->setState('filter.created_by', $createdBy);
+
+			$category = $app->input->post->get('category');
+			$this->setState('filter.category', $category);
+
+			// $tag = $app->input->post->get('tag');
+			// $this->setState('filter.tag', $tag);
+		}
+
 		// List state information.
 		parent::populateState($ordering, $direction);
 
-		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
-		$this->setState('filter.search', $context);
-
-		// Split context into component and optional section
-		$parts = FieldsHelper::extract($context);
-
-		if($parts)
+		// Force a language
+		if (!empty($forcedLanguage))
 		{
-			$this->setState('filter.component', $parts[0]);
-			$this->setState('filter.section', $parts[1]);
+			$this->setState('filter.language', $forcedLanguage);
+			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
 	}
 
@@ -122,7 +165,12 @@ class ImagesModel extends JoomListModel
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . $this->getState('filter.state');
+		$id .= ':' . serialize($this->getState('filter.access'));
+		$id .= ':' . $this->getState('filter.published');
+		$id .= ':' . serialize($this->getState('filter.category'));
+		$id .= ':' . serialize($this->getState('filter.created_by'));
+		$id .= ':' . $this->getState('filter.language');
+		//$id .= ':' . serialize($this->getState('filter.tag'));
 
 		return parent::getStoreId($id);
 	}
@@ -136,56 +184,38 @@ class ImagesModel extends JoomListModel
 	 */
 	protected function getListQuery()
 	{
-
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query->select($this->getState('list.select', 'DISTINCT a.*'));
-		$query->from('`#__joomgallery` AS a');
+    $query->from($db->quoteName('#__joomgallery', 'a'));
 
 		// Join over the users for the checked out user
-		$query->select("uc.name AS uEditor");
-		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
+    $query->select($db->quoteName('uc.name', 'uEditor'));
+    $query->join('LEFT', $db->quoteName('#__users', 'uc'), $db->quoteName('uc.id') . ' = ' . $db->quoteName('a.checked_out'));
     
 		// Join over the foreign key 'catid'
-		$query->select('`category`.title AS `cattitle`');
-		$query->join('LEFT', '#__joomgallery_categories AS category ON `category`.id = a.`catid`');
+    $query->select($db->quoteName('category.title', 'cattitle'));
+    $query->join('LEFT', $db->quoteName('#__joomgallery_categories', 'category'), $db->quoteName('category.id') . ' = ' . $db->quoteName('a.catid'));
 
 		// Join over the access level field 'access'
-		$query->select('`access`.title AS `access`'); 
-		$query->join('LEFT', '#__viewlevels AS access ON `access`.id = a.`access`');
+    $query->select($db->quoteName('access.title', 'access'));
+    $query->join('LEFT', $db->quoteName('#__viewlevels', 'access'), $db->quoteName('access.id') . ' = ' . $db->quoteName('a.access'));
 
 		// Join over the user field 'created_by'
-		$query->select('`created_by`.name AS `created_by`');
-		$query->join('LEFT', '#__users AS `created_by` ON `created_by`.id = a.`created_by`');
+    $query->select($db->quoteName('ua.name', 'created_by'));
+    $query->join('LEFT', $db->quoteName('#__users', 'ua'), $db->quoteName('ua.id') . ' = ' . $db->quoteName('a.created_by'));
 
 		// Join over the user field 'modified_by'
-		$query->select('`modified_by`.name AS `modified_by`');
-		$query->join('LEFT', '#__users AS `modified_by` ON `modified_by`.id = a.`modified_by`');
+    $query->select($db->quoteName('um.name', 'modified_by'));
+    $query->join('LEFT', $db->quoteName('#__users', 'um'), $db->quoteName('um.id') . ' = ' . $db->quoteName('a.modified_by'));
 
-
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-
-		if(!empty($search))
-		{
-			if(stripos($search, 'id:') === 0)
-			{
-				$query->where('a.id = ' . (int) substr($search, 3));
-			}
-			else
-			{
-				$search = $db->Quote('%' . $db->escape($search, true) . '%');
-				$query->where('( a.imgtitle LIKE ' . $search . ' )');
-			}
-		}
-
-		// Filtering access
+    // Filter by access level.
 		$filter_access = $this->state->get("filter.access");
     
-    if (is_numeric($filter_access))
+    if(is_numeric($filter_access))
 		{
 			$filter_access = (int) $filter_access;
 			$query->where($db->quoteName('a.access') . ' = :access')
@@ -197,15 +227,128 @@ class ImagesModel extends JoomListModel
 			$query->whereIn($db->quoteName('a.access'), $filter_access);
 		}
 
+    // Filter by owner
+		$userId = $this->getState('filter.created_by');
+
+		if(is_numeric($userId))
+		{
+			$userId = (int) $userId;
+			$type = $this->getState('filter.created_by.include', true) ? ' = ' : ' <> ';
+			$query->where($db->quoteName('a.created_by') . $type . ':userId')
+				->bind(':userId', $userId, ParameterType::INTEGER);
+		}
+		elseif(is_array($userId))
+		{
+			$userId = ArrayHelper::toInteger($userId);
+			$query->whereIn($db->quoteName('a.created_by'), $userId);
+		}
+
+		// Filter by search
+		$search = $this->getState('filter.search');
+
+		if(!empty($search))
+		{
+			if(stripos($search, 'id:') === 0)
+			{
+				$search = (int) substr($search, 3);
+				$query->where($db->quoteName('a.id') . ' = :search')
+					->bind(':search', $search, ParameterType::INTEGER);
+			}
+			else
+			{
+        $search = '%' . str_replace(' ', '%', trim($search)) . '%';
+				$query->where(
+					'(' . $db->quoteName('a.imgtitle') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
+						. ' OR ' . $db->quoteName('a.imgtext') . ' LIKE :search3)'
+				)
+					->bind([':search1', ':search2', ':search3'], $search);
+			}
+		}
+
+    // Filter by published state
+		$published = (string) $this->getState('filter.published');
+
+		if($published !== '*')
+		{
+			if(is_numeric($published))
+			{
+				$state = (int) $published;
+
+        if($state == 1 || $state == 2)
+        { // published/unpublished
+
+          // translate state
+          $state = ($state == 1) ? 1 : 0;
+
+          // row name
+          $row = 'a.published';
+        }
+        elseif($state == 3 || $state == 4)
+        {// approved/not approved
+
+          // translate state
+          $state = ($state == 3) ? 1 : 0;
+          
+          // row name
+          $row = 'a.approved';
+        }
+        elseif($state == 5)
+        {// rejected
+          Factory::getApplication()->enqueueMessage('Unknown state: Rejected', 'error');
+          $state = false;
+        }
+        elseif($state == 6 || $state == 7)
+        {// featured/not featured
+
+          // translate state
+          $state = ($state == 6) ? 1 : 0;
+
+          // row name
+          $row = 'a.featured';
+        }
+
+        if($state)
+        {
+          $query->where($db->quoteName($row) . ' = :state')
+					->bind(':state', $state, ParameterType::INTEGER);
+        }        
+			}
+		}
+
+    // Filter by categories
+    $catId = $this->getState("filter.category");
+
+    if(is_numeric($catId))
+		{
+			$catId = (int) $catId;
+			$query->where($db->quoteName('a.catid') . ' = :catId')
+				->bind(':catId', $catId, ParameterType::INTEGER);
+		}
+		elseif(is_array($catId))
+		{
+			$catId = ArrayHelper::toInteger($catId);
+			$query->whereIn($db->quoteName('a.catId'), $catId);
+		}
+
+    // Filter on the language.
+		if($language = $this->getState('filter.language'))
+		{
+			$query->where($db->quoteName('a.language') . ' = :language')
+				->bind(':language', $language);
+		}
+
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'a.id'); 
 		$orderDirn = $this->state->get('list.direction', 'ASC');
 
-		if($orderCol && $orderDirn)
-		{
+		// if($orderCol && $orderDirn)
+		// {
+    //   $query->order($db->escape($orderCol . ' ' . $orderDirn));
+		// }
+    // else
+    // {
       $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
-			//$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		}
+    // }
 
 		return $query;
 	}

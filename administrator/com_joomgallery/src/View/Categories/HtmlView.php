@@ -185,13 +185,13 @@ class HtmlView extends JoomGalleryView
 	protected function getSortFields()
 	{
 		return array(
-			'a.`title`' => Text::_('JGLOBAL_TITLE'),
-			'a.`parent_id`' => Text::_('COM_JOOMGALLERY_COMMON_PARENT_CATEGORY'),
-			'a.`published`' => Text::_('JSTATUS'),
-			'a.`access`' => Text::_('JGRID_HEADING_ACCESS'),
-			'a.`language`' => Text::_('JGRID_HEADING_LANGUAGE'),
+			'a.`title`'      => Text::_('JGLOBAL_TITLE'),
+			'a.`parent_id`'  => Text::_('COM_JOOMGALLERY_COMMON_PARENT_CATEGORY'),
+			'a.`published`'  => Text::_('JSTATUS'),
+			'a.`access`'     => Text::_('JGRID_HEADING_ACCESS'),
+			'a.`language`'   => Text::_('JGRID_HEADING_LANGUAGE'),
 			'a.`created_by`' => Text::_('JGLOBAL_FIELD_CREATED_BY_LABEL'),
-			'a.`id`' => Text::_('JGRID_HEADING_ID'),
+			'a.`id`'         => Text::_('JGRID_HEADING_ID'),
 		);
 	}
 
