@@ -38,11 +38,11 @@ class CategoryController extends FormController
 	{
 		$task = $this->getTask();
 
-		// // The save2copy task needs to be handled slightly differently.
-		// if ($task === 'save2copy')
-		// {
-		// 	$this->input->set('origin_id', $this->input->getInt('id'));
-		// }
+		// The save2copy task needs to be handled slightly differently.
+		if ($task === 'save2copy')
+		{
+			$this->input->set('origin_id', $this->input->getInt('id'));
+		}
 
 		return parent::save($key, $urlVar);
 	}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
     <fields name="filter">
         <field name="search"
                type="text"
@@ -18,9 +18,12 @@
 
         <field
               name="category"
-              type="joomcategory"
+              type="categoryedit"
               label="COM_JOOMGALLERY_COMMON_ALL"
               onchange="this.form.submit();"
+              show_root="false"
+              default=""
+              message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY"
               task="filter" />
 
         <field

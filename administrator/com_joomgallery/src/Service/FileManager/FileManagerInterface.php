@@ -79,7 +79,7 @@ interface FileManagerInterface
    *
    * @param   object|int|string    $img        Image object, image ID or image alias
    * @param   object|int|string    $dest       Category object, ID or alias of the destination category
-   * @param   string|False         $filename   Filename of the moved image (default: False)
+   * @param   string|false         $filename   Filename of the moved image (default: False)
    *
    * @return  bool    true on success, false otherwise
    *
@@ -125,27 +125,29 @@ interface FileManagerInterface
   /**
    * Copy category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be copied
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be copied
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyCategory($cat, $dest): bool;
+  public function copyCategory($cat, $dest, $foldername=false): bool;
 
   /**
    * Move category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be moved
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
-   * @param   bool                $copy     True, if you want to copy the category (default: false)
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be moved
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
+   * @param   bool                $copy         True, if you want to copy the category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveCategory($cat, $dest, $copy=false): bool;
+  public function moveCategory($cat, $dest, $foldername=false, $copy=false): bool;
 
   /**
    * Returns the path to an image

@@ -28,7 +28,8 @@ HTMLHelper::_('behavior.multiselect');
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
-   ->useScript('com_joomgallery.admin');
+   ->useScript('com_joomgallery.admin')
+   ->useScript('com_joomgallery.catBtns');
 
 $user      = Factory::getUser();
 $userId    = $user->get('id');

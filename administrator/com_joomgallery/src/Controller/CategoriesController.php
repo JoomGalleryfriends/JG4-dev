@@ -54,6 +54,7 @@ class CategoriesController extends AdminController
 			ArrayHelper::toInteger($pks);
 			$model = $this->getModel();
 			$model->duplicate($pks);
+      
 			$this->setMessage(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'));
 		}
 		catch (Exception $e)

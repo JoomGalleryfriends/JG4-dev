@@ -1,32 +1,33 @@
 window.Joomla = window.Joomla || {};
 
-(function (window, Joomla) {
-    Joomla.toggleField = function (id, task, field) {
+(function (window, Joomla){
 
-        var f = document.adminForm, i = 0, cbx, cb = f[ id ];
+  Joomla.toggleField = function (id, task, field)
+  {
+      var f = document.adminForm, i = 0, cbx, cb = f[id];
+      if (!cb) return false;
 
-        if (!cb) return false;
+      while(true)
+      {
+          cbx = f[ 'cb' + i ];
+          if (!cbx) break;
+          cbx.checked = false;
 
-        while (true) {
-            cbx = f[ 'cb' + i ];
+          i++;
+      }
 
-            if (!cbx) break;
+      var inputField   = document.createElement('input');
 
-            cbx.checked = false;
-            i++;
-        }
+      inputField.type  = 'hidden';
+      inputField.name  = 'field';
+      inputField.value = field;
+      f.appendChild(inputField);
 
-        var inputField   = document.createElement('input');
+      cb.checked = true;
+      f.boxchecked.value = 1;
+      Joomla.submitform(task);
 
-        inputField.type  = 'hidden';
-        inputField.name  = 'field';
-        inputField.value = field;
-        f.appendChild(inputField);
-
-        cb.checked = true;
-        f.boxchecked.value = 1;
-        Joomla.submitform(task);
-
-        return false;
-    };
+      return false;
+  };
+  
 })(window, Joomla);

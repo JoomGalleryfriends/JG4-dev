@@ -356,11 +356,17 @@ class CategoryModel extends JoomAdminModel
         // Handle folders if record gets copied
         if($isNew && $isCopy)
         {
+          // Create folder
+          $manager->createCategory($table->alias, $table->parent_id);
+
+          // Copy recursive
+          //----------------
+
           // Get source image id
-          $source_id = $app->input->get('origin_id', false, 'INT');
+          //$source_id = $app->input->get('origin_id', false, 'INT');
 
           // Copy folder (including files and subfolders)
-          $manager->copyCategory($source_id, $table->path);
+          //$manager->copyCategory($source_id, $table->path);
         }
 
         // Create folders
@@ -624,15 +630,34 @@ class CategoryModel extends JoomAdminModel
         // Reset the id to create a new record.
         $table->id = 0;
 
+        // Original category path
+        $origin_path = $table->path;
+
+        // Specify where to insert the new node.
+        $table->setLocation($table->parent_id, 'last-child');
+
+        // Clean entered data
         if(!$table->check())
         {
           throw new \Exception($table->getError());
-        }       
+        }
+
+        /// Create file manager service
+				$manager = JoomHelper::getService('FileManager');
+
+        // Copy folder
+				$manager->copyCategory($origin_path, $table->parent_id, $table->alias);
 
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, &$table, true, $table));
 
-        if(in_array(false, $result, true) || !$table->store())
+        if(in_array(false, $result, true) || !$table->store(true, true))
+        {
+          throw new \Exception($table->getError());
+        }
+
+        // Rebuild entire nested set tree
+        if(!$table->rebuild())
         {
           throw new \Exception($table->getError());
         }
