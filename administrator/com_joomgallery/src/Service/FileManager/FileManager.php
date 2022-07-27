@@ -404,7 +404,7 @@ class FileManager implements FileManagerInterface
    *
    * @param   object|int|string    $img        Image object, image ID or image alias
    * @param   object|int|string    $dest       Category object, ID or alias of the destination category
-   * @param   string|False         $filename   Filename of the moved image (default: False)
+   * @param   string|false         $filename   Filename of the moved image (default: False)
    *
    * @return  bool    true on success, false otherwise
    *
@@ -561,15 +561,16 @@ class FileManager implements FileManagerInterface
   /**
    * Move category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be moved
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
-   * @param   bool                $copy     True, if you want to copy the category (default: false)
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be moved
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
+   * @param   bool                $copy         True, if you want to copy the category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveCategory($cat, $dest, $copy=false): bool
+  public function moveCategory($cat, $dest, $foldername=false, $copy=false): bool
   {
     // Create filesystem service
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
@@ -591,8 +592,15 @@ class FileManager implements FileManagerInterface
       // Get path of target category
       $cat_path = $this->getCatPath($dest, $imagetype->typename);
 
+      // Get category foldername
+      $cat_foldername = \basename($src_path);
+      if($foldername)
+      {
+        $cat_foldername = $foldername;
+      }
+
       // Create category destination path
-      $dst_path = $cat_path . '/' . \basename($src_path);
+      $dst_path = $cat_path . '/' . $cat_foldername;
 
       // Move folder
       if(!$this->jg->getFilesystem()->moveFolder($src_path, $dst_path, $copy))
@@ -619,16 +627,17 @@ class FileManager implements FileManagerInterface
   /**
    * Copy category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be copied
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be copied
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyCategory($cat, $dest): bool
+  public function copyCategory($cat, $dest, $foldername=false): bool
   {
-    return $this->moveCategory($cat, $dest, true);
+    return $this->moveCategory($cat, $dest, $foldername, true);
   }
 
   /**
@@ -725,8 +734,8 @@ class FileManager implements FileManagerInterface
       $path = $cat;
     }
     // We got a category ID or an alias
-    elseif((\is_numeric($cat) && $cat > 0) || \is_string($cat))
-    {      
+    elseif((\is_numeric($cat) && $cat > 0) || (\is_string($cat) && \intval($cat) > 0))
+    {
       if(\is_numeric($cat))
       {
         $cat = \intval($cat);

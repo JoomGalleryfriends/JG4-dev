@@ -242,14 +242,14 @@ class ImageModel extends JoomAdminModel
 					$table->catid = '';
 				}
 
-				/// Create file manager service
+				// Create file manager service
 				$manager = JoomHelper::getService('FileManager');
 
 				// Regenerate filename
 				$newFilename = $manager->regenFilename($table->filename);
 
 				// Copy images
-				$manager->copy($table, $table->catid, $newFilename);
+				$manager->copyImages($table, $table->catid, $newFilename);
 
 				// Output warning messages
 				if(\count($this->component->getWarning()) > 1)

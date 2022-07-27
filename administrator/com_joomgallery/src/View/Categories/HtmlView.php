@@ -110,14 +110,6 @@ class HtmlView extends JoomGalleryView
 
       // Add button javascript
       $this->deleteBtnJS  = 'var counts = '. \json_encode($counts).';';
-      $this->deleteBtnJS .= 'jQuery(document).ready(function() {';
-      $this->deleteBtnJS .= '   document.querySelector("#adminForm").addEventListener("submit", function(event) {';
-      $this->deleteBtnJS .= '       event.preventDefault();';
-      $this->deleteBtnJS .= '       document.querySelector("#del_force").value = "1";';
-      $this->deleteBtnJS .= '       this.removeEventListener("submit", arguments.callee, false);';
-      $this->deleteBtnJS .= '       this.submit();';
-      $this->deleteBtnJS .= '   });';
-      $this->deleteBtnJS .= '});';      
     }
 
     if($canDo->get('core.edit.state')  || count($this->transitions))

@@ -101,17 +101,19 @@ class HtmlView extends JoomGalleryView
 		// If an existing item, can save to a copy.
 		if(!$isNew && $canDo->get('core.create'))
 		{ 
-			$toolbar = Toolbar::getInstance('toolbar');
+      ToolbarHelper::save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
 
-			$dropdown = $toolbar->dropdownButton('save2copy-group')
-				->text('JTOOLBAR_SAVE_AS_COPY')
-				->toggleSplit(true)
-				->icon('fa fa-ellipsis-h')
-				->buttonClass('btn btn-action');
+			// $toolbar = Toolbar::getInstance('toolbar');
 
-			$childBar = $dropdown->getChildToolbar();
-			$childBar->save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
-			$childBar->save2copy('category.save2copy.recursive', 'JTOOLBAR_SAVE_AS_COPY_RECURSIVE');
+			// $dropdown = $toolbar->dropdownButton('save2copy-group')
+			// 	->text('JTOOLBAR_SAVE_AS_COPY')
+			// 	->toggleSplit(true)
+			// 	->icon('fa fa-ellipsis-h')
+			// 	->buttonClass('btn btn-action');
+
+			// $childBar = $dropdown->getChildToolbar();
+			// $childBar->save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
+			// $childBar->save2copy('category.save2copy.recursive', 'JTOOLBAR_SAVE_AS_COPY_RECURSIVE');
 		}
 
 		if(empty($this->item->id))
