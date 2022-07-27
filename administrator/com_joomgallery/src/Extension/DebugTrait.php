@@ -43,19 +43,25 @@ trait DebugTrait
   /**
    * Add text to the debugoutput
    *
-   * @param   string   $txt        Text to add to the debugoutput
-   * @param   bool     $new_line   True to add text to a new line (default: true)
+   * @param   string   $txt         Text to add to the debugoutput
+   * @param   bool     $new_line    True to add text to a new line (default: true)
+   * @param   bool     $margin_top  True to add an empty line in front (default: false)
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function addDebug($txt, $new_line=true)
+  public function addDebug($txt, $new_line=true, $margin_top=false)
   {
-    if(!$new_line)
+    if(!$new_line && !empty($this->debug))
     {
       $last_line = \array_pop($this->debug);
       $txt = $last_line.$txt;
+    }
+
+    if($margin_top && $new_line && !empty($this->debug))
+    {
+      $txt = '<br />'.$txt;
     }
 
     \array_push($this->debug, $txt);
@@ -64,19 +70,25 @@ trait DebugTrait
   /**
    * Add text to the warningoutput
    *
-   * @param   string   $txt        Text to add to the debugoutput
-   * @param   bool     $new_line   True to add text to a new line (default: true)
+   * @param   string   $txt         Text to add to the debugoutput
+   * @param   bool     $new_line    True to add text to a new line (default: true)
+   * @param   bool     $margin_top  True to add an empty line in front (default: false)
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function addWarning($txt, $new_line=true)
+  public function addWarning($txt, $new_line=true, $margin_top=false)
   {
-    if(!$new_line)
+    if(!$new_line && !empty($this->warnings))
     {
       $last_line = \array_pop($this->warnings);
       $txt = $last_line.$txt;
+    }
+
+    if($margin_top && $new_line && !empty($this->warnings))
+    {
+      $txt = '<br />'.$txt;
     }
 
     \array_push($this->warnings, $txt);
@@ -117,6 +129,12 @@ trait DebugTrait
   */
   public function printDebug($type='warning')
   {
+    // Check if there is anything in the debg to be printed
+    if(empty($this->debug))
+    {
+      return;
+    }
+
     // Assemble debug string
     $debugoutput  = '<strong>Debug information:</strong><br />';
     $debugoutput .= '---------------------------------<br />';

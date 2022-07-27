@@ -20,6 +20,7 @@ use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Registry\Registry;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Category table
@@ -28,15 +29,16 @@ use \Joomla\Registry\Registry;
  * @since   4.0.0
  */
 class CategoryTable extends Table implements VersionableTableInterface
-{
+{ 
 	/**
 	 * Check if a field is unique
 	 *
-	 * @param   string  $field  Name of the field
+	 * @param   string   $field    Name of the field
+   * @param   integer  $parent   Parent category id (default=null)
 	 *
 	 * @return  bool    True if unique
 	 */
-	private function isUnique ($field)
+	private function isUnique ($field, $parent=null)
 	{
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -46,6 +48,11 @@ class CategoryTable extends Table implements VersionableTableInterface
 			->from($db->quoteName($this->_tbl))
 			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
 			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
+    
+    if($parent > 0)
+    {
+      $query->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent));
+    }    
 
 		$db->setQuery($query);
 		$db->execute();
@@ -64,7 +71,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 
 		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
 
-		$this->setColumnAlias('published', 'state');
+		$this->setColumnAlias('published', 'published');
 		$this->getRootId();
 	}
 
@@ -122,7 +129,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['modified_time'] = $date->toSql();
 		}
 
-    // Support for alias field: alias
+    	// Support for alias field: alias
 		if(empty($array['alias']))
 		{
 			if(empty($array['title']))
@@ -255,6 +262,22 @@ class CategoryTable extends Table implements VersionableTableInterface
 				$this->alias = $currentAlias . '-' . $count++;
 			}
 		}
+
+    // Check if title is unique inside this parent category
+		if(!$this->isUnique('title', $this->parent_id))
+		{
+			$count = 0;
+			$currentTitle =  $this->title;
+
+			while(!$this->isUnique('title', $this->parent_id))
+      {
+				$this->title = $currentTitle . ' (' . $count++ . ')';
+			}
+		}
+
+    // Check if path is correct
+    $manager    = JoomHelper::getService('FileManager');
+    $this->path = $manager->getCatPath($this->id, false, $this->parent_id, $this->alias);
 
 		// Support for subform field params
 		if(is_array($this->params))

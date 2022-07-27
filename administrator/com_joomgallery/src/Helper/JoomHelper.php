@@ -32,6 +32,13 @@ use \Joomla\CMS\Router\Route;
 class JoomHelper
 {
   /**
+   * List of available content types
+   *
+   * @var array
+   */
+  protected static $content_types = array('category', 'image', 'tag', 'imagetype');
+
+  /**
 	 * Gets the JoomGallery component object
 	 *
 	 * @return  Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
@@ -105,8 +112,8 @@ class JoomHelper
   /**
 	 * Returns a database record
    *
-   * @param   string          $name      The name of the record (available: category,image,tag)
-   * @param   int             $id        The id of the primary key
+   * @param   string          $name      The name of the record (available: category,image,tag, imagetype)
+   * @param   int|string      $id        The id of the primary key, the alias or the filename
    * @param   Object          $com_obj   JoomgalleryComponent object if available
 	 *
 	 * @return  CMSObject|bool  Object on success, false on failure.
@@ -115,28 +122,34 @@ class JoomHelper
 	 */
   public static function getRecord($name, $id, $com_obj=null)
   {
-    $availables = array('category', 'image', 'tag', 'imagetype');
+    // Check if content type is available
+    self::isAvailable($name);
 
-    if(!\in_array($name, $availables))
+    // We got a valid record object
+    if(\is_object($id) && $id instanceof \Joomla\CMS\Object\CMSObject && isset($id->id))
     {
-      throw new \Exception('Please provide an available name of the record type.');
-
-      return false;
+      return $id;
     }
-
-    if($name != 'imagetype' || !\is_array($id))
+    // We got a record ID, an alias or a filename
+    elseif(!empty($id) && ((\is_numeric($id) && $id > 0) || \is_string($id) || ($name == 'imagetype' && \is_array($id))))
     {
-      $id = intval($id);
-    }
+      if(\is_string($id))
+      {
+        $id = self::getRecordIDbyAliasOrFilename($name, $id);
+      }
 
-    if(!empty($id) && ($id > 0 || \is_array($id)))
-    {
-      // get the JoomgalleryComponent object if needed
+      if($name != 'imagetype' || !\is_array($id))
+      {
+        $id = intval($id);
+      }
+
+      // Get the JoomgalleryComponent object if needed
       if(!isset($com_obj) || !\strpos('JoomgalleryComponent', \get_class($com_obj)) === false)
       {
         $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
       }
 
+      // Create the model
       $model = $com_obj->getMVCFactory()->createModel($name);
 
       if(\is_null($model))
@@ -149,9 +162,10 @@ class JoomHelper
 
       return $return;
     }
+    // We got nothing to work with
     else
     {
-      throw new \Exception('Please provide an ID.');
+      throw new \Exception('Please provide a valid record ID, alias or filename.');
 
       return false;
     }
@@ -223,23 +237,39 @@ class JoomHelper
 
 	/**
 	 * Gets a list of the actions that can be performed.
+   * 
+   * @param   string  $type   The name of the content type of the item
+   * @param   int     $id     The item's id
 	 *
 	 * @return  CMSObject
 	 *
 	 * @since   4.0.0
 	 */
-	public static function getActions()
+	public static function getActions($type=null, $id=null)
 	{
-		$user   = Factory::getUser();
+    // Create asset name
+		$assetName = _JOOM_OPTION;
+    if($type)
+    {
+      // Check if content type is available
+      self::isAvailable($type);
+
+      $assetName .= '.'.$type;
+    }
+    if($id)
+    {
+      $assetName .= '.'.$id;
+    }
+
+    $user   = Factory::getUser(); 
 		$result = new CMSObject;
 
-		$assetName = 'com_joomgallery';
-
 		$actions = array(
-			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+			'core.admin', 'core.manage', 'joom.upload', 'joom.upload.inown', 'core.create', 'joom.create.inown',
+      'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
 		);
 
-		foreach ($actions as $action)
+		foreach($actions as $action)
 		{
 			$result->set($action, $user->authorise($action, $assetName));
 		}
@@ -306,6 +336,97 @@ class JoomHelper
       $path = $imagetype->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$img->filename;
 
       return Path::clean($path);
+    }
+  }
+
+  /**
+	 * Returns a record ID based on a given alias
+   *
+   * @param   string      $record   The name of the record (available: category,image,tag,imagetype)
+   * @param   string      $name     The alias or the filename of the image
+	 *
+	 * @return  int|bool    Record ID on success, false otherwise.
+	 *
+	 * @since   4.0.0
+	 */
+  public static function getRecordIDbyAliasOrFilename($record, $name)
+  {
+    $tables = array('category'  => _JOOM_TABLE_CATEGORIES,
+                    'image'     => _JOOM_TABLE_IMAGES,
+                    'imagetype' => _JOOM_TABLE_IMG_TYPES,
+                   );
+    
+    // Does imagetype support alias
+    if(!\array_key_exists($record, $tables))
+    {
+      throw new \Exception('Record does not support alias.');
+
+      return false;
+    }
+
+    // Get alias row name
+    $row_name = 'alias';
+    $filename = false;
+    if($record == 'imagetype')
+    {
+      $row_name = 'type_alias';
+    }
+    elseif($record == 'image')
+    {
+      if(\strpos($name, '.') !== false)
+      {
+        // We assume that $name is a filename
+        $filename = true;
+        $row_name = 'filename';
+      }
+    }
+
+    // Create database connection
+    $db = Factory::getDbo();
+
+    // Create query
+    $query = $db->getQuery(true);
+    $query->select($db->quoteName('id'));
+    $query->from($db->quoteName($tables[$record]));
+
+    if(!$filename)
+    {
+      $query->where($db->quoteName($row_name) . " = " . $db->quote($name));
+    }
+    else
+    {
+      $query->where($db->quoteName($row_name) . " LIKE " . $db->quote($name));
+    }
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+
+    $result = $db->loadResult();
+
+    if($result)
+    {
+      return $result;
+    }
+    else
+    {
+      return false;
+    }     
+  }
+
+  /**
+	 * Checks if a specific content type is available
+   *
+   * @param   string    $name   Content type name
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+  protected static function isAvailable($name)
+  {
+    if(!\in_array($name, self::$content_types))
+    {
+      throw new \Exception(Text::_('Please provide a valid content type.'));
     }
   }
 }

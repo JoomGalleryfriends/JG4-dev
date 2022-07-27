@@ -12,6 +12,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 
 \defined('JPATH_PLATFORM') or die;
 
+use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
+
 /**
 * Uploader Interface for the helper classes
 *
@@ -24,29 +26,55 @@ interface UploaderInterface
    *
    * @return  void
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   public function __construct();
 
 	/**
-	 * Method to upload a new image.
+	 * Method to retrieve an uploaded image. Step 1.
+   * (check upload, check user upload limit, create filename, onJoomBeforeUpload)
 	 *
    * @param   array    $data      Form data (as reference)
+   * @param   bool     $filename    True, if the filename has to be created (defaut: True)
    *
 	 * @return  bool     True on success, false otherwise
 	 *
 	 * @since  4.0.0
 	 */
-	public function upload(&$data): bool;
+	public function retrieveImage(&$data, $filename=True): bool;
+
+  /**
+   * Override form data with image metadata
+   * according to configuration. Step 2.
+   *
+   * @param   array   $data       The form data (as a reference)
+   * 
+   * @return  bool    True on success, false otherwise
+   * 
+   * @since   1.5.7
+   */
+  public function overrideData(&$data): bool;
+
+  /**
+	 * Method to create uploaded image files. Step 3.
+   * (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
+	 *
+   * @param   ImageTable   $data_row     Image object
+   *
+	 * @return  bool         True on success, false otherwise
+	 *
+	 * @since  4.0.0
+	 */
+	public function createImage($data_row): bool;
 
   /**
    * Rollback an erroneous upload
-   *
-   * @param   string  $filename    Filename of the image
+   * 
+   * @param   CMSObject   $data_row     Image object containing at least catid and filename (default: false)
    * 
    * @return  void
    * 
-   * @since   1.0.0
+   * @since   4.0.0
    */
-  public function rollback($filename);
+  public function rollback($data_row=false);
 }

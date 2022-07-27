@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Category;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Toolbar\ToolbarHelper;
+use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -99,8 +100,20 @@ class HtmlView extends JoomGalleryView
 
 		// If an existing item, can save to a copy.
 		if(!$isNew && $canDo->get('core.create'))
-		{
-			ToolbarHelper::custom('category.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
+		{ 
+      ToolbarHelper::save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
+
+			// $toolbar = Toolbar::getInstance('toolbar');
+
+			// $dropdown = $toolbar->dropdownButton('save2copy-group')
+			// 	->text('JTOOLBAR_SAVE_AS_COPY')
+			// 	->toggleSplit(true)
+			// 	->icon('fa fa-ellipsis-h')
+			// 	->buttonClass('btn btn-action');
+
+			// $childBar = $dropdown->getChildToolbar();
+			// $childBar->save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
+			// $childBar->save2copy('category.save2copy.recursive', 'JTOOLBAR_SAVE_AS_COPY_RECURSIVE');
 		}
 
 		if(empty($this->item->id))

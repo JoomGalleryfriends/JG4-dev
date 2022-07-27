@@ -14,14 +14,17 @@
            filter="unset" />
 
     <field name="hits"
-           default="0"
-           label="JGLOBAL_HITS"
-           hidden="true" />
+           type="text"
+           readonly="true"
+           class="readonly"
+           label="JGLOBAL_HITS" />
 
     <field name="downloads"
+           type="text"
+           readonly="true"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_DOWNLOADS"
-           hidden="true" />
+           class="readonly"
+           label="COM_JOOMGALLERY_COMMON_DOWNLOADS" />
 
     <field name="imgvotes"
            default="0"
@@ -29,14 +32,16 @@
            hidden="true" />
 
     <field name="imgvotesum"
+           type="text"
+           readonly="true"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_VOTESUM"
-           hidden="true" />
+           class="readonly"
+           label="COM_JOOMGALLERY_IMGMAN_IMAGE_RATING" />
 
     <field name="approved"
            default="0"
-           label="COM_JOOMGALLERY_FORM_LBL_IMAGE_APPROVED"
-           hidden="true" />
+           hidden="true"
+           label="COM_JOOMGALLERY_IMGMAN_APPROVED" />
 
     <field name="useruploaded"
            default="0"
@@ -56,7 +61,7 @@
            class="inputbox"
            generator="imgtitle"
            label="COM_JOOMGALLERY_COMMON_ALIAS"
-           description="COM_JOOMGALLERY_IMGMAN_ALIAS_TIP"
+           description="COM_JOOMGALLERY_IMG_ALIAS_DESC"
            maxlength="255" />
 
     <field name="catid"
@@ -125,22 +130,35 @@
     </field>
 
     <field name="created_time"
-           type="timecreated"
-           class="readonly"
-           readonly="true"
+           type="calendar"
+           translateformat="true"
+           showtime="true"
+           size="22"
+           filter="user_utc"
            label="JGLOBAL_FIELD_CREATED_LABEL" />
 
     <field name="created_by"
-           type="createdby"
+           type="user"
            label="JGLOBAL_FIELD_CREATED_BY_LABEL"
-           description="JGLOBAL_FIELD_CREATED_BY_DESC" />
+           description="JGLOBAL_FIELD_CREATED_BY_DESC"
+           validate="UserId" />
 
     <field name="modified_time"
-           type="timeupdated"
+           type="calendar"
+           class="form-control"
+           translateformat="true"
+           showtime="true"
+           size="22"
+           readonly="true"
+           filter="user_utc"
            label="JGLOBAL_FIELD_MODIFIED_LABEL" />
 
     <field name="modified_by"
-           type="modifiedby"
+           type="user"
+           class="readonly"
+           readonly="true"
+           filter="unset"
+           validate="UserId"
            label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
            description="JGLOBAL_FIELD_MODIFIED_BY_DESC" />
 
@@ -179,7 +197,7 @@
            type="file"
            accept="image/*"
            size="10485760"
-           label="COM_JOOMGALLERY_COMMON_IMAGE" />
+           label="COM_JOOMGALLERY_IMG_UPLOAD_IMAGE" />
 
     <field name="MAX_FILE_SIZE"
            type="hidden"

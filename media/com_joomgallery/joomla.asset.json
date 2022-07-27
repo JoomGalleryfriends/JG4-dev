@@ -21,9 +21,17 @@
       }
     },
     {
-        "name": "com_joomgallery.list",
-        "type": "style",
-        "uri": "com_joomgallery/list.css"
+      "name": "com_joomgallery.catBtns",
+      "type": "script",
+      "uri": "com_joomgallery/catBtns.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "com_joomgallery.list",
+      "type": "style",
+      "uri": "com_joomgallery/list.css"
     }
   ]
 }

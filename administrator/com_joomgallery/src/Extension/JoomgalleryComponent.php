@@ -37,8 +37,8 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\RefresherS
 use Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\RefresherServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsServiceTrait;
-use Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr\ImageMgrServiceInterface;
-use Joomgallery\Component\Joomgallery\Administrator\Service\ImageMgr\ImageMgrServiceTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerServiceInterface;
+use Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerServiceTrait;
 
 /**
  * Component class for Joomgallery
@@ -80,7 +80,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   use FilesystemServiceTrait;
   use RefresherServiceTrait;
   use IMGtoolsServiceTrait;
-  use ImageMgrServiceTrait;
+  use FileManagerServiceTrait;
 
   /**
 	 * Booting the extension. This is the function to set up the environment of the extension like
