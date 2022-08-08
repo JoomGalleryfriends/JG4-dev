@@ -101,7 +101,7 @@ class FileManager implements FileManagerInterface
       $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
 
       // Only proceed if imagetype is active
-      if($imagetype->params->jg_imgtype != 1)
+      if($imagetype->params->get('jg_imgtype', 1) != 1)
       {
         continue;
       }
@@ -132,7 +132,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Do we need to keep animation?
-      if($imagetype->params->jg_imgtypeanim == 1)
+      if($imagetype->params->get('jg_imgtypeanim', 0) == 1)
       {
         // Yes
         $this->jg->getIMGtools()->keep_anim = true;
@@ -144,7 +144,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Do we need to auto orient?
-      if($imagetype->params->jg_imgtypeorinet == 1)
+      if($imagetype->params->get('jg_imgtypeorinet', 0) == 1)
       {
         // Yes
         if(!$this->jg->getIMGtools()->orient())
@@ -161,14 +161,14 @@ class FileManager implements FileManagerInterface
       }
 
       // Need for resize?
-      if($imagetype->params->jg_imgtyperesize > 0)
+      if($imagetype->params->get('jg_imgtyperesize', 0) > 0)
       {
         // Yes
-        if(!$this->jg->getIMGtools()->resize($imagetype->params->jg_imgtyperesize,
-                                             $imagetype->params->jg_imgtypewidth,
-                                             $imagetype->params->jg_imgtypeheight,
-                                             $imagetype->params->jg_cropposition,
-                                             $imagetype->params->jg_imgtypesharpen)
+        if(!$this->jg->getIMGtools()->resize($imagetype->params->get('jg_imgtyperesize', 3),
+                                             $imagetype->params->get('jg_imgtypewidth', 5000),
+                                             $imagetype->params->get('jg_imgtypeheight', 5000),
+                                             $imagetype->params->get('jg_cropposition', 2),
+                                             $imagetype->params->get('jg_imgtypesharpen', 0))
           )
         {
           // Destroy the IMGtools service
@@ -183,14 +183,14 @@ class FileManager implements FileManagerInterface
       }
 
       // Need for watermarking?
-      if($imagetype->params->jg_imgtypewatermark == 1)
+      if($imagetype->params->get('jg_imgtypewatermark', 0) == 1)
       {
-        // Yes        
+        // Yes
         if(!$this->jg->getIMGtools()->watermark(JPATH_ROOT.\DIRECTORY_SEPARATOR.$this->jg->getConfig()->get('jg_wmfile'),
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkpos,
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkzoom,
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarksize,
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkopacity)
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkpos', 9),
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkzoom', 0),
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarksize', 15),
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkopacity', 80))
           )
         {
           // Destroy the IMGtools service
@@ -221,7 +221,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Write image to file
-      if(!$this->jg->getIMGtools()->write($file, $imagetype->params->jg_imgtypequality))
+      if(!$this->jg->getIMGtools()->write($file, $imagetype->params->get('jg_imgtypequality', 100)))
       {
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
