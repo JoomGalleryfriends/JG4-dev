@@ -82,14 +82,14 @@ if ($saveOrder && !empty($this->items))
                 <th scope="col" class="w-10 d-none d-md-table-cell">
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
                 </th>
+                <th scope="col" class="w-10 d-none d-md-table-cell">
+                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_OWNER', 'a.created_by', $listDirn, $listOrder); ?>
+                </th>
                 <?php if (Multilanguage::isEnabled()) : ?>
                   <th scope="col" class="w-10 d-none d-md-table-cell">
                     <?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_LANGUAGE', 'a.language', $listDirn, $listOrder); ?>
                   </th>
                 <?php endif; ?>
-                <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_OWNER', 'a.created_by', $listDirn, $listOrder); ?>
-                </th>
                 <th scope="col" class="w-3 d-none d-lg-table-cell"> 
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_FIELD_ID_LABEL', 'a.id', $listDirn, $listOrder); ?>
                 </th>
@@ -205,14 +205,14 @@ if ($saveOrder && !empty($this->items))
                 <td class="small d-none d-md-table-cell">
                   <?php echo $item->access; ?>
                 </td>
-                <?php if (Multilanguage::isEnabled()) : ?>
-                  <td class="small d-none d-md-table-cell">
-                  <?php echo $item->language; ?>
-                  </td>
-                <?php endif; ?>
                 <td class="small d-none d-md-table-cell">
                   <?php echo $item->created_by; ?>
                 </td>
+                <?php if (Multilanguage::isEnabled()) : ?>
+                  <td class="small d-none d-md-table-cell">
+                    <?php echo LayoutHelper::render('joomla.content.language', $item); ?>
+                  </td>
+                <?php endif; ?>
                 <td>
                   <?php echo $item->id; ?>
                 </td>

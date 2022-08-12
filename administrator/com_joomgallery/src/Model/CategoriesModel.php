@@ -219,6 +219,10 @@ class CategoriesModel extends JoomListModel
     $query->join('LEFT', $db->quoteName('#__joomgallery_categories', 'child'), $db->quoteName('child.parent_id') . ' = ' . $db->quoteName('a.id'));
     $query->group($db->quoteName('child.parent_id'));
 
+    // Join over the language fields 'language_title' and 'language_image'
+		$query->select(array($db->quoteName('l.title', 'language_title'), $db->quoteName('l.image', 'language_image')));
+		$query->join('LEFT', $db->quoteName('#__languages', 'l'), $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
+
     // Filter by access level.
 		$access = $this->getState('filter.access');
 
