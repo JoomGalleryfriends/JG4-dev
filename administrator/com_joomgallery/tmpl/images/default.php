@@ -220,6 +220,15 @@ if ($saveOrder)
                         <?php echo $this->escape($item->cattitle); ?>
                       <?php endif; ?>
                     </div>
+                    
+                    <?php if ($item->hidden === 1) : ?>
+                      <div class="small">
+                        <span class="badge bg-secondary">
+                          <?php echo Text::_('COM_JOOMGALLERY_IMGMAN_HIDDEN'); ?>
+                        </span>
+                      </div>
+                    <?php endif; ?>
+
                   </div>
                 </th>
 

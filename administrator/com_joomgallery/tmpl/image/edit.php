@@ -21,7 +21,8 @@ use \Joomla\CMS\Language\Text;
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
-	 ->useScript('form.validate');
+	 ->useScript('form.validate')
+   ->useStyle('com_joomgallery.admin');
 HTMLHelper::_('bootstrap.tooltip');
 
 $app = Factory::getApplication();
@@ -80,7 +81,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-images" class="options-form">
 				<legend><?php echo Text::_('COM_JOOMGALLERY_IMGMAN_IMAGE_PREVIEW'); ?></legend>
-        <div class="text-center">
+        <div class="text-center joom-image center">
+          <div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>
           <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_TYPE_THUMBNAIL'); ?>">
         </div>
         <div class="text-center">
@@ -138,7 +140,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
 	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS', true)); ?>
 	<div class="row">
-  <div class="col-lg-12">
+    <div class="col-lg-12">
       <fieldset class="form-vertical">
 				<legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS'); ?></legend>
 				<?php echo $this->form->renderField('params'); ?>

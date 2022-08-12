@@ -28,3 +28,25 @@ img.jg_minithumb {
   object-fit: contain;
   border: 1px solid #ddd;
 }
+.joom-imgtypes.btn-group {
+  margin-top: 1rem;
+}
+.joom-image {
+  position: relative;
+  min-height: 100px;
+}
+.joom-image > .joom-loader {
+  position: absolute;
+  text-align: center;
+  margin: 1rem auto;  
+  width: 100%;
+}
+.joom-image > img {
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+}
+.joom-image.center > img {
+  display: block;
+  margin: 0 auto;
+}

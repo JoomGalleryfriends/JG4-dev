@@ -16,11 +16,8 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
-use \Joomla\Registry\Registry;
-use \Joomla\Utilities\ArrayHelper;
-use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
-
 
 /**
  * JoomGallery Helper for the Backend
@@ -295,7 +292,7 @@ class JoomHelper
 
     if($imagetype === false)
     {
-      Factory::getApplication()->enqueueMessage('Imagetype not found!', 'error');
+      throw new Exception("Imagetype not found.");
 
       return false;
     }
@@ -314,28 +311,23 @@ class JoomHelper
       }
     }
 
-    if(!is_object($img))
+    if(!is_object($img) || \is_null($img->id) || $img->id === 0)
     {
       // image object not found
-      Factory::getApplication()->enqueueMessage('Image not available!', 'error');
-
-      return false;
+      return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
     }
 
     // Check whether the image shall be output through the PHP script or with its real path
     if($url)
     {
-      return  Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
+      return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
     }
     else
     {
-      // get corresponding category
-      $cat  = JoomHelper::getRecord('category', $img->catid);
+      // Create file manager service
+			$manager = JoomHelper::getService('FileManager');
 
-      // Create the complete path
-      $path = $imagetype->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$img->filename;
-
-      return Path::clean($path);
+      return $manager->getImgPath($type, $img);
     }
   }
 

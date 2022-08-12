@@ -166,8 +166,8 @@ class ImageTable extends Table implements VersionableTableInterface
 		// Support for empty date field: imgdate
 		if($array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
 		{
-			$array['imgdate'] = NULL;
-			$this->imgdate = NULL;
+			$array['imgdate'] = $date->toSql();
+			$this->imgdate    = $date->toSql();
 		}
 
 		if(isset($array['params']) && is_array($array['params']))
