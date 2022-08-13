@@ -392,26 +392,7 @@ class ImageModel extends JoomAdminModel
 				}
 			}
 
-			// Bind data to table object
-			if(!$table->bind($data))
-			{
-				$this->setError($table->getError());
-
-				return false;
-			}
-
-			// Prepare the row for saving
-			$this->prepareTable($table);
-
-			// Check the data.
-			if(!$table->check())
-			{
-				$this->setError($table->getError());
-
-				return false;
-			}
-
-			// Handle images if category was changed
+      // Handle images if category was changed
 			if(!$isNew && $catMoved)
 			{
 				// Create file manager service
@@ -429,6 +410,25 @@ class ImageModel extends JoomAdminModel
 				}				
 			}
 
+			// Bind data to table object
+			if(!$table->bind($data))
+			{
+				$this->setError($table->getError());
+
+				return false;
+			}
+
+			// Prepare the row for saving
+			$this->prepareTable($table);
+
+			// Check the data.
+			if(!$table->check())
+			{
+				$this->setError($table->getError());
+
+				return false;
+			}			
+
 			// Handle images if record gets copied
 			if($isNew && $isCopy)
 			{
@@ -438,12 +438,7 @@ class ImageModel extends JoomAdminModel
 				// Get source image id
 				$source_id = $app->input->get('origin_id', false, 'INT');
 
-				if($imgUploaded)
-				{
-					// Delete Images
-					$manager->deleteImages($source_id);
-				}
-				else
+				if(!$imgUploaded)
 				{
 					// Regenerate filename
 					$table->filename = $manager->regenFilename($data['filename']);

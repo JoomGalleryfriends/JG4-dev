@@ -277,7 +277,7 @@ class JoomHelper
   /**
    * Returns the URL or the path to an image
    *
-   * @param   string/object/int $img    Filename, database object or ID of the image
+   * @param   string/object/int $img    Filename, database object, ID or URL of the image
    * @param   string            $type   The image type
    * @param   bool              $url    True: image url, false: image path (default: true)
    *
@@ -297,21 +297,42 @@ class JoomHelper
       return false;
     }
 
-    if(!is_object($img))
+    if(!\is_object($img))
     {
-      if(is_numeric($img))
+      if(\is_numeric($img))
       {
         // get image based on ID
         $img = self::getRecord('image', $img);
       }
+      elseif(\is_string($img))
+      {
+        if(\strlen($img) > 5 && (\strpos($img, '/') !== false || \strpos($img, \DIRECTORY_SEPARATOR) !== false))
+        {
+          // already image url given
+          if(strpos($img, '/') === 0)
+          {
+            // url starts with '/'
+            return Uri::root(true).$img;
+          }
+          else
+          {
+            return Uri::root(true).'/'.$img;
+          }
+        }
+        else
+        {
+          // get image id based on filename
+          $img = self::getRecord('image', array('filename' => $img));
+        }
+      }
       else
       {
-        // get image id based on filename
-        $img = self::getRecord('image', array('filename' => $img));
+        // no image given
+        return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
       }
     }
 
-    if(!is_object($img) || \is_null($img->id) || $img->id === 0)
+    if(!\is_object($img) || \is_null($img->id) || $img->id === 0)
     {
       // image object not found
       return Uri::root(true).'/media/com_joomgallery/images/no-image.png';

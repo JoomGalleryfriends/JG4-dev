@@ -20,6 +20,7 @@ use \Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Button\PublishedButton;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
 HTMLHelper::_('bootstrap.tooltip');
@@ -66,6 +67,9 @@ if ($saveOrder && !empty($this->items))
                 <?php endif; ?>
                 <th scope="col" class="w-1 text-center">
                   <?php echo HTMLHelper::_('searchtools.sort', '', 'a.lft', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
+                </th>
+                <th scope="col" class="w-1 text-center">
+                  <?php // Spaceholder for thumbnail image ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
                   <?php echo HTMLHelper::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
@@ -158,6 +162,13 @@ if ($saveOrder && !empty($this->items))
                   <?php endif; ?>
                 </td>
 
+
+                <td class="small d-none d-md-table-cell">
+                  <?php if(!empty($item->thumbnail)) : ?>
+                    <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($item->thumbnail, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_THUMBNAIL'); ?>">
+                  <?php endif; ?>
+                </td>
+
                 <td class="category-status text-center">
                   <?php 
                     $options = [
@@ -171,7 +182,6 @@ if ($saveOrder && !empty($this->items))
                 </td>
 
                 <th scope="row" class="has-context">
-                  <div class="break-word">
                     <?php echo LayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
                     <?php if (isset($item->checked_out) && $item->checked_out && ($canEdit || $canChange)) : ?>
                       <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'categories.', $canCheckin); ?>
@@ -183,11 +193,18 @@ if ($saveOrder && !empty($this->items))
                     <?php else : ?>
                       <?php echo $this->escape($item->title); ?>
                     <?php endif; ?>
-                    <div class="small break-word">
+                    <div class="small">
                         <?php echo LayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
                         <?php echo Text::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
                     </div>
-                  </div>
+                    <?php if ($item->hidden === 1) : ?>
+                      <div class="small">
+                        <?php echo LayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
+                        <span class="badge bg-secondary">
+                          <?php echo Text::_('COM_JOOMGALLERY_IMGMAN_HIDDEN'); ?>
+                        </span>
+                      </div>
+                    <?php endif; ?>
                 </th>
 
                 <td class="d-none d-md-table-cell">

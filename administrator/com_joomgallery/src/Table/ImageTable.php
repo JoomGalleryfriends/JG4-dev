@@ -33,11 +33,12 @@ class ImageTable extends Table implements VersionableTableInterface
 	/**
 	 * Check if a field is unique
 	 *
-	 * @param   string  $field  Name of the field
+	 * @param   string   $field    Name of the field
+   * @param   integer  $catid    Category id (default=null)
 	 *
 	 * @return  bool    True if unique
 	 */
-	private function isUnique ($field)
+	private function isUnique ($field, $catid=null)
 	{
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -47,6 +48,11 @@ class ImageTable extends Table implements VersionableTableInterface
 			->from($db->quoteName($this->_tbl))
 			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
 			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
+
+    if($catid > 0)
+    {
+      $query->where($db->quoteName('catid') . ' = ' . $db->quote($catid));
+    }
 
 		$db->setQuery($query);
 		$db->execute();
@@ -272,12 +278,24 @@ class ImageTable extends Table implements VersionableTableInterface
 		// Check if alias is unique
 		if(!$this->isUnique('alias'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentAlias =  $this->alias;
 
 			while(!$this->isUnique('alias'))
       {
 				$this->alias = $currentAlias . '-' . $count++;
+			}
+		}
+
+    // Check if title is unique inside this category
+		if(!$this->isUnique('imgtitle', $this->catid))
+		{
+			$count = 2;
+			$currentTitle =  $this->imgtitle;
+
+			while(!$this->isUnique('imgtitle', $this->catid))
+      {
+				$this->imgtitle = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
 
