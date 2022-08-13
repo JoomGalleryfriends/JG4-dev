@@ -109,18 +109,6 @@ class FileManager implements FileManagerInterface
       // Debug info
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
 
-      // Read source image
-      if(!$this->jg->getIMGtools()->read($source))
-      {
-        // Destroy the IMGtools service
-        $this->jg->delIMGtools();
-
-        // Debug info
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-
-        continue;
-      }
-
       // Keep metadata only for original images
       if($imagetype->typename == 'original')
       {
@@ -141,6 +129,18 @@ class FileManager implements FileManagerInterface
       {
         // No
         $this->jg->getIMGtools()->keep_anim = false;
+      }
+      
+      // Read source image
+      if(!$this->jg->getIMGtools()->read($source))
+      {
+        // Destroy the IMGtools service
+        $this->jg->delIMGtools();
+
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
+        continue;
       }
 
       // Do we need to auto orient?

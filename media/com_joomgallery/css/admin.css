@@ -45,6 +45,7 @@ img.jg_minithumb {
   position: relative;
   z-index: 2;
   max-width: 100%;
+  background-color: #fff;
 }
 .joom-image.center > img {
   display: block;
