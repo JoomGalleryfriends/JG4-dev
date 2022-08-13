@@ -532,6 +532,36 @@ class CategoryModel extends JoomAdminModel
 		return true;
 	}
 
+  /**
+	 * Method to save the reordered nested set tree.
+	 * First we save the new order values in the lft values of the changed ids.
+	 * Then we invoke the table rebuild to implement the new ordering.
+	 *
+	 * @param   array    $idArray   An array of primary key ids.
+	 * @param   integer  $lftArray  The lft value
+	 *
+	 * @return  boolean  False on failure or error, True otherwise
+	 *
+	 * @since   1.6
+	 */
+	public function saveorder($idArray = null, $lftArray = null)
+	{
+		// Get an instance of the table object.
+		$table = $this->getTable();
+
+		if(!$table->saveorder($idArray, $lftArray))
+		{
+			$this->setError($table->getError());
+
+			return false;
+		}
+
+		// Clear the cache
+		$this->cleanCache();
+
+		return true;
+	}
+
 	/**
 	 * Method to get the data that should be injected in the form.
 	 *
