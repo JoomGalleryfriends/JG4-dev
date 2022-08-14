@@ -156,7 +156,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
 	<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-  <input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
+	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
 	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
 	<input type="hidden" name="jform[useruploaded]" value="<?php echo $this->item->useruploaded; ?>" />
 

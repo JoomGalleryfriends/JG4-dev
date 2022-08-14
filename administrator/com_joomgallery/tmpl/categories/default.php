@@ -29,7 +29,7 @@ $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
    ->useScript('com_joomgallery.catBtns')
-   ->useScript('multiselect');;
+   ->useScript('multiselect');
 
 $user      = Factory::getUser();
 $userId    = $user->get('id');
@@ -38,7 +38,7 @@ $listDirn  = $this->state->get('list.direction');
 $canOrder  = $user->authorise('core.edit.state', 'com_joomgallery');
 $saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
 
-if ($saveOrder && !empty($this->items))
+if($saveOrder && !empty($this->items))
 {
 	$saveOrderingUrl = 'index.php?option=com_joomgallery&task=categories.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
 	HTMLHelper::_('draggablelist.draggable');
@@ -55,7 +55,7 @@ if ($saveOrder && !empty($this->items))
         <div class="table-responsive">
           <table class="table table-striped" id="categoryList">
             <caption class="visually-hidden">
-							<?php echo Text::_('COM_JOOMGALLERY_TABLE_CAPTION'); ?>,
+							<?php echo Text::_('COM_JOOMGALLERY_CATEGORY_TABLE_CAPTION'); ?>,
 							<span id="orderedBy"><?php echo Text::_('JGLOBAL_SORTED_BY'); ?> </span>,
 							<span id="filteredBy"><?php echo Text::_('JGLOBAL_FILTERED_BY'); ?></span>
 						</caption>
@@ -218,9 +218,11 @@ if ($saveOrder && !empty($this->items))
 
                 <td class="d-none d-md-table-cell">
                 <?php if($item->img_count > 0) : ?>
-                  <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=images&filter[category]='.$item->id); ?>">(<?php echo $item->img_count; ?>)</a>
+                  <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=images&filter[category]='.$item->id); ?>">
+                    <span class="badge bg-info"><?php echo (int) $item->img_count; ?></span>
+                  </a>
                 <?php else : ?>
-                  (0)
+                  <span class="badge bg-info">0</span>
                 <?php endif; ?>
                 </td>
 

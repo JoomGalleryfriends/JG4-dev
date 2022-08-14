@@ -17,29 +17,29 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Language\Text;
-use Joomla\CMS\Session\Session;
-use Joomla\CMS\Language\Multilanguage;
-use Joomla\CMS\Button\FeaturedButton;
-use Joomla\CMS\Button\PublishedButton;
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomla\CMS\Session\Session;
+use \Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\Button\FeaturedButton;
+use \Joomla\CMS\Button\PublishedButton;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\ApprovedButton;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-HTMLHelper::_('bootstrap.tooltip');
-HTMLHelper::_('behavior.multiselect');
 
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
-   ->useScript('com_joomgallery.admin');
+   ->useScript('com_joomgallery.admin')
+   ->useScript('multiselect');
 
 $user      = Factory::getUser();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
 $canOrder  = $user->authorise('core.edit.state', 'com_joomgallery');
-$saveOrder = $listOrder == 'a.ordering';
+$saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 
-if ($saveOrder)
+if($saveOrder && !empty($this->items))
 {
 	$saveOrderingUrl = 'index.php?option=com_joomgallery&task=images.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
 	HTMLHelper::_('draggablelist.draggable');
@@ -74,7 +74,7 @@ if ($saveOrder)
                   <?php echo HTMLHelper::_('searchtools.sort', 'JFEATURED', 'a.featured', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'JSTATUS', 'a.published', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_PUBLISHED', 'a.published', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
                   <?php // Spaceholder for thumbnail image ?>
@@ -233,7 +233,16 @@ if ($saveOrder)
                 </th>
 
                 <td class="d-none d-lg-table-cell text-center">
-                  <?php echo $item->approved; ?>
+                  <?php 
+                    $options = [
+                      'task_prefix' => 'images.',
+                      'disabled' => !$canChange,
+                      'id' => 'state-' . $item->id
+                    ];
+
+                    echo (new ApprovedButton)->render((int) $item->approved, $i, $options); 
+                  ?>
+                  <?php //echo $item->approved; ?>
                 </td>
 
                 <td class="small d-none d-md-table-cell">

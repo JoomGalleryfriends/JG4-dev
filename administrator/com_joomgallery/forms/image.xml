@@ -39,9 +39,14 @@
            label="COM_JOOMGALLERY_IMGMAN_IMAGE_RATING" />
 
     <field name="approved"
+           type="list"
+           readonly="true"
            default="0"
-           hidden="true"
-           label="COM_JOOMGALLERY_IMGMAN_APPROVED" />
+           class="readonly"
+           label="COM_JOOMGALLERY_COMMON_APPROVED">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
 
     <field name="useruploaded"
            default="0"
