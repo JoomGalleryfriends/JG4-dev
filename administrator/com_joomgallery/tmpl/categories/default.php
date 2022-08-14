@@ -230,7 +230,13 @@ if($saveOrder && !empty($this->items))
                   <?php echo $item->access; ?>
                 </td>
                 <td class="small d-none d-md-table-cell">
-                  <?php echo $item->created_by; ?>
+                  <?php if ($item->created_by) : ?>
+                    <a href="<?php echo Route::_('index.php?option=com_users&task=user.edit&id=' . (int) $item->created_by_id); ?>">
+                      <?php echo $this->escape($item->created_by); ?>
+                    </a>
+                  <?php else : ?>
+                    <?php echo Text::_('JNONE'); ?>
+                  <?php endif; ?>
                 </td>
                 <?php if (Multilanguage::isEnabled()) : ?>
                   <td class="small d-none d-md-table-cell">
