@@ -205,7 +205,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Path to save image
-      $file = $this->getImgPath($imagetype->typename, 0, $cat, $filename, 0);
+      $file = $this->getImgPath(0, $imagetype->typename, $cat, $filename, 0);
 
       // Create folders if not existent
       if(!$this->jg->getFilesystem()->createFolder(\dirname($file)))
@@ -270,7 +270,7 @@ class FileManager implements FileManagerInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
-      $file = $this->getImgPath($imagetype->typename, $img);
+      $file = $this->getImgPath($img, $imagetype->typename);
 
       // Delete imagetype
       if(!$this->jg->getFilesystem()->deleteFile($file))
@@ -314,7 +314,7 @@ class FileManager implements FileManagerInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
-      $file = $this->getImgPath($imagetype->typename, $img);
+      $file = $this->getImgPath($img, $imagetype->typename);
 
       // Get file info
       $images[$imagetype->typename] = $this->jg->getFilesystem()->checkFile($file);
@@ -351,7 +351,7 @@ class FileManager implements FileManagerInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image source path
-      $img_src = $this->getImgPath($imagetype->typename, $img);
+      $img_src = $this->getImgPath($img, $imagetype->typename);
 
       // Get category destination path
       $cat_dst = $this->getCatPath($dest, $imagetype->typename);
@@ -625,8 +625,8 @@ class FileManager implements FileManagerInterface
   /**
    * Returns the path to an image
    *
-   * @param   string                    $type      Imagetype
    * @param   object|int|string         $img       Image object, image ID or image alias (new images: ID=0)
+   * @param   string                    $type      Imagetype
    * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
    * @param   string|bool               $filename  The filename (default: false)
    * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
@@ -635,7 +635,7 @@ class FileManager implements FileManagerInterface
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $img, $catid=false, $filename=false, $root=0)
+  public function getImgPath($img, $type, $catid=false, $filename=false, $root=0)
   {
     if($catid === false || $filename === false)
     {
@@ -651,7 +651,7 @@ class FileManager implements FileManagerInterface
         // Get image object
         $img = JoomHelper::getRecord('image', $img);
 
-        if($img === false)
+        if($img === false || \is_null($img->id))
         {
           Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_GETIMGPATH', $img), 'error');
 
@@ -693,7 +693,7 @@ class FileManager implements FileManagerInterface
    * Returns the path to a category without root path.
    *
    * @param   object|int|string        $cat       Category object, category ID or category alias (new categories: ID=0)
-   * @param   string|bool              $type      Imagetype if needed in the path
+   * @param   string|bool              $type      Imagetype if needed
    * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
    * @param   string|bool              $alias     The category alias (default: false)
    * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
@@ -704,7 +704,7 @@ class FileManager implements FileManagerInterface
    * @since   4.0.0
    */
   public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0)
-  { 
+  {
     // We got a valid category object
     if(\is_object($cat) && $cat instanceof \Joomla\CMS\Object\CMSObject && isset($cat->path))
     {      
