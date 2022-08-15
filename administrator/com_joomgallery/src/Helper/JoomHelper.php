@@ -348,7 +348,7 @@ class JoomHelper
       // Create file manager service
 			$manager = JoomHelper::getService('FileManager');
 
-      return $manager->getImgPath($type, $img);
+      return $manager->getImgPath($img, $type);
     }
   }
 
