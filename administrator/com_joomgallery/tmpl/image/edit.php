@@ -24,6 +24,16 @@ $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
 	->useScript('form.validate');
 HTMLHelper::_('bootstrap.tooltip');
+
+if($this->item->id > 0)
+{
+  $img_path = JoomHelper::getImg($this->item, 'thumbnail');
+}
+else
+{
+  $img_path = '#';
+}
+
 ?>
 
 <form
@@ -95,7 +105,7 @@ HTMLHelper::_('bootstrap.tooltip');
                 <tbody>
                   <tr>
                     <td>
-                      <img style="max-width:150px;" src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_'.strtoupper($imagetype->typename)); ?>">
+                      <img style="max-width:150px;" src="<?php echo $img_path; ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_'.strtoupper($imagetype->typename)); ?>">
                     </td>
                     <?php foreach($this->imagetypes as $key => $imagetype) : ?>
                       <td data-column="<?php echo Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_'.strtoupper($imagetype->type_alias)); ?>">
@@ -177,7 +187,7 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
 
       foreach($this->imagetypes as $key => $imagetype)
       {
-        $imgURL   .= $imagetype->typename.':"'.JoomHelper::getImg($this->item, $imagetype->typename).'",';
+        $imgURL   .= $imagetype->typename.':"'.$img_path.'",';
         $imgTitle .= $imagetype->typename.':"'.Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_'.strtoupper($imagetype->typename)).'",';
       }
 

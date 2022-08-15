@@ -148,6 +148,31 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
+        // Create path if not available
+        if(empty($table->path))
+        {
+          // get the JoomgalleryComponent object if needed
+          if(!isset($com_obj) || !\strpos('JoomgalleryComponent', \get_class($com_obj)) === false)
+          {
+            $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
+          }
+
+          $parentcat_model = $com_obj->getMVCFactory()->createModel('category');
+
+          if(\is_null($parentcat_model))
+          {
+            throw new \Exception('Can not create new category model');
+          }
+
+          // Attempt to load the parent category.
+          $parentcat = $parentcat_model->getItem($table->parent_id);
+
+          if(isset($parentcat->path))
+          {
+            $table->path = $parentcat->path.'/'.$table->alias;
+          }
+        }
+
         // Prepare the row for saving
         $this->prepareTable($table);
 

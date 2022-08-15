@@ -97,7 +97,7 @@ interface FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function checkFile($file): mixed;
+  public function checkFile($file);
 
   /**
    * Check filename if it's valid for the filesystem
@@ -125,18 +125,19 @@ interface FilesystemInterface
    *
    * @since   1.0.0
    */
-  public function cleanFilename($file, $strip_ext=false, $replace_chars=''): mixed;
+  public function cleanFilename($file, $strip_ext=false, $replace_chars='');
 
   /**
    * Create a folder and all necessary parent folders (local and storage).
    *
    * @param   string  $path   A path to create from the base path.
+   * @param   bool    $index  True to create an index.html file (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function createFolder($path): bool;
+  public function createFolder($path, $index=false): bool;
 
   /**
    * Moves a folder including all all files and subfolders (local and storage).
@@ -174,7 +175,7 @@ interface FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3): mixed;
+  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3);
 
   /**
    * Sets the permission of a given file or folder recursively.
@@ -188,4 +189,15 @@ interface FilesystemInterface
    * @since   4.0.0
    */
   public function chmod($path, $val, $mode=true): bool;
+
+  /**
+   * Copies an index.html file into a specified folder
+   *
+   * @param   string   $path    The path where the index.html should be created
+   * 
+   * @return  bool     True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function createIndexHtml($path): bool;
 }

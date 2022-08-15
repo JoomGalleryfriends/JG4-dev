@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
+use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
@@ -73,8 +74,8 @@ class ImagetypesModel extends JoomListModel
     foreach($items as $key => $item)
     {
       if(property_exists($item, 'params')) 
-		  {
-        $items[$key]->params = json_decode($item->params);
+      {
+        $items[$key]->params = new Registry($item->params);
       }
     }
 
