@@ -27,11 +27,10 @@
               label="COM_JOOMGALLERY_COMMON_ALL"
               onchange="this.form.submit();"
               show_root="false"
+              multiple="true"
               default=""
               message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY"
-              task="filter" >
-          <option value="">JOPTION_SELECT_CATEGORY</option>
-        </field>
+              task="filter" />
 
         <field name="access"
                type="accesslevel"

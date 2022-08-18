@@ -152,8 +152,8 @@ interface FileManagerInterface
   /**
    * Returns the path to an image
    *
-   * @param   string                    $type      Imagetype
    * @param   object|int|string         $img       Image object, image ID or image alias (new images: ID=0)
+   * @param   string                    $type      Imagetype
    * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
    * @param   string|bool               $filename  The filename (default: false)
    * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
@@ -162,13 +162,13 @@ interface FileManagerInterface
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $img, $catid=false, $filename=false, $root=0);
+  public function getImgPath($img, $type, $catid=false, $filename=false, $root=0);
 
   /**
    * Returns the path to a category without root path.
    *
    * @param   object|int|string        $cat       Category object, category ID or category alias (new categories: ID=0)
-   * @param   string|bool              $type      Imagetype if needed in the path
+   * @param   string|bool              $type      Imagetype if needed
    * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
    * @param   string|bool              $alias     The category alias (default: false)
    * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)

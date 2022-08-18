@@ -64,7 +64,7 @@
     <field name="published"
            type="radio"
            class="btn-group"
-           default="0"
+           default="1"
            label="COM_JOOMGALLERY_COMMON_PUBLISHED">
         <option value="0">JNO</option>
         <option value="1">JYES</option>

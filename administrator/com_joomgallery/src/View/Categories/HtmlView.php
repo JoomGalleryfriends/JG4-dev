@@ -59,6 +59,12 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
+    // Preprocess the list of items to find ordering divisions.
+		foreach ($this->items as &$item)
+		{
+			$this->ordering[$item->parent_id][] = $item->id;
+		}
+
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();

@@ -198,7 +198,7 @@ class CategoriesModel extends JoomListModel
     $query->join('LEFT', $db->quoteName('#__viewlevels', 'ag'), $db->quoteName('ag.id') . ' = ' . $db->quoteName('a.access'));
 
 		// Join over the user field 'created_by'
-    $query->select($db->quoteName('ua.name', 'created_by'));
+    $query->select(array($db->quoteName('ua.name', 'created_by'), $db->quoteName('ua.id', 'created_by_id')));
     $query->join('LEFT', $db->quoteName('#__users', 'ua'), $db->quoteName('ua.id') . ' = ' . $db->quoteName('a.created_by'));
 
 		// Join over the user field 'modified_by'
@@ -218,6 +218,10 @@ class CategoriesModel extends JoomListModel
 		$query->select('COUNT(`child`.id) AS `child_count`');
     $query->join('LEFT', $db->quoteName('#__joomgallery_categories', 'child'), $db->quoteName('child.parent_id') . ' = ' . $db->quoteName('a.id'));
     $query->group($db->quoteName('child.parent_id'));
+
+    // Join over the language fields 'language_title' and 'language_image'
+		$query->select(array($db->quoteName('l.title', 'language_title'), $db->quoteName('l.image', 'language_image')));
+		$query->join('LEFT', $db->quoteName('#__languages', 'l'), $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
 
     // Filter by access level.
 		$access = $this->getState('filter.access');

@@ -101,25 +101,13 @@ class FileManager implements FileManagerInterface
       $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
 
       // Only proceed if imagetype is active
-      if($imagetype->params->jg_imgtype != 1)
+      if($imagetype->params->get('jg_imgtype', 1) != 1)
       {
         continue;
       }
 
       // Debug info
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
-
-      // Read source image
-      if(!$this->jg->getIMGtools()->read($source))
-      {
-        // Destroy the IMGtools service
-        $this->jg->delIMGtools();
-
-        // Debug info
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-
-        continue;
-      }
 
       // Keep metadata only for original images
       if($imagetype->typename == 'original')
@@ -132,7 +120,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Do we need to keep animation?
-      if($imagetype->params->jg_imgtypeanim == 1)
+      if($imagetype->params->get('jg_imgtypeanim', 0) == 1)
       {
         // Yes
         $this->jg->getIMGtools()->keep_anim = true;
@@ -142,9 +130,21 @@ class FileManager implements FileManagerInterface
         // No
         $this->jg->getIMGtools()->keep_anim = false;
       }
+      
+      // Read source image
+      if(!$this->jg->getIMGtools()->read($source))
+      {
+        // Destroy the IMGtools service
+        $this->jg->delIMGtools();
+
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
+        continue;
+      }
 
       // Do we need to auto orient?
-      if($imagetype->params->jg_imgtypeorinet == 1)
+      if($imagetype->params->get('jg_imgtypeorinet', 0) == 1)
       {
         // Yes
         if(!$this->jg->getIMGtools()->orient())
@@ -161,14 +161,14 @@ class FileManager implements FileManagerInterface
       }
 
       // Need for resize?
-      if($imagetype->params->jg_imgtyperesize > 0)
+      if($imagetype->params->get('jg_imgtyperesize', 0) > 0)
       {
         // Yes
-        if(!$this->jg->getIMGtools()->resize($imagetype->params->jg_imgtyperesize,
-                                             $imagetype->params->jg_imgtypewidth,
-                                             $imagetype->params->jg_imgtypeheight,
-                                             $imagetype->params->jg_cropposition,
-                                             $imagetype->params->jg_imgtypesharpen)
+        if(!$this->jg->getIMGtools()->resize($imagetype->params->get('jg_imgtyperesize', 3),
+                                             $imagetype->params->get('jg_imgtypewidth', 5000),
+                                             $imagetype->params->get('jg_imgtypeheight', 5000),
+                                             $imagetype->params->get('jg_cropposition', 2),
+                                             $imagetype->params->get('jg_imgtypesharpen', 0))
           )
         {
           // Destroy the IMGtools service
@@ -183,14 +183,14 @@ class FileManager implements FileManagerInterface
       }
 
       // Need for watermarking?
-      if($imagetype->params->jg_imgtypewatermark == 1)
+      if($imagetype->params->get('jg_imgtypewatermark', 0) == 1)
       {
-        // Yes        
+        // Yes
         if(!$this->jg->getIMGtools()->watermark(JPATH_ROOT.\DIRECTORY_SEPARATOR.$this->jg->getConfig()->get('jg_wmfile'),
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkpos,
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkzoom,
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarksize,
-                                                $imagetype->params->jg_imgtypewtmsettings->jg_watermarkopacity)
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkpos', 9),
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkzoom', 0),
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarksize', 15),
+                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkopacity', 80))
           )
         {
           // Destroy the IMGtools service
@@ -205,7 +205,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Path to save image
-      $file = $this->getImgPath($imagetype->typename, 0, $cat, $filename, 0);
+      $file = $this->getImgPath(0, $imagetype->typename, $cat, $filename, 0);
 
       // Create folders if not existent
       if(!$this->jg->getFilesystem()->createFolder(\dirname($file)))
@@ -221,7 +221,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Write image to file
-      if(!$this->jg->getIMGtools()->write($file, $imagetype->params->jg_imgtypequality))
+      if(!$this->jg->getIMGtools()->write($file, $imagetype->params->get('jg_imgtypequality', 100)))
       {
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
@@ -270,7 +270,7 @@ class FileManager implements FileManagerInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
-      $file = $this->getImgPath($imagetype->typename, $img);
+      $file = $this->getImgPath($img, $imagetype->typename);
 
       // Delete imagetype
       if(!$this->jg->getFilesystem()->deleteFile($file))
@@ -314,7 +314,7 @@ class FileManager implements FileManagerInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image file name
-      $file = $this->getImgPath($imagetype->typename, $img);
+      $file = $this->getImgPath($img, $imagetype->typename);
 
       // Get file info
       $images[$imagetype->typename] = $this->jg->getFilesystem()->checkFile($file);
@@ -352,7 +352,7 @@ class FileManager implements FileManagerInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Get image source path
-      $img_src = $this->getImgPath($imagetype->typename, $img);
+      $img_src = $this->getImgPath($img, $imagetype->typename);
 
       // Get category destination path
       $cat_dst = $this->getCatPath($dest, $imagetype->typename);
@@ -643,8 +643,8 @@ class FileManager implements FileManagerInterface
   /**
    * Returns the path to an image
    *
-   * @param   string                    $type      Imagetype
    * @param   object|int|string         $img       Image object, image ID or image alias (new images: ID=0)
+   * @param   string                    $type      Imagetype
    * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
    * @param   string|bool               $filename  The filename (default: false)
    * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
@@ -653,7 +653,7 @@ class FileManager implements FileManagerInterface
    * 
    * @since   4.0.0
    */
-  public function getImgPath($type, $img, $catid=false, $filename=false, $root=0)
+  public function getImgPath($img, $type, $catid=false, $filename=false, $root=0)
   {
     if($catid === false || $filename === false)
     {
@@ -669,7 +669,7 @@ class FileManager implements FileManagerInterface
         // Get image object
         $img = JoomHelper::getRecord('image', $img);
 
-        if($img === false)
+        if($img === false || \is_null($img->id))
         {
           Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_GETIMGPATH', $img), 'error');
 
@@ -711,7 +711,7 @@ class FileManager implements FileManagerInterface
    * Returns the path to a category without root path.
    *
    * @param   object|int|string        $cat       Category object, category ID or category alias (new categories: ID=0)
-   * @param   string|bool              $type      Imagetype if needed in the path
+   * @param   string|bool              $type      Imagetype if needed
    * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
    * @param   string|bool              $alias     The category alias (default: false)
    * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
@@ -722,7 +722,7 @@ class FileManager implements FileManagerInterface
    * @since   4.0.0
    */
   public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0)
-  { 
+  {
     // We got a valid category object
     if(\is_object($cat) && $cat instanceof \Joomla\CMS\Object\CMSObject && isset($cat->path))
     {      

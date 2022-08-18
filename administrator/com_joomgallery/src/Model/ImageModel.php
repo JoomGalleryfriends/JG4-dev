@@ -392,6 +392,24 @@ class ImageModel extends JoomAdminModel
 				}
 			}
 
+      // Handle images if category was changed
+			if(!$isNew && $catMoved)
+			{
+				// Create file manager service
+				$manager = JoomHelper::getService('FileManager');
+
+				if($imgUploaded)
+				{
+					// Delete Images
+					$manager->deleteImages($table);
+				}
+				else
+				{
+					// Move Images
+					$manager->moveImages($table, $data['catid']);
+				}				
+			}
+
 			// Bind data to table object
 			if(!$table->bind($data))
 			{
@@ -409,6 +427,39 @@ class ImageModel extends JoomAdminModel
 				$this->setError($table->getError());
 
 				return false;
+			}			
+
+			// Handle images if record gets copied
+			if($isNew && $isCopy)
+			{
+				// Create file manager service
+				$manager = JoomHelper::getService('FileManager');
+
+				// Get source image id
+				$source_id = $app->input->get('origin_id', false, 'INT');
+
+				if(!$imgUploaded)
+				{
+					// Regenerate filename
+					$table->filename = $manager->regenFilename($data['filename']);
+
+					// Copy Images
+					$manager->copyImages($source_id, $data['catid'], $table->filename);
+				}
+			}
+
+			// Create images
+			if($imgUploaded)
+			{
+				// Create images
+				// (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
+				if(!$uploader->createImage($table))
+				{
+					$uploader->rollback();
+					$this->setError($this->component->getDebug());
+
+					return false;
+				}
 			}
 
 			// Handle images if category was changed

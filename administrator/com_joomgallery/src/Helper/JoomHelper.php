@@ -16,11 +16,8 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
-use \Joomla\Registry\Registry;
-use \Joomla\Utilities\ArrayHelper;
-use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
-
 
 /**
  * JoomGallery Helper for the Backend
@@ -133,7 +130,7 @@ class JoomHelper
     // We got a record ID, an alias or a filename
     elseif(!empty($id) && ((\is_numeric($id) && $id > 0) || \is_string($id) || ($name == 'imagetype' && \is_array($id))))
     {
-      if(\is_string($id))
+      if(\is_string($id) && (int) $id == 0)
       {
         $id = self::getRecordIDbyAliasOrFilename($name, $id);
       }
@@ -280,7 +277,7 @@ class JoomHelper
   /**
    * Returns the URL or the path to an image
    *
-   * @param   string/object/int $img    Filename, database object or ID of the image
+   * @param   string/object/int $img    Filename, database object, ID or URL of the image
    * @param   string            $type   The image type
    * @param   bool              $url    True: image url, false: image path (default: true)
    *
@@ -295,47 +292,63 @@ class JoomHelper
 
     if($imagetype === false)
     {
-      Factory::getApplication()->enqueueMessage('Imagetype not found!', 'error');
+      throw new Exception("Imagetype not found.");
 
       return false;
     }
 
-    if(!is_object($img))
+    if(!\is_object($img))
     {
-      if(is_numeric($img))
+      if(\is_numeric($img))
       {
         // get image based on ID
         $img = self::getRecord('image', $img);
       }
+      elseif(\is_string($img))
+      {
+        if(\strlen($img) > 5 && (\strpos($img, '/') !== false || \strpos($img, \DIRECTORY_SEPARATOR) !== false))
+        {
+          // already image url given
+          if(strpos($img, '/') === 0)
+          {
+            // url starts with '/'
+            return Uri::root(true).$img;
+          }
+          else
+          {
+            return Uri::root(true).'/'.$img;
+          }
+        }
+        else
+        {
+          // get image id based on filename
+          $img = self::getRecord('image', array('filename' => $img));
+        }
+      }
       else
       {
-        // get image id based on filename
-        $img = self::getRecord('image', array('filename' => $img));
+        // no image given
+        return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
       }
     }
 
-    if(!is_object($img))
+    if(!\is_object($img) || \is_null($img->id) || $img->id === 0)
     {
       // image object not found
-      Factory::getApplication()->enqueueMessage('Image not available!', 'error');
-
-      return false;
+      return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
     }
 
     // Check whether the image shall be output through the PHP script or with its real path
     if($url)
     {
-      return  Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
+      return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
     }
     else
     {
-      // get corresponding category
-      $cat  = JoomHelper::getRecord('category', $img->catid);
+      // Create file manager service
+			$manager = JoomHelper::getService('FileManager');
 
-      // Create the complete path
-      $path = $imagetype->path.\DIRECTORY_SEPARATOR.$cat->path.\DIRECTORY_SEPARATOR.$img->filename;
-
-      return Path::clean($path);
+      return $manager->getImgPath($img, $type);
     }
   }
 

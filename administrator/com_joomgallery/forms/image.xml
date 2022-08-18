@@ -39,9 +39,14 @@
            label="COM_JOOMGALLERY_IMGMAN_IMAGE_RATING" />
 
     <field name="approved"
+           type="list"
+           readonly="true"
            default="0"
-           hidden="true"
-           label="COM_JOOMGALLERY_IMGMAN_APPROVED" />
+           class="readonly"
+           label="COM_JOOMGALLERY_COMMON_APPROVED">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
 
     <field name="useruploaded"
            default="0"
@@ -75,7 +80,7 @@
     <field name="published"
            type="radio"
            class="btn-group"
-           default="0"
+           default="1"
            size="1"
            label="COM_JOOMGALLERY_COMMON_PUBLISHED">
         <option value="0">JNO</option>
@@ -219,7 +224,7 @@
            todaybutton="true"
            weeknumbers="false"
            filltable="false"
-           default="1900-01-01 00:00:00"
+           default=""
            label="COM_JOOMGALLERY_COMMON_IMGDATE"
            description="COM_JOOMGALLERY_IMGMAN_IMGDATE_DESC" />
 

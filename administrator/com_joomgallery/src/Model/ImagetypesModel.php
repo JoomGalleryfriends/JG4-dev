@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
+use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
@@ -54,9 +55,8 @@ class ImagetypesModel extends JoomListModel
 		$query->from($db->quoteName(_JOOM_TABLE_IMG_TYPES, 'a'));
 
 		// Add the list ordering clause.
-    $orderDirn = $this->state->get('list.direction', 'ASC');
-
-		$query->order($db->escape("ordering" . ' ' . $orderDirn));
+		//$query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
+    $query->order($db->escape('a.id ASC'));
 
 		return $query;
 	}
@@ -73,8 +73,8 @@ class ImagetypesModel extends JoomListModel
     foreach($items as $key => $item)
     {
       if(property_exists($item, 'params')) 
-		  {
-        $items[$key]->params = json_decode($item->params);
+      {
+        $items[$key]->params = new Registry($item->params);
       }
     }
 

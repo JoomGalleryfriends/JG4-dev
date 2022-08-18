@@ -21,7 +21,8 @@ use \Joomla\CMS\Language\Text;
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
-	 ->useScript('form.validate');
+	 ->useScript('form.validate')
+   ->useStyle('com_joomgallery.admin');
 HTMLHelper::_('bootstrap.tooltip');
 
 $app = Factory::getApplication();
@@ -80,7 +81,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-images" class="options-form">
 				<legend><?php echo Text::_('COM_JOOMGALLERY_IMGMAN_IMAGE_PREVIEW'); ?></legend>
-        <div class="text-center">
+        <div class="text-center joom-image center">
+          <div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>
           <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_TYPE_THUMBNAIL'); ?>">
         </div>
         <div class="text-center">
@@ -114,6 +116,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 			<fieldset id="fieldset-publishingdata" class="options-form">
 				<legend><?php echo Text::_('JGLOBAL_FIELDSET_PUBLISHING'); ?></legend>
         <div>
+          <?php echo $this->form->renderField('approved'); ?>
           <?php echo $this->form->renderField('created_time'); ?>
           <?php echo $this->form->renderField('created_by'); ?>
           <?php echo $this->form->renderField('modified_time'); ?>
@@ -137,7 +140,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
 	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS', true)); ?>
 	<div class="row">
-  <div class="col-lg-12">
+    <div class="col-lg-12">
       <fieldset class="form-vertical">
 				<legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS'); ?></legend>
 				<?php echo $this->form->renderField('params'); ?>
@@ -153,16 +156,15 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
 	<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-	<?php /*<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />*/ ?>
+	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
 	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
-	<input type="hidden" name="jform[approved]" value="<?php echo $this->item->approved; ?>" />
 	<input type="hidden" name="jform[useruploaded]" value="<?php echo $this->item->useruploaded; ?>" />
 
 	<?php if (Factory::getUser()->authorise('core.admin','joomgallery')) : ?>
-	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
-		<?php echo $this->form->getInput('rules'); ?>
-	<?php echo HTMLHelper::_('uitab.endTab'); ?>
-<?php endif; ?>
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
+      <?php echo $this->form->getInput('rules'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+  <?php endif; ?>
 	<?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
 	<input type="hidden" name="task" value=""/>
@@ -204,7 +206,11 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
     let imgTitle = <?php echo $imgTitle; ?>;
 
     modalTitle.innerHTML = imgTitle[typename];
-    modalBody.innerHTML = '<img style="max-width:100%" src="' + imgURL[typename] + '" alt="' + imgTitle[typename] + '">';
+    let body  = '<div class="joom-image center">'
+    body      = body + '<div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>';
+    body      = body + '<img src="' + imgURL[typename] + '" alt="' + imgTitle[typename] + '">';
+    body      = body + '</div>';
+    modalBody.innerHTML  = body;
 
     let bsmodal = new bootstrap.Modal(document.getElementById('image-modal-box'), {keyboard: false});
     bsmodal.show();

@@ -1,0 +1,88 @@
+<?php
+/**
+******************************************************************************************
+**   @version    4.0.0                                                                  **
+**   @package    com_joomgallery                                                        **
+**   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
+**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 2 or later                          **
+*****************************************************************************************/
+
+namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Date\Date;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Button\ActionButton;
+use Joomla\CMS\Layout\FileLayout;
+
+/**
+ * The ApprovedButton class.
+ *
+ * @since  4.0.0
+ */
+class ApprovedButton extends ActionButton
+{
+	/**
+	 * Configure this object.
+	 *
+	 * @return  void
+	 *
+	 * @since  4.0.0
+	 */
+	protected function preprocess()
+	{
+		$this->addState(1, 'unapprove', 'approve', Text::_('COM_JOOMGALLERY_COMMON_UNAPPROVE_ITEM'), ['tip_title' => Text::_('COM_JOOMGALLERY_COMMON_APPROVED')]);
+		$this->addState(0, 'approve', 'unapprove', Text::_('COM_JOOMGALLERY_COMMON_APPROVE_ITEM'), ['tip_title' => Text::_('COM_JOOMGALLERY_COMMON_UNAPPROVED')]);
+	}
+
+	/**
+	 * Render action button by item value.
+	 *
+	 * @param   integer|null  $value      Current value of this item.
+	 * @param   integer|null  $row        The row number of this item.
+	 * @param   array         $options    The options to override group options.
+	 *
+	 * @return  string  Rendered HTML.
+	 *
+	 * @since  4.0.0
+	 */
+	public function render(?int $value = null, ?int $row = null, array $options = []): string
+	{
+		return parent::render($value, $row, $options);
+	}
+
+  /**
+	 * Method to get the CSS class name for an icon identifier.
+	 *
+	 * Can be redefined in the final class.
+	 *
+	 * @param   string  $identifier  Icon identification string.
+	 *
+	 * @return  string  CSS class name.
+	 *
+	 * @since   4.0.0
+	 */
+	public function fetchIconClass(string $identifier): string
+	{
+		// It's an ugly hack, but this allows templates to define the icon classes for the toolbar
+		$layout = new FileLayout('joomla.button.iconclass');
+
+    switch($identifier)
+    {
+      case 'approve':
+        $identifier = 'publish';
+        break;
+
+      case 'unapprove':
+        $identifier = 'unpublish';
+        break;
+      
+      default:
+        break;
+    }
+
+		return $layout->render(array('icon' => $identifier));
+	}
+}

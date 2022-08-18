@@ -103,39 +103,4 @@ class CategoriesController extends AdminController
     
 		return false;
 	}
-
-	/**
-	 * Method to save the submitted ordering values for records via AJAX.
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 *
-	 * @throws  Exception
-	 */
-	public function saveOrderAjax()
-	{
-		// Get the input
-		$input = Factory::getApplication()->input;
-		$pks   = $input->post->get('cid', array(), 'array');
-		$order = $input->post->get('order', array(), 'array');
-
-		// Sanitize the input
-		ArrayHelper::toInteger($pks);
-		ArrayHelper::toInteger($order);
-
-		// Get the model
-		$model = $this->getModel();
-
-		// Save the ordering
-		$return = $model->saveorder($pks, $order);
-
-		if($return)
-		{
-			echo "1";
-		}
-
-		// Close the application
-		Factory::getApplication()->close();
-	}
 }
