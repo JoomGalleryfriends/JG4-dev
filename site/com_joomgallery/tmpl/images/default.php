@@ -57,7 +57,7 @@ $wa->useStyle('com_joomgallery.list');
 					</th>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_DOWNLOADS', 'a.downloads', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_DOWNLOADS', 'a.downloads', $listDirn, $listOrder); ?>
 					</th>
 
           <th class=''>
@@ -71,7 +71,7 @@ $wa->useStyle('com_joomgallery.list');
 					<?php endif; ?>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_PUBLISHED', 'a.published', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
 					</th>
 			</tr>
 			</thead>

@@ -48,7 +48,7 @@ $wa->useStyle('com_joomgallery.list');
 					</th>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_PARENT_CATEGORY', 'a.parent_id', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_SHOW_PARENT_CATEGORY_LABEL', 'a.parent_id', $listDirn, $listOrder); ?>
 					</th>
 
           <?php if ($canEdit || $canDelete): ?>
@@ -58,7 +58,7 @@ $wa->useStyle('com_joomgallery.list');
 					<?php endif; ?>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_PUBLISHED', 'a.published', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
 					</th>
 			</tr>
 			</thead>

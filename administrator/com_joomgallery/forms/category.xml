@@ -59,13 +59,13 @@
     <field name="parent_id"
            type="categoryedit"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_PARENT_CATEGORY" />
+           label="JGLOBAL_SHOW_PARENT_CATEGORY_LABEL" />
 
     <field name="published"
            type="radio"
            class="btn-group"
            default="1"
-           label="COM_JOOMGALLERY_COMMON_PUBLISHED">
+           label="JPUBLISHED">
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>

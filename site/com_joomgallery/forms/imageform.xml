@@ -20,17 +20,17 @@
 
     <field name="downloads"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_DOWNLOADS"
+           label="COM_JOOMGALLERY_DOWNLOADS"
            hidden="true" />
 
     <field name="imgvotes"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_VOTES"
+           label="COM_JOOMGALLERY_VOTES"
            hidden="true" />
 
     <field name="imgvotesum"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_VOTESUM"
+           label="COM_JOOMGALLERY_VOTESUM"
            hidden="true" />
 
     <field name="approved"
@@ -76,7 +76,7 @@
            class="btn-group"
            default="0"
            size="1"
-           label="COM_JOOMGALLERY_COMMON_PUBLISHED">
+           label="JPUBLISHED">
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -85,7 +85,7 @@
            type="text"
            maxlength="50"
            filter="string"
-           label="COM_JOOMGALLERY_COMMON_AUTHOR"
+           label="JAUTHOR"
            description="COM_JOOMGALLERY_IMGMAN_AUTHOR_TIP" />
 
     <field name="language"
@@ -183,16 +183,16 @@
            weeknumbers="false"
            filltable="false"
            default="1900-01-01 00:00:00"
-           label="COM_JOOMGALLERY_COMMON_IMGDATE"
-           description="COM_JOOMGALLERY_IMGMAN_IMGDATE_DESC" />
+           label="COM_JOOMGALLERY_IMGDATE"
+           description="COM_JOOMGALLERY_IMGDATE_DESC" />
 
     <field name="imgmetadata"
            type="editor"
            editor="codemirror"
            buttons="false"
            filter="JComponentHelper::filterText"
-           label="COM_JOOMGALLERY_IMGMAN_IMGMETADATA"
-           description="COM_JOOMGALLERY_IMGMAN_IMGMETADATA_DESC" />
+           label="COM_JOOMGALLERY_IMGMETADATA"
+           description="COM_JOOMGALLERY_IMGMETADATA_DESC" />
 
     <field name="params"
            type="subform"

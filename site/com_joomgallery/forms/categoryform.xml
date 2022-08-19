@@ -61,7 +61,7 @@
     <field name="parent_id"
            type="nestedparent"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_PARENT_CATEGORY"
+           label="JGLOBAL_SHOW_PARENT_CATEGORY_LABEL"
            description="COM_JOOMGALLERY_EDITCATEGORY_PARENT_CATEGORY_TIP"
            table="#__joomgallery_categories" />
 
@@ -69,7 +69,7 @@
            type="radio"
            class="btn-group"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_PUBLISHED"
+           label="JPUBLISHED"
            description="COM_JOOMGALLERY_EDITCATEGORY_PUBLISHED_TIP" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>

@@ -171,8 +171,8 @@ class HtmlView extends JoomGalleryView
 		return array(
 			'a.`ordering`'   => Text::_('JGRID_HEADING_ORDERING'),
 			'a.`hits`'       => Text::_('COM_JOOMGALLERY_COMMON_HITS'),
-			'a.`downloads`'  => Text::_('COM_JOOMGALLERY_COMMON_DOWNLOADS'),
-			'a.`approved`'   => Text::_('COM_JOOMGALLERY_COMMON_APPROVED'),
+			'a.`downloads`'  => Text::_('COM_JOOMGALLERY_DOWNLOADS'),
+			'a.`approved`'   => Text::_('COM_JOOMGALLERY_APPROVED'),
 			'a.`imgtitle`'   => Text::_('JGLOBAL_TITLE'),
 			'a.`catid`'      => Text::_('JCATEGORY'),
 			'a.`published`'  => Text::_('JSTATUS'),

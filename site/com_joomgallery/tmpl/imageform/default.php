@@ -102,7 +102,7 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
         <?php echo $this->form->renderField('robots'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_COMMON_IMAGES', true)); ?>
+      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
         <?php echo $this->form->renderField('filename'); ?>
 
         <?php echo $this->form->renderField('imgdate'); ?>

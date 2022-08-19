@@ -68,16 +68,16 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort', '', 'a.lft', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
-                  <?php echo HTMLHelper::_('searchtools.sort', 'COM_JOOMGALLERY_COMMON_PUBLISHED', 'a.state', $listDirn, $listOrder); ?>
+                  <?php // Spaceholder for thumbnail image ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
-                  <?php // Spaceholder for thumbnail image ?>
+                  <?php echo HTMLHelper::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" style="min-width:100px">
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_PARENT_CATEGORY', 'a.parent_id', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_SHOW_PARENT_CATEGORY_LABEL', 'a.parent_id', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
                   <?php echo Text::_('Images'); ?>
@@ -86,7 +86,7 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_OWNER', 'a.created_by', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_OWNER', 'a.created_by', $listDirn, $listOrder); ?>
                 </th>
                 <?php if (Multilanguage::isEnabled()) : ?>
                   <th scope="col" class="w-10 d-none d-md-table-cell">
@@ -168,6 +168,12 @@ if($saveOrder && !empty($this->items))
                   <?php endif; ?>
                 </td>
 
+                <td class="small d-none d-md-table-cell">
+                  <?php if(!empty($item->thumbnail)) : ?>
+                    <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($item->thumbnail, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
+                  <?php endif; ?>
+                </td>
+
                 <td class="category-status text-center">
                   <?php 
                     $options = [
@@ -178,12 +184,6 @@ if($saveOrder && !empty($this->items))
 
                     echo (new PublishedButton)->render((int) $item->published, $i, $options); 
                   ?>
-                </td>
-
-                <td class="small d-none d-md-table-cell">
-                  <?php if(!empty($item->thumbnail)) : ?>
-                    <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($item->thumbnail, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_THUMBNAIL'); ?>">
-                  <?php endif; ?>
                 </td>
 
                 <th scope="row" class="has-context">
@@ -213,9 +213,7 @@ if($saveOrder && !empty($this->items))
                 </th>
 
                 <td class="d-none d-md-table-cell">
-                  <div class="small">
-                    <?php echo ($item->parent_title == 'Root') ? '' : $item->parent_title; ?>
-                  </div>
+                  <?php echo ($item->parent_title == 'Root') ? '' : $item->parent_title; ?>
                 </td>
 
                 <td class="d-none d-md-table-cell">

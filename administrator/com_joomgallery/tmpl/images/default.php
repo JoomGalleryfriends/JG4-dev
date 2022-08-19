@@ -74,7 +74,7 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort', 'JFEATURED', 'a.featured', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_PUBLISHED', 'a.published', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
                   <?php // Spaceholder for thumbnail image ?>
@@ -83,13 +83,13 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_APPROVED', 'a.approved', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_APPROVED', 'a.approved', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_AUTHOR', 'a.imgauthor', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'JAUTHOR', 'a.imgauthor', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
                   <?php echo HTMLHelper::_('searchtools.sort',  'JDATE', 'a.imgdate', $listDirn, $listOrder); ?>
@@ -98,10 +98,10 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort', 'JGLOBAL_HITS', 'a.hits', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-3 d-none d-lg-table-cell text-center">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_DOWNLOADS', 'a.downloads', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_DOWNLOADS', 'a.downloads', $listDirn, $listOrder); ?>
                 </th>              
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_COMMON_OWNER', 'a.created_by', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_OWNER', 'a.created_by', $listDirn, $listOrder); ?>
                 </th>
                 <?php if (Multilanguage::isEnabled()) : ?>
                   <th scope="col" class="w-10 d-none d-md-table-cell">
@@ -183,7 +183,7 @@ if($saveOrder && !empty($this->items))
                 </td>
 
                 <td class="small d-none d-md-table-cell">
-                  <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($item, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_THUMBNAIL'); ?>">
+                  <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($item, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
                 </td>
 
                 <th scope="row" class="has-context">
@@ -253,7 +253,7 @@ if($saveOrder && !empty($this->items))
                   <?php if ($item->imgauthor) : ?>
                     <?php echo $this->escape($item->imgauthor); ?>
                   <?php else : ?>
-                    <?php echo Text::_('COM_JOOMGALLERY_COMMON_NO_USER'); ?>
+                    <?php echo Text::_('COM_JOOMGALLERY_NO_USER'); ?>
                   <?php endif; ?>
                 </td>
 
