@@ -166,7 +166,7 @@ class HtmlView extends JoomGalleryView
 			'a.`published`' => Text::_('JSTATUS'),
 			'a.`ordering`' => Text::_('JGRID_HEADING_ORDERING'),
 			'a.`title`' => Text::_('JGLOBAL_TITLE'),
-			'a.`group_id`' => Text::_('COM_JOOMGALLERY_COMMON_USER_GROUP'),
+			'a.`group_id`' => Text::_('COM_JOOMGALLERY_USER_GROUP'),
 		);
 	}
 

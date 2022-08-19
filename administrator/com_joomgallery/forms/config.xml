@@ -61,7 +61,7 @@
          type="sql"
          layout="joomla.form.field.list-fancy-select"
          required="true"
-         label="COM_JOOMGALLERY_COMMON_USER_GROUP"
+         label="COM_JOOMGALLERY_USER_GROUP"
          description="COM_JOOMGALLERY_CONFIG_USER_GROUP_DESC" />
 
   <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
@@ -105,7 +105,7 @@
       </field>
     </fieldset>
 
-    <fieldset type="tab" name="general-upload" label="COM_JOOMGALLERY_ACTION_UPLOAD">
+    <fieldset type="tab" name="general-upload" label="COM_JOOMGALLERY_UPLOAD">
       <field name="jg_replaceinfo"
              type="subform"
              max="6"
@@ -417,7 +417,7 @@
               description="COM_JOOMGALLERY_CONFIG_UR_UU_MAX_FILESIZE_LONG" />
     </fieldset>
 
-    <fieldset type="tab" name="user-upload" label="COM_JOOMGALLERY_ACTION_UPLOAD">
+    <fieldset type="tab" name="user-upload" label="COM_JOOMGALLERY_UPLOAD">
       <field name="jg_newpiccopyright"
              type="radio"
              default="1"
