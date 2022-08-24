@@ -149,7 +149,7 @@ class HtmlView extends BaseHtmlView
       $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=images");
     }
 
-    $breadcrumbTitle = Text::_('COM_JOOMGALLERY_COMMON_IMAGE');
+    $breadcrumbTitle = Text::_('COM_JOOMGALLERY_IMAGES');
 
     if(!in_array($breadcrumbTitle, $pathway->getPathwayNames()))
     {

@@ -26,8 +26,8 @@
            maxlength="100"
            filter="string"
            global_only="true"
-           label="COM_JOOMGALLERY_COMMON_IMAGE_PATH"
-           description="COM_JOOMGALLERY_COMMON_IMAGE_PATH_LONG" />
+           label="COM_JOOMGALLERY_IMAGES_PATH"
+           description="COM_JOOMGALLERY_IMAGES_PATH_LONG" />
 
     <field name="jg_imgtyperesize"
            type="list"
