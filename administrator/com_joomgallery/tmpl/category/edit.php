@@ -84,7 +84,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     </div>
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-thumbnail" class="options-form">
-				<legend><?php echo Text::_('COM_JOOMGALLERY_IMGMAN_IMAGE_PREVIEW'); ?></legend>
+				<legend><?php echo Text::_('COM_JOOMGALLERY_IMAGE_PREVIEW'); ?></legend>
         <div>
 				  <?php echo $this->form->renderField('thumbnail'); ?>
         </div>
@@ -120,11 +120,11 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Displayparams', Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS', true)); ?>
+	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Displayparams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
 	<div class="row">
     <div class="col-lg-12">
       <fieldset class="form-vertical">
-        <legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS'); ?></legend>
+        <legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
 				<?php echo $this->form->renderField('params'); ?>
 			</fieldset>
 		</div>

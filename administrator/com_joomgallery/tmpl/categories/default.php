@@ -206,7 +206,7 @@ if($saveOrder && !empty($this->items))
                       <div class="small">
                         <?php echo LayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
                         <span class="badge bg-secondary">
-                          <?php echo Text::_('COM_JOOMGALLERY_IMGMAN_HIDDEN'); ?>
+                          <?php echo Text::_('COM_JOOMGALLERY_HIDDEN'); ?>
                         </span>
                       </div>
                     <?php endif; ?>

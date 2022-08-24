@@ -49,7 +49,7 @@ $wa->useStyle('com_joomgallery.list');
 					</th>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_IMAGE_NAME', 'a.imgtitle', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_IMAGES_NAME', 'a.imgtitle', $listDirn, $listOrder); ?>
 					</th>
 
 					<th class=''>

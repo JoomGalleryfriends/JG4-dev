@@ -46,15 +46,15 @@
            filter="string"
            required="true"
            autofocus="true"
-           label="COM_JOOMGALLERY_COMMON_TITLE"
+           label="JGLOBAL_TITLE"
            message="COM_JOOMGALLERY_CATMAN_ALERT_CATEGORY_MUST_HAVE_TITLE" />
 
     <field name="alias"
            type="text"
            maxlength="255"
            generator="title"
-           label="COM_JOOMGALLERY_COMMON_ALIAS"
-           description="COM_JOOMGALLERY_IMG_ALIAS_DESC" />
+           label="JALIAS"
+           description="JFIELD_ALIAS_DESC" />
 
     <field name="parent_id"
            type="categoryedit"
@@ -72,7 +72,7 @@
 
     <field name="access"
            type="accesslevel"
-           label="COM_JOOMGALLERY_COMMON_ACCESS"
+           label="JFIELD_ACCESS_LABEL"
            description="COM_JOOMGALLERY_CATMAN_ACCESS_TIP"
            size="1" />
 
@@ -95,7 +95,7 @@
            cols="250"
            buttons="true"
            filter="JComponentHelper::filterText"
-           label="COM_JOOMGALLERY_COMMON_DESCRIPTION"
+           label="JGLOBAL_DESCRIPTION"
            hide="pagebreak" />
 
     <field name="hidden"
@@ -172,16 +172,16 @@
            cols="40"
            rows="5"
            filter="safehtml"
-           label="COM_JOOMGALLERY_COMMON_METADESC"
-           description="COM_JOOMGALLERY_COMMON_METADESC_TIP" />
+           label="JGLOBAL_DESCRIPTION"
+           description="JFIELD_META_DESCRIPTION_LABEL" />
 
     <field name="metakey"
            type="textarea"
            cols="40"
            rows="5"
            filter="string"
-           label="COM_JOOMGALLERY_COMMON_METAKEYS"
-           description="COM_JOOMGALLERY_COMMON_METAKEYS_TIP" />
+           label="JFIELD_META_KEYWORDS_LABEL"
+           description="JFIELD_META_KEYWORDS_DESC" />
 
     <field name="robots"
            type="list"
@@ -198,7 +198,7 @@
            type="subform"
            formsource="administrator/components/com_joomgallery/forms/subform_catparams.xml"
            layout="joomla.form.field.subform.default"
-           label="COM_JOOMGALLERY_COMMON_PARAMETERS" />
+           label="COM_JOOMGALLERY_PARAMETERS" />
 
     <field name="version_note"
            type="text"

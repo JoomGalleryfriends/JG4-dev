@@ -36,6 +36,6 @@
            type="subform"
            formsource="administrator/components/com_joomgallery/forms/subform_imagetypeparams.xml"
            layout="joomla.form.field.subform.default"
-           label="COM_JOOMGALLERY_COMMON_PARAMETERS" />
+           label="COM_JOOMGALLERY_PARAMETERS" />
   </fieldset>
 </form>

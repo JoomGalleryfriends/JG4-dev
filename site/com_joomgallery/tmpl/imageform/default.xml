@@ -12,7 +12,7 @@
                    query="SELECT 0 as `id`, 'New Image' as `imgtitle` UNION SELECT `id`,`imgtitle` FROM #__joomgallery ORDER BY `id`"
                    key_field="id"
                    value_field="imgtitle"
-                   label="COM_JOOMGALLERY_COMMON_IMAGE"
+                   label="COM_JOOMGALLERY_IMAGES"
                    require="true" >
             </field>
         </fieldset>

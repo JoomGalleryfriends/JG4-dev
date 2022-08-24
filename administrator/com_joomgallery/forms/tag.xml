@@ -45,7 +45,7 @@
            type="editor"
            buttons="true"
            filter="JComponentHelper::filterText"
-           label="COM_JOOMGALLERY_COMMON_DESCRIPTION" />
+           label="JGLOBAL_DESCRIPTION" />
 
     <field name="created_time" 
            type="timecreated"
