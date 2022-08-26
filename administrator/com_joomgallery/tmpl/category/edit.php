@@ -49,7 +49,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
   <div class="main-card">
 	<?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'category', 'recall' => true, 'breakpoint' => 768)); ?>
 	
-  <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'category', Text::_('COM_JOOMGALLERY_FIELDSET_CATEGORY', true)); ?>
+  <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'category', Text::_('JCATEGORY', true)); ?>
 	<div class="row">
     <div class="col-lg-9">
 			<fieldset class="adminform">
@@ -59,7 +59,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 		</div>
     <div class="col-lg-3">
       <fieldset class="form-vertical">
-				<legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_FIELDSET_CATEGORY'); ?></legend>
+				<legend class="visually-hidden"><?php echo Text::_('JCATEGORY'); ?></legend>
 				<?php echo $this->form->renderField('parent_id'); ?>
 				<?php echo $this->form->renderField('published'); ?>
 				<?php echo $this->form->renderField('access'); ?>

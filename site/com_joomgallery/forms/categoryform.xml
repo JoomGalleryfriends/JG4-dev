@@ -6,7 +6,7 @@
            readonly="true"
            class="readonly"
            default="0"
-           description="COM_JOOMGALLERY_CATMAN_CATEGORY_ID" />
+           description="COM_JOOMGALLERY_CATEGORY_ID" />
 
     <field name="checked_out"
            type="hidden"
@@ -84,8 +84,8 @@
     <field name="password"
            type="password"
            size="100"
-           label="COM_JOOMGALLERY_CATMAN_PASSWORD"
-           description="COM_JOOMGALLERY_CATMAN_PASSWORD_TIP" />
+           label="JGLOBAL_PASSWORD"
+           description="COM_JOOMGALLERY_FIELDS_PASSWORD_DESC" />
 
     <field name="language"
            type="language"
@@ -104,8 +104,8 @@
            type="radio"
            default="0"
            class="btn-group"
-           label="COM_JOOMGALLERY_CATMAN_HIDDEN"
-           description="COM_JOOMGALLERY_CATMAN_HIDDEN_TIP" >
+           label="COM_JOOMGALLERY_HIDDEN"
+           description="COM_JOOMGALLERY_FIELDS_HIDDEN_DESC" >
       <option value="0">JNO</option>
       <option value="1">JYES</option>
     </field>
@@ -114,8 +114,8 @@
            type="radio"
            default="0"
            class="btn-group"
-           label="COM_JOOMGALLERY_CATMAN_EXCLUDE_FROM_TOPLISTS"
-           description="COM_JOOMGALLERY_CATMAN_EXCLUDE_FROM_TOPLISTS_TIP" >
+           label="COM_JOOMGALLERY_FIELDS_EXCLUDE_FROM_TOPLISTS"
+           description="COM_JOOMGALLERY_FIELDS_EXCLUDE_FROM_TOPLISTS_DESC" >
       <option value="0">JNO</option>
       <option value="1">JYES</option>
     </field>
@@ -124,8 +124,8 @@
            type="radio"
            default="0"
            class="btn-group"
-           label="COM_JOOMGALLERY_CATMAN_EXCLUDE_FROM_SEARCH"
-           description="COM_JOOMGALLERY_CATMAN_EXCLUDE_FROM_SEARCH_TIP" >
+           label="COM_JOOMGALLERY_FIELDS_EXCLUDE_FROM_SEARCH"
+           description="COM_JOOMGALLERY_FIELDS_EXCLUDE_FROM_SEARCH_DESC" >
       <option value="0">JNO</option>
       <option value="1">JYES</option>
     </field>
@@ -133,8 +133,8 @@
     <field name="thumbnail"
            type="media"
            directory="/images/joomgallery/"
-           label="COM_JOOMGALLERY_COMMON_THUMBNAIL"
-           description="COM_JOOMGALLERY_CATMAN_THUMBNAIL_TIP" />
+           label="COM_JOOMGALLERY_THUMBNAIL"
+           description="COM_JOOMGALLERY_FIELDS_THUMBNAIL_DESC" />
 
     <field name="created_time"
            type="timecreated"
