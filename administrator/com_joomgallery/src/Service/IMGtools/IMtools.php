@@ -109,7 +109,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       // new version (>= v7.x)
       $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', $version));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
 
       return;
     }
@@ -122,7 +122,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       {
         // old version (<= v6.x)
         $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', $version));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
 
         return;
       }
@@ -232,7 +232,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->commands['strip'] = ' -strip';
     }
 
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_IMGTOOLS_USED_PROCESSOR', $version));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
 
     return true;
   }
@@ -253,7 +253,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
     // Define image type to write
@@ -284,7 +284,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       $this->commands['auto-orient'] = ' -auto-orient';
 
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_AUTOORIENT_IMAGE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_IMAGE'));
     }
 
     if($this->auto_orient && $this->method == 3)
@@ -359,7 +359,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if(!File::exists($wtm_files['dst_file']))
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_WATERMARKING'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'));
 
         return false;
       }
@@ -369,7 +369,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Debugoutput: success
-    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_MANIPULATION_SUCCESSFUL'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_MANIPULATION_SUCCESSFUL'));
 
     // Delete watermarked temp file if existing
     if($this->watermarking && File::exists($wtm_files['dst_file']) && \strpos($wtm_files['dst_file'], 'tmp_wtm_img') !== false)
@@ -406,7 +406,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
     // Define image type to write
@@ -425,7 +425,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     if(!$this->write($tmp_file, $quality))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_ERROR_OUTPUT_IMAGE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'));
       $this->rollback('', $tmp_file);
 
       return false;
@@ -497,7 +497,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
     // Prepare working area (imginfo)
@@ -547,17 +547,17 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     switch($method)
     {
       case 1:
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_HEIGHT'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_HEIGHT'));
         break;
       case 2:
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_WIDTH'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_WIDTH'));
         break;
       case 3:
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_MAX'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_MAX'));
         break;
       case 4:
         // Free resizing and cropping
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_RESIZE_TO_CROP'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_CROP'));
         break;
       default:
         break;
@@ -623,7 +623,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
     // Prepare working area (imginfo)
@@ -682,7 +682,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$this->auto_orient && $this->dst_imginfo['angle'] > 0)
     {
       $this->commands['rotate'] = ' -rotate "-'.$angle.'"';
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ROTATE_BY_ANGLE', $angle));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ROTATE_BY_ANGLE', $angle));
     }
 
     // Clean up working area (imginfo)
@@ -709,7 +709,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
     // Prepare working area (imginfo)
@@ -718,7 +718,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($direction == 0)
     {
       // Nothing to do
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_IMGTOOLS_FLIP_NOT_NEEDED'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_FLIP_NOT_NEEDED'));
 
       return true;
     }
@@ -778,7 +778,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Add debugoutput
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_FLIP_BY', $this->dst_imginfo['flip']));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FLIP_BY', $this->dst_imginfo['flip']));
 
     // Clean up working area (imginfo)
     $this->res_imginfo                = $this->src_imginfo;
@@ -802,7 +802,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
     $this->auto_orient = true;
@@ -831,7 +831,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
     
     // Ensure that the watermark path is valid and clean
@@ -846,7 +846,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Checks if watermark file is existent
     if(!File::exists($wtm_file))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_WATERMARK_NOT_EXIST'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARK_NOT_EXIST'));
 
       return false;
     }
@@ -868,7 +868,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->dst_type    = $tmp_src_type;
 
     // Create debugoutput
-    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_WATERMARKING'));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_WATERMARKING'));
 
     // Set watermark hint
     $this->watermarking = true;
@@ -1047,7 +1047,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Check image availability
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']))
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_IMGTOOLS_WORKSPACE_MISSING'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
     // Prepare working area (imginfo)
