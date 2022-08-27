@@ -57,22 +57,22 @@
          query="SELECT id, title FROM #__usergroups"
          key_field="id"
          value_field="title"
-         header="COM_JOOMGALLERY_CONFIG_USER_GROUP_HEADER"
+         header="COM_JOOMGALLERY_CONFIG_USER_GROUP"
          type="sql"
          layout="joomla.form.field.list-fancy-select"
          required="true"
          label="COM_JOOMGALLERY_USER_GROUP"
          description="COM_JOOMGALLERY_CONFIG_USER_GROUP_DESC" />
 
-  <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
-    <fieldset type="tab" name="general-general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
+  <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
+    <fieldset type="tab" name="general-general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
       <field name="jg_filesystem"
              type="list"
              default="localhost"
              global_only="true"
-             label="COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM"
-             description="COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM_LONG" >
-        <option value="localhost">COM_JOOMGALLERY_CONFIG_GS_FILESYSTEM_LOCALHOST</option>
+             label="COM_JOOMGALLERY_CONFIG_FILESYSTEM"
+             description="COM_JOOMGALLERY_CONFIG_FILESYSTEM_LONG" >
+        <option value="localhost">COM_JOOMGALLERY_CONFIG_FILESYSTEM_LOCALHOST</option>
       </field>
       <field name="jg_pathftpupload"
              type="text"
@@ -159,7 +159,7 @@
       </field>
     </fieldset>
 
-    <fieldset type="tab" name="general-imgprocessing" label="COM_JOOMGALLERY_CONFIG_GS_TAB_IMAGE_PROCESSING">
+    <fieldset type="tab" name="general-imgprocessing" label="COM_JOOMGALLERY_CONFIG_TAB_IMAGE_PROCESSING">
       <field name="jg_imgprocessor"
              type="list"
              default="gd"
@@ -203,7 +203,7 @@
              buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
              layout="joomla.form.field.subform.repeatable-config"
-             label="COM_JOOMGALLERY_CONFIG_GS_IP_STATICPROCESSING" />
+             label="COM_JOOMGALLERY_CONFIG_IP_STATIC" />
 
       <field name="jg_dynamicprocessing"
              type="subform"
@@ -211,10 +211,10 @@
              buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
              layout="joomla.form.field.subform.repeatable-config"
-             label="COM_JOOMGALLERY_CONFIG_GS_IP_DYNAMICPROCESSING" />
+             label="COM_JOOMGALLERY_CONFIG_IP_DYNAMIC" />
     </fieldset>
 
-    <fieldset type="tab" name="general-messages" label="COM_JOOMGALLERY_CONFIG_GS_TAB_MESSAGES_SETTINGS">
+    <fieldset type="tab" name="general-messages" label="COM_JOOMGALLERY_CONFIG_TAB_MESSAGES">
       <field name="jg_msg_upload_type"
              type="list"
              default="2"
@@ -351,8 +351,8 @@
     </fieldset>
   </fieldset>
 
-  <fieldset type="tab" name="user" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_USER_SETTINGS">
-    <fieldset type="tab" name="user-general" label="COM_JOOMGALLERY_CONFIG_COMMON_TAB_GENERAL_SETTINGS">
+  <fieldset type="tab" name="user" label="COM_JOOMGALLERY_CONFIG_TAB_USER_SETTINGS">
+    <fieldset type="tab" name="user-general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
         <field name="jg_userspace"
               type="radio"
               default="1"
@@ -636,10 +636,10 @@
     </fieldset>
   </fieldset>
 
-  <fieldset type="tab" name="backend" label="COM_JOOMGALLERY_CONFIG_BACKEND_TAB" note="backend">
+  <fieldset type="tab" name="backend" label="COM_JOOMGALLERY_CONFIG_TAB_BACKEND" note="backend">
   </fieldset>
 
-  <fieldset type="tab" name="frontend" label="COM_JOOMGALLERY_CONFIG_FRONTEND_TAB" note="frontend">
+  <fieldset type="tab" name="frontend" label="COM_JOOMGALLERY_CONFIG_TAB_FRONTEND" note="frontend">
   </fieldset>
 
   <field name="asset_id"

@@ -86,9 +86,9 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
           <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_TYPE_THUMBNAIL'); ?>">
         </div>
         <div class="text-center">
-          <div class="btn-group joom-imgtypes" role="group" aria-label="<?php echo Text::_('COM_JOOMGALLERY_COMMON_SHOWIMAGE_LBL'); ?>">
+          <div class="btn-group joom-imgtypes" role="group" aria-label="<?php echo Text::_('COM_JOOMGALLERY_SHOWIMAGE_LBL'); ?>">
             <?php foreach($this->imagetypes as $key => $imagetype) : ?>
-              <a class="btn btn-outline-primary" style="cursor:pointer;" onclick="openModal('<?php echo $imagetype->typename; ?>')"><?php echo Text::sprintf('COM_JOOMGALLERY_COMMON_SHOWIMAGE_IMGTYPE', \ucfirst($imagetype->typename)); ?></a>
+              <a class="btn btn-outline-primary" style="cursor:pointer;" onclick="openModal('<?php echo $imagetype->typename; ?>')"><?php echo Text::sprintf('COM_JOOMGALLERY_SHOWIMAGE_IMGTYPE', \ucfirst($imagetype->typename)); ?></a>
             <?php endforeach; ?>
           </div>
         </div>
