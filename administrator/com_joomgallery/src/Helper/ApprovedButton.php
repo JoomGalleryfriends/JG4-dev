@@ -33,8 +33,8 @@ class ApprovedButton extends ActionButton
 	 */
 	protected function preprocess()
 	{
-		$this->addState(1, 'unapprove', 'approve', Text::_('COM_JOOMGALLERY_COMMON_UNAPPROVE_ITEM'), ['tip_title' => Text::_('COM_JOOMGALLERY_APPROVED')]);
-		$this->addState(0, 'approve', 'unapprove', Text::_('COM_JOOMGALLERY_COMMON_APPROVE_ITEM'), ['tip_title' => Text::_('COM_JOOMGALLERY_COMMON_UNAPPROVED')]);
+		$this->addState(1, 'unapprove', 'approve', Text::_('COM_JOOMGALLERY_UNAPPROVE_ITEM'), ['tip_title' => Text::_('COM_JOOMGALLERY_APPROVED')]);
+		$this->addState(0, 'approve', 'unapprove', Text::_('COM_JOOMGALLERY_APPROVE_ITEM'), ['tip_title' => Text::_('COM_JOOMGALLERY_COMMON_UNAPPROVED')]);
 	}
 
 	/**

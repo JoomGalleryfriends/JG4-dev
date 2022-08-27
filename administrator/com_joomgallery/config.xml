@@ -14,8 +14,8 @@
         <field name="inheritance_config"
                type="list"
                default="default"
-               label="COM_JOOMGALLERY_ADMENU_INHERITANCE_CONFIG_LABEL"
-               description="COM_JOOMGALLERY_ADMENU_INHERITANCE_CONFIG_DESC" >
+               label="COM_JOOMGALLERY_CONFIG_INHERITANCE_METHOD_LABEL"
+               description="COM_JOOMGALLERY_CONFIG_INHERITANCE_METHOD_DESC" >
           <option value="default">JDEFAULT</option>
         </field>
     </fieldset>
