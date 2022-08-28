@@ -150,6 +150,18 @@ interface FileManagerInterface
   public function moveCategory($cat, $dest, $foldername=false, $copy=false): bool;
 
   /**
+   * Rename folder of category
+   *
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be renamed
+   * @param   string              $foldername   New foldername of the category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameCategory($cat, $foldername): bool;
+
+  /**
    * Returns the path to an image
    *
    * @param   object|int|string         $img       Image object, image ID or image alias (new images: ID=0)

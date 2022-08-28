@@ -146,6 +146,27 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
   }
 
   /**
+   * Rename a file.
+   *
+   * @param   string  $file      The file name.
+   * @param   string  $newName   The new name of the file.
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameFile($file, $newName): bool
+  {
+    // complete file path
+    $src = $this->completePath($file);
+
+    // exchange trailing name in file path
+    $dest = $this->renamePath($src, $newName);
+
+    return JFile::move($src, $dest);
+  }
+
+  /**
    * Checks a file for existence, validity and size
    *
    * @param   string  $file  The file name
@@ -265,6 +286,27 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
     $path = $this->completePath($path);
 
     return JFolder::delete($path);
+  }
+
+  /**
+   * Rename a folder.
+   *
+   * @param   string  $path      The path to the folder to rename.
+   * @param   string  $newName   The new name of the folder.
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameFolder($path, $newName): bool
+  {
+    // complete source path
+    $src = $this->completePath($path);
+
+    // exchange trailing name in path
+    $dest = $this->renamePath($src, $newName);
+
+    return JFolder::move($src, $dest);
   }
 
   /**
@@ -405,5 +447,27 @@ class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
     }
 
     return JPath::clean($path);
+  }
+
+  /**
+   * Exchanges the trailing name component of a path
+   *
+   * @param   string  $path      The path.
+   * @param   string  $newName   The trailing name.
+   *
+   * @return  string  Renamed path
+   *
+   * @since   4.0.0
+   */
+  private function renamePath($path, $newName)
+  {
+    // get trailing name component of path
+    $trName = \basename($path);
+
+    // remove trailing name from path
+    $clean_path = \substr($path, 0, strrpos($path, $trName));
+
+    // complete renamed path
+    return $this->completePath($clean_path.$newName);
   }
 }
