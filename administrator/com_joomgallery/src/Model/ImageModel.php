@@ -427,7 +427,10 @@ class ImageModel extends JoomAdminModel
 				$this->setError($table->getError());
 
 				return false;
-			}			
+			}
+
+      // Trigger the before save event.
+			$result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
 			// Handle images if record gets copied
 			if($isNew && $isCopy)
@@ -479,47 +482,6 @@ class ImageModel extends JoomAdminModel
 					$manager->moveImages($table, $data['catid']);
 				}				
 			}
-
-			// Handle images if record gets copied
-			if($isNew && $isCopy)
-			{
-				// Create file manager service
-				$manager = JoomHelper::getService('FileManager');
-
-				// Get source image id
-				$source_id = $app->input->get('origin_id', false, 'INT');
-
-				if($imgUploaded)
-				{
-					// Delete Images
-					$manager->deleteImages($source_id);
-				}
-				else
-				{
-					// Regenerate filename
-					$table->filename = $manager->regenFilename($data['filename']);
-
-					// Copy Images
-					$manager->copyImages($source_id, $data['catid'], $table->filename);
-				}
-			}
-
-			// Create images
-			if($imgUploaded)
-			{
-				// Create images
-				// (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
-				if(!$uploader->createImage($table))
-				{
-					$uploader->rollback();
-					$this->setError($this->component->getDebug());
-
-					return false;
-				}
-			}
-
-			// Trigger the before save event.
-			$result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
 			if(\in_array(false, $result, true))
 			{

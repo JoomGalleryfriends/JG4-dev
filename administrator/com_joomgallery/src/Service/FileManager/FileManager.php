@@ -621,7 +621,7 @@ class FileManager implements FileManagerInterface
     }
 
     // Move successful
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \ucfirst(\basename($src_path))));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_'.$method.'_CATEGORY', \ucfirst(\basename($src_path))));
 
     return true;
   }
@@ -667,7 +667,7 @@ class FileManager implements FileManagerInterface
     }
 
     // Renaming successful
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_CATEGORY', \ucfirst(\basename($path))));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_RENAME_CATEGORY', \ucfirst(\basename($path))));
 
     return true;
   }
