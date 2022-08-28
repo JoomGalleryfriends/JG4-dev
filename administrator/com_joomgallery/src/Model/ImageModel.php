@@ -465,24 +465,6 @@ class ImageModel extends JoomAdminModel
 				}
 			}
 
-			// Handle images if category was changed
-			if(!$isNew && $catMoved)
-			{
-				// Create file manager service
-				$manager = JoomHelper::getService('FileManager');
-
-				if($imgUploaded)
-				{
-					// Delete Images
-					$manager->deleteImages($table);
-				}
-				else
-				{
-					// Move Images
-					$manager->moveImages($table, $data['catid']);
-				}				
-			}
-
 			if(\in_array(false, $result, true))
 			{
         		if($imgUploaded)
@@ -499,7 +481,7 @@ class ImageModel extends JoomAdminModel
 			{
 				if($imgUploaded)
 				{
-        			$uploader->rollback();
+        	$uploader->rollback();
 				}
 				$this->setError($table->getError());
 

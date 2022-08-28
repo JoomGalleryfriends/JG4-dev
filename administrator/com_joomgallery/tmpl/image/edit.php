@@ -155,11 +155,6 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-	<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
-	<input type="hidden" name="jform[useruploaded]" value="<?php echo $this->item->useruploaded; ?>" />
-
 	<?php if (Factory::getUser()->authorise('core.admin','joomgallery')) : ?>
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
       <?php echo $this->form->getInput('rules'); ?>
@@ -168,6 +163,10 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	<?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
 	<input type="hidden" name="task" value=""/>
+  <?php /* <input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
+	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
+	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
+	<input type="hidden" name="jform[useruploaded]" value="<?php echo $this->item->useruploaded; ?>" /> */ ?>
 	<?php echo HTMLHelper::_('form.token'); ?>
 
 </form>
