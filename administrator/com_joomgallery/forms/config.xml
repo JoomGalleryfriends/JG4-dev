@@ -79,16 +79,16 @@
              default="administrator/components/com_joomgallery/temp/ftp_upload/"
              maxlength="100"
              filter="string"
-             label="COM_JOOMGALLERY_CONFIG_GS_PD_FTPUPLOAD_PATH"
-             description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_FOR_FTPUPLOAD" />
+             label="COM_JOOMGALLERY_CONFIG_FTPUPLOAD_PATH"
+             description="COM_JOOMGALLERY_CONFIG_FTPUPLOAD_PATH_LONG" />
 
       <field name="jg_use_real_paths"
              type="radio"
              default="0"
              class="btn-group"
              layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_GS_PD_USE_REAL_PATHS"
-             description="COM_JOOMGALLERY_CONFIG_GS_PD_USE_REAL_PATHS_LONG" >
+             label="COM_JOOMGALLERY_CONFIG_USE_REAL_PATHS"
+             description="COM_JOOMGALLERY_CONFIG_USE_REAL_PATHS_LONG" >
           <option value="0">JNO</option>
           <option value="1">JYES</option>
       </field>
@@ -98,8 +98,8 @@
              default="1"
              class="btn-group"
              layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_GS_PD_CHECKUPDATE"
-             description="COM_JOOMGALLERY_CONFIG_GS_PD_CHECKUPDATE_LONG" >
+             label="COM_JOOMGALLERY_CONFIG_CHECKUPDATE"
+             description="COM_JOOMGALLERY_CONFIG_CHECKUPDATE_LONG" >
           <option value="0">JNO</option>
           <option value="1">JYES</option>
       </field>
@@ -112,15 +112,15 @@
              multiple="true"
              formsource="administrator/components/com_joomgallery/forms/subform_imageinforeplace.xml"
              layout="joomla.form.field.subform.repeatable-table"
-             label="COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACEVALUES"/>
+             label="COM_JOOMGALLERY_CONFIG_REPLACE_METADATA"/>
 
       <field name="jg_replaceshowwarning"
              type="radio"
              default="0"
              class="btn-group"
              layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACE_SHOWWARNING"
-             description="COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACE_SHOWWARNING_LONG" >
+             label="COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING"
+             description="COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING_LONG" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
         <option value="2">COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACE_OPTION_2_SHOWWARNING</option>
@@ -131,8 +131,8 @@
              default="0"
              class="btn-group"
              layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_COMMON_ORIGINAL_FILENAME"
-             description="COM_JOOMGALLERY_CONFIG_COMMON_ORIGINAL_FILENAME_LONG" >
+             label="COM_JOOMGALLERY_CONFIG_ORIGINAL_FILENAME"
+             description="COM_JOOMGALLERY_CONFIG_ORIGINAL_FILENAME_LONG" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
       </field>
@@ -140,11 +140,11 @@
       <field name="jg_uploadorder"
              type="list"
              default="2"
-             label="COM_JOOMGALLERY_CONFIG_GS_BU_UPLOAD_ORDER"
-             description="COM_JOOMGALLERY_CONFIG_GS_BU_UPLOAD_ORDER_LONG" >
-        <option value="0">COM_JOOMGALLERY_CONFIG_GS_BU_NO_ORDER</option>
-        <option value="1">COM_JOOMGALLERY_CONFIG_GS_BU_DESCENDING</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_GS_BU_ASCENDING</option>
+             label="COM_JOOMGALLERY_CONFIG_UPLOAD_ORDER"
+             description="COM_JOOMGALLERY_CONFIG_UPLOAD_ORDER_LONG" >
+        <option value="0">JDEFAULT</option>
+        <option value="1">JGLOBAL_ORDER_DESCENDING</option>
+        <option value="2">JGLOBAL_ORDER_ASCENDING</option>
       </field>
 
       <field name="jg_filenamenumber"
@@ -152,8 +152,8 @@
              default="1"
              class="btn-group"
              layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_GS_BU_FILENAMENUMBER"
-             description="COM_JOOMGALLERY_CONFIG_GS_BU_FILENAMENUMBER_LONG" >
+             label="COM_JOOMGALLERY_CONFIG_NUMBERING"
+             description="COM_JOOMGALLERY_CONFIG_NUMBERING_LONG" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
       </field>
@@ -163,10 +163,10 @@
       <field name="jg_imgprocessor"
              type="list"
              default="gd"
-             label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGE_CREATOR"
-             description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGE_CREATOR_LONG" >
-        <option value="gd">COM_JOOMGALLERY_CONFIG_GS_IP_GDLIB</option>
-        <option value="im">COM_JOOMGALLERY_CONFIG_GS_IP_IMAGEMAGICK</option>
+             label="COM_JOOMGALLERY_CONFIG_IMAGEPROCESSOR"
+             description="COM_JOOMGALLERY_CONFIG_IMAGEPROCESSOR_LONG" >
+        <option value="gd">COM_JOOMGALLERY_CONFIG_GDLIB</option>
+        <option value="im">COM_JOOMGALLERY_CONFIG_IMAGEMAGICK</option>
       </field>
 
       <field name="jg_fastgd2creation"
@@ -186,15 +186,15 @@
              default=""
              maxlength="100"
              filter="string"
-             label="COM_JOOMGALLERY_CONFIG_GS_IP_PATH_TO_IMAGEMAGICK"
-             description="COM_JOOMGALLERY_CONFIG_GS_IP_PATH_TO_IMAGEMAGICK_LONG"
+             label="COM_JOOMGALLERY_CONFIG_PATH_IMAGEMAGICK"
+             description="COM_JOOMGALLERY_CONFIG_PATH_IMAGEMAGICK_LONG"
              showon="jg_imgprocessor:im" />
 
       <field name="jg_wmfile"
              type="media"
              directory="images/joomgallery"
-             label="COM_JOOMGALLERY_CONFIG_GS_PD_WATERMARK_PATH"
-             description="COM_JOOMGALLERY_CONFIG_GS_PD_PATH_WATERMARK_STORED" />
+             label="COM_JOOMGALLERY_WATERMARK"
+             description="COM_JOOMGALLERY_FIELDS_WATERMARK_DESC" />
 
       <field name="jg_staticprocessing"
              type="subform"

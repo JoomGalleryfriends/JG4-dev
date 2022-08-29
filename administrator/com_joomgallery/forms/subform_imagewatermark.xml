@@ -5,28 +5,28 @@
            type="list"
            groupByFieldset="false"
            default="9"
-           label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARK_POSITION"
-           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARK_POSITION_LONG" >
-        <option value="1">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_TOP_LEFT</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_TOP_CENTER</option>
-        <option value="3">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_TOP_RIGHT</option>
-        <option value="4">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_MIDDLE_LEFT</option>
-        <option value="5">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_MIDDLE_CENTER</option>
-        <option value="6">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_MIDDLE_RIGHT</option>
-        <option value="7">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_BOTTOM_LEFT</option>
-        <option value="8">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_BOTTOM_CENTER</option>
-        <option value="9">COM_JOOMGALLERY_CONFIG_DV_GS_OPTION_BOTTOM_RIGHT</option>
+           label="COM_JOOMGALLERY_CONFIG_WATERMARK_POSITION"
+           description="COM_JOOMGALLERY_CONFIG_WATERMARK_POSITION_LONG" >
+        <option value="1">COM_JOOMGALLERY_CONFIG_IMG_POSITION_TL</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_IMG_POSITION_TC</option>
+        <option value="3">COM_JOOMGALLERY_CONFIG_IMG_POSITION_TR</option>
+        <option value="4">COM_JOOMGALLERY_CONFIG_IMG_POSITION_ML</option>
+        <option value="5">COM_JOOMGALLERY_CONFIG_IMG_POSITION_MC</option>
+        <option value="6">COM_JOOMGALLERY_CONFIG_IMG_POSITION_MR</option>
+        <option value="7">COM_JOOMGALLERY_CONFIG_IMG_POSITION_LL</option>
+        <option value="8">COM_JOOMGALLERY_CONFIG_IMG_POSITION_LC</option>
+        <option value="9">COM_JOOMGALLERY_CONFIG_IMG_POSITION_LR</option>
     </field>
 
     <field name="jg_watermarkzoom"
            type="list"
            groupByFieldset="false"
            default="0"
-           label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKZOOM"
-           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKZOOM_LONG" >
-        <option value="0">COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKNORESIZE</option>
-        <option value="1">COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKHEIGHT</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKWIDTH</option>
+           label="COM_JOOMGALLERY_RESIZING"
+           description="COM_JOOMGALLERY_FIELDS_WATERMARK_RESIZING_DESC" >
+        <option value="0">JNO</option>
+        <option value="1">COM_JOOMGALLERY_CONFIG_RESIZE_BY_HEIGHT</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_RESIZE_BY_WIDTH</option>
     </field>
 
     <field name="jg_watermarksize"
@@ -49,7 +49,7 @@
            min="1"
            max="100"
            step="1"
-           label="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKOPACITY"
-           description="COM_JOOMGALLERY_CONFIG_DV_GS_WATERMARKOPACITY_LONG" />
+           label="COM_JOOMGALLERY_OPACITY"
+           description="COM_JOOMGALLERY_CONFIG_WATERMARK_OPACITY_LONG" />
   </fieldset>
 </form>

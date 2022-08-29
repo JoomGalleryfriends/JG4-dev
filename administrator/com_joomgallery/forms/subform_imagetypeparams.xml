@@ -15,12 +15,12 @@
            type="list"
            groupByFieldset="false"
            default="0"
-           label="COM_JOOMGALLERY_CONFIG_GS_IP_RESIZING"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_RESIZING_LONG" >
+           label="COM_JOOMGALLERY_RESIZING"
+           description="COM_JOOMGALLERY_FIELDS_RESIZING_DESC" >
         <option value="0">JNO</option>
-        <option value="1">COM_JOOMGALLERY_CONFIG_COMMON_SAMEHIGHT</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_COMMON_SAMEWIDTH</option>
-        <option value="3">COM_JOOMGALLERY_MAX_DIMENSION</option>
+        <option value="1">COM_JOOMGALLERY_CONFIG_RESIZE_BY_HEIGHT</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_RESIZE_BY_WIDTH</option>
+        <option value="3">COM_JOOMGALLERY_CONFIG_RESIZE_MAX_DIMENSION</option>
         <option value="4">COM_JOOMGALLERY_CROPPING</option>
     </field>
 
@@ -32,7 +32,7 @@
            max=""
            step="1"
            label="COM_JOOMGALLERY_IMAGE_WIDTH"
-           description="COM_JOOMGALLERY_IMAGE_WIDTH_LONG" />
+           description="COM_JOOMGALLERY_CONFIG_RESIZE_BY_WIDTH_LONG" />
 
     <field name="jg_imgtypeheight"
            type="number"
@@ -42,19 +42,19 @@
            max=""
            step="1"
            label="COM_JOOMGALLERY_IMAGE_HEIGHT"
-           description="COM_JOOMGALLERY_IMAGE_HEIGHT_LONG" />
+           description="COM_JOOMGALLERY_CONFIG_RESIZE_BY_HEIGHT_LONG" />
 
     <field name="jg_cropposition"
            type="list"
            groupByFieldset="false"
            default="2"
-           label="COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITION"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITION_LONG" >
-        <option value="0">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONLU</option>
-        <option value="1">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONRU</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONC</option>
-        <option value="3">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONLL</option>
-        <option value="4">COM_JOOMGALLERY_CONFIG_GS_IP_CROP_POSITIONRL</option>
+           label="COM_JOOMGALLERY_CONFIG_CROP_POSITION"
+           description="COM_JOOMGALLERY_CONFIG_CROP_POSITION_LONG" >
+        <option value="0">COM_JOOMGALLERY_CONFIG_IMG_POSITION_TL</option>
+        <option value="1">COM_JOOMGALLERY_CONFIG_IMG_POSITION_TR</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_IMG_POSITION_MC</option>
+        <option value="3">COM_JOOMGALLERY_CONFIG_IMG_POSITION_LL</option>
+        <option value="4">COM_JOOMGALLERY_CONFIG_IMG_POSITION_LR</option>
     </field>
 
     <field name="jg_imgtypeorinet"
@@ -63,7 +63,7 @@
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_AUTO_ORIENTATION"
-           description="COM_JOOMGALLERY_AUTO_ORIENTATION_LONG" >
+           description="COM_JOOMGALLERY_FIELDS_AUTO_ORIENTATION_DESC" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -98,8 +98,8 @@
            min="1"
            max="100"
            step="1"
-           label="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGE_QUALITY"
-           description="COM_JOOMGALLERY_CONFIG_GS_IP_IMAGE_QUALITY_LONG" />
+           label="COM_JOOMGALLERY_CONFIG_IMAGE_QUALITY"
+           description="COM_JOOMGALLERY_CONFIG_IMAGE_QUALITY_LONG" />
 
     <field name="jg_imgtypewatermark"
            type="radio"
@@ -107,7 +107,7 @@
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK"
-           description="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK_NO" >
+           description="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK_IMG_LONG" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -119,7 +119,6 @@
            multiple="true"
            formsource="administrator/components/com_joomgallery/forms/subform_imagewatermark.xml"
            layout="joomla.form.field.subform.repeatable"
-           label="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME_WATERMARK"
-           description="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME_WATERMARK_LONG" />
+           label="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME_WATERMARK" />
   </fieldset>
 </form>
