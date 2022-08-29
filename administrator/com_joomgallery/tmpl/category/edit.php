@@ -84,7 +84,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     </div>
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-thumbnail" class="options-form">
-				<legend><?php echo Text::_('COM_JOOMGALLERY_IMAGE_PREVIEW'); ?></legend>
+				<legend><?php echo Text::_('JGLOBAL_PREVIEW'); ?></legend>
         <div>
 				  <?php echo $this->form->renderField('thumbnail'); ?>
         </div>
