@@ -1356,22 +1356,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         }
       }
 
-      // Add different file types of JPEG files
-      if(\in_array('JPEG',$types))
-      {
-        if(!\in_array('JPG',$types))
-        {
-          \array_push($types, 'JPG');
-        }
-        if(!\in_array('JPE',$types))
-        {
-          \array_push($types, 'JPE');
-        }
-        if(!\in_array('JFIF',$types))
-        {
-          \array_push($types, 'JFIF');
-        }
-      }
+      $types = $this->addJpegTypes($types);
 
       $this->supported_types = $types;
     }

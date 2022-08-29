@@ -301,13 +301,14 @@ class ImageModel extends JoomAdminModel
 	 */
 	public function save($data)
 	{
-		$table       = $this->getTable();
-		$context     = $this->option . '.' . $this->name;
-		$app         = Factory::getApplication();
-		$imgUploaded = false;
-		$catMoved    = false;
-		$isNew       = true;
-		$isCopy      = false;
+		$table        = $this->getTable();
+		$context      = $this->option . '.' . $this->name;
+		$app          = Factory::getApplication();
+		$imgUploaded  = false;
+		$catMoved     = false;
+		$isNew        = true;
+		$isCopy       = false;
+    $aliasChanged = false;
 
 		$key = $table->getKeyName();
 		$pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
@@ -333,8 +334,8 @@ class ImageModel extends JoomAdminModel
 			$table->newTags = $data['tags'];
 		}
 
-    	// Change language to 'All' if multilangugae is not enabled
-    	if (!Multilanguage::isEnabled())
+    // Change language to 'All' if multilangugae is not enabled
+    if (!Multilanguage::isEnabled())
 		{
 			$data['language'] = '*';
 		}
@@ -356,17 +357,24 @@ class ImageModel extends JoomAdminModel
 				{
 					$catMoved = true;
 				}
+
+        // Check if the alias was changed
+				if($table->alias != $data['alias'])
+				{
+					$aliasChanged = true;
+          $old_alias    = $table->alias;
+				}
 			}
 
 			// Save form data in session
 			$app->setUserState(_JOOM_OPTION.'.image.upload', $data);
 
+      // Create uploader service
+			$uploader = JoomHelper::getService('uploader', array('html', false));
+
 			// Retrieve image from request
 			if($imgUploaded)
 			{
-				// Create uploader service
-				$uploader = JoomHelper::getService('uploader', array('html', false));
-
 				// Determine if we have to create new filename
 				$createFilename = false;
 				if($isNew || empty($data['filename']))
@@ -392,22 +400,17 @@ class ImageModel extends JoomAdminModel
 				}
 			}
 
-      // Handle images if category was changed
-			if(!$isNew && $catMoved)
-			{
-				// Create file manager service
-				$manager = JoomHelper::getService('FileManager');
+      // Create file manager service
+			$manager = JoomHelper::getService('FileManager');
 
-				if($imgUploaded)
-				{
-					// Delete Images
-					$manager->deleteImages($table);
-				}
-				else
-				{
-					// Move Images
-					$manager->moveImages($table, $data['catid']);
-				}				
+      // Get source image id
+			$source_id = $app->input->get('origin_id', false, 'INT');
+
+      // Handle images if category was changed
+			if(!$isNew && ($catMoved || $aliasChanged))
+			{
+				// Douplicate old data
+        $old_table = clone $table;
 			}
 
 			// Bind data to table object
@@ -429,27 +432,65 @@ class ImageModel extends JoomAdminModel
 				return false;
 			}
 
+      // Handle images if record gets copied
+			if($isNew && $isCopy && !$imgUploaded)
+			{
+        // Regenerate filename
+        $table->filename = $manager->regenFilename($data['filename']);
+			}
+
+      // Handle images if alias has changed
+			if(!$isNew && $aliasChanged && !$imgUploaded)
+			{
+        // Replace alias in filename
+        $table->filename = \str_replace($old_alias, $table->alias, $table->filename);
+      }
+
       // Trigger the before save event.
 			$result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
-			// Handle images if record gets copied
-			if($isNew && $isCopy)
+			// Store the data.
+			if(!$table->store())
 			{
-				// Create file manager service
-				$manager = JoomHelper::getService('FileManager');
+				$this->setError($table->getError());
 
-				// Get source image id
-				$source_id = $app->input->get('origin_id', false, 'INT');
+				return false;
+			}
 
-				if(!$imgUploaded)
+      // Handle images if category was changed
+			if(!$isNew && $catMoved)
+			{
+				if($imgUploaded)
 				{
-					// Regenerate filename
-					$table->filename = $manager->regenFilename($data['filename']);
-
-					// Copy Images
-					$manager->copyImages($source_id, $data['catid'], $table->filename);
+					// Delete old images
+					$manager->deleteImages($old_table);
+				}
+				else
+				{
+					// Move old images to new location
+					$manager->moveImages($old_table, $table->catid);
 				}
 			}
+
+			// Handle images if record gets copied
+			if($isNew && $isCopy && !$imgUploaded)
+			{
+        // Copy Images
+        $manager->copyImages($source_id, $table->catid, $table->filename);
+			}
+
+      // Handle images if alias has changed
+			if(!$isNew && $aliasChanged && !$imgUploaded)
+			{
+        if($catMoved)
+        {
+          // modify old_table object to fit with new image location
+          $old_table->catid = $table->catid;
+        }
+
+        // Rename files
+        $manager->renameImages($old_table, $table->filename);        
+      }
 
 			// Create images
 			if($imgUploaded)
@@ -467,19 +508,7 @@ class ImageModel extends JoomAdminModel
 
 			if(\in_array(false, $result, true))
 			{
-        		if($imgUploaded)
-				{
-        			$uploader->rollback();
-				}
-				$this->setError($table->getError());
-
-				return false;
-			}
-
-			// Store the data.
-			if(!$table->store())
-			{
-				if($imgUploaded)
+        if($imgUploaded)
 				{
         	$uploader->rollback();
 				}

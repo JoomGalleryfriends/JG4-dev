@@ -887,6 +887,37 @@ abstract class IMGtools implements IMGtoolsInterface
   }
 
   /**
+   * Adds different variants of JPEG to types array
+   *
+   * @param   array   $types    list of supported file types
+   *
+   * @return  array   $types    list of supported file types
+   *
+   * @since   4.0.0
+   */
+  protected function addJpegTypes($types)
+  {
+    // Add different file types of JPEG files
+    if(\in_array('JPEG',$types))
+    {
+      if(!\in_array('JPG',$types))
+      {
+        \array_push($types, 'JPG');
+      }
+      if(!\in_array('JPE',$types))
+      {
+        \array_push($types, 'JPE');
+      }
+      if(!\in_array('JFIF',$types))
+      {
+        \array_push($types, 'JFIF');
+      }
+    }
+
+    return $types;
+  }
+
+  /**
    * Read image metadata from image
    *
    * @param   string  img  The image file to read

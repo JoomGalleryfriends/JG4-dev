@@ -88,6 +88,18 @@ interface FileManagerInterface
   public function copyImages($img, $dest, $filename=false): bool;
 
   /**
+   * Rename files of image
+   *
+   * @param   object|int|string   $img        Image object, image ID or image alias
+   * @param   string              $filename   New filename of the image
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameImages($img, $filename): bool;
+
+  /**
    * Creation of a category
    *
    * @param   string              $foldername   Name of the folder to be created

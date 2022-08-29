@@ -416,6 +416,52 @@ class FileManager implements FileManagerInterface
   }
 
   /**
+   * Rename files of image
+   *
+   * @param   object|int|string   $img        Image object, image ID or image alias
+   * @param   string              $filename   New filename of the image
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameImages($img, $filename): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Loop through all imagetypes
+    $error = false;
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get full image filename
+      $file = $this->getImgPath($img, $imagetype->typename);
+
+      // Rename file
+      if(!$this->jg->getFilesystem()->renameFile($file, $filename))
+      {
+        // Renaming failed
+        $error = true;
+
+        continue;
+      }
+    }
+    
+    if($error)
+    {
+      // Renaming failed
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_IMAGE', \ucfirst(\basename($file))));
+
+      return false;
+    }
+
+    // Renaming successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_RENAME_IMAGE', \ucfirst(\basename($file))));
+
+    return true;
+  }
+
+  /**
    * Creation of a category
    *
    * @param   string              $foldername   Name of the folder to be created

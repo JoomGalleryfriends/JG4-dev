@@ -931,6 +931,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $types = \strtoupper($types);
 
       $this->supported_types = \explode(' ', $types);
+      $this->supported_types = $this->addJpegTypes($this->supported_types);
 
       return;
     }
@@ -946,6 +947,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
         $types = \strtoupper($types);
 
         $this->supported_types = \explode(' ', $types);
+        $this->supported_types = $this->addJpegTypes($this->supported_types);
 
         return;
       }
