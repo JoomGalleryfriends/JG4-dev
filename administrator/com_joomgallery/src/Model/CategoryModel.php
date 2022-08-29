@@ -141,7 +141,7 @@ class CategoryModel extends JoomAdminModel
           // Delete corresponding folders
 					if(!$manager->deleteCategory($table, $force_delete))
 					{
-						$this->setError($this->component->getDebug());
+						$this->setError($this->component->getDebug(true));
 
 						return false;
 					}

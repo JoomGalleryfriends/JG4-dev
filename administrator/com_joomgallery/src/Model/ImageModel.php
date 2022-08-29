@@ -386,7 +386,7 @@ class ImageModel extends JoomAdminModel
 				// (check upload, check user upload limit, create filename, onJoomBeforeSave)
 				if(!$uploader->retrieveImage($data, $createFilename))
 				{
-					$this->setError($this->component->getDebug());
+					$this->setError($this->component->getDebug(true));
 
 					return false;
 				}
@@ -394,7 +394,7 @@ class ImageModel extends JoomAdminModel
 				// Override data with image metadata
 				if(!$uploader->overrideData($data))
 				{
-					$this->setError($this->component->getDebug());
+					$this->setError($this->component->getDebug(true));
 
 					return false;
 				}
@@ -500,7 +500,7 @@ class ImageModel extends JoomAdminModel
 				if(!$uploader->createImage($table))
 				{
 					$uploader->rollback();
-					$this->setError($this->component->getDebug());
+					$this->setError($this->component->getDebug(true));
 
 					return false;
 				}
@@ -704,7 +704,7 @@ class ImageModel extends JoomAdminModel
 
 					if(!$manager->deleteImages($table))
 					{
-						$this->setError($this->component->getDebug());
+						$this->setError($this->component->getDebug(true));
 
 						return false;
 					}
