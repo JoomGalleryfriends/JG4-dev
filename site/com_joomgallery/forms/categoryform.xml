@@ -6,7 +6,7 @@
            readonly="true"
            class="readonly"
            default="0"
-           description="COM_JOOMGALLERY_CATEGORY_ID" />
+           description="JGLOBAL_FIELD_ID_LABEL" />
 
     <field name="checked_out"
            type="hidden"

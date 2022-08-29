@@ -80,7 +80,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	<div class="row">
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-images" class="options-form">
-				<legend><?php echo Text::_('COM_JOOMGALLERY_IMAGE_PREVIEW'); ?></legend>
+				<legend><?php echo Text::_('JGLOBAL_PREVIEW'); ?></legend>
         <div class="text-center joom-image center">
           <div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>
           <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_TYPE_THUMBNAIL'); ?>">
@@ -96,7 +96,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     </div>
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-images-data" class="options-form">
-        <legend><?php echo Text::_('COM_JOOMGALLERY_IMAGES_INFO'); ?></legend>
+        <legend><?php echo Text::_('INFO'); ?></legend>
         <div>
           <?php echo $this->form->renderField('imgauthor'); ?>
           <?php echo $this->form->renderField('imgdate'); ?>

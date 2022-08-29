@@ -5,7 +5,7 @@
            type="text"
            readonly="true"
            class="readonly"
-           label="COM_JOOMGALLERY_CATEGORY_ID" />
+           label="JGLOBAL_FIELD_ID_LABEL" />
 
     <field name="checked_out"
            type="hidden"
