@@ -353,6 +353,14 @@ class CategoryModel extends JoomAdminModel
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
+        // Store the data.
+        if(!$table->store())
+        {
+          $this->setError($table->getError());
+
+          return false;
+        }
+
         // Handle folders if parent category was changed
         if(!$isNew && $catMoved)
 			  {
@@ -375,7 +383,7 @@ class CategoryModel extends JoomAdminModel
         {
           // Create folders
           $manager->createCategory($table->alias, $table->parent_id);
-        }        
+        }
 
         // Handle folders if record gets copied
         if($isNew && $isCopy)
@@ -388,14 +396,6 @@ class CategoryModel extends JoomAdminModel
         }
 
         if(\in_array(false, $result, true))
-        {
-          $this->setError($table->getError());
-
-          return false;
-        }
-
-        // Store the data.
-        if(!$table->store())
         {
           $this->setError($table->getError());
 
