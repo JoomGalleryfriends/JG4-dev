@@ -231,7 +231,7 @@ class ImagesController extends AdminController
 			// Change the state of the items.
 			try
 			{
-				$model->changeSate($type, $cid, $value);
+				$model->changeSate($cid, $type,$value);
 				$errors = $model->getErrors();
 				$ntext = null;
 

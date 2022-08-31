@@ -822,15 +822,15 @@ class ImageModel extends JoomAdminModel
   /**
 	 * Method to change the state of one or more records.
 	 *
-   * @param   string   $type   Name of the state to be changed
 	 * @param   array    &$pks   A list of the primary keys to change.
+     * @param   string   $type   Name of the state to be changed
 	 * @param   integer  $value  The value of the state.
 	 *
 	 * @return  boolean  True on success.
 	 *
 	 * @since   1.6
 	 */
-	public function changeSate($type='publish', &$pks, $value = 1)
+	public function changeSate(&$pks, $type='publish', $value = 1)
 	{
 		$user    = Factory::getUser();
 		$table   = $this->getTable();
@@ -945,7 +945,7 @@ class ImageModel extends JoomAdminModel
 	 */
 	public function publish(&$pks, $value = 1)
 	{
-    return $this->changeSate('publish', $pks, $value);
+    return $this->changeSate($pks, 'publish', $value);
   }
 
 	/**
