@@ -33,13 +33,6 @@ abstract class IMGtools implements IMGtoolsInterface
   use ServiceTrait;
 
   /**
-   * Holds the JoomgalleryComponent object
-   *
-   * @var JoomgalleryComponent
-   */
-  protected $jg;
-
-  /**
    * Auto orient image based on exif orientation (jpg only)
    * default: false
    *
@@ -62,6 +55,20 @@ abstract class IMGtools implements IMGtoolsInterface
    * @var bool
    */
   public $keep_anim = false;
+
+  /**
+   * Holds the JoomgalleryComponent object
+   *
+   * @var JoomgalleryComponent
+   */
+  protected $jg;
+
+  /**
+   * List of all supportet image types (in uppercase)
+   *
+   * @var array
+   */
+  protected $supported_types = array();
 
   /**
    * Keep the url or string of the source file
@@ -148,6 +155,8 @@ abstract class IMGtools implements IMGtoolsInterface
 
     $this->keep_metadata = $keep_metadata;
     $this->keep_anim     = $keep_anim;
+
+    $this->supported_types = $this->getTypes();
   }
 
   /**
