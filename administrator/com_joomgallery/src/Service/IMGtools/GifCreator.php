@@ -113,7 +113,7 @@ class GifCreator
 
     for($i = 0; $i < count($frames); $i++)
     {
-      if(is_resource($frames[$i]))
+      if($this->isImage_GD($frames[$i]))
       {
         // Resource var
         $resourceImg = $frames[$i];
@@ -355,6 +355,23 @@ class GifCreator
     $this->loop     = 0;
     $this->dis      = 2;
     $this->colour   = -1;
+  }
+
+  /**
+   * Checks if the passed frame is either a resource of type gd or a GdImage object instance.
+   *
+   * @param   resource|GdImage|false   $frame   A frame to check the type for.
+   *
+   * @return  bool   True on success, false otherwise
+   */
+  protected function isImage_GD($frame)
+  {
+    if(\is_resource($frame) && 'gd' === \get_resource_type($frame) || \is_object($frame) && $frame instanceof \GdImage)
+    {
+      return true;
+    }
+
+    return false;
   }
 
   // Getter / Setter
