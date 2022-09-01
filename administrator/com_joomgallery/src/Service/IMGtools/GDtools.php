@@ -1326,7 +1326,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    *
    * @since   4.0.0
    */
-  public function getTypes()
+  public function getTypes(): array
   {
     if(\function_exists('gd_info'))
     {

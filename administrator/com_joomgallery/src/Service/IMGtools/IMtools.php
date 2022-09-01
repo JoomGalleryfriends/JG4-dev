@@ -908,7 +908,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    *
    * @since   4.0.0
    */
-  protected function getTypes()
+  protected function getTypes(): array
   {
     // Get supported types of ImageMagick v7.x
     @\exec(\trim($this->impath).'magick -list format', $output);
