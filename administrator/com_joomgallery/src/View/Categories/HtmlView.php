@@ -16,11 +16,11 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\HTML\Helpers\Sidebar;
 use \Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
+use stdClass;
 
 /**
  * View class for a list of Categories.
@@ -47,16 +47,22 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-    $this->items = $this->get('Items');
-		$this->state = $this->get('State');
-		$this->pagination = $this->get('Pagination');
-		$this->filterForm = $this->get('FilterForm');
+    $this->items         = $this->get('Items');
+		$this->state         = $this->get('State');
+		$this->pagination    = $this->get('Pagination');
+		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		// Check for errors.
 		if(count($errors = $this->get('Errors')))
 		{
 			throw new \Exception(implode("\n", $errors));
+		}
+
+    // Preprocess the list of items to find ordering divisions.
+		foreach ($this->items as &$item)
+		{
+			$this->ordering[$item->parent_id][] = $item->id;
 		}
 
 		$this->addToolbar();
@@ -75,7 +81,7 @@ class HtmlView extends JoomGalleryView
 	protected function addToolbar()
 	{
 		$state = $this->get('State');
-		$canDo = JoomHelper::getActions();
+		$canDo = JoomHelper::getActions('category');
 
 		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CATEGORY_MANAGER'), "folder-open");
 
@@ -92,48 +98,62 @@ class HtmlView extends JoomGalleryView
 			}
 		}
 
-		if($canDo->get('core.edit.state')  || count($this->transitions))
+    if($canDo->get('core.delete'))
+    {
+      // Get infos for confirmation message
+      $counts = new stdClass;
+      foreach($this->items as $item)
+      {
+        $counts->{$item->id} = new stdClass;
+        $counts->{$item->id}->img_count = $item->img_count;
+        $counts->{$item->id}->child_count = $item->child_count;
+      }
+
+      $toolbar->delete('categories.delete')
+				->text('JTOOLBAR_DELETE')
+				->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_CATEGORIES'))
+				->listCheck(true);
+
+      // Add button javascript
+      $this->deleteBtnJS  = 'var counts = '. \json_encode($counts).';';
+    }
+
+    if($canDo->get('core.edit.state')  || count($this->transitions))
 		{
-			$dropdown = $toolbar->dropdownButton('status-group')
-				->text('JTOOLBAR_CHANGE_STATUS')
+			$status_dropdown = $toolbar->dropdownButton('status-group')
+				->text('JTOOLBAR_PUBLISH')
 				->toggleSplit(false)
 				->icon('fas fa-ellipsis-h')
 				->buttonClass('btn btn-action')
 				->listCheck(true);
 
-			$childBar = $dropdown->getChildToolbar();
+			$status_childBar = $status_dropdown->getChildToolbar();
 
-			if(isset($this->items[0]->state))
+			if(isset($this->items[0]->published))
 			{
-				$childBar->publish('categories.publish')->listCheck(true);
-				$childBar->unpublish('categories.unpublish')->listCheck(true);
-				$childBar->archive('categories.archive')->listCheck(true);
+				$status_childBar->publish('categories.publish')->listCheck(true);
+				$status_childBar->unpublish('categories.unpublish')->listCheck(true);
 			}
-			elseif(isset($this->items[0]))
-			{
-				// If this component does not use state then show a direct delete button as we can not trash
-				$toolbar->delete('categories.delete')
-				->text('JTOOLBAR_EMPTY_TRASH')
-				->message('JGLOBAL_CONFIRM_DELETE')
-				->listCheck(true);
-			}
+		}
 
-			$childBar->standardButton('duplicate')
+    if($canDo->get('core.edit'))
+		{
+      $batch_dropdown = $toolbar->dropdownButton('batch-group')
+        ->text('JTOOLBAR_BATCH')
+        ->toggleSplit(false)
+        ->icon('fas fa-ellipsis-h')
+        ->buttonClass('btn btn-action')
+        ->listCheck(true);
+      
+      $batch_childBar = $batch_dropdown->getChildToolbar();
+
+      // Duplicate button inside batch dropdown
+      $batch_childBar->standardButton('duplicate')
 				->text('JTOOLBAR_DUPLICATE')
 				->icon('fas fa-copy')
 				->task('categories.duplicate')
 				->listCheck(true);
-
-			if(isset($this->items[0]->checked_out))
-			{
-				$childBar->checkin('categories.checkin')->listCheck(true);
-			}
-
-			if(isset($this->items[0]->state))
-			{
-				$childBar->trash('categories.trash')->listCheck(true);
-			}
-		}
+    }
 
 		if($canDo->get('core.admin'))
 		{
@@ -143,9 +163,9 @@ class HtmlView extends JoomGalleryView
 		}
 
 		// Show trash and delete for components that uses the state field
-		if(isset($this->items[0]->state))
+		if(isset($this->items[0]->published))
 		{
-			if($this->state->get('filter.state') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
+			if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
 			{
 				$toolbar->delete('categories.delete')
 					->text('JTOOLBAR_EMPTY_TRASH')
@@ -171,13 +191,13 @@ class HtmlView extends JoomGalleryView
 	protected function getSortFields()
 	{
 		return array(
-			'a.`title`' => Text::_('JGLOBAL_TITLE'),
-			'a.`parent_id`' => Text::_('COM_JOOMGALLERY_COMMON_PARENT_CATEGORY'),
-			'a.`published`' => Text::_('JSTATUS'),
-			'a.`access`' => Text::_('JGRID_HEADING_ACCESS'),
-			'a.`language`' => Text::_('JGRID_HEADING_LANGUAGE'),
+			'a.`title`'      => Text::_('JGLOBAL_TITLE'),
+			'a.`parent_id`'  => Text::_('COM_JOOMGALLERY_COMMON_PARENT_CATEGORY'),
+			'a.`published`'  => Text::_('JSTATUS'),
+			'a.`access`'     => Text::_('JGRID_HEADING_ACCESS'),
+			'a.`language`'   => Text::_('JGRID_HEADING_LANGUAGE'),
 			'a.`created_by`' => Text::_('JGLOBAL_FIELD_CREATED_BY_LABEL'),
-			'a.`id`' => Text::_('JGRID_HEADING_ID'),
+			'a.`id`'         => Text::_('JGRID_HEADING_ID'),
 		);
 	}
 

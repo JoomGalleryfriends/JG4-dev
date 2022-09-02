@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Table\Table as Table;
+use Joomla\CMS\Event\AbstractEvent;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
@@ -32,11 +33,12 @@ class ImageTable extends Table implements VersionableTableInterface
 	/**
 	 * Check if a field is unique
 	 *
-	 * @param   string  $field  Name of the field
+	 * @param   string   $field    Name of the field
+   * @param   integer  $catid    Category id (default=null)
 	 *
 	 * @return  bool    True if unique
 	 */
-	private function isUnique ($field)
+	private function isUnique ($field, $catid=null)
 	{
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -46,6 +48,11 @@ class ImageTable extends Table implements VersionableTableInterface
 			->from($db->quoteName($this->_tbl))
 			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
 			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
+
+    if($catid > 0)
+    {
+      $query->where($db->quoteName('catid') . ' = ' . $db->quote($catid));
+    }
 
 		$db->setQuery($query);
 		$db->execute();
@@ -64,7 +71,7 @@ class ImageTable extends Table implements VersionableTableInterface
 
 		parent::__construct(_JOOM_TABLE_IMAGES, 'id', $db);
 
-		$this->setColumnAlias('published', 'state');
+		$this->setColumnAlias('published', 'published');
 	}
 
 	/**
@@ -165,8 +172,8 @@ class ImageTable extends Table implements VersionableTableInterface
 		// Support for empty date field: imgdate
 		if($array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
 		{
-			$array['imgdate'] = NULL;
-			$this->imgdate = NULL;
+			$array['imgdate'] = $date->toSql();
+			$this->imgdate    = $date->toSql();
 		}
 
 		if(isset($array['params']) && is_array($array['params']))
@@ -271,12 +278,24 @@ class ImageTable extends Table implements VersionableTableInterface
 		// Check if alias is unique
 		if(!$this->isUnique('alias'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentAlias =  $this->alias;
 
 			while(!$this->isUnique('alias'))
       {
 				$this->alias = $currentAlias . '-' . $count++;
+			}
+		}
+
+    // Check if title is unique inside this category
+		if(!$this->isUnique('imgtitle', $this->catid))
+		{
+			$count = 2;
+			$currentTitle =  $this->imgtitle;
+
+			while(!$this->isUnique('imgtitle', $this->catid))
+      {
+				$this->imgtitle = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
 
@@ -349,6 +368,199 @@ class ImageTable extends Table implements VersionableTableInterface
   }
 
   /**
+	 * Method to set the state for a row or list of rows in the database table.
+	 *
+	 * The method respects checked out rows by other users and will attempt to checkin rows that it can after adjustments are made.
+	 *
+   * @param   string   $type    Name of the state to be changed
+	 * @param   mixed    $pks     An optional array of primary key values to update. If not set the instance property value is used.
+	 * @param   integer  $state   The new state.
+	 * @param   integer  $userId  The user ID of the user performing the operation.
+	 *
+	 * @return  boolean  True on success; false if $pks is empty.
+	 *
+	 * @since   4.0.0
+	 */
+	public function changeState($type = 'publish', $pks = null, $state = 1, $userId = 0)
+	{
+		// Sanitize input
+		$userId = (int) $userId;
+		$state  = (int) $state;
+
+		// Pre-processing by observers
+		$event = AbstractEvent::create(
+			'onTableBefore'.\ucfirst($type),
+			[
+				'subject'	=> $this,
+				'pks'		  => $pks,
+				'state'		=> $state,
+				'userId'	=> $userId,
+			]
+		);
+		$this->getDispatcher()->dispatch('onTableBefore'.\ucfirst($type), $event);
+
+		if (!\is_null($pks))
+		{
+			if (!\is_array($pks))
+			{
+				$pks = array($pks);
+			}
+
+			foreach ($pks as $key => $pk)
+			{
+				if (!\is_array($pk))
+				{
+					$pks[$key] = array($this->_tbl_key => $pk);
+				}
+			}
+		}
+
+		// If there are no primary keys set check to see if the instance key is set.
+		if (empty($pks))
+		{
+			$pk = array();
+
+			foreach ($this->_tbl_keys as $key)
+			{
+				if ($this->$key)
+				{
+					$pk[$key] = $this->$key;
+				}
+				// We don't have a full primary key - return false
+				else
+				{
+					$this->setError(Text::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
+
+					return false;
+				}
+			}
+
+			$pks = array($pk);
+		}
+
+    switch($type)
+    {
+      case 'feature':
+        $stateField  = 'featured';
+        break;
+
+      case 'approve':
+        $stateField  = 'approved';
+        break;
+      
+      case 'publish':
+      default:
+        $stateField  = 'published';
+        break;
+    }
+		$checkedOutField = $this->getColumnAlias('checked_out');
+
+		foreach ($pks as $pk)
+		{
+			// Update the publishing state for rows with the given primary keys.
+			$query = $this->_db->getQuery(true)
+				->update($this->_tbl)
+				->set($this->_db->quoteName($stateField) . ' = ' . (int) $state);
+
+			// If publishing, set published date/time if not previously set
+			if ($state && $this->hasField('publish_up') && (int) $this->publish_up == 0)
+			{
+				$nowDate = $this->_db->quote(Factory::getDate()->toSql());
+				$query->set($this->_db->quoteName($this->getColumnAlias('publish_up')) . ' = ' . $nowDate);
+			}
+
+			// Determine if there is checkin support for the table.
+			if ($this->hasField('checked_out') || $this->hasField('checked_out_time'))
+			{
+				$query->where(
+					'('
+						. $this->_db->quoteName($checkedOutField) . ' = 0'
+						. ' OR ' . $this->_db->quoteName($checkedOutField) . ' = ' . (int) $userId
+						. ' OR ' . $this->_db->quoteName($checkedOutField) . ' IS NULL'
+					. ')'
+				);
+				$checkin = true;
+			}
+			else
+			{
+				$checkin = false;
+			}
+
+			// Build the WHERE clause for the primary keys.
+			$this->appendPrimaryKeys($query, $pk);
+
+			$this->_db->setQuery($query);
+
+			try
+			{
+				$this->_db->execute();
+			}
+			catch (\RuntimeException $e)
+			{
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+
+			// If checkin is supported and all rows were adjusted, check them in.
+			if ($checkin && (\count($pks) == $this->_db->getAffectedRows()))
+			{
+				$this->checkIn($pk);
+			}
+
+			// If the Table instance value is in the list of primary keys that were set, set the instance.
+			$ours = true;
+
+			foreach ($this->_tbl_keys as $key)
+			{
+				if ($this->$key != $pk[$key])
+				{
+					$ours = false;
+				}
+			}
+
+			if ($ours)
+			{
+				$this->$stateField = $state;
+			}
+		}
+
+		$this->setError('');
+
+		// Pre-processing by observers
+		$event = AbstractEvent::create(
+			'onTableAfter'.\ucfirst($type),
+			[
+				'subject'	=> $this,
+				'pks'		=> $pks,
+				'state'		=> $state,
+				'userId'	=> $userId,
+			]
+		);
+		$this->getDispatcher()->dispatch('onTableAfter'.\ucfirst($type), $event);
+
+		return true;
+	}
+
+  /**
+	 * Method to set the publishing state for a row or list of rows in the database table.
+	 *
+	 * The method respects checked out rows by other users and will attempt to checkin rows that it can after adjustments are made.
+	 *
+	 * @param   mixed    $pks     An optional array of primary key values to update. If not set the instance property value is used.
+	 * @param   integer  $state   The publishing state. eg. [0 = unpublished, 1 = published]
+	 * @param   integer  $userId  The user ID of the user performing the operation.
+	 *
+	 * @return  boolean  True on success; false if $pks is empty.
+	 *
+	 * @since   1.7.0
+	 */
+	public function publish($pks = null, $state = 1, $userId = 0)
+	{
+    return $this->changeState('publish', $pks, $state, $userId);
+  }
+
+  /**
    * Support for multiple field
    *
    * @param   array   $data       Form data
@@ -377,5 +589,5 @@ class ImageTable extends Table implements VersionableTableInterface
 		{
 			$data[$fieldName] = '';
 		}
-  }
+  } 
 }

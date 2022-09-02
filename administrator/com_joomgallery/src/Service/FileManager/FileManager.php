@@ -109,18 +109,6 @@ class FileManager implements FileManagerInterface
       // Debug info
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
 
-      // Read source image
-      if(!$this->jg->getIMGtools()->read($source))
-      {
-        // Destroy the IMGtools service
-        $this->jg->delIMGtools();
-
-        // Debug info
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-
-        continue;
-      }
-
       // Keep metadata only for original images
       if($imagetype->typename == 'original')
       {
@@ -141,6 +129,18 @@ class FileManager implements FileManagerInterface
       {
         // No
         $this->jg->getIMGtools()->keep_anim = false;
+      }
+      
+      // Read source image
+      if(!$this->jg->getIMGtools()->read($source))
+      {
+        // Destroy the IMGtools service
+        $this->jg->delIMGtools();
+
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+
+        continue;
       }
 
       // Do we need to auto orient?
@@ -326,15 +326,16 @@ class FileManager implements FileManagerInterface
   /**
    * Move image files from one category to another
    *
-   * @param   object|int|string    $img    Image object, image ID or image alias
-   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
-   * @param   bool                 $copy   True, if you want to copy the images (default: false)
+   * @param   object|int|string    $img        Image object, image ID or image alias
+   * @param   object|int|string    $dest       Category object, ID or alias of the destination category
+   * @param   string|false         $filename   Filename of the moved image (default: false)
+   * @param   bool                 $copy       True, if you want to copy the images (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveImages($img, $dest, $copy=false): bool
+  public function moveImages($img, $dest, $filename=false, $copy=false): bool
   {
     // Create filesystem service
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
@@ -356,8 +357,15 @@ class FileManager implements FileManagerInterface
       // Get category destination path
       $cat_dst = $this->getCatPath($dest, $imagetype->typename);
 
+      // Get image filename
+      $img_filename = \basename($img_src);
+      if($filename)
+      {
+        $img_filename = $filename;
+      }
+
       // Create image destination path
-      $img_dst = $cat_dst . '/' . \basename($img_src);
+      $img_dst = $cat_dst . '/' . $img_filename;
 
       // Create folders if not existent
       if(!$this->jg->getFilesystem()->createFolder(\dirname($img_dst)))
@@ -380,7 +388,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Move successful
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
     }
 
     if($error)
@@ -394,16 +402,63 @@ class FileManager implements FileManagerInterface
   /**
    * Copy image files from one category to another
    *
-   * @param   object|int|string    $img    Image object, image ID or image alias
-   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
+   * @param   object|int|string    $img        Image object, image ID or image alias
+   * @param   object|int|string    $dest       Category object, ID or alias of the destination category
+   * @param   string|false         $filename   Filename of the moved image (default: False)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyImages($img, $dest): bool
+  public function copyImages($img, $dest, $filename=false): bool
   {
-    return $this->moveImages($img, $dest, true);
+    return $this->moveImages($img, $dest, $filename, true);
+  }
+
+  /**
+   * Rename files of image
+   *
+   * @param   object|int|string   $img        Image object, image ID or image alias
+   * @param   string              $filename   New filename of the image
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameImages($img, $filename): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Loop through all imagetypes
+    $error = false;
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get full image filename
+      $file = $this->getImgPath($img, $imagetype->typename);
+
+      // Rename file
+      if(!$this->jg->getFilesystem()->renameFile($file, $filename))
+      {
+        // Renaming failed
+        $error = true;
+
+        continue;
+      }
+    }
+    
+    if($error)
+    {
+      // Renaming failed
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_IMAGE', \ucfirst(\basename($file))));
+
+      return false;
+    }
+
+    // Renaming successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_RENAME_IMAGE', \ucfirst(\basename($file))));
+
+    return true;
   }
 
   /**
@@ -432,7 +487,7 @@ class FileManager implements FileManagerInterface
       if(!$this->jg->getFilesystem()->createFolder($path))
       {
         // Debug info
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', \strtoupper($foldername)));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CREATE_CATEGORY', \ucfirst($foldername)));
         $error = true;
 
         continue;
@@ -445,7 +500,7 @@ class FileManager implements FileManagerInterface
     }
 
     // Debug info
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_CATEGORY', \strtoupper($foldername)));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_CATEGORY', \ucfirst($foldername)));
 
     return true;
   }
@@ -481,7 +536,7 @@ class FileManager implements FileManagerInterface
         {
           // There are still images and subcategories available
           // Deletion not allowed
-          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY_NOTEMPTY', \strtoupper(\basename($path))));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY_NOTEMPTY', \ucfirst(\basename($path))));
 
           return false;
         }
@@ -501,7 +556,7 @@ class FileManager implements FileManagerInterface
         if(!$this->jg->getFilesystem()->deleteFolder($path))
         {
           // Debug info
-          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY', \strtoupper(\basename($path))));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_DELETE_CATEGORY', \ucfirst(\basename($path))));
           $error = true;
 
           continue;
@@ -515,7 +570,7 @@ class FileManager implements FileManagerInterface
     }
 
     // Debug info
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_DELETE_CATEGORY', \strtoupper(\basename($path))));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_DELETE_CATEGORY', \ucfirst(\basename($path))));
 
     return true;
   }
@@ -552,15 +607,16 @@ class FileManager implements FileManagerInterface
   /**
    * Move category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be moved
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
-   * @param   bool                $copy     True, if you want to copy the category (default: false)
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be moved
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
+   * @param   bool                $copy         True, if you want to copy the category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveCategory($cat, $dest, $copy=false): bool
+  public function moveCategory($cat, $dest, $foldername=false, $copy=false): bool
   {
     // Create filesystem service
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
@@ -582,14 +638,20 @@ class FileManager implements FileManagerInterface
       // Get path of target category
       $cat_path = $this->getCatPath($dest, $imagetype->typename);
 
+      // Get category foldername
+      $cat_foldername = \basename($src_path);
+      if($foldername)
+      {
+        $cat_foldername = $foldername;
+      }
+
       // Create category destination path
-      $dst_path = $cat_path . '/' . \basename($src_path);
+      $dst_path = $cat_path . '/' . $cat_foldername;
 
       // Move folder
       if(!$this->jg->getFilesystem()->moveFolder($src_path, $dst_path, $copy))
       {
         // Moving failed
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \strtoupper(\basename($src_path))));
         $error = true;
 
         continue;
@@ -598,11 +660,60 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      // Moving failed
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \ucfirst(\basename($src_path))));
+
       return false;
     }
 
     // Move successful
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \strtoupper(\basename($src_path))));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_'.$method.'_CATEGORY', \ucfirst(\basename($src_path))));
+
+    return true;
+  }
+
+  /**
+   * Rename folder of category
+   *
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be renamed
+   * @param   string              $foldername   New foldername of the category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameCategory($cat, $foldername): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Loop through all imagetypes
+    $error = false;
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get category path
+      $path = $this->getCatPath($cat, $imagetype->typename);
+
+      // Rename folder
+      if(!$this->jg->getFilesystem()->renameFolder($path, $foldername))
+      {
+        // Renaming failed
+        $error = true;
+
+        continue;
+      }
+    }
+    
+    if($error)
+    {
+      // Renaming failed
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_CATEGORY', \ucfirst(\basename($path))));
+
+      return false;
+    }
+
+    // Renaming successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_RENAME_CATEGORY', \ucfirst(\basename($path))));
 
     return true;
   }
@@ -610,16 +721,17 @@ class FileManager implements FileManagerInterface
   /**
    * Copy category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be copied
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be copied
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyCategory($cat, $dest): bool
+  public function copyCategory($cat, $dest, $foldername=false): bool
   {
-    return $this->moveCategory($cat, $dest, true);
+    return $this->moveCategory($cat, $dest, $foldername, true);
   }
 
   /**
@@ -716,8 +828,8 @@ class FileManager implements FileManagerInterface
       $path = $cat;
     }
     // We got a category ID or an alias
-    elseif((\is_numeric($cat) && $cat > 0) || \is_string($cat))
-    {      
+    elseif((\is_numeric($cat) && $cat > 0) || (\is_string($cat) && \intval($cat) > 0))
+    {
       if(\is_numeric($cat))
       {
         $cat = \intval($cat);
@@ -790,6 +902,88 @@ class FileManager implements FileManagerInterface
     }
 
     return JPath::clean($path);
+  }
+
+  /**
+   * Generates image filenames
+   * e.g. <Name/Title>_<Filecounter (opt.)>_<Date>_<Random Number>.<Extension>
+   *
+   * @param   string    $filename     Original upload name e.g. 'malta.jpg'
+   * @param   string    $tag          File extension e.g. 'jpg'
+   * @param   int       $filecounter  Optinally a filecounter
+   *
+   * @return  string    The generated filename
+   *
+   * @since   4.0.0
+   */
+  public function genFilename($filename, $tag, $filecounter = null): string
+  {
+    $filedate = date('Ymd');
+
+    // Remove filetag = $tag incl '.'
+    // Only if exists in filename
+    if(stristr($filename, $tag))
+    {
+      $filename = substr($filename, 0, strlen($filename)-strlen($tag)-1);
+    }
+
+    mt_srand();
+    $randomnumber = mt_rand(1000000000, 2099999999);
+
+    $maxlen = 255 - 2 - strlen($filedate) - strlen($randomnumber) - (strlen($tag) + 1);
+    if(!is_null($filecounter))
+    {
+      $maxlen = $maxlen - (strlen($filecounter) + 1);
+    }
+    if(strlen($filename) > $maxlen)
+    {
+      $filename = substr($filename, 0, $maxlen);
+    }
+
+    // New filename
+    if(is_null($filecounter))
+    {
+      $newfilename = $filename.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
+    }
+    else
+    {
+      $newfilename = $filename.'_'.$filecounter.'_'.$filedate.'_'.$randomnumber.'.'.$tag;
+    }
+
+    return $newfilename;
+  }
+
+  /**
+   * Regenerates image filenames
+   * Input is a filename generated from genFilename()
+   *
+   * @param   string    $filename     Original filename created from genFilename()
+   *
+   * @return  string    The generated filename
+   *
+   * @since   4.0.0
+   */
+  public function regenFilename($filename): string
+  {
+    $filecounter  = null;
+    $filename_arr = \explode('_', $filename);
+
+    // Extract different parts of the filename
+    if(\count($filename_arr) === 3)
+    {
+      list($name, $date, $end) = $filename_arr;
+    }
+    elseif(\count($filename_arr) === 4)
+    {
+      list($name, $filecounter, $date, $end) = $filename_arr;
+    }
+    else
+    {
+      throw new \Exception('Invalide filename received. Please make sure filename has the correct form.');
+    }
+    list($rnd, $tag) = \explode('.', $end);
+
+    return $this->genFilename($name, $tag, $filecounter);
   }
 
   /**

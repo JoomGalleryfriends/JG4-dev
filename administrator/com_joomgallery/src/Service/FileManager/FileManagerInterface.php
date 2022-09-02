@@ -63,27 +63,41 @@ interface FileManagerInterface
   /**
    * Move image files from one category to another
    *
-   * @param   object|int|string    $img    Image object, image ID or image alias
-   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
-   * @param   bool                 $copy   True, if you want to copy the images (default: false)
+   * @param   object|int|string    $img        Image object, image ID or image alias
+   * @param   object|int|string    $dest       Category object, ID or alias of the destination category
+   * @param   string|false         $filename   Filename of the moved image (default: false)
+   * @param   bool                 $copy       True, if you want to copy the images (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveImages($img, $dest, $copy=false): bool;
+  public function moveImages($img, $dest, $filename=false, $copy=false): bool;
 
   /**
    * Copy image files from one category to another
    *
-   * @param   object|int|string    $img    Image object, image ID or image alias
-   * @param   object|int|string    $dest   Category object, ID or alias of the destination category
+   * @param   object|int|string    $img        Image object, image ID or image alias
+   * @param   object|int|string    $dest       Category object, ID or alias of the destination category
+   * @param   string|false         $filename   Filename of the moved image (default: False)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyImages($img, $dest): bool;
+  public function copyImages($img, $dest, $filename=false): bool;
+
+  /**
+   * Rename files of image
+   *
+   * @param   object|int|string   $img        Image object, image ID or image alias
+   * @param   string              $filename   New filename of the image
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameImages($img, $filename): bool;
 
   /**
    * Creation of a category
@@ -123,27 +137,41 @@ interface FileManagerInterface
   /**
    * Copy category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be copied
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be copied
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyCategory($cat, $dest): bool;
+  public function copyCategory($cat, $dest, $foldername=false): bool;
 
   /**
    * Move category with all images from one parent category to another
    *
-   * @param   object|int|string   $cat      Object, ID or alias of the category to be moved
-   * @param   object|int|string   $dest     Category object, ID or alias of the destination category
-   * @param   bool                $copy     True, if you want to copy the category (default: false)
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be moved
+   * @param   object|int|string   $dest         Category object, ID or alias of the destination category
+   * @param   string|false        $foldername   Foldername of the moved category (default: false)
+   * @param   bool                $copy         True, if you want to copy the category (default: false)
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveCategory($cat, $dest, $copy=false): bool;
+  public function moveCategory($cat, $dest, $foldername=false, $copy=false): bool;
+
+  /**
+   * Rename folder of category
+   *
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be renamed
+   * @param   string              $foldername   New foldername of the category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameCategory($cat, $foldername): bool;
 
   /**
    * Returns the path to an image
@@ -175,4 +203,30 @@ interface FileManagerInterface
    * @since   4.0.0
    */
   public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0);
+
+  /**
+   * Generates image filenames
+   * e.g. <Name/Title>_<Filecounter (opt.)>_<Date>_<Random Number>.<Extension>
+   *
+   * @param   string    $filename     Original upload name e.g. 'malta.jpg'
+   * @param   string    $tag          File extension e.g. 'jpg'
+   * @param   int       $filecounter  Optinally a filecounter
+   *
+   * @return  string    The generated filename
+   *
+   * @since   4.0.0
+   */
+  public function genFilename($filename, $tag, $filecounter = null): string;
+
+  /**
+   * Regenerates image filenames
+   * Input is a filename generated from genFilename()
+   *
+   * @param   string    $filename     Original filename created from genFilename()
+   *
+   * @return  string    The generated filename
+   *
+   * @since   4.0.0
+   */
+  public function regenFilename($filename): string;
 }

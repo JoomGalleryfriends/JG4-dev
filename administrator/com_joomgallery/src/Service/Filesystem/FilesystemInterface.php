@@ -89,6 +89,18 @@ interface FilesystemInterface
   public function deleteFile($file): bool;
 
   /**
+   * Rename a file.
+   *
+   * @param   string  $file      The file name.
+   * @param   string  $newName   The new name of the file.
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameFile($file, $newName): bool;
+
+  /**
    * Checks a file for existence, validity and size
    *
    * @param   string  $file  The file name
@@ -162,6 +174,18 @@ interface FilesystemInterface
    * @since   4.0.0
    */
   public function deleteFolder($path): bool;
+
+  /**
+   * Rename a folder.
+   *
+   * @param   string  $path      The path to the folder to rename.
+   * @param   string  $newName   The new name of the folder.
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameFolder($path, $newName): bool;
 
   /**
    * Checks a folder for existence (local and storage).

@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
@@ -51,13 +52,6 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   public $convert_path = '';
 
   /**
-   * List of all supportet image types (in uppercase)
-   *
-   * @var array
-   */
-  protected $supported_types = array();
-
-  /**
    * ImageMagick commands
    *
    * @var array
@@ -90,7 +84,6 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     parent::__construct($keep_metadata, $keep_anim);
 
     $this->impath = $impath;
-    $this->getTypes();
   }
 
   /**
@@ -908,55 +901,71 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     return true;
   }
 
-  //////////////////////////////////////////////////
-  //   Protected functions with basic features.
-  //////////////////////////////////////////////////
-
   /**
    * Get supported image types
    *
-   * @return  void
+   * @return  array   list of supported image types (uppercase)
    *
    * @since   4.0.0
    */
-  protected function getTypes()
+  public function getTypes(): array
   {
-    // Check availability and version of ImageMagick v7.x
-    @\exec(\trim($this->impath).'magick -version', $output);
+    // Get supported types of ImageMagick v7.x
+    @\exec(\trim($this->impath).'magick -list format', $output);
 
-    if($output)
+    if(!$output)
     {
-      // new version (>= v7.x)
-      $types = \str_replace('Delegates (built-in): ', '', $output[5]);
-      $types = \strtoupper($types);
-
-      $this->supported_types = \explode(' ', $types);
-
-      return;
-    }
-    else
-    {
-      // Check availability and version of ImageMagick v6.x
+      // Get supported types of ImageMagick v6.x
       @\exec(\trim($this->impath).'convert -version', $output);
-
-      if($output)
-      {
-        // old version (<= v6.x)
-        $types = \str_replace(array('Delegates (built-in): ', ' '), array('',', '), $output[5]);
-        $types = \strtoupper($types);
-
-        $this->supported_types = \explode(' ', $types);
-
-        return;
-      }
-      else
-      {
-        $this->supported_types = array();
-
-        return;
-      }
     }
+
+    if(!$output)
+    {
+      return array();
+    }
+
+    // skip first two lines of output
+    \array_splice($output, 0, 2);
+
+    // skip last four lines of output
+    \array_splice($output, -4);
+
+    $types = array();
+    foreach ($output as $key => $line)
+    {
+      // skip empty line
+      if($line === '')
+      {
+        continue;
+      }
+
+      $pos = \strpos($line, '           ');
+
+      // skip lines starting with huge space
+      if(\strpos($line, '           ') === 0)
+      {
+        continue;
+      }
+
+      // replace spaces with ';'
+      $line = \preg_replace('!\s+!', ';', $line);
+
+      // split string by separator ';'
+      $temp_arr = explode(';', $line, 3);
+
+      // remove '*' from type
+      $type = \str_replace('*', '', $temp_arr[1]);
+
+      // add second value of array to types
+      array_push($types, $type);
+    }
+
+    return $types;
   }
+
+  //////////////////////////////////////////////////
+  //   Protected functions with basic features.
+  //////////////////////////////////////////////////
 
   /**
    * Assemble the convert command

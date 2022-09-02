@@ -415,7 +415,6 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["modified_by"] = 0;
     $data["jg_filesystem"] = 'localhost';
     $data["jg_wmfile"] = 'images/joomgallery/watermark.png';
-    $data["jg_filenamereplace"] = 'Š|S, Œ|O, Ž|Z, š|s, œ|oe, ž|z, Ÿ|Y, ¥|Y, µ|u, À|A, Á|A, Â|A, Ã|A, Ä|AE, Å|A, Æ|A, Ç|C, È|E, É|E, Ê|E, Ë|E, Ì|I, Í|I, Î|I, Ï|I, Ð|D, Ñ|N, Ò|O, Ó|O, Ô|O, Õ|O, Ö|OE, Ø|O, Ù|U, Ú|U, Û|U, Ü|UE, Ý|Y, à|a, á|a, â|a, ã|a, ä|ae, å|a, æ|a, ç|c, è|e, é|e, ê|e, ë|e';
     $data["jg_replaceinfo"] = '[]';
     $data["jg_staticprocessing"] = '';
     $data["jg_dynamicprocessing"] = '[]';

@@ -33,13 +33,6 @@ abstract class IMGtools implements IMGtoolsInterface
   use ServiceTrait;
 
   /**
-   * Holds the JoomgalleryComponent object
-   *
-   * @var JoomgalleryComponent
-   */
-  protected $jg;
-
-  /**
    * Auto orient image based on exif orientation (jpg only)
    * default: false
    *
@@ -62,6 +55,20 @@ abstract class IMGtools implements IMGtoolsInterface
    * @var bool
    */
   public $keep_anim = false;
+
+  /**
+   * Holds the JoomgalleryComponent object
+   *
+   * @var JoomgalleryComponent
+   */
+  protected $jg;
+
+  /**
+   * List of all supportet image types (in uppercase)
+   *
+   * @var array
+   */
+  protected $supported_types = array();
 
   /**
    * Keep the url or string of the source file
@@ -148,6 +155,8 @@ abstract class IMGtools implements IMGtoolsInterface
 
     $this->keep_metadata = $keep_metadata;
     $this->keep_anim     = $keep_anim;
+
+    $this->supported_types = $this->getTypes();
   }
 
   /**
@@ -884,6 +893,37 @@ abstract class IMGtools implements IMGtoolsInterface
     }
 
     return false;
+  }
+
+  /**
+   * Adds different variants of JPEG to types array
+   *
+   * @param   array   $types    list of supported file types
+   *
+   * @return  array   $types    list of supported file types
+   *
+   * @since   4.0.0
+   */
+  protected function addJpegTypes($types)
+  {
+    // Add different file types of JPEG files
+    if(\in_array('JPEG',$types))
+    {
+      if(!\in_array('JPG',$types))
+      {
+        \array_push($types, 'JPG');
+      }
+      if(!\in_array('JPE',$types))
+      {
+        \array_push($types, 'JPE');
+      }
+      if(!\in_array('JFIF',$types))
+      {
+        \array_push($types, 'JFIF');
+      }
+    }
+
+    return $types;
   }
 
   /**

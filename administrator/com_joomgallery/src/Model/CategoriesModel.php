@@ -13,6 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\Database\ParameterType;
+use Joomla\Utilities\ArrayHelper;
 use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
@@ -81,21 +84,64 @@ class CategoriesModel extends JoomListModel
 	 *
 	 * @throws Exception
 	 */
-	protected function populateState($ordering = null, $direction = null)
+	protected function populateState($ordering = 'a.lft', $direction = 'asc')
 	{
-		// List state information.
-		parent::populateState("a.lft", "ASC");
+    $app = Factory::getApplication();
 
-		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
-		$this->setState('filter.search', $context);
+		$forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
 
-		// Split context into component and optional section
-		$parts = FieldsHelper::extract($context);
-
-		if($parts)
+    // Adjust the context to support modal layouts.
+		if ($layout = $app->input->get('layout'))
 		{
-			$this->setState('filter.component', $parts[0]);
-			$this->setState('filter.section', $parts[1]);
+			$this->context .= '.' . $layout;
+		}
+
+    // Adjust the context to support forced languages.
+		if ($forcedLanguage)
+		{
+			$this->context .= '.' . $forcedLanguage;
+		}
+
+		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$this->setState('filter.search', $search);
+
+    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
+
+    $level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level');
+		$this->setState('filter.level', $level);
+
+    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
+		$this->setState('filter.language', $language);
+
+    $formSubmited = Factory::getApplication()->input->post->get('form_submited');
+
+    // Gets the value of a user state variable and sets it in the session
+		$this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
+    $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by');
+    $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category');
+
+    // List state information.
+		parent::populateState($ordering, $direction);
+
+    if ($formSubmited)
+		{
+			$access = $app->input->post->get('access');
+			$this->setState('filter.access', $access);
+
+			$author = $app->input->post->get('created_by');
+			$this->setState('filter.created_by', $author);
+
+			$category = $app->input->post->get('category');
+			$this->setState('filter.category', $category);
+
+		}
+
+    // Force a language
+		if (!empty($forcedLanguage))
+		{
+			$this->setState('filter.language', $forcedLanguage);
+			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
 	}
 
@@ -116,7 +162,11 @@ class CategoriesModel extends JoomListModel
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . $this->getState('filter.state');
+		$id .= ':' . serialize($this->getState('filter.access'));
+		$id .= ':' . $this->getState('filter.published');
+		$id .= ':' . serialize($this->getState('filter.category'));
+		$id .= ':' . serialize($this->getState('filter.created_by'));
+		$id .= ':' . $this->getState('filter.language');
 
 		return parent::getStoreId($id);
 	}
@@ -136,39 +186,166 @@ class CategoriesModel extends JoomListModel
 
 		// Select the required fields from the table.
 		$query->select($this->getState('list.select', 'DISTINCT a.*'));
-		$query->from('`#__joomgallery_categories` AS a');
+    $query->from($db->quoteName('#__joomgallery_categories', 'a'));
 
 		// Join over the users for the checked out user
-		$query->select('uc.name AS uEditor');
-		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-		$query->where('a.level <> 0');
+		$query->select($db->quoteName('uc.name', 'uEditor'));
+    $query->join('LEFT', $db->quoteName('#__users', 'uc'), $db->quoteName('uc.id') . ' = ' . $db->quoteName('a.checked_out'));
+		$query->where($db->quoteName('a.level') . ' <> 0');
 
 		// Join over the access level field 'access'
-		$query->select('`access`.title AS `access`');
-		$query->join('LEFT', '#__viewlevels AS access ON `access`.id = a.`access`');
+    $query->select($db->quoteName('ag.title', 'access'));
+    $query->join('LEFT', $db->quoteName('#__viewlevels', 'ag'), $db->quoteName('ag.id') . ' = ' . $db->quoteName('a.access'));
 
 		// Join over the user field 'created_by'
-		$query->select('`created_by`.name AS `created_by`');
-		$query->join('LEFT', '#__users AS `created_by` ON `created_by`.id = a.`created_by`');
+    $query->select(array($db->quoteName('ua.name', 'created_by'), $db->quoteName('ua.id', 'created_by_id')));
+    $query->join('LEFT', $db->quoteName('#__users', 'ua'), $db->quoteName('ua.id') . ' = ' . $db->quoteName('a.created_by'));
 
 		// Join over the user field 'modified_by'
-		$query->select('`modified_by`.name AS `modified_by`');
-		$query->join('LEFT', '#__users AS `modified_by` ON `modified_by`.id = a.`modified_by`');
+    $query->select($db->quoteName('um.name', 'modified_by'));
+    $query->join('LEFT', $db->quoteName('#__users', 'um'), $db->quoteName('um.id') . ' = ' . $db->quoteName('a.modified_by'));
 
+    // Join over the category field 'parent_title'
+    $query->select($db->quoteName('parent.title', 'parent_title'));
+    $query->join('LEFT', $db->quoteName('#__joomgallery_categories', 'parent'), $db->quoteName('parent.id') . ' = ' . $db->quoteName('a.parent_id'));
 
-		// Filter by search in title
+    // Get img_count
+		$query->select('COUNT(`img`.id) AS `img_count`');
+    $query->join('LEFT', $db->quoteName('#__joomgallery', 'img'), $db->quoteName('img.catid') . ' = ' . $db->quoteName('a.id'));
+    $query->group($db->quoteName('a.id'));
+
+    // Get child_count
+		$query->select('COUNT(`child`.id) AS `child_count`');
+    $query->join('LEFT', $db->quoteName('#__joomgallery_categories', 'child'), $db->quoteName('child.parent_id') . ' = ' . $db->quoteName('a.id'));
+    $query->group($db->quoteName('child.parent_id'));
+
+    // Join over the language fields 'language_title' and 'language_image'
+		$query->select(array($db->quoteName('l.title', 'language_title'), $db->quoteName('l.image', 'language_image')));
+		$query->join('LEFT', $db->quoteName('#__languages', 'l'), $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
+
+    // Filter by access level.
+		$access = $this->getState('filter.access');
+
+		if(is_numeric($access))
+		{
+			$access = (int) $access;
+			$query->where($db->quoteName('a.access') . ' = :access')
+				->bind(':access', $access, ParameterType::INTEGER);
+		}
+		elseif(is_array($access))
+		{
+			$access = ArrayHelper::toInteger($access);
+			$query->whereIn($db->quoteName('a.access'), $access);
+		}
+    
+    // Filter by owner
+		$userId = $this->getState('filter.created_by');
+
+		if(is_numeric($userId))
+		{
+			$userId = (int) $userId;
+			$type = $this->getState('filter.created_by.include', true) ? ' = ' : ' <> ';
+			$query->where($db->quoteName('a.created_by') . $type . ':userId')
+				->bind(':userId', $userId, ParameterType::INTEGER);
+		}
+		elseif(is_array($userId))
+		{
+			$userId = ArrayHelper::toInteger($userId);
+			$query->whereIn($db->quoteName('a.created_by'), $userId);
+		}
+
+		// Filter by search
 		$search = $this->getState('filter.search');
 
-		if(!empty($search))
+    if(!empty($search))
 		{
 			if(stripos($search, 'id:') === 0)
 			{
-				$query->where('a.id = ' . (int) substr($search, 3));
+				$search = (int) substr($search, 3);
+				$query->where($db->quoteName('a.id') . ' = :search')
+					->bind(':search', $search, ParameterType::INTEGER);
 			}
 			else
 			{
-				$search = $db->Quote('%' . $db->escape($search, true) . '%');
+				$search = '%' . str_replace(' ', '%', trim($search)) . '%';
+				$query->where(
+					'(' . $db->quoteName('a.title') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
+						. ' OR ' . $db->quoteName('a.description') . ' LIKE :search3)'
+				)
+					->bind([':search1', ':search2', ':search3'], $search);
 			}
+		}
+
+    // Filter by published state
+		$published = (string) $this->getState('filter.published');
+
+		if($published !== '*')
+		{
+			if(is_numeric($published))
+			{
+				$state = (int) $published;
+				$query->where($db->quoteName('a.published') . ' = :state')
+					->bind(':state', $state, ParameterType::INTEGER);
+			}
+		}
+
+    // Filter by categories and by level
+		$categoryId = $this->getState('filter.category', array());
+		$level      = (int) $this->getState('filter.level');
+
+		if(!is_array($categoryId))
+		{
+			$categoryId = $categoryId ? array($categoryId) : array();
+		}
+
+    // Case: Using both categories filter and by level filter
+		if(count($categoryId))
+		{
+			$categoryId = ArrayHelper::toInteger($categoryId);
+      $categoryTable = $this->getMVCFactory()->createTable('Category');
+			$subCatItemsWhere = array();
+
+			foreach($categoryId as $key => $filter_catid)
+			{
+				$categoryTable->load($filter_catid);
+
+				// Because values to $query->bind() are passed by reference, using $query->bindArray() here instead to prevent overwriting.
+				$valuesToBind = [$categoryTable->lft, $categoryTable->rgt];
+
+				if($level)
+				{
+					$valuesToBind[] = $level + $categoryTable->level - 1;
+				}
+
+				// Bind values and get parameter names.
+				$bounded = $query->bindArray($valuesToBind);
+
+				$categoryWhere = $db->quoteName('a.lft') . ' >= ' . $bounded[0] . ' AND ' . $db->quoteName('a.rgt') . ' <= ' . $bounded[1];
+
+				if($level)
+				{
+					$categoryWhere .= ' AND ' . $db->quoteName('a.level') . ' <= ' . $bounded[2];
+				}
+
+				$subCatItemsWhere[] = '(' . $categoryWhere . ')';
+			}
+
+			$query->where('(' . implode(' OR ', $subCatItemsWhere) . ')');
+		}
+
+    // Case: Using only the by level filter
+		elseif($level = (int) $level)
+		{
+			$query->where($db->quoteName('a.level') . ' <= :level')
+				->bind(':level', $level, ParameterType::INTEGER);
+		}
+
+
+    // Filter on the language.
+		if($language = $this->getState('filter.language'))
+		{
+			$query->where($db->quoteName('a.language') . ' = :language')
+				->bind(':language', $language);
 		}
 
 		// Add the list ordering clause.

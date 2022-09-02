@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
@@ -171,9 +172,9 @@ class ImageModel extends JoomAdminModel
 
 				return false;
 			}
-    }
+    	}
 
-    // Convert to the CMSObject before adding other data.
+    	// Convert to the CMSObject before adding other data.
 		$properties = $table->getProperties(1);
 		$item = ArrayHelper::toObject($properties, CMSObject::class);
 
@@ -183,12 +184,12 @@ class ImageModel extends JoomAdminModel
 			$item->params = $registry->toArray();
 		}
 
-    if(isset($item->params))
-    {
-      $item->params = json_encode($item->params);
-    }
+		if(isset($item->params))
+		{
+		$item->params = json_encode($item->params);
+		}
 
-    return $item;
+		return $item;
 	}
 
 	/**
@@ -220,43 +221,67 @@ class ImageModel extends JoomAdminModel
 
 		foreach($pks as $pk)
 		{
-      if($table->load($pk, true))
-      {
-        // Reset the id to create a new record.
-        $table->id = 0;
+			if($table->load($pk, true))
+			{
+				// Reset the id to create a new record.
+				$table->id = 0;
 
-        if(!$table->check())
-        {
-          throw new \Exception($table->getError());
-        }
+				if(!$table->check())
+				{
+					throw new \Exception($table->getError());
+				}
 
-        if(!empty($table->catid))
-        {
-          if(is_array($table->catid))
-          {
-            $table->catid = implode(',', $table->catid);
-          }
-        }
-        else
-        {
-          $table->catid = '';
-        }
+				if(!empty($table->catid))
+				{
+					if(is_array($table->catid))
+					{
+						$table->catid = implode(',', $table->catid);
+					}
+				}
+				else
+				{
+					$table->catid = '';
+				}
 
-        // Trigger the before save event.
-        $result = $app->triggerEvent($this->event_before_save, array($context, &$table, true, $table));
+				// Create file manager service
+				$manager = JoomHelper::getService('FileManager');
 
-        if(in_array(false, $result, true) || !$table->store())
-        {
-          throw new \Exception($table->getError());
-        }
+				// Regenerate filename
+				$newFilename = $manager->regenFilename($table->filename);
 
-        // Trigger the after save event.
-        $app->triggerEvent($this->event_after_save, array($context, &$table, true));
-      }
-      else
-      {
-        throw new \Exception($table->getError());
-      }
+				// Copy images
+				$manager->copyImages($table, $table->catid, $newFilename);
+
+        // Transfer new filename to table
+        $table->filename = $newFilename;
+
+				// Output warning messages
+				if(\count($this->component->getWarning()) > 1)
+				{
+					$this->component->printWarning();
+				}
+
+				// Output debug data
+				if(\count($this->component->getDebug()) > 1)
+				{
+					$this->component->printDebug();
+				}
+
+				// Trigger the before save event.
+				$result = $app->triggerEvent($this->event_before_save, array($context, &$table, true, $table));
+
+				if(in_array(false, $result, true) || !$table->store())
+				{
+					throw new \Exception($table->getError());
+				}
+
+				// Trigger the after save event.
+				$app->triggerEvent($this->event_after_save, array($context, &$table, true));
+			}
+			else
+			{
+				throw new \Exception($table->getError());
+			}
 		}
 
 		// Clean cache
@@ -266,7 +291,7 @@ class ImageModel extends JoomAdminModel
 	}
 
   /**
-	 * Method to save the form data.
+	 * Method to save image from form data.
 	 *
 	 * @param   array  $data  The form data.
 	 *
@@ -276,22 +301,38 @@ class ImageModel extends JoomAdminModel
 	 */
 	public function save($data)
 	{
-		$table    = $this->getTable();
-		$context  = $this->option . '.' . $this->name;
-		$app      = Factory::getApplication();
+		$table        = $this->getTable();
+		$context      = $this->option . '.' . $this->name;
+		$app          = Factory::getApplication();
+		$imgUploaded  = false;
+		$catMoved     = false;
+		$isNew        = true;
+		$isCopy       = false;
+    $aliasChanged = false;
 
-    // Rertrieve request image file data
-    $data['images'] = array();
-    \array_push($data['images'], $app->input->files->get('jform')['image']);
+		$key = $table->getKeyName();
+		$pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
 
-		if(\array_key_exists('tags', $data) && \is_array($data['tags']))
+		// Are we going to copy the image record?
+    	if($app->input->get('task') == 'save2copy')
+		{
+			$isCopy = true;
+		}
+		
+		// Rertrieve request image file data
+    	if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
+			&& $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
+		{
+			$imgUploaded = true;
+			$data['images'] = array();
+			\array_push($data['images'], $app->input->files->get('jform')['image']);
+		}    	
+
+		// Create tags
+		if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
 		{
 			$table->newTags = $data['tags'];
 		}
-
-		$key = $table->getKeyName();
-		$pk = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
-		$isNew = true;
 
     // Change language to 'All' if multilangugae is not enabled
     if (!Multilanguage::isEnabled())
@@ -302,47 +343,79 @@ class ImageModel extends JoomAdminModel
 		// Include the plugins for the save events.
 		PluginHelper::importPlugin($this->events_map['save']);
 
-		// Allow an exception to be thrown.
+		// Record editing and image creation
 		try
 		{
 			// Load the row if saving an existing record.
 			if($pk > 0)
 			{
-
 				$table->load($pk);
-				$isNew = false;
+				$isNew    = false;
+
+				// Check if the category was changed
+				if($table->catid != $data['catid'])
+				{
+					$catMoved = true;
+				}
+
+        // Check if the alias was changed
+				if($table->alias != $data['alias'])
+				{
+					$aliasChanged = true;
+          $old_alias    = $table->alias;
+				}
 			}
 
-      // Save form data in session
-      $app->setUserState(_JOOM_OPTION.'.image.upload', $data);
+			// Save form data in session
+			$app->setUserState(_JOOM_OPTION.'.image.upload', $data);
 
-      // // Create filename and image types
-      // // Modify form data based on image metadata
-      // $uploader = JoomHelper::getService('uploader', array('html'));
+      // Create uploader service
+			$uploader = JoomHelper::getService('uploader', array('html', false));
 
-      // if(!$uploader->upload($data))
-      // {
-      //   $this->setError($this->component->getDebug());
+			// Retrieve image from request
+			if($imgUploaded)
+			{
+				// Determine if we have to create new filename
+				$createFilename = false;
+				if($isNew || empty($data['filename']))
+				{
+					$createFilename = true;
+				}
 
-      //   return false;
-      // }
+				// Retrieve image
+				// (check upload, check user upload limit, create filename, onJoomBeforeSave)
+				if(!$uploader->retrieveImage($data, $createFilename))
+				{
+					$this->setError($this->component->getDebug(true));
 
-      // // Output messages
-      // if(\count($this->component->getWarning()) > 1)
-      // {
-      //   $this->component->printWarning();
-      // }
+					return false;
+				}
 
-      // // Output debug data
-      // if(\count($this->component->getDebug()) > 1)
-      // {
-      //   $this->component->printDebug();
-      // }
+				// Override data with image metadata
+				if(!$uploader->overrideData($data))
+				{
+					$this->setError($this->component->getDebug(true));
 
-			// Bind the data.
+					return false;
+				}
+			}
+
+      // Create file manager service
+			$manager = JoomHelper::getService('FileManager');
+
+      // Get source image id
+			$source_id = $app->input->get('origin_id', false, 'INT');
+
+      // Handle images if category was changed
+			if(!$isNew && ($catMoved || $aliasChanged))
+			{
+				// Douplicate old data
+        $old_table = clone $table;
+			}
+
+			// Bind data to table object
 			if(!$table->bind($data))
 			{
-        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
@@ -354,27 +427,91 @@ class ImageModel extends JoomAdminModel
 			// Check the data.
 			if(!$table->check())
 			{
-        //$uploader->rollback($data['filename']);
 				$this->setError($table->getError());
 
 				return false;
 			}
 
-			// Trigger the before save event.
-			$result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
-
-			if(\in_array(false, $result, true))
+      // Handle images if record gets copied
+			if($isNew && $isCopy && !$imgUploaded)
 			{
-        //$uploader->rollback($data['filename']);
-				$this->setError($table->getError());
-
-				return false;
+        // Regenerate filename
+        $table->filename = $manager->regenFilename($data['filename']);
 			}
+
+      // Handle images if alias has changed
+			if(!$isNew && $aliasChanged && !$imgUploaded)
+			{
+        // Replace alias in filename
+        $table->filename = \str_replace($old_alias, $table->alias, $table->filename);
+      }
+
+      // Trigger the before save event.
+			$result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
 			// Store the data.
 			if(!$table->store())
 			{
-        //$uploader->rollback($data['filename']);
+				$this->setError($table->getError());
+
+				return false;
+			}
+
+      // Handle images if category was changed
+			if(!$isNew && $catMoved)
+			{
+				if($imgUploaded)
+				{
+					// Delete old images
+					$manager->deleteImages($old_table);
+				}
+				else
+				{
+					// Move old images to new location
+					$manager->moveImages($old_table, $table->catid);
+				}
+			}
+
+			// Handle images if record gets copied
+			if($isNew && $isCopy && !$imgUploaded)
+			{
+        // Copy Images
+        $manager->copyImages($source_id, $table->catid, $table->filename);
+			}
+
+      // Handle images if alias has changed
+			if(!$isNew && $aliasChanged && !$imgUploaded)
+			{
+        if($catMoved)
+        {
+          // modify old_table object to fit with new image location
+          $old_table->catid = $table->catid;
+        }
+
+        // Rename files
+        $manager->renameImages($old_table, $table->filename);        
+      }
+
+			// Create images
+			if($imgUploaded)
+			{
+				// Create images
+				// (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
+				if(!$uploader->createImage($table))
+				{
+					$uploader->rollback();
+					$this->setError($this->component->getDebug(true));
+
+					return false;
+				}
+			}
+
+			if(\in_array(false, $result, true))
+			{
+        if($imgUploaded)
+				{
+        	$uploader->rollback();
+				}
 				$this->setError($table->getError());
 
 				return false;
@@ -388,12 +525,28 @@ class ImageModel extends JoomAdminModel
 		}
 		catch (\Exception $e)
 		{
-      //$uploader->rollback($data['filename']);
+			if($imgUploaded)
+			{
+				$uploader->rollback();
+			}
 			$this->setError($e->getMessage());
 
 			return false;
 		}
+		
+		// Output warning messages
+		if(\count($this->component->getWarning()) > 1)
+		{
+			$this->component->printWarning();
+		}
 
+		// Output debug data
+		if(\count($this->component->getDebug()) > 1)
+		{
+			$this->component->printDebug();
+		}
+
+		// Set state
 		if(isset($table->$key))
 		{
 			$this->setState($this->getName() . '.id', $table->$key);
@@ -401,6 +554,7 @@ class ImageModel extends JoomAdminModel
 
 		$this->setState($this->getName() . '.new', $isNew);
 
+		// Create associations
 		if($this->associationsContext && Associations::isEnabled() && !empty($data['associations']))
 		{
 			$associations = $data['associations'];
@@ -500,6 +654,7 @@ class ImageModel extends JoomAdminModel
 			}
 		}
 
+		// Redirect to associations
 		if($app->input->get('task') == 'editAssociations')
 		{
 			return $this->redirectToAssociations($data);
@@ -508,8 +663,8 @@ class ImageModel extends JoomAdminModel
 		return true;
 	}
 
-  /**
-	 * Method to delete one or more records.
+  	/**
+	 * Method to delete one or more images.
 	 *
 	 * @param   array  &$pks  An array of record primary keys.
 	 *
@@ -544,19 +699,19 @@ class ImageModel extends JoomAdminModel
 						return false;
 					}
 
-          // Delete corresponding imagetypes
-          $manager = JoomHelper::getService('ImageManager');
+					// Delete corresponding imagetypes
+					$manager = JoomHelper::getService('FileManager');
 
-          if(!$manager->deleteImages($table->filename, $table->catid))
-          {
-            $this->setError($this->component->getDebug());
+					if(!$manager->deleteImages($table))
+					{
+						$this->setError($this->component->getDebug(true));
 
-            return false;
-          }
+						return false;
+					}
 
-          // Delete corresponding comments
+					// Delete corresponding comments
 
-          // Delete corresponding votes
+					// Delete corresponding votes
 
 					// Multilanguage: if associated, delete the item in the _associations table
 					if($this->associationsContext && Associations::isEnabled())
@@ -646,23 +801,152 @@ class ImageModel extends JoomAdminModel
 			}
 		}
 
-    // Output messages
-    if(\count($this->component->getWarning()) > 1)
-    {
-      $this->component->printWarning();
-    }
+		// Output messages
+		if(\count($this->component->getWarning()) > 1)
+		{
+			$this->component->printWarning();
+		}
 
-    // Output debug data
-    if(\count($this->component->getDebug()) > 1)
-    {
-      $this->component->printDebug();
-    }
+		// Output debug data
+		if(\count($this->component->getDebug()) > 1)
+		{
+			$this->component->printDebug();
+		}
 
 		// Clear the component's cache
 		$this->cleanCache();
 
 		return true;
 	}
+
+  /**
+	 * Method to change the state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+     * @param   string   $type   Name of the state to be changed
+	 * @param   integer  $value  The value of the state.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   1.6
+	 */
+	public function changeSate(&$pks, $type='publish', $value = 1)
+	{
+		$user    = Factory::getUser();
+		$table   = $this->getTable();
+		$pks     = (array) $pks;
+		$context = $this->option . '.' . $this->name . '.' . $type;
+
+		// Include the plugins for the change of state event.
+		PluginHelper::importPlugin($this->events_map['change_state']);
+
+		// Access checks.
+		foreach($pks as $i => $pk)
+		{
+			$table->reset();
+
+			if($table->load($pk))
+			{
+				if(!$this->canEditState($table))
+				{
+					// Prune items that you can't change.
+					unset($pks[$i]);
+
+					Log::add(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+
+					return false;
+				}
+
+				// If the table is checked out by another user, drop it and report to the user trying to change its state.
+				if($table->hasField('checked_out') && $table->checked_out && ($table->checked_out != $user->id))
+				{
+					Log::add(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'), Log::WARNING, 'jerror');
+
+					// Prune items that you can't change.
+					unset($pks[$i]);
+
+					return false;
+				}
+
+        switch($type)
+        {
+          case 'feature':
+            $stateColumnName  = 'featured';
+            break;
+
+          case 'approve':
+            $stateColumnName  = 'approved';
+            break;
+          
+          case 'publish':
+          default:
+            $stateColumnName  = 'published';
+            break;
+        }
+
+				if(property_exists($table, $stateColumnName) && $table->get($stateColumnName, $value) == $value)
+				{
+					unset($pks[$i]);
+
+					continue;
+				}
+			}
+		}
+
+		// Check if there are items to change
+		if(!\count($pks))
+		{
+			return true;
+		}
+
+		// Trigger the before change state event.
+		$result = Factory::getApplication()->triggerEvent($this->event_before_change_state, array($context, $pks, $value));
+
+		if(\in_array(false, $result, true))
+		{
+			$this->setError($table->getError());
+
+			return false;
+		}
+
+		// Attempt to change the state of the records.
+		if (!$table->changeState($type, $pks, $value, $user->get('id')))
+		{
+			$this->setError($table->getError());
+
+			return false;
+		}
+
+		// Trigger the change state event.
+		$result = Factory::getApplication()->triggerEvent($this->event_change_state, array($context, $pks, $value));
+
+		if (\in_array(false, $result, true))
+		{
+			$this->setError($table->getError());
+
+			return false;
+		}
+
+		// Clear the component's cache
+		$this->cleanCache();
+
+		return true;
+	}
+
+  /**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   1.6
+	 */
+	public function publish(&$pks, $value = 1)
+	{
+    return $this->changeSate($pks, 'publish', $value);
+  }
 
 	/**
 	 * Prepare and sanitise the table prior to saving.

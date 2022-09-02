@@ -55,9 +55,8 @@ class ImagetypesModel extends JoomListModel
 		$query->from($db->quoteName(_JOOM_TABLE_IMG_TYPES, 'a'));
 
 		// Add the list ordering clause.
-    $orderDirn = $this->state->get('list.direction', 'ASC');
-
-		$query->order($db->escape("ordering" . ' ' . $orderDirn));
+		//$query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
+    $query->order($db->escape('a.id ASC'));
 
 		return $query;
 	}
