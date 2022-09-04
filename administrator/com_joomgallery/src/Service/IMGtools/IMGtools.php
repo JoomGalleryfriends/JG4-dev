@@ -435,7 +435,7 @@ abstract class IMGtools implements IMGtoolsInterface
     // Path must point to an existing file
     if(!(File::exists($img)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_CONFIG_GS_PD_FILE_NOT_EXIST'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'));
 
       return false;
     }

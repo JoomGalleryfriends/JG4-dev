@@ -121,7 +121,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       }
       else
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
 
         return;
       }
@@ -151,7 +151,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       if(\trim($disabled_function) == 'exec')
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_EXEC_DISABLED'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_EXEC_DISABLED'));
 
         return false;
       }
@@ -179,7 +179,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       }
       else
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
 
         return false;
       }
@@ -206,7 +206,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Analysis and validation of the source image
     if($this->analyse($file, $is_stream) == false)
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_FILE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
 
       return false;
     }
@@ -331,7 +331,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $file);
 
         return false;
@@ -523,7 +523,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     if($noResize)
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_NOT_NECESSARY'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_NOT_NEEDED'));
 
       return true;
     }
@@ -531,7 +531,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Generate informations about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_GD_ONLY_JPG_PNG'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
 
       return false;
     }
@@ -625,7 +625,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($angle == 0 && !$auto_orient)
     {
       // Nothing to do
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
 
       return true;
     }
@@ -649,7 +649,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if($angle == 0 && $this->dst_imginfo['flip'] == 'none')
       {
         // Nothing to do
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
 
         return true;
       }
@@ -849,7 +849,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $tmp_src_type    = $this->src_type;
     if(!($this->src_imginfo = $this->analyse($wtm_file)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_OUTPUT_INVALID_WTM_FILE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_WTMFILE'));
 
       return false;
     }
@@ -1153,7 +1153,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $dst_file);
 
         return false;
@@ -1225,7 +1225,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $tmp_file);
 
         return false;

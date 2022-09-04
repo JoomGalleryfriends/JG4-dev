@@ -110,13 +110,21 @@ class ImagesController extends AdminController
 		{
 			if(empty($pks))
 			{
-				throw new \Exception(Text::_('COM_JOOMGALLERY_NO_ELEMENT_SELECTED'));
+				throw new \Exception(Text::_('JERROR_NO_ITEMS_SELECTED'));
 			}
 
 			ArrayHelper::toInteger($pks);
 			$model = $this->getModel();
 			$model->duplicate($pks);
-			$this->setMessage(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'));
+
+      if(\count($pks) > 1)
+      {
+        $this->setMessage(Text::_('COM_JOOMGALLERY_IMAGES_SUCCESS_DUPLICATED'));
+      }
+      else
+      {
+        $this->setMessage(Text::_('COM_JOOMGALLERY_IMAGE_SUCCESS_DUPLICATED'));
+      }
 		}
 		catch (Exception $e)
 		{

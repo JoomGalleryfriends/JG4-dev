@@ -88,7 +88,7 @@ class FileManager implements FileManagerInterface
     if(!$filename)
     {
       // Debug info
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_CLEAN_FILENAME', \basename($source)));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CLEAN_FILENAME', \basename($source)));
 
       return false;
     }
@@ -107,7 +107,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Debug info
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
 
       // Keep metadata only for original images
       if($imagetype->typename == 'original')
@@ -240,11 +240,16 @@ class FileManager implements FileManagerInterface
       $this->jg->delIMGtools();
 
       // Debug info
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+      if(!$error)
+      {
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+      }
     }
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
@@ -288,6 +293,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
@@ -393,6 +400,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
@@ -496,6 +505,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
@@ -566,6 +577,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 

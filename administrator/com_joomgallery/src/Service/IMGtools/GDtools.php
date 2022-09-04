@@ -130,7 +130,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     }
     else
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GD_NOTFOUND'));
 
       return;
     }
@@ -195,7 +195,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for supportet imge files
     if(!\in_array($this->src_type, $this->supported_types))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
 
       return false;
     }
@@ -273,7 +273,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       else
       {
         // unsupported file type
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
 
         return false;
       }
@@ -379,7 +379,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
       if(!$success)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_COPYING', $file).' '.Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPYING_FILE', $file));
 
         return false;
       }
@@ -499,7 +499,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       else
       {
         // unsupported file type
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
 
         return false;
       }
@@ -626,7 +626,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Generate informations about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
       $this->rollback('', '');
 
       return false;
@@ -639,7 +639,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
       $this->rollback('', '');
 
       return false;
@@ -800,7 +800,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
 
       return false;
     }
@@ -940,7 +940,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
 
       return false;
     }
@@ -1218,7 +1218,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
       $this->rollback('', '');
 
       return false;
