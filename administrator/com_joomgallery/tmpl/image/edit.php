@@ -83,7 +83,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 				<legend><?php echo Text::_('JGLOBAL_PREVIEW'); ?></legend>
         <div class="text-center joom-image center">
           <div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>
-          <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_TYPE_THUMBNAIL'); ?>">
+          <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
         </div>
         <div class="text-center">
           <div class="btn-group joom-imgtypes" role="group" aria-label="<?php echo Text::_('COM_JOOMGALLERY_SHOWIMAGE_LBL'); ?>">

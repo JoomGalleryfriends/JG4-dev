@@ -57,11 +57,11 @@ class ConfigsController extends AdminController
 
       if(\count($pks) > 1)
       {
-        $this->setMessage(Text::_('COM_JOOMGALLERY_CONFIGS_SUCCESS_DUPLICATED'));
+        $this->setMessage(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'));
       }
       else
       {
-        $this->setMessage(Text::_('COM_JOOMGALLERY_CONFIG_SUCCESS_DUPLICATED'));
+        $this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SUCCESS_DUPLICATED'));
       }
 		}
 		catch (Exception $e)
