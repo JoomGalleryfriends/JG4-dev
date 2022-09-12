@@ -101,7 +101,7 @@ Factory::getApplication()
 					<tr>
 						<?php echo $table_head; ?>
             <th scope="col">
-              <?php echo Text::_('Settings'); ?>
+              <?php echo Text::_('COM_JOOMGALLERY_SETTINGS'); ?>
             </th>
 						<?php if (!empty($buttons)) : ?>
 						<td style="width:8%;">

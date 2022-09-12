@@ -49,11 +49,11 @@ if($group == 'jg_staticprocessing1' || $group == 'jg_staticprocessing2')
 	<?php 
   $i++;
   endforeach; ?>
-  <td data-column="<?php echo Text::_('Settings-Popup'); ?>">
+  <td data-column="<?php echo Text::_('COM_JOOMGALLERY_SETTINGS_POPUP'); ?>">
     <div class="control-group">
-      <div class="visually-hidden"><label><?php echo Text::_('Settings-Popup'); ?></label></div>
+      <div class="visually-hidden"><label><?php echo Text::_('COM_JOOMGALLERY_SETTINGS_POPUP'); ?></label></div>
       <div class="controls">
-        <a href="#" data-bs-toggle="modal" class="btn btn-secondary" data-bs-target="#<?php echo $group; ?>_modal"><?php echo Text::_('Show Settings'); ?></a>
+        <a href="#" data-bs-toggle="modal" class="btn btn-secondary" data-bs-target="#<?php echo $group; ?>_modal"><?php echo Text::_('COM_JOOMGALLERY_SHOW_SETTINGS'); ?></a> 
       </div>
     </div>
   </td>
