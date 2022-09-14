@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Filesystem\File;
@@ -51,13 +52,6 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * @var array
    */
   protected $memory_needed;
-
-  /**
-   * List of all supportet image types (in uppercase)
-   *
-   * @var array
-   */
-  protected $supported_types = array();
 
   /**
    * Holds the working GD-Objects (image) and its duration (hundredths of a second) of each frame
@@ -103,7 +97,6 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     parent::__construct($keep_metadata, $keep_anim);
 
     $this->fastgd2thumbcreation = $fastgd2thumbcreation;
-    $this->getTypes();
   }
 
   /**
@@ -137,7 +130,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     }
     else
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GD_NOTFOUND'));
 
       return;
     }
@@ -202,7 +195,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Check for supportet imge files
     if(!\in_array($this->src_type, $this->supported_types))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
 
       return false;
     }
@@ -280,7 +273,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       else
       {
         // unsupported file type
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
 
         return false;
       }
@@ -386,7 +379,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
       if(!$success)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_COPYING', $file).' '.Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPYING_FILE', $file));
 
         return false;
       }
@@ -506,7 +499,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       else
       {
         // unsupported file type
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
 
         return false;
       }
@@ -633,7 +626,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     // Generate informations about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
       $this->rollback('', '');
 
       return false;
@@ -646,7 +639,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
       $this->rollback('', '');
 
       return false;
@@ -807,7 +800,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
 
       return false;
     }
@@ -947,7 +940,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
 
       return false;
     }
@@ -1225,7 +1218,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $memory = $this->checkMemory($this->memory_needed);
     if(!$memory['success'])
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_ERROR_MEM_EXCEED').$memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte<br />');
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
       $this->rollback('', '');
 
       return false;
@@ -1326,18 +1319,14 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     return true;
   }
 
-  //////////////////////////////////////////////////
-  //   Protected functions with basic features.
-  //////////////////////////////////////////////////
-
   /**
    * Get supported image types
    *
-   * @return  void
+   * @return  array   list of supported image types (uppercase)
    *
    * @since   4.0.0
    */
-  protected function getTypes()
+  public function getTypes(): array
   {
     if(\function_exists('gd_info'))
     {
@@ -1356,30 +1345,19 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         }
       }
 
-      // Add different file types of JPEG files
-      if(\in_array('JPEG',$types))
-      {
-        if(!\in_array('JPG',$types))
-        {
-          \array_push($types, 'JPG');
-        }
-        if(!\in_array('JPE',$types))
-        {
-          \array_push($types, 'JPE');
-        }
-        if(!\in_array('JFIF',$types))
-        {
-          \array_push($types, 'JFIF');
-        }
-      }
+      $types = $this->addJpegTypes($types);
 
-      $this->supported_types = $types;
+      return $types;
     }
     else
     {
-      $this->supported_types = array();
+      return array();
     }
   }
+
+  //////////////////////////////////////////////////
+  //   Protected functions with basic features.
+  //////////////////////////////////////////////////
 
   /**
    * Calculates the amaount of memory (in bytes)

@@ -195,7 +195,7 @@ if($saveOrder && !empty($this->items))
                     <?php if ($canEdit || $canEditOwn) : ?>
                       <?php
                         $ImgUrl     = Route::_('index.php?option=com_joomgallery&task=image.edit&id='.(int) $item->id);
-                        $EditImgTxt = Text::_('COM_JOOMGALLERY_EDIT_IMAGE');
+                        $EditImgTxt = Text::_('COM_JOOMGALLERY_IMAGE_EDIT');
                       ?>
                       <a href="<?php echo $ImgUrl; ?>" title="<?php echo $EditImgTxt; ?>">
                         <?php echo $this->escape($item->imgtitle); ?>
@@ -213,7 +213,7 @@ if($saveOrder && !empty($this->items))
                       <?php if ($canEditCat || $canEditOwnCat) : ?>
                         <?php
                           $CatUrl     = Route::_('index.php?option=com_joomgallery&task=category.edit&id='.(int) $item->catid);
-                          $EditCatTxt = Text::_('COM_JOOMGALLERY_EDIT_CATEGORY');
+                          $EditCatTxt = Text::_('COM_JOOMGALLERY_CATEGORY_EDIT');
                         ?>
                         <a href="<?php echo $CatUrl; ?>" title="<?php echo $EditCatTxt; ?>"><?php echo $this->escape($item->cattitle); ?></a>
                       <?php else : ?>

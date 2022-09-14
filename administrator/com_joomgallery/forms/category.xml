@@ -12,33 +12,24 @@
            filter="unset" />
 
     <field name="lft"
-           default="0"
-           label="COM_JOOMGALLERY_FORM_LBL_CATEGORY_LFT"
-           description="COM_JOOMGALLERY_FORM_DESC_CATEGORY_LFT"
-           hidden="true" />
+           type="hidden"
+           filter="unset" />
 
     <field name="rgt"
-           default="0"
-           label="COM_JOOMGALLERY_FORM_LBL_CATEGORY_RGT"
-           description="COM_JOOMGALLERY_FORM_DESC_CATEGORY_RGT"
-           hidden="true" />
+           type="hidden"
+           filter="unset" />
 
     <field name="level"
-           default="0"
-           label="COM_JOOMGALLERY_FORM_LBL_CATEGORY_LEVEL"
-           description="COM_JOOMGALLERY_FORM_DESC_CATEGORY_LEVEL"
-           hidden="true" />
+           type="hidden"
+           filter="unset" />
 
     <field name="path"
-           label="COM_JOOMGALLERY_FORM_LBL_CATEGORY_PATH"
-           description="COM_JOOMGALLERY_FORM_DESC_CATEGORY_PATH"
-           hidden="true" />
+           type="hidden"
+           filter="unset" />
 
     <field name="in_hidden"
-           default="0"
-           label="COM_JOOMGALLERY_FORM_LBL_CATEGORY_IN_HIDDEN"
-           description="COM_JOOMGALLERY_FORM_DESC_CATEGORY_IN_HIDDEN"
-           hidden="true" />
+           type="hidden"
+           filter="unset" />
 
     <field name="title"
            type="text"

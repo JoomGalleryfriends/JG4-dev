@@ -240,11 +240,16 @@ class FileManager implements FileManagerInterface
       $this->jg->delIMGtools();
 
       // Debug info
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+      if(!$error)
+      {
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+      }
     }
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
@@ -288,6 +293,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
@@ -381,18 +388,20 @@ class FileManager implements FileManagerInterface
       if(!$this->jg->getFilesystem()->moveFile($img_src, $img_dst, $copy))
       {
         // Moving failed
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
         $error = true;
 
         continue;
       }
 
       // Move successful
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SUCCESS_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_'.$method.'_IMAGETYPE', \basename($img_src), $imagetype->typename));
     }
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
@@ -413,6 +422,52 @@ class FileManager implements FileManagerInterface
   public function copyImages($img, $dest, $filename=false): bool
   {
     return $this->moveImages($img, $dest, $filename, true);
+  }
+
+  /**
+   * Rename files of image
+   *
+   * @param   object|int|string   $img        Image object, image ID or image alias
+   * @param   string              $filename   New filename of the image
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameImages($img, $filename): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Loop through all imagetypes
+    $error = false;
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get full image filename
+      $file = $this->getImgPath($img, $imagetype->typename);
+
+      // Rename file
+      if(!$this->jg->getFilesystem()->renameFile($file, $filename))
+      {
+        // Renaming failed
+        $error = true;
+
+        continue;
+      }
+    }
+    
+    if($error)
+    {
+      // Renaming failed
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_IMAGE', \ucfirst(\basename($file))));
+
+      return false;
+    }
+
+    // Renaming successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_IMAGE', \ucfirst(\basename($file))));
+
+    return true;
   }
 
   /**
@@ -441,7 +496,7 @@ class FileManager implements FileManagerInterface
       if(!$this->jg->getFilesystem()->createFolder($path))
       {
         // Debug info
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \strtoupper($foldername)));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \ucfirst($foldername)));
         $error = true;
 
         continue;
@@ -450,11 +505,13 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
     // Debug info
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_CATEGORY', \strtoupper($foldername)));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_CATEGORY', \ucfirst($foldername)));
 
     return true;
   }
@@ -490,7 +547,7 @@ class FileManager implements FileManagerInterface
         {
           // There are still images and subcategories available
           // Deletion not allowed
-          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \strtoupper(\basename($path))));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \ucfirst(\basename($path))));
 
           return false;
         }
@@ -510,7 +567,7 @@ class FileManager implements FileManagerInterface
         if(!$this->jg->getFilesystem()->deleteFolder($path))
         {
           // Debug info
-          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY', \strtoupper(\basename($path))));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY', \ucfirst(\basename($path))));
           $error = true;
 
           continue;
@@ -520,11 +577,13 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+
       return false;
     }
 
     // Debug info
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_DELETE_CATEGORY', \strtoupper(\basename($path))));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_DELETE_CATEGORY', \ucfirst(\basename($path))));
 
     return true;
   }
@@ -606,7 +665,6 @@ class FileManager implements FileManagerInterface
       if(!$this->jg->getFilesystem()->moveFolder($src_path, $dst_path, $copy))
       {
         // Moving failed
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \strtoupper(\basename($src_path))));
         $error = true;
 
         continue;
@@ -615,11 +673,60 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
+      // Moving failed
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_'.$method.'_CATEGORY', \ucfirst(\basename($src_path))));
+
       return false;
     }
 
     // Move successful
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_'.$method.'_CATEGORY', \strtoupper(\basename($src_path))));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_'.$method.'_CATEGORY', \ucfirst(\basename($src_path))));
+
+    return true;
+  }
+
+  /**
+   * Rename folder of category
+   *
+   * @param   object|int|string   $cat          Object, ID or alias of the category to be renamed
+   * @param   string              $foldername   New foldername of the category
+   *
+   * @return  bool    true on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function renameCategory($cat, $foldername): bool
+  {
+    // Create filesystem service
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+
+    // Loop through all imagetypes
+    $error = false;
+    foreach($this->imagetypes as $key => $imagetype)
+    {
+      // Get category path
+      $path = $this->getCatPath($cat, $imagetype->typename);
+
+      // Rename folder
+      if(!$this->jg->getFilesystem()->renameFolder($path, $foldername))
+      {
+        // Renaming failed
+        $error = true;
+
+        continue;
+      }
+    }
+    
+    if($error)
+    {
+      // Renaming failed
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_CATEGORY', \ucfirst(\basename($path))));
+
+      return false;
+    }
+
+    // Renaming successful
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_CATEGORY', \ucfirst(\basename($path))));
 
     return true;
   }

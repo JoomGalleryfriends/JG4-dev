@@ -10,10 +10,9 @@
          description="JGLOBAL_FIELD_ID_DESC" />
 
   <field name="published"
-         hidden="true"
          default="1"
-         label="COM_JOOMGALLERY_FORM_LBL_CONFIG_PUBLISHED"
-         description="COM_JOOMGALLERY_FORM_DESC_CONFIG_PUBLISHED" />
+         type="hidden"
+         filter="unset" />
 
   <field name="ordering"
          hidden="true" />

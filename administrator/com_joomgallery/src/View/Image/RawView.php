@@ -58,7 +58,7 @@ class RawView extends JoomGalleryView
     // Check file
     if(!JFile::exists($img))
     {
-      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_COMMON_MSG_IMAGE_NOT_EXIST'), 'error');
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_IMAGE_NOT_EXIST'), 'error');
       $this->app->redirect(Route::_('index.php', false), 404);
     }
 

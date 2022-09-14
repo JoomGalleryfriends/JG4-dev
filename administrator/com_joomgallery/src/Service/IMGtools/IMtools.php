@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
@@ -51,13 +52,6 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   public $convert_path = '';
 
   /**
-   * List of all supportet image types (in uppercase)
-   *
-   * @var array
-   */
-  protected $supported_types = array();
-
-  /**
    * ImageMagick commands
    *
    * @var array
@@ -90,7 +84,6 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     parent::__construct($keep_metadata, $keep_anim);
 
     $this->impath = $impath;
-    $this->getTypes();
   }
 
   /**
@@ -128,7 +121,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       }
       else
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
 
         return;
       }
@@ -158,7 +151,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       if(\trim($disabled_function) == 'exec')
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_EXEC_DISABLED'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_EXEC_DISABLED'));
 
         return false;
       }
@@ -186,7 +179,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       }
       else
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_NOTFOUND'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
 
         return false;
       }
@@ -213,7 +206,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Analysis and validation of the source image
     if($this->analyse($file, $is_stream) == false)
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_FILE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
 
       return false;
     }
@@ -338,7 +331,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $file);
 
         return false;
@@ -530,7 +523,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     if($noResize)
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_RESIZE_NOT_NECESSARY'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_NOT_NEEDED'));
 
       return true;
     }
@@ -538,7 +531,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Generate informations about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_GD_ONLY_JPG_PNG'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
 
       return false;
     }
@@ -632,7 +625,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($angle == 0 && !$auto_orient)
     {
       // Nothing to do
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
 
       return true;
     }
@@ -656,7 +649,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if($angle == 0 && $this->dst_imginfo['flip'] == 'none')
       {
         // Nothing to do
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ROTATE_NOT_NECESSARY'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
 
         return true;
       }
@@ -856,7 +849,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $tmp_src_type    = $this->src_type;
     if(!($this->src_imginfo = $this->analyse($wtm_file)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_OUTPUT_INVALID_WTM_FILE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_WTMFILE'));
 
       return false;
     }
@@ -908,55 +901,71 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     return true;
   }
 
-  //////////////////////////////////////////////////
-  //   Protected functions with basic features.
-  //////////////////////////////////////////////////
-
   /**
    * Get supported image types
    *
-   * @return  void
+   * @return  array   list of supported image types (uppercase)
    *
    * @since   4.0.0
    */
-  protected function getTypes()
+  public function getTypes(): array
   {
-    // Check availability and version of ImageMagick v7.x
-    @\exec(\trim($this->impath).'magick -version', $output);
+    // Get supported types of ImageMagick v7.x
+    @\exec(\trim($this->impath).'magick -list format', $output);
 
-    if($output)
+    if(!$output)
     {
-      // new version (>= v7.x)
-      $types = \str_replace('Delegates (built-in): ', '', $output[5]);
-      $types = \strtoupper($types);
-
-      $this->supported_types = \explode(' ', $types);
-
-      return;
-    }
-    else
-    {
-      // Check availability and version of ImageMagick v6.x
+      // Get supported types of ImageMagick v6.x
       @\exec(\trim($this->impath).'convert -version', $output);
-
-      if($output)
-      {
-        // old version (<= v6.x)
-        $types = \str_replace(array('Delegates (built-in): ', ' '), array('',', '), $output[5]);
-        $types = \strtoupper($types);
-
-        $this->supported_types = \explode(' ', $types);
-
-        return;
-      }
-      else
-      {
-        $this->supported_types = array();
-
-        return;
-      }
     }
+
+    if(!$output)
+    {
+      return array();
+    }
+
+    // skip first two lines of output
+    \array_splice($output, 0, 2);
+
+    // skip last four lines of output
+    \array_splice($output, -4);
+
+    $types = array();
+    foreach ($output as $key => $line)
+    {
+      // skip empty line
+      if($line === '')
+      {
+        continue;
+      }
+
+      $pos = \strpos($line, '           ');
+
+      // skip lines starting with huge space
+      if(\strpos($line, '           ') === 0)
+      {
+        continue;
+      }
+
+      // replace spaces with ';'
+      $line = \preg_replace('!\s+!', ';', $line);
+
+      // split string by separator ';'
+      $temp_arr = explode(';', $line, 3);
+
+      // remove '*' from type
+      $type = \str_replace('*', '', $temp_arr[1]);
+
+      // add second value of array to types
+      array_push($types, $type);
+    }
+
+    return $types;
   }
+
+  //////////////////////////////////////////////////
+  //   Protected functions with basic features.
+  //////////////////////////////////////////////////
 
   /**
    * Assemble the convert command
@@ -1144,7 +1153,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $dst_file);
 
         return false;
@@ -1216,7 +1225,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_IM_SERVERPROBLEM','exec('.$convert.');'));
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $tmp_file);
 
         return false;

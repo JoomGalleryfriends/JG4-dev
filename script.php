@@ -8,9 +8,6 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-define('MODIFIED', 1);
-define('NOT_MODIFIED', 2);
-
 defined('_JEXEC') or die();
 
 use \Joomla\CMS\Factory;
@@ -73,7 +70,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if Joomla version is correct
     if(version_compare(JVERSION, '5.0.0', '>=') || version_compare(JVERSION, '4.0.0', '<'))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('JoomGallery 4.x is only compatible to Joomla! 4.x'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', '4.x'), 'error');
 
       return false;
     }
@@ -81,7 +78,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if PHP version is correct
     if(version_compare(PHP_VERSION, $this->minPhp, '<='))
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('JoomGallery 4.x is only compatible to PHP versions greater than 7.3. Your PHP version is %s.', $this->minPhp), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.3', $this->minPhp), 'error');
 
       return false;
     }
@@ -121,7 +118,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
       else
       {
-        Factory::getApplication()->enqueueMessage(Text::_('Unable to read JoomGallery manifest XML file.'), 'note');
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 'note');
       }
 
       $this->new_code    = $parent->getManifest()->version;
@@ -151,7 +148,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Create default Category
     if(!$this->addDefaultCategory())
     {
-      $app->enqueueMessage(Text::_('Unable to create default category', 'error'));
+      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CATEGORY', 'error'));
     }
 
     // Create image types
@@ -179,7 +176,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Create default Configuration-Set
     if(!$this->addDefaultConfig())
     {
-      $app->enqueueMessage(Text::_('Unable to create default configuration set', 'error'));
+      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
     }
 
 		$this->installPlugins($parent);

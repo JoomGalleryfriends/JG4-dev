@@ -51,7 +51,6 @@ interface IMGtoolsInterface
 
   /**
    * Read image from file or image string (stream)
-   * Supported image-types: ??
    *
    * @param   string  $file        Path to source file or image string
    * @param   bool    $is_stream   True if $src is image string (stream) (default: false)
@@ -65,7 +64,6 @@ interface IMGtoolsInterface
 
   /**
    * Write image to file
-   * Supported image-types: ??
    *
    * @param   string  $file     Path to destination file
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
@@ -78,7 +76,6 @@ interface IMGtoolsInterface
 
   /**
    * Output image as string (stream)
-   * Supported image-types: ??
    *
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
    * @param   bool    $html     Return html string for direct output (default: true)
@@ -104,7 +101,6 @@ interface IMGtoolsInterface
 
 	/**
    * Resize image
-   * Supported image-types: ??
    *
    * @param   int     $method         Resize to 0:noresize,1:height,2:width,3:proportional,4:crop
    * @param   int     $width          Width to resize
@@ -121,7 +117,6 @@ interface IMGtoolsInterface
 
   /**
    * Rotate image
-   * Supported image-types: ??
    *
    * @param   int     $angle          Angle to rotate the image anticlockwise
    *
@@ -133,7 +128,6 @@ interface IMGtoolsInterface
 
   /**
    * Flip image
-   * Supported image-types: ??
    *
    * @param   int     $direction       Direction to flip the image (0:none,1:horizontal,2:vertical,3:both)
    *
@@ -155,7 +149,6 @@ interface IMGtoolsInterface
 
   /**
    * Add watermark to an image
-   * Supported image-types: ??
    *
    * @param   string  $wtm_file       Path to watermark file
    * @param   int     $wtm_pos        Positioning of the watermark
@@ -172,7 +165,9 @@ interface IMGtoolsInterface
   public function watermark($wtm_file, $wtm_pos, $wtm_resize, $wtm_newSize, $opacity): bool;
 
   /**
-   * Read meta data from given image (Supported: JPG,PNG / EXIF,IPTC)
+   * Read meta data from given image
+   * Supported image-types: JPG,PNG
+   * Metadata types: COMMENT,EXIF,IPTC
    *
    * @param   string  $img             Path to the image file
    *
@@ -183,7 +178,9 @@ interface IMGtoolsInterface
   public function readMetadata($img): array;
 
   /**
-   * Copy image metadata depending on file type (Supported: JPG,PNG / EXIF,IPTC)
+   * Copy image metadata depending on file type
+   * Supported image-types: JPG,PNG
+   * Metadata types: COMMENT,EXIF,IPTC
    *
    * @param   string  $src_file        Path to source file
    * @param   string  $dst_file        Path to destination file
@@ -198,4 +195,12 @@ interface IMGtoolsInterface
    */
   public function copyMetadata($src_file, $dst_file, $src_imagetype, $dst_imgtype, $new_orient, $bak): bool;
 
+  /**
+   * Get supported image types
+   *
+   * @return  array   list of supported image types (uppercase)
+   *
+   * @since   4.0.0
+   */
+  public function getTypes(): array;
 }

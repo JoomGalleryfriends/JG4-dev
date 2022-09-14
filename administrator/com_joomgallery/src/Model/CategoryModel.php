@@ -141,7 +141,7 @@ class CategoryModel extends JoomAdminModel
           // Delete corresponding folders
 					if(!$manager->deleteCategory($table, $force_delete))
 					{
-						$this->setError($this->component->getDebug());
+						$this->setError($this->component->getDebug(true));
 
 						return false;
 					}
@@ -263,12 +263,13 @@ class CategoryModel extends JoomAdminModel
    */
   public function save($data)
   { 
-    $table      = $this->getTable();
-    $context    = $this->option . '.' . $this->name;
-    $app        = Factory::getApplication();
-    $isNew      = true;
-    $catMoved   = false;
-		$isCopy     = false;
+    $table        = $this->getTable();
+    $context      = $this->option . '.' . $this->name;
+    $app          = Factory::getApplication();
+    $isNew        = true;
+    $catMoved     = false;
+		$isCopy       = false;
+    $aliasChanged = false;
 
     $key = $table->getKeyName();
     $pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
@@ -308,6 +309,12 @@ class CategoryModel extends JoomAdminModel
           {
             $catMoved = true;
           }
+
+          // Check if the alias was changed
+          if($table->alias != $data['alias'])
+          {
+            $aliasChanged = true;
+          }
         }
 
         if($table->parent_id != $data['parent_id'] || $data['id'] == 0)
@@ -337,53 +344,58 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
-        // Create path if not available --> alias not yet generated!
+        // Recrate path
         if(empty($table->path))
         {
           $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
         }
 
-        // Handle folders if parent category was changed
-        if(!$isNew && $catMoved)
-			  {
-          // Move folder (including files and subfolders)
-					$manager->moveCategory($table, $data['parent_id']);
-
-          // Recreate category path
-          $table->path = $manager->getCatPath(0, false, $data['parent_id'], $data['alias']);
-        }
-
-        // Handle folders if record gets copied
-        if($isNew && $isCopy)
-        {
-          // Create folder
-          $manager->createCategory($table->alias, $table->parent_id);
-
-          // Copy recursive
-          //----------------
-
-          // Get source image id
-          //$source_id = $app->input->get('origin_id', false, 'INT');
-
-          // Copy folder (including files and subfolders)
-          //$manager->copyCategory($source_id, $table->path);
-        }
-
-        // Create folders
-        $manager->createCategory($table->alias, $table->parent_id);
-
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
-        if(\in_array(false, $result, true))
+        // Store the data.
+        if(!$table->store())
         {
           $this->setError($table->getError());
 
           return false;
         }
 
-        // Store the data.
-        if(!$table->store())
+        // Handle folders if parent category was changed
+        if(!$isNew && $catMoved)
+			  {
+          // Move folder (including files and subfolders)
+					$manager->moveCategory($table, $table->parent_id);
+
+          // Recrate path
+          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
+        }
+        // Handle folders if alias was changed
+        elseif (!$isNew && $aliasChanged)
+        {
+          // Rename folder
+					$manager->renameCategory($table, $table->alias);
+
+          // Recrate path
+          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
+        }
+        else
+        {
+          // Create folders
+          $manager->createCategory($table->alias, $table->parent_id);
+        }
+
+        // Handle folders if record gets copied
+        if($isNew && $isCopy)
+        {
+          // Get source image id
+          $source_id = $app->input->get('origin_id', false, 'INT');
+
+          // Copy folder (including files and subfolders)
+          $manager->copyCategory($source_id, $table->path);
+        }
+
+        if(\in_array(false, $result, true))
         {
           $this->setError($table->getError());
 

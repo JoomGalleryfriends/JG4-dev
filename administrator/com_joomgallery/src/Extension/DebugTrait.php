@@ -96,26 +96,44 @@ trait DebugTrait
 
   /**
 	 * Method to get the debugoutput
+   * 
+   * @param   bool   $implode   True, if youi want to implode the array (optional)
 	 *
-	 * @return  string
+	 * @return  string|array  Debugoutput
 	 *
 	 * @since  4.0.0
 	 */
-	public function getDebug()
+	public function getDebug($implode=false)
   {
-    return $this->debug;
+    if($implode)
+    {
+      return \implode('<br />', $this->debug);
+    }
+    else
+    {
+      return $this->debug;
+    }    
   }
 
   /**
 	 * Method to get the warningoutput
 	 *
-	 * @return  string
+	 * @param   bool   $implode   True, if youi want to implode the array (optional)
+	 *
+	 * @return  string|array  Debugoutput
 	 *
 	 * @since  4.0.0
 	 */
-	public function getWarning()
+	public function getWarning($implode=false)
   {
-    return $this->warnings;
+    if($implode)
+    {
+      return \implode('<br />', $this->warnings);
+    }
+    else
+    {
+      return $this->warnings;
+    }
   }
 
   /**

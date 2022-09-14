@@ -49,7 +49,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       {
         $this->jg->addDebug('<hr />');
       }
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_POSITION', $this->filecounter + 1));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_IMAGE_NBR_PROCESSING', $this->filecounter + 1));
     }
 
     $image = $data['images'][$this->filecounter];
@@ -59,7 +59,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     {
       if($image['error'] == 4)
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_FILE_NOT_UPLOADED'));
+        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_UPLOADED'));
 
         return false;
       }
@@ -97,18 +97,18 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     // Check for supported image format
     if(!\in_array(\strtoupper($tag), $supported_tags) || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_INVALID_IMAGE_TYPE'));
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'));
       $this->error  = true;
 
       return false;
     }
 
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_FILENAME', $this->src_name));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $this->src_name));
 
     // Image size must not exceed the setting in backend if we are in frontend
     if($is_site && $this->src_size > $this->jg->getConfig()->get('jg_maxfilesize'))
     {
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_MAX_ALLOWED_FILESIZE', $this->jg->getConfig()->get('jg_maxfilesize')));
+      $this->jg->addDebug(Text::sprintf('JGLOBAL_MAXIMUM_UPLOAD_SIZE_LIMIT', $this->jg->getConfig()->get('jg_maxfilesize')));
       $this->error  = true;
 
       return false;
@@ -143,11 +143,11 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       {
         if($is_site)
         {
-          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_COMMON_ERROR_INVALID_FILENAME'));
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FILENAME'));
         }
         else
         {
-          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_ERROR_INVALID_FILENAME', $newfilename, $oldfilename));
+          $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_INVALID_FILENAME', $newfilename, $oldfilename));
         }
         $this->error = true;
 
@@ -171,7 +171,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     $return = JFile::upload($this->src_tmp, $this->src_file);
     if(!$return)
     {
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_PROBLEM_MOVING', $this->src_file .' '. Text::_('COM_JOOMGALLERY_COMMON_CHECK_PERMISSIONS')));
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVING_FILE', $this->src_file));
       $this->rollback();
       $this->error = true;
 
@@ -180,7 +180,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 
     // Set permissions of uploaded file
     $return = JPath::setPermissions($this->src_file, '0644', null);
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_COMPLETE', filesize($this->src_file) / 1000));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_UPLOAD_COMPLETE', filesize($this->src_file) / 1000));
 
     return true;
   }
@@ -222,7 +222,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     // Check if filename was set
     if(!isset($data_row->filename) || empty($data_row->filename))
     {
-      throw new \Exception('Filename has to be set in image data. Run retrieveImage() method first.');
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_UPLOAD_CHECK_FILENAME'));
     }
 
     // Create file manager service
@@ -252,8 +252,8 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     //   $this->jg->getMessenger()->send($message);
     // }
 
-    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_IMAGE_SUCCESSFULLY_ADDED'));
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_NEW_FILENAME', $data_row->filename));
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE'));
+    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $data_row->filename));
 
     Factory::getApplication()->triggerEvent('onJoomAfterUpload', array($data_row));
 
@@ -276,19 +276,19 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
   {
     // Common PHP errors
     $uploadErrors = array(
-      1 => Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_PHP_MAXFILESIZE'),
-      2 => Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_HTML_MAXFILESIZE'),
-      3 => Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_FILE_PARTLY_UPLOADED'),
-      4 => Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_FILE_NOT_UPLOADED')
+      1 => Text::_('COM_JOOMGALLERY_ERROR_PHP_MAXFILESIZE'),
+      2 => Text::_('COM_JOOMGALLERY_ERROR_HTML_MAXFILESIZE'),
+      3 => Text::_('COM_JOOMGALLERY_ERROR_FILE_PARTLY_UPLOADED'),
+      4 => Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_UPLOADED')
     );
 
     if(in_array($uploaderror, $uploadErrors))
     {
-      return Text::sprintf('COM_JOOMGALLERY_UPLOAD_ERROR_CODE', $uploadErrors[$uploaderror]);
+      return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', $uploadErrors[$uploaderror]);
     }
     else
     {
-      return Text::sprintf('COM_JOOMGALLERY_UPLOAD_ERROR_CODE', Text::_('COM_JOOMGALLERY_UPLOAD_ERROR_UNKNOWN'));
+      return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN'));
     }
   }
 }

@@ -276,7 +276,7 @@ class Refresher implements RefresherInterface
 
     if($this->_msg && is_null($task))
     {
-      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_COMMON_REDIRECT'));
+      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_REFRESH_SITE'));
     }
     if(!$task)
     {
@@ -306,7 +306,7 @@ class Refresher implements RefresherInterface
 
     // create html document
     $doc = new HtmlDocument();
-    $head = array('title' => Text::_('COM_JOOMGALLERY_COMMON_REFRESHER_IN_PROGRESS'),
+    $head = array('title' => Text::_('COM_JOOMGALLERY_WORK_IN_PROGRESS'),
                   'description' => '',
                   'link' => ''
                  );
