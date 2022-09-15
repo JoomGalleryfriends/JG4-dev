@@ -173,8 +173,8 @@
              default="1"
              class="btn-group"
              layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_GS_IP_FAST_GD2_THUMBCREATION"
-             description="COM_JOOMGALLERY_CONFIG_GS_IP_FAST_GD2_THUMBCREATION_LONG"
+             label="COM_JOOMGALLERY_CONFIG_GD2_FASTDOWNSIZE"
+             description="COM_JOOMGALLERY_CONFIG_GD2_FASTDOWNSIZE_LONG"
              showon="jg_imgprocessor:gd" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
@@ -520,9 +520,9 @@
              showon="jg_download:1"
              label="COM_JOOMGALLERY_CONFIG_DOWNLOADFILE"
              description="COM_JOOMGALLERY_CONFIG_DOWNLOADFILE_LONG" >
-        <option value="0">COM_JOOMGALLERY_CONFIG_UR_UD_DETAIL_ONLY</option>
-        <option value="1">COM_JOOMGALLERY_CONFIG_UR_UD_ORIGINAL_ONLY</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_UR_UD_DETAIL_IFNO_ORIGINAL</option>
+        <option value="0">COM_JOOMGALLERY_DETAIL</option>
+        <option value="1">COM_JOOMGALLERY_ORIGINAL</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_DETAIL_WHEN_NO_ORIGINAL</option>
       </field>
 
       <field name="jg_downloadwithwatermark"
