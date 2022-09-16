@@ -57,7 +57,7 @@ if (!$canEdit && Factory::getUser()->authorise('core.edit.own', 'com_joomgallery
 		</tr>
 
     <tr>
-			<th><?php echo Text::_('COM_JOOMGALLERY_COMMON_DOWNLOADS'); ?></th>
+			<th><?php echo Text::_('COM_JOOMGALLERY_DOWNLOADS'); ?></th>
 			<td><?php echo $this->item->downloads; ?></td>
 		</tr>
 

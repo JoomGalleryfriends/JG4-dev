@@ -3,8 +3,8 @@
     <fields name="filter">
         <field name="search"
                type="text"
-               label="COM_JOOMGALLERY_COMMON_SEARCH"
-               hint="COM_JOOMGALLERY_COMMON_SEARCH"
+               label="JSEARCH_FILTER"
+               hint="JSEARCH_FILTER"
                class="js-stools-search-string" />
 
         <field name="state"
@@ -13,8 +13,8 @@
                description="COM_JOOMGALLERY_FILTER_STATE_DESC"
                onchange="this.form.submit();" >
             <option value="">JOPTION_SELECT_PUBLISHED</option>
-            <option value="1">COM_JOOMGALLERY_COMMON_OPTION_PUBLISHED_ONLY</option>
-            <option value="0">COM_JOOMGALLERY_COMMON_OPTION_NOT_PUBLISHED_ONLY</option>
+            <option value="1">PUBLISHED</option>
+            <option value="0">UNPUBLISHED</option>
         </field>
     </fields>
 
@@ -42,7 +42,7 @@
 
        <field name="limit"
               type="limitbox"
-              label="COM_JOOMGALLERY_COMMON_SEARCH_LIMIT"
+              label="JSEARCH_FILTER_LIMIT"
               class="input-mini"
               default="20"
               onchange="this.form.submit();" />

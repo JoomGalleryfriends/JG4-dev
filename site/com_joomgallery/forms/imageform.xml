@@ -7,7 +7,7 @@
            type="text"
            readonly="true"
            class="readonly"
-           label="COM_JOOMGALLERY_IMGMAN_IMAGE_ID" />
+           label="JGLOBAL_FIELD_ID_LABEL" />
 
     <field name="checked_out"
            type="hidden"
@@ -20,17 +20,17 @@
 
     <field name="downloads"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_DOWNLOADS"
+           label="COM_JOOMGALLERY_DOWNLOADS"
            hidden="true" />
 
     <field name="imgvotes"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_VOTES"
+           label="COM_JOOMGALLERY_VOTES"
            hidden="true" />
 
     <field name="imgvotesum"
            default="0"
-           label="COM_JOOMGALLERY_COMMON_VOTESUM"
+           label="COM_JOOMGALLERY_VOTESUM"
            hidden="true" />
 
     <field name="approved"
@@ -48,14 +48,14 @@
            maxlength="255"
            filter="safehtml"
            required="true"
-           label="COM_JOOMGALLERY_COMMON_IMAGE_NAME"
+           label="COM_JOOMGALLERY_IMAGES_NAME"
            message="COM_JOOMGALLERY_COMMON_ALERT_IMAGE_MUST_HAVE_TITLE" />
 
     <field name="alias"
            type="text"
            class="inputbox"
            generator="imgtitle"
-           label="COM_JOOMGALLERY_COMMON_ALIAS"
+           label="JALIAS"
            description="COM_JOOMGALLERY_IMGMAN_ALIAS_TIP"
            maxlength="255" />
 
@@ -76,7 +76,7 @@
            class="btn-group"
            default="0"
            size="1"
-           label="COM_JOOMGALLERY_COMMON_PUBLISHED">
+           label="JPUBLISHED">
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -85,8 +85,8 @@
            type="text"
            maxlength="50"
            filter="string"
-           label="COM_JOOMGALLERY_COMMON_AUTHOR"
-           description="COM_JOOMGALLERY_IMGMAN_AUTHOR_TIP" />
+           label="JAUTHOR"
+           description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC" />
 
     <field name="language"
            type="language"
@@ -98,19 +98,19 @@
            rows="250"
            buttons="true"
            filter="JComponentHelper::filterText"
-           label="COM_JOOMGALLERY_COMMON_DESCRIPTION" />
+           label="JGLOBAL_DESCRIPTION" />
 
     <field name="access"
            type="accesslevel"
-           label="COM_JOOMGALLERY_COMMON_ACCESS"
-           description="COM_JOOMGALLERY_IMGMAN_ACCESS_TIP" />
+           label="JFIELD_ACCESS_LABEL"
+           description="JFIELD_ACCESS_DESC" />
 
     <field name="hidden"
            type="radio"
            default="0"
            class="btn-group"
-           label="COM_JOOMGALLERY_IMGMAN_HIDDEN"
-           description="COM_JOOMGALLERY_IMGMAN_HIDDEN_TIP">
+           label="COM_JOOMGALLERY_HIDDEN"
+           description="COM_JOOMGALLERY_FIELDS_HIDDEN_DESC">
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -119,8 +119,8 @@
            type="radio"
            default="0"
            class="btn-group"
-           label="COM_JOOMGALLERY_COMMON_FEATURED"
-           description="COM_JOOMGALLERY_IMGMAN_FEATURED_TIP">
+           label="JFEATURED"
+           description="COM_JOOMGALLERY_FIELDS_FEATURED_DESC">
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
@@ -141,8 +141,8 @@
            rows="5"
            cols="40"
            default=""
-           label="COM_JOOMGALLERY_COMMON_METADESC"
-           description="COM_JOOMGALLERY_COMMON_METADESC_TIP"
+           label="JGLOBAL_DESCRIPTION"
+           description="JFIELD_META_DESCRIPTION_LABEL"
     />
 
     <field name="metakey"
@@ -151,8 +151,8 @@
            rows="5"
            cols="40"
            default=""
-           label="COM_JOOMGALLERY_COMMON_METAKEYS"
-           description="COM_JOOMGALLERY_COMMON_METAKEYS_TIP"
+           label="JFIELD_META_KEYWORDS_LABEL"
+           description="JFIELD_META_KEYWORDS_DESC"
     />
 
     <field name="robots"
@@ -169,7 +169,7 @@
     <field name="filename"
            type="imagelist"
            required="true"
-           label="COM_JOOMGALLERY_COMMON_IMAGE" />
+           label="COM_JOOMGALLERY_IMAGES" />
 
     <field name="imgdate"
            type="calendar"
@@ -183,22 +183,22 @@
            weeknumbers="false"
            filltable="false"
            default="1900-01-01 00:00:00"
-           label="COM_JOOMGALLERY_COMMON_IMGDATE"
-           description="COM_JOOMGALLERY_IMGMAN_IMGDATE_DESC" />
+           label="COM_JOOMGALLERY_IMGDATE"
+           description="COM_JOOMGALLERY_IMGDATE_DESC" />
 
     <field name="imgmetadata"
            type="editor"
            editor="codemirror"
            buttons="false"
            filter="JComponentHelper::filterText"
-           label="COM_JOOMGALLERY_IMGMAN_IMGMETADATA"
-           description="COM_JOOMGALLERY_IMGMAN_IMGMETADATA_DESC" />
+           label="COM_JOOMGALLERY_IMGMETADATA"
+           description="COM_JOOMGALLERY_IMGMETADATA_DESC" />
 
     <field name="params"
            type="subform"
            formsource="components/com_joomgallery/forms/subform_imageparams.xml"
            layout="joomla.form.field.subform.default"
-           label="COM_JOOMGALLERY_COMMON_PARAMETERS" />
+           label="COM_JOOMGALLERY_PARAMETERS" />
 
     <field name="version_note"
            type="text"

@@ -192,7 +192,7 @@ class HtmlView extends JoomGalleryView
 	{
 		return array(
 			'a.`title`'      => Text::_('JGLOBAL_TITLE'),
-			'a.`parent_id`'  => Text::_('COM_JOOMGALLERY_COMMON_PARENT_CATEGORY'),
+			'a.`parent_id`'  => Text::_('JGLOBAL_SHOW_PARENT_CATEGORY_LABEL'),
 			'a.`published`'  => Text::_('JSTATUS'),
 			'a.`access`'     => Text::_('JGRID_HEADING_ACCESS'),
 			'a.`language`'   => Text::_('JGRID_HEADING_LANGUAGE'),

@@ -8,9 +8,6 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-define('MODIFIED', 1);
-define('NOT_MODIFIED', 2);
-
 defined('_JEXEC') or die();
 
 use \Joomla\CMS\Factory;
@@ -73,7 +70,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if Joomla version is correct
     if(version_compare(JVERSION, '5.0.0', '>=') || version_compare(JVERSION, '4.0.0', '<'))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('JoomGallery 4.x is only compatible to Joomla! 4.x'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', '4.x'), 'error');
 
       return false;
     }
@@ -81,7 +78,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if PHP version is correct
     if(version_compare(PHP_VERSION, $this->minPhp, '<='))
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('JoomGallery 4.x is only compatible to PHP versions greater than 7.3. Your PHP version is %s.', $this->minPhp), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.3', $this->minPhp), 'error');
 
       return false;
     }
@@ -121,7 +118,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
       else
       {
-        Factory::getApplication()->enqueueMessage(Text::_('Unable to read JoomGallery manifest XML file.'), 'note');
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 'note');
       }
 
       $this->new_code    = $parent->getManifest()->version;
@@ -151,7 +148,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Create default Category
     if(!$this->addDefaultCategory())
     {
-      $app->enqueueMessage(Text::_('Unable to create default category', 'error'));
+      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CATEGORY', 'error'));
     }
 
     // Create image types
@@ -165,13 +162,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
       // Create default Image types records
       if(!$this->addDefaultIMGtype($key, $type['alias'], $type['path']))
       {
-        $app->enqueueMessage(Text::_('Unable to create image type: '.$key, 'error'));
+        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_IMAGETYPE'), 'error');
       }
 
       // Create default Image types directories
       if(!Folder::create(JPATH_ROOT.$type['path'].'/uncategorised'))
       {
-        $app->enqueueMessage(Text::_('Unable to create image directory for image type: ').$key, 'error');
+        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', 'Uncategorised'), 'error');
       }
       $this->count = $this->count + 1;
     }
@@ -179,7 +176,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Create default Configuration-Set
     if(!$this->addDefaultConfig())
     {
-      $app->enqueueMessage(Text::_('Unable to create default configuration set', 'error'));
+      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
     }
 
 		$this->installPlugins($parent);
@@ -192,13 +189,11 @@ class com_joomgalleryInstallerScript extends InstallerScript
       <img src="../media/com_joomgallery/images/joom_logo.png" alt="JoomGallery Logo">
       <p></p>
       <div class="alert alert-light">
-        <h3>JoomGallery <?php echo $parent->getManifest()->version;?> was installed successfully.</h3>
-        <p>You may now start using JoomGallery or download specific language files afore:</p>
+        <h3><?php echo Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL', $parent->getManifest()->version); ?></h3>
+        <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="Start" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#">
-            Start now!</a>
-          <a title="Languages" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#">
-            Languages</a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
+          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($install_message != '') : ?>
           <div><?php echo $install_message;?></div>
@@ -231,16 +226,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
       <img src="../media/com_joomgallery/images/joom_logo.png" alt="JoomGallery Logo">
       <p></p>
       <div class="alert alert-light">
-        <h3>JoomGallery was updated to version <?php echo $parent->getManifest()->version; ?> successfully.</h3>
+        <h3><?php echo Text::sprintf('COM_JOOMGALLERY_SUCCESS_UPDATE', $parent->getManifest()->version); ?></h3>
         <p>
-          <button class="btn btn-small btn-info" data-toggle="modal" data-target="#jg-changelog-popup"><i class="icon-list"></i> Changelog</button>
+          <button class="btn btn-small btn-info" data-toggle="modal" data-target="#jg-changelog-popup"><i class="icon-list"></i> <?php echo Text::_('COM_JOOMGALLERY_CHANGELOG'); ?></button>
         </p>
-        <p>You may now start using JoomGallery or download specific language files afore:</p>
+        <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="Start" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#">
-            Start now!</a>
-          <a title="Languages" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#">
-            Languages</a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
+          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($update_message != '') : ?>
           <div><?php echo $update_message;?></div>
@@ -252,8 +245,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 id="PopupChangelogModalLabel" class="modal-title">Changelog</h5>
-            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+            <h5 id="PopupChangelogModalLabel" class="modal-title"><?php echo Text::_('COM_JOOMGALLERY_CHANGELOG'); ?></h5>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="<?php echo Text::_('JTOOLBAR_CLOSE'); ?>">&times;</button>
           </div>
           <div class="modal-body">
             <iframe class="iframe" frameborder="0" src="<?php echo Route::_('index.php?option=com_joomgallery&controller=changelog&tmpl=component'); ?>" height="400px" width="100%"></iframe>
@@ -289,14 +282,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Delete directories
     if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
     {
-      $app->enqueueMessage(Text::_('Unable to delete image directory (/images/joomgallery)'), 'error');
+      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY', '"/images/joomgallery"'), 'error');
     }
     ?>
 
     <div class="text-center">
       <div class="alert alert-light">
-        <h3>JoomGallery was uninstalled successfully!</h3>
-        <p>Please remember to remove your images folders manually if you didn't use JoomGallery's default directories.</p>
+        <h3><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_UNINSTALL'); ?></h3>
+        <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_UNINSTALL_TXT'); ?></p>
 
         <?php if ($uninstall_message != '') : ?>
           <div><?php echo $uninstall_message;?></div>
@@ -531,12 +524,11 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
 				if ($result)
 				{
-					$app->enqueueMessage('Plugin ' . $pluginName . ' was installed successfully');
+					$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL_EXT', 'Plugin', $pluginName));
 				}
 				else
 				{
-					$app->enqueueMessage('There was an issue installing the plugin ' . $pluginName,
-						'error');
+					$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Plugin', $pluginName), 'error');
 				}
 
 				$query
@@ -583,7 +575,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	}
 
 	/**
-	 * Installs plugins for this component
+	 * Installs modules for this component
 	 *
 	 * @param   mixed $parent Object who called the install/update method
 	 *
@@ -624,15 +616,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
 					}
 
 					if ($result)
-					{
-						$app->enqueueMessage('Module ' . $moduleName . ' was installed successfully');
-					}
-					else
-					{
-						$app->enqueueMessage('There was an issue installing the module ' . $moduleName,
-							'error');
-					}
-				}
+          {
+            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL_EXT', 'Module', $moduleName));
+          }
+          else
+          {
+            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Module', $moduleName), 'error');
+          }
+        }
 			}
 		}
 	}
@@ -687,12 +678,11 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
 					if ($result)
 					{
-						$app->enqueueMessage('Plugin ' . $pluginName . ' was uninstalled successfully');
+						$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Plugin', $pluginName));
 					}
 					else
 					{
-						$app->enqueueMessage('There was an issue uninstalling the plugin ' . $pluginName,
-							'error');
+						$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Plugin', $pluginName), 'error');
 					}
 				}
 			}
@@ -700,7 +690,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	}
 
 	/**
-	 * Uninstalls plugins
+	 * Uninstalls modules
 	 *
 	 * @param   mixed $parent Object who called the uninstall method
 	 *
@@ -749,14 +739,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
 						$result    = $installer->uninstall('module', $extension);
 
 						if ($result)
-						{
-							$app->enqueueMessage('Module ' . $moduleName . ' was uninstalled successfully');
-						}
-						else
-						{
-							$app->enqueueMessage('There was an issue uninstalling the module ' . $moduleName,
-								'error');
-						}
+            {
+              $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Module', $moduleName));
+            }
+            else
+            {
+              $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Module', $moduleName), 'error');
+            }
 					}
 				}
 			}
@@ -782,7 +771,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       if(!File::copy($src.$file, $dst.$file))
       {
-        Factory::getApplication()->enqueueMessage('The image file ('.$file.') was not copied properly.', 'error');
+        Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', $file, 'Watermark'), 'error');
 
         $error = false;
       }

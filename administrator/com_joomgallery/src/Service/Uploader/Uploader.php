@@ -132,7 +132,7 @@ abstract class Uploader implements UploaderInterface
     if(!($tag == 'jpg' || $tag == 'jpeg' || $tag == 'jpe' || $tag == 'jfif'))
     {
       // Check for the right file-format, else throw warning
-      $this->jg->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_WRONGFILEFORMAT'));
+      $this->jg->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_READ_METADATA'));
 
       return true;
     }
@@ -161,6 +161,7 @@ abstract class Uploader implements UploaderInterface
     require_once JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/exifarray.php';
 
     // Loop through all replacements defined in config
+    $warning = false;
     foreach ($this->jg->getConfig()->get('jg_replaceinfo') as $replaceinfo)
     {
       $source_array = \explode('-', $replaceinfo->source);
@@ -194,7 +195,20 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', $source_name));
+            if($this->jg->getConfig()->get('jg_replaceshowwarning'))
+            {
+              if($source_attribute == 'DateTimeOriginal')
+              {
+                $this->jg->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_IMGDATE'));
+              }
+              else
+              {
+                $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
+              }
+
+              $warning = true;
+            }           
+
             continue 2;
           }          
           break;
@@ -208,7 +222,12 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', Text::_('COM_JOOMGALLERY_META_COMMENT')));
+            if($this->jg->getConfig()->get('jg_replaceshowwarning'))
+            {
+              $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_('COM_JOOMGALLERY_COMMENT')));
+              $warning = true;
+            }
+
             continue 2;
           }
           break;
@@ -239,7 +258,12 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_WARNING_REPLACE', $source_name));
+            if($this->jg->getConfig()->get('jg_replaceshowwarning'))
+            {
+              $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
+              $warning = true;
+            }
+
             continue 2;
           }
           break;
@@ -250,6 +274,12 @@ abstract class Uploader implements UploaderInterface
           break;
       }
 
+
+      if($warning)
+      {
+        $this->jg->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_METAHINT'));
+      }
+
       // Replace target with metadata value
       if($replaceinfo->target == 'tags')
       {
@@ -258,7 +288,7 @@ abstract class Uploader implements UploaderInterface
       else
       {
         $data[$replaceinfo->target] = $filter->clean($source_value, 'string');
-        $this->jg->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_' . \strtoupper($replaceinfo->target)));
+        $this->jg->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_' . \strtoupper($replaceinfo->target)));
       }
     }
 

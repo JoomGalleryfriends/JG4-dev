@@ -31,11 +31,11 @@ HTMLHelper::_('bootstrap.tooltip');
 
 	
 	<?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'tag')); ?>
-	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'tag', Text::_('COM_JOOMGALLERY_COMMON_TAG', true)); ?>
+	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'tag', Text::_('COM_JOOMGALLERY_TAG', true)); ?>
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<fieldset class="adminform">
-				<legend><?php echo Text::_('COM_JOOMGALLERY_COMMON_TAG'); ?></legend>
+				<legend><?php echo Text::_('COM_JOOMGALLERY_TAG'); ?></legend>
 				<?php echo $this->form->renderField('title'); ?>
 				<?php echo $this->form->renderField('published'); ?>
 				<?php echo $this->form->renderField('access'); ?>

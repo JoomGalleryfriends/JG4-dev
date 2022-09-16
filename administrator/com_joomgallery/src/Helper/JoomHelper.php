@@ -439,7 +439,7 @@ class JoomHelper
   {
     if(!\in_array($name, self::$content_types))
     {
-      throw new \Exception(Text::_('Please provide a valid content type.'));
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
   }
 }

@@ -131,7 +131,7 @@ class HtmlView extends BaseHtmlView
 
     // Add Breadcrumbs
     $pathway = $app->getPathway();
-    $breadcrumbList = Text::_('COM_JOOMGALLERY_COMMON_IMAGES');
+    $breadcrumbList = Text::_('COM_JOOMGALLERY_IMAGES');
 
     if(!in_array($breadcrumbList, $pathway->getPathwayNames()))
     {

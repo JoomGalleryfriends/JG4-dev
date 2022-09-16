@@ -62,7 +62,7 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
       <input type="hidden" name="jform[useruploaded]" value="<?php echo isset($this->item->useruploaded) ? $this->item->useruploaded : ''; ?>" />
 
       <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'Details')); ?>
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Details', Text::_('COM_JOOMGALLERY_COMMON_IMAGE', true)); ?>
+      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Details', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
         <?php echo $this->form->renderField('imgtitle'); ?>
 
         <?php echo $this->form->renderField('alias'); ?>
@@ -102,7 +102,7 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
         <?php echo $this->form->renderField('robots'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_COMMON_IMAGES', true)); ?>
+      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
         <?php echo $this->form->renderField('filename'); ?>
 
         <?php echo $this->form->renderField('imgdate'); ?>
@@ -110,7 +110,7 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
         <?php echo $this->form->renderField('imgmetadata'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS', true)); ?>
+      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
         <?php echo $this->form->renderField('params'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 

@@ -76,19 +76,19 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-  <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_COMMON_IMAGE', true)); ?>
+  <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
 	<div class="row">
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-images" class="options-form">
-				<legend><?php echo Text::_('COM_JOOMGALLERY_IMGMAN_IMAGE_PREVIEW'); ?></legend>
+				<legend><?php echo Text::_('JGLOBAL_PREVIEW'); ?></legend>
         <div class="text-center joom-image center">
           <div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>
-          <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_TYPE_THUMBNAIL'); ?>">
+          <img src="<?php echo JoomHelper::getImg($this->item, 'thumbnail'); ?>" class="img-thumbnail" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
         </div>
         <div class="text-center">
-          <div class="btn-group joom-imgtypes" role="group" aria-label="<?php echo Text::_('COM_JOOMGALLERY_COMMON_SHOWIMAGE_LBL'); ?>">
+          <div class="btn-group joom-imgtypes" role="group" aria-label="<?php echo Text::_('COM_JOOMGALLERY_SHOWIMAGE_LBL'); ?>">
             <?php foreach($this->imagetypes as $key => $imagetype) : ?>
-              <a class="btn btn-outline-primary" style="cursor:pointer;" onclick="openModal('<?php echo $imagetype->typename; ?>')"><?php echo Text::sprintf('COM_JOOMGALLERY_COMMON_SHOWIMAGE_IMGTYPE', \ucfirst($imagetype->typename)); ?></a>
+              <a class="btn btn-outline-primary" style="cursor:pointer;" onclick="openModal('<?php echo $imagetype->typename; ?>')"><?php echo Text::sprintf('COM_JOOMGALLERY_SHOWIMAGE_IMGTYPE', \ucfirst($imagetype->typename)); ?></a>
             <?php endforeach; ?>
           </div>
         </div>
@@ -96,7 +96,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     </div>
     <div class="col-12 col-lg-6">
       <fieldset id="fieldset-images-data" class="options-form">
-        <legend><?php echo Text::_('COM_JOOMGALLERY_COMMON_IMAGE_INFO'); ?></legend>
+        <legend><?php echo Text::_('INFO'); ?></legend>
         <div>
           <?php echo $this->form->renderField('imgauthor'); ?>
           <?php echo $this->form->renderField('imgdate'); ?>
@@ -138,11 +138,11 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS', true)); ?>
+	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
 	<div class="row">
     <div class="col-lg-12">
       <fieldset class="form-vertical">
-				<legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS'); ?></legend>
+				<legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
 				<?php echo $this->form->renderField('params'); ?>
 				<?php if ($this->state->params->get('save_history', 1)) : ?>
 					<div class="control-group">
@@ -195,7 +195,7 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
       foreach($this->imagetypes as $key => $imagetype)
       {
         $imgURL   .= $imagetype->typename.':"'.JoomHelper::getImg($this->item, $imagetype->typename).'",';
-        $imgTitle .= $imagetype->typename.':"'.Text::_('COM_JOOMGALLERY_MAIMAN_TYPE_'.strtoupper($imagetype->typename)).'",';
+        $imgTitle .= $imagetype->typename.':"'.Text::_('COM_JOOMGALLERY_'.strtoupper($imagetype->typename)).'",';
       }
 
       $imgURL .= '}';

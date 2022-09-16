@@ -3,8 +3,8 @@
     <fields name="filter">
         <field name="search"
                type="text"
-               label="COM_JOOMGALLERY_COMMON_SEARCH"
-               hint="COM_JOOMGALLERY_COMMON_SEARCH"
+               label="JSEARCH_FILTER"
+               hint="JSEARCH_FILTER"
                class="js-stools-search-string" />
 
         <field name="state"

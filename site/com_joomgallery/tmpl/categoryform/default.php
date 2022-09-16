@@ -105,7 +105,7 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
         <?php echo $this->form->renderField('robots'); ?>
 	    <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-	    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Displayparams', Text::_('COM_JOOMGALLERY_COMMON_PARAMETERS', true)); ?>
+	    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Displayparams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
 	      <?php echo $this->form->renderField('params'); ?>
 	    <?php echo HTMLHelper::_('uitab.endTab'); ?>
 

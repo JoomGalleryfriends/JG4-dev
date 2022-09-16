@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\MVC\Model\AdminModel;
+use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Factory;
 
 /**
