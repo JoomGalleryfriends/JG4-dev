@@ -14,6 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use Joomla\Database\ParameterType;
+use Joomla\Utilities\ArrayHelper;
 use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
@@ -220,7 +222,7 @@ class TagsModel extends JoomListModel
 					->bind([':search1', ':search2', ':search3'], $search);
 			}
 		}
-
+ 
     // Filter by published state
 		$published = (string) $this->getState('filter.published');
 
