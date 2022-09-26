@@ -94,7 +94,7 @@
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_HIDDEN"
-           description="COM_JOOMGALLERY_FIELDS_HIDDEN_DESC" >
+           description="COM_JOOMGALLERY_FIELDS_CATEGORY_HIDDEN_DESC" >
       <option value="0">JNO</option>
       <option value="1">JYES</option>
     </field>
