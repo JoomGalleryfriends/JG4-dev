@@ -114,15 +114,13 @@
              label="COM_JOOMGALLERY_CONFIG_REPLACE_METADATA"/>
 
       <field name="jg_replaceshowwarning"
-             type="radio"
+             type="list"
              default="0"
-             class="btn-group"
-             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING"
              description="COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING_LONG" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACE_OPTION_2_SHOWWARNING</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING_HINT</option>
       </field>
 
       <field name="jg_useorigfilename"
