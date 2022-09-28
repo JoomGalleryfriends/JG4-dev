@@ -49,8 +49,7 @@
          maxlength="255"
          filter="string"
          required="true"
-         label="JGLOBAL_TITLE"
-         description="JGLOBAL_FIELD_FIELD_ORDERING_DESC" />
+         label="JGLOBAL_TITLE" />
 
   <field name="group_id"
          query="SELECT id, title FROM #__usergroups"
