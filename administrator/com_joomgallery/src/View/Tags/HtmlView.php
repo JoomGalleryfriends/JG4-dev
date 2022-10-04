@@ -61,9 +61,9 @@ class HtmlView extends JoomGalleryView
 
 		$this->addToolbar();
 
-		$this->sidebar = Sidebar::render();
+		$this->sidebar = Sidebar::render(); 
 		parent::display($tpl);
-	}
+	} 
 
 	/**
 	 * Add the page title and toolbar.
@@ -75,7 +75,7 @@ class HtmlView extends JoomGalleryView
 	protected function addToolbar()
 	{
 		$state = $this->get('State');
-		$canDo = JoomHelper::getActions();
+		$canDo = JoomHelper::getActions('tag');
 
 		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_TAGS_MANAGER'), "tags");
 
@@ -92,54 +92,56 @@ class HtmlView extends JoomGalleryView
 			}
 		}
 
-		if($canDo->get('core.edit.state')  || count($this->transitions))
+    if($canDo->get('core.delete'))
+    {
+      $toolbar->delete('tags.delete')
+        ->text('JTOOLBAR_DELETE')
+        ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_TAGS'))
+        ->listCheck(true);
+    }
+
+    if($canDo->get('core.edit.state')  || count($this->transitions))
 		{
 			$dropdown = $toolbar->dropdownButton('status-group')
-				->text('JTOOLBAR_CHANGE_STATUS')
+				->text('JTOOLBAR_PUBLISH')
 				->toggleSplit(false)
 				->icon('fas fa-ellipsis-h')
 				->buttonClass('btn btn-action')
 				->listCheck(true);
 
-			$childBar = $dropdown->getChildToolbar();
+			$status_childBar = $dropdown->getChildToolbar();
 
-			if(isset($this->items[0]->state))
+			if(isset($this->items[0]->published))
 			{
-				$childBar->publish('tags.publish')->listCheck(true);
-				$childBar->unpublish('tags.unpublish')->listCheck(true);
-				$childBar->archive('tags.archive')->listCheck(true);
-			}
-			elseif(isset($this->items[0]))
-			{
-				// If this component does not use state then show a direct delete button as we can not trash
-				$toolbar->delete('tags.delete')
-				->text('JTOOLBAR_EMPTY_TRASH')
-				->message('JGLOBAL_CONFIRM_DELETE')
-				->listCheck(true);
+				$status_childBar->publish('tags.publish')->listCheck(true);
+				$status_childBar->unpublish('tags.unpublish')->listCheck(true);
 			}
 
-			$childBar->standardButton('duplicate')
-				->text('JTOOLBAR_DUPLICATE')
-				->icon('fas fa-copy')
-				->task('tags.duplicate')
-				->listCheck(true);
+      if($canDo->get('core.edit'))
+      {
+        $batch_dropdown = $toolbar->dropdownButton('batch-group')
+          ->text('JTOOLBAR_BATCH')
+          ->toggleSplit(false)
+          ->icon('fas fa-ellipsis-h')
+          ->buttonClass('btn btn-action')
+          ->listCheck(true);
+        
+        $batch_childBar = $batch_dropdown->getChildToolbar();
 
-			if(isset($this->items[0]->checked_out))
-			{
-				$childBar->checkin('tags.checkin')->listCheck(true);
-			}
-
-			if(isset($this->items[0]->state))
-			{
-				$childBar->trash('tags.trash')->listCheck(true);
-			}
+        // Duplicate button inside batch dropdown
+        $batch_childBar->standardButton('duplicate')
+          ->text('JTOOLBAR_DUPLICATE')
+          ->icon('fas fa-copy')
+          ->task('tags.duplicate')
+          ->listCheck(true);
+      }
 		}
 
 		// Show trash and delete for components that uses the state field
-		if(isset($this->items[0]->state))
+		if(isset($this->items[0]->published))
 		{
 
-			if($this->state->get('filter.state') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
+			if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
 			{
 				$toolbar->delete('tags.delete')
 					->text('JTOOLBAR_EMPTY_TRASH')
