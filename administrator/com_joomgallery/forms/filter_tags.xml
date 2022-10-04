@@ -5,6 +5,7 @@
                type="text"
                label="JSEARCH_FILTER"
                hint="JSEARCH_FILTER"
+               description="COM_JOOMGALLERY_FILTER_SEARCH_DESC"
                class="js-stools-search-string" />
 
         <field name="published"
