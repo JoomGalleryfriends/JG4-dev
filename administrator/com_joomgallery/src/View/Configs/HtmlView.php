@@ -65,19 +65,19 @@ class HtmlView extends JoomGalleryView
 		parent::display($tpl);
 	}
 
-  /**
-   * Add the page title and toolbar.
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-   */
-  protected function addToolbar()
-  {
-    $state = $this->get('State');
-    $canDo = JoomHelper::getActions();
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function addToolbar()
+	{
+		$state = $this->get('State');
+		$canDo = JoomHelper::getActions('config');
 
-    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIGURATION_MANAGER'), "sliders-h");
+		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIGURATION_MANAGER'), "config");
 
     $toolbar = Toolbar::getInstance('toolbar');
 
