@@ -54,6 +54,30 @@ class ConfigTable extends Table implements VersionableTableInterface
 		return $this->typeAlias;
 	}
 
+  /**
+	 * Check if a field is unique
+	 *
+	 * @param   string   $field    Name of the field
+	 *
+	 * @return  bool    True if unique
+	 */
+	private function isUnique ($field)
+	{
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select($db->quoteName($field))
+			->from($db->quoteName($this->_tbl))
+			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
+			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
+
+		$db->setQuery($query);
+		$db->execute();
+
+		return ($db->getNumRows() == 0) ? true : false;
+	}
+
 	/**
 	 * Overloaded bind function to pre-process the params.
 	 *
@@ -270,6 +294,18 @@ class ConfigTable extends Table implements VersionableTableInterface
 		if(property_exists($this, 'ordering') && $this->id == 0)
 		{
 			$this->ordering = self::getNextOrder();
+		}
+
+    // Check if title is unique inside this category
+		if(!$this->isUnique('title'))
+		{
+			$count = 2;
+			$currentTitle =  $this->title;
+
+			while(!$this->isUnique('title'))
+      {
+				$this->title = $currentTitle . ' (' . $count++ . ')';
+			}
 		}
 
 		// Support for subform field jg_replaceinfo

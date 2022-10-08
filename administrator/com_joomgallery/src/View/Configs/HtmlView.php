@@ -9,6 +9,7 @@
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\View\Configs;
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -23,6 +24,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
  * View class for a list of Configs.
+ * 
  * @package JoomGallery
  * @since   4.0.0
  */

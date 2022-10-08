@@ -1,5 +1,5 @@
 <?php
-/**
+/** 
 ******************************************************************************************
 **   @version    4.0.0                                                                  **
 **   @package    com_joomgallery                                                        **
@@ -34,7 +34,7 @@ class JoomHelper
    *
    * @var array
    */
-  protected static $content_types = array('category', 'image', 'tag', 'imagetype');
+  protected static $content_types = array('category', 'config', 'image', 'imagetype', 'tag');
 
   /**
 	 * Gets the JoomGallery component object

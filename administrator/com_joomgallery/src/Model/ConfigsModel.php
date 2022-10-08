@@ -117,22 +117,24 @@ class ConfigsModel extends JoomListModel
 	 *
 	 * @throws Exception
 	 */
-	protected function populateState($ordering = null, $direction = null)
+	protected function populateState($ordering = 'a.id', $direction = 'ASC')
 	{
-		// List state information.
-		parent::populateState('id', 'ASC');
+    $app = Factory::getApplication();
 
-		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
-		$this->setState('filter.search', $context);
-
-		// Split context into component and optional section
-		$parts = FieldsHelper::extract($context);
-
-		if($parts)
+    // Adjust the context to support modal layouts.
+		if ($layout = $app->input->get('layout'))
 		{
-			$this->setState('filter.component', $parts[0]);
-			$this->setState('filter.section', $parts[1]);
+			$this->context .= '.' . $layout;
 		}
+
+    $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$this->setState('filter.search', $search);
+
+		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
+
+		// List state information.
+		parent::populateState($ordering, $direction);
 	}
 
 	/**
@@ -152,7 +154,7 @@ class ConfigsModel extends JoomListModel
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . $this->getState('filter.state');
+		$id .= ':' . $this->getState('filter.published');
 
 		return parent::getStoreId($id);
 	}
@@ -172,33 +174,52 @@ class ConfigsModel extends JoomListModel
 
 		// Select the required fields from the table.
 		$query->select($this->getState('list.select', 'DISTINCT a.*'));
-		$query->from('`#__joomgallery_configs` AS a');
+    $query->from($db->quoteName('#__joomgallery_configs', 'a'));
 
 		// Join over the users for the checked out user
-		$query->select("uc.name AS uEditor");
-		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
+		$query->select($db->quoteName('uc.name', 'uEditor'));
+		$query->join('LEFT', $db->quoteName('#__users', 'uc'), $db->quoteName('uc.id') . ' = ' . $db->quoteName('a.checked_out'));
 
 		// Join over the user field 'created_by'
-		$query->select('`created_by`.name AS `created_by`');
-		$query->join('LEFT', '#__users AS `created_by` ON `created_by`.id = a.`created_by`');
+		$query->select(array($db->quoteName('ua.name', 'created_by'), $db->quoteName('ua.id', 'created_by_id')));
+    $query->join('LEFT', $db->quoteName('#__users', 'ua'), $db->quoteName('ua.id') . ' = ' . $db->quoteName('a.created_by'));
+		
+    // Join over the user field 'modified_by'
+		$query->select(array($db->quoteName('um.name', 'modified_by'), $db->quoteName('um.id', 'modified_by_id')));
+    $query->join('LEFT', $db->quoteName('#__users', 'um'), $db->quoteName('um.id') . ' = ' . $db->quoteName('a.modified_by'));
 
-		// Join over the user field 'modified_by'
-		$query->select('`modified_by`.name AS `modified_by`');
-		$query->join('LEFT', '#__users AS `modified_by` ON `modified_by`.id = a.`modified_by`');
-
-
-		// Filter by search in title
+		// Filter by search
 		$search = $this->getState('filter.search');
 
 		if(!empty($search))
 		{
 			if(stripos($search, 'id:') === 0)
 			{
-				$query->where('a.id = ' . (int) substr($search, 3));
+				$search = (int) substr($search, 3);
+				$query->where($db->quoteName('a.id') . ' = :search')
+					->bind(':search', $search, ParameterType::INTEGER);
 			}
 			else
 			{
-				$search = $db->Quote('%' . $db->escape($search, true) . '%');
+        $search = '%' . str_replace(' ', '%', trim($search)) . '%';
+				$query->where(
+					'(' . $db->quoteName('a.imgtitle') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
+						. ' OR ' . $db->quoteName('a.imgtext') . ' LIKE :search3)'
+				)
+					->bind([':search1', ':search2', ':search3'], $search);
+			}
+		}
+
+    // Filter by published state
+		$published = (string) $this->getState('filter.published');
+
+		if($published !== '*')
+		{
+			if(is_numeric($published))
+			{
+				$state = (int) $published;
+				$query->where($db->quoteName('a.published') . ' = :state')
+					->bind(':state', $state, ParameterType::INTEGER);
 			}
 		}
 
@@ -206,10 +227,14 @@ class ConfigsModel extends JoomListModel
 		$orderCol  = $this->state->get('list.ordering', 'id');
 		$orderDirn = $this->state->get('list.direction', 'ASC');
 
-		if($orderCol && $orderDirn)
-		{
-			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		}
+		// if($orderCol && $orderDirn)
+		// {
+    //   $query->order($db->escape($orderCol . ' ' . $orderDirn));
+		// }
+    // else
+    // {
+      $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
+    // }
 
 		return $query;
 	}
