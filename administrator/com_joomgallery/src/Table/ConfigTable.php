@@ -39,7 +39,7 @@ class ConfigTable extends Table implements VersionableTableInterface
 
 		parent::__construct(_JOOM_TABLE_CONFIGS, 'id', $db);
 
-		$this->setColumnAlias('published', 'state');
+		$this->setColumnAlias('published', 'published');
 	}
 
 	/**

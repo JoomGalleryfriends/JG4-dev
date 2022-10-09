@@ -249,7 +249,7 @@ class ConfigModel extends JoomAdminModel
       if(\in_array($staticprocessing['jg_imgtypename'], $forbidden) && $staticprocessing['jg_imgtype'] != '1')
       {
         // not allowed to unset this imagetype
-        $this->app->enqueueMessage('It is not allowed to unset the "'.$staticprocessing['jg_imgtypename'].'" imagetype. Imagetype "'.$staticprocessing['jg_imgtypename'].'" re-enabled.');
+        $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DEACTIVATE_IMAGETYPE', $staticprocessing['jg_imgtypename']));
 
         $staticprocessing['jg_imgtype'] = 1;
       }
@@ -302,7 +302,7 @@ class ConfigModel extends JoomAdminModel
       if(\in_array($imagetype_list->typename, $forbidden))
       {
         // not allowed to delete this imagetype
-        $this->app->enqueueMessage('It is not allowed to delete this imagetype. Imagetype restored.');
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DELETE_IMAGETYPE'));
       }
       else
       {
@@ -313,6 +313,30 @@ class ConfigModel extends JoomAdminModel
     $data['jg_staticprocessing'] = '';
 
     return parent::save($data);
+  }
+
+  /**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   1.6
+	 */
+	public function publish(&$pks, $value = 1)
+	{
+    // remove record with id=1 from the list of primary keys to change
+    if(($key = \array_search(1, $pks)) !== false)
+    {
+      unset($pks[$key]);
+
+      // It is not allowed to unpublish the global configuration set
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_UNPUBLISH_CONFIG_SET'));
+    }
+
+    parent::publish($pks, $value);
   }
 
 	/**

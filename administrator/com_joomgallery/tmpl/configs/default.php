@@ -68,7 +68,7 @@ if ($saveOrder && !empty($this->items))
                   <th scope="col" class="w-1 text-center d-none d-md-table-cell">
                     <?php echo HTMLHelper::_('searchtools.sort', '', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
                   </th>
-                <?php endif; ?>                
+                <?php endif; ?>
                 <th scope="col" class="w-1 text-center">
                   <?php echo HTMLHelper::_('searchtools.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
                 </th>
@@ -129,7 +129,7 @@ if ($saveOrder && !empty($this->items))
                 <td class="image-status text-center">
                   <?php 
                     $options = [
-                      'task_prefix' => 'images.',
+                      'task_prefix' => 'configs.',
                       'disabled' => !$canChange,
                       'id' => 'state-' . $item->id
                     ];
