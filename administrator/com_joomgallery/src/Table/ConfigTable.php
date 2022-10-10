@@ -326,6 +326,13 @@ class ConfigTable extends Table implements VersionableTableInterface
 			$this->jg_dynamicprocessing = json_encode($this->jg_dynamicprocessing, JSON_UNESCAPED_UNICODE);
 		}
 
+    // Support for media manager image select
+    if(!empty($this->jg_wmfile) && strpos($this->jg_wmfile, '#') !== false)
+    {
+      $this->jg_wmfile = explode('#', $this->jg_wmfile)[0];
+    }
+
+
 		return parent::check();
 	}
 
