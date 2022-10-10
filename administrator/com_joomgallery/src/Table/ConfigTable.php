@@ -345,6 +345,13 @@ class ConfigTable extends Table implements VersionableTableInterface
     }
 
 
+    // Support for media manager image select
+    if(!empty($this->jg_wmfile) && strpos($this->jg_wmfile, '#') !== false)
+    {
+      $this->jg_wmfile = explode('#', $this->jg_wmfile)[0];
+    }
+
+
 		return parent::check();
 	}
 
