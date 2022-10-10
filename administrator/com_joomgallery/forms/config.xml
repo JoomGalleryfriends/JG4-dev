@@ -36,14 +36,6 @@
          label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
          description="JGLOBAL_FIELD_MODIFIED_BY_DESC" />
 
-  <field name="version_note"
-         type="text"
-         class="inputbox"
-         size="45"
-         labelclass="control-label"
-         label="JGLOBAL_FIELD_VERSION_NOTE_LABEL"
-         description="JGLOBAL_FIELD_VERSION_NOTE_DESC" />
-
   <field name="title"
          type="text"
          maxlength="255"
@@ -157,8 +149,9 @@
 
     <fieldset type="tab" name="general-imgprocessing" label="COM_JOOMGALLERY_CONFIG_TAB_IMAGE_PROCESSING">
       <field name="jg_imgprocessor"
-             type="list"
+             type="imgprocessorlist"
              default="gd"
+             onchange="changeImgProcessorDesc()"
              label="COM_JOOMGALLERY_CONFIG_IMAGEPROCESSOR"
              description="COM_JOOMGALLERY_CONFIG_IMAGEPROCESSOR_LONG" >
         <option value="gd">COM_JOOMGALLERY_CONFIG_GDLIB</option>

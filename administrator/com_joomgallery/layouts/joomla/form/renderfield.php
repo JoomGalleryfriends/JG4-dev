@@ -48,12 +48,12 @@ if(!empty($parentclass))
 $tip = null;
 if(!empty($description) && strpos($description, '{tip}') !== false)
 {
-    $desc_arr    = explode('{tip}',$description);
+  $desc_arr    = explode('{tip}',$description);
 	$description = $desc_arr[0];
 	$tip         = $desc_arr[1];
 }
 
-?>
+?> 
 <div class="control-group<?php echo $class; ?>"<?php echo $rel; ?>>
 	<?php if ($hideLabel) : ?>
 		<div class="visually-hidden"><?php echo $label; ?></div>
@@ -78,6 +78,11 @@ if(!empty($description) && strpos($description, '{tip}') !== false)
 						<?php echo $tip; ?>
 					</small>
 				<?php endif; ?>
+        <?php if($name == 'jform[jg_imgprocessor]') : ?>
+          <div class="mt">
+            <small id="jg_imgprocessor_supplement" class="form-text"></small>
+          </div>          
+        <?php endif; ?>
 			</div>
 		<?php endif; ?>
 	</div>

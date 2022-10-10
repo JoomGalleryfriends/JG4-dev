@@ -10,7 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-defined('JPATH_BASE') or die;
+\defined('JPATH_BASE') or die;
 
 use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Factory;
@@ -21,7 +21,7 @@ use \Joomla\CMS\Factory;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ModifiedbyField extends \Joomla\CMS\Form\FormField
+class ModifiedbyField extends FormField
 {
 	/**
 	 * The form field type.

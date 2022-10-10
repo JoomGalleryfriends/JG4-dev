@@ -59,3 +59,9 @@ joomla-field-image .jg_minithumb {
   border: solid 1px var(--template-bg-dark-20);
   background-color: #e8e8e8;
 }
+.mt {
+  margin-top: 1rem;
+}
+.mb {
+  margin-bottom: 1rem;
+}
