@@ -30,6 +30,7 @@ HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
+   ->useScript('table.columns')
    ->useScript('multiselect');
 
 $user      = Factory::getUser();

@@ -29,6 +29,7 @@ $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
    ->useScript('com_joomgallery.catBtns')
+   ->useScript('table.columns')
    ->useScript('multiselect');
 
 $user      = Factory::getUser();
