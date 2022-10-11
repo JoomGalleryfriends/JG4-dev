@@ -69,7 +69,7 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort', '', 'a.lft', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
-                  <?php // Spaceholder for thumbnail image ?>
+                  <?php echo Text::_('COM_JOOMGALLERY_IMAGE') ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
                   <?php echo HTMLHelper::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>

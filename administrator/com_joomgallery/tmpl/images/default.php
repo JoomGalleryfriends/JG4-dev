@@ -78,7 +78,7 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-1 text-center">
-                  <?php // Spaceholder for thumbnail image ?>
+                  <?php echo Text::_('COM_JOOMGALLERY_IMAGE') ?>
                 </th>
                 <th scope="col" style="min-width:180px">
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
