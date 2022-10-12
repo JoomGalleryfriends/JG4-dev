@@ -177,6 +177,8 @@ class HtmlView extends JoomGalleryView
 		{
 			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
 		}
+
+    $toolbar->appendButton('Confirm', 'COM_JOOMGALLERY_CONFIG_RESET_CONFIRM', 'refresh', 'COM_JOOMGALLERY_CONFIG_RESET', 'config.reset', false);
 	}
 
   /**
