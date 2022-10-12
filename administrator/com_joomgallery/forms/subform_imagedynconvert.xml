@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset>
+    <field name="jg_imgtype"
+           type="radio"
+           groupByFieldset="false"
+           default="0"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           label="COM_JOOMGALLERY_CONFIG_ACTIVATED" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field> 
+
+    <field name="jg_imgtypename"
+           type="sql"
+           label="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME"
+           description="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME_SELECT_LONG"
+           query="SELECT typename FROM #__joomgallery_img_types"
+           key_field="typename"
+           value_field="typename" />
+
+    <field name="jg_imgtyperesize"
+           type="list"
+           groupByFieldset="false"
+           default="0"
+           label="COM_JOOMGALLERY_RESIZING"
+           description="COM_JOOMGALLERY_FIELDS_RESIZING_DESC" >
+        <option value="0">JNO</option>
+        <option value="1">COM_JOOMGALLERY_CONFIG_RESIZE_BY_HEIGHT</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_RESIZE_BY_WIDTH</option>
+        <option value="3">COM_JOOMGALLERY_CONFIG_RESIZE_MAX_DIMENSION</option>
+        <option value="4">COM_JOOMGALLERY_CROPPING</option>
+    </field>
+
+    <field name="jg_imgtypewidth"
+           type="number"
+           groupByFieldset="false"
+           filter="int"
+           min="1"
+           max="99999"
+           step="1"
+           showon="jg_imgtyperesize:2,3,4"
+           label="COM_JOOMGALLERY_IMAGE_WIDTH"
+           description="COM_JOOMGALLERY_CONFIG_RESIZE_BY_WIDTH_LONG" />
+
+    <field name="jg_imgtypeheight"
+           type="number"
+           groupByFieldset="false"
+           filter="int"
+           min="1"
+           max="99999"
+           step="1"
+           showon="jg_imgtyperesize:1,3,4"
+           label="COM_JOOMGALLERY_IMAGE_HEIGHT"
+           description="COM_JOOMGALLERY_CONFIG_RESIZE_BY_HEIGHT_LONG" />
+
+    <field name="jg_cropposition"
+           type="list"
+           groupByFieldset="false"
+           default="2"
+           showon="jg_imgtyperesize:4"
+           label="COM_JOOMGALLERY_CONFIG_CROP_POSITION"
+           description="COM_JOOMGALLERY_CONFIG_CROP_POSITION_LONG" >
+        <option value="0">COM_JOOMGALLERY_CONFIG_IMG_POSITION_TL</option>
+        <option value="1">COM_JOOMGALLERY_CONFIG_IMG_POSITION_TR</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_IMG_POSITION_MC</option>
+        <option value="3">COM_JOOMGALLERY_CONFIG_IMG_POSITION_LL</option>
+        <option value="4">COM_JOOMGALLERY_CONFIG_IMG_POSITION_LR</option>
+    </field>
+
+    <field name="jg_imgtypeorinet"
+           type="radio"
+           groupByFieldset="false"
+           default="0"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           label="COM_JOOMGALLERY_AUTO_ORIENTATION"
+           description="COM_JOOMGALLERY_FIELDS_AUTO_ORIENTATION_DESC" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field name="jg_imgtypeanim"
+           type="radio"
+           groupByFieldset="false"
+           default="0"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           label="COM_JOOMGALLERY_CONFIG_IP_TYPE_KEEPANIM"
+           description="COM_JOOMGALLERY_CONFIG_IP_TYPE_KEEPANIM_LONG">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field name="jg_imgtypesharpen"
+           type="radio"
+           groupByFieldset="false"
+           default="0"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           label="COM_JOOMGALLERY_CONFIG_IP_TYPE_SHARPEN"
+           description="COM_JOOMGALLERY_CONFIG_IP_TYPE_SHARPEN_LONG">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field name="jg_imgtypequality"
+           type="number"
+           groupByFieldset="false"
+           default="100"
+           filter="int"
+           min="1"
+           max="100"
+           step="1"
+           label="COM_JOOMGALLERY_CONFIG_IMAGE_QUALITY"
+           description="COM_JOOMGALLERY_CONFIG_IMAGE_QUALITY_LONG" />
+
+    <field name="jg_imgtypewatermark"
+           type="radio"
+           groupByFieldset="false"
+           default="0"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           label="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK"
+           description="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK_IMG_LONG" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field name="jg_imgtypewtmsettings"
+           type="subform"
+           groupByFieldset="false"
+           max="1"
+           multiple="false"
+           buttons="remove"
+           showon="jg_imgtypewatermark:1"
+           formsource="administrator/components/com_joomgallery/forms/subform_imagewatermark.xml"
+           layout="joomla.form.field.subform.repeatable"
+           label="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME_WATERMARK" />
+  </fieldset>
+</form>

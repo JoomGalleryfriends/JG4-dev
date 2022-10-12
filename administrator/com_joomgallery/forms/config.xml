@@ -192,21 +192,24 @@
              buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
              layout="joomla.form.field.subform.repeatable-config"
-             label="COM_JOOMGALLERY_CONFIG_IP_STATIC" />
+             label="COM_JOOMGALLERY_CONFIG_IP_STATIC" 
+             description="COM_JOOMGALLERY_CONFIG_IP_STATIC_DESC" />
 
       <field name="jg_dynamicprocessing"
              type="subform"
              multiple="true"
              buttons="add,remove"
-             formsource="administrator/components/com_joomgallery/forms/subform_imageconvert.xml"
+             min="0"
+             formsource="administrator/components/com_joomgallery/forms/subform_imagedynconvert.xml"
              layout="joomla.form.field.subform.repeatable-config"
-             label="COM_JOOMGALLERY_CONFIG_IP_DYNAMIC" />
+             label="COM_JOOMGALLERY_CONFIG_IP_DYNAMIC"
+             description="COM_JOOMGALLERY_CONFIG_IP_DYNAMIC_DESC" />
     </fieldset>
 
     <fieldset type="tab" name="general-messages" label="COM_JOOMGALLERY_CONFIG_TAB_MESSAGES">
       <field name="jg_msg_upload_type"
              type="list"
-             default="2"
+             default="0"
              label="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_TYPE_LONG" >
         <option value="0">JNONE</option>
@@ -226,7 +229,7 @@
 
       <field name="jg_msg_download_type"
              type="list"
-             default="2"
+             default="0"
              label="COM_JOOMGALLERY_CONFIG_MS_DOWNLOAD_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_DOWNLOAD_TYPE_LONG" >
         <option value="0">JNONE</option>
@@ -257,7 +260,7 @@
 
       <field name="jg_msg_comment_type"
              type="list"
-             default="2"
+             default="0"
              label="COM_JOOMGALLERY_CONFIG_MS_COMMENT_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_COMMENT_TYPE_LONG" >
         <option value="0">JNONE</option>
@@ -288,7 +291,7 @@
 
       <field name="jg_msg_report_type"
              type="list"
-             default="2"
+             default="0"
              label="COM_JOOMGALLERY_CONFIG_MS_REPORT_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_REPORT_TYPE_LONG" >
         <option value="0">JNONE</option>

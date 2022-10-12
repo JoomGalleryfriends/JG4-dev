@@ -17,6 +17,9 @@
 .jg.jg-config joomla-tab > joomla-tab-element .row-fluid {
   padding: 30px;
 }
+.jg.jg-config .subform-table-layout .table {
+  margin-bottom: 0;
+}
 .jg_minithumb {
   border: 0;
   height: 80px;

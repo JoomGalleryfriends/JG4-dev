@@ -33,6 +33,11 @@ if (!empty($options['showonEnabled']))
 	$wa->useScript('showon');
 }
 
+if($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamicprocessing')
+{
+  $addClass = 'mb-5';
+}
+
 $class           = empty($options['class']) ? '' : ' ' . $options['class'];
 $rel             = empty($options['rel']) ? '' : ' ' . $options['rel'];
 $id              = ($id ?? $name) . '-desc';
@@ -43,6 +48,11 @@ $descClass       = ($options['descClass'] ?? '') ?: (!empty($options['inlineHelp
 if(!empty($parentclass))
 {
 	$class .= ' ' . $parentclass;
+}
+
+if(!empty($addClass))
+{
+	$class .= ' ' . $addClass;
 }
 
 $tip = null;
