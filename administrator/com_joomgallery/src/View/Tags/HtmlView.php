@@ -65,58 +65,37 @@ class HtmlView extends JoomGalleryView
 		parent::display($tpl);
 	} 
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function addToolbar()
-	{
-		$state = $this->get('State');
-		$canDo = JoomHelper::getActions('tag');
+  /**
+   * Add the page title and toolbar.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  protected function addToolbar()
+  {
+    $state = $this->get('State');
+    $canDo = JoomHelper::getActions('tag');
 
-		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_TAGS_MANAGER'), "tags");
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_TAGS_MANAGER'), "tags");
 
-		$toolbar = Toolbar::getInstance('toolbar');
+    $toolbar = Toolbar::getInstance('toolbar');
 
-		// Check if the form exists before showing the add/edit buttons
-		$formPath = JPATH_COMPONENT_ADMINISTRATOR . '/src/View/Tags';
+    // Check if the form exists before showing the add/edit buttons
+    $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/src/View/Tags';
 
-		if(file_exists($formPath))
-		{
-			if($canDo->get('core.create'))
-			{
-				$toolbar->addNew('tag.add');
-			}
-		}
-
-    if($canDo->get('core.delete'))
+    // New button
+    if(file_exists($formPath))
     {
-      $toolbar->delete('tags.delete')
-        ->text('JTOOLBAR_DELETE')
-        ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_TAGS'))
-        ->listCheck(true);
+      if($canDo->get('core.create'))
+      {
+        $toolbar->addNew('tag.add');
+      }
     }
 
     if($canDo->get('core.edit.state')  || count($this->transitions))
-		{
-			$dropdown = $toolbar->dropdownButton('status-group')
-				->text('JTOOLBAR_PUBLISH')
-				->toggleSplit(false)
-				->icon('fas fa-ellipsis-h')
-				->buttonClass('btn btn-action')
-				->listCheck(true);
-
-			$status_childBar = $dropdown->getChildToolbar();
-
-			if(isset($this->items[0]->published))
-			{
-				$status_childBar->publish('tags.publish')->listCheck(true);
-				$status_childBar->unpublish('tags.unpublish')->listCheck(true);
-			}
-
+    {
+      // Batch button
       if($canDo->get('core.edit'))
       {
         $batch_dropdown = $toolbar->dropdownButton('batch-group')
@@ -135,29 +114,54 @@ class HtmlView extends JoomGalleryView
           ->task('tags.duplicate')
           ->listCheck(true);
       }
-		}
 
-		// Show trash and delete for components that uses the state field
-		if(isset($this->items[0]->published))
-		{
+      // State button
+      $dropdown = $toolbar->dropdownButton('status-group')
+        ->text('JSTATUS')
+        ->toggleSplit(false)
+        ->icon('fas fa-ellipsis-h')
+        ->buttonClass('btn btn-action')
+        ->listCheck(true);
 
-			if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
-			{
-				$toolbar->delete('tags.delete')
-					->text('JTOOLBAR_EMPTY_TRASH')
-					->message('JGLOBAL_CONFIRM_DELETE')
-					->listCheck(true);
-			}
-		}
+      $status_childBar = $dropdown->getChildToolbar();
 
-		if($canDo->get('core.admin'))
-		{
-			$toolbar->preferences('com_joomgallery');
-		}
+      if(isset($this->items[0]->published))
+      {
+        $status_childBar->publish('tags.publish')->listCheck(true);
+        $status_childBar->unpublish('tags.unpublish')->listCheck(true);
+      }
+    }
 
-		// Set sidebar action
-		Sidebar::setAction('index.php?option=com_joomgallery&view=tags');
-	}
+    // Delete button
+    if($canDo->get('core.delete'))
+    {
+      $toolbar->delete('tags.delete')
+        ->text('JTOOLBAR_DELETE')
+        ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_TAGS'))
+        ->listCheck(true);
+    }
+
+    // Show trash and delete for components that uses the state field
+    if(isset($this->items[0]->published))
+    {
+
+      if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
+      {
+        $toolbar->delete('tags.delete')
+          ->text('JTOOLBAR_EMPTY_TRASH')
+          ->message('JGLOBAL_CONFIRM_DELETE')
+          ->listCheck(true);
+      }
+    }
+
+    if($canDo->get('core.admin'))
+    {
+      $toolbar->preferences('com_joomgallery');
+    }
+
+    // Set sidebar action
+    Sidebar::setAction('index.php?option=com_joomgallery&view=tags');
+}
 
 	/**
 	 * Method to order fields
