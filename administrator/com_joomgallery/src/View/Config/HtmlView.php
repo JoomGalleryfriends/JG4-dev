@@ -123,26 +123,17 @@ class HtmlView extends JoomGalleryView
 			ToolbarHelper::custom('config.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 		}
 
-		if(empty($this->item->id))
-		{
-			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CANCEL');
-		}
-		else
-		{
-			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
-		}
-
-		// $resetGroup = $toolbar->dropdownButton('reset-group')
-		// 	->text('Settings')
-		// 	->toggleSplit(false)
-		// 	->icon('fas fa-ellipsis-h')
-		// 	->buttonClass('btn btn-action')
-		// 	->listCheck(false);
-
-		// $childBar = $resetGroup->getChildToolbar();
-
 		if(!$isNew)
 		{
+			// $resetGroup = $toolbar->dropdownButton('reset-group')
+			// 	->text('Settings')
+			// 	->toggleSplit(false)
+			// 	->icon('fas fa-ellipsis-h')
+			// 	->buttonClass('btn btn-action')
+			// 	->listCheck(false);
+
+			// $childBar = $resetGroup->getChildToolbar();
+
 			$toolbar->confirmButton('reset')
 				->text('COM_JOOMGALLERY_CONFIG_RESET')
 				->task('config.reset')
@@ -165,6 +156,15 @@ class HtmlView extends JoomGalleryView
 				'text' => Text::_('COM_JOOMGALLERY_IMPORT'));
 			$modal_btn = LayoutHelper::render('joomla.toolbar.popup', $modal_opt);
 			$toolbar->appendButton('Custom', $modal_btn);
+		}
+
+		if(empty($this->item->id))
+		{
+			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CANCEL');
+		}
+		else
+		{
+			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
 		}
 	}
 
