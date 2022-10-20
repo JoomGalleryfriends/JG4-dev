@@ -669,7 +669,7 @@ class ConfigModel extends JoomAdminModel
 		// Check file content
 		$json = json_decode($json_string, true);
     
-   	if(json_last_error() !== JSON_ERROR_NONE)
+   		if(json_last_error() !== JSON_ERROR_NONE)
 		{
 			// JSON not valid
 			$this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_INVALID_FILE_CONTENT', $file['name']), 'error');
