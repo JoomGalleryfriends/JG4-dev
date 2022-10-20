@@ -16,9 +16,11 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
+use \Joomla\CMS\Filesystem\File;
 use stdClass;
 
 /**
@@ -110,31 +112,8 @@ class ConfigModel extends JoomAdminModel
 
 			$data = $this->item;
 
-      // Load imagetypes from database
-      $new_staticprocessing = array();
-      $imagetypes           = JoomHelper::getRecords('imagetypes');
-
-      // Replace jg_staticprocessing based on imagetypes
-      foreach($imagetypes as $key => $imagetype)
-      {
-        // initialize stdClass object
-        if(!isset($new_staticprocessing['jg_staticprocessing'.$key]))
-        {
-          $new_staticprocessing['jg_staticprocessing'.$key] = new stdClass();
-        }
-
-        // create staticprocessing array
-        $new_staticprocessing['jg_staticprocessing'.$key]->jg_imgtypename = $imagetype->typename;
-        $new_staticprocessing['jg_staticprocessing'.$key]->jg_imgtypepath = $imagetype->path;
-
-        foreach($imagetype->params as $k => $param)
-        {
-          $new_staticprocessing['jg_staticprocessing'.$key]->{$k} = $param;
-        }
-      }
-
       // Set jg_staticprocessing data
-      $data->jg_staticprocessing = \json_encode((object) $new_staticprocessing);
+      $data->jg_staticprocessing = $this->getStaticprocessing();
 		}
 
 		return $data;
@@ -391,7 +370,7 @@ class ConfigModel extends JoomAdminModel
     $obj['jg_imgtypesharpen']     = '0';
     $obj['jg_imgtypequality']     = 100;
     $obj['jg_imgtypewatermark']   = '0';
-    $obj['jg_imgtypewtmsettings'] = [];
+    $obj['jg_imgtypewtmsettings'] = '{}';
 
     return (object) $obj;
   }
@@ -410,17 +389,53 @@ class ConfigModel extends JoomAdminModel
     switch($type)
     {
       case 'detail':
-        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"3","jg_imgtypewidth":"1000","jg_imgtypeheight":"1000","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"0","jg_imgtypequality":"80","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"3","jg_imgtypewidth":"1000","jg_imgtypeheight":"1000","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"0","jg_imgtypequality":"80","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"{}"}';
         break;
 
       case 'thumbnail':
-        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"4","jg_imgtypewidth":"250","jg_imgtypeheight":"250","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"1","jg_imgtypequality":"60","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"4","jg_imgtypewidth":"250","jg_imgtypeheight":"250","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"1","jg_imgtypequality":"60","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"{}"}';
         break;
       
       default:
-        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"0","jg_imgtypewidth":"","jg_imgtypeheight":"","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":"100","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"0","jg_imgtypewidth":"","jg_imgtypeheight":"","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":"100","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"{}"}';
         break;
     }
+  }
+
+  /**
+	 * Loads jg_staticprocessing data from imagetypes.
+   * 
+	 * @return  object   static processing data
+	 *
+	 * @since   4.0.0
+	 */
+  public function getStaticprocessing()
+  {
+    // Load imagetypes from database
+    $new_staticprocessing = array();
+    $imagetypes           = JoomHelper::getRecords('imagetypes');
+
+    // Replace jg_staticprocessing based on imagetypes
+    foreach($imagetypes as $key => $imagetype)
+    {
+      // initialize stdClass object
+      if(!isset($new_staticprocessing['jg_staticprocessing'.$key]))
+      {
+        $new_staticprocessing['jg_staticprocessing'.$key] = new stdClass();
+      }
+
+      // create staticprocessing array
+      $new_staticprocessing['jg_staticprocessing'.$key]->jg_imgtypename = $imagetype->typename;
+      $new_staticprocessing['jg_staticprocessing'.$key]->jg_imgtypepath = $imagetype->path;
+
+      foreach($imagetype->params as $k => $param)
+      {
+        $new_staticprocessing['jg_staticprocessing'.$key]->{$k} = $param;
+      }
+    }
+
+    // Return jg_staticprocessing data
+    return \json_encode((object) $new_staticprocessing);
   }
 
   /**
@@ -467,4 +482,219 @@ class ConfigModel extends JoomAdminModel
 
     return json_encode($data);
   }
+
+  /**
+	 * Method to reset form data to default values.
+	 *
+	 * @param   array  $data   Form data array
+	 * 
+	 * @return  array  Form data array with default data
+	 *
+	 * @since   4.0.0
+	 */
+	public function resetData($data)
+	{
+		// Load config form
+		$xmlfile = JPATH_COMPONENT_ADMINISTRATOR . '/forms/config.xml';
+		$cform = new Form('configForm');
+		$cform->loadFile($xmlfile);
+
+		foreach($data['jform'] as $key => $value)
+		{
+			if(strpos($key, 'jg_') !== false)
+			{
+				if($key == 'jg_replaceinfo' || $key == 'jg_dynamicprocessing')
+				{
+					// set default by hand
+					$default = '{}';
+				}
+				else if($key == 'jg_staticprocessing')
+				{
+					// Load imageconvert subform
+					$xmlfile_subform = JPATH_COMPONENT_ADMINISTRATOR . '/forms/subform_imageconvert.xml';
+					$subform = new Form('imageconvertSubform');
+					$subform->loadFile($xmlfile_subform);
+
+					// load default from imageconvert subform xml
+					foreach($value as $nmb => $array)
+					{
+						if(\in_array($array['jg_imgtypename'],array('original', 'detail', 'thumbnail')))
+						{
+							foreach($array as $subformkey => $subformvalue)
+							{
+								if($subformkey == 'jg_imgtypewtmsettings')
+								{
+									// Load imagewatermark subform
+									$xmlfile_wtmsubform = JPATH_COMPONENT_ADMINISTRATOR . '/forms/subform_imagewatermark.xml';
+									$wtm_subform = new Form('imagewatermarkSubform');
+									$wtm_subform->loadFile($xmlfile_wtmsubform);
+
+									// initialize watermark array
+									$default = array();
+
+									foreach($subformvalue as $wtm_key => $wtm_value)
+									{
+										// load default from xml file
+										$default_wtm = $wtm_subform->getField($wtm_key)->getAttribute('default', 'not found');
+
+										if($default_wtm === 'not found')
+										{
+											throw new \Exception('Watermark subform field with name '.$wtm_key.' does not have any default value!', 1);
+										}
+
+										// set default to watermark array
+										$default[$wtm_key] = $default_wtm;
+									}
+
+								}
+								else
+								{
+									$reset_str = $subform->getField($subformkey)->getAttribute('reset', 'not found');
+									
+									if($default === 'not found')
+									{
+										throw new \Exception('Convert subform field with name '.$key.' does not have any reset value!', 1);
+									}
+
+									$reset_arr = $this->getResetArray($reset_str);
+
+									$default = $reset_arr[$array['jg_imgtypename']];
+								}
+
+								// set default to data array
+								$data['jform']['jg_staticprocessing'][$nmb][$subformkey] = $default;
+							}
+						}
+						else
+						{
+							unset($data['jform']['jg_staticprocessing'][$nmb]);
+						}
+					}
+
+					continue; 
+				}
+				else
+				{
+					// load default from xml file
+					$default = $cform->getField($key)->getAttribute('default', 'not found');
+				}
+
+				if($default === 'not found')
+				{
+					throw new \Exception('Config field with name '.$key.' does not have any default value!', 1);
+				}
+
+				// set default to data array
+				$data['jform'][$key] = $default;
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Method to retrieve uploaded json file content
+	 *
+	 * @param   array    $file        Uploaded file info
+	 * @param   string   $fieldname   Name of the form field
+	 * 
+	 * @return  array    Associative array containing form data of json file
+	 *
+	 * @since   4.0.0
+	 */
+	public function getJSONfile($file, $fieldname)
+	{
+		// Get form field
+		$xml = JPATH_COMPONENT_ADMINISTRATOR . '/forms/config.xml';
+		$form = new Form('configForm');
+		$form->loadFile($xml);
+		$field = $form->getField($fieldname);
+
+		// Check file for errors
+		if($file['error'] !== 0)
+		{
+			// Upload failed
+			$this->setError($this->checkError($file['error']));		
+
+			return false;
+		}		
+
+		// Check file size
+		$filesize = intval($field->getAttribute('size', '512000'));
+		if($file['size'] > $filesize)
+		{
+			// Upload failed
+			$this->setError(Text::_('COM_JOOMGALLERY_ERROR_HTML_MAXFILESIZE'), 'error');
+
+			return false;
+		}
+
+		// Check file extension
+		if(strtolower(File::getExt($file['name'])) != 'json')
+		{
+			// Invalid file extension
+			$this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_INVALID_FILE_EXTENSION', 'json', $file['name']), 'error');
+
+			return false;
+		}
+
+		// Retrieve file content
+		$json_string = \file_get_contents($file['tmp_name']);
+
+		// Check file content
+		$json = json_decode($json_string, true);
+   		if(json_last_error() !== JSON_ERROR_NONE)
+		{
+			// JSON not valid
+			$this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_INVALID_FILE_CONTENT', $file['name']), 'error');
+
+			return false;
+		}
+
+		return $json;
+	}
+
+	/**
+	 * Method to create the imagetype reset array from string.
+	 *
+	 * @param   string  $string   String containing the reset values
+	 * 
+	 * @return  array   Array with reset values for each image type
+	 *
+	 * @since   4.0.0
+	 */
+	protected function getResetArray($string)
+	{
+		$array = array();
+
+		$imgtypes = \explode(';', $string);
+
+		foreach($imgtypes as $imgtype)
+		{
+			$content = \explode(':', $imgtype);
+
+			switch($content[0])
+			{
+				case 'orig':
+					$name = 'original';
+					break;
+				case 'det':
+					$name = 'detail';
+					break;
+				case 'thumb':
+					$name = 'thumbnail';
+					break;
+				default:
+					$name = false;
+					break;
+			}
+
+			if($name)
+			{
+				$array[$name] = $content[1];
+			}			
+		}
+
+		return $array;
+	}
 }

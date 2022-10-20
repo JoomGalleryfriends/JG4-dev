@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Config;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Toolbar\ToolbarHelper;
+use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
@@ -86,7 +87,7 @@ class HtmlView extends JoomGalleryView
 	protected function addToolbar()
 	{
 		Factory::getApplication()->input->set('hidemainmenu', true);
-    $toolbar = Toolbar::getInstance('toolbar');
+    	$toolbar = Toolbar::getInstance('toolbar');
 
 		$user  = Factory::getUser();
 		$isNew = ($this->item->id == 0);
@@ -131,7 +132,40 @@ class HtmlView extends JoomGalleryView
 			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
 		}
 
-    $toolbar->appendButton('Confirm', 'COM_JOOMGALLERY_CONFIG_RESET_CONFIRM', 'refresh', 'COM_JOOMGALLERY_CONFIG_RESET', 'config.reset', false);
+		// $resetGroup = $toolbar->dropdownButton('reset-group')
+		// 	->text('Settings')
+		// 	->toggleSplit(false)
+		// 	->icon('fas fa-ellipsis-h')
+		// 	->buttonClass('btn btn-action')
+		// 	->listCheck(false);
+
+		// $childBar = $resetGroup->getChildToolbar();
+
+		if(!$isNew)
+		{
+			$toolbar->confirmButton('reset')
+				->text('COM_JOOMGALLERY_CONFIG_RESET')
+				->task('config.reset')
+				->message('COM_JOOMGALLERY_CONFIG_RESET_CONFIRM')
+				->icon('icon-refresh')
+				->listCheck(false);
+				
+			$toolbar->standardButton('export')
+				->text('JTOOLBAR_EXPORT')
+				->task('config.export')
+				->icon('icon-download')
+				->listCheck(false);
+		
+			$modal_opt = array(
+				'selector'=> 'import_modal',
+				'doTask' => '',
+				'btnClass' => 'button-import btn btn-primary',
+				'htmlAttributes' => '',
+				'class' => 'icon-upload',
+				'text' => Text::_('COM_JOOMGALLERY_IMPORT'));
+			$modal_btn = LayoutHelper::render('joomla.toolbar.popup', $modal_opt);
+			$toolbar->appendButton('Custom', $modal_btn);
+		}
 	}
 
   /**

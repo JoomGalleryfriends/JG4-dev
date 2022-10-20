@@ -33,7 +33,7 @@ if (!empty($options['showonEnabled']))
 	$wa->useScript('showon');
 }
 
-if($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamicprocessing')
+if(isset($id) && ($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamicprocessing'))
 {
   $addClass = 'mb-5';
 }

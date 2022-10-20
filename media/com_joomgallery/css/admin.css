@@ -68,3 +68,6 @@ joomla-field-image .jg_minithumb {
 .mb {
   margin-bottom: 1rem;
 }
+.modal .modal-body {
+  margin: 1rem 2rem;
+}

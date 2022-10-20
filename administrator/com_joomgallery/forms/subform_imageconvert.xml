@@ -5,6 +5,7 @@
            type="radio"
            groupByFieldset="false"
            default="1"
+           reset="orig:1;det:1;thumb:1"
            class="btn-group"
            layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_CONFIG_IP_ACTIVATE_TYPE" >
@@ -14,6 +15,8 @@
 
     <field name="jg_imgtypename"
            type="text"
+           default=""
+           reset="orig:original;det:detail;thumb:thumbnail"
            groupByFieldset="false"
            maxlength="255"
            filter="word"
@@ -22,6 +25,8 @@
 
     <field name="jg_imgtypepath"
            type="text"
+           default=""
+           reset="orig:/images/joomgallery/originals;det:/images/joomgallery/details;thumb:/images/joomgallery/thumbnails"
            groupByFieldset="false"
            maxlength="100"
            filter="string"
@@ -33,6 +38,7 @@
            type="list"
            groupByFieldset="false"
            default="0"
+           reset="orig:0;det:3;thumb:4"
            label="COM_JOOMGALLERY_RESIZING"
            description="COM_JOOMGALLERY_FIELDS_RESIZING_DESC" >
         <option value="0">JNO</option>
@@ -44,6 +50,8 @@
 
     <field name="jg_imgtypewidth"
            type="number"
+           default=""
+           reset="orig:1;det:1000;thumb:250"
            groupByFieldset="false"
            filter="int"
            min="1"
@@ -55,6 +63,8 @@
 
     <field name="jg_imgtypeheight"
            type="number"
+           default=""
+           reset="orig:1;det:1000;thumb:250"
            groupByFieldset="false"
            filter="int"
            min="1"
@@ -68,6 +78,7 @@
            type="list"
            groupByFieldset="false"
            default="2"
+           reset="orig:2;det:2;thumb:2"
            showon="jg_imgtyperesize:4"
            label="COM_JOOMGALLERY_CONFIG_CROP_POSITION"
            description="COM_JOOMGALLERY_CONFIG_CROP_POSITION_LONG" >
@@ -82,6 +93,7 @@
            type="radio"
            groupByFieldset="false"
            default="0"
+           reset="orig:0;det:1;thumb:1"
            class="btn-group"
            layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_AUTO_ORIENTATION"
@@ -94,6 +106,7 @@
            type="radio"
            groupByFieldset="false"
            default="0"
+           reset="orig:1;det:1;thumb:0"
            class="btn-group"
            layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_CONFIG_IP_TYPE_KEEPANIM"
@@ -106,6 +119,7 @@
            type="radio"
            groupByFieldset="false"
            default="0"
+           reset="orig:0;det:0;thumb:1"
            class="btn-group"
            layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_CONFIG_IP_TYPE_SHARPEN"
@@ -118,6 +132,7 @@
            type="number"
            groupByFieldset="false"
            default="100"
+           reset="orig:100;det:80;thumb:60"
            filter="int"
            min="1"
            max="100"
@@ -129,6 +144,7 @@
            type="radio"
            groupByFieldset="false"
            default="0"
+           reset="orig:0;det:0;thumb:0"
            class="btn-group"
            layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK"

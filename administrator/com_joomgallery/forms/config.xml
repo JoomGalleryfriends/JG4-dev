@@ -54,6 +54,14 @@
          label="COM_JOOMGALLERY_USER_GROUP"
          description="COM_JOOMGALLERY_CONFIG_USER_GROUP_DESC" />
 
+  <field name="import_json"
+         type="file"
+         accept=".json,application/json"
+         size="307200"
+         title="COM_JOOMGALLERY_CONFIG_IMPORT_FILE"
+         label="COM_JOOMGALLERY_CONFIG_IMPORT_FILE_LBL"
+         description="COM_JOOMGALLERY_CONFIG_IMPORT_FILE_DESC" />
+
   <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
     <fieldset type="tab" name="general-common" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
       <field name="jg_filesystem"
@@ -98,6 +106,7 @@
     <fieldset type="tab" name="general-upload" label="COM_JOOMGALLERY_UPLOADS">
       <field name="jg_replaceinfo"
              type="subform"
+             default="{}"
              max="6"
              multiple="true"
              formsource="administrator/components/com_joomgallery/forms/subform_imageinforeplace.xml"
@@ -181,6 +190,7 @@
 
       <field name="jg_wmfile"
              type="media"
+             default="images/joomgallery/watermark.png"
              directory="images/joomgallery"
              label="COM_JOOMGALLERY_WATERMARK"
              description="COM_JOOMGALLERY_FIELDS_WATERMARK_DESC" />
@@ -197,6 +207,7 @@
 
       <field name="jg_dynamicprocessing"
              type="subform"
+             default="{}"
              multiple="true"
              buttons="add,remove"
              min="0"

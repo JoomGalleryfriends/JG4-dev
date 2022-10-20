@@ -27,6 +27,20 @@ HTMLHelper::_('bootstrap.tooltip');
 
 // Import CSS
 $wa->useStyle('com_joomgallery.admin');
+
+// Import json modal
+$importModal = array(
+  'selector' => 'import_modal',
+  'params'   => array('title'  => 'Global Configuration'.': '.Text::_($this->form->getField('import_json')->getAttribute('title')),
+                      'footer' => '<button class="btn btn-primary" onclick="submitImport(this, event)">'.Text::_('COM_JOOMGALLERY_IMPORT').'</button>'
+                     ),
+  'body'     => $this->form->renderField('import_json'),
+);
+$js  = 'var submitImport = function(element, event) {';
+$js .=     'event.preventDefault();';
+$js .=     'Joomla.submitform("config.import", document.getElementById("config-form"));';
+$js .= '};';
+$this->document->addScriptDeclaration($js);
 ?>
 
 <div class="jg jg-config">
@@ -42,6 +56,8 @@ $wa->useStyle('com_joomgallery.admin');
         <?php echo $this->form->renderField('group_id'); ?>
       </div>
     </div>
+
+    <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $importModal); ?>
 
     <?php //first level TabSet ?>
     <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'general')); ?>
