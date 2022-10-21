@@ -313,17 +313,29 @@ class ConfigTable extends Table implements VersionableTableInterface
 		{
 			$this->jg_replaceinfo = json_encode($this->jg_replaceinfo, JSON_UNESCAPED_UNICODE);
 		}
+		if(\is_null($this->jg_replaceinfo))
+		{
+			$this->jg_replaceinfo = '{}';
+		}
 
 		// Support for subform field jg_staticprocessing
 		if(is_array($this->jg_staticprocessing))
 		{
 			$this->jg_staticprocessing = json_encode($this->jg_staticprocessing, JSON_UNESCAPED_UNICODE);
 		}
+		if(\is_null($this->jg_staticprocessing))
+		{
+			$this->jg_staticprocessing = '{}';
+		}
 
 		// Support for subform field jg_dynamicprocessing
 		if(is_array($this->jg_dynamicprocessing))
 		{
 			$this->jg_dynamicprocessing = json_encode($this->jg_dynamicprocessing, JSON_UNESCAPED_UNICODE);
+		}
+		if(\is_null($this->jg_dynamicprocessing))
+		{
+			$this->jg_dynamicprocessing = '{}';
 		}
 
     // Support for media manager image select
