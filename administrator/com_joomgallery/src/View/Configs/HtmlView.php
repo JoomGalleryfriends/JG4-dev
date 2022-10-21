@@ -103,36 +103,36 @@ class HtmlView extends JoomGalleryView
 
       $childBar = $dropdown->getChildToolbar();
 
-      if(isset($this->items[0]->state))
-      {
-        $childBar->publish('configs.publish')->listCheck(true);
-        $childBar->unpublish('configs.unpublish')->listCheck(true);
-        $childBar->archive('configs.archive')->listCheck(true);
-      }
-      elseif(isset($this->items[0]))
-      {
-        // If this component does not use state then show a direct delete button as we can not trash
-        $toolbar->delete('configs.delete')
-        ->text('JTOOLBAR_DELETE')
-        ->message('JGLOBAL_CONFIRM_DELETE')
-        ->listCheck(true);
-      }
-
       $childBar->standardButton('duplicate')
         ->text('JTOOLBAR_DUPLICATE')
         ->icon('fas fa-copy')
         ->task('configs.duplicate')
         ->listCheck(true);
 
-      if(isset($this->items[0]->checked_out))
-      {
-        $childBar->checkin('configs.checkin')->listCheck(true);
-      }
+      // State button
+      $dropdown = $toolbar->dropdownButton('status-group')
+        ->text('JSTATUS')
+        ->toggleSplit(false)
+        ->icon('fas fa-ellipsis-h')
+        ->buttonClass('btn btn-action')
+        ->listCheck(true);
 
-      if(isset($this->items[0]->state))
+      $status_childBar = $dropdown->getChildToolbar();
+
+      if(isset($this->items[0]->published))
       {
-        $childBar->trash('configs.trash')->listCheck(true);
+        $status_childBar->publish('configs.publish')->listCheck(true);
+        $status_childBar->unpublish('configs.unpublish')->listCheck(true);
       }
+    }
+
+    // Delete button
+    if($canDo->get('core.delete'))
+    {
+      $toolbar->delete('configs.delete')
+        ->text('JTOOLBAR_DELETE')
+        ->message('COM_JOOMGALLERY_CONFIRM_DELETE_CONFIGS')
+        ->listCheck(true);
     }
 
     // Show trash and delete for components that uses the state field
