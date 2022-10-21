@@ -142,9 +142,20 @@ class HtmlView extends JoomGalleryView
     {
       if($this->state->get('filter.state') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
       {
-        $toolbar->delete('configs.delete')
-          ->text('JTOOLBAR_EMPTY_TRASH')
-          ->message('JGLOBAL_CONFIRM_DELETE')
+        $batch_dropdown = $toolbar->dropdownButton('batch-group')
+          ->text('JTOOLBAR_BATCH')
+          ->toggleSplit(false)
+          ->icon('fas fa-ellipsis-h')
+          ->buttonClass('btn btn-action')
+          ->listCheck(true);
+        
+        $batch_childBar = $batch_dropdown->getChildToolbar();
+
+        // Duplicate button inside batch dropdown
+        $batch_childBar->standardButton('duplicate')
+          ->text('JTOOLBAR_DUPLICATE')
+          ->icon('fas fa-copy')
+          ->task('configs.duplicate')
           ->listCheck(true);
       }
     }
