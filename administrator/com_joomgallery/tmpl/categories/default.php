@@ -46,17 +46,20 @@ if($saveOrder && !empty($this->items))
 }
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_joomgallery&view=categories'); ?>" method="post" name="adminForm" id="adminForm">
-  <div class="row">
-    <div class="col-md-12">
-      <div id="j-main-container" class="j-main-container">
-        <?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
-          <table class="table" id="categoryList">
+<form action="<?php echo Route::_('index.php?option=com_joomgallery&view=categories'); ?>" method="post"
+	  name="adminForm" id="adminForm">
+	<div class="row">
+		<div class="col-md-12">
+			<div id="j-main-container" class="j-main-container">
+				<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
+				<div class="clearfix"></div>
+        <div class="table-responsive">
+          <table class="table table-striped" id="categoryList">
             <caption class="visually-hidden">
-              <?php echo Text::_('COM_JOOMGALLERY_CATEGORY_TABLE_CAPTION'); ?>,
-              <span id="orderedBy"><?php echo Text::_('JGLOBAL_SORTED_BY'); ?> </span>,
-              <span id="filteredBy"><?php echo Text::_('JGLOBAL_FILTERED_BY'); ?></span>
-            </caption>
+							<?php echo Text::_('COM_JOOMGALLERY_CATEGORY_TABLE_CAPTION'); ?>,
+							<span id="orderedBy"><?php echo Text::_('JGLOBAL_SORTED_BY'); ?> </span>,
+							<span id="filteredBy"><?php echo Text::_('JGLOBAL_FILTERED_BY'); ?></span>
+						</caption>
             <thead>
               <tr>
                 <td class="w-1 text-center">
@@ -248,6 +251,7 @@ if($saveOrder && !empty($this->items))
               <?php endforeach; ?>
             </tbody>
           </table>
+        </div>
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
         <input type="hidden" id="del_force" name="del_force" value="0"/>

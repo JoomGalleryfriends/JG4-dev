@@ -47,12 +47,15 @@ if($saveOrder && !empty($this->items))
 }
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_joomgallery&view=images'); ?>" method="post" name="adminForm" id="adminForm">
-  <div class="row">
-    <div class="col-md-12">
-      <div id="j-main-container" class="j-main-container">
-        <?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
-          <table class="table itemList" id="imageList">
+<form action="<?php echo Route::_('index.php?option=com_joomgallery&view=images'); ?>" method="post"
+	  name="adminForm" id="adminForm">
+	<div class="row">
+		<div class="col-md-12">
+			<div id="j-main-container" class="j-main-container">
+			<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
+				<div class="clearfix"></div>
+        <div class="table-responsive">
+          <table class="table table-striped" id="imageList">
             <caption class="visually-hidden">
               <?php echo Text::_('COM_JOOMGALLERY_IMAGES_TABLE_CAPTION'); ?>,
               <span id="orderedBy"><?php echo Text::_('JGLOBAL_SORTED_BY'); ?> </span>,
@@ -294,6 +297,7 @@ if($saveOrder && !empty($this->items))
             <?php endforeach; ?>
             </tbody>
           </table>
+        </div>
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
 				<?php echo HTMLHelper::_('form.token'); ?>
