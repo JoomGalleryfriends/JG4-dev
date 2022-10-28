@@ -227,6 +227,7 @@ KEY `idx_typename` (`typename`)
 CREATE TABLE IF NOT EXISTS `#__joomgallery_tags` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
+`alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
 `title` VARCHAR(255) NOT NULL DEFAULT "",
 `description` TEXT NOT NULL,
 `access` INT(11) UNSIGNED NOT NULL DEFAULT 0,
