@@ -49,8 +49,7 @@
          maxlength="255"
          filter="string"
          required="true"
-         label="JGLOBAL_TITLE"
-         description="JGLOBAL_FIELD_FIELD_ORDERING_DESC" />
+         label="JGLOBAL_TITLE" />
 
   <field name="group_id"
          query="SELECT id, title FROM #__usergroups"
@@ -64,7 +63,7 @@
          description="COM_JOOMGALLERY_CONFIG_USER_GROUP_DESC" />
 
   <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
-    <fieldset type="tab" name="general-general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
+    <fieldset type="tab" name="general-common" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
       <field name="jg_filesystem"
              type="list"
              default="localhost"
@@ -114,15 +113,13 @@
              label="COM_JOOMGALLERY_CONFIG_REPLACE_METADATA"/>
 
       <field name="jg_replaceshowwarning"
-             type="radio"
+             type="list"
              default="0"
-             class="btn-group"
-             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING"
              description="COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING_LONG" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_GS_TAB_BACKEND_REPLACE_OPTION_2_SHOWWARNING</option>
+        <option value="2">COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING_HINT</option>
       </field>
 
       <field name="jg_useorigfilename"
@@ -351,7 +348,7 @@
   </fieldset>
 
   <fieldset type="tab" name="user" label="COM_JOOMGALLERY_CONFIG_TAB_USER_SETTINGS">
-    <fieldset type="tab" name="user-general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
+    <fieldset type="tab" name="user-common" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
         <field name="jg_userspace"
               type="radio"
               default="1"
