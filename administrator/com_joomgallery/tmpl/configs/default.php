@@ -73,7 +73,7 @@ if ($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" style="min-width:140px">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-25 d-none d-md-table-cell">
                 <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_USER_GROUP', 'a.group_id', $listDirn, $listOrder); ?>

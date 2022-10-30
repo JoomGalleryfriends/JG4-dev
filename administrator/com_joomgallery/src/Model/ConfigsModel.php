@@ -203,10 +203,9 @@ class ConfigsModel extends JoomListModel
 			{
         $search = '%' . str_replace(' ', '%', trim($search)) . '%';
 				$query->where(
-					'(' . $db->quoteName('a.imgtitle') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
-						. ' OR ' . $db->quoteName('a.imgtext') . ' LIKE :search3)'
+					'(' . $db->quoteName('a.title') . ' LIKE :search1)'
 				)
-					->bind([':search1', ':search2', ':search3'], $search);
+					->bind([':search1'], $search);
 			}
 		}
 
