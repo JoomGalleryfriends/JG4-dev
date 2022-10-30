@@ -168,6 +168,7 @@ $this->document->addScriptDeclaration($js);
               <?php endif; ?>
             <?php endforeach; ?>
 
+          <input type="hidden" id="actTab_L2_<?php echo $key_L1; ?>" name="actTab[L2][<?php echo $key_L1; ?>]" value="<?php echo $this->active_tabs['L2'][$key_L1]; ?>" />
           <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
         <?php endif; ?>
 
@@ -214,3 +215,9 @@ $this->document->addScriptDeclaration($js);
 
   </form>
 </div>
+
+<?php /*
+<script>
+  <?php echo $this->javascript; ?>
+</script>
+*/ ?>

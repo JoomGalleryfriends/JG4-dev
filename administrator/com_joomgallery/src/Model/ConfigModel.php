@@ -211,6 +211,10 @@ class ConfigModel extends JoomAdminModel
 	 */
 	public function save($data)
 	{
+	/* // get active tabs and store it to user state
+	$active_tabs = $this->app->input->getArray(array('actTab' => array()));
+	$this->app->setUserState(_JOOM_OPTION.'.edit.config.tab', $active_tabs); */
+
     $mod_items = $this->component->getMVCFactory()->createModel('imagetypes');
     $model     = $this->component->getMVCFactory()->createModel('imagetype');
 
