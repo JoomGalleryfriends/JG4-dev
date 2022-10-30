@@ -28,6 +28,9 @@ HTMLHelper::_('bootstrap.tooltip');
 // Import CSS
 $wa->useStyle('com_joomgallery.admin');
 
+/* // Add js for detecting active tabs
+$wa->useScript('com_joomgallery.activeTabs'); */
+
 // Import json modal
 $importModal = array(
   'selector' => 'import_modal',
@@ -60,26 +63,34 @@ $this->document->addScriptDeclaration($js);
     <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $importModal); ?>
 
     <?php //first level TabSet ?>
-    <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'general')); ?>
+    <?php echo HTMLHelper::_('uitab.startTabSet', 'L1-tabset', array('active' => 'general')); ?>
 
     <?php foreach ($this->fieldsets as $key_L1 => $fieldset_L1) : ?>
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $fieldset_L1['this']->title, Text::_($fieldset_L1['this']->label), true); ?>
+
+      <?php if ($key_L1 == 'permissions' && $this->user->authorise('core.admin','joomgallery')) : ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'L1-tabset', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
+          <?php echo $this->form->getInput('rules'); ?>
+        <?php echo HTMLHelper::_('uitab.endTab'); ?>
+        <?php continue; ?>
+      <?php endif; ?>
+
+      <?php echo HTMLHelper::_('uitab.addTab', 'L1-tabset', $fieldset_L1['this']->title, Text::_($fieldset_L1['this']->label), true); ?>
 
         <?php //second level TabSet ?>
         <?php if (count($fieldset_L1) > 1 && $key_L1 != 'this') : ?>
-          <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'general')); ?>
+          <?php echo HTMLHelper::_('uitab.startTabSet', 'L2-tabset', array('active' => 'general')); ?>
 
             <?php foreach ($this->fieldsets[$key_L1] as $key_L2 => $fieldset_L2) : ?>
               <?php if ($key_L2 != 'this') : ?>
-                <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $fieldset_L2['this']->title, Text::_($fieldset_L2['this']->label), true); ?>
+                <?php echo HTMLHelper::_('uitab.addTab', 'L2-tabset', $fieldset_L2['this']->title, Text::_($fieldset_L2['this']->label), true); ?>
 
                 <?php //third level TabSet ?>
                 <?php if (count($fieldset_L2) > 1 && $key_L2 != 'this') : ?>
-                  <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'general')); ?>
+                  <?php echo HTMLHelper::_('uitab.startTabSet', 'L3-tabset', array('active' => 'general')); ?>
 
                   <?php foreach ($this->fieldsets[$key_L2] as $key_L3 => $fieldset_L3) : ?>
                     <?php if ($key_L3 != 'this') : ?>
-                      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $fieldset_L3['this']->title, Text::_($fieldset_L3['this']->label), true); ?>
+                      <?php echo HTMLHelper::_('uitab.addTab', 'L3-tabset', $fieldset_L3['this']->title, Text::_($fieldset_L3['this']->label), true); ?>
 
                         <?php //third level Fields ?>
                         <div class="row-fluid">
@@ -111,6 +122,7 @@ $this->document->addScriptDeclaration($js);
                     <?php endif; ?>
                   <?php endforeach; ?>
 
+                  <input type="hidden" id="actTab_L3_<?php echo $key_L2; ?>" name="actTab[L3][<?php echo $key_L2; ?>]" value="<?php echo $this->active_tabs['L3'][$key_L2]; ?>" />
                   <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
                 <?php endif; ?>
 
@@ -141,9 +153,11 @@ $this->document->addScriptDeclaration($js);
                 </div>
 
                 <?php echo HTMLHelper::_('uitab.endTab'); ?>
+              
               <?php endif; ?>
             <?php endforeach; ?>
 
+          <input type="hidden" id="actTab_L2_<?php echo $key_L1; ?>" name="actTab[L2][<?php echo $key_L1; ?>]" value="<?php echo $this->active_tabs['L2'][$key_L1]; ?>" />
           <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
         <?php endif; ?>
 
@@ -175,13 +189,10 @@ $this->document->addScriptDeclaration($js);
 
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
     <?php endforeach; ?>
-
-    <?php if (Factory::getUser()->authorise('core.admin','joomgallery')) : ?>
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
-        <?php echo $this->form->getInput('rules'); ?>
-      <?php echo HTMLHelper::_('uitab.endTab'); ?>
-    <?php endif; ?>
-
+    
+    <?php /*
+    <input type="hidden" id="actTab_L1" name="actTab[L1]" value="<?php echo $this->active_tabs['L1']; ?>" />
+    */ ?>
     <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
     <input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
@@ -196,3 +207,9 @@ $this->document->addScriptDeclaration($js);
 
   </form>
 </div>
+
+<?php /*
+<script>
+  <?php echo $this->javascript; ?>
+</script>
+*/ ?>

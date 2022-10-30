@@ -13,11 +13,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Config;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Toolbar\Toolbar;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Form\FormHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
@@ -49,25 +50,52 @@ class HtmlView extends JoomGalleryView
 		$this->state            = $this->get('State');
 		$this->item             = $this->get('Item');
 		$this->form             = $this->get('Form');
-    $this->fieldsets        = array();
-    $this->is_global_config = ($this->item->id === 1) ? true : false;
+    	$this->fieldsets        = array();
+    	$this->is_global_config = ($this->item->id === 1) ? true : false;
     
-    // Add options to the replaceinfo field
-    JoomHelper::addReplaceinfoOptions($this->form);
+		// Add options to the replaceinfo field
+		JoomHelper::addReplaceinfoOptions($this->form);
 
-    // Fill fieldset array
-    foreach($this->form->getFieldsets() as $key => $fieldset)
-    {
-      $parts = \explode('-',$key);
-      $level = \count($parts);
+		// Fill fieldset array
+		foreach($this->form->getFieldsets() as $key => $fieldset)
+		{
+			$parts = \explode('-',$key);
+			$level = \count($parts);
 
-      $fieldset->level = $level;
-      $fieldset->title = \end($parts);
+			$fieldset->level = $level;
+			$fieldset->title = \end($parts);
+			$fieldset->activeChild = 'general';
 
-      $this->setFieldset($key, array('this'=>$fieldset));
-    }
+			$this->setFieldset($key, array('this'=>$fieldset));
+		}
 
-		// Check for errors.
+		// Add permissions fieldset to level 1 fieldsets
+		$permissions = array('name' => 'permissions',
+							'label' => 'JGLOBAL_ACTION_PERMISSIONS_LABEL',
+							'description' => '',
+							'type' => 'tab',
+							'level' => 1,
+							'title' => 'permissions');
+		$this->fieldsets['permission'] = array('this' => (object) $permissions);
+
+		/* // Get active tab array from user state
+		// array(array(path=>general.user, value=>tabname))
+		$input = $this->app->input->getArray(array());
+		if(\key_exists('actTab', $input))
+		{
+			$act_tab = $input['actTab'];
+		}
+		$this->addActiveTabs($this->app->getUserState(_JOOM_OPTION.'.edit.config.tab'), $act_tab);
+
+		// Get javascript to be loaded at the end of body
+		$path = Path::clean(JPATH_ROOT.'/media/com_joomgallery/js/activeTabs.js');
+        ob_start();
+		include $path;
+		$this->javascript = ob_get_contents();
+		ob_end_clean(); */
+
+
+		// Check for errors
 		if(count($errors = $this->get('Errors')))
 		{
 			throw new \Exception(implode("\n", $errors));

@@ -63,7 +63,7 @@
          description="COM_JOOMGALLERY_CONFIG_IMPORT_FILE_DESC" />
 
   <fieldset type="tab" name="general" label="COM_JOOMGALLERY_CONFIG_TAB_GENERAL">
-    <fieldset type="tab" name="general-common" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
+    <fieldset type="tab" name="general-general" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
       <field name="jg_filesystem"
              type="list"
              default="localhost"
@@ -355,7 +355,7 @@
   </fieldset>
 
   <fieldset type="tab" name="user" label="COM_JOOMGALLERY_CONFIG_TAB_USER_SETTINGS">
-    <fieldset type="tab" name="user-common" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
+    <fieldset type="tab" name="user-general" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
         <field name="jg_userspace"
               type="radio"
               default="1"
