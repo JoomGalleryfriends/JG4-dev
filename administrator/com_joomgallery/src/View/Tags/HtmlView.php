@@ -101,7 +101,7 @@ class HtmlView extends JoomGalleryView
         $batch_dropdown = $toolbar->dropdownButton('batch-group')
           ->text('JTOOLBAR_BATCH')
           ->toggleSplit(false)
-          ->icon('fas fa-ellipsis-h')
+          ->icon('fas fa-tags')
           ->buttonClass('btn btn-action')
           ->listCheck(true);
         
