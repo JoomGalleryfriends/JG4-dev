@@ -125,7 +125,7 @@ class HtmlView extends JoomGalleryView
       $dropdown = $toolbar->dropdownButton('status-group')
         ->text('JSTATUS')
         ->toggleSplit(false)
-        ->icon('fas fa-ellipsis-h')
+        ->icon('far fa-check-circle')
         ->buttonClass('btn btn-action')
         ->listCheck(true);
 
@@ -178,7 +178,6 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-
     if($canDo->get('core.admin'))
     {
       $toolbar->preferences('com_joomgallery');
@@ -187,7 +186,6 @@ class HtmlView extends JoomGalleryView
     // Set sidebar action
     Sidebar::setAction('index.php?option=com_joomgallery&view=categories');
   }
-
 
 	/**
 	 * Method to order fields
