@@ -76,6 +76,9 @@ if ($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-25 d-none d-md-table-cell">
+                  <?php echo Text::_('JFIELD_NOTE_LABEL'); ?>
+                </th>
+                <th scope="col" class="w-25 d-none d-md-table-cell">
                 <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_USER_GROUP', 'a.group_id', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-3 d-none d-lg-table-cell">
@@ -157,6 +160,9 @@ if ($saveOrder && !empty($this->items))
                     <?php endif; ?>
                   </div>
                 </th>
+                <td class="small d-none d-md-table-cell">
+                  <?php echo $this->escape($item->note); ?>
+                </td>
                 <td class="d-none d-lg-table-cell">
                   <?php echo $this->escape($item->group_id); ?>
                 </td>

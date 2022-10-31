@@ -1,6 +1,10 @@
 .wrapper .container-main {
   overflow: hidden;
 }
+.btn-secondary {
+  background-color: var(--template-bg-dark-50) !important;
+  border-color: var(--template-bg-dark-50) !important;
+}
 .jcc-color-box {
   float: left;
   width: 15px;
@@ -63,10 +67,16 @@ joomla-field-image .jg_minithumb {
   background-color: #e8e8e8;
 }
 .mt {
-  margin-top: 1rem;
+  margin-top: 1rem !important;
 }
 .mb {
-  margin-bottom: 1rem;
+  margin-bottom: 1rem !important;
+}
+.ml {
+  margin-left: 1rem !important;
+}
+.mr {
+  margin-right: 1rem !important;
 }
 .modal .modal-body {
   margin: 1rem 2rem;

@@ -18,7 +18,6 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
-
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
@@ -28,7 +27,7 @@ HTMLHelper::_('bootstrap.tooltip');
 // Import CSS
 $wa->useStyle('com_joomgallery.admin');
 
-// Import json modal
+// Import modal
 $importModal = array(
   'selector' => 'import_modal',
   'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('import_json')->getAttribute('title')),
@@ -40,16 +39,17 @@ $js  = 'var submitImport = function(element, event) {';
 $js .=     'event.preventDefault();';
 $js .=     'Joomla.submitform("config.import", document.getElementById("config-form"));';
 $js .= '};';
-$this->document->addScriptDeclaration($js);
 
 // Note modal
 $noteModal = array(
   'selector' => 'note_modal',
-  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('note')->getAttribute('label')),
+  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('note')->getAttribute('title')),
                       'footer' => '<button class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'.Text::_('JCLOSE').'">'.Text::_('JCLOSE').'</button>'
                     ),
   'body'     => $this->form->renderField('note'),
 );
+
+$this->document->addScriptDeclaration($js);
 ?>
 
 <div class="jg jg-config">
@@ -58,11 +58,16 @@ $noteModal = array(
     method="post" enctype="multipart/form-data" name="adminForm" id="config-form" class="form-validate form-horizontal">
 
     <div class="row">
-      <div class="col-lg-6 form-horizontal">
+      <div class="col-lg-5 form-horizontal">
         <?php echo $this->form->renderField('title'); ?>
       </div>
-      <div class="col-lg-6 form-horizontal">
+      <div class="col-lg-4 form-horizontal">
         <?php echo $this->form->renderField('group_id'); ?>
+      </div>
+      <div class="col-lg-3 form-horizontal">
+        <div class="control-group ml">
+          <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#note_modal" onclick="event.preventDefault()"><?php echo Text::_($this->form->getField('note')->getAttribute('title')); ?></button>
+        </div>
       </div>
     </div>
 

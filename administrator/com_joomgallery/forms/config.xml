@@ -49,6 +49,7 @@
          rows="5"
          cols="40"
          default=""
+         title="COM_JOOMGALLERY_EDIT_NOTE"
          label="JFIELD_NOTE_LABEL" />
 
   <field name="group_id"
@@ -215,10 +216,10 @@
 
       <field name="jg_dynamicprocessing"
              type="subform"
-             default="{}"
+             min="0"
              multiple="true"
              buttons="add,remove"
-             min="0"
+             default="{}"
              formsource="administrator/components/com_joomgallery/forms/subform_imagedynconvert.xml"
              layout="joomla.form.field.subform.repeatable-config"
              label="COM_JOOMGALLERY_CONFIG_IP_DYNAMIC"
