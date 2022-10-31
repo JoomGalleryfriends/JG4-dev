@@ -43,6 +43,14 @@
          required="true"
          label="JGLOBAL_TITLE" />
 
+  <field name="note"
+         type="textarea"
+         filter="safehtml"
+         rows="5"
+         cols="40"
+         default=""
+         label="JFIELD_NOTE_LABEL" />
+
   <field name="group_id"
          query="SELECT id, title FROM #__usergroups"
          key_field="id"

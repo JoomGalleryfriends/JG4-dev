@@ -37,68 +37,15 @@ class ConfigsModel extends JoomListModel
 	{
 		if(empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array(
+      $config['filter_fields'] = array(
 				'id', 'a.id',
+        'group_id', 'a.group_id',
 				'published', 'a.published',
 				'ordering', 'a.ordering',
 				'created_by', 'a.created_by',
 				'modified_by', 'a.modified_by',
-				'jg_pathftpupload', 'a.jg_pathftpupload',
-				'jg_wmfile', 'a.jg_wmfile',
-				'jg_use_real_paths', 'a.jg_use_real_paths',
-				'jg_checkupdate', 'a.jg_checkupdate',
-				'jg_listbox_max_items', 'a.jg_listbox_max_items',
 				'title', 'a.title',
-				'jg_replaceinfo', 'a.jg_replaceinfo',
-				'jg_replaceshowwarning', 'a.jg_replaceshowwarning',
-				'jg_useorigfilename', 'a.jg_useorigfilename',
-				'jg_uploadorder', 'a.jg_uploadorder',
-				'jg_filenamenumber', 'a.jg_filenamenumber',
-				'jg_delete_original', 'a.jg_delete_original',
-				'jg_imgprocessor', 'a.jg_imgprocessor',
-				'jg_fastgd2creation', 'a.jg_fastgd2creation',
-				'jg_impath', 'a.jg_impath',
-				'jg_staticprocessing', 'a.jg_staticprocessing',
-				'jg_dynamicprocessing', 'a.jg_dynamicprocessing',
-				'jg_msg_upload_type', 'a.jg_msg_upload_type',
-				'jg_msg_upload_recipients', 'a.jg_msg_upload_recipients',
-				'jg_msg_download_type', 'a.jg_msg_download_type',
-				'jg_msg_download_recipients', 'a.jg_msg_download_recipients',
-				'jg_msg_zipdownload', 'a.jg_msg_zipdownload',
-				'jg_msg_comment_type', 'a.jg_msg_comment_type',
-				'jg_msg_comment_recipients', 'a.jg_msg_comment_recipients',
-				'jg_msg_comment_toowner', 'a.jg_msg_comment_toowner',
-				'jg_msg_report_type', 'a.jg_msg_report_type',
-				'jg_msg_report_recipients', 'a.jg_msg_report_recipients',
-				'jg_msg_report_toowner', 'a.jg_msg_report_toowner',
-				'jg_msg_rejectimg_type', 'a.jg_msg_rejectimg_type',
-				'jg_msg_global_from', 'a.jg_msg_global_from',
-				'group_id', 'a.group_id',
-				'jg_userspace', 'a.jg_userspace',
-				'jg_approve', 'a.jg_approve',
-				'jg_maxusercat', 'a.jg_maxusercat',
-				'jg_maxuserimage', 'a.jg_maxuserimage',
-				'jg_maxuserimage_timespan', 'a.jg_maxuserimage_timespan',
-				'jg_maxfilesize', 'a.jg_maxfilesize',
-				'jg_newpiccopyright', 'a.jg_newpiccopyright',
-				'jg_uploaddefaultcat', 'a.jg_uploaddefaultcat',
-				'jg_useruploadsingle', 'a.jg_useruploadsingle',
-				'jg_maxuploadfields', 'a.jg_maxuploadfields',
-				'jg_useruploadajax', 'a.jg_useruploadajax',
-				'jg_useruploadbatch', 'a.jg_useruploadbatch',
-				'jg_special_upload', 'a.jg_special_upload',
-				'jg_newpicnote', 'a.jg_newpicnote',
-				'jg_redirect_after_upload', 'a.jg_redirect_after_upload',
-				'jg_download', 'a.jg_download',
-				'jg_download_hint', 'a.jg_download_hint',
-				'jg_downloadfile', 'a.jg_downloadfile',
-				'jg_downloadwithwatermark', 'a.jg_downloadwithwatermark',
-				'jg_showrating', 'a.jg_showrating',
-				'jg_maxvoting', 'a.jg_maxvoting',
-				'jg_ratingcalctype', 'a.jg_ratingcalctype',
-				'jg_votingonlyonce', 'a.jg_votingonlyonce',
-				'jg_report_images', 'a.jg_report_images',
-				'jg_report_hint', 'a.jg_report_hint',
+        'note', 'a.note'
 			);
 		}
 
@@ -203,9 +150,9 @@ class ConfigsModel extends JoomListModel
 			{
         $search = '%' . str_replace(' ', '%', trim($search)) . '%';
 				$query->where(
-					'(' . $db->quoteName('a.title') . ' LIKE :search1)'
+					'(' . $db->quoteName('a.title') . ' LIKE :search1 OR ' . $db->quoteName('a.note') . ' LIKE :search2)'
 				)
-					->bind([':search1'], $search);
+					->bind([':search1', ':search2'], $search);
 			}
 		}
 

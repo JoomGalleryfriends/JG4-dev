@@ -34,8 +34,8 @@ $wa->useScript('com_joomgallery.activeTabs'); */
 // Import json modal
 $importModal = array(
   'selector' => 'import_modal',
-  'params'   => array('title'  => 'Global Configuration'.': '.Text::_($this->form->getField('import_json')->getAttribute('title')),
-                      'footer' => '<button class="btn btn-primary" onclick="submitImport(this, event)">'.Text::_('COM_JOOMGALLERY_IMPORT').'</button>'
+  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('import_json')->getAttribute('title')),
+                      'footer' => '<button class="btn btn-primary" onclick="submitImport(this, event)" aria-label="'.Text::_('COM_JOOMGALLERY_IMPORT').'">'.Text::_('COM_JOOMGALLERY_IMPORT').'</button>'
                      ),
   'body'     => $this->form->renderField('import_json'),
 );
@@ -44,6 +44,15 @@ $js .=     'event.preventDefault();';
 $js .=     'Joomla.submitform("config.import", document.getElementById("config-form"));';
 $js .= '};';
 $this->document->addScriptDeclaration($js);
+
+// Note modal
+$noteModal = array(
+  'selector' => 'note_modal',
+  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('note')->getAttribute('label')),
+                      'footer' => '<button class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'.Text::_('JCLOSE').'">'.Text::_('JCLOSE').'</button>'
+                    ),
+  'body'     => $this->form->renderField('note'),
+);
 ?>
 
 <div class="jg jg-config">
@@ -60,6 +69,7 @@ $this->document->addScriptDeclaration($js);
       </div>
     </div>
 
+    <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $noteModal); ?>
     <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $importModal); ?>
 
     <?php //first level TabSet ?>
