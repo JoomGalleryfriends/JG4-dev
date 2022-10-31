@@ -50,15 +50,6 @@ $noteModal = array(
 );
 
 $this->document->addScriptDeclaration($js);
-
-// Note modal
-$noteModal = array(
-  'selector' => 'note_modal',
-  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('note')->getAttribute('label')),
-                      'footer' => '<button class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'.Text::_('JCLOSE').'">'.Text::_('JCLOSE').'</button>'
-                    ),
-  'body'     => $this->form->renderField('note'),
-);
 ?>
 
 <div class="jg jg-config">
