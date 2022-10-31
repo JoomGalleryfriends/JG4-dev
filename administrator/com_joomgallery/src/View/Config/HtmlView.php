@@ -64,7 +64,6 @@ class HtmlView extends JoomGalleryView
 
 			$fieldset->level = $level;
 			$fieldset->title = \end($parts);
-			$fieldset->activeChild = 'general';
 
 			$this->setFieldset($key, array('this'=>$fieldset));
 		}
@@ -77,22 +76,6 @@ class HtmlView extends JoomGalleryView
 							'level' => 1,
 							'title' => 'permissions');
 		$this->fieldsets['permission'] = array('this' => (object) $permissions);
-
-		/* // Get active tab array from user state
-		// array(array(path=>general.user, value=>tabname))
-		$input = $this->app->input->getArray(array());
-		if(\key_exists('actTab', $input))
-		{
-			$act_tab = $input['actTab'];
-		}
-		$this->addActiveTabs($this->app->getUserState(_JOOM_OPTION.'.edit.config.tab'), $act_tab);
-
-		// Get javascript to be loaded at the end of body
-		$path = Path::clean(JPATH_ROOT.'/media/com_joomgallery/js/activeTabs.js');
-        ob_start();
-		include $path;
-		$this->javascript = ob_get_contents();
-		ob_end_clean(); */
 
 
 		// Check for errors
