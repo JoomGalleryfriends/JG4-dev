@@ -134,16 +134,6 @@ class HtmlView extends JoomGalleryView
 			ToolbarHelper::custom('config.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 		}
 
-    $note_modal_opt = array(
-      'selector'=> 'note_modal',
-      'doTask' => '',
-      'btnClass' => 'button-import btn btn-primary',
-      'htmlAttributes' => '',
-      'class' => 'icon-tag',
-      'text' => Text::_('JFIELD_NOTE_LABEL'));
-    $note_modal_btn = LayoutHelper::render('joomla.toolbar.popup', $note_modal_opt);
-    $toolbar->appendButton('Custom', $note_modal_btn);
-
 		if(!$isNew)
 		{
 			// $resetGroup = $toolbar->dropdownButton('reset-group')

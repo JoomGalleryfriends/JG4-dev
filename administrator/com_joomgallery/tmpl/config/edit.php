@@ -50,6 +50,8 @@ $noteModal = array(
 );
 
 $this->document->addScriptDeclaration($js);
+?>
+
 <div class="jg jg-config">
   <form
     action="<?php echo Route::_('index.php?option=com_joomgallery&layout=edit&id=' . (int) $this->item->id); ?>"
