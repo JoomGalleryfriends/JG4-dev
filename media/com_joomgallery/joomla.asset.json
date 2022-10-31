@@ -29,14 +29,6 @@
       }
     },
     {
-      "name": "com_joomgallery.activeTabs",
-      "type": "script",
-      "uri": "com_joomgallery/activeTabs.js",
-      "attributes": {
-        "defer": true
-      }
-    },
-    {
       "name": "com_joomgallery.list",
       "type": "style",
       "uri": "com_joomgallery/list.css"
