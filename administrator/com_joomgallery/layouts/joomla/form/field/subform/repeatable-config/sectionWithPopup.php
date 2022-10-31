@@ -30,6 +30,11 @@ if($group == 'jg_staticprocessing1' || $group == 'jg_staticprocessing2')
 {
   $form->setFieldAttribute('jg_imgtype','readonly',true);
 }
+
+if($group == 'jg_staticprocessing0' || $group == 'jg_staticprocessing1' || $group == 'jg_staticprocessing2')
+{
+  $form->setFieldAttribute('jg_imgtypename','readonly',true);
+}
 ?>
 
 <tr class="subform-repeatable-group" data-base-name="<?php echo $basegroup; ?>" data-group="<?php echo $group; ?>">
