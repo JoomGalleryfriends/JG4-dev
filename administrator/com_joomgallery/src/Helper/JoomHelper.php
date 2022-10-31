@@ -301,8 +301,16 @@ class JoomHelper
     {
       if(\is_numeric($img))
       {
-        // get image based on ID
-        $img = self::getRecord('image', $img);
+        if($img == 0)
+        {
+          // ID = 0 given
+          return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
+        }
+        else
+        {
+          // get image based on ID
+          $img = self::getRecord('image', $img);
+        }
       }
       elseif(\is_string($img))
       {
