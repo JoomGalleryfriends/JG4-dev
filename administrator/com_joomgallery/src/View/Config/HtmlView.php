@@ -75,7 +75,7 @@ class HtmlView extends JoomGalleryView
 							'type' => 'tab',
 							'level' => 1,
 							'title' => 'permissions');
-		$this->fieldsets['permission'] = array('this' => (object) $permissions);
+		$this->fieldsets['permissions'] = array('this' => (object) $permissions);
 
 
 		// Check for errors
