@@ -5,6 +5,9 @@
   background-color: var(--template-bg-dark-50) !important;
   border-color: var(--template-bg-dark-50) !important;
 }
+.head-row .control-group .control-label {
+  width: 150px;
+}
 .jcc-color-box {
   float: left;
   width: 15px;

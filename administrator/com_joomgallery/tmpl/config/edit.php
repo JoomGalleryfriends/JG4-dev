@@ -68,16 +68,16 @@ $this->document->addScriptDeclaration($js);
     action="<?php echo Route::_('index.php?option=com_joomgallery&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" enctype="multipart/form-data" name="adminForm" id="config-form" class="form-validate form-horizontal">
 
-    <div class="row">
+    <div class="row head-row">
       <div class="col-lg-5 form-horizontal">
         <?php echo $this->form->renderField('title'); ?>
       </div>
-      <div class="col-lg-4 form-horizontal">
+      <div class="col-lg-5 form-horizontal">
         <?php echo $this->form->renderField('group_id'); ?>
       </div>
-      <div class="col-lg-3 form-horizontal">
+      <div class="col-lg-2 form-horizontal">
         <div class="control-group ml">
-          <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#note_modal" onclick="event.preventDefault()"><?php echo Text::_($this->form->getField('note')->getAttribute('title')); ?></button>
+          <a href="#" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#note_modal" onclick="event.preventDefault()"><?php echo Text::_($this->form->getField('note')->getAttribute('title')); ?></a>
         </div>
       </div>
     </div>
