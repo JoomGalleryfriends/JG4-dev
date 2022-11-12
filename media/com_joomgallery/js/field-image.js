@@ -12,7 +12,7 @@
     }
 
     static get observedAttributes() {
-      return ['url', 'modal', 'modal-width', 'modal-height', 'input', 'input-name', 'button-select'];
+      return ['url', 'modal', 'modal-width', 'modal-height', 'input', 'input-name', 'input-img', 'button-select'];
     }
 
     get url() {
@@ -55,6 +55,14 @@
       this.setAttribute('input', value);
     }
 
+    get inputImgId() {
+      return this.getAttribute('input-img');
+    }
+
+    set inputImgId(value) {
+      this.setAttribute('input-img', value);
+    }
+
     get inputNameClass() {
       return this.getAttribute('input-name');
     }
@@ -77,6 +85,7 @@
       this.modalBody = this.querySelector('.modal-body');
       this.input = this.querySelector(this.inputId);
       this.inputName = this.querySelector(this.inputNameClass);
+      this.inputImg = this.querySelector(this.inputImgId);
       this.buttonSelect = this.querySelector(this.buttonSelectClass); // Bootstrap modal init
 
       if (this.modal && window.bootstrap && window.bootstrap.Modal && !window.bootstrap.Modal.getInstance(this.modal)) {
@@ -156,10 +165,25 @@
       this.modalBody.innerHTML = '';
     } // Sets the value
 
+    changeImgPath(img_path, newid) {
+      let split_path = img_path.split('&');
+
+      // Exchange image id
+      split_path.forEach(function (value, i) {
+        if(value.includes('id=')) {
+          split_path[i] = 'id='+newid.toString();
+        }
+      });
+
+      return split_path.join('&');
+    } // Change image id in src path of image
+
 
     setValue(value, name) {
       this.input.setAttribute('value', value);
       this.inputName.setAttribute('value', name || value); // trigger change event both on the input and on the custom element
+      let img_path = this.inputImg.getAttribute('src');
+      this.inputImg.setAttribute('src', this.changeImgPath(img_path, value));
 
       this.input.dispatchEvent(new Event('change'));
       this.dispatchEvent(new CustomEvent('change', {

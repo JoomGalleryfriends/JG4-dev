@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -124,9 +124,10 @@ if(!$readonly)
 		modal-height="400px"
 		input=".field-image-input"
 		input-name=".field-image-input-name"
+    input-img="#jform_thumbnail_img"
 		button-select=".button-select">
 	<div class="input-group">
-    <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
+    <img id="jform_thumbnail_img" class="jg_minithumb" src="<?php echo JoomHelper::getImg($value, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
 		<input <?php echo ArrayHelper::toString($inputAttributes), $dataAttribute; ?> readonly>
 		<?php if (!$readonly) : ?>
 			<button type="button" class="btn btn-primary button-select" title="<?php echo Text::_('COM_JOOMGALLERY_FIELDS_SELECT_IMAGE'); ?>">

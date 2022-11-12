@@ -22,7 +22,7 @@ use Joomla\CMS\Language\Text;
  *
  * @since  4.0.0
  */
-class JGImageField extends FormField
+class JgimageField extends FormField
 {
 	/**
 	 * The form field type.
