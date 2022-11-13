@@ -117,10 +117,18 @@ class JgimageField extends FormField
 		// Initialize value
 		$name = Text::_('COM_JOOMGALLERY_FIELDS_SELECT_IMAGE');
 
-		if(is_numeric($this->value) && $this->value != 0)
+		if(is_numeric($this->value))
 		{
       $img = JoomHelper::getRecord('image', $this->value);
-			$name = $img->imgtitle;
+      
+      if($this->value === 0 || !$img)
+      {
+        $name = '';
+      }
+      else
+      {
+        $name = $img->imgtitle;
+      }			
 		}
 
 		// User lookup went wrong, we assign the value instead.

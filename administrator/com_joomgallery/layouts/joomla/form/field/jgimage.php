@@ -54,6 +54,11 @@ $modalHTML = '';
 $uri = new Uri('index.php?option=com_joomgallery&view=images&layout=modal&tmpl=component&required=0');
 $uri->setVar('field', $this->escape($id));
 
+if(empty($value))
+{
+  $value = 0;
+}
+
 if($required)
 {
 	$uri->setVar('required', 1);
