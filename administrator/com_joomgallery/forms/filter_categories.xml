@@ -18,7 +18,7 @@
 
         <field
               name="category"
-              type="categoryedit"
+              type="jgcategorydropdown"
               label="COM_JOOMGALLERY_COMMON_ALL"
               onchange="this.form.submit();"
               show_root="false"

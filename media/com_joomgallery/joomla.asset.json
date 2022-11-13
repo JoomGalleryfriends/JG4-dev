@@ -40,6 +40,14 @@
       "attributes": {
         "type": "module"
       }
+    },
+    {
+      "name": "com_joomgallery.field-category",
+      "type": "script",
+      "uri": "com_joomgallery/field-category.js",
+      "attributes": {
+        "type": "module"
+      }
     }
   ]
 }
