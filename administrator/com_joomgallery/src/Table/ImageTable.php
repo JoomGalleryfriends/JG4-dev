@@ -86,6 +86,37 @@ class ImageTable extends Table implements VersionableTableInterface
 		return $this->typeAlias;
 	}
 
+  /**
+     * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
+     *
+     * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
+     *                           If not set the instance property value is used.
+     * @param   boolean  $reset  True to reset the default values before loading the new row.
+     *
+     * @return  boolean  True if successful. False if row not found.
+     *
+     * @since   1.7.0
+     * @throws  \InvalidArgumentException
+     * @throws  \RuntimeException
+     * @throws  \UnexpectedValueException
+     */
+    public function load($keys = null, $reset = true)
+    {
+      $success = parent::load($keys, $reset);
+
+      if($success)
+      {
+        // Record successfully loaded
+        // load Tags
+        $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
+        $tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+
+        $this->tags = $tags_model->getMappedItems($this->id);
+      }
+      
+      return $success;
+    }
+
 	/**
 	 * Overloaded bind function to pre-process the params.
 	 *
@@ -230,7 +261,15 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function store($updateNulls = true)
 	{
-		return parent::store($updateNulls);
+    $success = parent::store($updateNulls);
+
+    if($success)
+    {
+      // Record successfully stored
+      // store Tags
+    }
+
+    return $success;
 	}
 
 	/**

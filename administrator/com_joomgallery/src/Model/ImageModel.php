@@ -331,7 +331,7 @@ class ImageModel extends JoomAdminModel
 		// Create tags
 		if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
 		{
-			$table->newTags = $data['tags'];
+			$table->new_tags = $data['tags'];
 		}
 
     // Change language to 'All' if multilangugae is not enabled
