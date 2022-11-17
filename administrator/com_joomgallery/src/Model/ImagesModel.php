@@ -311,7 +311,7 @@ class ImagesModel extends JoomListModel
           $row = 'a.featured';
         }
 
-        if($state)
+        if($state || $state === 0)
         {
           $query->where($db->quoteName($row) . ' = :state')
 					->bind(':state', $state, ParameterType::INTEGER);
