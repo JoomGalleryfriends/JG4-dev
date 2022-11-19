@@ -265,8 +265,22 @@ class ImageTable extends Table implements VersionableTableInterface
 
     if($success)
     {
-      // Record successfully stored
-      // store Tags
+      	// Record successfully stored
+     	// store Tags
+	  	$com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
+    	$tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+
+		# Create/Delete tags
+		if(!$tags_model->storeTagsList($this->tags))
+		{
+			$success = false;
+		}
+
+		# Add/Remove tags mapping
+		if(!$tags_model->updateMapping($this->tags, $this->id))
+		{
+			$success = false;
+		}
     }
 
     return $success;
