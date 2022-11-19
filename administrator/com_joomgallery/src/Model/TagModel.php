@@ -181,7 +181,7 @@ class TagModel extends JoomAdminModel
 	 */
 	public function getItem($pk = null)
 	{
-    if(!\is_numeric($pk))
+    if(!\is_null($pk) && !\is_numeric($pk))
     {
       // get item based on alias or title
       if(!$pk = $this->getItemID($pk))
