@@ -276,7 +276,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$success = false;
 		}
 
-		# Add/Remove tags mapping
+		# Update tags mapping
 		if(!$tags_model->updateMapping($this->tags, $this->id))
 		{
 			$success = false;
