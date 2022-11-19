@@ -80,7 +80,7 @@
     <field name="tags"
            type="jgtag"
            label="JTAG"
-           description="JTAG_DESC"
+           description="COM_JOOMGALLERY_FIELDS_TAG_DESC"
            class="inputbox span12 small"
            multiple="true" />
 
