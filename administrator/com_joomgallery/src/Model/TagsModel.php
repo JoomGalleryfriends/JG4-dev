@@ -430,31 +430,115 @@ class TagsModel extends JoomListModel
 	 * 
 	 * @param   array  $tags  List of tags
 	 *
-	 * @return  True on success, False otherwise
+	 * @return  array  List of tags on success, False otherwise
 	 *
 	 * @since   4.0.0
 	 */
 	public function storeTagsList($tags)
 	{
-		$available = $this->getItems;
+		$com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
 
-		return true;
+    foreach($tags as $key => $tag)
+    {
+      if(strpos($tag, '#new#') !== false)
+      {
+        $title = \str_replace('#new#', '', $tag);
+
+        // create tag
+        $data = array();
+        $data['id']        = '0';
+        $data['title']     = $title;
+        $data['published'] = '1';
+        $data['access']    = '1';
+        $data['language']  = '*';
+        $data['description']  = '';
+
+        if(!$tag_model->save($data))
+        {
+          $this->setError($tag_model->getError());
+          return false;
+        }
+        else
+        {
+          // update tags list entry on success
+          $tags[$key] = \strval($tag_model->getItem($title)->id);
+        }
+      }
+    }
+
+		return $tags;
 	}
 
 	/**
 	 * Update mapping between tags and image
 	 * 
-	 * @param   array  $tags    List of tags
-	 * @param   int    $img_id  Id of the image
+	 * @param   array  $new_tags   List of tags to be mapped to the image
+	 * @param   int    $img_id     Id of the image
 	 *
 	 * @return  True on success, False otherwise
 	 *
 	 * @since   4.0.0
 	 */
-	public function updateMapping($tags, $img_id)
+	public function updateMapping($new_tags, $img_id)
 	{
-		$available = $this->getItems;
+    $new_tags = ArrayHelper::toInteger($new_tags);
 
-		return true;
+		$current_tags = $this->idArray($this->getMappedItems($img_id));
+    $current_tags = ArrayHelper::toInteger($current_tags);
+
+    $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+
+    $success = true;
+    foreach($new_tags as $tag_id)
+    {
+      if(!\in_array($tag_id, $current_tags))
+      {
+        // add tag from mapping
+        if(!$tag_model->addMapping($tag_id, $img_id))
+        {
+          $this->setError($tag_model->getError());
+          $success = false;
+        }
+      }
+    }
+
+    foreach($current_tags as $tag_id)
+    {
+      if(!\in_array($tag_id, $new_tags))
+      {
+        // remove tag from mapping
+        if(!$tag_model->removeMapping($tag_id, $img_id))
+        {
+          $this->setError($tag_model->getError());
+          $success = false;
+        }
+      }
+    }
+
+		return $success;
 	}
+
+
+  /**
+	 * Convert a list of tag objects to a list of tag ids
+	 * 
+	 * @param   array  $objectlist   List of tag objects
+	 *
+	 * @return  array  List of tag ids
+	 *
+	 * @since   4.0.0
+	 */
+  protected function idArray($objectlist)
+  {
+    $array = array();
+
+    foreach($objectlist as $obj)
+    {
+      \array_push($array, $obj->id);
+    }
+
+    return $array;
+  }
 }
