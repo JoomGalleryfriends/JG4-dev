@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 \defined('JPATH_PLATFORM') or die;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\Config;
+use \Joomla\CMS\Component\ComponentHelper;
 
 /**
 * Trait to implement ConfigServiceInterface
@@ -43,17 +44,18 @@ trait ConfigServiceTrait
 	}
 
   /**
-	 * Creates the config helper class
-   *
-   * @param   string  $inheritance  Inheritance method to be used
+	 * Creates the config helper class based on the selected
+   * inheritance method in global component settings
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createConfig($inheritance = 'default'): void
+	public function createConfig(): void
 	{
-    switch ($inheritance)
+    $inheritance = ComponentHelper::getParams(_JOOM_OPTION)->get('inheritance_config', 'default');
+
+    switch($inheritance)
     {
       default:
       $this->config = new Config;

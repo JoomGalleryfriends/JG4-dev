@@ -59,6 +59,11 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
+    // Test config service
+    $this->component->createConfig();
+    $config = $this->component->getConfig();
+    dump($config);
+
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();

@@ -29,15 +29,14 @@ interface ConfigServiceInterface
 	private $config;
 
   /**
-	 * Creates the config helper class
-   *
-   * @param   string  $inheritance  Inheritance method to be used
+	 * Creates the config helper class based on the selected
+   * inheritance method in global component settings
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createConfig($inheritance): void;
+	public function createConfig(): void;
 
 	/**
 	 * Returns the config helper class.
