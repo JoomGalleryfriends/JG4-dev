@@ -14,7 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Object\CMSObject;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 
@@ -38,11 +38,11 @@ class Config implements ConfigInterface
   protected $subforms = array('jg_replaceinfo', 'jg_staticprocessing', 'jg_dynamicprocessing', 'jg_imgtypewtmsettings');
 
   /**
-   * Table object of the `#_joomgallery_configs` db table
+   * Item object of the `#_joomgallery_configs` db table
    *
-   * @var \Joomla\CMS\Table\Table
+   * @var \Joomla\CMS\Object\CMSObject
    */
-  protected $table = null;
+  protected $item = null;
 
   /**
    * Constructor
@@ -150,18 +150,13 @@ class Config implements ConfigInterface
 	 */
 	private function getParamsByID($id = 1)
 	{
-    if($this->table == null)
-    {
-      $this->table = Table::getInstance('ConfigTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
-    }
+    $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
+    $model   = $com_obj->getMVCFactory()->createModel('Config');
 
-    $id     = intval($id);
+    $id          = intval($id);
+    $this->item = $model->getItem($id);
 
-    $this->table->load($id);
-    $params = $this->table->getProperties();
-    $this->table->reset();
-
-    return $params;
+    return $this->item->getProperties();
   }
 
   /**

@@ -118,9 +118,6 @@ class ConfigModel extends JoomAdminModel
 			}
 
 			$data = $this->item;
-
-      // Set jg_staticprocessing data
-      $data->jg_staticprocessing = $this->getStaticprocessing();
 		}
 
 		return $data;
@@ -145,7 +142,10 @@ class ConfigModel extends JoomAdminModel
       }
     }
 
-    return $item;		
+    // Set jg_staticprocessing data
+    $item->jg_staticprocessing = $this->getStaticprocessing();
+
+    return $item;
 	}
 
 	/**
