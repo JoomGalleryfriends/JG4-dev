@@ -16,7 +16,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
-use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Configuration Class
@@ -45,18 +46,79 @@ class Config implements ConfigInterface
   protected $item = null;
 
   /**
-   * Constructor
+   * Content for which the settings has to be calculated
    *
-   * @param   int  $id  row id of the config record to be loaded
+   * @var string
+   */
+  protected $context = 'com_joomgallery';
+
+  /**
+   * IDs of the different content
+   *
+   * @var array
+   */
+  protected $ids = array('user' => null, 'category' => null, 'image' => null, 'menu' => null);
+
+  /**
+   * Loading the calculated settings for a specific content
+   * to class properties
+   *
+   * @param   string   $context   Context of the content (default: com_joomgallery)
+   * @param   int      $id        ID of the content if needed (default: null)
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function __construct($id = 1)
+  public function __construct($context = 'com_joomgallery', $id = null)
   {
-    // get global configuration set
-    $glob_params = $this->getParamsByID($id);
+    // Check context
+    $context_array = \explode('.', $context);
+    $context_ok    = true;
+
+    if($context_array[0] != 'com_joomgallery' || !\array_key_exists($context_array[1], $this->ids) || \count($context_array) > 2)
+    {
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
+
+      $context_ok = false;
+    }
+
+    // Completing $this->ids based on given context
+    switch($context_array[1])
+    {
+      case 'user':
+        $this->ids['user'] = (int) $id;
+        break;
+
+      case 'category':
+        $this->ids['user']     = Factory::getUser()->get('id');
+        $this->ids['category'] = (int) $id;
+        break;
+
+      case 'image':
+        $img = JoomHelper::getRecord('image', $id);
+
+        $this->ids['user']     = Factory::getUser()->get('id');
+        $this->ids['image']    = (int) $id;
+        $this->ids['category'] = (int) $img->catid;
+        break;
+
+      case 'menu':
+        $this->ids['user'] = Factory::getUser()->get('id');
+        $this->ids['menu'] = (int) $id;
+        // TBD
+        // Depending on frontend views and router 
+        break;
+      
+      default:
+        $this->ids['user'] = Factory::getUser()->get('id');
+        break;
+    }
+
+    //---------Level 1---------
+
+    // Get global configuration set
+    $glob_params = $this->getParamsByID(1);
 
     if($glob_params == false || empty($glob_params))
     {
@@ -65,32 +127,28 @@ class Config implements ConfigInterface
       return;
     }
 
-    // write config values to class properties
+    // Write config values to class properties
     $this->setParamsToClass($glob_params);
 
-    // get user specific configuration set
-    $user_params = $this->getParamsByGroups();
+    //---------Level 2---------
 
-    // override class properties where needed
+    // Get user specific configuration set
+    $user_params = $this->getParamsByUser($this->ids['user']);
+
+    // Override class properties where needed
     if($user_params != false && !empty($user_params))
     {
       $this->setParamsToClass($user_params);
     }
 
-    if(Factory::getApplication()->isClient('site'))
+    if(!$context_ok)
     {
-      // get config values from current category
-
-      // override class properties where needed
-
-      // get config values from current image
-
-      // override class properties where needed
-
-      // get config values from current manuitem
-
-      // override class properties where needed
+      return;
     }
+
+    //---------Level 3---------
+
+    // Get category specific configuration set
   }
 
   /**
@@ -162,16 +220,18 @@ class Config implements ConfigInterface
   /**
 	 * Read out the row from `#_joomgallery_configs` table
    * with the biggest group_id number
-   * and correspond to the user group of the current user
+   * and correspond to the user group of the given user
 	 *
+   * @param   int    $id  id of the user
+   * 
 	 * @return  array  record values
 	 *
 	 * @since   4.0.0
 	 */
-  private function getParamsByGroups()
+  private function getParamsByUser($id)
   {
     // get array of all user groups the current user is in
-    $user    = Factory::getUser();
+    $user    = Factory::getUser($id);
     $groups  = $user->get('groups');
 
     // get a db connection
