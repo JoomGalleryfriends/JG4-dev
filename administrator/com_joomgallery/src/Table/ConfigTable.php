@@ -161,42 +161,34 @@ class ConfigTable extends Table implements VersionableTableInterface
     // Support for multiple field: jg_ratingcalctype
 		$this->multipleFieldSupport($array, 'jg_ratingcalctype');
     
-    if($array['jg_maxusercat'] === '')
-		{
-			$array['jg_maxusercat'] = NULL;
-			$this->jg_maxusercat = NULL;
-		}
+    // Support for number field: jg_maxusercat
+    $this->numberFieldSupport($array, 'jg_maxusercat');
 
-		if($array['jg_maxuserimage'] === '')
-		{
-			$array['jg_maxuserimage'] = NULL;
-			$this->jg_maxuserimage = NULL;
-		}
+    // Support for number field: jg_maxuserimage
+    $this->numberFieldSupport($array, 'jg_maxuserimage');
 
-		if($array['jg_maxuserimage_timespan'] === '')
-		{
-			$array['jg_maxuserimage_timespan'] = NULL;
-			$this->jg_maxuserimage_timespan = NULL;
-		}
+    // Support for number field: jg_maxuserimage_timespan
+    $this->numberFieldSupport($array, 'jg_maxuserimage_timespan');
 
-		if($array['jg_maxfilesize'] === '')
-		{
-			$array['jg_maxfilesize'] = NULL;
-			$this->jg_maxfilesize = NULL;
-		}
+    // Support for number field: jg_maxfilesize
+    $this->numberFieldSupport($array, 'jg_maxfilesize');
 
-    if($array['jg_maxuploadfields'] === '')
-		{
-			$array['jg_maxuploadfields'] = NULL;
-			$this->jg_maxuploadfields = NULL;
-		}
+    // Support for number field: jg_maxuploadfields
+    $this->numberFieldSupport($array, 'jg_maxuploadfields');
 
-		if($array['jg_maxvoting'] === '')
-		{
-			$array['jg_maxvoting'] = NULL;
-			$this->jg_maxvoting = NULL;
-		}
+    // Support for number field: jg_maxvoting
+    $this->numberFieldSupport($array, 'jg_maxvoting');
 
+    // Support for multiple subform field: jg_replaceinfo
+    $this->subformFieldSupport($array, 'jg_replaceinfo');
+
+    // Support for multiple subform field: jg_staticprocessing
+    $this->subformFieldSupport($array, 'jg_staticprocessing');
+
+    // Support for multiple subform field: jg_dynamicprocessing
+    $this->subformFieldSupport($array, 'jg_dynamicprocessing');
+
+    // 
 		if(isset($array['params']) && is_array($array['params']))
 		{
 			$registry = new Registry;
@@ -443,5 +435,38 @@ class ConfigTable extends Table implements VersionableTableInterface
 		{
 			$data[$fieldName] = '';
 		}
+  }
+
+  /**
+   * Support for number field
+   *
+   * @param   array   $data       Form data
+   * @param   string  $fieldName  Name of the field
+   *
+   * @return  void
+   */
+  protected function numberFieldSupport(&$data, $fieldName)
+  {
+    if($data[$fieldName] === '')
+		{
+			$data[$fieldName] = null;
+			$this->{$fieldName} = null;
+		}
+  }
+
+  /**
+   * Support for number field
+   *
+   * @param   array   $data       Form data
+   * @param   string  $fieldName  Name of the field
+   *
+   * @return  void
+   */
+  protected function subformFieldSupport(&$data, $fieldName)
+  {
+    if((!empty($data[$fieldName]) && (is_array($data[$fieldName]))))
+    {
+      \array_push($this->_jsonEncode, $fieldName);
+    }
   }
 }

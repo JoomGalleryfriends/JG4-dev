@@ -24,7 +24,7 @@ use \Joomla\CMS\Language\Text;
  *
  * @since  4.0.0
  */
-class ImgprocessorlistField extends ListField
+class ImgProcessorListField extends ListField
 {
 	/**
 	 * The form field type.
