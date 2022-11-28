@@ -83,7 +83,7 @@ class HtmlView extends JoomGalleryView
     $state = $this->get('State');
     $canDo = JoomHelper::getActions('category');
 
-    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CATEGORY_MANAGER'), "folder-open");
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CATEGORIES'), "folder-open");
 
     $toolbar = Toolbar::getInstance('toolbar');
 
