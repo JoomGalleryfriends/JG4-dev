@@ -38,6 +38,7 @@ if(isset($id) && ($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamic
   $addClass = 'mb-5';
 }
 
+$unused          = (strpos($class, 'unused') !== false) ? 'unused' : '';
 $class           = empty($options['class']) ? '' : ' ' . $options['class'];
 $rel             = empty($options['rel']) ? '' : ' ' . $options['rel'];
 $id              = ($id ?? $name) . '-desc';
@@ -68,7 +69,7 @@ if(!empty($description) && strpos($description, '{tip}') !== false)
 	<?php if ($hideLabel) : ?>
 		<div class="visually-hidden"><?php echo $label; ?></div>
 	<?php else : ?>
-		<div class="control-label"><?php echo $label; ?></div>
+		<div class="control-label <?php echo $unused; ?>"><?php echo $label; ?></div>
 	<?php endif; ?>
 	<div class="controls">
 		<?php echo $input; ?>

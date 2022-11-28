@@ -31,6 +31,7 @@
            maxlength="100"
            filter="string"
            global_only="true"
+           sensitive="true"
            label="COM_JOOMGALLERY_CONFIG_IMAGETYPE_PATH"
            description="COM_JOOMGALLERY_CONFIG_IMAGETYPE_PATH_LONG" />
 

@@ -27,6 +27,9 @@
 .jg.jg-config .subform-table-layout .table {
   margin-bottom: 0;
 }
+.jg .control-label.unused label {
+  color: red;
+}
 .jg_minithumb {
   border: 0;
   height: 80px;
