@@ -81,6 +81,11 @@ $this->document->addScriptDeclaration($js);
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="form-horizontal">
+        <p><span class="icon-notification-circle" aria-hidden="true"></span>: <?php echo Text::_('COM_JOOMGALLERY_CONFIG_SENSITIVE_FIELD'); ?></p>
+      </div>
+    </div>
 
     <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $noteModal); ?>
     <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $importModal); ?>

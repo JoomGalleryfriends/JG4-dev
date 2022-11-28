@@ -38,7 +38,13 @@ if(isset($id) && ($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamic
   $addClass = 'mb-5';
 }
 
+if(strpos($id, 'jg_imgtypepath') !== false)
+{
+  $tmp = true;
+}
+
 $unused          = (strpos($class, 'unused') !== false) ? 'unused' : '';
+$sensitive       = (!empty($options['sensitive']) && $options['sensitive'] == true) ? true : false;
 $class           = empty($options['class']) ? '' : ' ' . $options['class'];
 $rel             = empty($options['rel']) ? '' : ' ' . $options['rel'];
 $id              = ($id ?? $name) . '-desc';
@@ -64,17 +70,41 @@ if(!empty($description) && strpos($description, '{tip}') !== false)
 	$tip         = $desc_arr[1];
 }
 
+$sensitiveBtn = '';
+$sensitiveLbl = '';
+if($sensitive)
+{
+  // disbled input field
+  $tmp_input = explode(' ', trim($input));
+  $tmp_input = array_merge(array($tmp_input[0]), array('disabled'), array_slice($tmp_input, 1));
+  $input     = implode(' ', $tmp_input);
+
+  // add sensitive class
+  $input = str_replace('class="', 'class="sensitive-input ', $input);
+
+  $sensitiveLbl = ' <span class="icon-notification-circle" aria-hidden="true"></span>';
+  $sensitiveBtn = '<a href="#" class="btn btn-secondary inline" onclick="enableEditing(event,this)">'.Text::_('JTOOLBAR_ENABLE').'</a>';
+
+  Text::script('COM_JOOMGALLERY_CONFIG_ALERT_ENABLE_SENSITIVE_FIELD');
+
+  /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
+	$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+	$wa->useScript('com_joomgallery.sensitiveField');
+}
+
 ?> 
 <div class="control-group<?php echo $class; ?>"<?php echo $rel; ?>>
 	<?php if ($hideLabel) : ?>
 		<div class="visually-hidden"><?php echo $label; ?></div>
 	<?php else : ?>
-		<div class="control-label <?php echo $unused; ?>"><?php echo $label; ?></div>
+		<div class="control-label <?php echo $unused; ?>">
+      <?php echo $label.$sensitiveLbl; ?>
+    </div>
 	<?php endif; ?>
-	<div class="controls">
-		<?php echo $input; ?>
+	<div class="controls <?php echo $sensitive ? 'sensitive': ''; ?>">
+    <?php echo $sensitiveBtn; ?><?php echo $input; ?>
 		<?php if (!$hideDescription && !empty($description)) : ?>
-			<div id="<?php echo $id; ?>" class="<?php echo $descClass ?>">
+			<div id="<?php echo $id; ?>" class="description <?php echo $descClass ?>">
 				<small class="form-text">
 					<?php echo $description; ?>
 					<?php if(!empty($tip)) : ?>

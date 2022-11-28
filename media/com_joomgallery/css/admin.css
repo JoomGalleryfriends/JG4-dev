@@ -30,6 +30,17 @@
 .jg .control-label.unused label {
   color: red;
 }
+.jg .controls.sensitive {
+  display: flex;
+  flex-wrap: wrap;
+}
+.jg .controls.sensitive .sensitive-input {
+  width: inherit;
+  flex-grow: 1;
+}
+.jg .controls.sensitive .description {
+  width: 100%;
+}
 .jg_minithumb {
   border: 0;
   height: 80px;
