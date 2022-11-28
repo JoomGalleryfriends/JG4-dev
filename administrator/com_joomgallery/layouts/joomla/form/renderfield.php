@@ -39,13 +39,21 @@ if(isset($id) && ($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamic
 }
 
 $unused          = (strpos($class, 'unused') !== false) ? 'unused' : '';
-$sensitive       = (!empty($options['sensitive']) && $options['sensitive'] == true) ? true : false;
 $class           = empty($options['class']) ? '' : ' ' . $options['class'];
 $rel             = empty($options['rel']) ? '' : ' ' . $options['rel'];
 $id              = ($id ?? $name) . '-desc';
 $hideLabel       = !empty($options['hiddenLabel']);
 $hideDescription = empty($options['hiddenDescription']) ? false : $options['hiddenDescription'];
 $descClass       = ($options['descClass'] ?? '') ?: (!empty($options['inlineHelp']) ? 'hide-aware-inline-help d-none' : '');
+
+if((isset($sensitive) && $sensitive == true) || (!empty($options['sensitive']) && $options['sensitive'] == true))
+{
+  $sensitive = true;
+}
+else
+{
+  $sensitive = false;
+}
 
 if(!empty($parentclass))
 {

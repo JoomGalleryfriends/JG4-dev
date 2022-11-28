@@ -34,12 +34,21 @@
   display: flex;
   flex-wrap: wrap;
 }
-.jg .controls.sensitive .sensitive-input {
+.jg .controls.sensitive input.sensitive-input {
   width: inherit;
   flex-grow: 1;
 }
+.jg .controls.sensitive .sensitive-input.switcher  {
+  width: 10rem;
+}
 .jg .controls.sensitive .description {
   width: 100%;
+}
+.jg .subform-repeatable .controls.sensitive .btn {
+  margin-inline-end: 0;
+}
+.jg .subform-repeatable .control-label label {
+  width: initial;
 }
 .jg_minithumb {
   border: 0;
@@ -70,7 +79,7 @@ img.jg_minithumb {
   position: relative;
   z-index: 2;
   max-width: 100%;
-  background-color: #fff;
+  background-color: var(--body-bg);
 }
 .joom-image.center > img {
   display: block;
@@ -83,6 +92,12 @@ joomla-field-image .jg_minithumb {
   border: solid 1px var(--template-bg-dark-20);
   background-color: #e8e8e8;
 }
+.jg .modal .modal-body {
+  margin: 1rem 2rem;
+}
+.jg .modal .btn {
+  color: var(--white);
+}
 .mt {
   margin-top: 1rem !important;
 }
@@ -94,7 +109,4 @@ joomla-field-image .jg_minithumb {
 }
 .mr {
   margin-right: 1rem !important;
-}
-.modal .modal-body {
-  margin: 1rem 2rem;
 }
