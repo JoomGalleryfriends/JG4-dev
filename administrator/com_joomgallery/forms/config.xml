@@ -87,6 +87,7 @@
              default="administrator/components/com_joomgallery/temp/ftp_upload/"
              maxlength="100"
              filter="string"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_FTPUPLOAD_PATH"
              description="COM_JOOMGALLERY_CONFIG_FTPUPLOAD_PATH_LONG" />
 
@@ -94,8 +95,6 @@
              type="radio"
              default="0"
              class="btn-group unused"
-             unused="true"
-             descClass="testClass"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_USE_REAL_PATHS"
              description="COM_JOOMGALLERY_CONFIG_USE_REAL_PATHS_LONG" >
@@ -106,7 +105,7 @@
       <field name="jg_checkupdate"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_CHECKUPDATE"
              description="COM_JOOMGALLERY_CONFIG_CHECKUPDATE_LONG" >
@@ -138,7 +137,7 @@
       <field name="jg_useorigfilename"
              type="radio"
              default="0"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_ORIGINAL_FILENAME"
              description="COM_JOOMGALLERY_CONFIG_ORIGINAL_FILENAME_LONG" >
@@ -149,6 +148,7 @@
       <field name="jg_uploadorder"
              type="list"
              default="2"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_UPLOAD_ORDER"
              description="COM_JOOMGALLERY_CONFIG_UPLOAD_ORDER_LONG" >
         <option value="0">JDEFAULT</option>
@@ -232,6 +232,7 @@
       <field name="jg_msg_upload_type"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_TYPE_LONG" >
         <option value="0">JNONE</option>
@@ -243,6 +244,7 @@
       <field name="jg_msg_upload_recipients"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS"
              description="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS_LONG"
              showon="jg_msg_upload_type:1,2,3">
@@ -252,6 +254,7 @@
       <field name="jg_msg_download_type"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_DOWNLOAD_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_DOWNLOAD_TYPE_LONG" >
         <option value="0">JNONE</option>
@@ -263,6 +266,7 @@
       <field name="jg_msg_download_recipients"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_DOWNLOAD_RECIPIENTS"
              description="COM_JOOMGALLERY_CONFIG_MS_DOWNLOAD_RECIPIENTS_LONG"
              showon="jg_msg_download_type:1,2,3" >
@@ -272,7 +276,7 @@
       <field name="jg_msg_zipdownload"
              type="radio"
              default="0"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_MS_ZIPDOWNLOAD"
              description="COM_JOOMGALLERY_CONFIG_MS_ZIPDOWNLOAD_LONG" >
@@ -283,6 +287,7 @@
       <field name="jg_msg_comment_type"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_COMMENT_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_COMMENT_TYPE_LONG" >
         <option value="0">JNONE</option>
@@ -294,6 +299,7 @@
       <field name="jg_msg_comment_recipients"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_COMMENT_RECIPIENTS"
              description="COM_JOOMGALLERY_CONFIG_MS_COMMENT_RECIPIENTS_LONG"
              showon="jg_msg_comment_type:1,2,3">
@@ -303,7 +309,7 @@
       <field name="jg_msg_comment_toowner"
              type="radio"
              default="0"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_MS_COMMENT_TOOWNER"
              description="COM_JOOMGALLERY_CONFIG_MS_COMMENT_TOOWNER_LONG" >
@@ -314,6 +320,7 @@
       <field name="jg_msg_report_type"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_REPORT_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_REPORT_TYPE_LONG" >
         <option value="0">JNONE</option>
@@ -325,6 +332,7 @@
       <field name="jg_msg_report_recipients"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_REPORT_RECIPIENTS"
              description="COM_JOOMGALLERY_CONFIG_MS_REPORT_RECIPIENTS_LONG"
              showon="jg_msg_report_type:1,2,3">
@@ -334,7 +342,7 @@
       <field name="jg_msg_report_toowner"
              type="radio"
              default="0"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_MS_REPORT_TOOWNER"
              description="COM_JOOMGALLERY_CONFIG_MS_REPORT_TOOWNER_LONG" >
@@ -345,6 +353,7 @@
       <field name="jg_msg_rejectimg_type"
              type="list"
              default="1"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_REJECTIMG_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_REJECTIMG_TYPE_LONG" >
         <option value="1">COM_JOOMGALLERY_CONFIG_MS_OPTION_MAIL</option>
@@ -355,7 +364,7 @@
       <field name="jg_msg_global_from"
              type="radio"
              default="0"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS"
              description="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS_LONG" >
@@ -370,7 +379,7 @@
         <field name="jg_userspace"
               type="radio"
               default="1"
-              class="btn-group"
+              class="btn-group unused"
               layout="joomla.form.field.radio.switcher"
               label="COM_JOOMGALLERY_CONFIG_USERSPACE"
               description="COM_JOOMGALLERY_CONFIG_USERSPACE_LONG" >
@@ -381,7 +390,7 @@
         <field name="jg_approve"
               type="radio"
               default="0"
-              class="btn-group"
+              class="btn-group unused"
               layout="joomla.form.field.radio.switcher"
               showon="jg_userspace:1"
               label="COM_JOOMGALLERY_CONFIG_ADMIN_APPROVAL"
@@ -397,6 +406,7 @@
               min="1"
               step="1"
               showon="jg_userspace:1"
+              class="unused"
               label="COM_JOOMGALLERY_CONFIG_MAX_USERCATS"
               description="COM_JOOMGALLERY_CONFIG_MAX_USERCATS_LONG" />
 
@@ -407,6 +417,7 @@
               min="1"
               step="1"
               showon="jg_userspace:1"
+              class="unused"
               label="COM_JOOMGALLERY_CONFIG_MAX_USERIMGS"
               description="COM_JOOMGALLERY_CONFIG_MAX_USERIMGS_LONG" />
 
@@ -417,6 +428,7 @@
               step="1"
               default="0"
               showon="jg_userspace:1"
+              class="unused"
               label="COM_JOOMGALLERY_CONFIG_MAX_USERIMGS_TIMESPAN"
               description="COM_JOOMGALLERY_CONFIG_MAX_USERIMGS_TIMESPAN_LONG" />
 
@@ -427,6 +439,7 @@
               min="1"
               step="1"
               showon="jg_userspace:1"
+              class="unused"
               label="COM_JOOMGALLERY_CONFIG_MAX_FILESIZE"
               description="COM_JOOMGALLERY_CONFIG_MAX_FILESIZE_LONG" />
     </fieldset>
@@ -435,7 +448,7 @@
       <field name="jg_userupload"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_FRONTEND_UPLOAD"
              description="COM_JOOMGALLERY_CONFIG_FRONTEND_UPLOAD_LONG" >
@@ -446,7 +459,7 @@
       <field name="jg_newpiccopyright"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_COPYRIGHT_NOTE"
              description="COM_JOOMGALLERY_CONFIG_COPYRIGHT_NOTE_LONG"
@@ -458,6 +471,7 @@
       <field name="jg_uploaddefaultcat"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_DEFAULT_CAT"
              description="COM_JOOMGALLERY_CONFIG_DEFAULT_CAT_LONG"
              showon="jg_userupload:1" >
@@ -471,7 +485,7 @@
       <field name="jg_special_upload"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_PROBLEMATIC_FILES_UPLOAD"
              description="COM_JOOMGALLERY_CONFIG_PROBLEMATIC_FILES_UPLOAD_LONG"
@@ -483,7 +497,7 @@
       <field name="jg_newpicnote"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_UPLOAD_QUOTA"
              description="COM_JOOMGALLERY_CONFIG_UPLOAD_QUOTA_LONG"
@@ -495,6 +509,7 @@
       <field name="jg_redirect_after_upload"
              type="list"
              default="0"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_REDIRECT_AFTER_UPLOAD"
              description="COM_JOOMGALLERY_CONFIG_REDIRECT_AFTER_UPLOAD_LONG"
              showon="jg_userupload:1" >
@@ -509,7 +524,7 @@
       <field name="jg_download"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_DOWNLOAD"
              description="COM_JOOMGALLERY_CONFIG_DOWNLOAD_LONG" >
@@ -520,7 +535,7 @@
       <field name="jg_download_hint"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              showon="jg_download:1"
              label="COM_JOOMGALLERY_CONFIG_HINT_NOT_ENOUGH_RIGHTS"
@@ -533,6 +548,7 @@
              type="list"
              default="2"
              showon="jg_download:1"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_DOWNLOADFILE"
              description="COM_JOOMGALLERY_CONFIG_DOWNLOADFILE_LONG" >
         <option value="0">COM_JOOMGALLERY_DETAIL</option>
@@ -543,7 +559,7 @@
       <field name="jg_downloadwithwatermark"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              showon="jg_download:1"
              label="COM_JOOMGALLERY_CONFIG_DOWNLOADWITHWATERMARK"
@@ -557,7 +573,7 @@
       <field name="jg_showrating"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_RATING"
              description="COM_JOOMGALLERY_CONFIG_RATING_LONG" >
@@ -571,6 +587,7 @@
              filter="int"
              min="1"
              step="1"
+             class="unused"
              showon="jg_showrating:1"
              label="COM_JOOMGALLERY_CONFIG_HIGHEST_RATING"
              description="COM_JOOMGALLERY_CONFIG_HIGHEST_RATING_LONG" />
@@ -579,6 +596,7 @@
              type="list"
              default="0"
              showon="jg_showrating:1"
+             class="unused"
              label="COM_JOOMGALLERY_CONFIG_CALC_TYPE"
              description="COM_JOOMGALLERY_CONFIG_CALC_TYPE_LONG" >
         <option value="0">COM_JOOMGALLERY_CONFIG_CALC_TYPE_STANDARD</option>
@@ -588,7 +606,7 @@
       <field name="jg_votingonlyonce"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              showon="jg_showrating:1"
              label="COM_JOOMGALLERY_CONFIG_VOTING_ONLY_ONCE"
@@ -602,7 +620,7 @@
       <field name="jg_report_images"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_REPORT_IMAGES"
              description="COM_JOOMGALLERY_CONFIG_REPORT_IMAGES_LONG" >
@@ -613,7 +631,7 @@
       <field name="jg_report_hint"
              type="radio"
              default="1"
-             class="btn-group"
+             class="btn-group unused"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_HINT_NOT_ENOUGH_RIGHTS"
              description="COM_JOOMGALLERY_CONFIG_REPORT_HINT_LONG" >
