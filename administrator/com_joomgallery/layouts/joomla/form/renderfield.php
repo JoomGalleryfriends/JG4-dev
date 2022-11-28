@@ -38,11 +38,6 @@ if(isset($id) && ($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamic
   $addClass = 'mb-5';
 }
 
-if(strpos($id, 'jg_imgtypepath') !== false)
-{
-  $tmp = true;
-}
-
 $unused          = (strpos($class, 'unused') !== false) ? 'unused' : '';
 $sensitive       = (!empty($options['sensitive']) && $options['sensitive'] == true) ? true : false;
 $class           = empty($options['class']) ? '' : ' ' . $options['class'];
