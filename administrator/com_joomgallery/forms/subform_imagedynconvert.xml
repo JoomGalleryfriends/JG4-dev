@@ -2,11 +2,9 @@
 <form>
   <fieldset>
     <field name="jg_imgtype"
-           type="radio"
+           type="customlist"
            groupByFieldset="false"
            default="0"
-           class="btn-group"
-           layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_CONFIG_ACTIVATED" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>

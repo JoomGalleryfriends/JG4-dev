@@ -95,7 +95,7 @@ if($sensitive)
 	$wa->useScript('com_joomgallery.sensitiveField');
 }
 
-?> 
+?>
 <div class="control-group<?php echo $class; ?>"<?php echo $rel; ?>>
 	<?php if ($hideLabel) : ?>
 		<div class="visually-hidden"><?php echo $label; ?></div>

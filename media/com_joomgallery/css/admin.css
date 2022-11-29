@@ -34,9 +34,18 @@
   display: flex;
   flex-wrap: wrap;
 }
-.jg .controls.sensitive input.sensitive-input {
+.jg .subform-repeatable-container td.sensitive {
+  display: flex;
+  align-items: baseline;
+}
+.jg .controls.sensitive input.sensitive-input,
+.jg .controls.sensitive select.sensitive-input,
+.jg .subform-repeatable-container td.sensitive .control-group {
   width: inherit;
   flex-grow: 1;
+}
+.jg .subform-repeatable-container td.sensitive [class^=icon] {
+  margin-left: 1rem;
 }
 .jg .controls.sensitive .sensitive-input.switcher  {
   width: 10rem;

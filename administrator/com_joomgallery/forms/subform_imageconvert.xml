@@ -2,13 +2,10 @@
 <form>
   <fieldset>
     <field name="jg_imgtype"
-           type="customradio"
+           type="customlist"
            groupByFieldset="false"
            default="1"
            reset="orig:1;det:1;thumb:1"
-           class="btn-group"
-           sensitive="true"
-           layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_CONFIG_IP_ACTIVATE_TYPE" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>

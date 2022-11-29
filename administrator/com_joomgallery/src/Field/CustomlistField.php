@@ -12,16 +12,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
 \defined('JPATH_BASE') or die;
 
-use Joomla\CMS\Form\Field\RadioField;
+use Joomla\CMS\Form\Field\ListField;
 
 /**
  * Form Field class for the Joomla Platform.
- * Provides radio button inputs
+ * Supports a generic list of options.
  *
- * @link   https://html.spec.whatwg.org/multipage/input.html#radio-button-state-(type=radio)
  * @since  1.7.0
  */
-class CustomradioField extends RadioField
+class CustomlistField extends ListField
 {
     /**
      * The form field type.
@@ -29,7 +28,7 @@ class CustomradioField extends RadioField
      * @var    string
      * @since  1.7.0
      */
-    protected $type = 'customradio';
+    protected $type = 'customlist';
 
     /**
      * Method to get the data to be passed to the layout for rendering.

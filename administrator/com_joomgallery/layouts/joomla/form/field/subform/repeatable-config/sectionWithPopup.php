@@ -26,6 +26,11 @@ extract($displayData);
  * @var   boolean $is_global_config   True if the global configuration is loaded in config.edit view
  */
 
+if($group == 'jg_staticprocessing0')
+{
+  $form->setFieldAttribute('jg_imgtype','sensitive',true);
+}
+
 if($group == 'jg_staticprocessing1' || $group == 'jg_staticprocessing2')
 {
   $form->setFieldAttribute('jg_imgtype','readonly',true);
@@ -41,14 +46,18 @@ if($group == 'jg_staticprocessing0' || $group == 'jg_staticprocessing1' || $grou
 	<?php
   $i = 0;
   foreach ($form->getGroup('') as $k => $field) : ?>
-    <?php if($i == 1)
+    <?php
+    $sensitive = $field->getAttribute('sensitive', 0) == 1 ? true : false ;
+    $sensitiveLbl = $sensitive ? ' <span class="icon-notification-circle" aria-hidden="true"></span>' : '' ;
+    $sensitiveClass = $sensitive ? 'sensitive' : '' ;
+    if($i == 1)
     {
       $fieldname = $field->value;
     }
     ?>
     <?php if($i < 2): ?>
-      <td data-column="<?php echo strip_tags($field->label); ?>">
-        <?php echo $field->renderField(array('hiddenLabel' => true, 'hiddenDescription' => true)); ?>
+      <td data-column="<?php echo strip_tags($field->label); ?>" class="<?php echo $sensitiveClass; ?>">
+        <?php echo $field->renderField(array('hiddenLabel' => true, 'hiddenDescription' => true, 'sensitive' => $sensitive)).' '.$sensitiveLbl; ?>
       </td>
     <?php endif; ?>
 	<?php 
