@@ -38,7 +38,7 @@ class JgimageField extends FormField
 	 * @var   array
 	 * @since 3.5
 	 */
-	protected $categories = null;
+	protected $category = null;
 
 	/**
 	 * Images to exclude from the list of images
@@ -142,7 +142,7 @@ class JgimageField extends FormField
 
 		$extraData = array(
 			'imageName'  => $name,
-			'categories' => $this->getCats(),
+			'category' => $this->getCat(),
 			'excluded'   => $this->getExcluded(),
 		);
 
@@ -156,11 +156,11 @@ class JgimageField extends FormField
 	 *
 	 * @since   1.6
 	 */
-	protected function getCats()
+	protected function getCat()
 	{
-		if (isset($this->element['categories']))
+		if (isset($this->element['category']))
 		{
-			return explode(',', $this->element['categories']);
+			return (int) $this->element['category'][0];
 		}
 	}
 
