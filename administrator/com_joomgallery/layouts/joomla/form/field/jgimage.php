@@ -129,7 +129,7 @@ if(!$readonly)
 		modal-height="400px"
 		input=".field-image-input"
 		input-name=".field-image-input-name"
-    input-img="#jform_thumbnail_img"
+    	input-img="#jform_thumbnail_img"
 		button-select=".button-select">
 	<div class="input-group">
     <img id="jform_thumbnail_img" class="jg_minithumb" src="<?php echo JoomHelper::getImg($value, 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">

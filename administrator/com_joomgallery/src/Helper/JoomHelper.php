@@ -18,6 +18,7 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Filesystem\Path;
 
 /**
  * JoomGallery Helper for the Backend
@@ -304,7 +305,7 @@ class JoomHelper
         if($img == 0)
         {
           // ID = 0 given
-          return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
+          return self::getImgZero($url, $type);          
         }
         else
         {
@@ -336,14 +337,14 @@ class JoomHelper
       else
       {
         // no image given
-        return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
+        return self::getImgZero($url, $type); 
       }
     }
 
     if(!\is_object($img) || \is_null($img->id) || $img->id === 0)
     {
       // image object not found
-      return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
+      return self::getImgZero($url, $type);     
     }
 
     // Check whether the image shall be output through the PHP script or with its real path
@@ -356,7 +357,7 @@ class JoomHelper
       // Create file manager service
 			$manager = JoomHelper::getService('FileManager');
 
-      return $manager->getImgPath($img, $type);
+      return $manager->getImgPath($img, $type, false, false, 1);
     }
   }
 
@@ -448,6 +449,31 @@ class JoomHelper
     if(!\in_array($name, self::$content_types))
     {
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
+    }
+  }
+
+  /**
+	 * Returns the image url or path for image with id=0
+   *
+   * @param   bool       $url    True: image url, false: image path (default: true)
+   * @param   string     $type   The image type (default: thumbnail)
+	 *
+	 * @return  string     Image path or url
+	 *
+	 * @since   4.0.0
+	 */
+  protected static function getImgZero($url=true, $type='thumbnail')
+  {
+    if($url)
+    {
+      return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id=0');
+    }
+    else
+    {
+      $manager = JoomHelper::getService('FileManager');
+      $path =  $manager->addRoot(1).'/media/com_joomgallery/images/no-image.png';
+
+      return Path::clean($path);
     }
   }
 }
