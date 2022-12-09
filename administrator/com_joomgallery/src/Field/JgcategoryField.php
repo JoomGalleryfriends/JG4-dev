@@ -119,19 +119,25 @@ class JgcategoryField extends FormField
 
 		if(is_numeric($this->value))
 		{
-      if($this->value > 0)
-      {
-        $cat = JoomHelper::getRecord('category', $this->value);
-      }
-      
-      if($this->value == 0 || !$cat)
-      {
-        $name = '';
-      }
-      else
-      {
-        $name = $cat->title;
-      }
+			if($this->value > 0)
+			{
+				$cat = JoomHelper::getRecord('category', $this->value);
+			}
+
+			// Interprete root category
+			if($this->value === 1)
+			{
+				$cat->title = Text::_('JGLOBAL_ROOT_PARENT');
+			}
+
+			if($this->value == 0 || !$cat)
+			{
+				$name = '';
+			}
+			else
+			{
+				$name = $cat->title;
+			}
 		}
 
 		// User lookup went wrong, we assign the value instead.
