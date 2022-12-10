@@ -1,5 +1,5 @@
 <?php
-/**
+/** 
 ******************************************************************************************
 **   @version    4.0.0                                                                  **
 **   @package    com_joomgallery                                                        **
@@ -38,7 +38,7 @@ class JgimageField extends FormField
 	 * @var   array
 	 * @since 3.5
 	 */
-	protected $category = null;
+	protected $categories = null;
 
 	/**
 	 * Images to exclude from the list of images
@@ -142,7 +142,7 @@ class JgimageField extends FormField
 
 		$extraData = array(
 			'imageName'  => $name,
-			'category' => $this->getCat(),
+			'categories' => $this->getCats(),
 			'excluded'   => $this->getExcluded(),
 		);
 
@@ -156,11 +156,11 @@ class JgimageField extends FormField
 	 *
 	 * @since   1.6
 	 */
-	protected function getCat()
+	protected function getCats()
 	{
-		if (isset($this->element['category']))
+		if (isset($this->element['categories']))
 		{
-			return (int) $this->element['category'][0];
+			return explode(',', $this->element['categories']);
 		}
 	}
 

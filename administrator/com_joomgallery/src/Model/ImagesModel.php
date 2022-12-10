@@ -331,7 +331,27 @@ class ImagesModel extends JoomListModel
 		elseif(is_array($catId))
 		{
 			$catId = ArrayHelper::toInteger($catId);
-			$query->whereIn($db->quoteName('a.catId'), $catId);
+			$query->whereIn($db->quoteName('a.catid'), $catId);
+		}
+
+    // Filter: Exclude images
+    $excludedId = Factory::getApplication()->input->get('exclude', '', 'string');
+    $excludedId = (string) preg_replace('/[^0-9\,]/i', '', $excludedId);
+    if(\strpos($excludedId, ',') !== false)
+    {
+      $excludedId = \explode(',', $excludedId);
+    }
+
+    if(is_numeric($excludedId))
+		{
+			$excludedId = (int) $excludedId;
+			$query->where($db->quoteName('a.id') . ' != :imgId')
+				->bind(':imgId', $excludedId, ParameterType::INTEGER);
+		}
+		elseif(is_array($excludedId))
+		{
+			$excludedId = ArrayHelper::toInteger($excludedId);
+			$query->whereNotIn($db->quoteName('a.id'), $excludedId);
 		}
 
     // Filter on the language.

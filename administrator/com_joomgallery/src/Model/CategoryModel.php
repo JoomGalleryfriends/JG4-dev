@@ -89,7 +89,7 @@ class CategoryModel extends JoomAdminModel
 		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));	
 
 		// Apply filter for current category on thumbnail field
-		$form->setFieldAttribute('thumbnail', 'category', $this->item->id);
+    $form->setFieldAttribute('thumbnail', 'categories', $this->item->id);
 
 		if(empty($form))
 		{

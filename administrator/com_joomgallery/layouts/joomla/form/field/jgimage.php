@@ -45,7 +45,7 @@ extract($displayData);
  * @var   string   $validate        Validation rules to apply.
  * @var   string   $value           Value attribute of the field.
  * @var   string   $imageName       The image name
- * @var   mixed    $category        The filtering for one category (null means no filtering)
+ * @var   mixed    $categories      The filtering for categories (null means no filtering)
  * @var   mixed    $excluded        The images to exclude from the list of images
  * @var   string   $dataAttribute   Miscellaneous data attributes preprocessed for HTML output
  * @var   array    $dataAttributes  Miscellaneous data attribute for eg, data-*.
@@ -64,14 +64,14 @@ if($required)
 	$uri->setVar('required', 1);
 }
 
-if(!empty($category))
+if(!empty($categories))
 {
-	$uri->setVar('filter[category]', (string) $category);
+	$uri->setVar('filter[category]', '['.implode(',', $categories).']');
 }
 
 if(!empty($excluded))
 {
-	$uri->setVar('excluded', base64_encode(json_encode($excluded)));
+	$uri->setVar('exclude', '['.implode(',', $excluded).']');
 }
 
 // Invalidate the input value if no image selected
