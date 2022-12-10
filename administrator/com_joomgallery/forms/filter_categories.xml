@@ -25,7 +25,7 @@
               default=""
               message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY"
               task="filter" >
-          <option value="">JOPTION_SELECT_CATEGORY</option>
+          <option value="">COM_JOOMGALLERY_FIELDS_SELECT_PARENT</option>
         </field>
 
         <field
@@ -59,6 +59,18 @@
                label="COM_JOOMGALLERY_COMMON_OPTION_SELECT_OWNER"
                hint="COM_JOOMGALLERY_COMMON_OPTION_SELECT_OWNER"
                onchange="this.form.submit();" />
+
+        <field
+              name="exclude"
+              type="jgcategorydropdown"
+              label="COM_JOOMGALLERY_COMMON_ALL"
+              onchange="this.form.submit();"
+              show_root="false"
+              default=""
+              message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY"
+              task="filter" >
+          <option value="">COM_JOOMGALLERY_FIELDS_SELECT_EXCLUDE</option>
+        </field>
     </fields>
 
     <fields name="list">

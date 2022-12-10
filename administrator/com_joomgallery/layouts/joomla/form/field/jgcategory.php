@@ -45,7 +45,7 @@ extract($displayData);
  * @var   string   $validate        Validation rules to apply.
  * @var   string   $value           Value attribute of the field.
  * @var   string   $categoryName    The category name
- * @var   mixed    $categories      The filtering categories (null means no filtering)
+ * @var   mixed    $category        The filtering category (null means no filtering)
  * @var   mixed    $excluded        The categories to exclude from the list of categories
  * @var   string   $dataAttribute   Miscellaneous data attributes preprocessed for HTML output
  * @var   array    $dataAttributes  Miscellaneous data attribute for eg, data-*.
@@ -64,15 +64,15 @@ if($required)
 	$uri->setVar('required', 1);
 }
 
-if(!empty($categories))
-{
-	$uri->setVar('categories', base64_encode(json_encode($categories)));
-}
-
-if(!empty($excluded))
-{
-	$uri->setVar('excluded', base64_encode(json_encode($excluded)));
-}
+// Apply filter in categories list
+$uri->setVar('list[fullordering]', 'a.lft+ASC');
+$uri->setVar('list[limit]', '20');
+$uri->setVar('filter[search]', '');
+$uri->setVar('filter[published]', '*');
+$uri->setVar('filter[level]', '*');
+$uri->setVar('filter[created_by]', '');
+$uri->setVar('filter[category]', (isset($category)) ? (string) $category : '');
+$uri->setVar('filter[exclude]', (isset($excluded)) ? (string) $excluded : '');
 
 // Invalidate the input value if no image selected
 if($this->escape($categoryName) === Text::_('COM_JOOMGALLERY_FIELDS_SELECT_CATEGORY'))

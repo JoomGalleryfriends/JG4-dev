@@ -33,15 +33,15 @@ class JgcategoryField extends FormField
 	public $type = 'jgcategory';
 
 	/**
-	 * Filtering categories
+	 * Filtering category
 	 *
 	 * @var   array
 	 * @since 3.5
 	 */
-	protected $categories = null;
+	protected $category = null;
 
 	/**
-	 * Categories to exclude from the list of categories
+	 * Category to exclude from the list of categories
 	 *
 	 * @var   array
 	 * @since 3.5
@@ -148,7 +148,7 @@ class JgcategoryField extends FormField
 
 		$extraData = array(
 			'categoryName'  => $name,
-			'categories' => $this->getCats(),
+			'category' => $this->getCat(),
 			'excluded'   => $this->getExcluded(),
 		);
 
@@ -162,11 +162,11 @@ class JgcategoryField extends FormField
 	 *
 	 * @since   1.6
 	 */
-	protected function getCats()
+	protected function getCat()
 	{
-		if (isset($this->element['categories']))
+		if (isset($this->element['category']))
 		{
-			return explode(',', $this->element['categories']);
+			return intval($this->element['category']);
 		}
 	}
 
@@ -181,7 +181,7 @@ class JgcategoryField extends FormField
 	{
 		if (isset($this->element['exclude']))
 		{
-			return explode(',', $this->element['exclude']);
+			return intval($this->element['exclude']);
 		}
 	}
 }
