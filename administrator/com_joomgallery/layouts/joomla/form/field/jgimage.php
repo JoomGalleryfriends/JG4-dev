@@ -64,6 +64,13 @@ if($required)
 	$uri->setVar('required', 1);
 }
 
+// Apply filter in images list
+$uri->setVar('list[fullordering]', 'a.id+DESC');
+$uri->setVar('list[limit]', '20');
+$uri->setVar('filter[search]', '');
+$uri->setVar('filter[published]', '*');
+$uri->setVar('filter[created_by]', '');
+
 if(!empty($categories))
 {
 	$uri->setVar('filter[category]', '['.implode(',', $categories).']');
