@@ -244,6 +244,12 @@ class ImageTable extends Table implements VersionableTableInterface
 			$this->setRules($array['rules']);
 		}
 
+    // Support for tags
+    if(!isset($this->tags))
+    {
+      $this->tags = array();
+    }
+
 		return parent::bind($array, $ignore);
 	}
 
