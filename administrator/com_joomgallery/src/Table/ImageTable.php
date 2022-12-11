@@ -272,7 +272,7 @@ class ImageTable extends Table implements VersionableTableInterface
     if($success)
     {
       // Record successfully stored
-     	// store Tags
+     	// Store Tags
 	  	$com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
     	$tags_model = $com_obj->getMVCFactory()->createModel('Tags');
 
@@ -424,9 +424,27 @@ class ImageTable extends Table implements VersionableTableInterface
   public function delete($pk = null)
   {
     $this->load($pk);
-    $result = parent::delete($pk);
+    $success = parent::delete($pk);
 
-    return $result;
+    if($success)
+    {
+      // Record successfully deleted
+      // Delete Tag mapping
+      $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
+      $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+
+      // remove tag from mapping
+      foreach($this->tags as $tag)
+      {
+        if(!$tag_model->removeMapping($tag->id, $this->id))
+        {
+          $this->setError($tag_model->getError());
+          $success = false;
+        }
+      }
+    }
+
+    return $success;
   }
 
   /**
