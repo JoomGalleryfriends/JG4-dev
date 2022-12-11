@@ -117,7 +117,6 @@
     <fieldset type="tab" name="general-upload" label="COM_JOOMGALLERY_UPLOADS">
       <field name="jg_replaceinfo"
              type="subform"
-             default="{}"
              multiple="true"
              buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imageinforeplace.xml"
@@ -221,7 +220,6 @@
              type="subform"
              multiple="true"
              buttons="add,remove"
-             default="{}"
              formsource="administrator/components/com_joomgallery/forms/subform_imagedynconvert.xml"
              layout="joomla.form.field.subform.repeatable-config"
              label="COM_JOOMGALLERY_CONFIG_IP_DYNAMIC"

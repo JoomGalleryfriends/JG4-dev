@@ -70,6 +70,14 @@ if($group == 'jg_staticprocessing0' || $group == 'jg_staticprocessing1' || $grou
         <a href="#" data-bs-toggle="modal" class="btn btn-secondary" data-bs-target="#<?php echo $group; ?>_modal"><?php echo Text::_('COM_JOOMGALLERY_SETTINGS'); ?></a> 
       </div>
     </div>
+    <?php
+      $modalData = array(
+        'selector' => $group . '_modal',
+        'params'   => array('title'  => $label.': '.ucfirst($fieldname)),
+        'body' => LayoutHelper::render('joomla.form.field.subform.repeatable-config.modal', $displayData)
+      );
+      echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $modalData);
+    ?>
   </td>
 	<?php if (!empty($buttons)) : ?>
 	<td>
@@ -94,13 +102,4 @@ if($group == 'jg_staticprocessing0' || $group == 'jg_staticprocessing1' || $grou
     <?php endif; ?>
 	</td>
 	<?php endif; ?>
-
-  <?php
-    $modalData = array(
-      'selector' => $group . '_modal',
-      'params'   => array('title'  => $label.': '.ucfirst($fieldname)),
-      'body' => LayoutHelper::render('joomla.form.field.subform.repeatable-config.modal', $displayData)
-    );
-    echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $modalData);
-  ?>
 </tr>
