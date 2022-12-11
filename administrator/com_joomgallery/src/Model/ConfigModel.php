@@ -88,6 +88,13 @@ class ConfigModel extends JoomAdminModel
 			return false;
 		}
 
+    // Special threatment for Global Configuration set
+    if($this->item->id === 1)
+    {
+      $form->setFieldAttribute('title', 'readonly', 'true');
+      $form->setFieldAttribute('group_id', 'readonly', 'true');
+    }
+
 		return $form;
 	}
 
@@ -211,6 +218,9 @@ class ConfigModel extends JoomAdminModel
 	 */
 	public function save($data)
 	{
+    // id of the data to be saved
+    $id = intval($data['id']);
+
     $mod_items = $this->component->getMVCFactory()->createModel('imagetypes');
     $model     = $this->component->getMVCFactory()->createModel('imagetype');
 
@@ -228,7 +238,8 @@ class ConfigModel extends JoomAdminModel
       if(\in_array($staticprocessing['jg_imgtypename'], $forbidden) && $staticprocessing['jg_imgtype'] != '1')
       {
         // not allowed to unset this imagetype
-        $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DEACTIVATE_IMAGETYPE', $staticprocessing['jg_imgtypename']));
+        $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DEACTIVATE_IMAGETYPE', $staticprocessing['jg_imgtypename']));
+        //$this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DEACTIVATE_IMAGETYPE', $staticprocessing['jg_imgtypename']));
 
         $staticprocessing['jg_imgtype'] = 1;
       }
@@ -281,7 +292,8 @@ class ConfigModel extends JoomAdminModel
       if(\in_array($imagetype_list->typename, $forbidden))
       {
         // not allowed to delete this imagetype
-        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DELETE_IMAGETYPE'));
+        $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DELETE_IMAGETYPE'));
+        //$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_ALLOWED_DELETE_IMAGETYPE'));
       }
       else
       {
@@ -290,6 +302,13 @@ class ConfigModel extends JoomAdminModel
     }
 
     $data['jg_staticprocessing'] = '';
+
+    // Special threatment for Global Configuration set
+    if($id === 1)
+    {
+      $data['title']    = 'Global Configuration';
+      $data['group_id'] = '1';
+    }
 
     return parent::save($data);
   }
