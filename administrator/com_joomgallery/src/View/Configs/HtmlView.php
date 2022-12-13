@@ -75,7 +75,7 @@ class HtmlView extends JoomGalleryView
     $state = $this->get('State');
     $canDo = JoomHelper::getActions();
 
-    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIGURATIONS'), "sliders-h");
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIG_SETS'), "sliders-h");
 
     $toolbar = Toolbar::getInstance('toolbar');
 
