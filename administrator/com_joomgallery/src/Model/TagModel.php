@@ -333,6 +333,32 @@ class TagModel extends JoomAdminModel
   }
 
   /**
+	 * Method to delete one or more tags.
+	 *
+	 * @param   array  &$pks  An array of record primary keys.
+	 *
+	 * @return  boolean  True if successful, false if an error occurs.
+	 *
+	 * @since   1.6
+	 */
+	public function delete(&$pks)
+	{
+    $success = parent::delete($pks);
+
+    if($success)
+    {
+      // Record successfully deleted
+      // Delete Tag mapping
+      foreach($pks as $pk)
+      {
+        $success = $this->removeMapping($pk);
+      }
+    }
+
+    return $success;
+  }  
+
+  /**
    * Method to add a mapping between tag and image.
    *
    * @param   int  $tag_id  ID of the tag to be mapped.
@@ -367,13 +393,13 @@ class TagModel extends JoomAdminModel
    * Method to add a mapping between tag and image.
    *
    * @param   int  $tag_id  ID of the tag to be mapped.
-   * @param   int  $img_id  ID of the image to be mapped.
+   * @param   int  $img_id  ID of the image to be mapped. (optional)
    *
    * @return  boolean  True on success, False on error.
    *
    * @since   4.0.0
    */
-  public function removeMapping($tag_id, $img_id)
+  public function removeMapping($tag_id, $img_id=0)
   {
     $tag_id = (int) $tag_id;
     $img_id = (int) $img_id;
@@ -381,10 +407,13 @@ class TagModel extends JoomAdminModel
     $db = Factory::getDbo();
     $query = $db->getQuery(true);
 
-    $conditions = array(
-      $db->quoteName('imgid') . ' = ' . $db->quote($img_id),
-      $db->quoteName('tagid') . ' = ' . $db->quote($tag_id)
-    );
+    $conditions = array($db->quoteName('tagid') . ' = ' . $db->quote($tag_id));
+
+    if($img_id > 0)
+    {
+      // Delete mapping only for a specific image
+      \array_push($conditions, $db->quoteName('imgid') . ' = ' . $db->quote($img_id));
+    }
 
     $query->delete($db->quoteName(_JOOM_TABLE_TAGS_REF));
     $query->where($conditions);
