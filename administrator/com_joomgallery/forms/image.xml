@@ -77,6 +77,13 @@
            required="true"
            message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY" />
 
+    <field name="tags"
+           type="jgtag"
+           label="JTAG"
+           description="COM_JOOMGALLERY_FIELDS_TAG_DESC"
+           class="inputbox span12 small"
+           multiple="true" />
+
     <field name="published"
            type="radio"
            class="btn-group"
