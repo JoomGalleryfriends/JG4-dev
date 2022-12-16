@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Object\CMSObject;
+use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -68,15 +69,18 @@ class Config implements ConfigInterface
    *
    * @return  void
    *
-   * @since   4.0.0
+   * @since   4.0.0 
    */
   public function __construct($context = 'com_joomgallery', $id = null)
   {
+    // Load component
+    $this->getComponent();
+
     // Check context
     $context_array = \explode('.', $context);
     $context_ok    = true;
 
-    if($context_array[0] != 'com_joomgallery' || !\array_key_exists($context_array[1], $this->ids) || \count($context_array) > 2)
+    if($context_array[0] != 'com_joomgallery' || (\count($context_array) > 1 && !\array_key_exists($context_array[1], $this->ids)) || \count($context_array) > 2)
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
 
@@ -84,35 +88,42 @@ class Config implements ConfigInterface
     }
 
     // Completing $this->ids based on given context
-    switch($context_array[1])
+    if(\count($context_array) > 1)
     {
-      case 'user':
-        $this->ids['user'] = (int) $id;
-        break;
+      switch($context_array[1])
+      {
+        case 'user':
+          $this->ids['user'] = (int) $id;
+          break;
 
-      case 'category':
-        $this->ids['user']     = Factory::getUser()->get('id');
-        $this->ids['category'] = (int) $id;
-        break;
+        case 'category':
+          $this->ids['user']     = Factory::getUser()->get('id');
+          $this->ids['category'] = (int) $id;
+          break;
 
-      case 'image':
-        $img = JoomHelper::getRecord('image', $id);
+        case 'image':
+          $img = JoomHelper::getRecord('image', $id);
 
-        $this->ids['user']     = Factory::getUser()->get('id');
-        $this->ids['image']    = (int) $id;
-        $this->ids['category'] = (int) $img->catid;
-        break;
+          $this->ids['user']     = Factory::getUser()->get('id');
+          $this->ids['image']    = (int) $id;
+          $this->ids['category'] = (int) $img->catid;
+          break;
 
-      case 'menu':
-        $this->ids['user'] = Factory::getUser()->get('id');
-        $this->ids['menu'] = (int) $id;
-        // TBD
-        // Depending on frontend views and router 
-        break;
-      
-      default:
-        $this->ids['user'] = Factory::getUser()->get('id');
-        break;
+        case 'menu':
+          $this->ids['user'] = Factory::getUser()->get('id');
+          $this->ids['menu'] = (int) $id;
+          // TBD
+          // Depending on frontend views and router 
+          break;
+        
+        default:
+          $this->ids['user'] = Factory::getUser()->get('id');
+          break;
+      }
+    }
+    else
+    {
+      $this->ids['user'] = Factory::getUser()->get('id');
     }
 
     //---------Level 1---------
@@ -143,12 +154,26 @@ class Config implements ConfigInterface
 
     if(!$context_ok)
     {
+      // Wrong context provided. No further inheritantion
       return;
     }
 
     //---------Level 3---------
+    if(isset($this->ids['category']))
+    {
+      // Get category specific configuration set
+      $cat_model = $this->component->getMVCFactory()->createModel('Category');
+      $parents   = $cat_model->getParents($this->ids['category']);
+    }
 
-    // Get category specific configuration set
+    //---------Level 4---------
+
+    // Get image specific configuration set
+
+    //---------Level 5---------
+
+    // Get menu specific configuration set
+
   }
 
   /**

@@ -778,4 +778,62 @@ class CategoryModel extends JoomAdminModel
 
 		parent::preprocessForm($form, $data, $group);
 	}
+
+  /**
+   * Get the child categories.
+   * 
+   * @param   integer  $pk  The id of the primary key.
+   *
+   * @return  mixed    An array of categories or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getChildren($pk = null)
+  {
+    return true;
+  }
+
+  /**
+   * Get the parent categories.
+   * 
+   * @param   integer  $pk  The id of the primary key.
+   *
+   * @return  mixed    An array of categories or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getParents($pk = null)
+  {
+    $tmp = 1;
+    
+    return true;
+  }
+
+  /**
+   * Get the right sibling (adjacent) categories.
+   * 
+   * @param   integer  $pk  The id of the primary key.
+   *
+   * @return  mixed    An array of categories or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getRightSibling($pk = null)
+  {
+    return true;
+  }
+
+  /**
+   * Get the left sibling (adjacent) categories.
+   * 
+   * @param   integer  $pk  The id of the primary key.
+   *
+   * @return  mixed    An array of categories or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getLeftSibling($pk = null)
+  {
+    return true;
+  }
 }
