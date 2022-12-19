@@ -321,6 +321,11 @@ class ImagesModel extends JoomListModel
 
     // Filter by categories
     $catId = $this->getState("filter.category");
+    $catId = (string) preg_replace('/[^0-9\,]/i', '', $catId);
+    if(\strpos($catId, ',') !== false)
+    {
+      $catId = \explode(',', $catId);
+    }
 
     if(is_numeric($catId))
 		{
