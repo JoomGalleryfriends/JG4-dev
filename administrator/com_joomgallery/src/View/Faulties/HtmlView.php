@@ -60,7 +60,7 @@ class HtmlView extends JoomGalleryView
 		}
 
     // Test config service
-    $this->component->createConfig();
+    $this->component->createConfig('com_joomgallery.category', 5);
     $config = $this->component->getConfig();
     dump($config);
 

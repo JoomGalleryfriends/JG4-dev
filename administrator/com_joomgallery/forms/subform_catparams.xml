@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
   <fieldset>
-    <field name="allow_download"
+    <field name="jg_download"
            groupByFieldset="false"
            default="-1"
            type="radio"
@@ -25,7 +25,7 @@
       <option value="1">JYES</option>
     </field>
 
-    <field name="allow_rating"
+    <field name="jg_showrating"
            groupByFieldset="false"
            default="-1"
            type="radio"
@@ -37,7 +37,7 @@
       <option value="1">JYES</option>
     </field>
 
-    <field name="allow_watermark"
+    <field name="jg_dynamic_watermark"
            groupByFieldset="false"
            default="-1"
            type="radio"
@@ -49,7 +49,7 @@
       <option value="1">JYES</option>
     </field>
 
-    <field name="allow_watermark_download"
+    <field name="jg_downloadwithwatermark"
            groupByFieldset="false"
            default="-1"
            type="radio"

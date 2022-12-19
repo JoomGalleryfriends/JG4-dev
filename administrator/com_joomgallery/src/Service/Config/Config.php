@@ -28,7 +28,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  * @package JoomGallery
  * @since   1.5.5
  */
-class Config implements ConfigInterface
+abstract class Config implements ConfigInterface
 {
   use ServiceTrait;
 
@@ -38,13 +38,6 @@ class Config implements ConfigInterface
    * @var array
    */
   protected $subforms = array('jg_replaceinfo', 'jg_staticprocessing', 'jg_dynamicprocessing', 'jg_imgtypewtmsettings');
-
-  /**
-   * Item object of the `#_joomgallery_configs` db table
-   *
-   * @var \Joomla\CMS\Object\CMSObject
-   */
-  protected $item = null;
 
   /**
    * Content for which the settings has to be calculated
@@ -78,13 +71,12 @@ class Config implements ConfigInterface
 
     // Check context
     $context_array = \explode('.', $context);
-    $context_ok    = true;
 
     if($context_array[0] != 'com_joomgallery' || (\count($context_array) > 1 && !\array_key_exists($context_array[1], $this->ids)) || \count($context_array) > 2)
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
 
-      $context_ok = false;
+      $this->context = false;
     }
 
     // Completing $this->ids based on given context
@@ -125,55 +117,6 @@ class Config implements ConfigInterface
     {
       $this->ids['user'] = Factory::getUser()->get('id');
     }
-
-    //---------Level 1---------
-
-    // Get global configuration set
-    $glob_params = $this->getParamsByID(1);
-
-    if($glob_params == false || empty($glob_params))
-    {
-      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_LOAD_CONFIG'), 'error');
-
-      return;
-    }
-
-    // Write config values to class properties
-    $this->setParamsToClass($glob_params);
-
-    //---------Level 2---------
-
-    // Get user specific configuration set
-    $user_params = $this->getParamsByUser($this->ids['user']);
-
-    // Override class properties where needed
-    if($user_params != false && !empty($user_params))
-    {
-      $this->setParamsToClass($user_params);
-    }
-
-    if(!$context_ok)
-    {
-      // Wrong context provided. No further inheritantion
-      return;
-    }
-
-    //---------Level 3---------
-    if(isset($this->ids['category']))
-    {
-      // Get category specific configuration set
-      $cat_model = $this->component->getMVCFactory()->createModel('Category');
-      $parents   = $cat_model->getParents($this->ids['category']);
-    }
-
-    //---------Level 4---------
-
-    // Get image specific configuration set
-
-    //---------Level 5---------
-
-    // Get menu specific configuration set
-
   }
 
   /**
@@ -185,7 +128,7 @@ class Config implements ConfigInterface
 	 *
 	 * @since   4.0.0
 	 */
-	private function setParamsToClass($params)
+	protected function setParamsToClass($params)
 	{
     foreach($params as $key => $value)
     {
@@ -215,6 +158,19 @@ class Config implements ConfigInterface
           // set param to class property
           if(!isset($this->$key) || $value !== $this->$key)
           {
+            if($value == '-1')
+            {
+              continue;
+            }
+            elseif(\is_integer($value) || \is_bool($value) || $value === '1' || $value === '0')
+            {
+              $value = \intval($value);
+            }
+            elseif(\is_numeric($value))
+            {
+              $value = \floatval($value);
+            }
+
             $this->set($key, $value);
           }
         }
@@ -231,15 +187,15 @@ class Config implements ConfigInterface
 	 *
 	 * @since   4.0.0
 	 */
-	private function getParamsByID($id = 1)
+	protected function getParamsByID($id = 1)
 	{
     $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
     $model   = $com_obj->getMVCFactory()->createModel('Config');
 
-    $id          = intval($id);
-    $this->item = $model->getItem($id);
+    $id   = intval($id);
+    $item = $model->getItem($id);
 
-    return $this->item->getProperties();
+    return $item->getProperties();
   }
 
   /**
@@ -253,7 +209,7 @@ class Config implements ConfigInterface
 	 *
 	 * @since   4.0.0
 	 */
-  private function getParamsByUser($id)
+  protected function getParamsByUser($id)
   {
     // get array of all user groups the current user is in
     $user    = Factory::getUser($id);
