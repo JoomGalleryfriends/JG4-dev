@@ -320,10 +320,10 @@ class ImagesModel extends JoomListModel
 		}
 
     // Filter by categories
-    $catId = $this->getState("filter.category", array());
+    $catId = $this->getState("filter.category");
 
     // Convert to array
-    if(!\is_array($catId))
+    if(isset($catId) && !\is_array($catId))
     {
       $catId = (string) preg_replace('/[^0-9\,]/i', '', $catId);
       if(\strpos($catId, ',') !== false)
