@@ -50,7 +50,7 @@ class DefaultConfig extends Config implements ConfigInterface
 
     if($glob_params == false || empty($glob_params))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_LOAD_CONFIG'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
 
       return;
     }
@@ -82,6 +82,12 @@ class DefaultConfig extends Config implements ConfigInterface
       $cat_model = $this->component->getMVCFactory()->createModel('Category');
       $parents   = $cat_model->getParents($this->ids['category'], true);
 
+      if($parents === false && empty($parents))
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        return;
+      }
+
       // Override class properties based on category params
       foreach ($parents as $key => $cat)
       {
@@ -98,6 +104,12 @@ class DefaultConfig extends Config implements ConfigInterface
       $img_model  = $this->component->getMVCFactory()->createModel('Image');
       $image      = $img_model->getItem($this->ids['image']);
 
+      if($image === false && empty($image))
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        return;
+      }
+
       // Override class properties based on image params
       $img_params = \json_decode($image->params);
       $this->setParamsToClass($img_params);
@@ -108,6 +120,12 @@ class DefaultConfig extends Config implements ConfigInterface
     {
       // Load menu item
       $menu = Factory::getApplication()->getMenu()->getItem($this->ids['menu']);
+
+      if($menu === false && empty($menu))
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        return;
+      }
       
       // Override class properties based on menu item params
       $this->setParamsToClass($menu->getParams());
