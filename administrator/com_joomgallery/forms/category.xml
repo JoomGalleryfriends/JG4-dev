@@ -120,7 +120,7 @@
     </field>
 
     <field name="thumbnail"
-           type="media"
+           type="jgimage"
            directory="/images/joomgallery/"
            label="COM_JOOMGALLERY_THUMBNAIL"
            description="COM_JOOMGALLERY_FIELDS_THUMBNAIL_DESC" />

@@ -32,6 +32,14 @@
       "name": "com_joomgallery.list",
       "type": "style",
       "uri": "com_joomgallery/list.css"
+    },
+    {
+      "name": "com_joomgallery.field-image",
+      "type": "script",
+      "uri": "com_joomgallery/field-image.js",
+      "attributes": {
+        "type": "module"
+      }
     }
   ]
 }

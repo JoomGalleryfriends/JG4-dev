@@ -42,7 +42,7 @@
                onchange="this.form.submit();" />
         
         <field name="created_by"
-               type="user"
+               type="userdropdown"
                label="COM_JOOMGALLERY_COMMON_OPTION_SELECT_OWNER"
                hint="COM_JOOMGALLERY_COMMON_OPTION_SELECT_OWNER"
                onchange="this.form.submit();" />
