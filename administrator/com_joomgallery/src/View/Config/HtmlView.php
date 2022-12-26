@@ -177,59 +177,6 @@ class HtmlView extends JoomGalleryView
 		{
 			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
 		}
-
-		// $resetGroup = $toolbar->dropdownButton('reset-group')
-		// 	->text('Settings')
-		// 	->toggleSplit(false)
-		// 	->icon('fas fa-ellipsis-h')
-		// 	->buttonClass('btn btn-action')
-		// 	->listCheck(false);
-
-		// $childBar = $resetGroup->getChildToolbar();
-
-		if(!$isNew)
-		{
-			// $resetGroup = $toolbar->dropdownButton('reset-group')
-			// 	->text('Settings')
-			// 	->toggleSplit(false)
-			// 	->icon('fas fa-ellipsis-h')
-			// 	->buttonClass('btn btn-action')
-			// 	->listCheck(false);
-
-			// $childBar = $resetGroup->getChildToolbar();
-
-			$toolbar->confirmButton('reset')
-				->text('COM_JOOMGALLERY_CONFIG_RESET')
-				->task('config.reset')
-				->message('COM_JOOMGALLERY_RESET_CONFIRM')
-				->icon('icon-refresh')
-				->listCheck(false);
-				
-			$toolbar->standardButton('export')
-				->text('JTOOLBAR_EXPORT')
-				->task('config.export')
-				->icon('icon-download')
-				->listCheck(false);
-		
-			$import_modal_opt = array(
-				'selector'=> 'import_modal',
-				'doTask' => '',
-				'btnClass' => 'button-import btn btn-primary',
-				'htmlAttributes' => '',
-				'class' => 'icon-upload',
-				'text' => Text::_('COM_JOOMGALLERY_IMPORT'));
-			$import_modal_btn = LayoutHelper::render('joomla.toolbar.popup', $import_modal_opt);
-			$toolbar->appendButton('Custom', $import_modal_btn);
-		}
-
-		if(empty($this->item->id))
-		{
-			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CANCEL');
-		}
-		else
-		{
-			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
-		}
 	}
 
   /**
