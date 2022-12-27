@@ -58,6 +58,7 @@
          value_field="title"
          header="COM_JOOMGALLERY_CONFIG_USER_GROUP"
          type="sql"
+         class="mb-0"
          layout="joomla.form.field.list-fancy-select"
          required="true"
          label="COM_JOOMGALLERY_USER_GROUP"
