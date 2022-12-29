@@ -20,14 +20,30 @@ use \Joomla\CMS\Factory;
 * @since  4.0.0
 */
 trait MessageTrait
-{  
+{
+  /**
+   * Set to true if a error occured
+   *
+   * @var bool
+  */
+  public $error = false;
+
+  /**
+	 * Session storage path
+	 *
+	 * @var string
+	 *
+	 * @since  4.0.0
+	*/
+  public $msgUserStateKey = 'com_joomgallery.messages';
+
   /**
 	 * Debug information storage
 	 *
 	 * @var array
 	 *
 	 * @since  4.0.0
-	 */
+	*/
 	protected $debug = array();
 
   /**
@@ -36,7 +52,7 @@ trait MessageTrait
    * @var array
    * 
    * @since  4.0.0
-   */
+  */
   protected $warnings = array();
 
   /**
@@ -45,7 +61,7 @@ trait MessageTrait
    * @var array
    * 
    * @since  4.0.0
-   */
+  */
   protected $errors = array();
 
   /**
@@ -59,9 +75,9 @@ trait MessageTrait
   {
     $app = Factory::getApplication();
 
-    $app->setUserState('joom.messages.debug', $this->debug);
-    $app->setUserState('joom.messages.warnings', $this->warnings);
-    $app->setUserState('joom.messages.errors', $this->errors);
+    $app->setUserState($this->msgUserStateKey.'.debug', $this->debug);
+    $app->setUserState($this->msgUserStateKey.'.warnings', $this->warnings);
+    $app->setUserState($this->msgUserStateKey.'.errors', $this->errors);
   }
 
   /**
@@ -75,9 +91,9 @@ trait MessageTrait
   {
     $app = Factory::getApplication();
 
-    $this->debug    = $app->getUserState('joom.messages.debug', array());
-    $this->warnings = $app->getUserState('joom.messages.warnings', array());
-    $this->errors   = $app->getUserState('joom.messages.errors', array());
+    $this->debug    = $app->getUserState($this->msgUserStateKey.'.debug', array());
+    $this->warnings = $app->getUserState($this->msgUserStateKey.'.warnings', array());
+    $this->errors   = $app->getUserState($this->msgUserStateKey.'.errors', array());
   }
 
   /**
@@ -136,7 +152,7 @@ trait MessageTrait
 	 * @return  string|array  Debugoutput
 	 *
 	 * @since  4.0.0
-	 */
+	*/
 	public function getDebug($implode=false)
   {
     return $this->getMsg('debug', $implode);
@@ -150,7 +166,7 @@ trait MessageTrait
 	 * @return  string|array  Warningoutput
 	 *
 	 * @since  4.0.0
-	 */
+	*/
 	public function getWarning($implode=false)
   {
     return $this->getMsg('warning', $implode);
@@ -164,7 +180,7 @@ trait MessageTrait
 	 * @return  string|array  Erroroutput
 	 *
 	 * @since  4.0.0
-	 */
+	*/
 	public function getError($implode=false)
   {
     return $this->getMsg('error', $implode);
@@ -286,7 +302,7 @@ trait MessageTrait
 	 * @return  string|array  Debugoutput
 	 *
 	 * @since  4.0.0
-	 */
+	*/
 	public function getMsg($storage, $implode=false)
   {
     $storage = $this->selectStorage($storage);
@@ -396,7 +412,7 @@ trait MessageTrait
 	 *
 	 * @since   4.0.0 
    * @throws  Exception
-	 */
+	*/
   protected function selectStorage($selection)
   {
     switch($selection)
@@ -430,23 +446,23 @@ trait MessageTrait
 	 *
 	 * @since   4.0.0 
    * @throws  Exception
-	 */
+	*/
   protected function selectStoragePath($selection)
   {
     switch($selection)
     {
       case 'debug':
-        return 'joom.messages.debug';
+        return $this->msgUserStateKey.'.debug';
         break;
 
       case 'warnings':
       case 'warning':
-        return 'joom.messages.warnings';
+        return $this->msgUserStateKey.'.warnings';
         break;
 
       case 'error':
       case 'errors':
-        return 'joom.messages.errors';
+        return $this->msgUserStateKey.'.errors';
         break;
 
       default:
