@@ -26,7 +26,7 @@ use Joomla\CMS\HTML\HTMLRegistryAwareTrait;
 use Joomla\CMS\Tag\TagServiceTrait;
 use Psr\Container\ContainerInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomConfig;
-use Joomgallery\Component\Joomgallery\Administrator\Extension\DebugTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Extension\MessageTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderServiceInterface;
@@ -55,7 +55,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
    */
   public $supported_types = null;
 
-  use DebugTrait;
+  use MessageTrait;
 	use AssociationServiceTrait;
 	use RouterServiceTrait;
 	use HTMLRegistryAwareTrait;
