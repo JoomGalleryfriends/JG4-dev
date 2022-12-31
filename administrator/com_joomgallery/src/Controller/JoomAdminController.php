@@ -80,15 +80,14 @@ class JoomAdminController extends BaseAdminController
       $res = parent::execute($task);
 
       // After execution of the task
-      if($res->component->error)
+      if(!$this->component->msgWithhold && $res->component->error)
       {
-        $res->component->printError();
-        return false;
+        $this->component->printError();
       }
       elseif(!$this->component->msgWithhold)
       {
-        $res->component->printWarning();
-        $res->component->printDebug();
+        $this->component->printWarning();
+        $this->component->printDebug();
       }
 
       return $res;

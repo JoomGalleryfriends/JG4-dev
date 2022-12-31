@@ -343,12 +343,6 @@ trait MessageTrait
   */
   public function printMsg($storage, $type='warning', $title=true)
   {
-    // Check if there is anything in the storage to be printed
-    if(empty($storage))
-    {
-      return;
-    }
-
     // Create output title
     $storage_title = 'COM_JOOMGALLERY_';
     switch($storage)
@@ -369,6 +363,12 @@ trait MessageTrait
 
     // Collect storage info
     $storage = &$this->selectMsgStorage($storage);
+
+    // Check if there is anything in the storage to be printed
+    if(empty($storage))
+    {
+      return;
+    }
 
     // Assemble the output
     $output = '';
