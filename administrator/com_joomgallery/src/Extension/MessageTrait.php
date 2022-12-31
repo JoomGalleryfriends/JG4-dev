@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
 
 /**
 * Trait to implement messaging tools
@@ -71,7 +72,7 @@ trait MessageTrait
    *
    * @since   4.0.0
   */
-  public function toSession()
+  public function msgToSession()
   {
     $app = Factory::getApplication();
 
@@ -87,7 +88,7 @@ trait MessageTrait
    *
    * @since   4.0.0
   */
-  public function fromSession()
+  public function msgFromSession()
   {
     $app = Factory::getApplication();
 
@@ -109,7 +110,7 @@ trait MessageTrait
   */
   public function addDebug($txt, $new_line=true, $margin_top=false)
   {
-    $this->setMsg('debug', $txt, $new_line, $margin_top);
+    $this->setMsg($txt, 'debug', $new_line, $margin_top);
   }
 
   /**
@@ -125,7 +126,7 @@ trait MessageTrait
   */
   public function addWarning($txt, $new_line=true, $margin_top=false)
   {
-    $this->setMsg('warning', $txt, $new_line, $margin_top);
+    $this->setMsg($txt, 'warning', $new_line, $margin_top);
   }
 
   /**
@@ -141,7 +142,7 @@ trait MessageTrait
   */
   public function setError($txt, $new_line=true, $margin_top=false)
   {
-    $this->setMsg('error', $txt, $new_line, $margin_top);
+    $this->setMsg($txt, 'error', $new_line, $margin_top);
   }
 
   /**
@@ -278,7 +279,12 @@ trait MessageTrait
   */
   public function setMsg($txt, $storage, $new_line=true, $margin_top=false)
   {
-    $storage = $this->selectStorage($storage);
+    if(empty($txt))
+    {
+      return;
+    }
+
+    $storage = &$this->selectMsgStorage($storage);
 
     if(!$new_line && !empty($storage))
     {
@@ -305,7 +311,7 @@ trait MessageTrait
 	*/
 	public function getMsg($storage, $implode=false)
   {
-    $storage = $this->selectStorage($storage);
+    $storage = &$this->selectMsgStorage($storage);
 
     if($implode)
     {
@@ -349,7 +355,7 @@ trait MessageTrait
     $storage_title .= 'INFORMATION';
 
     // Collect storage info
-    $storage = $this->selectStorage($storage);
+    $storage = &$this->selectMsgStorage($storage);
 
     // Check if there is anything in the storage to be printed
     if(empty($storage))
@@ -392,8 +398,8 @@ trait MessageTrait
   */
   public function clearMsgStorage($storage, $session=true)
   {
-    $session_path = $this->selectStoragePath($storage);
-    $storage      = $this->selectStorage($storage);
+    $session_path = $this->selectMsgStoragePath($storage);
+    $storage      = &$this->selectMsgStorage($storage);
 
     $storage = array();
 
@@ -413,7 +419,7 @@ trait MessageTrait
 	 * @since   4.0.0 
    * @throws  Exception
 	*/
-  protected function selectStorage($selection)
+  protected function &selectMsgStorage($selection)
   {
     switch($selection)
     {
@@ -447,7 +453,7 @@ trait MessageTrait
 	 * @since   4.0.0 
    * @throws  Exception
 	*/
-  protected function selectStoragePath($selection)
+  protected function selectMsgStoragePath($selection)
   {
     switch($selection)
     {
