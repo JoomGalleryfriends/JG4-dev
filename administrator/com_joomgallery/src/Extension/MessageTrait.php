@@ -30,6 +30,13 @@ trait MessageTrait
   public $error = false;
 
   /**
+   * Set to true if messages should be withholded
+   *
+   * @var bool
+  */
+  public $msgWithhold = false;
+
+  /**
 	 * Session storage path
 	 *
 	 * @var string
@@ -336,6 +343,12 @@ trait MessageTrait
   */
   public function printMsg($storage, $type='warning', $title=true)
   {
+    // Check if there is anything in the storage to be printed
+    if(empty($storage))
+    {
+      return;
+    }
+
     // Create output title
     $storage_title = 'COM_JOOMGALLERY_';
     switch($storage)
@@ -356,12 +369,6 @@ trait MessageTrait
 
     // Collect storage info
     $storage = &$this->selectMsgStorage($storage);
-
-    // Check if there is anything in the storage to be printed
-    if(empty($storage))
-    {
-      return;
-    }
 
     // Assemble the output
     $output = '';
