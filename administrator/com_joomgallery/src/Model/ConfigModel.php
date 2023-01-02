@@ -629,14 +629,20 @@ class ConfigModel extends JoomAdminModel
 		$form->loadFile($xml);
 		$field = $form->getField($fieldname);
 
-		// Check file for errors
-		if($file['error'] !== 0)
-		{
-			// Upload failed
-			$this->setError($this->checkError($file['error']));		
+    // Check for upload error codes
+    if($file['error'] > 0)
+    {
+      if($file['error'] == 4)
+      {
+        $this->setError(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_UPLOADED'));
 
-			return false;
-		}		
+        return false;
+      }
+      $uploader = JoomHelper::getService('Uploader', array('html'));
+      $this->setError($uploader->checkError($file['error']));
+
+      return false;
+    }	
 
 		// Check file size
 		$filesize = intval($field->getAttribute('size', '512000'));
@@ -662,7 +668,8 @@ class ConfigModel extends JoomAdminModel
 
 		// Check file content
 		$json = json_decode($json_string, true);
-   		if(json_last_error() !== JSON_ERROR_NONE)
+    
+   	if(json_last_error() !== JSON_ERROR_NONE)
 		{
 			// JSON not valid
 			$this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_INVALID_FILE_CONTENT', $file['name']), 'error');

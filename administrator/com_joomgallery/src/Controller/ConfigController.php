@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\FormController;
 use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 
 /**
  * Config controller class.
