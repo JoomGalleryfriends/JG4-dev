@@ -12,7 +12,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 
 \defined('_JEXEC') or die;
 
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MailMessenger;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MailTempMessenger;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\PmMessenger;
 
 /**
 * Trait to implement MessengerServiceInterface
@@ -32,14 +34,31 @@ trait MessengerServiceTrait
 
   /**
 	 * Creates the messenger service class
+   * 
+   * @param   string  $msgMethod   Name of the messager to be used
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createMessenger()
+	public function createMessenger($msgMethod)
   {
-    $this->messenger = new Messenger;
+    switch ($msgMethod)
+    {
+      case 'pm':
+        $this->uploader = new PmMessenger();
+        break;
+
+      case 'mailtemplate':
+      case 'template':
+        $this->uploader = new MailTempMessenger();
+        break;
+
+      default:
+        $this->messenger = new MailMessenger();
+        break;
+    }
+
     return;
   }
 

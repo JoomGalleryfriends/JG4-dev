@@ -13,28 +13,34 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\User\User;
+use \Joomla\CMS\Language\Language;
+use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessageInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MailMessage;
 
 /**
- * Messenger Class
+ * Mail Messenger Class
  *
- * Provides methods to send all kind of messages in the gallery.
+ * Provides methods to send email messages in the gallery.
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-abstract class Messenger implements MessengerInterface
+class MailMessenger extends Messenger implements MessengerInterface
 {
-  use ServiceTrait;
-
   /**
-   * Message object
+   * Constructor
    *
-   * @var MessageInterface
-   * 
-   * @since  4.0.0
+   * @return  void
+   *
+   * @since   4.0.0
    */
-  protected $message = null;
+  public function __construct()
+  {
+    $this->message = New MailMessage();
+  }
 }

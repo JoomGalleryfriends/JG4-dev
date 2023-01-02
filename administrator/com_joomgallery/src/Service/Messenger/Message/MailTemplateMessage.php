@@ -8,26 +8,24 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Message;
 
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Message\MessageInterface;
 
 /**
- * Message Class
+ * Mail Template Message Class
+ * Contains the content of a template based email message
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class Message
+class MailTemplateMessage implements MessageInterface
 {
-  use ServiceTrait;
-
   /**
    * List of recipients
-   * user ID || address (localhost@localhost.de)
    *
    * @var array
    */
@@ -35,14 +33,13 @@ class Message
 
   /**
    * Sender
-   * user ID || address (localhost@localhost.de)
    *
-   * @var int
+   * @var int|string
    */
   protected $from = null;
 
   /**
-   * Username
+   * Sender display name
    *
    * @var string
    */
@@ -61,13 +58,6 @@ class Message
    * @var string
    */
   protected $body = '';
-
-  /**
-   * Message template
-   *
-   * @var string
-   */
-  protected $template = '';
 
   /**
    * Method to add one ore more recipients

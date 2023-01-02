@@ -13,8 +13,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessageInterface;
+
 /**
 * Interface for the messenger class
+*
+* @property  MessageInterface  $message
 *
 * @since  4.0.0
 */
