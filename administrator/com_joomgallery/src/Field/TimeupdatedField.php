@@ -10,10 +10,10 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-defined('JPATH_BASE') or die;
+\defined('JPATH_BASE') or die;
 
-use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Date\Date;
 

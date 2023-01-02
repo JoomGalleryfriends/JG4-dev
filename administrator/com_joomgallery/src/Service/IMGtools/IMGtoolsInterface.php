@@ -32,6 +32,15 @@ interface IMGtoolsInterface
   public function __construct($keep_metadata, $keep_anim);
 
   /**
+   * Version notes
+   *
+   * @return  false|string  Version string on success false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function version();
+
+  /**
    * Add information of currently used image processor to debug output
    *
    * @return  void

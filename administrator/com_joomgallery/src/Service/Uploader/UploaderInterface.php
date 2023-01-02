@@ -30,6 +30,17 @@ interface UploaderInterface
    */
   public function __construct();
 
+  /**
+   * Analyses an error code and returns its text
+   *
+   * @param   int     $uploaderror  The errorcode
+   *
+   * @return  string  The error message
+   *
+   * @since   4.0.0
+   */
+  public function checkError($uploaderror): string;
+
 	/**
 	 * Method to retrieve an uploaded image. Step 1.
    * (check upload, check user upload limit, create filename, onJoomBeforeUpload)
