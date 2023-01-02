@@ -1058,7 +1058,7 @@ class FileManager implements FileManagerInterface
    * 
    * @since   4.0.0
    */
-  protected function addRoot($whichRoot)
+  public function addRoot($whichRoot)
   {
     // Create filesystem service
     $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));

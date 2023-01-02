@@ -52,3 +52,10 @@ img.jg_minithumb {
   display: block;
   margin: 0 auto;
 }
+.badge-list .badge {
+  margin: 0.2rem;
+}
+joomla-field-image .jg_minithumb {
+  border: solid 1px var(--template-bg-dark-20);
+  background-color: #e8e8e8;
+}

@@ -311,7 +311,7 @@ class ImagesModel extends JoomListModel
           $row = 'a.featured';
         }
 
-        if($state)
+        if($state || $state === 0)
         {
           $query->where($db->quoteName($row) . ' = :state')
 					->bind(':state', $state, ParameterType::INTEGER);
@@ -322,6 +322,16 @@ class ImagesModel extends JoomListModel
     // Filter by categories
     $catId = $this->getState("filter.category");
 
+    // Convert to array
+    if(isset($catId) && !\is_array($catId))
+    {
+      $catId = (string) preg_replace('/[^0-9\,]/i', '', $catId);
+      if(\strpos($catId, ',') !== false)
+      {
+        $catId = \explode(',', $catId);
+      }
+    }
+
     if(is_numeric($catId))
 		{
 			$catId = (int) $catId;
@@ -331,7 +341,27 @@ class ImagesModel extends JoomListModel
 		elseif(is_array($catId))
 		{
 			$catId = ArrayHelper::toInteger($catId);
-			$query->whereIn($db->quoteName('a.catId'), $catId);
+			$query->whereIn($db->quoteName('a.catid'), $catId);
+		}
+
+    // Filter: Exclude images
+    $excludedId = Factory::getApplication()->input->get('exclude', '', 'string');
+    $excludedId = (string) preg_replace('/[^0-9\,]/i', '', $excludedId);
+    if(\strpos($excludedId, ',') !== false)
+    {
+      $excludedId = \explode(',', $excludedId);
+    }
+
+    if(is_numeric($excludedId))
+		{
+			$excludedId = (int) $excludedId;
+			$query->where($db->quoteName('a.id') . ' != :imgId')
+				->bind(':imgId', $excludedId, ParameterType::INTEGER);
+		}
+		elseif(is_array($excludedId))
+		{
+			$excludedId = ArrayHelper::toInteger($excludedId);
+			$query->whereNotIn($db->quoteName('a.id'), $excludedId);
 		}
 
     // Filter on the language.

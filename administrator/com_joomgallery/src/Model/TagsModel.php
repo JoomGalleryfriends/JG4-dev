@@ -156,7 +156,7 @@ class TagsModel extends JoomListModel
 
 		// Select the required fields from the table.
     $query->select($this->getState('list.select', 'DISTINCT a.*'));
-    $query->from($db->quoteName('#__joomgallery_tags', 'a'));
+    $query->from($db->quoteName(_JOOM_TABLE_TAGS, 'a'));
 
 		// Join over the users for the checked out user
     $query->select($db->quoteName('uc.name', 'uEditor'));
@@ -182,7 +182,7 @@ class TagsModel extends JoomListModel
 		$subQueryCountTaggedItems = $db->getQuery(true);
 		$subQueryCountTaggedItems
 			->select('COUNT(' . $db->quoteName('tags_ref.imgid') . ')')
-			->from($db->quoteName('#__joomgallery_tags_ref', 'tags_ref'))
+			->from($db->quoteName(_JOOM_TABLE_TAGS_REF, 'tags_ref'))
 			->where($db->quoteName('tags_ref.tagid') . ' = ' . $db->quoteName('a.id'));
 		$query->select('(' . (string) $subQueryCountTaggedItems . ') AS ' . $db->quoteName('countTaggedItems'));
 
@@ -263,6 +263,8 @@ class TagsModel extends JoomListModel
 	 * Get an array of data items
 	 *
 	 * @return mixed Array of data items on success, false on failure.
+   * 
+   * @since   4.0.0
 	 */
 	public function getItems()
 	{
@@ -270,4 +272,273 @@ class TagsModel extends JoomListModel
 
 		return $items;
 	}
+
+  /**
+	 * Search for data items
+   * 
+   * @param   array  $filters  Filter to apply to the search
+	 *
+	 * @return  array
+   * 
+   * @since   4.0.0
+	 */
+	public function searchItems($filters = array())
+	{
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true)
+            ->select([
+                        $db->quoteName('a.id', 'value'),
+                        $db->quoteName('a.title', 'text'),
+                      ])
+            ->from($db->quoteName(_JOOM_TABLE_TAGS, 'a'));
+
+    // Filter language
+    if(!empty($filters['flanguage']))
+    {
+        $query->whereIn($db->quoteName('a.language'), [$filters['flanguage'], '*'], ParameterType::STRING);
+    }
+
+    // Search in title or path
+    if(!empty($filters['like']))
+    {
+        $search = '%' . trim($filters['like']) . '%';
+        $query->where(
+                        '(' . $db->quoteName('a.title') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2)'
+                      )
+              ->bind([':search1', ':search2'], $search);
+    }
+
+    // Filter title
+    if(!empty($filters['title']))
+    {
+        $query->where($db->quoteName('a.title') . ' = :title')
+              ->bind(':title', $filters['title']);
+    }
+
+    // Filter on the published state
+    if(isset($filters['published']) && is_numeric($filters['published']))
+    {
+        $published = (int) $filters['published'];
+        $query->where($db->quoteName('a.published') . ' = :published')
+              ->bind(':published', $published, ParameterType::INTEGER);
+    }
+
+    // Filter on the access level
+    if(isset($filters['access']) && \is_array($filters['access']) && \count($filters['access']))
+    {
+        $groups = ArrayHelper::toInteger($filters['access']);
+        $query->whereIn($db->quoteName('a.access'), $groups);
+    }
+
+    $query->group([
+            $db->quoteName('a.id'),
+            $db->quoteName('a.title'),
+            $db->quoteName('a.ordering'),
+            $db->quoteName('a.published'),
+            $db->quoteName('a.access'),
+          ])
+          ->order($db->quoteName('a.ordering') . ' ASC');
+
+    // Get the options.
+    $db->setQuery($query);
+
+    try
+    {
+      $items = $db->loadObjectList();
+    }
+    catch(\RuntimeException $e)
+    {
+      return array();
+    }
+
+    return $items;
+  }
+
+  /**
+	 * Build an SQL query to load a list of all items mapped to an image.
+   * 
+   * @param   int  $img_id  ID of the mapped image
+	 *
+	 * @return  DatabaseQuery
+	 *
+	 * @since   4.0.0
+	 */
+	protected function getMappedListQuery($img_id)
+	{
+    // Create a new query object. 
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    // Select the required fields from the table.
+    $query->select('a.*');
+    $query->from($db->quoteName(_JOOM_TABLE_TAGS, 'a'));
+
+		// Join over the access level field 'access'
+    $query->select($db->quoteName('access.title', 'access'));
+    $query->join('LEFT', $db->quoteName('#__viewlevels', 'access'), $db->quoteName('access.id') . ' = ' . $db->quoteName('a.access'));
+
+		// Join over the user field 'created_by'
+    $query->select(array($db->quoteName('ua.name', 'created_by'), $db->quoteName('ua.id', 'created_by_id')));
+    $query->join('LEFT', $db->quoteName('#__users', 'ua'), $db->quoteName('ua.id') . ' = ' . $db->quoteName('a.created_by'));
+
+		// Join over the user field 'modified_by'
+    $query->select(array($db->quoteName('um.name', 'modified_by'), $db->quoteName('um.id', 'modified_by_id')));
+    $query->join('LEFT', $db->quoteName('#__users', 'um'), $db->quoteName('um.id') . ' = ' . $db->quoteName('a.modified_by'));
+
+    // Join over the language fields 'language_title' and 'language_image'
+		$query->select(array($db->quoteName('l.title', 'language_code')));
+		$query->join('LEFT', $db->quoteName('#__languages', 'l'), $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
+
+    // Apply the mapping
+		$query->join('INNER', $db->quoteName(_JOOM_TABLE_TAGS_REF, 'ref'), $db->quoteName('a.id') . ' = ' . $db->quoteName('ref.tagid'));
+    $query->where($db->quoteName('ref.imgid') . ' = ' . $db->quote($img_id));
+
+    $query->order('a.id ASC');
+
+    return $query;
+  }
+
+  /**
+	 * Get an array of data items mapped to an an image.
+   * 
+   * @param   int  $img_id  ID of the mapped image
+	 *
+	 * @return mixed Array of data items on success, false on failure.
+   * 
+   * @since   4.0.0
+	 */
+  public function getMappedItems($img_id)
+  {
+    try
+    {
+      // Load the list items
+      $query = $this->getMappedListQuery($img_id);
+      $items = $this->_getList($query);
+    }
+    catch(\RuntimeException $e)
+    {
+      $this->setError($e->getMessage());
+
+      return false;
+    }
+
+    return $items;
+  }
+
+	/**
+	 * Store items based on list generated by tags select field
+	 * 
+	 * @param   array  $tags  List of tags
+	 *
+	 * @return  array  List of tags on success, False otherwise
+	 *
+	 * @since   4.0.0
+	 */
+	public function storeTagsList($tags)
+	{
+		$com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+
+    foreach($tags as $key => $tag)
+    {
+      if(strpos($tag, '#new#') !== false)
+      {
+        $title = \str_replace('#new#', '', $tag);
+
+        // create tag
+        $data = array();
+        $data['id']        = '0';
+        $data['title']     = $title;
+        $data['published'] = '1';
+        $data['access']    = '1';
+        $data['language']  = '*';
+        $data['description']  = '';
+
+        if(!$tag_model->save($data))
+        {
+          $this->setError($tag_model->getError());
+          return false;
+        }
+        else
+        {
+          // update tags list entry on success
+          $tags[$key] = \strval($tag_model->getItem($title)->id);
+        }
+      }
+    }
+
+		return $tags;
+	}
+
+	/**
+	 * Update mapping between tags and image
+	 * 
+	 * @param   array  $new_tags   List of tags to be mapped to the image
+	 * @param   int    $img_id     Id of the image
+	 *
+	 * @return  True on success, False otherwise
+	 *
+	 * @since   4.0.0
+	 */
+	public function updateMapping($new_tags, $img_id)
+	{
+    $new_tags = ArrayHelper::toInteger($new_tags);
+
+		$current_tags = $this->idArray($this->getMappedItems($img_id));
+    $current_tags = ArrayHelper::toInteger($current_tags);
+
+    $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+
+    $success = true;
+    foreach($new_tags as $tag_id)
+    {
+      if(!\in_array($tag_id, $current_tags))
+      {
+        // add tag from mapping
+        if(!$tag_model->addMapping($tag_id, $img_id))
+        {
+          $this->setError($tag_model->getError());
+          $success = false;
+        }
+      }
+    }
+
+    foreach($current_tags as $tag_id)
+    {
+      if(!\in_array($tag_id, $new_tags))
+      {
+        // remove tag from mapping
+        if(!$tag_model->removeMapping($tag_id, $img_id))
+        {
+          $this->setError($tag_model->getError());
+          $success = false;
+        }
+      }
+    }
+
+		return $success;
+	}
+
+
+  /**
+	 * Convert a list of tag objects to a list of tag ids
+	 * 
+	 * @param   array  $objectlist   List of tag objects
+	 *
+	 * @return  array  List of tag ids
+	 *
+	 * @since   4.0.0
+	 */
+  protected function idArray($objectlist)
+  {
+    $array = array();
+
+    foreach($objectlist as $obj)
+    {
+      \array_push($array, $obj->id);
+    }
+
+    return $array;
+  }
 }

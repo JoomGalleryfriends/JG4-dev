@@ -120,6 +120,7 @@ class CategoriesModel extends JoomListModel
 		$this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
     $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by');
     $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category');
+    $this->getUserStateFromRequest($this->context . '.filter.exclude', 'filter_exclude');
 
     // List state information.
 		parent::populateState($ordering, $direction);
@@ -135,6 +136,8 @@ class CategoriesModel extends JoomListModel
 			$category = $app->input->post->get('category');
 			$this->setState('filter.category', $category);
 
+      $exclude = $app->input->post->get('exclude');
+			$this->setState('filter.exclude', $exclude);
 		}
 
     // Force a language
@@ -165,6 +168,7 @@ class CategoriesModel extends JoomListModel
 		$id .= ':' . serialize($this->getState('filter.access'));
 		$id .= ':' . $this->getState('filter.published');
 		$id .= ':' . serialize($this->getState('filter.category'));
+    $id .= ':' . serialize($this->getState('filter.exclude'));
 		$id .= ':' . serialize($this->getState('filter.created_by'));
 		$id .= ':' . $this->getState('filter.language');
 
@@ -301,36 +305,7 @@ class CategoriesModel extends JoomListModel
     // Case: Using both categories filter and by level filter
 		if(count($categoryId))
 		{
-			$categoryId = ArrayHelper::toInteger($categoryId);
-      $categoryTable = $this->getMVCFactory()->createTable('Category');
-			$subCatItemsWhere = array();
-
-			foreach($categoryId as $key => $filter_catid)
-			{
-				$categoryTable->load($filter_catid);
-
-				// Because values to $query->bind() are passed by reference, using $query->bindArray() here instead to prevent overwriting.
-				$valuesToBind = [$categoryTable->lft, $categoryTable->rgt];
-
-				if($level)
-				{
-					$valuesToBind[] = $level + $categoryTable->level - 1;
-				}
-
-				// Bind values and get parameter names.
-				$bounded = $query->bindArray($valuesToBind);
-
-				$categoryWhere = $db->quoteName('a.lft') . ' >= ' . $bounded[0] . ' AND ' . $db->quoteName('a.rgt') . ' <= ' . $bounded[1];
-
-				if($level)
-				{
-					$categoryWhere .= ' AND ' . $db->quoteName('a.level') . ' <= ' . $bounded[2];
-				}
-
-				$subCatItemsWhere[] = '(' . $categoryWhere . ')';
-			}
-
-			$query->where('(' . implode(' OR ', $subCatItemsWhere) . ')');
+      $this->categoriesFilterQuery($query, $categoryId, $level);
 		}
 
     // Case: Using only the by level filter
@@ -340,6 +315,18 @@ class CategoriesModel extends JoomListModel
 				->bind(':level', $level, ParameterType::INTEGER);
 		}
 
+    // Filter: Exclude categories
+    $excludeId = $this->getState('filter.exclude', array());
+    if(!is_array($excludeId))
+		{
+			$excludeId = $excludeId ? array($excludeId) : array();
+		}
+
+    // Case: Exclude categories filter
+    if(count($excludeId))
+		{
+      $this->categoriesFilterQuery($query, $excludeId, false, true);
+    }
 
     // Filter on the language.
 		if($language = $this->getState('filter.language'))
@@ -371,4 +358,49 @@ class CategoriesModel extends JoomListModel
 
 		return $items;
 	}
+
+  protected function categoriesFilterQuery(&$query, $categoryId, $level=false, $exclude=false)
+  {
+    $db = $this->getDbo();
+
+    $categoryId = ArrayHelper::toInteger($categoryId);
+    $categoryTable = $this->getMVCFactory()->createTable('Category');
+    $subCatItemsWhere = array();
+
+    foreach($categoryId as $key => $filter_catid)
+    {
+      $categoryTable->load($filter_catid);
+
+      // Because values to $query->bind() are passed by reference, using $query->bindArray() here instead to prevent overwriting.
+      $valuesToBind = [$categoryTable->lft, $categoryTable->rgt];
+
+      if($level)
+      {
+        $valuesToBind[] = $level + $categoryTable->level - 1;
+      }
+
+      // Bind values and get parameter names.
+      $bounded = $query->bindArray($valuesToBind);
+
+      if($exclude)
+      {
+        // select all categories except this category and its childs
+        $categoryWhere = $db->quoteName('a.lft') . ' < ' . $bounded[0] . ' OR ' . $db->quoteName('a.lft') . ' > ' . $bounded[1];
+      }
+      else
+      {
+        // select only this category and its childs
+        $categoryWhere = $db->quoteName('a.lft') . ' >= ' . $bounded[0] . ' AND ' . $db->quoteName('a.rgt') . ' <= ' . $bounded[1];
+      }
+
+      if($level)
+      {
+        $categoryWhere .= ' AND ' . $db->quoteName('a.level') . ' <= ' . $bounded[2];
+      }
+
+      $subCatItemsWhere[] = '(' . $categoryWhere . ')';
+    }
+
+    $query->where('(' . implode(' OR ', $subCatItemsWhere) . ')');  
+  }
 }
