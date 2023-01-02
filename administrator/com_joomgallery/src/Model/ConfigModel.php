@@ -525,7 +525,7 @@ class ConfigModel extends JoomAdminModel
 				if($key == 'jg_replaceinfo' || $key == 'jg_dynamicprocessing')
 				{
 					// set default by hand
-					$default = '{}';
+					$default = array();
 				}
 				else if($key == 'jg_staticprocessing')
 				{
