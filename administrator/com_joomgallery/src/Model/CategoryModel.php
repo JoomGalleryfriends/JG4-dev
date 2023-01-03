@@ -86,7 +86,18 @@ class CategoryModel extends JoomAdminModel
 		$app = Factory::getApplication();
 
 		// Get the form.
-		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));	
+		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));
+
+    // Apply filter to exclude child categories
+    $children = $form->getFieldAttribute('parent_id', 'children', 'true');
+    $children = filter_var($children, FILTER_VALIDATE_BOOLEAN);
+    if(!$children)
+    {
+      $form->setFieldAttribute('parent_id', 'exclude', $this->item->id);
+    }
+
+		// Apply filter for current category on thumbnail field
+    $form->setFieldAttribute('thumbnail', 'categories', $this->item->id);
 
 		if(empty($form))
 		{

@@ -10,7 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('_JEXEC') or die;
+\defined('JPATH_BASE') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\ListField;
@@ -24,7 +24,7 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @since  1.6
  */
-class CategoryeditField extends ListField
+class JgcategorydropdownField extends ListField
 {
 	/**
 	 * To allow creation of new categories.
@@ -48,7 +48,7 @@ class CategoryeditField extends ListField
 	 * @var    string
 	 * @since  1.6
 	 */
-	public $type = 'categoryedit';
+	public $type = 'jgcategorydropdown';
 
 	/**
 	 * Name of the layout being used to render the field

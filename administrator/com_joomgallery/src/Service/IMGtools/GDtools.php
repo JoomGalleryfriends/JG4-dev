@@ -112,6 +112,27 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 	}
 
   /**
+   * Version notes
+   *
+   * @return  false|string  Version string on success false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function version()
+  {
+    if(\function_exists('gd_info'))
+    {
+      $version = \str_replace(array('bundled (', ')'), array('',''), gd_info()['GD Version']);
+
+      return 'GD '.$version;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /**
    * Add information of currently used image processor to debug output
    *
    * @return  void
@@ -120,10 +141,8 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function info(): void
   {
-    if(\function_exists('gd_info'))
+    if($version = $this->version)
     {
-      $version = \str_replace(array('bundled (', ')'), array('',''), gd_info()['GD Version']);
-      $version = 'GD '.$version;
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
 
       return;

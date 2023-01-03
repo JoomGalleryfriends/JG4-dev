@@ -114,17 +114,83 @@ class TagModel extends JoomAdminModel
 		return $data;
 	}
 
+  /**
+	 * Method to get the item ID based on alias or title.
+	 *
+	 * @param   string  $string  The alias or title of the item
+	 *
+	 * @return  mixed    ID on success, false on failure.
+	 *
+	 * @since   4.0.0
+	 */
+  protected function getItemID($string)
+  {
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->select($db->quoteName('id'));
+    $query->from($db->quoteName(_JOOM_TABLE_TAGS));
+    $query->where($db->quoteName('alias') . ' = ' . $db->quote($string));
+
+    $db->setQuery($query);
+
+    try
+    {
+      $tag_id = $db->loadResult();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      return false;
+    }
+
+    if($tag_id)
+    {
+      return $tag_id;
+    }
+
+    $query = $db->getQuery(true);
+
+    $query->select($db->quoteName('id'));
+    $query->from($db->quoteName(_JOOM_TABLE_TAGS));
+    $query->where($db->quoteName('title') . ' = ' . $db->quote($string));
+
+    $db->setQuery($query);
+
+    try
+    {
+      $tag_id = $db->loadResult();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      return false;
+    }
+
+    return $tag_id;
+  }
+
 	/**
 	 * Method to get a single record.
 	 *
-	 * @param   integer  $pk  The id of the primary key.
+	 * @param   int|string  $pk  The id alias or title of the item
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
 	 * @since   4.0.0
 	 */
 	public function getItem($pk = null)
-	{		
+	{
+    if(!\is_null($pk) && !\is_numeric($pk))
+    {
+      // get item based on alias or title
+      if(!$pk = $this->getItemID($pk))
+      {
+        $this->setError(Text::_('COM_JOOMGALLERY_ERROR_INVALID_ALIAS'));
+        return false;
+      }
+    }
+
     if($item = parent::getItem($pk))
     {
       if(isset($item->params))
@@ -264,5 +330,106 @@ class TagModel extends JoomAdminModel
     }
 
     return parent::save($data);
+  }
+
+  /**
+	 * Method to delete one or more tags.
+	 *
+	 * @param   array  &$pks  An array of record primary keys.
+	 *
+	 * @return  boolean  True if successful, false if an error occurs.
+	 *
+	 * @since   1.6
+	 */
+	public function delete(&$pks)
+	{
+    $success = parent::delete($pks);
+
+    if($success)
+    {
+      // Record successfully deleted
+      // Delete Tag mapping
+      foreach($pks as $pk)
+      {
+        $success = $this->removeMapping($pk);
+      }
+    }
+
+    return $success;
+  }  
+
+  /**
+   * Method to add a mapping between tag and image.
+   *
+   * @param   int  $tag_id  ID of the tag to be mapped.
+   * @param   int  $img_id  ID of the image to be mapped.
+   *
+   * @return  boolean  True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function addMapping($tag_id, $img_id)
+  {
+    $db = Factory::getDbo();
+
+    $mapping = new \stdClass();
+    $mapping->imgid = (int) $img_id;
+    $mapping->tagid = (int) $tag_id;
+
+    try
+    {
+      $db->insertObject(_JOOM_TABLE_TAGS_REF, $mapping);
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Method to add a mapping between tag and image.
+   *
+   * @param   int  $tag_id  ID of the tag to be mapped.
+   * @param   int  $img_id  ID of the image to be mapped. (optional)
+   *
+   * @return  boolean  True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function removeMapping($tag_id, $img_id=0)
+  {
+    $tag_id = (int) $tag_id;
+    $img_id = (int) $img_id;
+
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    $conditions = array($db->quoteName('tagid') . ' = ' . $db->quote($tag_id));
+
+    if($img_id > 0)
+    {
+      // Delete mapping only for a specific image
+      \array_push($conditions, $db->quoteName('imgid') . ' = ' . $db->quote($img_id));
+    }
+
+    $query->delete($db->quoteName(_JOOM_TABLE_TAGS_REF));
+    $query->where($conditions);
+
+    $db->setQuery($query);
+
+    try
+    {
+      $db->execute();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      return false;
+    }
+
+    return true;
   }
 }

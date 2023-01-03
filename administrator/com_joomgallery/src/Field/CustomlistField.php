@@ -12,36 +12,39 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
 \defined('JPATH_BASE') or die;
 
-use \Joomla\CMS\Form\FormField;
+use Joomla\CMS\Form\Field\ListField;
 
 /**
- * Supports an HTML select list of categories
- * 
- * @package JoomGallery
- * @since   4.0.0
+ * Form Field class for the Joomla Platform.
+ * Supports a generic list of options.
+ *
+ * @since  1.7.0
  */
-class FileMultipleField extends FormField
+class CustomlistField extends ListField
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  4.0.0
-	 */
-	protected $type = 'filemultiple';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  1.7.0
+     */
+    protected $type = 'customlist';
 
-	/**
-	 * Method to get the field input markup.
-	 *
-	 * @return  string    The field input markup.
-	 *
-	 * @since   4.0.0
-	 */
-	protected function getInput()
-	{
-		// Initialize variables.
-		$html = '<input type="file" name="' . $this->name . '[]" multiple>';
+    /**
+     * Method to get the data to be passed to the layout for rendering.
+     *
+     * @return  array
+     *
+     * @since   3.5
+     */
+    protected function getLayoutData()
+    {
+        $data = parent::getLayoutData();
 
-		return $html;
-	}
+        $extraData = array(
+          'sensitive'   => $this->getAttribute('sensitive')
+        );
+
+        return array_merge($data, $extraData);
+    }
 }

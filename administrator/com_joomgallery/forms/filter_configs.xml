@@ -7,10 +7,9 @@
                hint="JSEARCH_FILTER"
                class="js-stools-search-string" />
 
-        <field name="state"
-               type="status"
-               label="COM_JOOMGALLERY_FILTER_STATE"
-               description="COM_JOOMGALLERY_FILTER_STATE_DESC"
+        <field name="published"
+               type="list"
+               label="JOPTION_SELECT_PUBLISHED"
                onchange="this.form.submit();">
             <option value="">JOPTION_SELECT_PUBLISHED</option>
             <option value="1">PUBLISHED</option>

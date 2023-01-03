@@ -29,9 +29,33 @@
       }
     },
     {
+      "name": "com_joomgallery.sensitiveField",
+      "type": "script",
+      "uri": "com_joomgallery/sensitiveField.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
       "name": "com_joomgallery.list",
       "type": "style",
       "uri": "com_joomgallery/list.css"
+    },
+    {
+      "name": "com_joomgallery.field-image",
+      "type": "script",
+      "uri": "com_joomgallery/field-image.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.field-category",
+      "type": "script",
+      "uri": "com_joomgallery/field-category.js",
+      "attributes": {
+        "type": "module"
+      }
     }
   ]
 }
