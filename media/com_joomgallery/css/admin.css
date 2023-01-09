@@ -1,6 +1,13 @@
 .wrapper .container-main {
   overflow: hidden;
 }
+.btn-secondary {
+  background-color: var(--template-bg-dark-50) !important;
+  border-color: var(--template-bg-dark-50) !important;
+}
+.head-row .control-group .control-label {
+  width: 150px;
+}
 .jcc-color-box {
   float: left;
   width: 15px;
@@ -16,6 +23,43 @@
 }
 .jg.jg-config joomla-tab > joomla-tab-element .row-fluid {
   padding: 30px;
+}
+.jg.jg-config .subform-table-layout .table,
+.jg.jg-config joomla-field-fancy-select.mb-0 div
+{
+  margin-bottom: 0;
+}
+.jg .control-label.unused label {
+  color: red;
+}
+.jg .controls.sensitive {
+  display: flex;
+  flex-wrap: wrap;
+}
+.jg .subform-repeatable-container td.sensitive {
+  display: flex;
+  align-items: baseline;
+}
+.jg .controls.sensitive input.sensitive-input,
+.jg .controls.sensitive select.sensitive-input,
+.jg .subform-repeatable-container td.sensitive .control-group {
+  width: inherit;
+  flex-grow: 1;
+}
+.jg .subform-repeatable-container td.sensitive [class^=icon] {
+  margin-left: 1rem;
+}
+.jg .controls.sensitive .sensitive-input.switcher  {
+  width: 10rem;
+}
+.jg .controls.sensitive .description {
+  width: 100%;
+}
+.jg .subform-repeatable .controls.sensitive .btn {
+  margin-inline-end: 0;
+}
+.jg .subform-repeatable .control-label label {
+  width: initial;
 }
 .jg_minithumb {
   border: 0;
@@ -46,7 +90,7 @@ img.jg_minithumb {
   position: relative;
   z-index: 2;
   max-width: 100%;
-  background-color: #fff;
+  background-color: var(--body-bg);
 }
 .joom-image.center > img {
   display: block;
@@ -58,4 +102,22 @@ img.jg_minithumb {
 joomla-field-image .jg_minithumb {
   border: solid 1px var(--template-bg-dark-20);
   background-color: #e8e8e8;
+}
+.jg .modal .modal-body {
+  margin: 1rem 2rem;
+}
+.jg .modal .btn {
+  color: var(--white);
+}
+.mt {
+  margin-top: 1rem !important;
+}
+.mb {
+  margin-bottom: 1rem !important;
+}
+.ml {
+  margin-left: 1rem !important;
+}
+.mr {
+  margin-right: 1rem !important;
 }

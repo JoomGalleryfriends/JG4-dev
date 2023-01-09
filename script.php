@@ -408,9 +408,9 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["modified_by"] = 0;
     $data["jg_filesystem"] = 'localhost';
     $data["jg_wmfile"] = 'images/joomgallery/watermark.png';
-    $data["jg_replaceinfo"] = '[]';
-    $data["jg_staticprocessing"] = '';
-    $data["jg_dynamicprocessing"] = '[]';
+    $data["jg_replaceinfo"] = '{}';
+    $data["jg_staticprocessing"] = '{}';
+    $data["jg_dynamicprocessing"] = '{}';
     $data["jg_imgprocessor"] = 'gd';
     $data["jg_maxusercat"] = 10;
     $data["jg_maxuserimage"] = 500;
