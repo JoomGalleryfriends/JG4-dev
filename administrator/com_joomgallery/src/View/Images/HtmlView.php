@@ -80,7 +80,7 @@ class HtmlView extends JoomGalleryView
     $state = $this->get('State');
     $canDo = JoomHelper::getActions('image');
 
-    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGE_MANAGER'), "image");
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES'), "image");
 
     $toolbar = Toolbar::getInstance('toolbar');
 

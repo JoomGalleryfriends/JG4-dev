@@ -90,7 +90,7 @@ class HtmlView extends JoomGalleryView
 
 		$canDo = JoomHelper::getActions();
 
-		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGE_MANAGER').' :: '.Text::_('COM_JOOMGALLERY_IMAGE_EDIT'), "image");
+		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_IMAGE_EDIT'), "image");
 
 		// If not checked out, can save the item.
 		if(!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))

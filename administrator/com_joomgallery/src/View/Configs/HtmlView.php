@@ -9,6 +9,7 @@
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\View\Configs;
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -23,6 +24,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
  * View class for a list of Configs.
+ * 
  * @package JoomGallery
  * @since   4.0.0
  */
@@ -63,19 +65,19 @@ class HtmlView extends JoomGalleryView
 		parent::display($tpl);
 	}
 
-  /**
-   * Add the page title and toolbar.
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-   */
-  protected function addToolbar()
-  {
-    $state = $this->get('State');
-    $canDo = JoomHelper::getActions();
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function addToolbar()
+	{
+		$state = $this->get('State');
+		$canDo = JoomHelper::getActions('config');
 
-    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIGURATION_MANAGER'), "sliders-h");
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIG_SETS'), "sliders-h");
 
     $toolbar = Toolbar::getInstance('toolbar');
 
@@ -131,7 +133,7 @@ class HtmlView extends JoomGalleryView
     {
       $toolbar->delete('configs.delete')
         ->text('JTOOLBAR_DELETE')
-        ->message('COM_JOOMGALLERY_CONFIRM_DELETE_CONFIGS')
+        ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_ITEMS'))
         ->listCheck(true);
     }
 

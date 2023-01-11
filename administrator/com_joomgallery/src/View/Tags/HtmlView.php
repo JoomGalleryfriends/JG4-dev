@@ -77,7 +77,7 @@ class HtmlView extends JoomGalleryView
     $state = $this->get('State');
     $canDo = JoomHelper::getActions('tag');
 
-    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_TAGS_MANAGER'), "tags");
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_TAGS'), "tags");
 
     $toolbar = Toolbar::getInstance('toolbar');
 

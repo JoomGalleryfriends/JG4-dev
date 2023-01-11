@@ -39,7 +39,7 @@ class ConfigTable extends Table implements VersionableTableInterface
 
 		parent::__construct(_JOOM_TABLE_CONFIGS, 'id', $db);
 
-		$this->setColumnAlias('published', 'state');
+		$this->setColumnAlias('published', 'published');
 	}
 
 	/**
@@ -52,6 +52,30 @@ class ConfigTable extends Table implements VersionableTableInterface
 	public function getTypeAlias()
 	{
 		return $this->typeAlias;
+	}
+
+  /**
+	 * Check if a field is unique
+	 *
+	 * @param   string   $field    Name of the field
+	 *
+	 * @return  bool    True if unique
+	 */
+	private function isUnique ($field)
+	{
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select($db->quoteName($field))
+			->from($db->quoteName($this->_tbl))
+			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
+			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
+
+		$db->setQuery($query);
+		$db->execute();
+
+		return ($db->getNumRows() == 0) ? true : false;
 	}
 
 	/**
@@ -137,42 +161,34 @@ class ConfigTable extends Table implements VersionableTableInterface
     // Support for multiple field: jg_ratingcalctype
 		$this->multipleFieldSupport($array, 'jg_ratingcalctype');
     
-    if($array['jg_maxusercat'] === '')
-		{
-			$array['jg_maxusercat'] = NULL;
-			$this->jg_maxusercat = NULL;
-		}
+    // Support for number field: jg_maxusercat
+    $this->numberFieldSupport($array, 'jg_maxusercat');
 
-		if($array['jg_maxuserimage'] === '')
-		{
-			$array['jg_maxuserimage'] = NULL;
-			$this->jg_maxuserimage = NULL;
-		}
+    // Support for number field: jg_maxuserimage
+    $this->numberFieldSupport($array, 'jg_maxuserimage');
 
-		if($array['jg_maxuserimage_timespan'] === '')
-		{
-			$array['jg_maxuserimage_timespan'] = NULL;
-			$this->jg_maxuserimage_timespan = NULL;
-		}
+    // Support for number field: jg_maxuserimage_timespan
+    $this->numberFieldSupport($array, 'jg_maxuserimage_timespan');
 
-		if($array['jg_maxfilesize'] === '')
-		{
-			$array['jg_maxfilesize'] = NULL;
-			$this->jg_maxfilesize = NULL;
-		}
+    // Support for number field: jg_maxfilesize
+    $this->numberFieldSupport($array, 'jg_maxfilesize');
 
-    if($array['jg_maxuploadfields'] === '')
-		{
-			$array['jg_maxuploadfields'] = NULL;
-			$this->jg_maxuploadfields = NULL;
-		}
+    // Support for number field: jg_maxuploadfields
+    $this->numberFieldSupport($array, 'jg_maxuploadfields');
 
-		if($array['jg_maxvoting'] === '')
-		{
-			$array['jg_maxvoting'] = NULL;
-			$this->jg_maxvoting = NULL;
-		}
+    // Support for number field: jg_maxvoting
+    $this->numberFieldSupport($array, 'jg_maxvoting');
 
+    // Support for multiple subform field: jg_replaceinfo
+    $this->subformFieldSupport($array, 'jg_replaceinfo');
+
+    // Support for multiple subform field: jg_staticprocessing
+    $this->subformFieldSupport($array, 'jg_staticprocessing');
+
+    // Support for multiple subform field: jg_dynamicprocessing
+    $this->subformFieldSupport($array, 'jg_dynamicprocessing');
+
+    // 
 		if(isset($array['params']) && is_array($array['params']))
 		{
 			$registry = new Registry;
@@ -272,10 +288,26 @@ class ConfigTable extends Table implements VersionableTableInterface
 			$this->ordering = self::getNextOrder();
 		}
 
+    // Check if title is unique inside this category
+		if(!$this->isUnique('title'))
+		{
+			$count = 2;
+			$currentTitle =  $this->title;
+
+			while(!$this->isUnique('title'))
+      {
+				$this->title = $currentTitle . ' (' . $count++ . ')';
+			}
+		}
+
 		// Support for subform field jg_replaceinfo
 		if(is_array($this->jg_replaceinfo))
 		{
 			$this->jg_replaceinfo = json_encode($this->jg_replaceinfo, JSON_UNESCAPED_UNICODE);
+		}
+		if(\is_null($this->jg_replaceinfo))
+		{
+			$this->jg_replaceinfo = '{}';
 		}
 
 		// Support for subform field jg_staticprocessing
@@ -283,12 +315,34 @@ class ConfigTable extends Table implements VersionableTableInterface
 		{
 			$this->jg_staticprocessing = json_encode($this->jg_staticprocessing, JSON_UNESCAPED_UNICODE);
 		}
+		if(\is_null($this->jg_staticprocessing))
+		{
+			$this->jg_staticprocessing = '{}';
+		}
 
 		// Support for subform field jg_dynamicprocessing
 		if(is_array($this->jg_dynamicprocessing))
 		{
 			$this->jg_dynamicprocessing = json_encode($this->jg_dynamicprocessing, JSON_UNESCAPED_UNICODE);
 		}
+		if(\is_null($this->jg_dynamicprocessing))
+		{
+			$this->jg_dynamicprocessing = '{}';
+		}
+
+    // Support for media manager image select
+    if(!empty($this->jg_wmfile) && strpos($this->jg_wmfile, '#') !== false)
+    {
+      $this->jg_wmfile = explode('#', $this->jg_wmfile)[0];
+    }
+
+
+    // Support for media manager image select
+    if(!empty($this->jg_wmfile) && strpos($this->jg_wmfile, '#') !== false)
+    {
+      $this->jg_wmfile = explode('#', $this->jg_wmfile)[0];
+    }
+
 
 		return parent::check();
 	}
@@ -381,5 +435,38 @@ class ConfigTable extends Table implements VersionableTableInterface
 		{
 			$data[$fieldName] = '';
 		}
+  }
+
+  /**
+   * Support for number field
+   *
+   * @param   array   $data       Form data
+   * @param   string  $fieldName  Name of the field
+   *
+   * @return  void
+   */
+  protected function numberFieldSupport(&$data, $fieldName)
+  {
+    if($data[$fieldName] === '')
+		{
+			$data[$fieldName] = null;
+			$this->{$fieldName} = null;
+		}
+  }
+
+  /**
+   * Support for number field
+   *
+   * @param   array   $data       Form data
+   * @param   string  $fieldName  Name of the field
+   *
+   * @return  void
+   */
+  protected function subformFieldSupport(&$data, $fieldName)
+  {
+    if((!empty($data[$fieldName]) && (is_array($data[$fieldName]))))
+    {
+      \array_push($this->_jsonEncode, $fieldName);
+    }
   }
 }
