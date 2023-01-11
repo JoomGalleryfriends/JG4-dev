@@ -103,6 +103,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
 `title` VARCHAR(255) NOT NULL DEFAULT "",
+`note` TEXT,
 `group_id` INT(11) UNSIGNED NOT NULL DEFAULT 1,
 `published` TINYINT(1) NOT NULL DEFAULT 0,
 `ordering` INT(11) NOT NULL DEFAULT 0,

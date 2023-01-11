@@ -87,13 +87,13 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   }
 
   /**
-   * Add information of currently used image processor to debug output
+   * Version notes
    *
-   * @return  void
+   * @return  false|string  Version string on success false otherwise
    *
    * @since   4.0.0
    */
-  public function info(): void
+  public function version()
   {
     // Check availability and version of ImageMagick v7.x
     @\exec(\trim($this->impath).'magick -version', $output);
@@ -101,10 +101,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($output)
     {
       // new version (>= v7.x)
-      $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
-
-      return;
+      return \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
     }
     else
     {
@@ -114,17 +111,35 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if($output)
       {
         // old version (<= v6.x)
-        $version = \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
-
-        return;
+        return \str_replace(array('Version: ', ' http://www.imagemagick.org'), array('',''), $output[0]);
       }
       else
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
-
-        return;
+        return false;
       }
+    }
+  }
+
+  /**
+   * Add information of currently used image processor to debug output
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function info(): void
+  {
+    if($version = $this->version)
+    {
+      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
+
+      return;
+    }
+    else
+    {
+      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
+
+      return;
     }
   }
 

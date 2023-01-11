@@ -270,9 +270,9 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
    *
    * @return  string  The error message
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
-  protected function checkError($uploaderror)
+  public function checkError($uploaderror): string
   {
     // Common PHP errors
     $uploadErrors = array(
