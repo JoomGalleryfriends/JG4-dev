@@ -141,7 +141,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function info(): void
   {
-    if($version = $this->version)
+    if($version = $this->version())
     {
       $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
 
