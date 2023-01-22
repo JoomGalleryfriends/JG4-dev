@@ -157,7 +157,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Read image from file or image string (stream)
-   * Supported image-types: jpg,png,gif
+   * Supported image-types: jpg, png, gif, webp
    *
    * @param   string  $file        Path to source file or image string
    * @param   bool    $is_stream   True if $src is image string (stream) (default: false)
@@ -254,7 +254,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Write image to file
-   * Supported image-types: jpg,png,gif
+   * Supported image-types: jpg, png, gif, webp
    *
    * @param   string  $file     Path to destination file
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
@@ -587,6 +587,10 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         $stream = 'data:image/gif;base64,'.$stream;
         break;
 
+      case 'WEBP':
+        $stream = 'data:image/webp;base64,'.$stream;
+        break;
+
       case 'JPEG':
       case 'JPG':
       default:
@@ -606,7 +610,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Resize image
-   * Supported image-types: jpg,png,gif
+   * Supported image-types: jpg, png, gif, webp
    *
    * @param   int     $method         Resize to 0:noresize,1:height,2:width,3:proportional,4:crop
    * @param   int     $width          Width to resize
@@ -773,7 +777,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Rotate image
-   * Supported image-types: jpg,png,gif
+   * Supported image-types: jpg, png, gif, webp
    *
    * @param   int     $angle          Angle to rotate the image anticlockwise
    *
@@ -894,7 +898,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Flip image
-   * Supported image-types: jpg,png,gif
+   * Supported image-types: jpg, png, gif, webp
    *
    * @param   int     $direction       Direction to flip the image (0:none,1:horizontal,2:vertical,3:both)
    *
@@ -1167,7 +1171,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Add watermark to an image
-   * Supported image-types: jpg,png,gif
+   * Supported image-types: jpg, png, gif, webp
    *
    * @param   string  $wtm_file       Path to watermark file
    * @param   int     $wtm_pos        Positioning of the watermark
@@ -1519,6 +1523,30 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         // PNG has always 3 channels (RGB)
         $channels = 3;
         break;
+      case 'WEBP':
+        // Todo
+        switch($method)
+        {
+          case 'resize':
+            // Tweakfactor dependent on number of pixels (~2.5)
+            $m = -0.000000007157;
+            $c = 2.70193;
+            break;
+          case 'rotate':
+            // Tweakfactor dependent on number of pixels (~3.3)
+            $m = -0.000000011928;
+            $c = 3.50322;
+            break;
+          default:
+            // Constant tweakfactor of 2.5
+            $m = 0;
+            $c = 2.5;
+            break;
+        }
+
+        // WEBP has always ??
+        $channels = 3;
+        break;
     }
 
     // Pixel calculation for source and destination GD-Frame
@@ -1729,7 +1757,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Creates GD image objects from different file types with one frame
-   * Supported: JPG, PNG, GIF
+   * Supported: JPG, PNG, GIF, WEBP
    *
    * @param   string  $src_file     Path to source file
    * @param   array   $imginfo      array with source image informations
@@ -1752,6 +1780,9 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         break;
       case 'JPG':
         $src_frame[0]['image'] = \imagecreatefromjpeg($src_file);
+        break;
+      case 'WEBP':
+        $src_frame[0]['image'] = \imagecreatefromwebp($src_file);
         break;
       default:
         return false;
@@ -1827,6 +1858,15 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
             \imagefill($src_frame, 0, 0, $trnprt_color);
           }
         break;
+        case 'WEBP':
+          if(\function_exists('imagecolorallocatealpha'))
+          {
+            // Needs at least php v4.3.2
+            \imagealphablending($src_frame, false);
+            $trnprt_color = \imagecolorallocatealpha($src_frame, 0, 0, 0, 127);
+            \imagefill($src_frame, 0, 0, $trnprt_color);
+          }
+        break;
         default:
           $src_frame = false;
 
@@ -1845,7 +1885,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
   /**
    * Output GD image object to file from different file types with one frame
-   * Supported: JPG, PNG, GIF
+   * Supported: JPG, PNG, GIF, WEBP
    *
    * @param   string  $dst_file     Path to destination file
    * @param   array   $dst_frame    array with one GD object for one frame ; array(array('duration'=>0, 'image'=>GDobject))
@@ -1916,6 +1956,23 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
         // Write file
         $success = \imagejpeg($dst_frame[0]['image'], $dst_file, $quality);
+
+        if(\is_null($dst_file))
+        {
+          // retrieve the byte stream
+          $rawImageBytes = \ob_get_contents();
+          \ob_end_clean();
+        }
+        break;
+      case 'WEBP':
+        if(\is_null($dst_file))
+        {
+          // Begin capturing the byte stream
+          \ob_start();
+        }
+
+        // Write file
+        $success = \imagewebp($dst_frame[0]['image'], $dst_file, $quality);
 
         if(\is_null($dst_file))
         {
@@ -2454,7 +2511,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * (use for debugging only)
    *
    * @param   object     $img   GDobject of the image to filter (has to be truecolor)
-   * @param   string     $type  Image type (PNG, GIF or JPG)
+   * @param   string     $type  Image type (PNG, GIF, JPG or WEBP)
    *
    * @return  display image on success.
    *
@@ -2480,6 +2537,10 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         break;
       case 'JPG':
         $src = 'image/jpeg';
+        \imagejpeg($img);
+        break;
+      case 'WEBP':
+        $src = 'image/webp';
         \imagejpeg($img);
         break;
       default:

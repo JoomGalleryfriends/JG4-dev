@@ -224,7 +224,7 @@ abstract class IMGtools implements IMGtoolsInterface
     $imagetype = array(0=>'UNKNOWN', 1 => 'GIF', 2 => 'JPG', 3 => 'PNG', 4 => 'SWF',
                        5 => 'PSD', 6 => 'BMP', 7 => 'TIFF', 8 => 'TIFF', 9 => 'JPC',
                        10 => 'JP2', 11 => 'JPX', 12 => 'JB2', 13 => 'SWC', 14 => 'IFF',
-                       15=>'WBMP', 16=>'XBM', 17=>'ICO', 18=>'COUNT');
+                       15=>'WBMP', 16=>'XBM', 17=>'ICO', 18=>'WEBP', 19=>'COUNT');
 
     $this->src_type = $imagetype[$info[2]];
 
@@ -261,6 +261,33 @@ abstract class IMGtools implements IMGtoolsInterface
       if($pngtype == 4 || $pngtype == 6)
       {
         $this->res_imginfo['transparency'] = true;
+      }
+    }
+
+    // Detect, if image is a transparent webp image
+    if($this->src_type == 'WEBP')
+    {
+      // Detect, if webp has transparency
+      if($is_stream)
+      {
+        $webptype = \ord(\substr($img, 25, 1));
+      }
+      else
+      {
+        $webptype = file_get_contents($img);
+        $included = strpos($webptype, "ALPH");
+        if($included !== FALSE)
+        {
+          $this->res_imginfo['transparency'] = true;
+        }
+        else
+        {
+          $included = strpos($webptype, "VP8L");
+          if($included !== FALSE)
+          {
+            $this->res_imginfo['transparency'] = true;
+          }
+        }
       }
     }
 
