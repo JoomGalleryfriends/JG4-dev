@@ -98,7 +98,8 @@ class HtmlView extends JoomGalleryView
 	protected function addToolbar()
 	{
 		Factory::getApplication()->input->set('hidemainmenu', true);
-    	$toolbar = Toolbar::getInstance('toolbar');
+
+		$toolbar = Toolbar::getInstance('toolbar');
 
 		$user  = Factory::getUser();
 		$isNew = ($this->item->id == 0);
@@ -120,18 +121,36 @@ class HtmlView extends JoomGalleryView
 		if(!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
 		{
 			ToolbarHelper::apply('config.apply', 'JTOOLBAR_APPLY');
-			ToolbarHelper::save('config.save', 'JTOOLBAR_SAVE');
+
+			$saveGroup = $toolbar->dropdownButton('save-group');
+
+			$saveGroup->configure
+			(
+				function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew)
+				{
+					$childBar->save('config.save', 'JTOOLBAR_SAVE');
+
+					if(!$checkedOut && ($canDo->get('core.create')))
+					{
+						$childBar->save2new('config.save2new');
+					}
+
+					// If an existing item, can save to a copy.
+					if(!$isNew && $canDo->get('core.create'))
+					{
+						$childBar->save2copy('config.save2copy');
+					}
+				}
+			);
 		}
 
-		if(!$checkedOut && ($canDo->get('core.create')))
+		if(empty($this->item->id))
 		{
-			ToolbarHelper::custom('config.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
+			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CANCEL');
 		}
-
-		// If an existing item, can save to a copy.
-		if(!$isNew && $canDo->get('core.create'))
+		else
 		{
-			ToolbarHelper::custom('config.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
+			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
 		}
 
 		if(!$isNew)
@@ -167,15 +186,6 @@ class HtmlView extends JoomGalleryView
 				'text' => Text::_('COM_JOOMGALLERY_IMPORT'));
 			$import_modal_btn = LayoutHelper::render('joomla.toolbar.popup', $import_modal_opt);
 			$toolbar->appendButton('Custom', $import_modal_btn);
-		}
-
-		if(empty($this->item->id))
-		{
-			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CANCEL');
-		}
-		else
-		{
-			ToolbarHelper::cancel('config.cancel', 'JTOOLBAR_CLOSE');
 		}
 	}
 

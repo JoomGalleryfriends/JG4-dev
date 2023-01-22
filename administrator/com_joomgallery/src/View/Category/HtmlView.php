@@ -70,6 +70,8 @@ class HtmlView extends JoomGalleryView
 	{
 		Factory::getApplication()->input->set('hidemainmenu', true);
 
+		$toolbar = Toolbar::getInstance('toolbar');
+
 		$user  = Factory::getUser();
 		$isNew = ($this->item->id == 0);
 
@@ -90,30 +92,30 @@ class HtmlView extends JoomGalleryView
 		if(!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
 		{
 			ToolbarHelper::apply('category.apply', 'JTOOLBAR_APPLY');
-			ToolbarHelper::save('category.save', 'JTOOLBAR_SAVE');
 		}
 
 		if(!$checkedOut && ($canDo->get('core.create')))
 		{
-			ToolbarHelper::custom('category.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
-		}
+			$saveGroup = $toolbar->dropdownButton('save-group');
 
-		// If an existing item, can save to a copy.
-		if(!$isNew && $canDo->get('core.create'))
-		{ 
-      ToolbarHelper::save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
+			$saveGroup->configure
+			(
+				function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew)
+				{
+					$childBar->save('category.save', 'JTOOLBAR_SAVE');
 
-			// $toolbar = Toolbar::getInstance('toolbar');
+					if(!$checkedOut && ($canDo->get('core.create')))
+					{
+						$childBar->save2new('category.save2new');
+					}
 
-			// $dropdown = $toolbar->dropdownButton('save2copy-group')
-			// 	->text('JTOOLBAR_SAVE_AS_COPY')
-			// 	->toggleSplit(true)
-			// 	->icon('fa fa-ellipsis-h')
-			// 	->buttonClass('btn btn-action');
-
-			// $childBar = $dropdown->getChildToolbar();
-			// $childBar->save2copy('category.save2copy', 'JTOOLBAR_SAVE_AS_COPY');
-			// $childBar->save2copy('category.save2copy.recursive', 'JTOOLBAR_SAVE_AS_COPY_RECURSIVE');
+					// If an existing item, can save to a copy.
+					if(!$isNew && $canDo->get('core.create'))
+					{
+						$childBar->save2copy('category.save2copy');
+					}
+				}
+			);
 		}
 
 		if(empty($this->item->id))
