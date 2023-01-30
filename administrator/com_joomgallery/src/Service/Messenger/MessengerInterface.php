@@ -27,9 +27,11 @@ interface MessengerInterface
   /**
    * Method to send a message
    *
+   * @param   mixed   $recipient   List of users or email adresses receiving the message
+   * 
    * @return  bool    True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function send(): bool;
+  public function send($recipients): bool;
 }

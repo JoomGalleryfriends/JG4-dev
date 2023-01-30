@@ -18,9 +18,6 @@ use \Joomla\CMS\User\User;
 use \Joomla\CMS\Language\Language;
 use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessageInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\PmMessage;
 
 /**
  * Mail Messenger Class
@@ -30,8 +27,10 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\PmMessage
  * @package JoomGallery
  * @since   4.0.0
  */
-class PmMessenger extends Messenger implements MessengerInterface
+class PmMessenger implements MessengerInterface
 {
+  use ServiceTrait;
+
   /**
    * Constructor
    *
@@ -41,7 +40,7 @@ class PmMessenger extends Messenger implements MessengerInterface
    */
   public function __construct()
   {
-    $this->message = New PmMessage();
+    $this->jg = Factory::getApplication()->bootComponent('com_joomgallery');
   }
 
   /**

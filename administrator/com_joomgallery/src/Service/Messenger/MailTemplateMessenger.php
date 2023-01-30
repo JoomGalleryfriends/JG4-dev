@@ -22,9 +22,6 @@ use \Joomla\CMS\Mail\Exception\MailDisabledException;
 use \Joomla\CMS\Mail\MailTemplate;
 use \PHPMailer\PHPMailer\Exception as phpMailerException;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessageInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MailTemplateMessage;
 
 /**
  * Mail Template Messenger Class
@@ -34,8 +31,31 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MailTempl
  * @package JoomGallery
  * @since   4.0.0
  */
-class MailTemplateMessenger extends Messenger implements MessengerInterface
+class MailTemplateMessenger implements MessengerInterface
 {
+  use ServiceTrait;
+
+  /**
+   * Language the message is written
+   * 
+   * @var Language
+   */
+  public $language = null;
+
+  /**
+   * Template id to use
+   * 
+   * @var Language
+   */
+  public $template = 'com_jomgallery.newimage';
+
+  /**
+   * List with variables available in the template
+   * 
+   * @var array
+   */
+  public $data = array();
+
   /**
    * Constructor
    *
@@ -45,38 +65,32 @@ class MailTemplateMessenger extends Messenger implements MessengerInterface
    */
   public function __construct()
   {
-    $this->message = New MailTemplateMessage();
+    $this->jg       = Factory::getApplication()->bootComponent('com_joomgallery');
+    $this->language = Factory::getApplication()->getLanguage();
+
+    $this->addTemplateData(array('sitename' => $app->get('sitename'), 'siteurl' => Uri::root()));
   }
 
   /**
    * Send a template based email.
    *
-   * @param   User        $recipient       The user receiving the message
-   * @param   string      $user            The user making the transition
-   * @param   string      $title           The title of the item transitioned
-   * @param   string      $transitionName  The name of the transition executed
-   * @param   string      $toStage         The stage moving to
-   * @param   Language    $language        The language to use for translating the message
-   * @param   string      $extraText       The additional text to add to the end of the message
+   * @param   mixed    $recipient    List of users or email adresses receiving the message
    *
-   * @return  void
+   * @return  bool        true on success, false otherwise
    *
    * @since   4.0.0
    * @throws  \PHPMailer\PHPMailer\Exception
    */
-  protected function send(User $recipient, string $user, string $title, string $transitionName, string $toStage, Language $language, string $extraText): void
+  public function send($recipients): void
   {
-    $data                   = [];
-    $data['siteurl']        = Uri::base();
-    $data['title']          = $title;
-    $data['user']           = $user;
-    $data['transitionName'] = $transitionName;
-    $data['toStage']        = $toStage;
-    $data['extraText']      = $extraText;
+    if(empty(MailTemplate::getTemplate($this->template, $this->language->getTag())))
+    {
+      $this->jg->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_MAIL_INVALID_TEMPLATE', $this->template));
+    }
 
-    $mailer = new MailTemplate('plg_workflow_notification.mail', $this->app->getLanguage()->getTag());
-    $mailer->addTemplateData($data);
-    $mailer->addRecipient($recipient->email);
+    $mailer = new MailTemplate($this->template, $this->language->getTag());
+    $mailer->addTemplateData($this->data);
+    $mailer->addRecipients($recipients);
     
     try
     {
@@ -88,18 +102,61 @@ class MailTemplateMessenger extends Messenger implements MessengerInterface
       {
         Log::add(Text::_($exception->getMessage()), Log::WARNING, 'jerror');
 
-        $this->setError(Text::_('COM_MESSAGES_ERROR_MAIL_FAILED'));
+        $this->jg->setError(Text::_('COM_JOOMGALLERY_ERROR_MAIL_FAILED'));
 
         return false;
       }
       catch(\RuntimeException $exception)
       {
-        Factory::getApplication()->enqueueMessage(Text::_($exception->errorMessage()), 'warning');
-
-        $this->setError(Text::_('COM_MESSAGES_ERROR_MAIL_FAILED'));
+        $this->addWarning(Text::_('COM_JOOMGALLERY_ERROR_MAIL_FAILED'));
 
         return false;
       }
+    }
+  }
+
+  /**
+   * Method to add one ore more recipients
+   *
+   * @param   array   $recipients  An array of email adresses or a single one as a string
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  protected function addRecipients($recipients)
+  {
+    if(is_array($recipients))
+    {
+      foreach ($recipients as $recipient)
+      {
+        $this->mailer->addRecipient($recipient);
+      }
+    }
+    else
+    {
+      $this->mailer->addRecipient($recipient);
+    }
+  }
+
+  /**
+   * Method to add one ore more variables to be used in the template
+   *
+   * @param   array   $data   An array of key value pairs with variables to be used in the template
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function addTemplateData($data)
+  {
+    if(is_array($data))
+    {
+      $this->data = array_merge($this->data, $data);
+    }
+    else
+    {
+      array_push($this->data, $data);
     }
   }
 }

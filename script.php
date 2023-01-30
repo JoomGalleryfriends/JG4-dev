@@ -179,6 +179,19 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
     }
 
+    // Create default mail templates
+    $suc_templates = true;
+
+    if(!$this->addMailTemplate('newimage', array('user, title, category')))
+    {
+      $suc_templates = false;
+    }
+
+    if(!$suc_templates)
+    {
+      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
+    }      
+
 		$this->installPlugins($parent);
 		$this->installModules($parent);
 
@@ -299,6 +312,69 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     <?php
 	}
+
+  /**
+	 * Add a mail template to the ´#__mail_templates´ table
+   *
+   * @param  string  context_id  Name of the mail template
+   * @param  array   tags        List of tags that can be used as variables in this mail template
+   * @param  string  language    Language tag to specify the language this template is used for (default='' : all langauges)
+   * 
+	 * @return  bool  true on success
+	 */
+	public function addMailTemplate($context_id, $tags, $language='')
+  {
+    $db = Factory::getDbo();
+
+    // Create the model
+    $com_mails  = Factory::getApplication()->bootComponent('com_mails');
+    $tableClass = $com_mails->getMVCFactory()->createTable('template');
+
+    if(class_exists($tableClass))
+    {
+      $table = new $tableClass($db);
+    }
+    else
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error load mail template table'), 'error');
+
+      return false;
+    }
+
+    // add standard tags
+    $params = new stdClass();
+    $params->tags = array('sitename', 'siteurl');
+
+    // add provided tags    
+    if(is_array($tags) && count($tags) > 0)
+    {
+      $params->tags = array_merge($params->tags, $tags);
+    }
+
+    $data = array();
+    $data["id"] = null;
+    $data['template_id'] = 'com_joomgallery.'.strtolower($context_id);
+    $data['extension'] = 'com_joomgallery';
+    $data['language'] = $language;
+    $data['subject'] = 'COM_JOOMGALLERY_MAIL_'.strtoupper($context_id).'_SUBJECT';
+    $data['body'] = 'COM_JOOMGALLERY_MAIL_'.strtoupper($context_id).'_BODY';
+    $data['params'] = json_encode($params);
+
+    if (!$table->bind($data))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind mail template'), 'error');
+
+      return false;
+    }
+    if (!$table->store($data))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store mail template'), 'error');
+
+      return false;
+    }
+
+    return true;
+  }
 
   /**
 	 * Add a category to the ´#__joomgallery_categories´ table

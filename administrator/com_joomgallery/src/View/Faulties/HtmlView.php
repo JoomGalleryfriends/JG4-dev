@@ -59,6 +59,11 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
+		$this->component->createMessenger('mail');
+		$msg = $this->component->getMessenger();
+		$msg->set('')
+		dump($config)
+
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();

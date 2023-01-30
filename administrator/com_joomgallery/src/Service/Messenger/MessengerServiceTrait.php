@@ -49,13 +49,8 @@ trait MessengerServiceTrait
         $this->uploader = new PmMessenger();
         break;
 
-      case 'mailtemplate':
-      case 'template':
-        $this->uploader = new MailTemplateMessenger();
-        break;
-
       default:
-        $this->messenger = new MailMessenger();
+        $this->messenger = new MailTemplateMessenger();
         break;
     }
 
