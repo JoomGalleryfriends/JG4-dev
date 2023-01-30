@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 \defined('_JEXEC') or die;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MailMessenger;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MailTemplateMessenger;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\PmMessenger;
 
 /**
@@ -50,7 +49,7 @@ trait MessengerServiceTrait
         break;
 
       default:
-        $this->messenger = new MailTemplateMessenger();
+        $this->messenger = new MailMessenger();
         break;
     }
 

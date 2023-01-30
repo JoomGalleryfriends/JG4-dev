@@ -17,6 +17,8 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User;
 use \Joomla\CMS\Language\Language;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Mail\MailTemplate;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
 
 /**
@@ -27,68 +29,75 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger
  * @package JoomGallery
  * @since   4.0.0
  */
-class PmMessenger implements MessengerInterface
+class PmMessenger extends Messenger implements MessengerInterface
 {
-  use ServiceTrait;
-
-  /**
-   * Constructor
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-   */
-  public function __construct()
-  {
-    $this->jg = Factory::getApplication()->bootComponent('com_joomgallery');
-  }
-
   /**
    * Send a message to com_messages.
    *
-   * @param   User        $recipient       The user receiving the message
-   * @param   string      $user            The user making the transition
-   * @param   string      $title           The title of the item transitioned
-   * @param   string      $transitionName  The name of the transition executed
-   * @param   string      $toStage         The stage moving to
-   * @param   Language    $language        The language to use for translating the message
-   * @param   string      $extraText       The additional text to add to the end of the message
+   * @param   mixed    $recipients    List of users receiving the message
    *
-   * @return  void
+   * @return  bool     true on success, false otherwise
    *
    * @since   4.0.0
    */
-  protected function send(User $recipient, string $user, string $title, string $transitionName, string $toStage, Language $language, string $extraText): void
+  public function send($recipients): bool
   {
-    if($recipient->authorise('core.manage', 'com_message'))
-    {
-      // Get the model for private messages
-      $modelMessage = $this->app->bootComponent('com_messages')->getMVCFactory()->createModel('Message', 'Administrator');
+    $template = MailTemplate::getTemplate($this->template_id, $this->language->getTag());
 
-      // Remove users with locked input box from the list of receivers
-      if($this->isMessageBoxLocked($recipient->id))
+    if(empty($template))
+    {
+      $this->jg->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_MSG_INVALID_TEMPLATE', $this->template_id));
+
+      return false;
+    }
+
+    foreach($recipients as $recipient)
+    {
+      if(\is_numeric($recipient))
       {
-        return;
+        // CMS user id given
+        $recipient = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($recipient);
       }
 
-      $subject     = sprintf($language->_('PLG_WORKFLOW_NOTIFICATION_ON_TRANSITION_SUBJECT'), $title);
-      $messageText = sprintf(
-          $language->_('PLG_WORKFLOW_NOTIFICATION_ON_TRANSITION_MSG'),
-          $title,
-          $transitionName,
-          $user,
-          $toStage
-      );
-      $messageText .= '<br>' . $extraText;
+      if(\is_string($recipient))
+      {
+        // CMS username given
+        $recipient = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($recipient);
+      }
 
-      $message = [
-          'id'         => 0,
-          'user_id_to' => $recipient->id,
-          'subject'    => $subject,
-          'message'    => $messageText,
-      ];
+      if(!$recipient instanceof \Joomla\CMS\User\User)
+      {
+        $this->jg->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_USER_NOT_FOUND'));
+      }
 
-      $modelMessage->save($message);
+      if($recipient->authorise('core.manage', 'com_message'))
+      {
+        // Remove users with locked input box from the list of receivers
+        if($this->isMessageBoxLocked($recipient->id))
+        {
+          continue;
+        }
+
+        $subject     = $this->replaceTags(Text::_($template->subject), $this->data);
+        $messageText = $this->replaceTags(Text::_($template->body), $this->data);
+
+        $message = [
+            'id'         => 0,
+            'user_id_to' => $recipient->id,
+            'subject'    => $subject,
+            'message'    => $messageText,
+        ];
+
+        // Get the model for private messages
+        $modelMessage = Factory::getApplication()->bootComponent('com_messages')->getMVCFactory()->createModel('Message', 'Administrator');
+
+        if(!$modelMessage->save($message))
+        {
+          $this->jg->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_FAILED'));
+        }
+
+        $this->sent = $this->sent + 1;
+      }
     }
   }
 
@@ -109,14 +118,15 @@ class PmMessenger implements MessengerInterface
     }
 
     // Check for locked inboxes would be better to have _cdf settings in the user_object or a filter in users model
-    $query = $this->db->getQuery(true);
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true);
 
-    $query->select($this->db->quoteName('user_id'))
-        ->from($this->db->quoteName('#__messages_cfg'))
-        ->where($this->db->quoteName('user_id') . ' = ' . $userId)
-        ->where($this->db->quoteName('cfg_name') . ' = ' . $this->db->quote('locked'))
-        ->where($this->db->quoteName('cfg_value') . ' = 1');
+    $query->select($db->quoteName('user_id'))
+        ->from($db->quoteName('#__messages_cfg'))
+        ->where($db->quoteName('user_id') . ' = ' . $userId)
+        ->where($db->quoteName('cfg_name') . ' = ' . $db->quote('locked'))
+        ->where($db->quoteName('cfg_value') . ' = 1');
 
-    return (int) $this->db->setQuery($query)->loadResult() === $userId;
+    return (int) $db->setQuery($query)->loadResult() === $userId;
   }
 }
