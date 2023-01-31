@@ -15,7 +15,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Log\Log;
-use \Joomla\CMS\Language\Language;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Mail\Exception\MailDisabledException;
 use \Joomla\CMS\Mail\MailTemplate;
@@ -54,7 +53,7 @@ class MailMessenger extends Messenger implements MessengerInterface
 
     $mailer = new MailTemplate($this->template_id, $this->language->getTag());
     $mailer->addTemplateData($this->data);
-    $mailer->addRecipients($recipients, $mailer);
+    $this->addRecipients($recipients, $mailer);
     
     try
     {
@@ -78,7 +77,8 @@ class MailMessenger extends Messenger implements MessengerInterface
       }
     }
 
-    $this->sent = $this->sent + \count($recipients);
+    $num = (\is_array($recipients)) ? \count($recipients) : 1;
+    $this->sent = $this->sent + $num;
 
     return true;
   }

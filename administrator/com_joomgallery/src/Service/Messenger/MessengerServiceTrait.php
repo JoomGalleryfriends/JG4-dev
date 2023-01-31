@@ -45,7 +45,7 @@ trait MessengerServiceTrait
     switch ($msgMethod)
     {
       case 'pm':
-        $this->uploader = new PmMessenger();
+        $this->messenger = new PmMessenger();
         break;
 
       default:

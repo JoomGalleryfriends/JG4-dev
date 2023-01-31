@@ -34,4 +34,37 @@ interface MessengerInterface
    * @since   4.0.0
    */
   public function send($recipients): bool;
+
+  /**
+   * Method to select the template to be used for the message
+   *
+   * @param   string   $id   The id of the template to be used
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function selectTemplate(string $id);
+
+  /**
+   * Method to select the language of the message
+   *
+   * @param   string   $tag   The id of the template to be used
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function selectLanguage(string $tag);
+
+  /**
+   * Method to add one ore more variables to be used in the template
+   *
+   * @param   mixed   $data   An array of key value pairs with variables to be used in the template
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function addTemplateData($data);
 }

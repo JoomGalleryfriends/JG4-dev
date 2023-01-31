@@ -14,9 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\User\User;
-use \Joomla\CMS\Language\Language;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\CMS\Mail\MailTemplate;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
@@ -51,6 +50,11 @@ class PmMessenger extends Messenger implements MessengerInterface
       return false;
     }
 
+    if(!\is_array($recipients))
+    {
+      $recipients = array($recipients);
+    }
+
     foreach($recipients as $recipient)
     {
       if(\is_numeric($recipient))
@@ -68,6 +72,7 @@ class PmMessenger extends Messenger implements MessengerInterface
       if(!$recipient instanceof \Joomla\CMS\User\User)
       {
         $this->jg->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_USER_NOT_FOUND'));
+        continue;
       }
 
       if($recipient->authorise('core.manage', 'com_message'))
@@ -94,11 +99,14 @@ class PmMessenger extends Messenger implements MessengerInterface
         if(!$modelMessage->save($message))
         {
           $this->jg->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_FAILED'));
+          continue;
         }
 
         $this->sent = $this->sent + 1;
       }
     }
+
+    return true;
   }
 
   /**

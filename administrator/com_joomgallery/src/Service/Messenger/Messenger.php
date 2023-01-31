@@ -15,7 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
-use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomla\CMS\Language\LanguageFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
 
 /**
@@ -28,8 +28,6 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger
  */
 abstract class Messenger implements MessengerInterface
 {
-  use ServiceTrait;
-
   /**
    * Number of messanges successfully sent
    * 
@@ -42,14 +40,14 @@ abstract class Messenger implements MessengerInterface
    * 
    * @var Language
    */
-  public $language = null;
+  protected $language = null;
 
   /**
    * Template id to use
    * 
    * @var Language
    */
-  public $template_id = 'com_jomgallery.newimage';
+  protected $template_id = 'com_joomgallery.newimage';
 
   /**
    * List with variables available in the template
@@ -58,7 +56,7 @@ abstract class Messenger implements MessengerInterface
    */
   public $data = array();
 
-  /**
+  /** 
    * Constructor
    *
    * @return  void
@@ -74,9 +72,40 @@ abstract class Messenger implements MessengerInterface
   }
 
   /**
+   * Method to select the template to be used for the message
+   *
+   * @param   string   $id   The id of the template to be used
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function selectTemplate(string $id)
+  {
+    if(\is_string($id))
+    {
+      $this->template_id = $id;
+    }
+  }
+
+  /**
+   * Method to select the language of the message
+   *
+   * @param   string   $tag   The id of the template to be used
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function selectLanguage(string $tag)
+  {
+    $this->language = Factory::getContainer()->get(LanguageFactoryInterface::class)->createLanguage($tag);
+  }
+
+  /**
    * Method to add one ore more variables to be used in the template
    *
-   * @param   array   $data   An array of key value pairs with variables to be used in the template
+   * @param   mixed   $data   An array of key value pairs with variables to be used in the template
    * 
    * @return  void
    * 
