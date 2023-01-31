@@ -61,8 +61,9 @@ class HtmlView extends JoomGalleryView
 
 		$this->component->createMessenger('mail');
 		$msg = $this->component->getMessenger();
-		$msg->set('')
-		dump($config)
+		$msg->set('template_id', 'com_jomgallery.newimage');
+    $msg->addTemplateData(array('user' => 'Manuel', 'title' => 'MyImage', 'category' => 'MyCategory'));
+    $msg->send('tech.spuur@quickline.ch');
 
 		$this->addToolbar();
 

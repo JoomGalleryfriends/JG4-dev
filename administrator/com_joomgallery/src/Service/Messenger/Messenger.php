@@ -13,6 +13,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Uri\Uri;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
 
@@ -82,13 +84,13 @@ abstract class Messenger implements MessengerInterface
    */
   public function addTemplateData($data)
   {
-    if(is_array($data))
+    if(\is_array($data))
     {
-      $this->data = array_merge($this->data, $data);
+      $this->data = \array_merge($this->data, $data);
     }
     else
     {
-      array_push($this->data, $data);
+      \array_push($this->data, $data);
     }
   }
 
@@ -104,28 +106,34 @@ abstract class Messenger implements MessengerInterface
      */
     protected function replaceTags($text, $tags)
     {
-        foreach ($tags as $key => $value) {
-            if (is_array($value)) {
-                $matches = array();
+      foreach($tags as $key => $value)
+      {
+        if(\is_array($value))
+        {
+          $matches = array();
 
-                if (preg_match_all('/{' . strtoupper($key) . '}(.*?){\/' . strtoupper($key) . '}/s', $text, $matches)) {
-                    foreach ($matches[0] as $i => $match) {
-                        $replacement = '';
+          if(\preg_match_all('/{' . \strtoupper($key) . '}(.*?){\/' . \strtoupper($key) . '}/s', $text, $matches))
+          {
+            foreach($matches[0] as $i => $match)
+            {
+              $replacement = '';
 
-                        foreach ($value as $subvalue) {
-                            if (is_array($subvalue)) {
-                                $replacement .= $this->replaceTags($matches[1][$i], $subvalue);
-                            }
-                        }
-
-                        $text = str_replace($match, $replacement, $text);
-                    }
+              foreach($value as $subvalue)
+              {
+                if (\is_array($subvalue))
+                {
+                  $replacement .= $this->replaceTags($matches[1][$i], $subvalue);
                 }
-            } else {
-                $text = str_replace('{' . strtoupper($key) . '}', $value, $text);
-            }
-        }
+              }
 
-        return $text;
+              $text = \str_replace($match, $replacement, $text);
+            }
+          }
+        } else {
+            $text = \str_replace('{' . \strtoupper($key) . '}', $value, $text);
+        }
+      }
+
+      return $text;
     }
 }

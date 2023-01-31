@@ -30,12 +30,14 @@ interface MessengerServiceInterface
 
   /**
 	 * Creates the messenger service class
+   * 
+   * @param   string  $msgMethod   Name of the messager to be used
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createMessenger(): void;
+	public function createMessenger($msgMethod): void;
 
 	/**
 	 * Returns the messenger service class.
