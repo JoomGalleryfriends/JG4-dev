@@ -72,11 +72,18 @@ abstract class Config implements ConfigInterface
     // Check context
     $context_array = \explode('.', $context);
 
-    if($context_array[0] != 'com_joomgallery' || (\count($context_array) > 1 && !\array_key_exists($context_array[1], $this->ids)) || \count($context_array) > 2)
+    if( $context_array[0] != 'com_joomgallery' || 
+        (\count($context_array) > 1 && !\array_key_exists($context_array[1], $this->ids)) || 
+        (\count($context_array) > 2 && $context_array[2] != 'id')
+      )
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
 
       $this->context = false;
+    }
+    else
+    {
+      $this->context = $context;
     }
 
     // Completing $this->ids based on given context
