@@ -804,7 +804,14 @@ class CategoryModel extends JoomAdminModel
       return false;
     }
 
-    $children = $table->getNodeTree('children', $self);
+    // add root category
+    $root = false;
+    if($pk == 1 && $self)
+    {
+      $root = true;
+    }
+
+    $children = $table->getNodeTree('children', $self, $root);
     if(!$children)
     {
       $this->setError($table->getError());
