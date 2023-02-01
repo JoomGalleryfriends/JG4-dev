@@ -931,7 +931,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$output)
     {
       // Get supported types of ImageMagick v6.x
-      @\exec(\trim($this->impath).'convert -version', $output);
+      @\exec(\trim($this->impath).'convert -list format', $output);
     }
 
     if(!$output)
