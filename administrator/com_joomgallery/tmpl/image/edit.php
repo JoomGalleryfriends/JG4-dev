@@ -69,7 +69,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 				<?php echo $this->form->renderField('catid'); ?>
         <?php echo $this->form->renderField('featured'); ?>
         <?php echo $this->form->renderField('hidden'); ?>
-        <?php echo $this->form->renderField('access'); ?>				
+        <?php echo $this->form->renderField('access'); ?>
+        <?php echo $this->form->renderField('tags'); ?>
 				<?php echo $this->form->renderField('language'); ?>
       </fieldset>
     </div>

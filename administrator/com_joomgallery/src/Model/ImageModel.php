@@ -308,7 +308,7 @@ class ImageModel extends JoomAdminModel
 		$catMoved     = false;
 		$isNew        = true;
 		$isCopy       = false;
-    $aliasChanged = false;
+    	$aliasChanged = false;
 
 		$key = $table->getKeyName();
 		$pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
@@ -329,10 +329,10 @@ class ImageModel extends JoomAdminModel
 		}    	
 
 		// Create tags
-		if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
-		{
-			$table->newTags = $data['tags'];
-		}
+		// if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
+		// {
+		// 	$table->new_tags = $data['tags'];
+		// }
 
     // Change language to 'All' if multilangugae is not enabled
     if (!Multilanguage::isEnabled())

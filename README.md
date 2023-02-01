@@ -18,7 +18,15 @@ https://docs.google.com/presentation/d/1kXGfGRrHswU0M3yh0zUvOwW1fYqB07cksHzNxzcE
 
 JoomGallery is an OpenSource project and is developed by users for users. So if you are using JoomGallery feel free to contribute to the project...
 
+
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2TBYDQ88VH4PW)
+
 ## Code development
+### Joomla 4 extension development docs
+- https://blog.astrid-guenther.de/en/der-weg-zu-joomla4-erweiterungen/
+- https://www.dionysopoulos.me/book.html
+- https://joomlacommunity.cloud.mattermost.com/main/channels/extension-development-room
+
 ### Codestyle guide
 PHP: [Codestyle guide for PHP](docs/Codestyleguide.md)
 

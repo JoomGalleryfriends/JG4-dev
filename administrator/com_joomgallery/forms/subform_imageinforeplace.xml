@@ -19,12 +19,11 @@
     <field name="source"
            type="list"
            groupByFieldset="false"
-           default="0"
+           default="COMMENT"
            label="COM_JOOMGALLERY_CONFIG_SOURCE_METADATA_FIELD"
            description="COM_JOOMGALLERY_CONFIG_SOURCE_METADATA_FIELD_LONG"
            EXIF="[['IFD0','270'],['EXIF','37510'],['IFD0','315'],['IFD0','33432'],['IFD0','306'],['EXIF','36867'],['EXIF','36868']]"
            IPTC="[['IPTC','205'],['IPTC','2105'],['IPTC','2120'],['IPTC','240'],['IPTC','285'],['IPTC','280'],['IPTC','225'],['IPTC','2116'],['IPTC','2110'],['IPTC','2115'],['IPTC','2122'],['IPTC','255'],['IPTC','292']]">
-        <option value="0">COM_JOOMGALLERY_CONFIG_REPLACEVALUE_NONE</option>
         <option value="COMMENT">COM_JOOMGALLERY_COMMENT</option>
     </field>
   </fieldset>

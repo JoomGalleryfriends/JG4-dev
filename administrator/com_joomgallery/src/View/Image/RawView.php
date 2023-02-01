@@ -39,20 +39,22 @@ class RawView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
+    // Create filesystem service
+    $this->component->createFilesystem();
+
+    // Get request variables
     $type = $this->app->input->get('type', 'detail', 'word');
     $id   = $this->app->input->get('id', 0, 'int');
 
     // Get image path
     $img = JoomHelper::getImg($id, $type, false);
 
-    // Create filesystem service
-    $this->component->createFilesystem();
-
     // Clean image path
-    $img = $this->component->getFilesystem()->get('local_root') . $img;
+    //$img = $this->component->getFilesystem()->get('local_root') . $img;
     $this->component->getFilesystem()->cleanPath($img);
 
     // Download image from storage
+    // ToDo: Not a good solution!
     $this->component->getFilesystem()->downloadFile($img);
 
     // Check file

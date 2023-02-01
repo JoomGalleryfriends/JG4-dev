@@ -86,6 +86,37 @@ class ImageTable extends Table implements VersionableTableInterface
 		return $this->typeAlias;
 	}
 
+  /**
+     * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
+     *
+     * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
+     *                           If not set the instance property value is used.
+     * @param   boolean  $reset  True to reset the default values before loading the new row.
+     *
+     * @return  boolean  True if successful. False if row not found.
+     *
+     * @since   1.7.0
+     * @throws  \InvalidArgumentException
+     * @throws  \RuntimeException
+     * @throws  \UnexpectedValueException
+     */
+    public function load($keys = null, $reset = true)
+    {
+      $success = parent::load($keys, $reset);
+
+      if($success)
+      {
+        // Record successfully loaded
+        // load Tags
+        $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
+        $tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+
+        $this->tags = $tags_model->getMappedItems($this->id);
+      }
+      
+      return $success;
+    }
+
 	/**
 	 * Overloaded bind function to pre-process the params.
 	 *
@@ -213,6 +244,12 @@ class ImageTable extends Table implements VersionableTableInterface
 			$this->setRules($array['rules']);
 		}
 
+    // Support for tags
+    if(!isset($this->tags))
+    {
+      $this->tags = array();
+    }
+
 		return parent::bind($array, $ignore);
 	}
 
@@ -230,7 +267,32 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function store($updateNulls = true)
 	{
-		return parent::store($updateNulls);
+    $success = parent::store($updateNulls);
+
+    if($success)
+    {
+      // Record successfully stored
+     	// Store Tags
+	  	$com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
+    	$tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+
+      // Create tags
+      $this->tags = $tags_model->storeTagsList($this->tags);
+      if($this->tags === false)
+      {
+        $this->setError('Tags Model reports '.$tags_model->getError());
+        $success = false;
+      }
+
+      // Update tags mapping
+      if(!$tags_model->updateMapping($this->tags, $this->id))
+      {
+        $this->setError('Tags Model reports '.$tags_model->getError());
+        $success = false;
+      }
+    }
+
+    return $success;
 	}
 
 	/**
@@ -362,9 +424,27 @@ class ImageTable extends Table implements VersionableTableInterface
   public function delete($pk = null)
   {
     $this->load($pk);
-    $result = parent::delete($pk);
+    $success = parent::delete($pk);
 
-    return $result;
+    if($success)
+    {
+      // Record successfully deleted
+      // Delete Tag mapping
+      $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
+      $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+
+      // remove tag from mapping
+      foreach($this->tags as $tag)
+      {
+        if(!$tag_model->removeMapping($tag->id, $this->id))
+        {
+          $this->setError($tag_model->getError());
+          $success = false;
+        }
+      }
+    }
+
+    return $success;
   }
 
   /**

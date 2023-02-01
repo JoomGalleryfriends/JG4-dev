@@ -18,7 +18,6 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
-
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
@@ -27,6 +26,41 @@ HTMLHelper::_('bootstrap.tooltip');
 
 // Import CSS
 $wa->useStyle('com_joomgallery.admin');
+
+// Import modal
+$importModal = array(
+  'selector' => 'import_modal',
+  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('import_json')->getAttribute('title')),
+                      'footer' => '<button class="btn btn-primary" onclick="submitImport(this, event)" aria-label="'.Text::_('COM_JOOMGALLERY_IMPORT').'">'.Text::_('COM_JOOMGALLERY_IMPORT').'</button>'
+                     ),
+  'body'     => $this->form->renderField('import_json'),
+);
+$js  = 'var submitImport = function(element, event) {';
+$js .=     'event.preventDefault();';
+$js .=     'Joomla.submitform("config.import", document.getElementById("config-form"));';
+$js .= '};';
+
+// Note modal
+$noteModal = array(
+  'selector' => 'note_modal',
+  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('note')->getAttribute('title')),
+                      'footer' => '<button class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'.Text::_('JCLOSE').'">'.Text::_('JCLOSE').'</button>'
+                    ),
+  'body'     => $this->form->renderField('note'),
+);
+
+$this->document->addScriptDeclaration($js);
+
+// Note modal
+$noteModal = array(
+  'selector' => 'note_modal',
+  'params'   => array('title'  => $this->item->get('title').': '.Text::_($this->form->getField('note')->getAttribute('title')),
+                      'footer' => '<button class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'.Text::_('JCLOSE').'">'.Text::_('JCLOSE').'</button>'
+                    ),
+  'body'     => $this->form->renderField('note'),
+);
+
+$this->document->addScriptDeclaration($js);
 ?>
 
 <div class="jg jg-config">
@@ -34,58 +68,64 @@ $wa->useStyle('com_joomgallery.admin');
     action="<?php echo Route::_('index.php?option=com_joomgallery&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" enctype="multipart/form-data" name="adminForm" id="config-form" class="form-validate form-horizontal">
 
-    <div class="row">
-      <div class="col-lg-6 form-horizontal">
+    <div class="row head-row">
+      <div class="col-lg-5 form-horizontal">
         <?php echo $this->form->renderField('title'); ?>
       </div>
-      <div class="col-lg-6 form-horizontal">
+      <div class="col-lg-5 form-horizontal">
         <?php echo $this->form->renderField('group_id'); ?>
+      </div>
+      <div class="col-lg-2 form-horizontal">
+        <div class="control-group ml">
+          <a href="#" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#note_modal" onclick="event.preventDefault()"><?php echo Text::_($this->form->getField('note')->getAttribute('title')); ?></a>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-horizontal">
+        <p><span class="icon-notification-circle" aria-hidden="true"></span>: <?php echo Text::_('COM_JOOMGALLERY_CONFIG_SENSITIVE_FIELD'); ?></p>
       </div>
     </div>
 
+    <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $noteModal); ?>
+    <?php echo LayoutHelper::render('libraries.html.bootstrap.modal.main', $importModal); ?>
+
     <?php //first level TabSet ?>
-    <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'general')); ?>
+    <?php echo HTMLHelper::_('uitab.startTabSet', 'L1-tabset', array('active' => 'general', 'recall' => true)); ?>
 
     <?php foreach ($this->fieldsets as $key_L1 => $fieldset_L1) : ?>
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $fieldset_L1['this']->title, Text::_($fieldset_L1['this']->label), true); ?>
+
+      <?php if ($key_L1 == 'permissions' && $this->user->authorise('core.admin','joomgallery')) : ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'L1-tabset', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
+          <?php echo $this->form->getInput('rules'); ?>
+        <?php echo HTMLHelper::_('uitab.endTab'); ?>
+        <?php continue; ?>
+      <?php endif; ?>
+
+      <?php echo HTMLHelper::_('uitab.addTab', 'L1-tabset', $fieldset_L1['this']->name, Text::_($fieldset_L1['this']->label), true); ?>
 
         <?php //second level TabSet ?>
         <?php if (count($fieldset_L1) > 1 && $key_L1 != 'this') : ?>
-          <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'general')); ?>
+          <?php echo HTMLHelper::_('uitab.startTabSet', 'L2-tabset_'.$key_L1, array('active' => 'general', 'recall' => true)); ?>
 
             <?php foreach ($this->fieldsets[$key_L1] as $key_L2 => $fieldset_L2) : ?>
               <?php if ($key_L2 != 'this') : ?>
-                <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $fieldset_L2['this']->title, Text::_($fieldset_L2['this']->label), true); ?>
+                <?php echo HTMLHelper::_('uitab.addTab', 'L2-tabset_'.$key_L1, $fieldset_L2['this']->name, Text::_($fieldset_L2['this']->label), true); ?>
 
                 <?php //third level TabSet ?>
                 <?php if (count($fieldset_L2) > 1 && $key_L2 != 'this') : ?>
-                  <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'general')); ?>
+                  <?php echo HTMLHelper::_('uitab.startTabSet', 'L3-tabset_'.$key_L1.'-'.$key_L2, array('active' => 'general', 'recall' => true)); ?>
 
                   <?php foreach ($this->fieldsets[$key_L2] as $key_L3 => $fieldset_L3) : ?>
                     <?php if ($key_L3 != 'this') : ?>
-                      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $fieldset_L3['this']->title, Text::_($fieldset_L3['this']->label), true); ?>
+                      <?php echo HTMLHelper::_('uitab.addTab', 'L3-tabset_'.$key_L1.'-'.$key_L2, $fieldset_L3['this']->name, Text::_($fieldset_L3['this']->label), true); ?>
 
                         <?php //third level Fields ?>
                         <div class="row-fluid">
                           <div class="span10 form-horizontal">
                             <fieldset class="adminform">
                               <?php foreach ($this->getFieldset($fieldset_L3['this']->name) as $field) : ?>
-                                <?php
-                                  if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
-                                  {
-                                    $field_data = array(
-                                      'name' =>$field->name,
-                                      'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array())),
-                                      'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
-                                      'description' => Text::_('COM_JOOMGALLERY_CONFIG_EDIT_ONLY_IN_GLOBAL')
-                                    );
-                                    echo LayoutHelper::render('joomla.form.renderfield', $field_data);
-                                  }
-                                  else
-                                  {
-                                    echo $field->renderField();
-                                  }
-                                ?>
+                                <?php echo $this->renderField($field); ?>
                               <?php endforeach; ?>
                             </fieldset>
                           </div>
@@ -94,7 +134,7 @@ $wa->useStyle('com_joomgallery.admin');
                       <?php echo HTMLHelper::_('uitab.endTab'); ?>
                     <?php endif; ?>
                   <?php endforeach; ?>
-
+                  
                   <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
                 <?php endif; ?>
 
@@ -103,28 +143,14 @@ $wa->useStyle('com_joomgallery.admin');
                   <div class="span10 form-horizontal">
                     <fieldset class="adminform">
                       <?php foreach ($this->getFieldset($fieldset_L2['this']->name) as $field) : ?>
-                        <?php
-                          if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
-                          {
-                            $field_data = array(
-                              'name' =>$field->name,
-                              'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array())),
-                              'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
-                              'description' => Text::_('COM_JOOMGALLERY_CONFIG_EDIT_ONLY_IN_GLOBAL')
-                            );
-                            echo LayoutHelper::render('joomla.form.renderfield', $field_data);
-                          }
-                          else
-                          {
-                            echo $field->renderField();
-                          }
-                        ?>
+                        <?php echo $this->renderField($field); ?>
                       <?php endforeach; ?>
                     </fieldset>
                   </div>
                 </div>
 
                 <?php echo HTMLHelper::_('uitab.endTab'); ?>
+              
               <?php endif; ?>
             <?php endforeach; ?>
 
@@ -136,22 +162,7 @@ $wa->useStyle('com_joomgallery.admin');
             <div class="span10 form-horizontal">
               <fieldset class="adminform">
                 <?php foreach ($this->getFieldset($fieldset_L1['this']->name) as $field) : ?>
-                  <?php
-                    if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
-                    {
-                      $field_data = array(
-                        'name' =>$field->name,
-                        'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array())),
-                        'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
-                        'description' => Text::_('COM_JOOMGALLERY_CONFIG_EDIT_ONLY_IN_GLOBAL')
-                      );
-                      echo LayoutHelper::render('joomla.form.renderfield', $field_data);
-                    }
-                    else
-                    {
-                      echo $field->renderField();
-                    }
-                  ?>
+                  <?php echo $this->renderField($field); ?>
                 <?php endforeach; ?>
               </fieldset>
             </div>
@@ -159,13 +170,7 @@ $wa->useStyle('com_joomgallery.admin');
 
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
     <?php endforeach; ?>
-
-    <?php if (Factory::getUser()->authorise('core.admin','joomgallery')) : ?>
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
-        <?php echo $this->form->getInput('rules'); ?>
-      <?php echo HTMLHelper::_('uitab.endTab'); ?>
-    <?php endif; ?>
-
+    
     <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
     <input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />

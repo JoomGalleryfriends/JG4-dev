@@ -1,5 +1,5 @@
 <?php
-/**
+/** 
 ******************************************************************************************
 **   @version    4.0.0                                                                  **
 **   @package    com_joomgallery                                                        **
@@ -18,6 +18,8 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Form\Form;
 
 /**
  * JoomGallery Helper for the Backend
@@ -33,7 +35,7 @@ class JoomHelper
    *
    * @var array
    */
-  protected static $content_types = array('category', 'image', 'tag', 'imagetype');
+  protected static $content_types = array('category', 'config', 'field', 'image', 'imagetype', 'tag', 'user', 'vote');
 
   /**
 	 * Gets the JoomGallery component object
@@ -301,8 +303,16 @@ class JoomHelper
     {
       if(\is_numeric($img))
       {
-        // get image based on ID
-        $img = self::getRecord('image', $img);
+        if($img == 0)
+        {
+          // ID = 0 given
+          return self::getImgZero($url, $type);          
+        }
+        else
+        {
+          // get image based on ID
+          $img = self::getRecord('image', $img);
+        }
       }
       elseif(\is_string($img))
       {
@@ -328,14 +338,14 @@ class JoomHelper
       else
       {
         // no image given
-        return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
+        return self::getImgZero($url, $type); 
       }
     }
 
     if(!\is_object($img) || \is_null($img->id) || $img->id === 0)
     {
       // image object not found
-      return Uri::root(true).'/media/com_joomgallery/images/no-image.png';
+      return self::getImgZero($url, $type);     
     }
 
     // Check whether the image shall be output through the PHP script or with its real path
@@ -348,7 +358,7 @@ class JoomHelper
       // Create file manager service
 			$manager = JoomHelper::getService('FileManager');
 
-      return $manager->getImgPath($img, $type);
+      return $manager->getImgPath($img, $type, false, false, 1);
     }
   }
 
@@ -427,6 +437,89 @@ class JoomHelper
   }
 
   /**
+	 * Add dropdown options to the jg_replaceinfo->source form field
+   * based on its attributes
+   *
+   * @param   Form    $form    Form object to add replaceinfo options
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+  public static function addReplaceinfoOptions(&$form)
+  {
+    // Check if we got a valid form
+    if(\is_object($form) && $form instanceof \Joomla\CMS\Form\Form)
+    {
+      if($form->getName() == 'com_joomgallery.config')
+      {
+        // We got the complete config form
+        $formtype     = 'form';
+        $exif_options = $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('EXIF');
+        $iptc_options = $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('IPTC');
+      }
+      elseif(strpos($form->getName(), 'subform.jg_replaceinfo') !== false)
+      {
+        // We got a jg_replaceinfo subform
+        $formtype     = 'subform';
+        $exif_options = $form->getField('source')->getAttribute('EXIF');
+        $iptc_options = $form->getField('source')->getAttribute('IPTC');
+      }
+      else
+      {
+        throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
+      }
+
+      require JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/iptcarray.php';
+      require JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/exifarray.php';
+      
+      $lang = Factory::getLanguage();
+      $lang->load(_JOOM_OPTION.'.exif', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
+      $lang->load(_JOOM_OPTION.'.iptc', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
+
+      // create dropdown list of metadata sources
+      $exif_options = \json_decode(\str_replace('\'', '"', $exif_options));
+      $iptc_options = \json_decode(\str_replace('\'', '"', $iptc_options));
+
+      foreach ($exif_options as $key => $exif_option)
+      {
+        // add all defined exif options
+        $text  = Text::_($exif_config_array[$exif_option[0]][$exif_option[1]]['Name']).' (exif)';
+        $value = $exif_option[0] . '-' . $exif_option[1];
+        if($formtype == 'subform')
+        {
+          $form->getField('source')->addOption($text, array('value'=>$value));
+        }
+        else
+        {
+          $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
+        }
+      }
+
+      foreach ($iptc_options as $key => $iptc_option)
+      {
+        // add all defined iptc options
+        $text  = Text::_($iptc_config_array[$iptc_option[0]][$iptc_option[1]]['Name']).' (iptc)';
+        $value = $iptc_option[0] . '-' . $iptc_option[1];
+        if($formtype == 'subform')
+        {
+          $form->getField('source')->addOption($text, array('value'=>$value));
+        }
+        else
+        {
+          $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
+        }
+      }
+
+      return;
+    }
+    else
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
+    }
+  }
+
+  /**
 	 * Checks if a specific content type is available
    *
    * @param   string    $name   Content type name
@@ -440,6 +533,31 @@ class JoomHelper
     if(!\in_array($name, self::$content_types))
     {
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
+    }
+  }
+
+  /**
+	 * Returns the image url or path for image with id=0
+   *
+   * @param   bool       $url    True: image url, false: image path (default: true)
+   * @param   string     $type   The image type (default: thumbnail)
+	 *
+	 * @return  string     Image path or url
+	 *
+	 * @since   4.0.0
+	 */
+  protected static function getImgZero($url=true, $type='thumbnail')
+  {
+    if($url)
+    {
+      return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id=0');
+    }
+    else
+    {
+      $manager = JoomHelper::getService('FileManager');
+      $path =  $manager->addRoot(1).'/media/com_joomgallery/images/no-image.png';
+
+      return Path::clean($path);
     }
   }
 }

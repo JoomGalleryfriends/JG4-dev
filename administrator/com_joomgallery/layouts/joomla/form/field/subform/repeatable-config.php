@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 extract($displayData);
 
@@ -33,7 +34,17 @@ extract($displayData);
  * @var   array   $buttons          Array of the buttons that will be rendered
  * @var   bool    $groupByFieldset  Whether group the subform fields by it`s fieldset
  */
-if ($multiple)
+
+// Add options to the replaceinfo field
+if($fieldname == 'jg_replaceinfo')
+{
+  foreach ($forms as $form)
+  {
+    JoomHelper::addReplaceinfoOptions($form);
+  }
+}
+
+ if ($multiple)
 {
 	// Add script
 	Factory::getApplication()
@@ -60,6 +71,7 @@ $class = $class ? ' ' . $class : '';
 
 // Build heading
 $table_head = '';
+$subforms_with_popup = array('jg_staticprocessing', 'jg_dynamicprocessing');
 
 $i = 0;
 foreach ($tmpl->getGroup('') as $field)
@@ -77,6 +89,13 @@ foreach ($tmpl->getGroup('') as $field)
   }
 
   $i++;
+}
+
+$section = 'section';
+if(in_array($fieldname, $subforms_with_popup))
+{
+  $table_head .= '<th scope="col">'.Text::_('COM_JOOMGALLERY_SETTINGS').'</th>';
+  $section = 'sectionWithPopup';
 }
 
 $sublayout = 'section-byfieldsets';
@@ -100,9 +119,6 @@ Factory::getApplication()
 				<thead>
 					<tr>
 						<?php echo $table_head; ?>
-            <th scope="col">
-              <?php echo Text::_('COM_JOOMGALLERY_SETTINGS'); ?>
-            </th>
 						<?php if (!empty($buttons)) : ?>
 						<td style="width:8%;">
 							<?php if (!empty($buttons['add'])) : ?>
@@ -119,7 +135,7 @@ Factory::getApplication()
 				<tbody class="subform-repeatable-container">
 				<?php
 				foreach ($forms as $k => $form) :
-            echo $this->sublayout('section', array('label' => $label, 'form' => $form, 'basegroup' => $fieldname, 'group' => $fieldname . $k, 'buttons' => $buttons, 'is_global_config' => $is_global_config));		
+            echo $this->sublayout($section, array('label' => $label, 'form' => $form, 'basegroup' => $fieldname, 'group' => $fieldname . $k, 'buttons' => $buttons, 'is_global_config' => $is_global_config));		
 				endforeach;
 				?>
 				</tbody>
@@ -127,7 +143,7 @@ Factory::getApplication()
 		</div>
 		<?php if ($multiple) : ?>
 		<template class="subform-repeatable-template-section hidden">
-			<?php echo trim($this->sublayout('section', array('label' => $label, 'form' => $tmpl, 'basegroup' => $fieldname, 'group' => $fieldname . 'X', 'buttons' => $buttons, 'is_global_config' => $is_global_config))); ?>
+			<?php echo trim($this->sublayout($section, array('label' => $label, 'form' => $tmpl, 'basegroup' => $fieldname, 'group' => $fieldname . 'X', 'buttons' => $buttons, 'is_global_config' => $is_global_config))); ?>
 		</template>
 		<?php endif; ?>
 	</joomla-field-subform>

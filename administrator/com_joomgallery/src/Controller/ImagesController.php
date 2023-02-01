@@ -17,11 +17,11 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
 use Joomla\Input\Input;
-use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use Joomgallery\Component\Joomgallery\Administrator\Controller\JoomAdminController;
 
 /**
  * Images list controller class.
@@ -29,7 +29,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImagesController extends AdminController
+class ImagesController extends JoomAdminController
 {
   /**
 	 * Constructor.

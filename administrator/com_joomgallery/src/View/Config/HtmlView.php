@@ -13,9 +13,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Config;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Toolbar\ToolbarHelper;
+use \Joomla\CMS\Layout\LayoutHelper;
+use \Joomla\CMS\Toolbar\Toolbar;
+use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Form\FormHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
@@ -47,25 +50,35 @@ class HtmlView extends JoomGalleryView
 		$this->state            = $this->get('State');
 		$this->item             = $this->get('Item');
 		$this->form             = $this->get('Form');
-    $this->fieldsets        = array();
-    $this->is_global_config = ($this->item->id === 1) ? true : false;
+    	$this->fieldsets        = array();
+    	$this->is_global_config = ($this->item->id === 1) ? true : false;
     
-    // Add options to the replaceinfo field
-    $this->addReplaceinfoOptions();
+		// Add options to the replaceinfo field
+		JoomHelper::addReplaceinfoOptions($this->form);
 
-    // Fill fieldset array
-    foreach($this->form->getFieldsets() as $key => $fieldset)
-    {
-      $parts = \explode('-',$key);
-      $level = \count($parts);
+		// Fill fieldset array
+		foreach($this->form->getFieldsets() as $key => $fieldset)
+		{
+			$parts = \explode('-',$key);
+			$level = \count($parts);
 
-      $fieldset->level = $level;
-      $fieldset->title = \end($parts);
+			$fieldset->level = $level;
+			$fieldset->title = \end($parts);
 
-      $this->setFieldset($key, array('this'=>$fieldset));
-    }
+			$this->setFieldset($key, array('this'=>$fieldset));
+		}
 
-		// Check for errors.
+		// Add permissions fieldset to level 1 fieldsets
+		$permissions = array('name' => 'permissions',
+							'label' => 'JGLOBAL_ACTION_PERMISSIONS_LABEL',
+							'description' => '',
+							'type' => 'tab',
+							'level' => 1,
+							'title' => 'permissions');
+		$this->fieldsets['permissions'] = array('this' => (object) $permissions);
+
+
+		// Check for errors
 		if(count($errors = $this->get('Errors')))
 		{
 			throw new \Exception(implode("\n", $errors));
@@ -85,6 +98,7 @@ class HtmlView extends JoomGalleryView
 	protected function addToolbar()
 	{
 		Factory::getApplication()->input->set('hidemainmenu', true);
+    	$toolbar = Toolbar::getInstance('toolbar');
 
 		$user  = Factory::getUser();
 		$isNew = ($this->item->id == 0);
@@ -100,7 +114,7 @@ class HtmlView extends JoomGalleryView
 
 		$canDo = JoomHelper::getActions();
 
-		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIGURATION_MANAGER').' :: '.Text::_('COM_JOOMGALLERY_CONFIG_EDIT'), "sliders-h");
+		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_CONFIG_SETS').' :: '.Text::_('COM_JOOMGALLERY_CONFIG_EDIT'), "sliders-h");
 
 		// If not checked out, can save the item.
 		if(!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
@@ -118,6 +132,41 @@ class HtmlView extends JoomGalleryView
 		if(!$isNew && $canDo->get('core.create'))
 		{
 			ToolbarHelper::custom('config.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
+		}
+
+		if(!$isNew)
+		{
+			// $resetGroup = $toolbar->dropdownButton('reset-group')
+			// 	->text('Settings')
+			// 	->toggleSplit(false)
+			// 	->icon('fas fa-ellipsis-h')
+			// 	->buttonClass('btn btn-action')
+			// 	->listCheck(false);
+
+			// $childBar = $resetGroup->getChildToolbar();
+
+			$toolbar->confirmButton('reset')
+				->text('JRESET')
+				->task('config.reset')
+				->message('COM_JOOMGALLERY_RESET_CONFIRM')
+				->icon('icon-refresh')
+				->listCheck(false);
+				
+			$toolbar->standardButton('export')
+				->text('JTOOLBAR_EXPORT')
+				->task('config.export')
+				->icon('icon-download')
+				->listCheck(false);
+		
+			$import_modal_opt = array(
+				'selector'=> 'import_modal',
+				'doTask' => '',
+				'btnClass' => 'button-import btn btn-primary',
+				'htmlAttributes' => '',
+				'class' => 'icon-upload',
+				'text' => Text::_('COM_JOOMGALLERY_IMPORT'));
+			$import_modal_btn = LayoutHelper::render('joomla.toolbar.popup', $import_modal_opt);
+			$toolbar->appendButton('Custom', $import_modal_btn);
 		}
 
 		if(empty($this->item->id))
@@ -264,40 +313,41 @@ class HtmlView extends JoomGalleryView
   }
 
   /**
-	 * Method to add options to the jg_replaceinfo->source field
-   * based on its attributes
-	 *
-	 * @return   void
-	 *
-	 */
-  protected function addReplaceinfoOptions()
+  * Add the page title and toolbar.
+  *
+  * @param   object  $field   Field object to render
+  *
+  * @return  string  html code for field output
+  */
+  public function renderField($field)
   {
-    require_once JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/iptcarray.php';
-    require_once JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/exifarray.php';
-    $lang = Factory::getLanguage();
-    $lang->load(_JOOM_OPTION.'.exif', JPATH_ADMINISTRATOR);
-    $lang->load(_JOOM_OPTION.'.iptc', JPATH_ADMINISTRATOR);
+	$global_only = false;
+	if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
+	{
+		$global_only = true;
+	}
 
-    // create dropdown list of metadata sources
-    $exif_options = $this->form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('EXIF');
-    $iptc_options = $this->form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('IPTC');
-    $exif_options = \json_decode(\str_replace('\'', '"', $exif_options));
-    $iptc_options = \json_decode(\str_replace('\'', '"', $iptc_options));
+	$sensitive = false;
+	if(!empty($field->getAttribute('sensitive')) && $field->getAttribute('sensitive') == true)
+	{
+		$sensitive = true;
+	}
 
-    foreach ($exif_options as $key => $exif_option)
-    {
-      // add all defined exif options
-      $text  = $exif_config_array[$exif_option[0]][$exif_option[1]]['Name'];
-      $value = $exif_option[0] . '-' . $exif_option[1];
-      $this->form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-    }
-
-    foreach ($iptc_options as $key => $iptc_option)
-    {
-      // add all defined iptc options
-      $text  = $iptc_config_array[$iptc_option[0]][$iptc_option[1]]['Name'];
-      $value = $iptc_option[0] . '-' . $iptc_option[1];
-      $this->form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-    }
+	if($global_only)
+	{
+		// Fields with global_only attribute --> Not editable
+		$field_data = array(
+      'id' => $field->id,
+			'name' => $field->name,
+			'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array(), 'sensitive'=>$sensitive)),
+			'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
+			'description' => Text::_('COM_JOOMGALLERY_CONFIG_EDIT_ONLY_IN_GLOBAL'),
+		);
+		echo LayoutHelper::render('joomla.form.renderfield', $field_data);
+	}
+	else
+	{
+		echo $field->renderField(array('sensitive' => $sensitive));
+	}
   }
 }

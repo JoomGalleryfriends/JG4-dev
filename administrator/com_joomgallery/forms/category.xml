@@ -48,8 +48,9 @@
            description="JFIELD_ALIAS_DESC" />
 
     <field name="parent_id"
-           type="categoryedit"
-           default="0"
+           type="jgcategory"
+           children="false"
+           default="1"
            label="JGLOBAL_SHOW_PARENT_CATEGORY_LABEL" />
 
     <field name="published"
@@ -94,7 +95,7 @@
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_HIDDEN"
-           description="COM_JOOMGALLERY_FIELDS_HIDDEN_DESC" >
+           description="COM_JOOMGALLERY_FIELDS_CATEGORY_HIDDEN_DESC" >
       <option value="0">JNO</option>
       <option value="1">JYES</option>
     </field>
@@ -120,7 +121,7 @@
     </field>
 
     <field name="thumbnail"
-           type="media"
+           type="jgimage"
            directory="/images/joomgallery/"
            label="COM_JOOMGALLERY_THUMBNAIL"
            description="COM_JOOMGALLERY_FIELDS_THUMBNAIL_DESC" />
