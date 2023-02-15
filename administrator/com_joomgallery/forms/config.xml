@@ -219,6 +219,7 @@
 
       <field name="jg_dynamicprocessing"
              type="subform"
+             min="0"
              multiple="true"
              buttons="add,remove"
              formsource="administrator/components/com_joomgallery/forms/subform_imagedynconvert.xml"

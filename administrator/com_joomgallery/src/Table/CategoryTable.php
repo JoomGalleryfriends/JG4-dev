@@ -20,6 +20,7 @@ use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -441,5 +442,246 @@ class CategoryTable extends Table implements VersionableTableInterface
 		{
 			$data[$fieldName] = '';
 		}
+  }
+
+  /**
+   * Get a node tree based on current category (children, parents, complete)
+   *
+   * @param    string   $type     Which kind of nde tree (default: cpl)
+   * @param    bool     $self     Include current node id (default: false)
+   * @param    bool     $root     Include root node (default: false)
+   * 
+   * @return   array  List tree node node ids ordered by level ascending.
+   * @throws  \UnexpectedValueException
+   */
+  public function getNodeTree($type = 'cpl', $self = false, $root = false)
+  {
+    // Check if object is loaded
+    if(!$this->id)
+    {
+      throw new \UnexpectedValueException('Table not loaded. Load table first.');
+    }
+
+    // Convert type
+    switch($type)
+    {
+      case 'parents':
+        $type = 'parents';
+        break;
+
+      case 'childs':
+      case 'children':
+        $type = 'children';
+        break;
+      
+      default:
+        $type = 'cpl';
+        break;
+    }
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    // Select the required fields from the table.
+		$query->select(array('id', 'level', 'title'));
+    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+
+    if($type === 'children')
+    {
+      // Select children
+      if($self)
+      {
+        $query->where($db->quoteName('lft') . ' >= ' . $this->lft . ' AND ' . $db->quoteName('rgt') . ' <= ' . $this->rgt);
+      }
+      else
+      {
+        $query->where($db->quoteName('lft') . ' > ' . $this->lft . ' AND ' . $db->quoteName('rgt') . ' < ' . $this->rgt);
+      }
+    }
+    elseif($type === 'parents')
+    {
+      // Select parents
+      if($self)
+      {
+        $query->where($db->quoteName('lft') . ' <= ' . $this->lft . ' AND ' . $db->quoteName('rgt') . ' >= ' . $this->rgt);
+      }
+      else
+      {
+        $query->where($db->quoteName('lft') . ' < ' . $this->lft . ' AND ' . $db->quoteName('rgt') . ' > ' . $this->rgt);
+      }
+    }
+    else
+    {
+      // children and itself
+      $cWhere = '(' . $db->quoteName('lft') . ' >= ' . $this->lft . ' AND ' . $db->quoteName('rgt') . ' <= ' . $this->rgt . ')';
+      // parents
+      $pWhere = '(' . $db->quoteName('lft') . ' < ' . $this->lft . ' AND ' . $db->quoteName('rgt') . ' > ' . $this->rgt . ')';
+
+      $query->where('(' . implode(' OR ', array($cWhere, $pWhere)) . ')');
+    }
+
+    // Exclude root category
+    if(!$root)
+    {
+      $query->where($db->quoteName('level') . ' > 0');
+    }
+    
+    // Apply ordering
+    $query->order($db->quoteName('level') . ' ASC');
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+
+    if(!$tree = $db->loadAssocList())
+    {
+      if($type === 'children')
+      {
+        $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_CHILDREN_FOUND'));
+      }
+      elseif($type === 'parents')
+      {
+        $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_PARENT_FOUND'));
+      }
+      else
+      {
+        $this->setError(Text::_('COM_JOOMGALLERY_ERROR_GETNODETREE'));
+      }
+    }
+
+    return $tree;
+  }
+
+  /**
+   * Get a list of (direct) siblings (left, right, both)
+   *
+   * @param    string   $type    Left or right siblings (default: both)
+   * @param    bool     $direct  Only direct siblings (default: true)
+   * @param    object   $parent  Parent category (only needed if direct=false)
+   * 
+   * @return   array  List of siblings.
+   * @throws  \UnexpectedValueException
+   */
+  public function getSibling($type = 'both', $direct = true, $parent = null)
+  {
+    // Check if object is loaded
+    if(!$this->id)
+    {
+      throw new \UnexpectedValueException('Table not loaded. Load table first.');
+    }
+
+    // Convert type
+    switch($type)
+    {
+      case 'left':
+      case 'lft':
+      case 'l':
+        $type = 'left';
+        break;
+
+      case 'right':
+      case 'rgt':
+      case 'r':
+        $type = 'right';
+        break;
+      
+      default:
+        $type = 'both';
+        break;
+    }
+
+    // Check if parent object is loaded
+    if(!$direct && !$parent->id)
+    {
+      throw new \UnexpectedValueException('Parent table not loaded. Load parent table first.');
+    }
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    // Select the required fields from the table.
+		$query->select(array('id', 'title', 'lft', 'rgt'));
+    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+
+    if($type === 'left')
+    {
+      // Select left siblings
+      if($direct)
+      {
+        $query->where($db->quoteName('rgt') . ' = ' . strval($this->lft - 1));
+      }
+      else
+      {
+        $query->where($db->quoteName('lft') . ' > ' . strval($parent->lft) . ' AND ' . $db->quoteName('rgt') . ' < ' . strval($this->lft));
+      }
+    }
+    elseif($type === 'right')
+    {
+      // Select right siblings
+      if($direct)
+      {
+        $query->where($db->quoteName('lft') . ' = ' . strval($this->rgt + 1));
+      }
+      else
+      {
+        $query->where($db->quoteName('lft') . ' > ' . strval($this->rgt) . ' AND ' . $db->quoteName('rgt') . ' < ' . strval($parent->rgt));
+      }
+    }
+    else
+    {
+      // Select all siblings
+      if($direct)
+      {
+        $query->where($db->quoteName('rgt') . ' = ' . strval($this->lft - 1). ' OR ' . $db->quoteName('lft') . ' = ' . strval($this->rgt + 1));
+      }
+      else
+      {
+        $query->where($db->quoteName('id') . ' != ' . $this->id);
+      }
+    }
+
+    //Apply level
+    $query->where($db->quoteName('level') . ' = ' . $this->level);
+
+    // Apply ordering
+    if(!$direct)
+    {
+      $query->order($db->quoteName('lft') . ' ASC');
+    }
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+
+    $siblings = $db->loadAssocList();
+
+    if(!$siblings)
+    {
+      $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_SIBLING_FOUND'));
+    }
+
+    // Loop through the sibling and add the position (left or right)
+    foreach($siblings as $key => $sibling)
+    {
+      if($sibling['rgt'] < $this->lft)
+      {
+        // left sibling
+        $siblings[$key]['side'] = 'left';
+      }
+      elseif($sibling['lft'] > $this->rgt)
+      {
+        // right sibling
+        $siblings[$key]['side'] = 'right';
+      }
+      else
+      {
+        throw new \UnexpectedValueException('Unexpected sibling received.');
+      }
+
+      unset($siblings[$key]['lft']);
+      unset($siblings[$key]['rgt']);
+    }
+
+    return $siblings;
   }
 }

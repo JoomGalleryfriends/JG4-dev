@@ -29,15 +29,17 @@ interface ConfigServiceInterface
 	private $config;
 
   /**
-	 * Creates the config helper class
-   *
-   * @param   string  $inheritance  Inheritance method to be used
+	 * Creates the config helper class based on the selected
+   * inheritance method in global component settings
+   * 
+   * @param   string   $context   Context of the content (default: com_joomgallery)
+   * @param   int      $id        ID of the content if needed (default: null)
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createConfig($inheritance): void;
+	public function createConfig($context = 'com_joomgallery', $id = null): void;
 
 	/**
 	 * Returns the config helper class.

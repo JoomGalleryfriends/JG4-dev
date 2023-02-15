@@ -20,14 +20,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 interface ConfigInterface
 {
 	/**
-   * Constructor loads the currently needed configuration set
-   * to its class variables
+   * Loading the calculated settings for a specific content
+   * to class properties
    *
-   * @param   int  $id  row id of the config record to be loaded
+   * @param   string   $context   Context of the content (default: com_joomgallery)
+   * @param   int      $id        ID of the contenttype if needed (default: null)
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function __construct($id);
+  public function __construct($context = 'com_joomgallery', $id = null);
 }
