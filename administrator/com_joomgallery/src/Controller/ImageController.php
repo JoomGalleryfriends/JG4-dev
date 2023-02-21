@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\FormController;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
 
 /**
@@ -47,4 +48,49 @@ class ImageController extends FormController
 
 		return parent::save($key, $urlVar);
 	}
+
+  /**
+   * Method to add multiple new image records.
+   *
+   * @return  boolean  True if the record can be added, false if not.
+   *
+   * @since   4.0
+   */
+  public function multipleadd()
+  {
+    $this->view_item = 'image';
+    $layout = 'upload';
+
+    $context = "$this->option.upload.$this->context";
+
+    // Access check.
+    if (!$this->allowAdd()) {
+        // Set the internal error and also the redirect error.
+        $this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
+
+        $this->setRedirect(
+            Route::_(
+                'index.php?option=' . $this->option . '&view=' . $this->view_list
+                . $this->getRedirectToListAppend(),
+                false
+            )
+        );
+
+        return false;
+    }
+
+    // Clear the record edit information from the session.
+    $this->app->setUserState($context . '.data', null);
+
+    // Redirect to the edit screen.
+    $this->setRedirect(
+        Route::_(
+            'index.php?option=' . $this->option . '&view=' . $this->view_item
+            . '&layout=' . $layout,
+            false
+        )
+    );
+
+    return true;
+  }
 }

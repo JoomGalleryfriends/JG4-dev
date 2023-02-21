@@ -62,18 +62,26 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
-		$this->addToolbar();
+    if($this->_layout == 'upload')
+    {
+      $this->addToolbarUpload();
+    }
+    else
+    {
+      $this->addToolbarEdit();
+    }
+		
 		parent::display($tpl);
 	}
 
 	/**
-	 * Add the page title and toolbar.
+	 * Add the page title and toolbar for the image edit form.
 	 *
 	 * @return void
 	 *
 	 * @throws Exception
 	 */
-	protected function addToolbar()
+	protected function addToolbarEdit()
 	{
 		Factory::getApplication()->input->set('hidemainmenu', true);
 
@@ -134,4 +142,19 @@ class HtmlView extends JoomGalleryView
 			ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CLOSE');
 		}
 	}
+
+  /**
+	 * Add the page title and toolbar for the upload form.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
+	protected function addToolbarUpload()
+	{
+    Factory::getApplication()->input->set('hidemainmenu', true);
+
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD'), "image");
+    ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CLOSE');
+  }
 }
