@@ -20,6 +20,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Http\PhpEnvironment\Response as PhpResponse;
 use Laminas\Http\Response;
 use Laminas\Json\Json;
+
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\BadHeader;
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\File;
 
@@ -366,7 +367,8 @@ class Server
 
         if (file_exists($storageFileName)) {
             $json = file_get_contents($storageFileName);
-            $data = Json::decode($json, Json::TYPE_ARRAY);
+            //$data = Json::decode($json, Json::TYPE_ARRAY);
+            $data = \json_decode($json, true);
             if (is_array($data)) {
                 return array_merge($refData, $data);
             }
@@ -547,7 +549,8 @@ class Server
             $this->metaData['MimeType'] = $this->fileType;
         }
 
-        $json = Json::encode($this->metaData);
+        //$json = Json::encode($this->metaData);
+        $json = \json_encode($this->metaData);
 
         file_put_contents($this->directory . $this->getUserUuid() . '.info', $json);
     }
