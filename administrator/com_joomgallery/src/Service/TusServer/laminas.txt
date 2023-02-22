@@ -2,9 +2,9 @@ Laminas\Http\PhpEnvironment\Request
 ------------------------------------
 - getMethod()                  | Return the method for this request. (return string) -->JInput::getMethod()
 - isOptions()                  | Is this an OPTIONS method request? (return bool)
-- getHeader()->getFieldValue() | Returns a https request header value based on the provided name. (return string) -->??
+- getHeader()->getFieldValue() | Returns a https request header value based on the provided name. (return string) --> JInput->server->get('HTTP_CONTENT_TYPE')
 - getUri()->getPath()          | Returns the URI path. (return string)  --> JUri::getPath()
-- getQuery('info', -1)         | Returns a single query parameter based on the provided name. (default: -1)  --> JInput
+- getQuery('info', -1)         | Returns a single query parameter based on the provided name. (default: -1)  --> JInput->get('info', -1)
 
 Laminas\Http\Response
 ----------------------

@@ -23,6 +23,7 @@ $uppy_version = 'v3.5.0'; // Uppy version to use
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
+$wa->registerAndUseStyle('com_joomgallery.uppy', 'https://releases.transloadit.com/uppy/'.$uppy_version.'/uppy.min.css');
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
    ->useStyle('com_joomgallery.admin');
@@ -34,8 +35,6 @@ $app = Factory::getApplication();
 $isModal = $app->input->get('layout') === 'modal';
 $layout  = $isModal ? 'modal' : 'edit';
 $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
-
-$wa->registerAndUseStyle('com_joomgallery.uppy', 'https://releases.transloadit.com/uppy/'.$uppy_version.'/uppy.min.css');
 ?>
 
 <form
@@ -44,10 +43,12 @@ $wa->registerAndUseStyle('com_joomgallery.uppy', 'https://releases.transloadit.c
   aria-label="<?php echo Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD', true); ?>" >
 
   <div class="row align-items-start">
-    <div class="col-12 col-md-6 mb">
-      <div id="drag-drop-area"></div>
+    <div class="col-xxl-auto col-md-6 mb">
+      <div id="drag-drop-area">
+        <div class="card"><div class="card-body">Upload form could not be loaded.<br />Make sure JavaScript is enabled in order to use the multiple upload method.</div></div>
+      </div>
     </div>
-    <div class="col-12 col-md-6 card">
+    <div class="col card">
       <div class="card-header">
         <h2>Options</h2>
       </div>
@@ -72,6 +73,11 @@ $wa->registerAndUseStyle('com_joomgallery.uppy', 'https://releases.transloadit.c
     }
   });
 
+  if(uppy != null)
+  {
+    document.getElementById('drag-drop-area').innerHTML = '';
+  }
+
   uppy.use(Dashboard, {
     inline: true,
     target: '#drag-drop-area',
@@ -84,7 +90,8 @@ $wa->registerAndUseStyle('com_joomgallery.uppy', 'https://releases.transloadit.c
   });
 
   uppy.use(Tus, {
-    endpoint: 'https://tusd.tusdemo.net/files/',
+    endpoint: "<?php echo Uri::root(false).'administrator/index.php?option=com_joomgallery&task=images.tusupload';?>",
+    //endpoint: 'https://tusd.tusdemo.net/files/',
     retryDelays: [0, 1000, 3000, 5000],
     allowedMetaFields: null,
   })

@@ -109,6 +109,9 @@ joomla-field-image .jg_minithumb {
 .jg .modal .btn {
   color: var(--white);
 }
+.uppy-Dashboard-inner {
+  background-color: var(--white);
+}
 .mt {
   margin-top: 1rem !important;
 }
