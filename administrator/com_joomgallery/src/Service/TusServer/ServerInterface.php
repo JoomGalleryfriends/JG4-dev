@@ -50,25 +50,29 @@ interface ServerInterface
   public function getResponse(): ResponseInterface;
 
   /**
+   * Get the domain of the server
+   * 
    * @return string
    */
   public function getDomain(): string;
 
   /**
+   * Sets the domain of the server
+   * 
    * @param string $domain
    *
-   * @return Server
+   * @return void
    */
-  public function setDomain(string $domain): Server;
+  public function setDomain(string $domain);
 
   /**
    * Sets upload size limit
    *
    * @param int $value
    *
-   * @return Server
+   * @return void
    */
-  public function setAllowMaxSize(int $value): Server;
+  public function setAllowMaxSize(int $value);
 
   /**
    * Get real name of transfered file
@@ -76,4 +80,13 @@ interface ServerInterface
    * @return string  Real name of file
    */
   public function getRealFileName(): string;
+
+  /**
+     * Allows GET method (it means allow download uploded files)
+     *
+     * @param bool $allow
+     *
+     * @return void
+     */
+    public function setAllowGetMethod($allow);
 }

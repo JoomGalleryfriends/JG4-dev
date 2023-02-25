@@ -40,12 +40,41 @@ class Server implements ServerInterface
     public const TIMEOUT = 30;
     public const TUS_VERSION = '1.0.0';
 
+    /**
+     * Joomla! CMS Application class
+     * 
+     * @var Joomla\CMS\Application\CMSApplication
+     */
     protected $app;
-    protected $specs;
-    private   $uuid;
-    private   $directory = '';
-    private   $realFileName = '';
 
+    /**
+     * Array containing all relevant tus headers
+     * 
+     * @var array
+     */
+    protected $specs;
+
+    /**
+     * Unique upload identifier
+     * Identification of the upload
+     * 
+     * @var string
+     */
+    private   $uuid;
+
+    /**
+     * Directory to use for save the file
+     * 
+     * @var bool
+     */
+    private   $directory = '';
+
+    /**
+     * Switch GET method.
+     * GET method needed to download uploaded files.
+     * 
+     * @var bool
+     */
     private $allowGetMethod = true;
 
     /**
@@ -69,14 +98,25 @@ class Server implements ServerInterface
     private $debugMode;
 
     /**
-     * @var string Name of the domain, on which the file upload is provided
+     * Name of the domain, on which the file upload is provided
+     * 
+     * @var string 
      */
     private $domain = '';
 
     /**
+     * Filetype of the uploaded file
+     * 
      * @var string
      */
     private $fileType  = '';
+
+    /**
+     * Name of the uploaded file
+     * 
+     * @var string
+     */
+    private   $realFileName = '';
 
     /**
      * Constructor
@@ -988,9 +1028,9 @@ class Server implements ServerInterface
      *
      * @param bool $allow
      *
-     * @return Server
+     * @return void
      */
-    public function setAllowGetMethod($allow): Server
+    public function setAllowGetMethod($allow)
     {
         $this->allowGetMethod = (bool)$allow;
 
@@ -1002,10 +1042,10 @@ class Server implements ServerInterface
      *
      * @param int $value
      *
-     * @return Server
+     * @return void
      * @throws \BadMethodCallException
      */
-    public function setAllowMaxSize(int $value): Server
+    public function setAllowMaxSize(int $value)
     {
         if ($value > 0) {
             $this->allowMaxSize = $value;
@@ -1028,7 +1068,7 @@ class Server implements ServerInterface
     }
 
 
-    public function setStatusCode(int $code)
+    private function setStatusCode(int $code)
     {
       $this->app->setHeader('Status', (string) $code);
     }
@@ -1040,8 +1080,8 @@ class Server implements ServerInterface
      *
      * @return  $this
      */
-	  public function setContent($content, $replace = true)
-	  {
+	private function setContent($content, $replace = true)
+	{
       if($replace)
       {
         $this->app->setBody($content);
@@ -1057,7 +1097,7 @@ class Server implements ServerInterface
      *
      * @return  array
      */
-    public function getHeaders()
+    private function getHeaders()
     {
       return $this->app->getHeaders();
     }
@@ -1076,12 +1116,14 @@ class Server implements ServerInterface
      *
      * @since   1.0
      */
-    public function addHeaderLine(string $name, string $value, bool $replace = true)
+    private function addHeaderLine(string $name, string $value, bool $replace = true)
     {
       return $this->app->setHeader($name, $value, $replace);
     }
 
     /**
+     * Get the domain of the server
+     * 
      * @return string
      */
     public function getDomain(): string
@@ -1090,11 +1132,13 @@ class Server implements ServerInterface
     }
 
     /**
+     * Sets the domain of the server
+     * 
      * @param string $domain
      *
-     * @return Server
+     * @return void
      */
-    public function setDomain(string $domain): Server
+    public function setDomain(string $domain)
     {
         $this->domain = $domain;
 
