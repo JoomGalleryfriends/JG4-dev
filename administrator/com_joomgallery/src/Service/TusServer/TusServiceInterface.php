@@ -25,13 +25,14 @@ interface TusServiceInterface
 	 * Creates the tus server class
    * 
    * @param   string   Upload folder path
+   * @param   string   TUS server implementation location (URI)
    * @param   bool     True if debug mode should be activated
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createTusServer(string $folder='', bool $debug=false): void;
+	public function createTusServer(string $folder='', string $location = '', bool $debug=false): void;
 
 	/**
 	 * Returns the tus server class.

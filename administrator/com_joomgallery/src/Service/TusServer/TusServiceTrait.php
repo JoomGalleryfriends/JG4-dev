@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 \defined('JPATH_PLATFORM') or die;
 
 use \Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Server;
 
@@ -48,21 +49,26 @@ trait TusServiceTrait
 	 * Creates the tus server class
    * 
    * @param   string   Upload folder path
+   * @param   string   TUS server implementation location (URI)
    * @param   bool     True if debug mode should be activated
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createTusServer(string $folder='', bool $debug=false): void
+	public function createTusServer(string $folder='', string $location = '', bool $debug=false): void
 	{
     // Create and configure server
     if(empty($folder))
     {
       $folder = Factory::getApplication()->get('tmp_path');
     }
+    if(empty($location))
+    {
+      $location = Uri::root(true) . '/administrator/index.php?option=com_joomgallery&task=images.tusupload';
+    }
 
-    $this->tus = new Server($folder, $debug);
+    $this->tus = new Server($folder, $location, $debug);
 
     return;
 	}

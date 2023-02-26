@@ -26,11 +26,13 @@ interface ServerInterface
    * Constructor
    *
    * @param  string   $directory   The directory to use for save the file
+   * @param  string   $location    The uri to reach the TUS server
    * @param  bool     $debug       Switches debug mode - {@see Server::debugMode}
    *
-   * @since   4.0.0
+   * @throws File
+   * @access public
    */
-  public function __construct(string $directory, bool $debug = false);
+  public function __construct(string $directory, string $location, bool $debug = false);
 
   /**
    * Process the client request
@@ -82,11 +84,11 @@ interface ServerInterface
   public function getRealFileName(): string;
 
   /**
-     * Allows GET method (it means allow download uploded files)
-     *
-     * @param bool $allow
-     *
-     * @return void
-     */
-    public function setAllowGetMethod($allow);
+   * Allows GET method (it means allow download uploded files)
+   *
+   * @param bool $allow
+   *
+   * @return void
+   */
+  public function setAllowGetMethod($allow);
 }

@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 $tus_specs_array = array
 (
+  'Headers' => array(
     'Tus-Version'     => array( 'Name'        => 'HTTP_TUS_VERSION',
                                 'Description' => 'Comma-separated list of protocol versions supported by the Server',
                                 'Request'     => array('OPTIONS'),
@@ -82,7 +83,22 @@ $tus_specs_array = array
                                 'Request'     => array('POST','PATCH'),
                                 'Type'        => 'integer',
                                 'Required'    => false,
-                                'Default'     => 0,
+                                'Default'     => null,
                                 'Value'       => 0
                               ),
+  ),
+  'Codes' => array(
+    200 => 'OK',
+    201 => 'Created',
+    204 => 'No Content',
+    400 => 'Bad Request',
+    403 => 'Forbidden',
+    404 => 'Not Found',
+    409 => 'Conflict',
+    410 => 'Gone',
+    412 => 'Precondition Failed',
+    413 => 'Request Entity Too Large',
+    415 => 'Unsupported Media Type',
+    460 => 'Checksum Mismatch',
+  )
 );

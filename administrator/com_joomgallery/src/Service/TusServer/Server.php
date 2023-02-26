@@ -13,14 +13,18 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 // No direct access
 defined('_JEXEC') or die;
 
+use Exception;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Uri\Uri;
 use Psr\Http\Message\ResponseInterface;
 
+use Joomgallery\Component\Joomgallery\Administrator\Extension\ResponseTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
+use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\FileToolsService;
+use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Abort;
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\BadHeader;
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\File;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\FileToolsService;
+use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Max;
+use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Request;
 
 /**
  * Tus-Server v1.0.0 implementation
@@ -36,23 +40,17 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\FileToolsS
  */
 class Server implements ServerInterface
 {
+    use ResponseTrait;
 
     public const TIMEOUT = 30;
     public const TUS_VERSION = '1.0.0';
-
-    /**
-     * Joomla! CMS Application class
-     * 
-     * @var Joomla\CMS\Application\CMSApplication
-     */
-    protected $app;
 
     /**
      * Array containing all relevant tus headers
      * 
      * @var array
      */
-    protected $specs;
+    private $specs;
 
     /**
      * Unique upload identifier
@@ -65,9 +63,27 @@ class Server implements ServerInterface
     /**
      * Directory to use for save the file
      * 
-     * @var bool
+     * @var string
      */
     private   $directory = '';
+
+    /**
+     * Location of the TUS server - URI to reach the TUS server without domain
+     * Info: With slash (/) in the beginning
+     * Example: /index.php?target=tus
+     * 
+     * @var string
+     */
+    private $location = '/';
+
+    /**
+     * Name of the domain, on which the file upload is provided
+     * Info: Without slash (/) at the end
+     * Example: http://example.org
+     * 
+     * @var string 
+     */
+    private $domain = '';
 
     /**
      * Switch GET method.
@@ -85,6 +101,8 @@ class Server implements ServerInterface
     private $allowMaxSize = 2147483648; // 2GB
 
     /**
+     * Storage to collect upload meta data
+     * 
      * @var array
      */
     private $metaData;
@@ -96,13 +114,6 @@ class Server implements ServerInterface
      * @var bool
      */
     private $debugMode;
-
-    /**
-     * Name of the domain, on which the file upload is provided
-     * 
-     * @var string 
-     */
-    private $domain = '';
 
     /**
      * Filetype of the uploaded file
@@ -122,14 +133,17 @@ class Server implements ServerInterface
      * Constructor
      *
      * @param  string   $directory   The directory to use for save the file
+     * @param  string   $location    The uri to reach the TUS server
      * @param  bool     $debug       Switches debug mode - {@see Server::debugMode}
      *
      * @throws File
      * @access public
      */
-    public function __construct(string $directory, bool $debug = false)
+    public function __construct(string $directory, string $location, bool $debug = false)
     {
         $this->setDirectory($directory);
+        $this->setLocation($location);
+        
         $this->app = Factory::getApplication();
         $this->debugMode = $debug;
 
@@ -140,18 +154,17 @@ class Server implements ServerInterface
     /**
      * Process the client request
      *
-     * @param   bool               $send  True to send the response, false to return the response
+     * @param   bool             $send    True to send the response, false to return the response
      *
-     * @return  void|Response   void if send = true else Response object
+     * @return  void|Response    void if send = true else Response object
      * 
      * @throws Exception\Request If the method isn't available
      * @throws BadHeader
      */
-    public function process($send = false)
+    public function process($send = true)
     {
         try
         {
-            //$method = $this->getRequest()->getMethod();
             $method = $this->app->input->getMethod();
 
             $isOption = false;
@@ -160,7 +173,7 @@ class Server implements ServerInterface
                 case 'POST':
                     if (!$this->checkTusVersion())
                     {
-                      throw new Exception\Request('The requested protocol version is not supported', 405);
+                      throw new Request('The requested protocol version is not supported', 405);
                     }
                     $this->buildUuid();
                     $this->processPost();
@@ -169,7 +182,7 @@ class Server implements ServerInterface
                 case 'HEAD':
                     if (!$this->checkTusVersion())
                     {
-                      throw new Exception\Request('The requested protocol version is not supported', 405);
+                      throw new Request('The requested protocol version is not supported', 405);
                     }
                     $this->getUserUuid();
                     $this->processHead();
@@ -178,7 +191,7 @@ class Server implements ServerInterface
                 case 'PATCH':
                     if (!$this->checkTusVersion())
                     {
-                      throw new Exception\Request('The requested protocol version is not supported', 405);
+                      throw new Request('The requested protocol version is not supported', 405);
                     }
                     $this->getUserUuid();
                     $this->processPatch();
@@ -195,7 +208,7 @@ class Server implements ServerInterface
                     break;
 
                 default:
-                    throw new Exception\Request('The requested method ' . $method . ' is not allowed', 405);
+                    throw new Request('The requested method ' . $method . ' is not allowed', 405);
             }
 
             $this->addCommonHeader($isOption);
@@ -206,7 +219,7 @@ class Server implements ServerInterface
             }
 
         }
-        catch (Exception\BadHeader $exp)
+        catch (BadHeader $exp)
         {
             if($send === false)
             {
@@ -217,7 +230,7 @@ class Server implements ServerInterface
             $this->addCommonHeader();
 
         }
-        catch (Exception\Request $exp)
+        catch (Request $exp)
         {
             if($send === false)
             {
@@ -225,7 +238,7 @@ class Server implements ServerInterface
             }
 
             $this->setStatusCode($exp->getCode());
-            $this->setContent($exp->getMessage());
+            //$this->setContent($exp->getMessage());
             $this->addCommonHeader(true);
         }
         catch (\Exception $exp)
@@ -270,7 +283,7 @@ class Server implements ServerInterface
 
         if(is_numeric($headers['Upload-Length']) === false || $headers['Upload-Length'] < 0)
         {
-            throw new Exception\BadHeader('Upload-Length must be a positive integer');
+            throw new BadHeader('Upload-Length must be a positive integer');
         }
 
         $finalLength = (int)$headers['Upload-Length'];
@@ -281,12 +294,12 @@ class Server implements ServerInterface
 
         if(file_exists($file) === true)
         {
-            throw new Exception\File('File already exists : ' . $file);
+            throw new File('File already exists : ' . $file);
         }
 
         if (touch($file) === false)
         {
-            throw new Exception\File('Impossible to touch ' . $file);
+            throw new File('Impossible to touch ' . $file);
         }
 
         $this->setMetaDataValue('ID', $this->uuid);
@@ -294,11 +307,10 @@ class Server implements ServerInterface
 
         $this->setStatusCode(201);
 
-        $path = Uri::current();
+        $location = $this->app->input->server->get('REQUEST_URI', $this->getLocation(), 'string');
+        $domain   = $this->getDomain() ?: '';
 
-        $domain = $this->getDomain() ?: '';
-
-        $this->addHeaderLine('Location', $domain . $path . '/' . $this->uuid);
+        $this->addHeaderLine('Location', $domain . $location . '&uuid=' . $this->uuid);
 
         unset($path);
     }
@@ -318,7 +330,6 @@ class Server implements ServerInterface
         if ($this->existsInMetaData('ID') === false)
         {
             $this->setStatusCode(404);
-            $this->setContent('Not Found');
             return;
         }
 
@@ -328,7 +339,6 @@ class Server implements ServerInterface
             // allow new upload
             $this->removeFromMetaData($this->uuid);
             $this->setStatusCode(404);
-            $this->setContent('Not Found');
             return;
         }
 
@@ -341,7 +351,6 @@ class Server implements ServerInterface
         $this->addHeaderLine('Cache-Control', 'no-store');
 
         $this->setStatusCode(200);
-        $this->setContent('Ok');
     }
 
     /**
@@ -373,17 +382,17 @@ class Server implements ServerInterface
 
         if(is_numeric($headers['Upload-Offset']) === false || $headers['Upload-Offset'] < 0)
         {
-            throw new Exception\BadHeader('Upload-Offset must be a positive integer');
+            throw new BadHeader('Upload-Offset must be a positive integer');
         }
 
         if(isset($headers['Content-Length']) && (is_numeric($headers['Content-Length']) === false || $headers['Content-Length'] < 0))
         {
-            throw new Exception\BadHeader('Content-Length must be a positive integer');
+            throw new BadHeader('Content-Length must be a positive integer');
         }
 
         if(is_string($headers['Content-Type']) === false || $headers['Content-Type'] !== 'application/offset+octet-stream')
         {
-            throw new Exception\BadHeader('Content-Type must be "application/offset+octet-stream"');
+            throw new BadHeader('Content-Type must be "application/offset+octet-stream"');
         }
 
         // Offset of current PATCH request
@@ -401,7 +410,6 @@ class Server implements ServerInterface
         if($offsetSession === null || $offsetSession !== $offsetHeader)
         {
             $this->setStatusCode(409);
-            $this->setContent('Conflict');
             $this->addHeaderLine('Upload-Offset', $offsetSession);
             return;
         }
@@ -411,7 +419,6 @@ class Server implements ServerInterface
         {
             // the whole file was uploaded
             $this->setStatusCode(204);
-            $this->setContent('No Content');
             $this->addHeaderLine('Upload-Offset', $offsetSession);
             return;
         }
@@ -420,19 +427,19 @@ class Server implements ServerInterface
         $handleInput = fopen('php://input', 'rb');
         if($handleInput === false)
         {
-            throw new Exception\File('Impossible to open php://input');
+            throw new File('Impossible to open php://input');
         }
 
         $file = $this->directory . $this->getFilename();
         $handleOutput = fopen($file, 'ab');
         if ($handleOutput === false)
         {
-            throw new Exception\File('Impossible to open file to write into');
+            throw new File('Impossible to open file to write into');
         }
 
         if (fseek($handleOutput, $offsetSession) === false)
         {
-            throw new Exception\File('Impossible to move pointer in the good position');
+            throw new File('Impossible to move pointer in the good position');
         }
 
         ignore_user_abort(false);
@@ -461,13 +468,13 @@ class Server implements ServerInterface
 
                 if(connection_status() !== CONNECTION_NORMAL)
                 {
-                    throw new Exception\Abort('User abort connexion');
+                    throw new Abort('User abort connexion');
                 }
 
                 $data = fread($handleInput, 8192);
                 if($data === false)
                 {
-                    throw new Exception\File('Impossible to read the datas');
+                    throw new File('Impossible to read the datas');
                 }
 
                 $sizeRead = strlen($data);
@@ -477,7 +484,7 @@ class Server implements ServerInterface
                 {
                     if($contentLength !== null && $totalWrite < $contentLength)
                     {
-                        throw new Exception\Abort('Stream unexpectedly ended. Maybe user aborted?');
+                        throw new Abort('Stream unexpectedly ended. Maybe user aborted?');
                     }
 
                     // end of stream
@@ -487,20 +494,20 @@ class Server implements ServerInterface
                 // If user sent more datas than expected (by POST Final-Length), abort
                 if($contentLength !== null && ($sizeRead + $currentSize > $lengthSession))
                 {
-                    throw new Exception\Max('Size sent is greather than max length expected');
+                    throw new Max('Size sent is greather than max length expected');
                 }
 
                 // If user sent more datas than expected (by PATCH Content-Length), abort
                 if($contentLength !== null && ($sizeRead + $totalWrite > $contentLength))
                 {
-                    throw new Exception\Max('Size sent is greather than max length expected');
+                    throw new Max('Size sent is greather than max length expected');
                 }
 
                 // Write datas
                 $sizeWrite = fwrite($handleOutput, $data);
                 if($sizeWrite === false)
                 {
-                    throw new Exception\File('Unable to write data');
+                    throw new File('Unable to write data');
                 }
 
                 $currentSize += $sizeWrite;
@@ -519,17 +526,17 @@ class Server implements ServerInterface
             $this->addHeaderLine('Upload-Offset', $currentSize);
 
         }
-        catch (Exception\Max $exp)
+        catch (Max $exp)
         {
             $returnCode = 400;
             $returnMsg  = $exp->getMessage();
         }
-        catch (Exception\File $exp)
+        catch (File $exp)
         {
             $returnCode = 500;
             $returnMsg  = $exp->getMessage();
         }
-        catch (Exception\Abort $exp)
+        catch (Abort $exp)
         {
             $returnCode = 100;
             $returnMsg  = $exp->getMessage();
@@ -561,7 +568,6 @@ class Server implements ServerInterface
         $this->uuid = null;
 
         $this->setStatusCode(204);
-        $this->setContent('No Content');
     }
 
     /**
@@ -573,23 +579,23 @@ class Server implements ServerInterface
     {
         if (!$this->allowGetMethod)
         {
-            throw new Exception\Request('The requested method Get is not allowed', 405);
+            throw new Request('The requested method Get is not allowed', 405);
         }
 
         $file = $this->directory . $this->getFilename();
         if(!file_exists($file))
         {
-            throw new Exception\Request('The file ' . $this->uuid . ' doesn\'t exist', 404);
+            throw new Request('The file ' . $this->uuid . ' doesn\'t exist', 404);
         }
 
         if(!is_readable($file))
         {
-            throw new Exception\Request('The file ' . $this->uuid . ' is unaccessible', 403);
+            throw new Request('The file ' . $this->uuid . ' is unaccessible', 403);
         }
 
         if(!file_exists($file . '.info') || !is_readable($file . '.info'))
         {
-            throw new Exception\Request('The file ' . $this->uuid . ' has no metadata', 500);
+            throw new Request('The file ' . $this->uuid . ' has no metadata', 500);
         }
 
         $fileName = $this->getMetaDataValue('FileName');
@@ -616,27 +622,8 @@ class Server implements ServerInterface
         exit;
     }
 
-    /**
-     * Set the directory where the file will be store
-     *
-     * @param   string   $directory   The directory where the file are stored
-     *
-     * @return  Server
-     * 
-     * @throws File
-     * @throws \InvalidArgumentException
-     */
-    private function setDirectory(string $directory): Server
-    {
-        if(is_dir($directory) === false || is_writable($directory) === false)
-        {
-            throw new Exception\File($directory . ' doesn\'t exist or isn\'t writable');
-        }
-
-        $this->directory = $directory . (substr($directory, -1) !== DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '');
-
-        return $this;
-    }
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
 
     /**
      * Checks compatibility with requested Tus protocol
@@ -645,7 +632,7 @@ class Server implements ServerInterface
      */
     private function checkTusVersion(): bool
     {
-        $tusVersion = $this->app->input->server->get($this->specs['Tus-Resumable']['Name'], $this->specs['Tus-Resumable']['Default'], $this->specs['Tus-Resumable']['Type']);
+        $tusVersion = $this->app->input->server->get($this->specs['Headers']['Tus-Resumable']['Name'], $this->specs['Headers']['Tus-Resumable']['Default'], $this->specs['Headers']['Tus-Resumable']['Type']);
 
         if($tusVersion === self::TUS_VERSION)
         {
@@ -654,16 +641,7 @@ class Server implements ServerInterface
         else
         {
           return false;
-        }       
-        
-        // $tusVersion = $this->getRequest()->getHeader('Tus-Resumable');
-
-        // if ($tusVersion instanceof HeaderInterface)
-        // {
-        //     return $tusVersion->getFieldValue() === self::TUS_VERSION;
-        // }
-
-        // return false;
+        }
     }
 
     /**
@@ -674,6 +652,35 @@ class Server implements ServerInterface
     private function buildUuid(): void
     {
         $this->uuid = hash('md5', uniqid(mt_rand() . php_uname(), true));
+    }
+
+    /**
+     * Get the UUID of the request (use for HEAD and PATCH request)
+     *
+     * @return  string  The UUID of the request
+     * 
+     * @throws \InvalidArgumentException If the UUID is empty
+     * @access private
+     */
+    private function getUserUuid(): string
+    {
+        if($this->uuid === null)
+        {
+            // $path = Uri::current();
+            // $uuid = substr($path, strrpos($path, '/') + 1);
+            $uuid = $this->app->input->get('uuid', '', 'string');
+
+            if(strlen($uuid) === 32 && preg_match('/[a-z0-9]/', $uuid))
+            {
+                $this->uuid = $uuid;
+            }
+            else
+            {
+                throw new \InvalidArgumentException('The uuid cannot be empty.');
+            }
+        }
+
+        return $this->uuid;
     }
 
     /**
@@ -693,8 +700,10 @@ class Server implements ServerInterface
 
     /**
      * Get the session info
+     * 
+     * @return array
      */
-    private function getMetaData(): ?array
+    private function getMetaData(): array
     {
         if($this->metaData === null)
         {
@@ -739,114 +748,6 @@ class Server implements ServerInterface
         }
 
         return $refData;
-    }
-
-    /**
-     * Get the UUID of the request (use for HEAD and PATCH request)
-     *
-     * @return  string  The UUID of the request
-     * 
-     * @throws \InvalidArgumentException If the UUID is empty
-     * @access private
-     */
-    private function getUserUuid(): string
-    {
-        if($this->uuid === null)
-        {
-            $path = Uri::current();
-            $uuid = substr($path, strrpos($path, '/') + 1);
-
-            if(strlen($uuid) === 32 && preg_match('/[a-z0-9]/', $uuid))
-            {
-                $this->uuid = $uuid;
-            }
-            else
-            {
-                throw new \InvalidArgumentException('The uuid cannot be empty.');
-            }
-        }
-
-        return $this->uuid;
-    }
-
-    /**
-     * Extract a list of headers in the HTTP headers
-     *
-     * @param   array  $headers   A list of header name to extract
-     *
-     * @return  array  A list if header ([header name => header value])
-     * 
-     * @throws BadHeader
-     * @access private
-     */
-    private function extractHeaders($headers): array
-    {
-        if(is_array($headers) === false)
-        {
-            throw new \InvalidArgumentException('Headers must be an array');
-        }
-
-        $headersValues = [];
-        foreach ($headers as $headerName)
-        {
-            $value = $this->app->input->server->get($this->specs[$headerName]['Name'], $this->specs[$headerName]['Default'], $this->specs[$headerName]['Type']);
-            
-            if($this->specs[$headerName]['Type'] == 'string' && trim($value) === '')
-            {
-                throw new Exception\BadHeader($headerName . ' can\'t be empty');
-            }
-
-            $headersValues[$headerName] = $value;                
-        }
-
-        return $headersValues;
-    }
-
-    /**
-     * Sets real file name
-     *
-     * @param  string  $value   plain or base64 encoded file name
-     *
-     * @return Server  object
-     * @access private
-     */
-    private function setRealFileName($value): Server
-    {
-        $parts = explode(',', $value);
-
-        foreach ($parts as $part) {
-            if (($namePos = strpos($part, 'filename ')) !== false) {
-                $value = substr($part, $namePos + 9); // 9 - length of 'filename '
-                $this->realFileName = base64_decode($value);
-            }
-            elseif(($namePos = strpos($part, 'filetype ')) !== false) {
-                $value = substr($part, $namePos + 9); // 9 - length of 'filetype '
-                $this->fileType = base64_decode($value);
-            }
-            else {
-                $this->realFileName = $value;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the filename to use when save the uploaded file
-     *
-     * @return  string  The filename to use
-     * 
-     * @throws \DomainException If the uuid isn't define
-     * @access private
-     */
-    private function getFilename(): string
-    {
-        if($this->uuid === null)
-        {
-            throw new \DomainException('Uuid can\'t be null when call ' . __METHOD__);
-        }
-
-        return $this->uuid;
     }
 
     /**
@@ -924,18 +825,6 @@ class Server implements ServerInterface
     }
 
     /**
-     * Get real name of transfered file
-     *
-     * @return string  Real name of file
-     * 
-     * @access public
-     */
-    public function getRealFileName(): string
-    {
-        return $this->realFileName;
-    }
-
-    /**
      * Remove selected $id from database
      *
      * @param string $id The id to test
@@ -974,6 +863,98 @@ class Server implements ServerInterface
         }
 
         throw new \RuntimeException($key . ' is not defined in medatada');
+    }
+
+    /**
+     * Sets real file name
+     *
+     * @param  string  $value   plain or base64 encoded file name
+     *
+     * @return Server  object
+     * @access private
+     */
+    private function setRealFileName($value): Server
+    {
+        $parts = explode(',', $value);
+
+        foreach ($parts as $part) {
+            if (($namePos = strpos($part, 'filename ')) !== false) {
+                $value = substr($part, $namePos + 9); // 9 - length of 'filename '
+                $this->realFileName = base64_decode($value);
+            }
+            elseif(($namePos = strpos($part, 'filetype ')) !== false) {
+                $value = substr($part, $namePos + 9); // 9 - length of 'filetype '
+                $this->fileType = base64_decode($value);
+            }
+            else {
+                $this->realFileName = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get real name of transfered file
+     *
+     * @return string  Real name of file
+     * 
+     * @access public
+     */
+    public function getRealFileName(): string
+    {
+        return $this->realFileName;
+    }
+
+    /**
+     * Get the filename to use when save the uploaded file
+     *
+     * @return  string  The filename to use
+     * 
+     * @throws \DomainException If the uuid isn't define
+     * @access private
+     */
+    private function getFilename(): string
+    {
+        if($this->uuid === null)
+        {
+            throw new \DomainException('Uuid can\'t be null when call ' . __METHOD__);
+        }
+
+        return $this->uuid;
+    }
+
+    /**
+     * Extract a list of headers in the HTTP headers
+     *
+     * @param   array  $headers   A list of header name to extract
+     *
+     * @return  array  A list if header ([header name => header value])
+     * 
+     * @throws BadHeader
+     * @access private
+     */
+    private function extractHeaders($headers): array
+    {
+        if(is_array($headers) === false)
+        {
+            throw new \InvalidArgumentException('Headers must be an array');
+        }
+
+        $headersValues = [];
+        foreach ($headers as $headerName)
+        {
+            $value = $this->app->input->server->get($this->specs['Headers'][$headerName]['Name'], $this->specs['Headers'][$headerName]['Default'], $this->specs['Headers'][$headerName]['Type']);
+            
+            if($this->specs['Headers'][$headerName]['Type'] == 'string' && trim($value) === '')
+            {
+                throw new BadHeader($headerName . ' can\'t be empty');
+            }
+
+            $headersValues[$headerName] = $value;                
+        }
+
+        return $headersValues;
     }
 
     /**
@@ -1058,67 +1039,69 @@ class Server implements ServerInterface
     }
 
     /**
-     * Get the PSR-7 Response Object. 
+     * Set the directory where the file will be store
      *
-     * @return  ResponseInterface The response object
+     * @param   string   $directory   The directory where the file are stored
+     *
+     * @return  Server
+     * 
+     * @throws File
+     * @throws \InvalidArgumentException
      */
-    public function getResponse(): ResponseInterface
+    private function setDirectory(string $directory): Server
     {
-      return $this->app->response;
-    }
+        if(is_dir($directory) === false || is_writable($directory) === false)
+        {
+            throw new File($directory . ' doesn\'t exist or isn\'t writable');
+        }
 
+        $this->directory = $directory . (substr($directory, -1) !== DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '');
 
-    private function setStatusCode(int $code)
-    {
-      $this->app->setHeader('Status', (string) $code);
+        return $this;
     }
 
     /**
-     * Set body content.  If body content already defined, this will replace it.
-     *
-     * @param   string  $content  The content to set as the response body.
-     *
-     * @return  $this
+     * Get the location (uri) of the TUS server
+     * 
+     * @return string
      */
-	private function setContent($content, $replace = true)
-	{
-      if($replace)
+    private function getLocation(): string
+    {
+      if(\substr($this->location, 0, 1) != '/')
       {
-        $this->app->setBody($content);
+        // location should always starts with a slash (/)
+        return '/' . $this->location;
       }
-      else
+
+      return $this->location;
+    }
+
+    /**
+     * Sets the location (uri) of the TUS server
+     * 
+     * @param string $location
+     *
+     * @return void
+     * 
+     * @throws \Exception
+     */
+    private function setLocation(string $location)
+    {
+      if(\strpos($location, 'http') !== false || \strpos($location, '://') !== false || \strpos($location, 'www.') !== false)
       {
-        $this->app->appendBody($content);
+        // looks like $location contains the domain
+        throw new \Exception('Location should not contain the domain. Please provide the domain seperately using setDomain() method.', 1);        
       }
-    }
 
-    /**
-     * Method to get the array of response headers to be sent when the response is sent to the client.
-     *
-     * @return  array
-     */
-    private function getHeaders()
-    {
-      return $this->app->getHeaders();
-    }
+      if(\substr($location, 0, 1) != '/')
+      {
+        // location should always starts with a slash (/)
+        $location = '/' . $location;
+      }
 
-    /**
-     * Method to set a response header.
-     *
-     * If the replace flag is set then all headers with the given name will be replaced by the new one.
-     * The headers are stored in an internal array to be sent when the site is sent to the browser.
-     *
-     * @param   string   $name     The name of the header to set.
-     * @param   string   $value    The value of the header to set.
-     * @param   boolean  $replace  True to replace any headers with the same name.
-     *
-     * @return  $this
-     *
-     * @since   1.0
-     */
-    private function addHeaderLine(string $name, string $value, bool $replace = true)
-    {
-      return $this->app->setHeader($name, $value, $replace);
+      $this->location = $location;
+
+      return;
     }
 
     /**
@@ -1128,6 +1111,12 @@ class Server implements ServerInterface
      */
     public function getDomain(): string
     {
+      if(\substr($this->domain, -1) == '/')
+      {
+        // domain should never ends with a slash (/)
+        return \substr($this->domain, 0, -1);
+      }
+      
       return $this->domain;
     }
 
@@ -1140,8 +1129,14 @@ class Server implements ServerInterface
      */
     public function setDomain(string $domain)
     {
-        $this->domain = $domain;
+      if(\substr($domain, -1) == '/')
+      {
+        // domain should never ends with a slash (/)
+        $domain = \substr($domain, 0, -1);
+      }
 
-        return $this;
+      $this->domain = $domain;
+
+      return;
     }
 }
