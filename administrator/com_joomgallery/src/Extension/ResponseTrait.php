@@ -12,6 +12,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 
 \defined('_JEXEC') or die;
 
+use Psr\Http\Message\ResponseInterface;
+
 /**
 * Trait implementing tools to create responses
 *
