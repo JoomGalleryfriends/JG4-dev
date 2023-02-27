@@ -182,7 +182,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Create default mail templates
     $suc_templates = true;
 
-    if(!$this->addMailTemplate('newimage', array('user', 'title', 'category')))
+    if(!$this->addMailTemplate('newimage', array('user_id', 'user_username', 'user_name', 'img_id', 'img_title', 'cat_id', 'cat_title')))
     {
       $suc_templates = false;
     }
