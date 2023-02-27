@@ -72,7 +72,6 @@ img.jg_minithumb {
   object-fit: contain;
   border: 1px solid #ddd;
 }
-
 .joom-imgtypes.btn-group {
   margin-top: 1rem;
 }
@@ -111,6 +110,9 @@ joomla-field-image .jg_minithumb {
 }
 .uppy-Dashboard-inner {
   background-color: var(--white);
+}
+.uppy-Dashboard-Item {
+  height: auto !important;
 }
 .mt {
   margin-top: 1rem !important;

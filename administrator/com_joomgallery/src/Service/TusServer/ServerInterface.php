@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 \defined('JPATH_PLATFORM') or die;
 
 use Psr\Http\Message\ResponseInterface;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Server;
 
 /**
 * TUS server Interface
@@ -52,20 +51,11 @@ interface ServerInterface
   public function getResponse(): ResponseInterface;
 
   /**
-   * Get the domain of the server
+   * Get the location (uri) of the TUS server
    * 
    * @return string
    */
-  public function getDomain(): string;
-
-  /**
-   * Sets the domain of the server
-   * 
-   * @param string $domain
-   *
-   * @return void
-   */
-  public function setDomain(string $domain);
+  public function getLocation(): string;
 
   /**
    * Sets upload size limit
@@ -77,13 +67,6 @@ interface ServerInterface
   public function setAllowMaxSize(int $value);
 
   /**
-   * Get real name of transfered file
-   *
-   * @return string  Real name of file
-   */
-  public function getRealFileName(): string;
-
-  /**
    * Allows GET method (it means allow download uploded files)
    *
    * @param bool $allow
@@ -91,4 +74,21 @@ interface ServerInterface
    * @return void
    */
   public function setAllowGetMethod($allow);
+
+  /**
+   * Sets the Access-Control-Allow-Origin header (CORS)
+   * 
+   * @param  string  $domain  Domain to allow access from
+   *
+   * @return void
+   */
+  public function setAccessControlHeader(string $domain);
+
+  
+  /**
+   * Get real name of transfered file
+   *
+   * @return string  Real name of file
+   */
+  public function getRealFileName(): string;
 }

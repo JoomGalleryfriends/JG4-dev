@@ -44,6 +44,7 @@ class Server implements ServerInterface
 
     public const TIMEOUT = 30;
     public const TUS_VERSION = '1.0.0';
+    public const TUS_EXTENSIONS = 'creation,termination';
 
     /**
      * Array containing all relevant tus headers
@@ -62,6 +63,7 @@ class Server implements ServerInterface
 
     /**
      * Directory to use for save the file
+     * Info: With slash (/) at the end
      * 
      * @var string
      */
@@ -86,6 +88,14 @@ class Server implements ServerInterface
     private $domain = '';
 
     /**
+     * Access-Control-Allow-Origin header value
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+     * 
+     * @var string
+     */
+    private $allowAccess = '*';
+
+    /**
      * Switch GET method.
      * GET method needed to download uploaded files.
      * 
@@ -94,11 +104,11 @@ class Server implements ServerInterface
     private $allowGetMethod = true;
 
     /**
-     * TODO: handle this limit in patch method
+     * Max filesize allowed to upload in bytes
      *
      * @var int
      */
-    private $allowMaxSize = 2147483648; // 2GB
+    private $allowMaxSize = 262144000; // 250MB
 
     /**
      * Storage to collect upload meta data
@@ -207,6 +217,11 @@ class Server implements ServerInterface
                     $this->processGet();
                     break;
 
+                case 'DELETE':
+                  $this->getUserUuid();
+                  $this->processDelete();
+                  break;
+
                 default:
                     throw new Request('The requested method ' . $method . ' is not allowed', 405);
             }
@@ -238,8 +253,18 @@ class Server implements ServerInterface
             }
 
             $this->setStatusCode($exp->getCode());
-            //$this->setContent($exp->getMessage());
-            $this->addCommonHeader(true);
+            $this->addCommonHeader();
+        }
+        catch (File $exp)
+        {
+            if($send === false)
+            {
+                throw $exp;
+            }
+
+            $this->setStatusCode(500);
+            $this->setContent($exp->getMessage());
+            $this->addCommonHeader();
         }
         catch (\Exception $exp)
         {
@@ -288,18 +313,23 @@ class Server implements ServerInterface
 
         $finalLength = (int)$headers['Upload-Length'];
 
+        if($finalLength > $this->allowMaxSize)
+        {
+          throw new Request('Request Entity Too Large', 413);
+        }
+
         $this->setRealFileName($headers['Upload-Metadata']);
 
         $file = $this->directory . $this->getFilename();
 
         if(file_exists($file) === true)
         {
-            throw new File('File already exists : ' . $file);
+            throw new File('File already exists : ' . $file, 500);
         }
 
         if (touch($file) === false)
         {
-            throw new File('Impossible to touch ' . $file);
+            throw new File('Impossible to touch ' . $file, 500);
         }
 
         $this->setMetaDataValue('ID', $this->uuid);
@@ -622,6 +652,36 @@ class Server implements ServerInterface
         exit;
     }
 
+    /**
+     * Process the DELETE request
+     * 
+     * @link http://tus.io/protocols/resumable-upload.html#delete
+     *
+     * @return void
+     */
+    private function processDelete(): void
+    {
+      if($this->existsInMetaData('ID') === false)
+      {
+          $this->setStatusCode(404);
+          return;
+      }
+
+      // if file in storage does not exists
+      if(!file_exists($this->directory . $this->getFilename()))
+      {
+          // allow new upload
+          $this->removeFromMetaData($this->uuid);
+          $this->setStatusCode(404);
+          return;
+      }
+
+      // Delete files of upload in storage
+      $this->deleteUpload($this->uuid);
+
+      $this->setStatusCode(204);
+    }
+
     ///////////////////////////////////////////
     ///////////////////////////////////////////
 
@@ -642,6 +702,43 @@ class Server implements ServerInterface
         {
           return false;
         }
+    }
+
+    /**
+     * Add the commons headers to the HTTP response
+     *
+     * @param bool $isOption Is OPTION request
+     *
+     * @access private
+     */
+    private function addCommonHeader($isOption = false): void
+    {
+        $this->addHeaderLine('Tus-Resumable', self::TUS_VERSION);
+        $this->addHeaderLine('Access-Control-Allow-Origin', $this->allowAccess);
+        $this->addHeaderLine('Access-Control-Expose-Headers', 'Upload-Offset, Location, Upload-Length, Tus-Version, Tus-Resumable, Tus-Max-Size, Tus-Extension, Upload-Metadata');
+
+        if($isOption)
+        {
+            $allowedMethods = 'OPTIONS,HEAD,POST,PATCH,DELETE';
+
+            if($this->getAllowGetMethod())
+            {
+                $allowedMethods .= ',GET';
+            }
+
+            $this->addHeaderLine('Tus-Version', self::TUS_VERSION);
+            $this->addHeaderLine('Tus-Extension', self::TUS_EXTENSIONS);
+            $this->addHeaderLine('Allow', $allowedMethods);
+            $this->addHeaderLine('Access-Control-Allow-Methods', $allowedMethods);
+            $this->addHeaderLine('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Final-Length, Upload-Offset, Upload-Length, Tus-Resumable, Upload-Metadata');
+
+            if($this->allowMaxSize > 0)
+            {
+                $this->addHeaderLine('Tus-Max-Size', $this->allowMaxSize);
+            }
+        }
+
+        return;
     }
 
     /**
@@ -912,7 +1009,6 @@ class Server implements ServerInterface
      * @return  string  The filename to use
      * 
      * @throws \DomainException If the uuid isn't define
-     * @access private
      */
     private function getFilename(): string
     {
@@ -925,6 +1021,34 @@ class Server implements ServerInterface
     }
 
     /**
+     * Get the filename to use when save the uploaded file
+     * 
+     * @param   string  $uuid   UUID of the upload to delete
+     *
+     * @return  void
+     * 
+     * @throws File If one or multiple files are not deletable
+     */
+    private function deleteUpload($uuid)
+    {
+      // List of name of files inside upload folder
+      $files = glob($this->directory.'*');
+
+      $num_files = 0;
+      foreach($files as $file)
+      {
+        if(\strpos(\basename($file), $uuid) !== false)
+        {
+          // Delete file with uuid in its name
+          if(!\unlink($file))
+          {
+            throw new File('File with name "' . $file . '" can not be deleted.', 500);
+          }
+        }
+      }
+    }
+
+    /**
      * Extract a list of headers in the HTTP headers
      *
      * @param   array  $headers   A list of header name to extract
@@ -932,7 +1056,6 @@ class Server implements ServerInterface
      * @return  array  A list if header ([header name => header value])
      * 
      * @throws BadHeader
-     * @access private
      */
     private function extractHeaders($headers): array
     {
@@ -955,43 +1078,6 @@ class Server implements ServerInterface
         }
 
         return $headersValues;
-    }
-
-    /**
-     * Add the commons headers to the HTTP response
-     *
-     * @param bool $isOption Is OPTION request
-     *
-     * @access private
-     */
-    private function addCommonHeader($isOption = false): void
-    {
-        $this->addHeaderLine('Tus-Resumable', self::TUS_VERSION);
-        $this->addHeaderLine('Access-Control-Allow-Origin', '*');
-        $this->addHeaderLine('Access-Control-Expose-Headers', 'Upload-Offset, Location, Upload-Length, Tus-Version, Tus-Resumable, Tus-Max-Size, Tus-Extension, Upload-Metadata');
-
-        if($isOption)
-        {
-            $allowedMethods = 'OPTIONS,HEAD,POST,PATCH';
-
-            if($this->getAllowGetMethod())
-            {
-                $allowedMethods .= ',GET';
-            }
-
-            $this->addHeaderLine('Tus-Version', self::TUS_VERSION);
-            $this->addHeaderLine('Tus-Extension', 'creation');
-            $this->addHeaderLine('Allow', $allowedMethods);
-            $this->addHeaderLine('Access-Control-Allow-Methods', $allowedMethods);
-            $this->addHeaderLine('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Final-Length, Upload-Offset, Upload-Length, Tus-Resumable, Upload-Metadata');
-
-            if($this->allowMaxSize > 0)
-            {
-                $this->addHeaderLine('Tus-Max-Size', $this->allowMaxSize);
-            }
-        }
-
-        return;
     }
 
     /**
@@ -1065,7 +1151,7 @@ class Server implements ServerInterface
      * 
      * @return string
      */
-    private function getLocation(): string
+    public function getLocation(): string
     {
       if(\substr($this->location, 0, 1) != '/')
       {
@@ -1138,5 +1224,17 @@ class Server implements ServerInterface
       $this->domain = $domain;
 
       return;
+    }
+
+    /**
+     * Sets the Access-Control-Allow-Origin header (CORS)
+     * 
+     * @param  string  $domain  Domain to allow access from
+     *
+     * @return void
+     */
+    public function setAccessControlHeader(string $domain)
+    {
+      $this->allowAccess = $domain;
     }
 }

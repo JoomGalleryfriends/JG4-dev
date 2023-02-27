@@ -156,5 +156,11 @@ class HtmlView extends JoomGalleryView
 
     ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD'), "image");
     ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CLOSE');
+
+    // Create tus server
+    $this->component->createTusServer();
+    $server = $this->component->getTusServer();
+
+    $this->item->tus_location = $server->getLocation();
   }
 }
