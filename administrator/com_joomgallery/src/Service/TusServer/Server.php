@@ -28,6 +28,7 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\
 
 /**
  * Tus-Server v1.0.0 implementation
+ * Changed and adjusted through JoomGallery::ProjectTeam
  *
  * @version   1.0.0
  * @link      https://github.com/Orajo/zf2-tus-server
@@ -708,8 +709,6 @@ class Server implements ServerInterface
      * Add the commons headers to the HTTP response
      *
      * @param bool $isOption Is OPTION request
-     *
-     * @access private
      */
     private function addCommonHeader($isOption = false): void
     {
@@ -757,7 +756,6 @@ class Server implements ServerInterface
      * @return  string  The UUID of the request
      * 
      * @throws \InvalidArgumentException If the UUID is empty
-     * @access private
      */
     private function getUserUuid(): string
     {
@@ -786,7 +784,6 @@ class Server implements ServerInterface
      * @param $key
      *
      * @return bool  True if the id exists, false else
-     * @access private
      */
     private function existsInMetaData($key): bool
     {
@@ -811,7 +808,7 @@ class Server implements ServerInterface
     }
 
     /**
-     * Reads or initialize metadata about file.
+     * Reads or initialize metadata from file.
      *
      * @param string $name
      *
@@ -856,7 +853,6 @@ class Server implements ServerInterface
      * @return void
      * 
      * @throws \Exception
-     * @access  private
      */
     private function setMetaDataValue($key, $value): void
     {
@@ -927,7 +923,6 @@ class Server implements ServerInterface
      * @param string $id The id to test
      *
      * @return bool
-     * @access private
      */
     private function removeFromMetaData($id): bool
     {
@@ -943,13 +938,13 @@ class Server implements ServerInterface
     }
 
     /**
-     * Get a value from session
+     * Get a metadata value from session
      *
      * @param string $key The key for wich you want value
      *
      * @return mixed The value for the id-key
+     * 
      * @throws \Exception key is not defined in medatada
-     * @access private
      */
     private function getMetaDataValue($key)
     {
@@ -963,12 +958,39 @@ class Server implements ServerInterface
     }
 
     /**
+     * Parse Upload-Metadata header
+     *
+     * @param  string   $metadata   Upload-Metadata header string
+     *
+     * @return array    Associative array with all Upload-Metadata
+     */
+    private function parseUploadMetadata($metadata)
+    {
+      $parts = explode(',', $metadata);
+
+      if(\count($parts) <= 1)
+      {
+        // if only one metadata exists, it is the filename
+        return array('filename' => $metadata);
+      }
+
+      // multiple metadata submitted
+      $metadata = array();
+      foreach($parts as $part)
+      {
+        $pair = explode(' ', $part);
+        $metadata[$pair[0]] = base64_decode($pair[1]);
+      }
+
+      return $metadata;
+    }
+
+    /**
      * Sets real file name
      *
      * @param  string  $value   plain or base64 encoded file name
      *
      * @return Server  object
-     * @access private
      */
     private function setRealFileName($value): Server
     {
@@ -995,8 +1017,6 @@ class Server implements ServerInterface
      * Get real name of transfered file
      *
      * @return string  Real name of file
-     * 
-     * @access public
      */
     public function getRealFileName(): string
     {
