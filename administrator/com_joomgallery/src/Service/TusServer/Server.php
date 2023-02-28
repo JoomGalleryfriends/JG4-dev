@@ -300,7 +300,7 @@ class Server implements ServerInterface
      */
     private function processPost(): void
     {
-        if($this->existsInMetaData('ID') === true)
+        if($this->existsInMetaData('id') === true)
         {
             throw new \RuntimeException('The UUID already exists');
         }
@@ -319,7 +319,8 @@ class Server implements ServerInterface
           throw new Request('Request Entity Too Large', 413);
         }
 
-        $this->setRealFileName($headers['Upload-Metadata']);
+        $this->setMetaData($this->parseMetaDataHeader($headers['Upload-Metadata']));
+        $this->setRealFileName();
 
         $file = $this->directory . $this->getFilename();
 
@@ -333,7 +334,7 @@ class Server implements ServerInterface
             throw new File('Impossible to touch ' . $file, 500);
         }
 
-        $this->setMetaDataValue('ID', $this->uuid);
+        $this->setMetaDataValue('id', $this->uuid);
         $this->saveMetaData($finalLength, 0, false, true);
 
         $this->setStatusCode(201);
@@ -358,7 +359,7 @@ class Server implements ServerInterface
      */
     private function processHead(): void
     {
-        if ($this->existsInMetaData('ID') === false)
+        if ($this->existsInMetaData('id') === false)
         {
             $this->setStatusCode(404);
             return;
@@ -368,15 +369,15 @@ class Server implements ServerInterface
         if (!file_exists($this->directory . $this->getFilename()))
         {
             // allow new upload
-            $this->removeFromMetaData($this->uuid);
+            $this->deleteMetaData($this->uuid);
             $this->setStatusCode(404);
             return;
         }
 
-        $offset  = $this->getMetaDataValue('Offset');
+        $offset  = $this->getMetaDataValue('offset');
         $this->addHeaderLine('Upload-Offset', $offset);
 
-        $length = $this->getMetaDataValue('Size');
+        $length = $this->getMetaDataValue('size');
         $this->addHeaderLine('Upload-Length', $length);
 
         $this->addHeaderLine('Cache-Control', 'no-store');
@@ -403,7 +404,7 @@ class Server implements ServerInterface
     private function processPatch()
     {
         // Check the uuid
-        if ($this->existsInMetaData('ID') === false)
+        if ($this->existsInMetaData('id') === false)
         {
             throw new \RuntimeException('The UUID doesn\'t exists');
         }
@@ -431,11 +432,11 @@ class Server implements ServerInterface
         // Length of data of the current PATCH request
         $contentLength = isset($headers['Content-Length']) ? (int)$headers['Content-Length'] : null;
         // Last offset, taken from session
-        $offsetSession = (int)$this->getMetaDataValue('Offset');
+        $offsetSession = (int)$this->getMetaDataValue('offset');
         // Total length of file (expected data)
-        $lengthSession = (int)$this->getMetaDataValue('Size');
+        $lengthSession = (int)$this->getMetaDataValue('size');
 
-        $this->setRealFileName($this->getMetaDataValue('FileName'));
+        $this->setRealFileName();
 
         // Check consistency (user vars vs session vars)
         if($offsetSession === null || $offsetSession !== $offsetHeader)
@@ -543,7 +544,7 @@ class Server implements ServerInterface
 
                 $currentSize += $sizeWrite;
                 $totalWrite += $sizeWrite;
-                $this->setMetaDataValue('Offset', $currentSize);
+                $this->setMetaDataValue('offset', $currentSize);
 
                 if($currentSize === $lengthSession)
                 {
@@ -629,7 +630,7 @@ class Server implements ServerInterface
             throw new Request('The file ' . $this->uuid . ' has no metadata', 500);
         }
 
-        $fileName = $this->getMetaDataValue('FileName');
+        $fileName = $this->getMetaDataValue('filename');
 
         if ($this->debugMode)
         {
@@ -662,7 +663,7 @@ class Server implements ServerInterface
      */
     private function processDelete(): void
     {
-      if($this->existsInMetaData('ID') === false)
+      if($this->existsInMetaData('id') === false)
       {
           $this->setStatusCode(404);
           return;
@@ -672,7 +673,7 @@ class Server implements ServerInterface
       if(!file_exists($this->directory . $this->getFilename()))
       {
           // allow new upload
-          $this->removeFromMetaData($this->uuid);
+          $this->deleteMetaData($this->uuid);
           $this->setStatusCode(404);
           return;
       }
@@ -779,7 +780,96 @@ class Server implements ServerInterface
     }
 
     /**
-     * Check if $key an $id exists in the session
+     * Get metaData from property
+     * Reads metaData from file if property is empty
+     * 
+     * @return array
+     */
+    private function getMetaData(): array
+    {
+        if(empty($this->metaData))
+        {
+            $this->metaData = $this->readMetaData($this->getUserUuid());
+        }
+
+        return $this->metaData;
+    }
+
+    /**
+     * Set metaData array to property
+     * 
+     * @param  array  $metadata  The metadata array
+     * @param  bool   $replace   True to replace, false to append 
+     * 
+     * @return void
+     */
+    private function setMetaData($metadata, $replace=true)
+    {
+      // Make keys lowercase
+      foreach($metadata as $key => $value)
+      {
+        $metadata[\strtolower($key)] = $value;
+        unset($metadata[$key]);
+      }
+
+      if($replace)
+      {
+        $this->metaData = $metadata;
+      }
+      else
+      {
+        \array_merge($this->metaData, $metadata);
+      }
+    }
+
+    /**
+     * Get a metaData value from property
+     *
+     * @param string $key The key for wich you want value
+     *
+     * @return mixed The value for the id-key
+     * 
+     * @throws \Exception key is not defined in medatada
+     */
+    private function getMetaDataValue($key)
+    {
+        $data =& $this->getMetaData();
+        if(isset($data[$key]))
+        {
+            return $data[$key];
+        }
+
+        throw new \RuntimeException($key . ' is not defined in medatada');
+    }
+
+    /**
+     * Set a metaData value in the property
+     *
+     * @param  string  $key    The key for wich you want set the value
+     * @param  mixed   $value  The value for the id-key to save
+     *
+     * @return void
+     */
+    private function setMetaDataValue($key, $value): void
+    {
+        $data =& $this->getMetaData();
+        $key  = \strtolower($key);
+
+        if($key == 'size')
+        {
+          if($data['size'] === 0)
+          {
+            $data['size'] = $value;
+          }
+          
+          return;
+        }
+
+        $data[$key] = $value;
+    }
+
+    /**
+     * Check if $key exists in metaData property
      *
      * @param $key
      *
@@ -793,46 +883,58 @@ class Server implements ServerInterface
     }
 
     /**
-     * Get the session info
-     * 
-     * @return array
+     * Parse the Tus Upload-Metadata header
+     *
+     * @param  string   $header   Upload-Metadata header string
+     *
+     * @return array    Associative array with all Upload-Metadata
      */
-    private function getMetaData(): array
+    private function parseMetaDataHeader($header)
     {
-        if($this->metaData === null)
-        {
-            $this->metaData = $this->readMetaData($this->getUserUuid());
-        }
+      $parts = explode(',', $header);
 
-        return $this->metaData;
+      if(\count($parts) <= 1)
+      {
+        // if only one metadata exists, it is the filename
+        return array('filename' => $header);
+      }
+
+      // multiple metadata submitted
+      $metadata = array();
+      foreach($parts as $part)
+      {
+        $pair = explode(' ', $part);
+        $metadata[\strtolower($pair[0])] = base64_decode($pair[1]);
+      }
+
+      return $metadata;
     }
 
     /**
-     * Reads or initialize metadata from file.
+     * Reads or initialize metaData from file.
      *
-     * @param string $name
+     * @param  string  $filename  The filname of the file
      *
      * @return array
      */
-    private function readMetaData($name): array
+    private function readMetaData($filename): array
     {
         $refData = [
-            'ID' => '',
-            'Size' => 0,
-            'Offset' => 0,
-            'Extension' => '',
-            'FileName' => '',
-            'MimeType' => '',
-            'IsPartial' => true,
-            'IsFinal' => false,
-            'PartialUploads' => null, // unused
+            'id' => '',
+            'size' => 0,
+            'offset' => 0,
+            'extension' => '',
+            'filename' => '',
+            'mimetype' => '',
+            'ispartial' => true,
+            'isfinal' => false,
         ];
 
-        $storageFileName = $this->directory . $name . '.info';
+        $file = $this->directory . $filename . '.info';
 
-        if(file_exists($storageFileName))
+        if(file_exists($file))
         {
-            $json = file_get_contents($storageFileName);
+            $json = file_get_contents($file);
             $data = \json_decode($json, true);
 
             if(is_array($data))
@@ -845,31 +947,7 @@ class Server implements ServerInterface
     }
 
     /**
-     * Set a value in the session
-     *
-     * @param  string  $key    The key for wich you want set the value
-     * @param  mixed   $value  The value for the id-key to save
-     *
-     * @return void
-     * 
-     * @throws \Exception
-     */
-    private function setMetaDataValue($key, $value): void
-    {
-        $data = $this->getMetaData();
-
-        if(isset($data[$key]))
-        {
-            $data[$key] = $value;
-        }
-        else
-        {
-            throw new \RuntimeException($key . ' is not defined in medatada');
-        }
-    }
-
-    /**
-     * Saves metadata about uploaded file.
+     * Saves metadata to file.
      * Metadata are saved into a file with name mask 'uuid'.info
      *
      * @param  int   $size
@@ -881,56 +959,48 @@ class Server implements ServerInterface
      */
     private function saveMetaData(int $size, int $offset = 0, bool $isFinal = false, bool $isPartial = false): void
     {
-        $this->setMetaDataValue('ID', $this->getUserUuid());
-        $this->metaData['ID'] = $this->getUserUuid();
-        $this->metaData['Offset'] = $offset;
-        $this->metaData['IsPartial'] = $isPartial;
-        $this->metaData['IsFinal'] = $isFinal;
+        $this->setMetaDataValue('id', $this->getUserUuid());
+        $this->setMetaDataValue('offset', $offset);
+        $this->setMetaDataValue('ispartial', $isPartial);
+        $this->setMetaDataValue('isfinal', $isFinal);
+        $this->setMetaDataValue('size', $size);
 
-        if($this->metaData['Size'] === 0)
-        {
-            $this->metaData['Size'] = $size;
-        }
 
-        if(empty($this->metaData['FileName']))
+        if(empty($this->metaData['filename']))
         {
-            $this->metaData['FileName'] = $this->getRealFileName();
             $info = new \SplFileInfo($this->getRealFileName());
-            $ext = $info->getExtension();
-            $this->metaData['Extension'] = $ext;
+            $this->setMetaDataValue('filename', $this->getRealFileName());
+            $this->setMetaDataValue('extension', $info->getExtension());
         }
 
         if($isFinal)
         {
             if(!$this->fileType)
             {
-                $this->fileType = FileToolsService::detectMimeType(
-                    $this->directory . $this->getUserUuid(),
-                    $this->getRealFileName()
-                );
+                $this->fileType = FileToolsService::detectMimeType($this->directory.$this->getUserUuid(), $this->getRealFileName());
             }
-            $this->metaData['MimeType'] = $this->fileType;
+            $this->setMetaDataValue('mimetype', $this->fileType);
         }
 
-        $json = \json_encode($this->metaData);
+        $json = \json_encode($this->getMetaData());
 
         file_put_contents($this->directory . $this->getUserUuid() . '.info', $json);
     }
 
     /**
-     * Remove selected $id from database
+     * Delets a metaData file
      *
-     * @param string $id The id to test
+     * @param  string  $filename  The filname of the file
      *
-     * @return bool
+     * @return bool    True on success, false otherwise
      */
-    private function removeFromMetaData($id): bool
+    private function deleteMetaData($filename): bool
     {
-        $storageFileName = $this->directory . $id . '.info';
+        $file = $this->directory . $filename . '.info';
 
-        if (file_exists($storageFileName) && is_writable($storageFileName))
+        if(file_exists($file) && is_writable($file))
         {
-            unset($storageFileName);
+            unset($file);
             return true;
         }
 
@@ -938,79 +1008,21 @@ class Server implements ServerInterface
     }
 
     /**
-     * Get a metadata value from session
+     * Set realFileName and fileType from metaData
      *
-     * @param string $key The key for wich you want value
-     *
-     * @return mixed The value for the id-key
-     * 
-     * @throws \Exception key is not defined in medatada
+     * @return void
      */
-    private function getMetaDataValue($key)
+    private function setRealFileName()
     {
-        $data = $this->getMetaData();
-        if (isset($data[$key]))
+        if($this->existsInMetaData('filename'))
         {
-            return $data[$key];
+          $this->realFileName = $this->getMetaDataValue('filename');
         }
 
-        throw new \RuntimeException($key . ' is not defined in medatada');
-    }
-
-    /**
-     * Parse Upload-Metadata header
-     *
-     * @param  string   $metadata   Upload-Metadata header string
-     *
-     * @return array    Associative array with all Upload-Metadata
-     */
-    private function parseUploadMetadata($metadata)
-    {
-      $parts = explode(',', $metadata);
-
-      if(\count($parts) <= 1)
-      {
-        // if only one metadata exists, it is the filename
-        return array('filename' => $metadata);
-      }
-
-      // multiple metadata submitted
-      $metadata = array();
-      foreach($parts as $part)
-      {
-        $pair = explode(' ', $part);
-        $metadata[$pair[0]] = base64_decode($pair[1]);
-      }
-
-      return $metadata;
-    }
-
-    /**
-     * Sets real file name
-     *
-     * @param  string  $value   plain or base64 encoded file name
-     *
-     * @return Server  object
-     */
-    private function setRealFileName($value): Server
-    {
-        $parts = explode(',', $value);
-
-        foreach ($parts as $part) {
-            if (($namePos = strpos($part, 'filename ')) !== false) {
-                $value = substr($part, $namePos + 9); // 9 - length of 'filename '
-                $this->realFileName = base64_decode($value);
-            }
-            elseif(($namePos = strpos($part, 'filetype ')) !== false) {
-                $value = substr($part, $namePos + 9); // 9 - length of 'filetype '
-                $this->fileType = base64_decode($value);
-            }
-            else {
-                $this->realFileName = $value;
-            }
+        if($this->existsInMetaData('filetype'))
+        {
+          $this->fileType = $this->getMetaDataValue('filetype');
         }
-
-        return $this;
     }
 
     /**
