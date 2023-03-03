@@ -285,7 +285,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $file = Path::clean($file);
 
     // Set output quality
-    $this->commands['quality'] = ' -quality "'.$this->dst_imginfo['quality'].'"';
+    $this->commands['quality'] = ' -quality "'.$quality.'"';
 
     // Rotate image, if needed (use auto-orient command)
     if($this->auto_orient)
@@ -931,7 +931,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$output)
     {
       // Get supported types of ImageMagick v6.x
-      @\exec(\trim($this->impath).'convert -version', $output);
+      @\exec(\trim($this->impath).'convert -list format', $output);
     }
 
     if(!$output)

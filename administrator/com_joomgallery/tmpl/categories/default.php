@@ -52,6 +52,12 @@ if($saveOrder && !empty($this->items))
 		<div class="col-md-12">
 			<div id="j-main-container" class="j-main-container">
 				<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
+        <?php if (empty($this->items)) : ?>
+          <div class="alert alert-info">
+            <span class="icon-info-circle" aria-hidden="true"></span><span class="visually-hidden"><?php echo Text::_('INFO'); ?></span>
+            <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+          </div>
+        <?php else : ?>
 				<div class="clearfix"></div>
         <div class="table-responsive">
           <table class="table table-striped" id="categoryList">
@@ -252,6 +258,7 @@ if($saveOrder && !empty($this->items))
             </tbody>
           </table>
         </div>
+        <?php endif; ?>
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
         <input type="hidden" id="del_force" name="del_force" value="0"/>
