@@ -14,10 +14,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\Component\ComponentHelper;
-use \Joomla\CMS\User\UserHelper;
+use \Joomla\CMS\Object\CMSObject;
+use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Configuration Class
@@ -27,15 +28,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterf
  * @package JoomGallery
  * @since   1.5.5
  */
-class Config implements ConfigInterface
+abstract class Config implements ConfigInterface
 {
-  /**
-   * Determines whether extended configuration
-   * manager is enabled
-   *
-   * @var boolean
-   */
-  protected $extended = false;
+  use ServiceTrait;
 
   /**
    * Array with key values of subforms
@@ -45,63 +40,89 @@ class Config implements ConfigInterface
   protected $subforms = array('jg_replaceinfo', 'jg_staticprocessing', 'jg_dynamicprocessing', 'jg_imgtypewtmsettings');
 
   /**
-   * Table object of the `#_joomgallery_configs` db table
+   * Content for which the settings has to be calculated
    *
-   * @var \Joomla\CMS\Table\Table
+   * @var string
    */
-  protected $table = null;
+  protected $context = 'com_joomgallery';
 
   /**
-   * Constructor
+   * IDs of the different content
    *
-   * @param   int  $id  row id of the config record to be loaded
+   * @var array
+   */
+  protected $ids = array('user' => null, 'category' => null, 'image' => null, 'menu' => null);
+
+  /**
+   * Loading the calculated settings for a specific content
+   * to class properties
+   *
+   * @param   string   $context   Context of the content (default: com_joomgallery)
+   * @param   int      $id        ID of the content if needed (default: null)
    *
    * @return  void
    *
-   * @since   4.0.0
+   * @since   4.0.0 
    */
-  public function __construct($id = 1)
+  public function __construct($context = 'com_joomgallery', $id = null)
   {
-    if(ComponentHelper::getParams(_JOOM_OPTION)->get('extended_config', 0))
+    // Load component
+    $this->getComponent();
+
+    // Check context
+    $context_array = \explode('.', $context);
+
+    if( $context_array[0] != 'com_joomgallery' || 
+        (\count($context_array) > 1 && !\array_key_exists($context_array[1], $this->ids)) || 
+        (\count($context_array) > 2 && $context_array[2] != 'id')
+      )
     {
-      $this->extended = true;
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
+
+      $this->context = false;
+    }
+    else
+    {
+      $this->context = $context;
     }
 
-    // get global configuration set
-    $glob_params = $this->getParamsByID($id);
-
-    if($glob_params == false || empty($glob_params))
+    // Completing $this->ids based on given context
+    if(\count($context_array) > 1)
     {
-      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_LOAD_CONFIG'), 'error');
+      switch($context_array[1])
+      {
+        case 'user':
+          $this->ids['user'] = (int) $id;
+          break;
 
-      return;
+        case 'category':
+          $this->ids['user']     = Factory::getUser()->get('id');
+          $this->ids['category'] = (int) $id;
+          break;
+
+        case 'image':
+          $img = JoomHelper::getRecord('image', $id);
+
+          $this->ids['user']     = Factory::getUser()->get('id');
+          $this->ids['image']    = (int) $id;
+          $this->ids['category'] = (int) $img->catid;
+          break;
+
+        case 'menu':
+          $this->ids['user'] = Factory::getUser()->get('id');
+          $this->ids['menu'] = (int) $id;
+          // TBD
+          // Depending on frontend views and router 
+          break;
+        
+        default:
+          $this->ids['user'] = Factory::getUser()->get('id');
+          break;
+      }
     }
-
-    // write config values to class properties
-    $this->setParamsToClass($glob_params);
-
-    // get user specific configuration set
-    $user_params = $this->getParamsByGroups();
-
-    // override class properties where needed
-    if($user_params != false && !empty($user_params))
+    else
     {
-      $this->setParamsToClass($user_params);
-    }
-
-    if(Factory::getApplication()->isClient('site'))
-    {
-      // get config values from current category
-
-      // override class properties where needed
-
-      // get config values from current image
-
-      // override class properties where needed
-
-      // get config values from current manuitem
-
-      // override class properties where needed
+      $this->ids['user'] = Factory::getUser()->get('id');
     }
   }
 
@@ -114,7 +135,7 @@ class Config implements ConfigInterface
 	 *
 	 * @since   4.0.0
 	 */
-	private function setParamsToClass($params)
+	protected function setParamsToClass($params)
 	{
     foreach($params as $key => $value)
     {
@@ -144,6 +165,19 @@ class Config implements ConfigInterface
           // set param to class property
           if(!isset($this->$key) || $value !== $this->$key)
           {
+            if($value == '-1')
+            {
+              continue;
+            }
+            elseif(\is_integer($value) || \is_bool($value) || $value === '1' || $value === '0')
+            {
+              $value = \intval($value);
+            }
+            elseif(\is_numeric($value))
+            {
+              $value = \floatval($value);
+            }
+
             $this->set($key, $value);
           }
         }
@@ -160,35 +194,32 @@ class Config implements ConfigInterface
 	 *
 	 * @since   4.0.0
 	 */
-	private function getParamsByID($id = 1)
+	protected function getParamsByID($id = 1)
 	{
-    if($this->table == null)
-    {
-      $this->table = Table::getInstance('ConfigTable', '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\');
-    }
+    $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
+    $model   = $com_obj->getMVCFactory()->createModel('Config');
 
-    $id     = intval($id);
+    $id   = intval($id);
+    $item = $model->getItem($id);
 
-    $this->table->load($id);
-    $params = $this->table->getProperties();
-    $this->table->reset();
-
-    return $params;
+    return $item->getProperties();
   }
 
   /**
 	 * Read out the row from `#_joomgallery_configs` table
    * with the biggest group_id number
-   * and correspond to the user group of the current user
+   * and correspond to the user group of the given user
 	 *
+   * @param   int    $id  id of the user
+   * 
 	 * @return  array  record values
 	 *
 	 * @since   4.0.0
 	 */
-  private function getParamsByGroups()
+  protected function getParamsByUser($id)
   {
     // get array of all user groups the current user is in
-    $user    = Factory::getUser();
+    $user    = Factory::getUser($id);
     $groups  = $user->get('groups');
 
     // get a db connection
@@ -215,111 +246,4 @@ class Config implements ConfigInterface
 
     return $params;
   }
-
-  /**
-	 * Sets a default value if not already assigned
-	 *
-	 * @param   string  $property  The name of the property.
-	 * @param   mixed   $default   The default value.
-	 *
-	 * @return  mixed
-	 *
-	 * @since   4.0.0
-	 */
-	public function def($property, $default = null)
-	{
-		$value = $this->get($property, $default);
-
-		return $this->set($property, $value);
-	}
-
-  /**
-	 * Returns a property of the object or the default value if the property is not set.
-	 *
-	 * @param   string  $property  The name of the property.
-	 * @param   mixed   $default   The default value.
-	 *
-	 * @return  mixed    The value of the property.
-	 *
-	 * @since   4.0.0
-	 */
-	public function get($property, $default = null)
-	{
-		if (isset($this->$property))
-		{
-			return $this->$property;
-		}
-
-		return $default;
-	}
-
-  /**
-	 * Returns an associative array of object properties.
-	 *
-	 * @param   boolean  $public  If true, returns only the public properties.
-	 *
-	 * @return  array
-	 *
-	 * @since   4.0.0
-	 */
-	public function getProperties($public = true)
-	{
-		$vars = get_object_vars($this);
-
-		if ($public)
-		{
-			foreach ($vars as $key => $value)
-			{
-				if ('_' == substr($key, 0, 1))
-				{
-					unset($vars[$key]);
-				}
-			}
-		}
-
-		return $vars;
-	}
-
-  /**
-	 * Modifies a property of the object, creating it if it does not already exist.
-	 *
-	 * @param   string  $property  The name of the property.
-	 * @param   mixed   $value     The value of the property to set.
-	 *
-	 * @return  mixed  Previous value of the property.
-	 *
-	 * @since   4.0.0
-	 */
-	public function set($property, $value = null)
-	{
-		$previous = $this->$property ?? null;
-		$this->$property = $value;
-
-		return $previous;
-	}
-
-  /**
-	 * Set the object properties based on a named array/hash.
-	 *
-	 * @param   mixed  $properties  Either an associative array or another object.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   1.7.0
-	 */
-	public function setProperties($properties)
-	{
-		if (\is_array($properties) || \is_object($properties))
-		{
-			foreach ((array) $properties as $k => $v)
-			{
-				// Use the set function which might be overridden.
-				$this->set($k, $v);
-			}
-
-			return true;
-		}
-
-		return false;
-	}
 }

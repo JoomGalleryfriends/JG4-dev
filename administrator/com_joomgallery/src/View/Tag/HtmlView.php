@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Tag;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Toolbar\ToolbarHelper;
+use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -69,6 +70,8 @@ class HtmlView extends JoomGalleryView
 	{
 		Factory::getApplication()->input->set('hidemainmenu', true);
 
+		$toolbar = Toolbar::getInstance('toolbar');
+
 		$user  = Factory::getUser();
 		$isNew = ($this->item->id == 0);
 
@@ -89,18 +92,30 @@ class HtmlView extends JoomGalleryView
 		if(!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
 		{
 			ToolbarHelper::apply('tag.apply', 'JTOOLBAR_APPLY');
-			ToolbarHelper::save('tag.save', 'JTOOLBAR_SAVE');
 		}
 
 		if(!$checkedOut && ($canDo->get('core.create')))
 		{
-			ToolbarHelper::custom('tag.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
-		}
+			$saveGroup = $toolbar->dropdownButton('save-group');
 
-		// If an existing item, can save to a copy.
-		if(!$isNew && $canDo->get('core.create'))
-		{
-			ToolbarHelper::custom('tag.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
+			$saveGroup->configure
+			(
+				function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew)
+				{
+					$childBar->save('tag.save', 'JTOOLBAR_SAVE');
+
+					if(!$checkedOut && ($canDo->get('core.create')))
+					{
+						$childBar->save2new('tag.save2new');
+					}
+
+					// If an existing item, can save to a copy.
+					if(!$isNew && $canDo->get('core.create'))
+					{
+						$childBar->save2copy('tag.save2copy');
+					}
+				}
+			);
 		}
 
 		if(empty($this->item->id))

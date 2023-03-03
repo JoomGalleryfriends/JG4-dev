@@ -646,7 +646,7 @@ class CategoryModel extends JoomAdminModel
       // Do any procesing on fields here if needed
     }
 
-    return $item;		
+    return $item;
 	}
 
 	/**
@@ -778,4 +778,213 @@ class CategoryModel extends JoomAdminModel
 
 		parent::preprocessForm($form, $data, $group);
 	}
+
+  /**
+   * Get children categories.
+   * 
+   * @param   integer  $pk     The id of the primary key.
+   * @param   bool     $self   Include current node id (default: false)
+   *
+   * @return  mixed    An array of categories or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getChildren($pk = null, $self = false)
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = intval($this->item->id);
+    }
+
+    $table = $this->getTable();
+    if($table->load($pk) === false)
+    {
+      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+
+      return false;
+    }
+
+    // add root category
+    $root = false;
+    if($pk == 1 && $self)
+    {
+      $root = true;
+    }
+
+    $children = $table->getNodeTree('children', $self, $root);
+    if(!$children)
+    {
+      $this->setError($table->getError());
+
+      return false;
+    }
+    
+    return $children;
+  }
+
+  /**
+   * Get parent categories.
+   * 
+   * @param   integer  $pk     The id of the primary key.
+   * @param   bool     $self   Include current node id (default: false)
+   * @param   bool     $root   Include root node (default: false)
+   *
+   * @return  mixed    An array of categories or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getParents($pk = null, $self = false, $root = false)
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = intval($this->item->id);
+    }
+
+    $table = $this->getTable();
+    if($table->load($pk) === false)
+    {
+      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+
+      return false;
+    }
+
+    $parents = $table->getNodeTree('parents', $self, $root);
+    if(!$parents)
+    {
+      $this->setError($table->getError());
+
+      return false;
+    }
+    
+    return $parents;
+  }
+
+  /**
+   * Get category tree
+   * 
+   * @param   integer  $pk     The id of the primary key.
+   * @param   bool     $self   Include current node id (default: false)
+   * @param   bool     $root   Include root node (default: false)
+   *
+   * @return  mixed    An array of categories or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getTree($pk = null, $root = false)
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = intval($this->item->id);
+    }
+
+    $table = $this->getTable();
+    if($table->load($pk) === false)
+    {
+      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+
+      return false;
+    }
+
+    $tree = $table->getNodeTree('cpl', true, $root);
+    if(!$tree)
+    {
+      $this->setError($table->getError());
+
+      return false;
+    }
+    
+    return $tree;
+  }
+
+  /**
+   * Get direct left or right sibling (adjacent) of the category.
+   * 
+   * @param   integer  $pk    The id of the primary key.
+   * @param   string   $side  Left or right side ribling. 
+   *
+   * @return  mixed    List of sibling or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getSibling($pk, $side)
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = intval($this->item->id);
+    }
+
+    $table = $this->getTable();
+    if($table->load($pk) === false)
+    {
+      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+
+      return false;
+    }
+    
+    $sibling = $table->getSibling($side, true);
+
+    if(!$sibling)
+    {
+      $this->setError($table->getError());
+
+      return false;
+    }
+    
+    return $sibling;
+  }
+
+  /**
+   * Get all left and/or right siblings (adjacent) of the category.
+   * 
+   * @param   integer  $pk    The id of the primary key.
+   * @param   string   $side  Left, right or both sides siblings.
+   *
+   * @return  mixed    List of siblings or false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function getSiblings($pk, $side)
+  {
+    $parent_id = null;
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk        = intval($this->item->id);
+      $parent_id = intval($this->item->parent_id);
+    }
+
+    // Load catgory table
+    $table = $this->getTable();
+    if($table->load($pk) === false)
+    {
+      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+
+      return false;
+    }
+
+    if(\is_null($parent_id))
+    {
+      $parent_id = intval($table->parent_id);
+    }
+
+    // Load parent table
+    $ptable = $this->getTable();
+    if($ptable->load($parent_id) === false)
+    {
+      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $parent_id));
+
+      return false;
+    }
+    
+    $sibling = $table->getSibling($side, false, $ptable);
+
+    if(!$sibling)
+    {
+      $this->setError($table->getError());
+
+      return false;
+    }
+    
+    return $sibling;
+  }
+
 }
