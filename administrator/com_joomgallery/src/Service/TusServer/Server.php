@@ -319,7 +319,7 @@ class Server implements ServerInterface
           throw new Request('Request Entity Too Large', 413);
         }
 
-        $this->setMetaData($this->parseMetaDataHeader($headers['Upload-Metadata']));
+        $this->setMetaData($this->parseMetaDataHeader($headers['Upload-Metadata']), false);
         $this->setRealFileName();
 
         $file = $this->directory . $this->getFilename();
@@ -404,7 +404,7 @@ class Server implements ServerInterface
     private function processPatch()
     {
         // Check the uuid
-        if ($this->existsInMetaData('id') === false)
+        if($this->existsInMetaData('id') === false)
         {
             throw new \RuntimeException('The UUID doesn\'t exists');
         }
@@ -809,7 +809,6 @@ class Server implements ServerInterface
       foreach($metadata as $key => $value)
       {
         $metadata[\strtolower($key)] = $value;
-        unset($metadata[$key]);
       }
 
       if($replace)
@@ -818,7 +817,7 @@ class Server implements ServerInterface
       }
       else
       {
-        \array_merge($this->metaData, $metadata);
+        $this->metaData = \array_merge($this->metaData, $metadata);
       }
     }
 
@@ -833,7 +832,7 @@ class Server implements ServerInterface
      */
     private function getMetaDataValue($key)
     {
-        $data =& $this->getMetaData();
+        $data = $this->getMetaData();
         if(isset($data[$key]))
         {
             return $data[$key];
@@ -852,7 +851,7 @@ class Server implements ServerInterface
      */
     private function setMetaDataValue($key, $value): void
     {
-        $data =& $this->getMetaData();
+        $data = $this->getMetaData();
         $key  = \strtolower($key);
 
         if($key == 'size')
@@ -866,6 +865,7 @@ class Server implements ServerInterface
         }
 
         $data[$key] = $value;
+        $this->metaData = $data;
     }
 
     /**
@@ -932,14 +932,14 @@ class Server implements ServerInterface
 
         $file = $this->directory . $filename . '.info';
 
-        if(file_exists($file))
+        if(\file_exists($file))
         {
-            $json = file_get_contents($file);
+            $json = \file_get_contents($file);
             $data = \json_decode($json, true);
 
-            if(is_array($data))
+            if(\is_array($data))
             {
-                return array_merge($refData, $data);
+                return \array_merge($refData, $data);
             }
         }
 
@@ -968,8 +968,12 @@ class Server implements ServerInterface
 
         if(empty($this->metaData['filename']))
         {
-            $info = new \SplFileInfo($this->getRealFileName());
             $this->setMetaDataValue('filename', $this->getRealFileName());
+        }
+
+        if(empty($this->metaData['extension']))
+        {
+            $info = new \SplFileInfo($this->getRealFileName());
             $this->setMetaDataValue('extension', $info->getExtension());
         }
 
