@@ -73,7 +73,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     autoProceed: false,
     restrictions: {
       maxFileSize: 262144000, // 250MB
-      allowedFileTypes: ['image/*', 'video/*'],
+      allowedFileTypes: ['image/*', 'video/*', 'audio/*', 'text/*', 'application/*'],
     }
   });
 
