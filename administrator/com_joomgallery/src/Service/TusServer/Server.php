@@ -860,11 +860,12 @@ class Server implements ServerInterface
           {
             $data['size'] = $value;
           }
-          
-          return;
         }
-
-        $data[$key] = $value;
+        else
+        {
+          $data[$key] = $value;
+        }
+        
         $this->metaData = $data;
     }
 
