@@ -72,8 +72,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
   let uppy = new Uppy({
     autoProceed: false,
     restrictions: {
-      maxFileSize: 10000000,
-      allowedFileTypes: ['image/*'],
+      maxFileSize: 262144000, // 250MB
+      allowedFileTypes: ['image/*', 'video/*'],
     }
   });
 
