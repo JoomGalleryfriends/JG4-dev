@@ -60,7 +60,7 @@ class Server implements ServerInterface
      * 
      * @var string
      */
-    private   $uuid;
+    private $uuid;
 
     /**
      * Directory to use for save the file
@@ -68,7 +68,7 @@ class Server implements ServerInterface
      * 
      * @var string
      */
-    private   $directory = '';
+    private $directory = '';
 
     /**
      * Location of the TUS server - URI to reach the TUS server without domain
@@ -138,7 +138,7 @@ class Server implements ServerInterface
      * 
      * @var string
      */
-    private   $realFileName = '';
+    private $realFileName = '';
 
     /**
      * Constructor
@@ -287,6 +287,31 @@ class Server implements ServerInterface
     }
 
     /**
+     * Loads an upload into the object
+     *
+     * @param   string  $uuid  The uuid of the upload to load
+     * 
+     * @return  bool    True on success, false otherwise
+     */
+    public function loadUpload(string $uuid=null): bool
+    {
+      $this->uuid = $uuid;
+      $this->getUserUuid();
+
+      // Load the metadata and check for the uuid
+      if($this->existsInMetaData('id') === false)
+      {
+          return false;
+      }
+
+      $this->setRealFileName();
+
+      return true;
+    }
+
+
+
+    /**
      * Process the POST request
      * 
      * @link https://tus.io/protocols/resumable-upload.html#post
@@ -374,10 +399,10 @@ class Server implements ServerInterface
             return;
         }
 
-        $offset  = $this->getMetaDataValue('offset');
+        $offset  = $this->getMetaDataValue('offset', true);
         $this->addHeaderLine('Upload-Offset', $offset);
 
-        $length = $this->getMetaDataValue('size');
+        $length = $this->getMetaDataValue('size', true);
         $this->addHeaderLine('Upload-Length', $length);
 
         $this->addHeaderLine('Cache-Control', 'no-store');
@@ -432,9 +457,9 @@ class Server implements ServerInterface
         // Length of data of the current PATCH request
         $contentLength = isset($headers['Content-Length']) ? (int)$headers['Content-Length'] : null;
         // Last offset, taken from session
-        $offsetSession = (int)$this->getMetaDataValue('offset');
+        $offsetSession = (int)$this->getMetaDataValue('offset', true);
         // Total length of file (expected data)
-        $lengthSession = (int)$this->getMetaDataValue('size');
+        $lengthSession = (int)$this->getMetaDataValue('size', true);
 
         $this->setRealFileName();
 
@@ -630,7 +655,7 @@ class Server implements ServerInterface
             throw new Request('The file ' . $this->uuid . ' has no metadata', 500);
         }
 
-        $fileName = $this->getMetaDataValue('filename');
+        $fileName = $this->getMetaDataValue('filename', true);
 
         if ($this->debugMode)
         {
@@ -762,8 +787,6 @@ class Server implements ServerInterface
     {
         if($this->uuid === null)
         {
-            // $path = Uri::current();
-            // $uuid = substr($path, strrpos($path, '/') + 1);
             $uuid = $this->app->input->get('uuid', '', 'string');
 
             if(strlen($uuid) === 32 && preg_match('/[a-z0-9]/', $uuid))
@@ -824,13 +847,14 @@ class Server implements ServerInterface
     /**
      * Get a metaData value from property
      *
-     * @param string $key The key for wich you want value
+     * @param string $key    The key for wich you want value
+     * @param bool   $throw  True if exception should be thrown
      *
-     * @return mixed The value for the id-key
+     * @return mixed The value for the id-key, false on failure
      * 
      * @throws \Exception key is not defined in medatada
      */
-    private function getMetaDataValue($key)
+    public function getMetaDataValue($key, $throw=false)
     {
         $data = $this->getMetaData();
         if(isset($data[$key]))
@@ -838,7 +862,14 @@ class Server implements ServerInterface
             return $data[$key];
         }
 
-        throw new \RuntimeException($key . ' is not defined in medatada');
+        if($throw)
+        {
+          throw new \RuntimeException($key . ' is not defined in medatada');
+        }
+        else
+        {
+          return false;
+        }        
     }
 
     /**
@@ -1021,12 +1052,12 @@ class Server implements ServerInterface
     {
         if($this->existsInMetaData('filename'))
         {
-          $this->realFileName = $this->getMetaDataValue('filename');
+          $this->realFileName = $this->getMetaDataValue('filename', true);
         }
 
         if($this->existsInMetaData('filetype'))
         {
-          $this->fileType = $this->getMetaDataValue('filetype');
+          $this->fileType = $this->getMetaDataValue('filetype', true);
         }
     }
 

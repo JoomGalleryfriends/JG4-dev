@@ -112,7 +112,7 @@ trait ResponseTrait
    *
    * @return  ResponseInterface The response object
    */
-  public function getResponse(): ResponseInterface
+  private function getResponse(): ResponseInterface
   {
     return $this->app->response;
   }

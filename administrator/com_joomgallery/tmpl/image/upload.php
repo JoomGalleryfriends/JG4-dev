@@ -155,7 +155,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
       // Add Popup
       let div = document.createElement('div');
-      div.innerHTML = createPopup(uuid, 'File-Upload of file "'+res.name+'" using Uppy successful.<br />Debug-Info will be added here...');
+      div.innerHTML = createPopup(uuid, 'Upload of file "'+res.name+'" using Uppy successful.<br />Upload-ID: '+uuid+'<br />Debug-Info will be added here...');
       document.getElementById('popup-area').appendChild(div);
 
       new bootstrap.Modal(document.getElementById('modal'+uuid));

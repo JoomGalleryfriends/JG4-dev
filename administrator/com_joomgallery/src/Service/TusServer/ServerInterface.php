@@ -44,18 +44,13 @@ interface ServerInterface
   public function process(bool $send = false);
 
   /**
-   * Get the PSR-7 Response Object. 
+   * Loads an upload into the object
    *
-   * @return  Response The response object
-   */
-  public function getResponse(): ResponseInterface;
-
-  /**
-   * Get the location (uri) of the TUS server
+   * @param   string  $uuid  The uuid of the upload to load
    * 
-   * @return string
+   * @return  bool    True on success, false otherwise
    */
-  public function getLocation(): string;
+  public function loadUpload(string $uuid=null): bool;
 
   /**
    * Sets upload size limit
@@ -84,11 +79,29 @@ interface ServerInterface
    */
   public function setAccessControlHeader(string $domain);
 
-  
+  /**
+   * Get the location (uri) of the TUS server
+   * 
+   * @return string
+   */
+  public function getLocation(): string;
+
   /**
    * Get real name of transfered file
    *
    * @return string  Real name of file
    */
   public function getRealFileName(): string;
+
+  /**
+   * Get a metaData value from property
+   *
+   * @param string $key    The key for wich you want value
+   * @param bool   $throw  True if exception should be thrown
+   *
+   * @return mixed The value for the id-key, false on failure
+   * 
+   * @throws \Exception key is not defined in medatada
+   */
+  public function getMetaDataValue($key, $throw=false);
 }
