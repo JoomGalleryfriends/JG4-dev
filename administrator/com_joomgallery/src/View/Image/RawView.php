@@ -77,6 +77,9 @@ class RawView extends JoomGalleryView
       case 3:
         $mime = 'image/png';
         break;
+      case 18:
+        $mime = 'image/webp';
+        break;
       default:
         $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_COMMON_MSG_MIME_NOT_ALLOWED', $info[2]), 'error');
         $this->app->redirect(Route::_('index.php', false), 404);
