@@ -23,12 +23,11 @@ use \Joomla\CMS\Factory;
 trait ServiceTrait
 {
   /**
-   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
-   *
-   * @access  protected
-   * @var     object
+   * JoomGallery extension class
+   * 
+   * @var Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
    */
-  var $component;
+  protected $jg = null;
 
   /**
 	 * Sets a default value if not already assigned
