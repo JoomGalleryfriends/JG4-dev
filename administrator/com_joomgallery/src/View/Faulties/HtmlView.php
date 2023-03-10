@@ -59,6 +59,13 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
+		$this->component->createMessenger('mail');
+		$msg = $this->component->getMessenger();
+		$msg->selectTemplate('com_joomgallery.newimage');
+    $msg->addTemplateData(array('user' => 'Manuel', 'title' => 'MyImage', 'category' => 'MyCategory'));
+    //$msg->selectLanguage('de-DE');
+    $msg->send(821);
+
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();

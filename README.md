@@ -72,12 +72,12 @@ https://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html
 
 | Taks area | Description |
 | ----------- | ----------- |
-| PHP Devloper | Programming the functionalities of the JoomGallery (Framework, MVC pattern, Services, Helpers, ...) |
-| Frontend Designer | Creating the template files for the component views in the frontend (Template: Cassiopeia) |
-| Backend Designer | Creating the template files for the component views in the backend (Template: Atum) |
-| Language Manager | Setting up, structuring and managing the language files for frontend and backend. |
-| Documentation | Writing instructions for the support section of the website. |
-| Testing | Testing the new code before merging them into the main project. |
+| PHP Devloper (Backend)| Programming the backend functionalities of the JoomGallery (Framework, MVC pattern, Services, Helpers, ...) |
+| PHP Devloper (Frontend)| Programming the frontend functionalities of the JoomGallery (MVC pattern, Router, View-Objects ...)|
+| Frontend Designer | Creating the template files for the component views in the frontend (Template: Cassiopeia)|
+| Language Manager | Setting up, structuring and managing the language files for frontend and backend.|
+| Documentation | Writing instructions for the support section of the website.|
+| Testing | Testing the new code before merging them into the main project.|
 
 ## Testing
 1. Open the Pull request you want to test

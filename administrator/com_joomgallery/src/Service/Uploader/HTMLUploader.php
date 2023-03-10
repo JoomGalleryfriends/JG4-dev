@@ -252,7 +252,8 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     //   $this->jg->getMessenger()->send($message);
     // }
 
-    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE'));
+    $this->jg->addDebug(' ');
+    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE_END'));
     $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $data_row->filename));
 
     Factory::getApplication()->triggerEvent('onJoomAfterUpload', array($data_row));

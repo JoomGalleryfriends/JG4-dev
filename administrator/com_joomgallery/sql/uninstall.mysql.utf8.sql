@@ -12,3 +12,4 @@ DROP TABLE IF EXISTS `#__joomgallery_votes`;
 
 DELETE FROM `#__assets` WHERE (name LIKE 'com_joomgallery%');
 DELETE FROM `#__content_types` WHERE (type_alias LIKE 'com_joomgallery%');
+DELETE FROM `#__mail_templates` WHERE (extension LIKE 'com_joomgallery%');
