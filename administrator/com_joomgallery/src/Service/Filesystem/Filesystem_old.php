@@ -16,10 +16,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
-
-use \Joomla\Component\Media\Administrator\Model\ApiModel;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\FilesystemInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -29,67 +26,14 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 *
 * @since  4.0.0
 */
-class Filesystem extends ApiModel implements FilesystemInterface
+abstract class Filesystem implements FilesystemInterface
 {
-  use ServiceTrait;
-
-  /**
-   * The adapter name.
-   * Scheme: adapter-rootfolder
-   *
-   * @var   string
-   * @since  4.0.0
-   */
-  protected $filesystem = 'local-images';
-
-  /**
-   * The available extensions.
-   *
-   * @var   string[]
-   * @since  4.0.0
-   */
-  private $allowedExtensions = null;
-
   /**
    * Root folder of the local filesystem
    *
    * @var string
    */
   protected $local_root = JPATH_ROOT;
-
-  /**
-   * Constructor
-   *
-   * @param  string  $filesystem  Name of the filesystem to use
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-   */
-  public function __construct(string $filesystem='')
-  {
-    parent::__construct();
-    
-    if($filesystem != '')
-    {
-      $this->filesystem = $filesystem;
-    }
-  }
-
-  /**
-   * Function to strip additional / or \ in a path name.
-   *
-   * @param   string  $path   The path to clean
-   * @param   string  $ds     Directory separator (optional)
-   *
-   * @return  string  The cleaned path
-   *
-   * @since   4.0.0
-   */
-  public function cleanPath($path, $ds=\DIRECTORY_SEPARATOR): string
-  {
-    return JPath::clean($path, $ds);
-  }
 
   /**
    * Cleaning of file/category name
@@ -324,117 +268,109 @@ class Filesystem extends ApiModel implements FilesystemInterface
   }
 
   /**
-   * Sets the permission of a given file or folder recursively.
-   *
-   * @param   string  $path      The path to the file/folder
-   * @param   string  $val       The octal representation of the value to change file/folder mode
-   * @param   bool    $mode      True to use file mode. False to use folder mode. (default: true)
-   *
-   * @return  bool    True if successful [one fail means the whole operation failed].
-   *
-   * @since   4.0.0
-   */
-  public function chmod($path, $val, $mode=true): bool
-  {
-    // complete folder path
-    $path = $this->completePath($path);
+	 * Sets a default value if not already assigned
+	 *
+	 * @param   string  $property  The name of the property.
+	 * @param   mixed   $default   The default value.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   4.0.0
+	 */
+	public function def($property, $default = null)
+	{
+		$value = $this->get($property, $default);
 
-    if($mode)
-    {
-      return JPath::setPermissions(JPath::clean($path), $val, null);
-    }
-    else
-    {
-      return JPath::setPermissions(JPath::clean($path), null, $val);
-    }
-  }
+		return $this->set($property, $value);
+	}
 
   /**
-   * Checks if the given path is an allowed file.
-   *
-   * @param   string  $path  The path to file
-   *
-   * @return boolean
-   *
-   * @since   4.0.0
-   */
-  private function isMediaFile($path)
-  {
-      // Check if there is an extension available
-      if(!strrpos($path, '.'))
-      {
-          return false;
-      }
+	 * Returns a property of the object or the default value if the property is not set.
+	 *
+	 * @param   string  $property  The name of the property.
+	 * @param   mixed   $default   The default value.
+	 *
+	 * @return  mixed    The value of the property.
+	 *
+	 * @since   4.0.0
+	 */
+	public function get($property, $default = null)
+	{
+		if (isset($this->$property))
+		{
+			return $this->$property;
+		}
 
-      // Initialize the allowed extensions
-      if ($this->allowedExtensions === null)
-      {
-          // Get options from the input or fallback to images only
-          $mediaTypes = [];
-          $types      = [];
-          $extensions = [];
-
-          // Default to showing all supported formats
-          if(count($mediaTypes) === 0)
-          {
-              $mediaTypes = ['0', '1', '2', '3'];
-          }
-
-          array_map(
-              function ($mediaType) use (&$types) {
-                  switch ($mediaType) {
-                      case '0':
-                          $types[] = 'images';
-                          break;
-                      case '1':
-                          $types[] = 'audios';
-                          break;
-                      case '2':
-                          $types[] = 'videos';
-                          break;
-                      case '3':
-                          $types[] = 'documents';
-                          break;
-                      default:
-                          break;
-                  }
-              },
-              $mediaTypes
-          );
-
-          $images = array_map(
-              'trim',
-              explode(',',$this->component->getConfig()->get('jg_filetypes','jpg,jpeg,png,gif,webp'))
-          );
-
-          foreach($types as $type)
-          {
-              if(in_array($type, ['images', 'audios', 'videos', 'documents']))
-              {
-                  $extensions = array_merge($extensions, ${$type});
-              }
-          }
-
-          // Make them an array
-          $this->allowedExtensions = $extensions;
-      }
-
-      // Extract the extension
-      $extension = strtolower(substr($path, strrpos($path, '.') + 1));
-
-      // Check if the extension exists in the allowed extensions
-      return in_array($extension, $this->allowedExtensions);
-  }
+		return $default;
+	}
 
   /**
-   * Get the filesystem property.
-   *
-   * @return string  The filesystem
-   *
-   * @since   4.0.0
-   */
-  public function getFilesystem(): string
-  {
-    return $this->filesystem;
-  }
+	 * Returns an associative array of object properties.
+	 *
+	 * @param   boolean  $public  If true, returns only the public properties.
+	 *
+	 * @return  array
+	 *
+	 * @since   4.0.0
+	 */
+	public function getProperties($public = true)
+	{
+		$vars = get_object_vars($this);
+
+		if ($public)
+		{
+			foreach ($vars as $key => $value)
+			{
+				if ('_' == substr($key, 0, 1))
+				{
+					unset($vars[$key]);
+				}
+			}
+		}
+
+		return $vars;
+	}
+
+  /**
+	 * Modifies a property of the object, creating it if it does not already exist.
+	 *
+	 * @param   string  $property  The name of the property.
+	 * @param   mixed   $value     The value of the property to set.
+	 *
+	 * @return  mixed  Previous value of the property.
+	 *
+	 * @since   4.0.0
+	 */
+	public function set($property, $value = null)
+	{
+		$previous = $this->$property ?? null;
+		$this->$property = $value;
+
+		return $previous;
+	}
+
+  /**
+	 * Set the object properties based on a named array/hash.
+	 *
+	 * @param   mixed  $properties  Either an associative array or another object.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   1.7.0
+	 */
+	public function setProperties($properties)
+	{
+		if (\is_array($properties) || \is_object($properties))
+		{
+			foreach ((array) $properties as $k => $v)
+			{
+				// Use the set function which might be overridden.
+				$this->set($k, $v);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
 }

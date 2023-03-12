@@ -10,7 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
 /**
 * Interface for the filesystem classes
@@ -19,17 +19,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 */
 interface FilesystemInterface
 {
-	/**
-   * Constructor enables the connection to the filesystem
-   * in which the images should be stored
-   *
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-   */
-  public function __construct();
-
   /**
    * Function to strip additional / or \ in a path name.
    *
@@ -39,77 +28,9 @@ interface FilesystemInterface
    * @return  string  The cleaned path
    *
    * @since   4.0.0
+   * @throws  \Exception
    */
-  public function cleanPath($path, $ds=\DIRECTORY_SEPARATOR): string;
-
-  /**
-   * Moves a file from local folder to storage
-   *
-   * @param   string  $src   File name at local folder
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function uploadFile($src): bool;
-
-  /**
-   * Moves a file from the storage to a local folder
-   *
-   * @param   string  $dest  File name at local folder
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function downloadFile($dest): bool;
-
-  /**
-   * Moves a file at the storage filesystem
-   *
-   * @param   string  $src   Source file name
-   * @param   string  $dest  Destination file name
-   * @param   bool    $copy  True, if you want to copy the file (default: false)
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function moveFile($src, $dest, $copy = false): bool;
-
-  /**
-   * Delete a file or array of files
-   *
-   * @param   mixed  $file   The file name or an array of file names
-   *
-   * @return  bool   true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function deleteFile($file): bool;
-
-  /**
-   * Rename a file.
-   *
-   * @param   string  $file      The file name.
-   * @param   string  $newName   The new name of the file.
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function renameFile($file, $newName): bool;
-
-  /**
-   * Checks a file for existence, validity and size
-   *
-   * @param   string  $file  The file name
-   *
-   * @return  mixed   file size on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function checkFile($file);
+  public function cleanPath(string $path, string $ds=\DIRECTORY_SEPARATOR): string;
 
   /**
    * Check filename if it's valid for the filesystem
@@ -118,11 +39,12 @@ interface FilesystemInterface
    * @param   string    $namea          filename after processing in e.g. fixFilename
    * @param   bool      $checkspecial   True if the filename shall be checked for special characters only
    *
-   * @return  bool      True if the filename is valid, false otherwise
+   * @return  string    Filename on success
    *
    * @since   2.0.0
+   * @throws  \Exception
   */
-  public function checkFilename($nameb, $namea = '', $checkspecial = false): bool;
+  public function checkFilename(string $nameb, string $namea = '', bool $checkspecial = false): string;
 
   /**
    * Cleaning of file/category name
@@ -133,73 +55,12 @@ interface FilesystemInterface
    * @param   bool      $strip_ext       True for stripping the extension
    * @param   string    $replace_chars   Characters to be replaced
    *
-   * @return  mixed     cleaned name on success, false otherwise
+   * @return  string    cleaned name
    *
    * @since   1.0.0
+   * @throws  \Exception
    */
-  public function cleanFilename($file, $strip_ext=false, $replace_chars='');
-
-  /**
-   * Create a folder and all necessary parent folders (local and storage).
-   *
-   * @param   string  $path   A path to create from the base path.
-   * @param   bool    $index  True to create an index.html file (default: false)
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function createFolder($path, $index=false): bool;
-
-  /**
-   * Moves a folder including all all files and subfolders (local and storage).
-   *
-   * @param   string  $src    The path to the source folder.
-   * @param   string  $dest   The path to the destination folder.
-   * @param   bool    $copy   True, if you want to copy the folder (default: false)
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function moveFolder($src, $dest, $copy = false): bool;
-
-  /**
-   * Delete a folder including all files and subfolders (local and storage).
-   *
-   * @param   string  $path   The path to the folder to delete.
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function deleteFolder($path): bool;
-
-  /**
-   * Rename a folder.
-   *
-   * @param   string  $path      The path to the folder to rename.
-   * @param   string  $newName   The new name of the folder.
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function renameFolder($path, $newName): bool;
-
-  /**
-   * Checks a folder for existence (local and storage).
-   *
-   * @param   string  $path      The path to the folder to check.
-   * @param   bool    $files     True to return a list of files in the folder
-   * @param   bool    $folders   True to return a list of subfolders of the folder
-   * @param   int     $maxLevel  The maximum number of levels to recursively read (default: 3).
-   *
-   * @return  mixed   Array with files and folders on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3);
+  public function cleanFilename(string $file, bool $strip_ext=false, string $replace_chars=''): string;
 
   /**
    * Sets the permission of a given file or folder recursively.
@@ -208,20 +69,214 @@ interface FilesystemInterface
    * @param   string  $val       The octal representation of the value to change file/folder mode
    * @param   bool    $mode      True to use file mode. False to use folder mode. (default: true)
    *
-   * @return  bool    True if successful [one fail means the whole operation failed].
+   * @return  void
    *
    * @since   4.0.0
+   * @throws  \Exception
    */
-  public function chmod($path, $val, $mode=true): bool;
+  public function chmod(string $path, string $val, bool $mode=true);
 
   /**
    * Copies an index.html file into a specified folder
    *
    * @param   string   $path    The path where the index.html should be created
    * 
-   * @return  bool     True on success, false otherwise
+   * @return  string
    * 
    * @since   4.0.0
+   * @throws  \Exception
    */
-  public function createIndexHtml($path): bool;
+  public function createIndexHtml(string $path): string;
+
+  /**
+     * Returns the requested file or folder. The returned object
+     * has the following properties available:
+     * - type:          The type can be file or dir
+     * - name:          The name of the file
+     * - path:          The relative path to the root
+     * - extension:     The file extension
+     * - size:          The size of the file
+     * - create_date:   The date created
+     * - modified_date: The date modified
+     * - mime_type:     The mime type
+     * - width:         The width, when available
+     * - height:        The height, when available
+     *
+     * If the path doesn't exist a FileNotFoundException is thrown.
+     *
+     * @param   string  $path  The path to the file or folder
+     *
+     * @return  \stdClass
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function getFile(string $path = '/'): \stdClass;
+
+    /**
+     * Returns the folders and files for the given path. The returned objects
+     * have the following properties available:
+     * - type:          The type can be file or dir
+     * - name:          The name of the file
+     * - path:          The relative path to the root
+     * - extension:     The file extension
+     * - size:          The size of the file
+     * - create_date:   The date created
+     * - modified_date: The date modified
+     * - mime_type:     The mime type
+     * - width:         The width, when available
+     * - height:        The height, when available
+     *
+     * If the path doesn't exist a FileNotFoundException is thrown.
+     *
+     * @param   string  $path  The folder
+     *
+     * @return  \stdClass[]
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function getFiles(string $path = '/'): array;
+
+    /**
+     * Returns a resource for the given path.
+     *
+     * @param   string  $path  The path
+     *
+     * @return  resource
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function getResource(string $path);
+
+    /**
+     * Creates a folder with the given name in the given path.
+     *
+     * It returns the new folder name. This allows the implementation
+     * classes to normalise the file name.
+     *
+     * @param   string  $name  The name
+     * @param   string  $path  The folder
+     *
+     * @return  string
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function createFolder(string $name, string $path): string;
+
+    /**
+     * Creates a file with the given name in the given path with the data.
+     *
+     * It returns the new file name. This allows the implementation
+     * classes to normalise the file name.
+     *
+     * @param   string  $name  The name
+     * @param   string  $path  The folder
+     * @param   string  $data  The data
+     *
+     * @return  string
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function createFile(string $name, string $path, $data): string;
+
+    /**
+     * Updates the file with the given name in the given path with the data.
+     *
+     * @param   string  $name  The name
+     * @param   string  $path  The folder
+     * @param   string  $data  The data
+     *
+     * @return  void
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function updateFile(string $name, string $path, $data);
+
+    /**
+     * Deletes the folder or file of the given path.
+     *
+     * @param   string  $path  The path to the file or folder
+     *
+     * @return  void
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function delete(string $path);
+
+    /**
+     * Moves a file or folder from source to destination.
+     *
+     * It returns the new destination path. This allows the implementation
+     * classes to normalise the file name.
+     *
+     * @param   string  $sourcePath       The source path
+     * @param   string  $destinationPath  The destination path
+     * @param   bool    $force            Force to overwrite
+     *
+     * @return  string
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function move(string $sourcePath, string $destinationPath, bool $force = false): string;
+
+    /**
+     * Copies a file or folder from source to destination.
+     *
+     * It returns the new destination path. This allows the implementation
+     * classes to normalise the file name.
+     *
+     * @param   string  $sourcePath       The source path
+     * @param   string  $destinationPath  The destination path
+     * @param   bool    $force            Force to overwrite
+     *
+     * @return  string
+     *
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    public function copy(string $sourcePath, string $destinationPath, bool $force = false): string;
+
+    /**
+     * Returns a public url for the given path. This function can be used by the cloud
+     * adapter to publish the media file and create a permanent publicly accessible
+     * url.
+     *
+     * @param   string  $path  The path to file
+     *
+     * @return  string
+     *
+     * @since   4.0.0
+     * @throws  \Joomla\Component\Media\Administrator\Exception\FileNotFoundException
+     */
+    public function getUrl(string $path): string;
+
+    /**
+     * Returns the name of the adapter.
+     * It will be shown in the Media Manager
+     *
+     * @return  string
+     *
+     * @since   4.0.0
+     */
+    public function getAdapterName(): string;
+
+    /**
+     * Search for a pattern in a given path
+     *
+     * @param   string  $path       The base path for the search
+     * @param   string  $needle     The path to file
+     * @param   bool    $recursive  Do a recursive search
+     *
+     * @return  \stdClass[]
+     *
+     * @since   4.0.0
+     */
+    public function search(string $path, string $needle, bool $recursive = false): array;
 }

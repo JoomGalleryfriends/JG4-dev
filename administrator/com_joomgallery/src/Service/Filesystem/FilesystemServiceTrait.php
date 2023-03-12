@@ -12,7 +12,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 
 \defined('JPATH_PLATFORM') or die;
 
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\LocalFilesystem;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\Filesystem;
 
 /**
 * Trait to implement FilesystemServiceInterface
@@ -56,7 +56,7 @@ trait FilesystemServiceTrait
     switch ($filesystem)
     {
       default:
-      $this->filesystem = new LocalFilesystem;
+      $this->filesystem = new Filesystem;
         break;
     }
 

@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `modified_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `jg_filesystem` VARCHAR(100) NOT NULL DEFAULT "",
+`jg_filetypes` VARCHAR(100) NOT NULL DEFAULT "jpg,jpeg,png,gif,webp",
 `jg_pathftpupload` VARCHAR(100) NOT NULL DEFAULT "administrator/components/com_joomgallery/temp/ftp_upload/",
 `jg_wmfile` VARCHAR(50) NOT NULL DEFAULT "media/joomgallery/images/watermark.png",
 `jg_use_real_paths` TINYINT(1) NOT NULL DEFAULT 0,
