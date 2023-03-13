@@ -17,7 +17,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 *
 * @since  4.0.0
 */
-interface FilesystemInterface
+interface FilesystemInterfaceOld
 {
 	/**
    * Constructor enables the connection to the filesystem

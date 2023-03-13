@@ -83,13 +83,13 @@
              description="COM_JOOMGALLERY_CONFIG_FILESYSTEM_LONG" >
         <option value="localhost">COM_JOOMGALLERY_CONFIG_FILESYSTEM_LOCALHOST</option>
       </field>
-      <field name="jg_filetypes"
+      <field name="jg_imagetypes"
              type="text"
              default="jpg,jpeg,png,gif,webp"
              global_only="true"
              sensitive="true"
-             label="COM_JOOMGALLERY_CONFIG_FILETYPES"
-             description="COM_JOOMGALLERY_CONFIG_FILETYPES_LONG" >
+             label="COM_JOOMGALLERY_CONFIG_IMAGETYPES"
+             description="COM_JOOMGALLERY_CONFIG_IMAGETYPES_LONG" >
       </field>
       <field name="jg_pathftpupload"
              type="text"

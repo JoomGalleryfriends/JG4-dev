@@ -32,7 +32,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  * @package JoomGallery
  * @since   4.0.0
  */
-class LocalFilesystem extends BaseFilesystem implements FilesystemInterface
+class LocalFilesystemOld extends BaseFilesystem implements FilesystemInterface
 {
   /**
    * Root folder of the local storage system

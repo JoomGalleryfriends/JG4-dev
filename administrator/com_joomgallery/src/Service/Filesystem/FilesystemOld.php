@@ -26,7 +26,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 *
 * @since  4.0.0
 */
-abstract class Filesystem implements FilesystemInterface
+abstract class FilesystemOld implements FilesystemInterface
 {
   /**
    * Root folder of the local filesystem
