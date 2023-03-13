@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Filesystem\File as JFile;
@@ -88,6 +89,9 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     {
       $this->filesystem = $filesystem;
     }
+
+    // Load language of com_media
+    Factory::getLanguage()->load('com_media', JPATH_ADMINISTRATOR);
   }
 
   /**
@@ -326,13 +330,33 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @return  string
    * 
    * @since   4.0.0
+   * @throws  \Exception
    */
   public function createIndexHtml(string $path): string
   {
+    $adapter = $this->getFilesystem();
+
+    list($service, $folder) = \explode('-', $adapter);
+
+    if($service !== 'local')
+    {
+      return '';
+    }
+
     // Content
     $html = '<html><body bgcolor="#FFFFFF"></body></html>';
 
-    return $this->createFile('index.html', $path, $html);
+    // File path
+    $file = JPath::clean($this->local_root.\DIRECTORY_SEPARATOR.$folder.$path.\DIRECTORY_SEPARATOR.'index.html');
+
+    if(\file_put_contents($file, $html))
+    {
+      return 'index.html';
+    }
+    else
+    {
+      throw new InvalidPathException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_FILE'));
+    }
   }
 
   /**
@@ -379,17 +403,24 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $adapter = $this->getFilesystem();
 
     // Add adapter prefix to the file returned
-    $file = $this->getAdapter($adapter)->getFile($path);
+    try
+    {
+      $file = $this->getAdapter($adapter)->getFile($path);
+    }
+    catch (FileNotFoundException $e)
+    {
+      throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
+    }
 
     // Check if it is an allowed file
     if($file->type == 'file' && !$this->isAllowedFile($file->path))
     {
-        throw new InvalidPathException();
+      throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
     if(isset($options['url']) && $options['url'] && $file->type == 'file')
     {
-        $file->url = $this->getUrl($adapter, $file->path);
+        $file->url = $this->getUrl($file->path);
     }
 
     if(isset($options['content']) && $options['content'] && $file->type == 'file')
@@ -432,7 +463,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     if(isset($options['search']) && $options['search'] != null)
     {
       // Do search
-      $files = $this->search($adapter, $options['search'], $path, $options['recursive']);
+      $files = $this->search($options['search'], $path, $options['recursive']);
     }
     else
     {
@@ -455,7 +486,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       // Check if we need more information
       if(isset($options['url']) && $options['url'] && $file->type == 'file')
       {
-        $file->url = $this->getUrl($adapter, $file->path);
+        $file->url = $this->getUrl($file->path);
       }
 
       if(isset($options['content']) && $options['content'] && $file->type == 'file')
@@ -558,7 +589,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     try
     {
-      $file = $this->getFile($adapter, $path . '/' . $name);
+      $file = $this->getFile($path . '/' . $name);
     }
     catch (FileNotFoundException $e)
     {
@@ -574,7 +605,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Check if it is an allowed file
     if(!$this->isAllowedFile($path . '/' . $name))
     {
-      throw new InvalidPathException();
+      throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
     $app               = Factory::getApplication();
@@ -625,7 +656,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Check if it is an allowed file
     if(!$this->isAllowedFile($path . '/' . $name))
     {
-      throw new InvalidPathException();
+      throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
     $app               = Factory::getApplication();
@@ -669,12 +700,12 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   {
     $adapter = $this->getFilesystem();
 
-    $file = $this->getFile($adapter, $path);
+    $file = $this->getFile($path);
 
     // Check if it is an allowed file
     if($file->type == 'file' && !$this->isAllowedFile($file->path))
     {
-      throw new InvalidPathException();
+      throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
     $type              = $file->type === 'file' ? 'file' : 'folder';
@@ -758,7 +789,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Check if it is an allowed file
     if(!$this->isAllowedFile($path))
     {
-      throw new InvalidPathException();
+      throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
     $url = $this->getAdapter($adapter)->getUrl($path);

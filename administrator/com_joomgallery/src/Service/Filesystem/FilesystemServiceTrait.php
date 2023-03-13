@@ -45,20 +45,15 @@ trait FilesystemServiceTrait
   /**
 	 * Creates the filesystem helper class
    *
-   * @param   string  $filesystem  Name of the filesystem to be used
+   * @param   string  $filesystem  Name of the filesystem adapter to be used
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createFilesystem($filesystem = 'localhost'): void
+	public function createFilesystem($filesystem = ''): void
 	{
-    switch ($filesystem)
-    {
-      default:
-      $this->filesystem = new Filesystem;
-        break;
-    }
+    $this->filesystem = new Filesystem($filesystem);
 
     return;
 	}

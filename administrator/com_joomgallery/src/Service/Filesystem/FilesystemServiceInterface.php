@@ -31,7 +31,7 @@ interface FilesystemServiceInterface
   /**
 	 * Creates the filesystem helper class
    *
-   * @param   string  $filesystem  Name of the filesystem to be used
+   * @param   string  $filesystem  Name of the filesystem adapter to be used
 	 *
    * @return  void
    *
