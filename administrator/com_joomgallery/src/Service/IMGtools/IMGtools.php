@@ -264,10 +264,10 @@ abstract class IMGtools implements IMGtoolsInterface
       }
     }
 
-    // Detect, if image is a transparent webp image
+    // Detect, if image is a transparent or animated webp image
     if($this->src_type == 'WEBP')
     {
-      // Detect, if webp has transparency
+      // Detect, if webp has transparency or animation
       if($is_stream)
       {
         $webptype = \ord(\substr($img, 25, 1));
@@ -287,6 +287,28 @@ abstract class IMGtools implements IMGtoolsInterface
           {
             $this->res_imginfo['transparency'] = true;
           }
+        }
+
+        // Detect, if webp has animation
+        $included = strpos($webptype, "ANIM");
+        if($included !== FALSE)
+        {
+          $this->res_imginfo['animation'] = true;
+        }
+        else
+        {
+          $included = strpos($webptype, "ANMF");
+          if($included !== FALSE)
+          {
+            $this->res_imginfo['animation'] = true;
+          }
+        }
+
+        if($this->res_imginfo['animation'] == true)
+        {
+          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_UPLOAD_ANIMATED_WEBP'));
+
+          return false;
         }
       }
     }
