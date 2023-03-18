@@ -67,9 +67,11 @@ class FileManager implements FileManagerInterface
   }
 
   /**
-   * Creation of image types
+   * Creation of image types based on source file.
+   * Source file has to be given with a full system path.
+   * 
    *
-   * @param   string               $source     Source file for which the image types shall be created
+   * @param   string               $source     Source file with which the image types shall be created
    * @param   string               $filename   Name for the files to be created
    * @param   object|int|string    $cat        Object, ID or alias of the corresponding category (default: 2)
    * 
@@ -80,7 +82,7 @@ class FileManager implements FileManagerInterface
   public function createImages($source, $filename, $cat=2): bool
   {
     // Create filesystem service
-    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','local-images'));
 
     // Fix filename
     $filename = $this->jg->getFilesystem()->cleanFilename($filename, 1, JFile::getExt($source));
@@ -205,10 +207,11 @@ class FileManager implements FileManagerInterface
       }
 
       // Path to save image
-      $file = $this->getImgPath(0, $imagetype->typename, $cat, $filename, 0);
+      $file = $this->getImgPath(0, $imagetype->typename, $cat, $filename, false);
 
       // Create folders if not existent
-      if(!$this->jg->getFilesystem()->createFolder(\dirname($file)))
+      $folder = \dirname($file);
+      if(!$this->jg->getFilesystem()->createFolder(\basename($folder), \dirname($folder)))
       {
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
@@ -221,7 +224,9 @@ class FileManager implements FileManagerInterface
       }
 
       // Write image to file
-      if(!$this->jg->getIMGtools()->write($file, $imagetype->params->get('jg_imgtypequality', 100)))
+      $image_content = $this->jg->getIMGtools()->stream($imagetype->params->get('jg_imgtypequality', 100), false);
+      //$this->jg->getIMGtools()->write($file, $imagetype->params->get('jg_imgtypequality', 100))
+      if(!$image_content)
       {
         // Destroy the IMGtools service
         $this->jg->delIMGtools();
@@ -234,7 +239,8 @@ class FileManager implements FileManagerInterface
       }
 
       // Upload image file to storage
-      $this->jg->getFilesystem()->uploadFile($file);
+      // $this->jg->getFilesystem()->uploadFile($file);
+      $this->jg->getFilesystem()->createFile(\basename($file), \dirname($file), $image_content);
 
       // Destroy the IMGtools service
       $this->jg->delIMGtools();
@@ -490,7 +496,7 @@ class FileManager implements FileManagerInterface
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Category path
-      $path = $this->getCatPath(0, $imagetype->typename, $parent, $foldername, 0);
+      $path = $this->getCatPath(0, $imagetype->typename, $parent, $foldername, false);
 
       // Create folder if not existent
       if(!$this->jg->getFilesystem()->createFolder($path))
@@ -754,13 +760,13 @@ class FileManager implements FileManagerInterface
    * @param   string                    $type      Imagetype
    * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
    * @param   string|bool               $filename  The filename (default: false)
-   * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
+   * @param   boolean                   $root      True to add the system root to the path
    * 
    * @return  mixed   Path to the image on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getImgPath($img, $type, $catid=false, $filename=false, $root=0)
+  public function getImgPath($img, $type, $catid=false, $filename=false, $root=false)
   {
     if($catid === false || $filename === false)
     {
@@ -806,9 +812,9 @@ class FileManager implements FileManagerInterface
     $path = $this->imagetypes[$this->imagetypes_dict[$type]]->path.\DIRECTORY_SEPARATOR.$catpath.\DIRECTORY_SEPARATOR.$filename;
 
     // add root to path if needed
-    if($root > 0)
+    if($root)
     {
-      $path = $this->addRoot($root).\DIRECTORY_SEPARATOR.$path;
+      $path = JPATH_ROOT.\DIRECTORY_SEPARATOR.$path;
     }
 
     return JPath::clean($path);
@@ -821,14 +827,14 @@ class FileManager implements FileManagerInterface
    * @param   string|bool              $type      Imagetype if needed
    * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
    * @param   string|bool              $alias     The category alias (default: false)
-   * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
+   * @param   boolean                  $root      True to add the system root to the path
    * 
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0)
+  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=false)
   {
     // We got a valid category object
     if(\is_object($cat) && $cat instanceof \Joomla\CMS\Object\CMSObject && isset($cat->path))
@@ -909,9 +915,9 @@ class FileManager implements FileManagerInterface
     }
     
     // add root to path if needed
-    if($root > 0)
+    if($root)
     {
-      $path = $this->addRoot($root).\DIRECTORY_SEPARATOR.$path;
+      $path = JPATH_ROOT.\DIRECTORY_SEPARATOR.$path;
     }
 
     return JPath::clean($path);
@@ -1047,34 +1053,5 @@ class FileManager implements FileManagerInterface
     }
 
     return true;
-  }
-
-  /**
-   * Create root path based on $whichRoot
-   * 
-   * @param   integer   $whichRoot    0:no root, 1:local root, 2:storage root
-   * 
-   * @return  string    Root path
-   * 
-   * @since   4.0.0
-   */
-  public function addRoot($whichRoot)
-  {
-    // Create filesystem service
-    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
-
-    // Create root path
-    switch($whichRoot)
-    {
-      case 1:
-        return $this->jg->getFilesystem()->get('local_root');
-        break;
-
-      case 2:
-        return $this->jg->getFilesystem()->get('root');
-      
-      default:
-        return '';
-    }
   }
 }

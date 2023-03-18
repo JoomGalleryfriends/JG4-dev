@@ -279,15 +279,16 @@ class JoomHelper
   /**
    * Returns the URL or the path to an image
    *
-   * @param   string/object/int $img    Filename, database object, ID or URL of the image
-   * @param   string            $type   The image type
-   * @param   bool              $url    True: image url, false: image path (default: true)
+   * @param   string/object/int $img     Filename, database object, ID or URL of the image
+   * @param   string            $type    The image type
+   * @param   bool              $url     True to return an image URL, false for a system path (default: true)
+   * @param   bool              $root    True to add the system root to path. Only if $url=false. (default: true)
    *
    * @return  mixed             URL or path to the image on success, false otherwise
    *
    * @since   1.5.5
    */
-  public static function getImg($img, $type, $url=true)
+  public static function getImg($img, $type, $url=true, $root=true)
   {
     // get imagetypes
     $imagetype = self::getRecord('imagetype', array('typename' => $type));
@@ -306,7 +307,7 @@ class JoomHelper
         if($img == 0)
         {
           // ID = 0 given
-          return self::getImgZero($url, $type);          
+          return self::getImgZero($type, $url, $root);          
         }
         else
         {
@@ -338,27 +339,57 @@ class JoomHelper
       else
       {
         // no image given
-        return self::getImgZero($url, $type); 
+        return self::getImgZero($type, $url, $root); 
       }
     }
 
     if(!\is_object($img) || \is_null($img->id) || $img->id === 0)
     {
       // image object not found
-      return self::getImgZero($url, $type);     
+      return self::getImgZero($type, $url, $root);
     }
 
     // Check whether the image shall be output through the PHP script or with its real path
     if($url)
     {
-      return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
+      // Create file config service based on current user
+			$config = self::getService('Config');
+
+      if($config->get('jg_use_real_paths', 0) == 0)
+      {
+        // Joomgallery internal URL
+        // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3
+        return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
+      }
+      else
+      {
+        // Create file manager service
+			  $manager    = self::getService('FileManager');
+        // Create file manager service
+			  $filesystem = self::getService('Filesystem');
+        
+        // Real URL
+        // Example: https://www.example.org/images/joomgallery/orig/test.jpg
+        return $filesystem->getUrl($manager->getImgPath($img, $type));
+      }
     }
     else
     {
       // Create file manager service
-			$manager = JoomHelper::getService('FileManager');
+			$manager = self::getService('FileManager');
 
-      return $manager->getImgPath($img, $type, false, false, 1);
+      if($root)
+      {
+        // Complete system path
+        // Example: D:/xampp/joomla/images/joomgallery/orig/test.jpg
+        return $manager->getImgPath($img, $type, false, false, true);
+      }
+      else
+      {
+        // Relative system path
+        // Example: /images/joomgallery/orig/test.jpg
+        return $manager->getImgPath($img, $type, false, false, false);
+      }
     }
   }
 
@@ -539,14 +570,15 @@ class JoomHelper
   /**
 	 * Returns the image url or path for image with id=0
    *
-   * @param   bool       $url    True: image url, false: image path (default: true)
-   * @param   string     $type   The image type (default: thumbnail)
+   * @param   string   $type    The image type
+   * @param   bool     $url     True to return an image URL, false for a system path (default: true)
+   * @param   bool     $root    True to add the system root to path. Only if $url=false. (default: true)
 	 *
 	 * @return  string     Image path or url
 	 *
 	 * @since   4.0.0
 	 */
-  protected static function getImgZero($url=true, $type='thumbnail')
+  protected static function getImgZero($type, $url=true, $root=true)
   {
     if($url)
     {
@@ -554,8 +586,14 @@ class JoomHelper
     }
     else
     {
-      $manager = JoomHelper::getService('FileManager');
-      $path =  $manager->addRoot(1).'/media/com_joomgallery/images/no-image.png';
+      if($root)
+      {
+        $path =  JPATH_ROOT.'/media/com_joomgallery/images/no-image.png';
+      }
+      else
+      {
+        $path =  '/media/com_joomgallery/images/no-image.png';
+      }
 
       return Path::clean($path);
     }

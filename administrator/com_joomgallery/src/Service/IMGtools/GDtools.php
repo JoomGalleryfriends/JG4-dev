@@ -488,18 +488,19 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
   }
 
   /**
-   * Output image as string (stream)
+   * Output the image as string (stream)
    * Supported image-types: ??
    *
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
-   * @param   bool    $html     Return html string for direct output (default: true)
+   * @param   bool    $base64   String encoded with base64 (defaul: false)
+   * @param   bool    $html     Return html string for direct output (default: false)
    * @param   string  $type     Set image type to write (default: same as source)
    *
    * @return  string  base64 encoded image string or html string
    *
    * @since   4.0.0
    */
-  public function stream($quality=100, $html=true, $type=false): string
+  public function stream($quality=100, $base64=false, $html=false, $type=false): string
   {
     // Check working area (frames and imginfo)
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
@@ -566,6 +567,12 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       $this->rollback('', '');
 
       return false;
+    }
+
+    if(!$base64)
+    {
+      // Output plain image stream
+      return $stream;
     }
 
     // Base64 encoding

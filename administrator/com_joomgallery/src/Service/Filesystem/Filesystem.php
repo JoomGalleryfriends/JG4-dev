@@ -401,6 +401,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function getFile(string $path = '/', array $options = []): \stdClass
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     // Add adapter prefix to the file returned
     try
@@ -458,6 +459,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function getFiles(string $path = '/', array $options = []): array
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     // Check whether user searching
     if(isset($options['search']) && $options['search'] != null)
@@ -529,6 +531,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function createFolder(string $name, string $path, bool $override = true): string
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     try
     {
@@ -586,6 +589,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function createFile(string $name, string $path, $data, bool $override = true): string
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     try
     {
@@ -652,6 +656,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function updateFile(string $name, string $path, $data)
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     // Check if it is an allowed file
     if(!$this->isAllowedFile($path . '/' . $name))
@@ -699,6 +704,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function delete(string $path)
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     $file = $this->getFile($path);
 
@@ -746,7 +752,9 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    */
   public function copy(string $sourcePath, string $destinationPath, bool $force = false): string
   {
-    $adapter = $this->getFilesystem();
+    $adapter         = $this->getFilesystem();
+    $sourcePath      = $this->cleanPath($this->adjustPath($sourcePath), '/');
+    $destinationPath = $this->cleanPath($this->adjustPath($destinationPath), '/');
 
     return $this->getAdapter($adapter)->copy($sourcePath, $destinationPath, $force);
   }
@@ -766,7 +774,9 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    */
   public function move(string $sourcePath, string $destinationPath, bool $force = false): string
   {
-    $adapter = $this->getFilesystem();
+    $adapter         = $this->getFilesystem();
+    $sourcePath      = $this->cleanPath($this->adjustPath($sourcePath), '/');
+    $destinationPath = $this->cleanPath($this->adjustPath($destinationPath), '/');
 
     return $this->getAdapter($adapter)->move($sourcePath, $destinationPath, $force);
   }
@@ -785,6 +795,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function getUrl(string $path): string
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     // Check if it is an allowed file
     if(!$this->isAllowedFile($path))
@@ -815,6 +826,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function search(string $path = '/', string $needle, bool $recursive = false): array
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
     return $this->getAdapter($adapter)->search($path, $needle, $recursive);
   }
@@ -824,16 +836,24 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    *
    * @param   string  $path  The path
    *
-   * @return  resource
+   * @return  array   array(info, ressource)
    *
    * @since   4.0.0
    * @throws  \Exception
    */
-  public function getResource(string $path)
+  public function getResource(string $path): array
   {
     $adapter = $this->getFilesystem();
+    $path    = $this->cleanPath($this->adjustPath($path), '/');
 
-    return $this->getAdapter($adapter)->getResource($path);
+    // Check if it is an allowed file
+    $file = $this->getFile($path);
+    if($file->type != 'file' || !$this->isAllowedFile($file->path))
+    {
+      throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
+    }
+
+    return array($file, $this->getAdapter($adapter)->getResource($path));
   }
 
   /**
@@ -952,7 +972,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
   /**
    * Get the filesystem property.
-   *
+   * 
    * @return string  The filesystem
    *
    * @since   4.0.0
@@ -960,5 +980,32 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   public function getFilesystem(): string
   {
     return $this->filesystem;
+  }
+
+  /**
+   * Adjusting the path if needed.
+   * 
+   * @param  string  The path to be adjusted
+   * 
+   * @return string  The adjusted path
+   *
+   * @since   4.0.0
+   */
+  public function adjustPath(string $path=''): string
+  {
+    if(empty($path))
+    {
+      return $path;
+    }
+
+    list($provider, $account) = \array_pad(\explode('-', $this->getFilesystem(), 2), 2, null);
+
+    if($provider == 'local')
+    {
+      // delete account from path
+      $path = \substr($path, \strlen($account) + 1);
+    }
+
+    return $path;
   }
 }
