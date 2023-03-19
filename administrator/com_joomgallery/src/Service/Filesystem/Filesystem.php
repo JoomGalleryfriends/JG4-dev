@@ -1014,8 +1014,12 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     if($provider == 'local')
     {
-      // delete account from path
-      $path = \substr($path, \strlen($account) + 1);
+      if(\strpos(\substr($path, 0, \strlen($account) + 1), $account) !== false)
+      {
+        // path needs to be adjusted
+        // delete account from path
+        $path = \substr($path, \strlen($account) + 1);
+      }
     }
 
     return $path;
