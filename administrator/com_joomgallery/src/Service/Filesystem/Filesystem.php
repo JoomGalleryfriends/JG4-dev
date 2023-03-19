@@ -412,6 +412,18 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     {
       throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
     }
+    catch (\Exception $e)
+    {
+      $msg = $e->getMessage();
+      if(\strpos($e->getMessage(), 'account') !== false || \strpos($e->getMessage(), 'Account') !== false)
+      {
+        throw new \Exception(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
+      }
+      else
+      {
+        throw new \Exception($e->getMessage());
+      }
+    }
 
     // Check if it is an allowed file
     if($file->type == 'file' && !$this->isAllowedFile($file->path))
