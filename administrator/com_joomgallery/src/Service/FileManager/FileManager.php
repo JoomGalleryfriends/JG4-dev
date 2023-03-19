@@ -240,7 +240,38 @@ class FileManager implements FileManagerInterface
 
       // Upload image file to storage
       // $this->jg->getFilesystem()->uploadFile($file);
-      $this->jg->getFilesystem()->createFile(\basename($file), \dirname($file), $image_content);
+      try
+      {
+        $this->jg->getFilesystem()->createFile(\basename($file), \dirname($file), $image_content);
+      }
+      catch (FileExistsException $e)
+      {
+        // File already exists
+
+        // Destroy the IMGtools service
+        $this->jg->delIMGtools();
+
+        // Debug info
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_ALREADY_EXISTING', $filename));
+        $error = true;
+
+        continue;
+
+      }
+      catch (InvalidPathException $e)
+      {
+        // Not allowed filetype
+
+        // Destroy the IMGtools service
+        $this->jg->delIMGtools();
+
+        // Debug info
+        $this->jg->addDebug($e->getMessage());
+        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+        $error = true;
+
+        continue;
+      }
 
       // Destroy the IMGtools service
       $this->jg->delIMGtools();
@@ -274,7 +305,7 @@ class FileManager implements FileManagerInterface
   public function deleteImages($img): bool
   {
     // Create filesystem service
-    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','localhost'));
+    $this->jg->createFilesystem($this->jg->getConfig()->get('jg_filesystem','local-images'));
 
     // Loop through all imagetypes
     $error = false;
@@ -284,7 +315,15 @@ class FileManager implements FileManagerInterface
       $file = $this->getImgPath($img, $imagetype->typename);
 
       // Delete imagetype
-      if(!$this->jg->getFilesystem()->deleteFile($file))
+      try
+      {
+        $this->jg->getFilesystem()->delete($file);
+      }
+      catch (FileNotFoundException $e)
+      {
+        // Do nothing
+      }
+      catch (\Exception $e)
       {
         // Deletion failed
         $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
