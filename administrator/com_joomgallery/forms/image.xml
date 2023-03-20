@@ -151,8 +151,8 @@
 
     <field name="created_by"
            type="user"
-           label="JGLOBAL_FIELD_CREATED_BY_LABEL"
-           description="JGLOBAL_FIELD_CREATED_BY_DESC"
+           label="COM_JOOMGALLERY_OWNER"
+           description="COM_JOOMGALLERY_FIELDS_OWNER_DESC"
            validate="UserId" />
 
     <field name="modified_time"
