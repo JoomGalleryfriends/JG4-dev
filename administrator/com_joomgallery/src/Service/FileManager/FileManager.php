@@ -466,7 +466,7 @@ class FileManager implements FileManagerInterface
         else
         {
           $this->component->getFilesystem()->move($img_src, $img_dst);
-        }        
+        }
       }
       catch(\FileNotFoundException $e)
       {
@@ -548,7 +548,7 @@ class FileManager implements FileManagerInterface
       catch(\FileNotFoundException $e)
       {
         // File not found
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($img_src).' ('.$imagetype->typename.')');
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file_orig).' ('.$imagetype->typename.')');
         $error = true;
 
         continue;
@@ -571,7 +571,7 @@ class FileManager implements FileManagerInterface
     }
 
     // Renaming successful
-    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_IMAGE', \ucfirst(\basename($file))));
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_IMAGE', \ucfirst(\basename($file_orig))));
 
     return true;
   }
@@ -672,7 +672,7 @@ class FileManager implements FileManagerInterface
         catch (FileNotFoundException $e)
         {
           // Folder not found
-          $this->component->addDebug(Text::__('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').' ('.\ucfirst(\basename($path)).')');
+          $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').' ('.\ucfirst(\basename($path)).')');
 
           return false;
         }        
@@ -1185,7 +1185,7 @@ class FileManager implements FileManagerInterface
   protected function getImagetypes()
   {
     // get all imagetypes
-    $this->imagetypes = JoomHelper::getRecords('imagetypes', $this->jg);
+    $this->imagetypes = JoomHelper::getRecords('imagetypes', $this->component);
 
     // sort imagetypes by id descending
     $this->imagetypes = \array_reverse($this->imagetypes);
