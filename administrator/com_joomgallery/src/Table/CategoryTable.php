@@ -120,12 +120,12 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
-		if($task == 'apply' || $task == 'save')
+		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
-		if($task == 'apply' || $task == 'save')
+		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
 			$array['modified_time'] = $date->toSql();
 		}
