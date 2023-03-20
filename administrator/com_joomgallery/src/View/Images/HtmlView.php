@@ -92,7 +92,19 @@ class HtmlView extends JoomGalleryView
     {
       if($canDo->get('core.create'))
       {
-        $toolbar->addNew('image.add');
+        $add_dropdown = $toolbar->dropdownButton('add-group')
+          ->text('JTOOLBAR_NEW')
+          ->toggleSplit(true)
+          ->icon('fas fa-plus')
+          ->buttonClass('btn btn-action');
+
+        $add_childBar = $add_dropdown->getChildToolbar();
+
+        $add_childBar->addNew('image.add');
+        $add_childBar->standardButton('multipleadd')
+          ->text('COM_JOOMGALLERY_MULTIPLE_NEW')
+          ->icon('fas fa-upload')
+          ->task('image.multipleadd');
       }
     }
 
@@ -121,17 +133,17 @@ class HtmlView extends JoomGalleryView
       // Image manipulation button
       if($canDo->get('core.edit'))
       {
-        $batch_dropdown = $toolbar->dropdownButton('batch-group')
+        $process_dropdown = $toolbar->dropdownButton('process-group')
           ->text('Image Manipulation')
           ->toggleSplit(false)
           ->icon('fas fa-images')
           ->buttonClass('btn btn-action')
           ->listCheck(true);
         
-        $batch_childBar = $batch_dropdown->getChildToolbar();
+        $process_childBar = $process_dropdown->getChildToolbar();
 
         // Recreate button inside image manipulation
-        $batch_childBar->standardButton('recreate')
+        $process_childBar->standardButton('recreate')
           ->text('recreate - comes later')
           ->icon('fas fa-refresh')
           ->task('images.recreate')

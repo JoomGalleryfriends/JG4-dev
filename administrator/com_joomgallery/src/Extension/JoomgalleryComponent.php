@@ -41,6 +41,8 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileMana
 use Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerServiceTraitInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerServiceTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusServiceInterface;
+use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusServiceTrait;
 
 /**
  * Component class for Joomgallery
@@ -84,6 +86,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   use IMGtoolsServiceTrait;
   use FileManagerServiceTrait;
   use MessengerServiceTrait;
+  use TusServiceTrait;
 
   /**
 	 * Booting the extension. This is the function to set up the environment of the extension like
