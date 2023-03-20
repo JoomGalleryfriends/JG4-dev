@@ -136,7 +136,7 @@
 
     <field name="created_by"
            type="user"
-           label="JGLOBAL_FIELD_CREATED_BY_LABEL"
+           label="COM_JOOMGALLERY_OWNER"
            description="JGLOBAL_FIELD_CREATED_BY_DESC"
            validate="UserId" />
 
