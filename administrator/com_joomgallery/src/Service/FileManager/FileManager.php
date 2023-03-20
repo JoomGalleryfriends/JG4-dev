@@ -395,7 +395,23 @@ class FileManager implements FileManagerInterface
       $file = $this->getImgPath($img, $imagetype->typename);
 
       // Get file info
-      $images[$imagetype->typename] = $this->component->getFilesystem()->getFile($file);
+      try
+      {
+        $images[$imagetype->typename] = $this->component->getFilesystem()->getFile($file);
+      }
+      catch (FileNotFoundException $e)
+      {
+        // File not found
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')');
+
+        return false;
+      }
+      catch (\Exception $e)
+      {
+        $this->component->addDebug($e->getMessage());
+
+        return false;
+      }
     }
 
     return $images;
@@ -447,7 +463,24 @@ class FileManager implements FileManagerInterface
 
       // Create folders if not existent
       $folder_dst = \dirname($img_dst);
-      if(!$this->component->getFilesystem()->createFolder(\basename($folder_dst), \dirname($folder_dst)))
+      try
+      {
+        $res = $this->component->getFilesystem()->createFolder(\basename($folder_dst), \dirname($folder_dst));
+      }
+      catch(\FileExistsException $e)
+      {
+        // Do nothing
+      }
+      catch(\Exception $e)
+      {
+        // Debug info
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \ucfirst($folder_dst)));
+        $error = true;
+
+        continue;
+      }
+
+      if(!$res)
       {
         // Debug info
         $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \basename($folder_dst)));
@@ -664,7 +697,6 @@ class FileManager implements FileManagerInterface
         $path  = $this->getCatPath($cat, $imagetype->typename);
 
         // Available files and subfolders
-        //$files = $this->component->getFilesystem()->checkFolder($path, true, true, 1);
         try
         {
           $files = $this->component->getFilesystem()->getFiles($path);
@@ -675,7 +707,7 @@ class FileManager implements FileManagerInterface
           $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').' ('.\ucfirst(\basename($path)).')');
 
           return false;
-        }        
+        }
 
         if(\count($files) > 0)
         {
@@ -695,8 +727,21 @@ class FileManager implements FileManagerInterface
       // Category path
       $path  = $this->getCatPath($cat, $imagetype->typename);
 
+      // Available files and subfolders
+      try
+      {
+        $files = $this->component->getFilesystem()->getFiles($path);
+      }
+      catch (FileNotFoundException $e)
+      {
+        // Folder not found
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').' ('.\ucfirst(\basename($path)).')');
+
+        return false;
+      }
+
       // Delete folder if existent
-      if($this->component->getFilesystem()->getFiles($path))
+      if($files)
       {
         try
         {
@@ -753,7 +798,17 @@ class FileManager implements FileManagerInterface
       $path = $this->getCatPath($cat, $imagetype->typename);
 
       // Get folder info
-      $folders[$imagetype->typename] = $this->component->getFilesystem()->getFiles($path);
+      try
+      {
+        $folders[$imagetype->typename] = $this->component->getFilesystem()->getFiles($path);
+      }
+      catch (FileNotFoundException $e)
+      {
+        // Folder not found
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').' ('.\ucfirst(\basename($path)).')');
+
+        return false;
+      }
     }
 
     return $folders;
