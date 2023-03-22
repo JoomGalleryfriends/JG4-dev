@@ -182,7 +182,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['created_by'] = Factory::getUser()->id;
 		}
 
-		if($task == 'apply' || $task == 'save')
+		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
 			$array['modified_time'] = $date->toSql();
 		}
@@ -192,7 +192,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
-		if($task == 'apply' || $task == 'save')
+		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
 			$array['modified_by'] = Factory::getUser()->id;
 		}
