@@ -49,6 +49,9 @@ class RawView extends JoomGalleryView
     // Create filesystem service
     $this->component->createFilesystem();
 
+    // Have a Read
+    // https://stackoverflow.com/questions/1851849/output-an-image-in-php
+
     // Get image ressource
     try
     {
