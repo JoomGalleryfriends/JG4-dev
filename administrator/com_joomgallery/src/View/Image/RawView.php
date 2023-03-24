@@ -49,9 +49,6 @@ class RawView extends JoomGalleryView
     // Create filesystem service
     $this->component->createFilesystem();
 
-    // Have a Read
-    // https://stackoverflow.com/questions/1851849/output-an-image-in-php
-
     // Get image ressource
     try
     {
@@ -67,9 +64,14 @@ class RawView extends JoomGalleryView
     $this->document->setMimeEncoding($file_info->mime_type);
 
     // Set header to specify the file name
-    $disposition = 'inline';
-    $this->app->setHeader('Content-disposition', $disposition.'; filename='.basename($img_path));
+    $this->app->setHeader('Cache-Control','no-cache, must-revalidate');
+    $this->app->setHeader('Pragma','no-cache');
+    $this->app->setHeader('Content-disposition','inline; filename='.\basename($img_path));
+    $this->app->setHeader('Content-Length',\strval($file_info->size));
 
-    echo \stream_get_contents($ressource);
+    \ob_end_clean(); //required here or large files will not work
+    \fpassthru($ressource);
+
+    //echo \stream_get_contents($ressource);
   }
 }
