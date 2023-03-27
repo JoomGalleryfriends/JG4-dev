@@ -78,11 +78,14 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @since   4.0.0
    */
   public function __construct(string $filesystem = '')
-  {  
+  {
+    // Load application
+    $this->getApp();
+
     // Load component
     $this->getComponent();
 
-    // instantiate config service
+    // Instantiate config service
     $this->component->createConfig();
 
     if($filesystem != '')

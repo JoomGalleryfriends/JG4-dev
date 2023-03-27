@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Layout\FileLayout;
 use \Joomla\CMS\Document\HtmlDocument;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\RefresherInterface;
 
 /**
@@ -29,6 +30,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\Refresher
  */
 class Refresher implements RefresherInterface
 {
+  use ServiceTrait;
+
   /**
    * Unix timestamp of start time
    *
@@ -106,6 +109,12 @@ class Refresher implements RefresherInterface
    */
   public function __construct($params = array())
   {
+    // Load application
+    $this->getApp();
+    
+    // Load component
+    $this->getComponent();
+
     $app = Factory::getApplication('administrator');
 
     // set controller

@@ -63,13 +63,16 @@ class FileManager implements FileManagerInterface
    */
   public function __construct()
   {
+    // Load application
+    $this->getApp();
+
     // Load component
     $this->getComponent();
 
-    // instantiate config service
+    // Instantiate config service
     $this->component->createConfig();
 
-    // get imagetypes
+    // Get imagetypes
     $this->getImagetypes();
   }
 

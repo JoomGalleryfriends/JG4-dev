@@ -18,9 +18,7 @@ use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
 use \Joomla\CMS\Filter\InputFilter;
 use \Joomla\CMS\Object\CMSObject;
-use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
 * Base class for the Uploader helper classes
@@ -29,6 +27,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 */
 abstract class Uploader implements UploaderInterface
 {
+  use ServiceTrait;
+
   /**
    * Set to true if a error occured
    *
@@ -67,13 +67,6 @@ abstract class Uploader implements UploaderInterface
   public $imgtitle = '';
 
   /**
-   * Holds the JoomgalleryComponent object
-   *
-   * @var JoomgalleryComponent
-   */
-  protected $jg;
-
-  /**
    * Name of the used filesystem
    *
    * @var string
@@ -98,8 +91,13 @@ abstract class Uploader implements UploaderInterface
    */
   public function __construct($multiple=false)
   {
-    $this->jg = JoomHelper::getComponent();
-    $this->jg->createConfig();
+    // Load application
+    $this->getApp();
+    
+    // Load component
+    $this->getComponent();
+
+    $this->component->createConfig();
 
     $app  = Factory::getApplication();
 
@@ -110,8 +108,8 @@ abstract class Uploader implements UploaderInterface
     $this->imgtitle    = $app->getUserStateFromRequest($this->userStateKey.'.imgtitle', 'imgtitle', '', 'string');
     $this->filecounter = $app->getUserStateFromRequest($this->userStateKey.'.filecounter', 'filecounter', 0, 'post', 'int');
 
-    $this->jg->addDebug($app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
-    $this->jg->addWarning($app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
+    $this->component->addDebug($app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
+    $this->component->addWarning($app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
   }
 
   /**
@@ -132,25 +130,25 @@ abstract class Uploader implements UploaderInterface
     if(!($tag == 'jpg' || $tag == 'jpeg' || $tag == 'jpe' || $tag == 'jfif'))
     {
       // Check for the right file-format, else throw warning
-      $this->jg->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_READ_METADATA'));
+      $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_READ_METADATA'));
 
       return true;
     }
 
     // Create the IMGtools service
-    $this->jg->createIMGtools($this->jg->getConfig()->get('jg_imgprocessor'));
+    $this->component->createIMGtools($this->component->getConfig()->get('jg_imgprocessor'));
 
     // Get image metadata (source)
-    $metadata = $this->jg->getIMGtools()->readMetadata($this->src_file);
+    $metadata = $this->component->getIMGtools()->readMetadata($this->src_file);
 
     // Add image metadata to data
     $data['imgmetadata'] = \json_encode($metadata);
 
     // Check if there is something to override
-    if(!\property_exists($this->jg->getConfig()->get('jg_replaceinfo'), 'jg_replaceinfo0'))
+    if(!\property_exists($this->component->getConfig()->get('jg_replaceinfo'), 'jg_replaceinfo0'))
     {
       // Destroy the IMGtools service
-      $this->jg->delIMGtools();
+      $this->component->delIMGtools();
       
       return true;
     }
@@ -162,7 +160,7 @@ abstract class Uploader implements UploaderInterface
 
     // Loop through all replacements defined in config
     $warning = false;
-    foreach ($this->jg->getConfig()->get('jg_replaceinfo') as $replaceinfo)
+    foreach ($this->component->getConfig()->get('jg_replaceinfo') as $replaceinfo)
     {
       $source_array = \explode('-', $replaceinfo->source);
 
@@ -195,15 +193,15 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            if($this->jg->getConfig()->get('jg_replaceshowwarning'))
+            if($this->component->getConfig()->get('jg_replaceshowwarning'))
             {
               if($source_attribute == 'DateTimeOriginal')
               {
-                $this->jg->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_IMGDATE'));
+                $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_IMGDATE'));
               }
               else
               {
-                $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
+                $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
               }
 
               $warning = true;
@@ -222,9 +220,9 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            if($this->jg->getConfig()->get('jg_replaceshowwarning'))
+            if($this->component->getConfig()->get('jg_replaceshowwarning'))
             {
-              $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_('COM_JOOMGALLERY_COMMENT')));
+              $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_('COM_JOOMGALLERY_COMMENT')));
               $warning = true;
             }
 
@@ -258,9 +256,9 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            if($this->jg->getConfig()->get('jg_replaceshowwarning'))
+            if($this->component->getConfig()->get('jg_replaceshowwarning'))
             {
-              $this->jg->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
+              $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
               $warning = true;
             }
 
@@ -277,7 +275,7 @@ abstract class Uploader implements UploaderInterface
 
       if($warning)
       {
-        $this->jg->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_METAHINT'));
+        $this->component->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_METAHINT'));
       }
 
       // Replace target with metadata value
@@ -288,12 +286,12 @@ abstract class Uploader implements UploaderInterface
       else
       {
         $data[$replaceinfo->target] = $filter->clean($source_value, 'string');
-        $this->jg->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_' . \strtoupper($replaceinfo->target)));
+        $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_' . \strtoupper($replaceinfo->target)));
       }
     }
 
     // Destroy the IMGtools service
-    $this->jg->delIMGtools();
+    $this->component->delIMGtools();
 
     return true;
   }
@@ -312,10 +310,10 @@ abstract class Uploader implements UploaderInterface
     if($data_row)
     {
       // Create file manager service
-      $this->jg->createFileManager();
+      $this->component->createFileManager();
 
       // Delete just created images
-      $this->jg->getFileManager()->deleteImages($data_row);
+      $this->component->getFileManager()->deleteImages($data_row);
     }
 
     // Delete temp image
@@ -345,7 +343,7 @@ abstract class Uploader implements UploaderInterface
           ->from(_JOOM_TABLE_IMAGES)
           ->where('created_by = '.$userid);
 
-    $timespan = $this->jg->getConfig()->get('jg_maxuserimage_timespan');
+    $timespan = $this->component->getConfig()->get('jg_maxuserimage_timespan');
     if($timespan > 0)
     {
       $query->where('imgdate > (UTC_TIMESTAMP() - INTERVAL '. $timespan .' DAY)');

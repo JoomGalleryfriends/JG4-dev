@@ -19,7 +19,6 @@ use \Joomla\CMS\Filesystem\File;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\GifFrameExtractor;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * IMGtools Base Class
@@ -151,6 +150,9 @@ abstract class IMGtools implements IMGtoolsInterface
    */
   public function __construct($keep_metadata=false, $keep_anim=false)
   {
+    // Load application
+    $this->getApp();
+    
     // Load component
     $this->getComponent();
 
