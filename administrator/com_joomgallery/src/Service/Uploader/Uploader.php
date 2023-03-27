@@ -19,6 +19,7 @@ use \Joomla\CMS\Filesystem\Path as JPath;
 use \Joomla\CMS\Filter\InputFilter;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 
 /**
 * Base class for the Uploader helper classes
