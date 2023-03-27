@@ -151,7 +151,8 @@ abstract class IMGtools implements IMGtoolsInterface
    */
   public function __construct($keep_metadata=false, $keep_anim=false)
   {
-    $this->jg = JoomHelper::getComponent();
+    // Load component
+    $this->getComponent();
 
     $this->keep_metadata = $keep_metadata;
     $this->keep_anim     = $keep_anim;
@@ -169,7 +170,7 @@ abstract class IMGtools implements IMGtoolsInterface
   public function types(): void
   {
     $types = \implode(', ', $this->get('supported_types'));
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUPPORTED_TYPES', $types));
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUPPORTED_TYPES', $types));
 
     return;
   }
@@ -306,7 +307,7 @@ abstract class IMGtools implements IMGtoolsInterface
 
         if($this->res_imginfo['animation'] == true)
         {
-          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_UPLOAD_ANIMATED_WEBP'));
+          $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_UPLOAD_ANIMATED_WEBP'));
 
           return false;
         }
@@ -484,7 +485,7 @@ abstract class IMGtools implements IMGtoolsInterface
     // Path must point to an existing file
     if(!(File::exists($img)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'));
 
       return false;
     }
