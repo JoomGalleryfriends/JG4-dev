@@ -115,8 +115,6 @@ class Refresher implements RefresherInterface
     // Load component
     $this->getComponent();
 
-    $app = Factory::getApplication('administrator');
-
     // set controller
     if(isset($params['controller']))
     {
@@ -124,7 +122,7 @@ class Refresher implements RefresherInterface
     }
     else
     {
-      $this->_controller    = $app->input->get('controller', '', 'cmd');
+      $this->_controller    = $this->app->input->get('controller', '', 'cmd');
     }
 
     // set task
@@ -134,7 +132,7 @@ class Refresher implements RefresherInterface
     }
     else
     {
-      $this->_task          = $app->input->get('task', '', 'cmd');
+      $this->_task          = $this->app->input->get('task', '', 'cmd');
     }
 
     // set message
@@ -155,11 +153,11 @@ class Refresher implements RefresherInterface
       if(isset($params['start']) && $params['start'])
       {
         $this->_total       = $params['remaining'];
-        $app->setUserState('joom.refresher.total', $this->_total);
+        $this->app->setUserState('joom.refresher.total', $this->_total);
       }
       else
       {
-        $this->_total       = $app->getUserState('joom.refresher.total');
+        $this->_total       = $this->app->getUserState('joom.refresher.total');
       }
 
       $this->_showprogress  = $this->_total ? true : false;
@@ -216,18 +214,16 @@ class Refresher implements RefresherInterface
   {
     if(!is_null($remaining))
     {
-      $app = Factory::getApplication('administrator');
-
       $this->_remaining     = $remaining;
 
       if(!is_null($start) && $start)
       {
         $this->_total       = $remaining;
-        $app->setUserState('joom.refresher.total', $this->_total);
+        $this->app->setUserState('joom.refresher.total', $this->_total);
       }
       else
       {
-        $this->_total       = $app->getUserState('joom.refresher.total');
+        $this->_total       = $this->app->getUserState('joom.refresher.total');
       }
 
       $this->_showprogress  = $this->_total ? true : false;
@@ -276,8 +272,6 @@ class Refresher implements RefresherInterface
    */
   public function refresh($remaining, $task, $msg, $type, $controller)
   {
-    $app = Factory::getApplication('administrator');
-
     if($remaining)
     {
       $this->_remaining = $remaining;
@@ -285,7 +279,7 @@ class Refresher implements RefresherInterface
 
     if($this->_msg && is_null($task))
     {
-      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_REFRESH_SITE'));
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_REFRESH_SITE'));
     }
     if(!$task)
     {
@@ -298,13 +292,13 @@ class Refresher implements RefresherInterface
 
     if($msg)
     {
-      $app->enqueueMessage($msg, $type);
+      $this->app->enqueueMessage($msg, $type);
     }
 
     if(!$this->_msg || $msg)
     {
       // Persist messages if they exist
-      $messages = $app->getMessageQueue();
+      $messages = $this->app->getMessageQueue();
 
       if(count($messages))
       {
@@ -336,6 +330,6 @@ class Refresher implements RefresherInterface
                 );
     echo $doc->render($tmpl);
 
-    $app->close();
+    $this->app->close();
   }
 }

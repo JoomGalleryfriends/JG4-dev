@@ -453,7 +453,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $file->adapter = $adapter;
 
     $event = new FetchMediaItemEvent('onFetchMediaItem', ['item' => $file]);
-    Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+    $this->app->getDispatcher()->dispatch($event->getName(), $event);
 
     return $event->getArgument('item');
   }
@@ -524,7 +524,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $files = array_values($files);
 
     $event = new FetchMediaItemsEvent('onFetchMediaItems', ['items' => $files]);
-    Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+    $this->app->getDispatcher()->dispatch($event->getName(), $event);
 
     return $event->getArgument('items');
   }
@@ -564,7 +564,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       throw new FileExistsException();
     }
 
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->name      = $name;
@@ -572,7 +571,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     PluginHelper::importPlugin('content');
 
-    $result = $app->triggerEvent('onContentBeforeSave', ['com_media.folder', $object, true, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.folder', $object, true, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -581,7 +580,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $object->name = $this->getAdapter($object->adapter)->createFolder($object->name, $object->path);
 
-    $app->triggerEvent('onContentAfterSave', ['com_media.folder', $object, true, $object]);
+    $this->app->triggerEvent('onContentAfterSave', ['com_media.folder', $object, true, $object]);
 
     return $object->name;
   }
@@ -627,7 +626,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->name      = $name;
@@ -640,7 +638,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Also include the filesystem plugins, perhaps they support batch processing too
     PluginHelper::importPlugin('media-action');
 
-    $result = $app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, true, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, true, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -649,7 +647,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $object->name = $this->getAdapter($object->adapter)->createFile($object->name, $object->path, $object->data);
 
-    $app->triggerEvent('onContentAfterSave', ['com_media.file', $object, true, $object]);
+    $this->app->triggerEvent('onContentAfterSave', ['com_media.file', $object, true, $object]);
 
     return $object->name;
   }
@@ -679,7 +677,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->name      = $name;
@@ -692,7 +689,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Also include the filesystem plugins, perhaps they support batch processing too
     PluginHelper::importPlugin('media-action');
 
-    $result = $app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, false, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, false, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -701,7 +698,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $this->getAdapter($object->adapter)->updateFile($object->name, $object->path, $object->data);
 
-    $app->triggerEvent('onContentAfterSave', ['com_media.file', $object, false, $object]);
+    $this->app->triggerEvent('onContentAfterSave', ['com_media.file', $object, false, $object]);
   }
 
   /**
@@ -730,7 +727,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
 
     $type              = $file->type === 'file' ? 'file' : 'folder';
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->path      = $path;
@@ -740,7 +736,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Also include the filesystem plugins, perhaps they support batch processing too
     PluginHelper::importPlugin('media-action');
 
-    $result = $app->triggerEvent('onContentBeforeDelete', ['com_media.' . $type, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeDelete', ['com_media.' . $type, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -749,7 +745,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $this->getAdapter($object->adapter)->delete($object->path);
 
-    $app->triggerEvent('onContentAfterDelete', ['com_media.' . $type, $object]);
+    $this->app->triggerEvent('onContentAfterDelete', ['com_media.' . $type, $object]);
   }
 
   /**
@@ -821,7 +817,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $url = $this->getAdapter($adapter)->getUrl($path);
 
     $event = new FetchMediaItemUrlEvent('onFetchMediaFileUrl', ['adapter' => $adapter, 'path' => $path, 'url' => $url]);
-    Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+    $this->app->getDispatcher()->dispatch($event->getName(), $event);
 
     return $event->getArgument('url');
   }

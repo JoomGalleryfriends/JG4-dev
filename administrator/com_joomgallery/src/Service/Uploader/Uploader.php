@@ -100,17 +100,15 @@ abstract class Uploader implements UploaderInterface
 
     $this->component->createConfig();
 
-    $app  = Factory::getApplication();
-
     $this->multiple    = $multiple;
 
-    $this->error       = $app->getUserStateFromRequest($this->userStateKey.'.error', 'error', false, 'bool');
-    $this->catid       = $app->getUserStateFromRequest($this->userStateKey.'.catid', 'catid', 0, 'int');
-    $this->imgtitle    = $app->getUserStateFromRequest($this->userStateKey.'.imgtitle', 'imgtitle', '', 'string');
-    $this->filecounter = $app->getUserStateFromRequest($this->userStateKey.'.filecounter', 'filecounter', 0, 'post', 'int');
+    $this->error       = $this->app->getUserStateFromRequest($this->userStateKey.'.error', 'error', false, 'bool');
+    $this->catid       = $this->app->getUserStateFromRequest($this->userStateKey.'.catid', 'catid', 0, 'int');
+    $this->imgtitle    = $this->app->getUserStateFromRequest($this->userStateKey.'.imgtitle', 'imgtitle', '', 'string');
+    $this->filecounter = $this->app->getUserStateFromRequest($this->userStateKey.'.filecounter', 'filecounter', 0, 'post', 'int');
 
-    $this->component->addDebug($app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
-    $this->component->addWarning($app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
+    $this->component->addDebug($this->app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
+    $this->component->addWarning($this->app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
   }
 
   /**
@@ -364,15 +362,13 @@ abstract class Uploader implements UploaderInterface
    */
   protected function getSerial()
   {
-    $app  = Factory::getApplication();
-
     // Check if the initial value is already calculated
     if(isset($this->filecounter))
     {
       $this->filecounter++;
 
       // Store the next value in the session
-      $app->setUserState($this->userStateKey.'.filecounter', $this->filecounter + 1);
+      $this->app->setUserState($this->userStateKey.'.filecounter', $this->filecounter + 1);
 
       return $this->filecounter;
     }
@@ -405,13 +401,11 @@ abstract class Uploader implements UploaderInterface
    */
   protected function resetUserStates()
   {
-    $app  = Factory::getApplication();
-
     // Reset file counter, delete original and create special gif selection and debug information
-    $app->setUserState($this->userStateKey.'.filecounter', 0);
-    $app->setUserState($this->userStateKey.'.error', false);
-    $app->setUserState($this->userStateKey.'.debugoutput', null);
-    $app->setUserState($this->userStateKey.'.warningoutput', null);
+    $this->app->setUserState($this->userStateKey.'.filecounter', 0);
+    $this->app->setUserState($this->userStateKey.'.error', false);
+    $this->app->setUserState($this->userStateKey.'.debugoutput', null);
+    $this->app->setUserState($this->userStateKey.'.warningoutput', null);
   }
 
   /**

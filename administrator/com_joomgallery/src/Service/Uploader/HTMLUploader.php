@@ -40,7 +40,6 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 	 */
 	public function retrieveImage(&$data, $filename=True): bool
   {
-    $app  = Factory::getApplication();
     $user = Factory::getUser();
 
     if(\count($data['images']) > 1)
@@ -71,7 +70,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 
     // Get number of uploaded images of the current user
     $counter = $this->getImageNumber($user->get('id'));
-    $is_site = $app->isClient('site');
+    $is_site = $this->app->isClient('site');
 
     // Check if user already exceeds its upload limit
     if($is_site && $counter > ($this->component->getConfig()->get('jg_maxuserimage') - 1) && $user->get('id'))
@@ -160,7 +159,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     }    
 
     // Trigger onJoomBeforeUpload
-    $plugins  = $app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
+    $plugins  = $this->app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
     if(in_array(false, $plugins, true))
     {
       return false;
@@ -256,7 +255,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE_END'));
     $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $data_row->filename));
 
-    Factory::getApplication()->triggerEvent('onJoomAfterUpload', array($data_row));
+    $this->app->triggerEvent('onJoomAfterUpload', array($data_row));
 
     // Reset user states
     $this->resetUserStates();

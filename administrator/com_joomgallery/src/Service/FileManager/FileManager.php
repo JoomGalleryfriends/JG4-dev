@@ -1012,7 +1012,7 @@ class FileManager implements FileManagerInterface
 
         if($img === false || \is_null($img->id))
         {
-          Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error');
+          $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error');
 
           return false;
         }
@@ -1023,7 +1023,7 @@ class FileManager implements FileManagerInterface
       // We got nothing to work with
       else
       {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
 
         return false;
       }
@@ -1087,7 +1087,7 @@ class FileManager implements FileManagerInterface
 
       if($cat === false)
       {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error');
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error');
 
         return false;
       }
@@ -1120,7 +1120,7 @@ class FileManager implements FileManagerInterface
 
         if($parent === false)
         {
-          Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error');
+          $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error');
 
           return false;
         }
@@ -1131,7 +1131,7 @@ class FileManager implements FileManagerInterface
     // We got nothing to work with
     else
     {
-      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error');
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error');
 
       return false;
     }

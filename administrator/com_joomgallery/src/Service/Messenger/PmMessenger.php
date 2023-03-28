@@ -94,7 +94,7 @@ class PmMessenger extends Messenger implements MessengerInterface
         ];
 
         // Get the model for private messages
-        $modelMessage = Factory::getApplication()->bootComponent('com_messages')->getMVCFactory()->createModel('Message', 'Administrator');
+        $modelMessage = $this->app->bootComponent('com_messages')->getMVCFactory()->createModel('Message', 'Administrator');
 
         if(!$modelMessage->save($message))
         {

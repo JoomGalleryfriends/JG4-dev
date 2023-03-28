@@ -1342,7 +1342,7 @@ abstract class IMGtools implements IMGtoolsInterface
                             11 => 4,        // Float
                             12 => 8 );      // Double
 
-    $tmp_folder = Factory::getApplication()->get('tmp_path');
+    $tmp_folder = $this->app->get('tmp_path');
     $tmp_file   = $tmp_folder.'/tmp.txt';
 
     if(isset($exifdata))

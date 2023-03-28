@@ -74,8 +74,8 @@ abstract class Messenger implements MessengerInterface
     // Load component
     $this->getComponent();
 
-    $this->language = Factory::getApplication()->getLanguage();
-    $this->addTemplateData(array('sitename' => Factory::getApplication()->get('sitename'), 'siteurl' => Uri::root()));
+    $this->language = $this->app->getLanguage();
+    $this->addTemplateData(array('sitename' => $this->app->get('sitename'), 'siteurl' => Uri::root()));
   }
 
   /**

@@ -78,7 +78,7 @@ abstract class Config implements ConfigInterface
         (\count($context_array) > 2 && $context_array[2] != 'id')
       )
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
+      $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
 
       $this->context = false;
     }
@@ -197,7 +197,7 @@ abstract class Config implements ConfigInterface
 	 */
 	protected function getParamsByID($id = 1)
 	{
-    $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
+    $com_obj = $this->app->bootComponent('com_joomgallery');
     $model   = $com_obj->getMVCFactory()->createModel('Config');
 
     $id   = intval($id);
