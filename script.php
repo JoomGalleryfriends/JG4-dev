@@ -195,7 +195,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 		$this->installPlugins($parent);
 		$this->installModules($parent);
 
-    $this->copyWatermarkfile();
+    $this->copyImgFiles();
     ?>
 
     <div class="text-center">
@@ -833,10 +833,10 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 *
 	 * @return   bool  True on success, false otherwise
 	 */
-	private function copyWatermarkfile()
+	private function copyImgFiles()
 	{
     // Define paths
-    $files = array('watermark.png', 'logo.png');
+    $files = array('watermark.png', 'logo.png', 'no-image.png');
     $src   = JPATH_ROOT.'/media/com_joomgallery/images/';
     $dst   = JPATH_ROOT.'/images/joomgallery/';
 

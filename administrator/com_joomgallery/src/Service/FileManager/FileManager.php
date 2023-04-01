@@ -55,6 +55,13 @@ class FileManager implements FileManagerInterface
   protected $imagetypes_dict = array();
 
   /**
+   * No image path
+   *
+   * @var string
+   */
+  protected $no_image = '/images/joomgallery/no_image.png';
+
+  /**
    * Constructor
    *
    * @return  void
@@ -1023,6 +1030,20 @@ class FileManager implements FileManagerInterface
       // We got nothing to work with
       else
       {
+        if($img === 0)
+        {
+          // ID: 0. Return no-image path
+          $path = $this->no_image;
+
+          // add root to path if needed
+          if($root)
+          {
+            $path = JPATH_ROOT.\DIRECTORY_SEPARATOR.$path;
+          }
+
+          return JPath::clean($path);
+        }
+
         $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
 
         return false;
