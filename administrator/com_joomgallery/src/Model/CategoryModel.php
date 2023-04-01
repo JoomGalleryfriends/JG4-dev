@@ -355,7 +355,7 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
-        // Recrate path
+        // Crate path if not existent
         if(empty($table->path))
         {
           $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
@@ -375,20 +375,20 @@ class CategoryModel extends JoomAdminModel
         // Handle folders if parent category was changed
         if(!$isNew && $catMoved)
 			  {
+          // Get path back from old location temporarely
+          $table->setPathWithLocation(true);
+
           // Move folder (including files and subfolders)
 					$manager->moveCategory($table, $table->parent_id);
 
-          // Recrate path
-          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
+          // Reset path
+          $table->setPathWithLocation(false);
         }
         // Handle folders if alias was changed
         elseif (!$isNew && $aliasChanged)
         {
           // Rename folder
 					$manager->renameCategory($table, $table->alias);
-
-          // Recrate path
-          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
         }
         else
         {
