@@ -157,6 +157,10 @@ abstract class Uploader implements UploaderInterface
     require_once JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/iptcarray.php';
     require_once JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/exifarray.php';
 
+    $lang = Factory::getLanguage();
+    $lang->load(_JOOM_OPTION.'.exif', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
+    $lang->load(_JOOM_OPTION.'.iptc', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
+
     // Loop through all replacements defined in config
     $warning = false;
     foreach ($this->component->getConfig()->get('jg_replaceinfo') as $replaceinfo)
@@ -196,11 +200,11 @@ abstract class Uploader implements UploaderInterface
             {
               if($source_attribute == 'DateTimeOriginal')
               {
-                $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_IMGDATE'));
+                $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_IMGDATE', Text::_($source_name)));
               }
               else
               {
-                $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
+                $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
               }
 
               $warning = true;
@@ -257,7 +261,7 @@ abstract class Uploader implements UploaderInterface
             // Matadata value not available in image
             if($this->component->getConfig()->get('jg_replaceshowwarning'))
             {
-              $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', $source_name));
+              $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
               $warning = true;
             }
 
