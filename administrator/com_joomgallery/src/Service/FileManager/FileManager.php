@@ -59,7 +59,7 @@ class FileManager implements FileManagerInterface
    *
    * @var string
    */
-  protected $no_image = '/images/joomgallery/no_image.png';
+  protected $no_image = '/images/joomgallery/no-image.png';
 
   /**
    * Constructor

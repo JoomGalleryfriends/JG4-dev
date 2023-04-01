@@ -90,7 +90,13 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     if($filesystem != '')
     {
+      // Define filesystem adapter based on service creation parameter
       $this->filesystem = $filesystem;
+    }
+    else
+    {
+      // Define filesystem adapter based on configuration 'jg_filesystem'
+      $this->component->getConfig()->get('jg_filesystem','local-images');
     }
 
     // Load language of com_media
