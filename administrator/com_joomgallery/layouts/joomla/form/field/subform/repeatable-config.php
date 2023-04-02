@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
 
 extract($displayData);
 
@@ -40,7 +40,7 @@ if($fieldname == 'jg_replaceinfo')
 {
   foreach ($forms as $form)
   {
-    JoomHelper::addReplaceinfoOptions($form);
+    ConfigHelper::addReplaceinfoOptions($form);
   }
 }
 

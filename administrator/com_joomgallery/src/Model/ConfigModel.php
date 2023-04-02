@@ -19,6 +19,7 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 use \Joomla\CMS\Filesystem\File;
 use stdClass;
@@ -152,8 +153,8 @@ class ConfigModel extends JoomAdminModel
    */
   protected function preprocessForm(Form $form, $data, $group = 'content')
   {
-    // Add options to the replaceinfo field
-		JoomHelper::addReplaceinfoOptions($form);
+    // Add options to the jg_replaceinfo.source field
+		ConfigHelper::addReplaceinfoOptions($form);
 
     // Import the appropriate plugin group.
     PluginHelper::importPlugin($group);
