@@ -134,7 +134,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    */
   public function cleanFilename(string $file, int $with_ext=2, string $def_ext='jpg')
   {
-    $ext = JFile::getExt($file);
+    $ext = $this->getExt($file);
 
     // Replace extension if present
     if($ext)
@@ -245,6 +245,33 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     else
     {
       return JPath::setPermissions(JPath::clean($path), null, $val);
+    }
+  }
+
+  /**
+   * Get the file extension of a file.
+   *
+   * @param   string   $path   The filename or file path including extension
+   *
+   * @return  string   Extension (lowercase) if found, empty string otherwise.
+   *
+   * @since   4.0.0
+   */
+  public function getExt(string $file): string
+  {
+    $ext = JFile::getExt($file);
+
+    // Check if it is a valid extension
+    $valid_rex = !\boolval(\preg_match('/[^a-zA-Z]/', $ext));  // File extension has to be only letters
+    $valid_len = \strlen($ext) < 9; // File extension has to be shorter than 9 chars
+
+    if($valid_rex && $valid_len)
+    {
+      return \strtolower($ext);
+    }
+    else
+    {
+      return '';
     }
   }
 
@@ -751,7 +778,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    *
    * @since   4.0.0
    */
-  private function isAllowedFile(string $path): bool
+  public function isAllowedFile(string $path): bool
   {
     // Check if there is an extension available
     if(!strrpos($path, '.'))

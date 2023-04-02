@@ -308,31 +308,25 @@ class ImageModel extends JoomAdminModel
 		$catMoved     = false;
 		$isNew        = true;
 		$isCopy       = false;
-    	$aliasChanged = false;
+    $aliasChanged = false;
 
 		$key = $table->getKeyName();
 		$pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
 
 		// Are we going to copy the image record?
-    	if($app->input->get('task') == 'save2copy')
+    if($app->input->get('task') == 'save2copy')
 		{
 			$isCopy = true;
 		}
 		
 		// Rertrieve request image file data
-    	if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
-			&& $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
+    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
+    && $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
 		{
 			$imgUploaded = true;
 			$data['images'] = array();
 			\array_push($data['images'], $app->input->files->get('jform')['image']);
-		}    	
-
-		// Create tags
-		// if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
-		// {
-		// 	$table->new_tags = $data['tags'];
-		// }
+		}
 
     // Change language to 'All' if multilangugae is not enabled
     if (!Multilanguage::isEnabled())
@@ -350,7 +344,7 @@ class ImageModel extends JoomAdminModel
 			if($pk > 0)
 			{
 				$table->load($pk);
-				$isNew    = false;
+				$isNew = false;
 
 				// Check if the category was changed
 				if($table->catid != $data['catid'])
@@ -442,8 +436,11 @@ class ImageModel extends JoomAdminModel
       // Handle images if alias has changed
 			if(!$isNew && $aliasChanged && !$imgUploaded)
 			{
-        // Replace alias in filename
-        $table->filename = \str_replace($old_alias, $table->alias, $table->filename);
+        if(!$this->component->getConfig()->get('jg_useorigfilename'))
+        {
+          // Replace alias in filename if filename is title dependent
+          $table->filename = \str_replace($old_alias, $table->alias, $table->filename);
+        }
       }
 
       // Trigger the before save event.

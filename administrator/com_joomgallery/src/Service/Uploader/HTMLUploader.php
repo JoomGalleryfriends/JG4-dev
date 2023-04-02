@@ -85,16 +85,23 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     $this->src_name = $image['name'];
     $this->src_size = $image['size'];
 
-    // Get extension
-    $tag = strtolower(JFile::getExt($this->src_name));
+    // Create filesystem service
+    $this->component->createFilesystem();
 
-    // Get supported formats
+    // Get extension
+    $tag = $this->component->getFilesystem()->getExt($this->src_name);
+
+    // Get supported formats of image processor
     $this->component->createIMGtools($this->component->getConfig()->get('jg_imgprocessor'));
-    $supported_tags = $this->component->getIMGtools()->get('supported_types');
+    $supported_ext = $this->component->getIMGtools()->get('supported_types');
+    $allowed_imgtools = \in_array(\strtoupper($tag), $supported_ext);
     $this->component->delIMGtools();
 
+    // Get supported formats of filesystem    
+    $allowed_filesystem = $this->component->getFilesystem()->isAllowedFile($this->src_name);
+
     // Check for supported image format
-    if(!\in_array(\strtoupper($tag), $supported_tags) || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
+    if(!$allowed_imgtools || !$allowed_filesystem || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'));
       $this->error  = true;
@@ -122,41 +129,20 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
         $filecounter = $this->getSerial();
       }
 
-      // Create filesystem service
-      $this->component->createFilesystem('localhost');
-
       // Create new filename
       if($this->component->getConfig()->get('jg_useorigfilename'))
       {
-        $oldfilename = $this->src_name;
-        $newfilename = $this->component->getFilesystem()->cleanFilename($this->src_name);
+        $newfilename = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
       }
       else
       {
-        $oldfilename = $data['imgtitle'];
-        $newfilename = $this->component->getFilesystem()->cleanFilename($data['imgtitle']);
-      }
-
-      // Check the new filename
-      if(!$this->component->getFilesystem()->checkFilename($oldfilename, $newfilename))
-      {
-        if($is_site)
-        {
-          $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FILENAME'));
-        }
-        else
-        {
-          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_INVALID_FILENAME', $newfilename, $oldfilename));
-        }
-        $this->error = true;
-
-        return false;
+        $newfilename = $this->component->getFilesystem()->cleanFilename($data['imgtitle'], 0);
       }
 
       // Generate image filename
       $this->component->createFileManager();
       $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
-    }    
+    }
 
     // Trigger onJoomBeforeUpload
     $plugins  = $this->app->triggerEvent('onJoomBeforeUpload', array($data['filename']));

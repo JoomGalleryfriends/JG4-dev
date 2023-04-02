@@ -208,7 +208,7 @@ interface FileManagerInterface
    * Generates image filenames
    * e.g. <Name/Title>_<Filecounter (opt.)>_<Date>_<Random Number>.<Extension>
    *
-   * @param   string    $filename     Original upload name e.g. 'malta.jpg'
+   * @param   string    $filename     Original upload name without extension
    * @param   string    $tag          File extension e.g. 'jpg'
    * @param   int       $filecounter  Optinally a filecounter
    *
