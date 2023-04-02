@@ -24,11 +24,13 @@
         <field
               name="category"
               type="jgcategorydropdown"
+              layout="joomla.form.field.list-fancy-select"
               label="COM_JOOMGALLERY_COMMON_ALL"
               onchange="this.form.submit();"
               show_root="false"
               multiple="true"
               default=""
+              hint="JOPTION_SELECT_CATEGORY"
               message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY"
               task="filter" />
 
