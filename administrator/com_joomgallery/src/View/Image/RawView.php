@@ -35,64 +35,43 @@ class RawView extends JoomGalleryView
 	 *
 	 * @return void
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function display($tpl = null)
 	{
-    // Create filesystem service
-    $this->component->createFilesystem();
-
     // Get request variables
-    $type = $this->app->input->get('type', 'detail', 'word');
+    $type = $this->app->input->get('type', 'thumbnail', 'word');
     $id   = $this->app->input->get('id', 0, 'int');
 
     // Get image path
-    $img = JoomHelper::getImg($id, $type, false);
+    $img_path = JoomHelper::getImg($id, $type, false, false);
 
-    // Clean image path
-    //$img = $this->component->getFilesystem()->get('local_root') . $img;
-    $this->component->getFilesystem()->cleanPath($img);
+    // Create filesystem service
+    $this->component->createFilesystem();
 
-    // Download image from storage
-    // ToDo: Not a good solution!
-    $this->component->getFilesystem()->downloadFile($img);
-
-    // Check file
-    if(!JFile::exists($img))
+    // Get image ressource
+    try
     {
-      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_IMAGE_NOT_EXIST'), 'error');
+      list($file_info, $ressource) = $this->component->getFilesystem()->getResource($img_path);
+    }
+    catch (InvalidPathException $e)
+    {
+      $this->app->enqueueMessage($e, 'error');
       $this->app->redirect(Route::_('index.php', false), 404);
     }
 
-    // Get mime type
-    $info = getimagesize($img);
-    switch($info[2])
-    {
-      case 1:
-        $mime = 'image/gif';
-       break;
-      case 2:
-        $mime = 'image/jpeg';
-        break;
-      case 3:
-        $mime = 'image/png';
-        break;
-      case 18:
-        $mime = 'image/webp';
-        break;
-      default:
-        $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_COMMON_MSG_MIME_NOT_ALLOWED', $info[2]), 'error');
-        $this->app->redirect(Route::_('index.php', false), 404);
-        break;
-    }
-
     // Set mime encoding
-    $this->document->setMimeEncoding($mime);
+    $this->document->setMimeEncoding($file_info->mime_type);
 
     // Set header to specify the file name
-    $disposition = 'inline';
-    $this->app->setHeader('Content-disposition', $disposition.'; filename='.basename($img));
+    $this->app->setHeader('Cache-Control','no-cache, must-revalidate');
+    $this->app->setHeader('Pragma','no-cache');
+    $this->app->setHeader('Content-disposition','inline; filename='.\basename($img_path));
+    $this->app->setHeader('Content-Length',\strval($file_info->size));
 
-    echo \file_get_contents($img);
+    \ob_end_clean(); //required here or large files will not work
+    \fpassthru($ressource);
+
+    //echo \stream_get_contents($ressource);
   }
 }

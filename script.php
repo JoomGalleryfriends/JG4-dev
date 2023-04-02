@@ -482,7 +482,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["checked_out"] = 0;
     $data["created_by"] = 0;
     $data["modified_by"] = 0;
-    $data["jg_filesystem"] = 'localhost';
+    $data["jg_filesystem"] = 'local-images';
     $data["jg_wmfile"] = 'images/joomgallery/watermark.png';
     $data["jg_replaceinfo"] = '{}';
     $data["jg_staticprocessing"] = '{}';
