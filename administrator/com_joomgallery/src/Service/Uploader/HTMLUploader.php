@@ -251,7 +251,7 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       $this->component->getMessenger()->addTemplateData($tpl_vars);
 
       // Get recipients
-      $recipients = $this->component->getConfig()->get('jg_msg_upload_recipients')
+      $recipients = $this->component->getConfig()->get('jg_msg_upload_recipients');
 
       // Send message
       $this->component->getMessenger()->send($recipients);
