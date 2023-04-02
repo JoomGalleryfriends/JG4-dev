@@ -162,7 +162,6 @@ abstract class Uploader implements UploaderInterface
     $lang->load(_JOOM_OPTION.'.iptc', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
 
     // Loop through all replacements defined in config
-    $warning = false;
     foreach ($this->component->getConfig()->get('jg_replaceinfo') as $replaceinfo)
     {
       $source_array = \explode('-', $replaceinfo->source);
@@ -196,7 +195,7 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            if($this->component->getConfig()->get('jg_replaceshowwarning'))
+            if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               if($source_attribute == 'DateTimeOriginal')
               {
@@ -206,8 +205,6 @@ abstract class Uploader implements UploaderInterface
               {
                 $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
               }
-
-              $warning = true;
             }           
 
             continue 2;
@@ -223,10 +220,9 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            if($this->component->getConfig()->get('jg_replaceshowwarning'))
+            if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_('COM_JOOMGALLERY_COMMENT')));
-              $warning = true;
             }
 
             continue 2;
@@ -259,10 +255,9 @@ abstract class Uploader implements UploaderInterface
           else
           {
             // Matadata value not available in image
-            if($this->component->getConfig()->get('jg_replaceshowwarning'))
+            if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
-              $warning = true;
             }
 
             continue 2;
@@ -276,7 +271,7 @@ abstract class Uploader implements UploaderInterface
       }
 
 
-      if($warning)
+      if($this->component->getConfig()->get('jg_replaceshowwarning') == 2)
       {
         $this->component->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_METAHINT'));
       }

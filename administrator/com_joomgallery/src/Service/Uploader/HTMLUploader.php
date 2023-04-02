@@ -12,6 +12,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 
 \defined('_JEXEC') or die;
 
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
@@ -223,19 +224,38 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     }
 
     // Message about new image
-    // if($is_site)
-    // {
-    //   // Create message service
-    //   $this->component->createMessenger();
+    $jg_filenamenumber = $this->component->getConfig()->get('jg_filenamenumber');
+    if($is_site && $jg_filenamenumber !== 'none')
+    {
+      // Create message service
+      $this->component->createMessenger($jg_filenamenumber);
 
-    //   $message    = array(
-    //                         'from'      => $user->get('id'),
-    //                         'subject'   => Text::_('COM_JOOMGALLERY_UPLOAD_MESSAGE_NEW_IMAGE_UPLOADED'),
-    //                         'body'      => Text::sprintf('COM_JOOMGALLERY_MESSAGE_NEW_IMAGE_SUBMITTED_BODY', $this->component->getConfig()->get('jg_realname') ? $user->get('name') : $user->get('username'), $row->imgtitle),
-    //                         'mode'      => 'upload'
-    //                       );
-    //   $this->component->getMessenger()->send($message);
-    // }
+      // Get user
+      $user = Factory::getUser();
+
+      // Get category
+      $cat = JoomHelper::getRecord('category', $data_row->catid, $this->component);
+
+      // Template variables
+      $tpl_vars = array( 'user_id' => $user->id,
+                         'user_username' => $user->username,
+                         'user_name' => $user->name,
+                         'img_id' => $data_row->id,
+                         'img_title' => $data_row->imgtitle,
+                         'cat_id' => $cat->id,
+                         'cat_title' => $cat->title
+                        );
+
+      // Setting up message template
+      $this->component->getMessenger()->selectTemplate(_JOOM_OPTION.'.newimage');
+      $this->component->getMessenger()->addTemplateData($tpl_vars);
+
+      // Get recipients
+      $recipients = $this->component->getConfig()->get('jg_msg_upload_recipients')
+
+      // Send message
+      $this->component->getMessenger()->send($recipients);
+    }
 
     $this->component->addDebug(' ');
     $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE_END'));
