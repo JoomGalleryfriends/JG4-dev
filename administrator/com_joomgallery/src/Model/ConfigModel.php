@@ -50,7 +50,21 @@ class ConfigModel extends JoomAdminModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $item = null;	
+	protected $item = null;
+
+  /**
+	 * @var    null  Form object
+	 *
+	 * @since  4.0.0
+	 */
+	protected $form = null;
+
+  /**
+	 * @var    array  Fieldset array
+	 *
+	 * @since  4.0.0
+	 */
+	protected $fieldsets = array();
 
 	/**
 	 * Returns a reference to the a Table object, always creating it.
@@ -81,9 +95,9 @@ class ConfigModel extends JoomAdminModel
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
-		$form = $this->loadForm($this->typeAlias, 'config', array('control' => 'jform', 'load_data' => $loadData));
+		$this->form = $this->loadForm($this->typeAlias, 'config', array('control' => 'jform', 'load_data' => $loadData));
 
-		if(empty($form))
+		if(empty($this->form))
 		{
 			return false;
 		}
@@ -91,11 +105,11 @@ class ConfigModel extends JoomAdminModel
     // Special threatment for Global Configuration set
     if($this->item->id === 1)
     {
-      $form->setFieldAttribute('title', 'readonly', 'true');
-      $form->setFieldAttribute('group_id', 'readonly', 'true');
+      $this->form->setFieldAttribute('title', 'readonly', 'true');
+      $this->form->setFieldAttribute('group_id', 'readonly', 'true');
     }
 
-		return $form;
+		return $this->form;
 	}
 
 	/**
@@ -123,6 +137,31 @@ class ConfigModel extends JoomAdminModel
 		return $data;
 	}
 
+  /**
+   * Method to allow derived classes to preprocess the form.
+   *
+   * @param   Form    $form   A Form object.
+   * @param   mixed   $data   The data expected for the form.
+   * @param   string  $group  The name of the plugin group to import (defaults to "content").
+   *
+   * @return  void
+   *
+   * @see     FormField
+   * @since   4.0.0
+   * @throws  \Exception if there is an error in the form event.
+   */
+  protected function preprocessForm(Form $form, $data, $group = 'content')
+  {
+    // Add options to the replaceinfo field
+		JoomHelper::addReplaceinfoOptions($form);
+
+    // Import the appropriate plugin group.
+    PluginHelper::importPlugin($group);
+
+    // Trigger the form preparation event.
+    Factory::getApplication()->triggerEvent('onContentPrepareForm', array($form, $data));
+  }
+
 	/**
 	 * Method to get a single record.
 	 *
@@ -147,6 +186,70 @@ class ConfigModel extends JoomAdminModel
 
     return $item;
 	}
+
+  /**
+	 * Method to get all available fieldsets from form.
+	 *
+	 * @return  array   Array with available fieldsets
+	 *
+	 * @since   4.0.0
+	 */
+  public function getFieldsets()
+  {
+    // Fill fieldset array
+		foreach($this->form->getFieldsets() as $key => $fieldset)
+		{
+			$parts = \explode('-',$key);
+			$level = \count($parts);
+
+			$fieldset->level = $level;
+			$fieldset->title = \end($parts);
+
+			$this->setFieldset($key, array('this'=>$fieldset));
+		}
+
+		// Add permissions fieldset to level 1 fieldsets
+		$permissions = array('name' => 'permissions',
+							'label' => 'JGLOBAL_ACTION_PERMISSIONS_LABEL',
+							'description' => '',
+							'type' => 'tab',
+							'level' => 1,
+							'title' => 'permissions');
+		$this->fieldsets['permissions'] = array('this' => (object) $permissions);
+
+    return $this->fieldsets;
+  }
+
+  /**
+	 * Add a fieldset to the fieldset array.
+   * source: https://stackoverflow.com/questions/13308968/create-infinitely-deep-multidimensional-array-from-string-in-php
+   *
+   * @param  string  $key    path for the value in the array
+   * @param  string  $value  the value to be placed at the defined path
+	 *
+	 * @return void
+	 *
+	 */
+	protected function setFieldset($key, $value)
+	{
+    if(false === ($levels = \explode('-',$key)))
+    {
+      return;
+    }
+
+    $pointer = &$this->fieldsets;
+    for ($i=0; $i < \sizeof($levels); $i++)
+    {
+      if(!isset($pointer[$levels[$i]]))
+      {
+        $pointer[$levels[$i]] = array();
+      }
+
+      $pointer = &$pointer[$levels[$i]];
+    }
+
+    $pointer = $value;
+  }
 
 	/**
 	 * Method to duplicate an Config
