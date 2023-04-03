@@ -156,6 +156,9 @@ class ConfigModel extends JoomAdminModel
     // Add options to the jg_replaceinfo.source field
 		ConfigHelper::addReplaceinfoOptions($form);
 
+    // Add options to the jg_filesystem field
+    ConfigHelper::addFilesystemOptions($form);
+
     // Import the appropriate plugin group.
     PluginHelper::importPlugin($group);
 

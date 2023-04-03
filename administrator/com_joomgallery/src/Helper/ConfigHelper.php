@@ -17,6 +17,8 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\Form;
 
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+
 /**
  * Helper for the configuration manager
  *
@@ -103,6 +105,41 @@ class ConfigHelper
       }
 
       return;
+    }
+    else
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
+    }
+  }
+
+  /**
+	 * Add dropdown options to the jg_filesystem form field
+   *
+   * @param   Form    $form    Form object to add filesystem options
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+   * @throws  \Exception
+	 */
+  public static function addFilesystemOptions(&$form)
+  {
+    // Check if we got a valid form object
+    if(\is_object($form) && $form instanceof Form && $form->getName() == 'com_joomgallery.config')
+    {
+      $filesystem = JoomHelper::getService('filesystem');
+      $providers  = $filesystem->getProviders();
+
+      foreach($providers as $provider)
+      {
+        foreach ($provider->adapterNames as $adapter)
+        {
+          $val  = $provider->name . '-' . $adapter;
+          $text = $provider->displayName . ' (' . $adapter . ')';
+
+          $form->getField('jg_filesystem')->addOption($text, array('value'=>$val));
+        }
+      }
     }
     else
     {

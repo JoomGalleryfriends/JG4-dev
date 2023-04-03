@@ -178,6 +178,9 @@ class HtmlView extends JoomGalleryView
 	 */
   public function getFieldset($name)
 	{
+
+    return $this->form->getFieldset($name);
+
     $xml = null;
 
     // Attempt to load the XML file.

@@ -76,12 +76,11 @@
     <fieldset type="tab" name="general-general" label="COM_JOOMGALLERY_CONFIG_TAB_COMMON">
       <field name="jg_filesystem"
              type="list"
-             default="localhost"
+             default="local-images"
              global_only="true"
              sensitive="true"
              label="COM_JOOMGALLERY_CONFIG_FILESYSTEM"
              description="COM_JOOMGALLERY_CONFIG_FILESYSTEM_LONG" >
-        <option value="local-images">COM_JOOMGALLERY_CONFIG_FILESYSTEM_LOCALHOST</option>
       </field>
       <field name="jg_imagetypes"
              type="text"
