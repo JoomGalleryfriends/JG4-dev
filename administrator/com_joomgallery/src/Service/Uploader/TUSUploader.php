@@ -16,11 +16,11 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderIn
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader as BaseUploader;
 
 /**
-* Uploader helper class (Batch Upload)
+* Uploader helper class (TUS Upload)
 *
 * @since  4.0.0
 */
-class BatchUploader extends BaseUploader implements UploaderInterface
+class TUSUploader extends BaseUploader implements UploaderInterface
 {
 	/**
 	 * Method to upload a new image.
@@ -31,6 +31,6 @@ class BatchUploader extends BaseUploader implements UploaderInterface
 	 */
 	public function upload(): string
   {
-    return 'Batch upload successfully!';
+    return 'TUS upload successfully!';
   }
 }

@@ -12,9 +12,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 
 \defined('JPATH_PLATFORM') or die;
 
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\SingleUploader;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\AjaxUploader;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\BatchUploader;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\HTMLUploader;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\TUSUploader;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\FTPUploader;
 
 /**
@@ -45,26 +44,23 @@ trait UploaderServiceTrait
 		return $this->uploader;
 	}
 
-    /**
+	/**
 	 * Creates the Uploader helper class based on the selected upload method
 	 *
-     * @param   string  $uploadMethod   Name of the upload method to be used
+	 * @param   string  $uploadMethod   Name of the upload method to be used
 	 * @param   bool    $multiple       True, if it is a multiple upload (default: false)
 	 *
-     * @return  void
-     *
+	 * @return  void
+	 *
 	 * @since  4.0.0
 	 */
 	public function createUploader($uploadMethod, $multiple=false): void
 	{
     switch ($uploadMethod)
     {
-      case 'ajax':
-        $this->uploader = new AjaxUploader($multiple);
-        break;
-
-      case 'batch':
-        $this->uploader = new BatchUploader($multiple);
+      case 'TUS':
+			case 'tus':
+        $this->uploader = new TUSUploader($multiple);
         break;
 
       case 'FTP':
