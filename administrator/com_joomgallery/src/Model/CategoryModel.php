@@ -355,12 +355,6 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
-        // Crate path if not existent
-        if(empty($table->path))
-        {
-          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
-        }
-
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 

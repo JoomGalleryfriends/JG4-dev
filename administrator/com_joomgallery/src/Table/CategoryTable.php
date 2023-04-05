@@ -262,19 +262,14 @@ class CategoryTable extends Table implements VersionableTableInterface
 	 */
   public function setPathWithLocation($old = false)
   {
-    if($old)
+    // Check with new categories and category data changes!!
+    if($old && $this->_old_location_path)
     {
-      if($this->_old_location_path)
-      {
-        $this->path = $this->_old_location_path;
-      }
+      $this->path = $this->_old_location_path;
     }
-    else
+    elseif($this->_new_location_path)
     {
-      if($this->_new_location_path)
-      {
-        $this->path = \str_replace('{alias}', $this->alias, $this->_new_location_path);
-      }
+      $this->path = \str_replace('{alias}', $this->alias, $this->_new_location_path);
     }
   }
 
@@ -376,12 +371,19 @@ class CategoryTable extends Table implements VersionableTableInterface
   {
     parent::setLocation($referenceId, $position);
 
-    if($referenceId !== 0)
+    if($referenceId !== 0 && !empty($this->id))
     {
       $referenceObj = JoomHelper::getRecord('category', $referenceId);
 
-      $this->_new_location_path = $referenceObj->path.'/{alias}';
-    }    
+      if(empty($referenceObj->path))
+      {
+        $this->_new_location_path = '{alias}';
+      }
+      else
+      {
+        $this->_new_location_path = $referenceObj->path.'/{alias}';
+      }      
+    }
   }
 
 	/**

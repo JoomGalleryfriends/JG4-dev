@@ -1088,7 +1088,14 @@ class FileManager implements FileManagerInterface
       // We got a valid parent category object
       if(\is_object($parent) && $parent instanceof \Joomla\CMS\Object\CMSObject && isset($parent->path))
       {
-        $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        if(empty($parent->path))
+        {
+          $path = $alias;
+        }
+        else
+        {
+          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        }
       }
       // We got a parent category path
       elseif(\is_string($parent) && $this->is_path($parent))
@@ -1113,7 +1120,14 @@ class FileManager implements FileManagerInterface
           return false;
         }
 
-        $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        if(empty($parent->path))
+        {
+          $path = $alias;
+        }
+        else
+        {
+          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        }
       }
     }
     // We got nothing to work with
