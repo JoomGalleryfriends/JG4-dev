@@ -23,9 +23,11 @@ JoomGallery is an OpenSource project and is developed by users for users. So if 
 
 ## Code development
 ### Joomla 4 extension development docs
-- https://blog.astrid-guenther.de/en/der-weg-zu-joomla4-erweiterungen/
-- https://www.dionysopoulos.me/book.html
-- https://joomlacommunity.cloud.mattermost.com/main/channels/extension-development-room
+- [Astrids Blog on Joomla 4 Extension development](https://blog.astrid-guenther.de/en/der-weg-zu-joomla4-erweiterungen/)
+- [Nicholas bokk on Joomla 4 development](https://www.dionysopoulos.me/book.html)
+- [Robbies video series on Joomla 4 component development](https://www.youtube.com/playlist?list=PLzio09PZm6TuXGnu-ptpVb90Szkawy9IV)
+- [Official Joomla 4 component development docs](https://docs.joomla.org/J4.x:Developing_an_MVC_Component/Introduction)
+- [Mattermost channel for Joomla developers](https://joomlacommunity.cloud.mattermost.com/main/channels/extension-development-room)
 
 ### Codestyle guide
 PHP: [Codestyle guide for PHP](docs/Codestyleguide.md)
