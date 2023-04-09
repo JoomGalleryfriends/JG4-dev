@@ -72,7 +72,7 @@ abstract class Uploader implements UploaderInterface
    *
    * @var string
    */
-  protected $filesystem_type = 'localhost';
+  protected $filesystem_type = 'local-images';
 
   /**
    * Set to true if it is a multiple upload
@@ -109,6 +109,88 @@ abstract class Uploader implements UploaderInterface
 
     $this->component->addDebug($this->app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
     $this->component->addWarning($this->app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
+  }
+
+  /**
+	 * Base method to retrieve an uploaded image. Step 1.
+   * Method has to be extended! Do not use it in this way!
+	 *
+   * @param   array    $data        Form data (as reference)
+   * @param   bool     $filename    True, if the filename has to be created (defaut: True)
+   *
+	 * @return  bool     True on success, false otherwise
+	 *
+	 * @since  4.0.0
+	 */
+	public function retrieveImage(&$data, $filename=True): bool
+  {
+    // Create filesystem service
+    $this->component->createFilesystem();
+
+    // Get extension
+    $tag = $this->component->getFilesystem()->getExt($this->src_name);
+
+    // Get supported formats of image processor
+    $this->component->createIMGtools($this->component->getConfig()->get('jg_imgprocessor'));
+    $supported_ext = $this->component->getIMGtools()->get('supported_types');
+    $allowed_imgtools = \in_array(\strtoupper($tag), $supported_ext);
+    $this->component->delIMGtools();
+
+    // Get supported formats of filesystem    
+    $allowed_filesystem = $this->component->getFilesystem()->isAllowedFile($this->src_name);
+
+    // Check for supported image format
+    if(!$allowed_imgtools || !$allowed_filesystem || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
+    {
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'));
+      $this->error  = true;
+
+      return false;
+    }
+
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $this->src_name));
+
+    // Image size must not exceed the setting in backend if we are in frontend
+    if($this->app->isClient('site') && $this->src_size > $this->component->getConfig()->get('jg_maxfilesize'))
+    {
+      $this->component->addDebug(Text::sprintf('JGLOBAL_MAXIMUM_UPLOAD_SIZE_LIMIT', $this->component->getConfig()->get('jg_maxfilesize')));
+      $this->error  = true;
+
+      return false;
+    }
+
+    if($filename)
+    {
+      // Get filecounter
+      $filecounter = null;
+      if($this->multiple && $this->component->getConfig()->get('jg_filenamenumber'))
+      {
+        $filecounter = $this->getSerial();
+      }
+
+      // Create new filename
+      if($this->component->getConfig()->get('jg_useorigfilename'))
+      {
+        $newfilename = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
+      }
+      else
+      {
+        $newfilename = $this->component->getFilesystem()->cleanFilename($data['imgtitle'], 0);
+      }
+
+      // Generate image filename
+      $this->component->createFileManager();
+      $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
+    }
+
+    // Trigger onJoomBeforeUpload
+    $plugins  = $this->app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
+    if(in_array(false, $plugins, true))
+    {
+      return false;
+    }
+
+    return true;
   }
 
   /**
