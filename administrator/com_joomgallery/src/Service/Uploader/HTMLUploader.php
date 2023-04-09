@@ -71,10 +71,9 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 
     // Get number of uploaded images of the current user
     $counter = $this->getImageNumber($user->get('id'));
-    $is_site = $this->app->isClient('site');
 
     // Check if user already exceeds its upload limit
-    if($is_site && $counter > ($this->component->getConfig()->get('jg_maxuserimage') - 1) && $user->get('id'))
+    if($this->app->isClient('site') && $counter > ($this->component->getConfig()->get('jg_maxuserimage') - 1) && $user->get('id'))
     {
       $timespan = $this->component->getConfig()->get('jg_maxuserimage_timespan');
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_MAY_ADD_MAX_OF', $this->component->getConfig()->get('jg_maxuserimage'), $timespan > 0 ? Text::plural('COM_JOOMGALLERY_UPLOAD_NEW_IMAGE_MAXCOUNT_TIMESPAN', $timespan) : ''));
@@ -86,68 +85,11 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     $this->src_name = $image['name'];
     $this->src_size = $image['size'];
 
-    // Create filesystem service
-    $this->component->createFilesystem();
-
-    // Get extension
-    $tag = $this->component->getFilesystem()->getExt($this->src_name);
-
-    // Get supported formats of image processor
-    $this->component->createIMGtools($this->component->getConfig()->get('jg_imgprocessor'));
-    $supported_ext = $this->component->getIMGtools()->get('supported_types');
-    $allowed_imgtools = \in_array(\strtoupper($tag), $supported_ext);
-    $this->component->delIMGtools();
-
-    // Get supported formats of filesystem    
-    $allowed_filesystem = $this->component->getFilesystem()->isAllowedFile($this->src_name);
-
-    // Check for supported image format
-    if(!$allowed_imgtools || !$allowed_filesystem || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
-    {
-      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'));
-      $this->error  = true;
-
-      return false;
-    }
-
-    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $this->src_name));
-
-    // Image size must not exceed the setting in backend if we are in frontend
-    if($is_site && $this->src_size > $this->component->getConfig()->get('jg_maxfilesize'))
-    {
-      $this->component->addDebug(Text::sprintf('JGLOBAL_MAXIMUM_UPLOAD_SIZE_LIMIT', $this->component->getConfig()->get('jg_maxfilesize')));
-      $this->error  = true;
-
-      return false;
-    }
-
-    if($filename)
-    {
-      // Get filecounter
-      $filecounter = null;
-      if($this->multiple && $this->component->getConfig()->get('jg_filenamenumber'))
-      {
-        $filecounter = $this->getSerial();
-      }
-
-      // Create new filename
-      if($this->component->getConfig()->get('jg_useorigfilename'))
-      {
-        $newfilename = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
-      }
-      else
-      {
-        $newfilename = $this->component->getFilesystem()->cleanFilename($data['imgtitle'], 0);
-      }
-
-      // Generate image filename
-      $this->component->createFileManager();
-      $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
-    }
-
-    // Trigger onJoomBeforeUpload
-    $plugins  = $this->app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
-    if(in_array(false, $plugins, true))
+    // Perform the parent method
+    // - check tag and size
+    // - create filename
+    // - trigger onJoomBeforeUpload
+    if(!parent::retrieveImage($data, $filename))
     {
       return false;
     }
