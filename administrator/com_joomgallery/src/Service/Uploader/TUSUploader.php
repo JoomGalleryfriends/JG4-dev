@@ -17,7 +17,6 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
 
-use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface as TUSServerInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader as BaseUploader;
 
@@ -150,26 +149,11 @@ class TUSUploader extends BaseUploader implements UploaderInterface
     // Get upload date
     if(empty($data['imgdate']) || \strpos($data['imgdate'], '1900-01-01') !== false)
     {
-      $data['imgdate'] = $data['created_time'];
+      $data['imgdate'] = date('Y-m-d');
     }
 
     // Override form data with image metadata
     return parent::overrideData($data);
-  }
-
-  /**
-	 * Method to create uploaded image files. Step 3.
-   * (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
-	 *
-   * @param   ImageTable   $data_row     Image object
-   *
-	 * @return  bool         True on success, false otherwise
-	 *
-	 * @since  4.0.0
-	 */
-	public function createImage($data_row): bool
-  {
-    return true;
   }
 
   /**

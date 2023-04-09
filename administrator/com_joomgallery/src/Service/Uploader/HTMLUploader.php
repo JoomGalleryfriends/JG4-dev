@@ -12,12 +12,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 
 \defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
-use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
+
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader as BaseUploader;
 
@@ -133,82 +132,6 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 
     // Override form data with image metadata
     return parent::overrideData($data);
-  }
-
-  /**
-	 * Method to create uploaded image files. Step 3.
-   * (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
-	 *
-   * @param   ImageTable   $data_row     Image object
-   *
-	 * @return  bool         True on success, false otherwise
-	 *
-	 * @since  4.0.0
-	 */
-	public function createImage($data_row): bool
-  {
-    // Check if filename was set
-    if(!isset($data_row->filename) || empty($data_row->filename))
-    {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_UPLOAD_CHECK_FILENAME'));
-    }
-
-    // Create file manager service
-    $this->component->createFileManager();    
-    
-    // Create image types
-    if(!$this->component->getFileManager()->createImages($this->src_file, $data_row->filename, $data_row->catid))
-    {
-      $this->rollback($data_row);
-      $this->error = true;
-
-      return false;
-    }
-
-    // Message about new image
-    $jg_filenamenumber = $this->component->getConfig()->get('jg_filenamenumber');
-    if($is_site && $jg_filenamenumber !== 'none')
-    {
-      // Create message service
-      $this->component->createMessenger($jg_filenamenumber);
-
-      // Get user
-      $user = Factory::getUser();
-
-      // Get category
-      $cat = JoomHelper::getRecord('category', $data_row->catid, $this->component);
-
-      // Template variables
-      $tpl_vars = array( 'user_id' => $user->id,
-                         'user_username' => $user->username,
-                         'user_name' => $user->name,
-                         'img_id' => $data_row->id,
-                         'img_title' => $data_row->imgtitle,
-                         'cat_id' => $cat->id,
-                         'cat_title' => $cat->title
-                        );
-
-      // Setting up message template
-      $this->component->getMessenger()->selectTemplate(_JOOM_OPTION.'.newimage');
-      $this->component->getMessenger()->addTemplateData($tpl_vars);
-
-      // Get recipients
-      $recipients = $this->component->getConfig()->get('jg_msg_upload_recipients');
-
-      // Send message
-      $this->component->getMessenger()->send($recipients);
-    }
-
-    $this->component->addDebug(' ');
-    $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE_END'));
-    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $data_row->filename));
-
-    $this->app->triggerEvent('onJoomAfterUpload', array($data_row));
-
-    // Reset user states
-    $this->resetUserStates();
-
-    return !$this->error;
   }
 
   /**
