@@ -61,6 +61,14 @@
            label="JGLOBAL_TITLE"
            message="COM_JOOMGALLERY_COMMON_ALERT_IMAGE_MUST_HAVE_TITLE" />
 
+    <field name="numbering"
+           type="number"
+           default="1"
+           min="1"
+           step="1"
+           label="COM_JOOMGALLERY_FIELDS_NUMBERING_START"
+           description="COM_JOOMGALLERY_FIELDS_NUMBERING_START_DESC" />
+
     <field name="alias"
            type="text"
            class="inputbox"
@@ -105,10 +113,20 @@
     <field name="language"
            type="language"
            client="administrator"
-           label="JGRID_HEADING_LANGUAGE"
-           >
+           label="JGRID_HEADING_LANGUAGE">
            <option value="*">JALL</option>
 		</field>
+
+    <field name="debug"
+           type="radio"
+           class="btn-group"
+           default="0"
+           size="1"
+           label="COM_JOOMGALLERY_DEBUG_MODE"
+           description="COM_JOOMGALLERY_FIELDS_DEBUG_MODE_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
 
     <field name="imgtext"
            type="editor"
