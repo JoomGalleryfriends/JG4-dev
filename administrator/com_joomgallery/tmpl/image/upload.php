@@ -45,16 +45,40 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
     <div class="row align-items-start">
       <div class="col-xxl-auto col-md-6 mb">
-        <div id="drag-drop-area">
-          <div class="card"><div class="card-body">Upload form could not be loaded.<br />Make sure JavaScript is enabled in order to use the multiple upload method.</div></div>
+        <div class="card">
+          <div class="card-header">
+            <h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE_SELECTION'); ?></h2>
+          </div>
+          <div id="drag-drop-area">
+            <div class="card-body"><?php echo Text::_('COM_JOOMGALLERY_INFO_UPLOAD_FORM_NOT_LOADED'); ?></div>
+          </div>
+          <hr />
+          <div class="card-body">
+            <?php echo $this->form->renderField('debug'); ?>
+          </div>
         </div>
       </div>
       <div class="col card">
         <div class="card-header">
-          <h2>Options</h2>
+          <h2><?php echo Text::_('JOPTIONS'); ?></h2>
         </div>
         <div class="card-body">
+          <p><?php echo Text::_('COM_JOOMGALLERY_GENERIC_UPLOAD_DATA'); ?></p>
           <?php echo $this->form->renderField('catid'); ?>
+          <?php if(!$this->config->get('jg_useorigfilename')): ?>
+            <?php echo $this->form->renderField('imgtitle'); ?>
+            <?php if($this->config->get('jg_filenamenumber')): ?>
+              <?php echo $this->form->renderField('numbering'); ?>
+            <?php endif; ?>
+          <?php endif; ?>
+          <?php echo $this->form->renderField('imgauthor'); ?>
+          <?php echo $this->form->renderField('published'); ?>
+          <?php echo $this->form->renderField('access'); ?>
+          <?php echo $this->form->renderField('language'); ?>
+          <fieldset class="adminform">
+            <?php echo $this->form->getLabel('imgtext'); ?>
+            <?php echo $this->form->getInput('imgtext'); ?>
+          </fieldset>
         </div>
       </div>
     </div>
@@ -87,15 +111,14 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     target: '#drag-drop-area',
     showProgressDetails: true,
     metaFields: [
-      { id: 'name', name: 'Name', placeholder: 'file name'},
-      { id: 'description', name: 'Description', placeholder: 'description of the file' },
-      { id: 'owner', name: 'Author', placeholder: 'author of the file' }
+      { id: 'imgtitle', name: 'Name', placeholder: 'file name'},
+      { id: 'imgtext', name: 'Description', placeholder: 'description of the file' },
+      { id: 'author', name: 'Author', placeholder: 'author of the file' }
     ],
   });
 
   uppy.use(Tus, {
     endpoint: "<?php echo $this->item->tus_location; ?>",
-    //endpoint: 'https://tusd.tusdemo.net/files/',
     retryDelays: [0, 1000, 3000, 5000],
     allowedMetaFields: null,
   })

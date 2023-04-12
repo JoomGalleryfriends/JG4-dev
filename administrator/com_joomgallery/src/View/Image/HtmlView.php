@@ -48,6 +48,7 @@ class HtmlView extends JoomGalleryView
 		$this->state      = $this->get('State');
 		$this->item       = $this->get('Item');
 		$this->form       = $this->get('Form');
+    $this->config     = JoomHelper::getService('config');
     $this->imagetypes = JoomHelper::getRecords('imagetypes');
 
     if($this->item->id == 0)

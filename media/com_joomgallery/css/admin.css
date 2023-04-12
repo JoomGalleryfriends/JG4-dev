@@ -110,6 +110,7 @@ joomla-field-image .jg_minithumb {
 }
 .uppy-Dashboard-inner {
   background-color: var(--white);
+  border: none;
 }
 .uppy-Dashboard-Item {
   height: auto !important;
