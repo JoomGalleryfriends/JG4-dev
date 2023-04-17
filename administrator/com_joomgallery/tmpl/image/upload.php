@@ -19,13 +19,11 @@ use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
 $uppy_version = '3.7.0'; // Uppy version to use
-$path_css = Uri::root(true).'/media/'._JOOM_OPTION.'/css';
-$path_js = Uri::root(true).'/media/'._JOOM_OPTION.'/js';
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
-$wa->registerAndUseStyle('com_joomgallery.uppy', _JOOM_OPTION.'/uppy-'.$uppy_version.'.min.css');
-$wa->registerAndUseScript('com_joomgallery.uppy', _JOOM_OPTION.'/uppy-'.$uppy_version.'.js', [], ['type' => 'module', 'defer' => true]);
+$wa->registerAndUseStyle('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.min.css');
+$wa->registerAndUseScript('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.js', [], ['type' => 'module', 'defer' => true]);
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
    ->useStyle('com_joomgallery.admin');
