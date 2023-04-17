@@ -8,7 +8,7 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomla\CMS\Form;
+namespace Joomgallery\Component\Joomgallery\Administrator\Form;
 
 use Joomla\CMS\Form\Form;
 
@@ -39,7 +39,7 @@ class ConfigForm extends Form
    * @since   1.7.0
    * @throws  \Exception
    */
-  public function getFieldset($set)
+  public function getFieldset($set = null)
   {
     $fields = [];
 

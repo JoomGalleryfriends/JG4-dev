@@ -10,8 +10,10 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Form;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Form\FormFactoryInterface;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\Database\DatabaseAwareTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Form\ConfigForm;
 
@@ -39,16 +41,18 @@ class FormFactory implements FormFactoryInterface
      */
     public function createForm(string $name, array $options = array()): Form
     {
-      if($name == 'config')
+      if(\strpos($name, 'config') !== false)
       {
+        // The config form needs a special form class
         $form = new ConfigForm($name, $options);
       }
       else
       {
+        // All other forms can use the default form class
         $form = new Form($name, $options);
       }
 
-      $form->setDatabase($this->getDatabase());
+      $form->setDatabase(Factory::getContainer()->get(DatabaseInterface::class));
 
       return $form;
     }

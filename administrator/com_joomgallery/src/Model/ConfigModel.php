@@ -16,8 +16,10 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Form\FormFactory;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
@@ -112,6 +114,21 @@ class ConfigModel extends JoomAdminModel
 
 		return $this->form;
 	}
+
+  /**
+   * Get the FormFactoryInterface.
+   *
+   * @return  FormFactoryInterface
+   *
+   * @since   4.0.0
+   * @throws  \UnexpectedValueException May be thrown if the FormFactory has not been set.
+   */
+  public function getFormFactory(): FormFactoryInterface
+  {
+    $formFactory = new FormFactory;
+
+    return $formFactory;
+  }
 
 	/**
 	 * Method to get the data that should be injected in the form.

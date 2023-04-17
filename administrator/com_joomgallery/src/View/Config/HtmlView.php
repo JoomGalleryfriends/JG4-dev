@@ -178,103 +178,11 @@ class HtmlView extends JoomGalleryView
 	 */
   public function getFieldset($name)
 	{
-
     return $this->form->getFieldset($name);
-
-    $xml = null;
-
-    // Attempt to load the XML file.
-    $filename = JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'forms'.DIRECTORY_SEPARATOR.'config.xml';
-    if(file_exists($filename))
-    {
-      $xml = simplexml_load_file($filename);
-    }
-
-    // Initialise fields array
-    $fields = array();
-
-    // Make sure there is a valid Form XML document.
-		if(!($xml instanceof \SimpleXMLElement))
-		{
-			throw new \UnexpectedValueException('XML is not an instance of SimpleXMLElement');
-		}
-
-    /*
-		 * Get an array of <field /> elements that are underneath a <fieldset /> element
-		 * with the appropriate name attribute, and also any <field /> elements with
-		 * the appropriate fieldset attribute. To allow repeatable elements only fields
-		 * which are not descendants of other fields are selected.
-		 */
-    $elements = $xml->xpath('(//fieldset[@name="' . $name . '"]/field | //field[@fieldset="' . $name . '"])[not(ancestor::field)]');
-
-    // If no field elements were found return empty.
-		if(empty($elements))
-		{
-			return $fields;
-		}
-
-    // Build the result array from the found field elements.
-		foreach($elements as $element)
-		{
-			// Get the field groups for the element.
-			$attrs = $element->xpath('ancestor::fields[@name]/@name');
-			$groups = array_map('strval', $attrs ? $attrs : array());
-			$group = implode('.', $groups);
-
-			// If the field is successfully loaded add it to the result array.
-      // Get the field type.
-      $type = $element['type'] ? (string) $element['type'] : 'text';
-
-      // Load the FormField object for the field.
-      $field = FormHelper::loadFieldType($type);
-
-      // If the object could not be loaded, get a text field object.
-      if($field === false)
-      {
-        $field = FormHelper::loadFieldType('text');
-      }
-
-      /*
-      * Get the value for the form field if not set.
-      * Default to the translated version of the 'default' attribute
-      * if 'translate_default' attribute if set to 'true' or '1'
-      * else the value of the 'default' attribute for the field.
-      */
-      $default = (string) ($element['default'] ? $element['default'] : $element->default);
-
-      if(($translate = $element['translate_default']) && ((string) $translate === 'true' || (string) $translate === '1'))
-      {
-        $lang = Factory::getLanguage();
-
-        if($lang->hasKey($default))
-        {
-          $debug = $lang->setDebug(false);
-          $default = Text::_($default);
-          $lang->setDebug($debug);
-        }
-        else
-        {
-          $default = Text::_($default);
-        }
-      }
-
-      $value = $this->form->getValue((string) $element['name'], $group, $default);
-
-      // Setup the FormField object.
-      $field->setForm($this->form);
-      $field->setup($element, $value, $group);
-
-			if($field)
-			{
-				$fields[$field->id] = $field;
-			}
-		}
-
-		return $fields;
   }
 
   /**
-  * Add the page title and toolbar.
+  * Render a single field.
   *
   * @param   object  $field   Field object to render
   *
