@@ -84,14 +84,6 @@ class ConfigHelper
         $value = $exif_option[0] . '-' . $exif_option[1];
 
         \array_push($options, array('text' => $text, 'value'=>$value));
-        // if($formtype == 'subform')
-        // {
-        //   $form->getField('source')->addOption($text, array('value'=>$value));
-        // }
-        // else
-        // {
-        //   $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-        // }
       }
 
       foreach ($iptc_options as $key => $iptc_option)
@@ -101,14 +93,6 @@ class ConfigHelper
         $value = $iptc_option[0] . '-' . $iptc_option[1];
 
         \array_push($options, array('text' => $text, 'value'=>$value));
-        // if($formtype == 'subform')
-        // {
-        //   $form->getField('source')->addOption($text, array('value'=>$value));
-        // }
-        // else
-        // {
-        //   $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-        // }
       }
 
       return $options;
