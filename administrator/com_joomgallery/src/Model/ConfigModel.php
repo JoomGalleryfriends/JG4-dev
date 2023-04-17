@@ -21,7 +21,6 @@ use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Form\FormFactory;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 use \Joomla\CMS\Filesystem\File;
 use stdClass;
@@ -170,11 +169,14 @@ class ConfigModel extends JoomAdminModel
    */
   protected function preprocessForm(Form $form, $data, $group = 'content')
   {
-    // Add options to the jg_replaceinfo.source field
-		ConfigHelper::addReplaceinfoOptions($form);
+    // Get fields with dynamic options
+    $dyn_fields = $form->getDynamicFields();
 
-    // Add options to the jg_filesystem field
-    ConfigHelper::addFilesystemOptions($form);
+    // Add options to dynamic fields
+    foreach($dyn_fields as $key => $field)
+    {
+      $form->setDynamicOptions($field);
+    }
 
     // Import the appropriate plugin group.
     PluginHelper::importPlugin($group);

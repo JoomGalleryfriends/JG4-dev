@@ -29,17 +29,17 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class ConfigHelper
 {
   /**
-	 * Add dropdown options to the jg_replaceinfo->source form field
+   * Get a list of options for the jg_replaceinfo->source form field
    * based on its attributes
    *
-   * @param   Form    $form    Form object to add replaceinfo options
+   * @param   Form    $form    Form object containing jg_replaceinfo->source form field
 	 *
-	 * @return  void
+	 * @return  array   List of options
 	 *
 	 * @since   4.0.0
    * @throws  \Exception
 	 */
-  public static function addReplaceinfoOptions(&$form)
+  public static function getReplaceinfoOptions($form)
   {
     // Check if we got a valid form
     if(\is_object($form) && $form instanceof Form)
@@ -74,19 +74,24 @@ class ConfigHelper
       $exif_options = \json_decode(\str_replace('\'', '"', $exif_options));
       $iptc_options = \json_decode(\str_replace('\'', '"', $iptc_options));
 
+      // initialise options array
+      $options = array();
+
       foreach ($exif_options as $key => $exif_option)
       {
         // add all defined exif options
         $text  = Text::_($exif_config_array[$exif_option[0]][$exif_option[1]]['Name']).' (exif)';
         $value = $exif_option[0] . '-' . $exif_option[1];
-        if($formtype == 'subform')
-        {
-          $form->getField('source')->addOption($text, array('value'=>$value));
-        }
-        else
-        {
-          $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-        }
+
+        \array_push($options, array('text' => $text, 'value'=>$value));
+        // if($formtype == 'subform')
+        // {
+        //   $form->getField('source')->addOption($text, array('value'=>$value));
+        // }
+        // else
+        // {
+        //   $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
+        // }
       }
 
       foreach ($iptc_options as $key => $iptc_option)
@@ -94,17 +99,19 @@ class ConfigHelper
         // add all defined iptc options
         $text  = Text::_($iptc_config_array[$iptc_option[0]][$iptc_option[1]]['Name']).' (iptc)';
         $value = $iptc_option[0] . '-' . $iptc_option[1];
-        if($formtype == 'subform')
-        {
-          $form->getField('source')->addOption($text, array('value'=>$value));
-        }
-        else
-        {
-          $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-        }
+
+        \array_push($options, array('text' => $text, 'value'=>$value));
+        // if($formtype == 'subform')
+        // {
+        //   $form->getField('source')->addOption($text, array('value'=>$value));
+        // }
+        // else
+        // {
+        //   $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
+        // }
       }
 
-      return;
+      return $options;
     }
     else
     {
@@ -113,16 +120,16 @@ class ConfigHelper
   }
 
   /**
-	 * Add dropdown options to the jg_filesystem form field
+	 * Get a list of options for the jg_filesystem form field
    *
-   * @param   Form    $form    Form object to add filesystem options
+   * @param   Form    $form    Form object containing jg_filesystem form field
 	 *
-	 * @return  void
+	 * @return  array   List of options
 	 *
 	 * @since   4.0.0
    * @throws  \Exception
 	 */
-  public static function addFilesystemOptions(&$form)
+  public static function getFilesystemOptions($form)
   {
     // Check if we got a valid form object
     if(\is_object($form) && $form instanceof Form && $form->getName() == 'com_joomgallery.config')
@@ -130,6 +137,7 @@ class ConfigHelper
       $filesystem = JoomHelper::getService('filesystem');
       $providers  = $filesystem->getProviders();
 
+      $options = array();
       foreach($providers as $provider)
       {
         foreach ($provider->adapterNames as $adapter)
@@ -137,9 +145,11 @@ class ConfigHelper
           $val  = $provider->name . '-' . $adapter;
           $text = $provider->displayName . ' (' . $adapter . ')';
 
-          $form->getField('jg_filesystem')->addOption($text, array('value'=>$val));
+          \array_push($options, array('text' => $text, 'value'=>$val));
         }
       }
+
+      return $options;
     }
     else
     {

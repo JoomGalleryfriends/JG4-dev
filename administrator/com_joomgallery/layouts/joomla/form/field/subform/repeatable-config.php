@@ -35,16 +35,7 @@ extract($displayData);
  * @var   bool    $groupByFieldset  Whether group the subform fields by it`s fieldset
  */
 
-// Add options to the replaceinfo field
-if($fieldname == 'jg_replaceinfo')
-{
-  foreach ($forms as $form)
-  {
-    ConfigHelper::addReplaceinfoOptions($form);
-  }
-}
-
- if ($multiple)
+if($multiple)
 {
 	// Add script
 	Factory::getApplication()
