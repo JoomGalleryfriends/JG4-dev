@@ -23,9 +23,9 @@ var callback = function() {
     target: '#drag-drop-area',
     showProgressDetails: true,
     metaFields: [
-      { id: 'imgtitle', name: 'Name', placeholder: 'file name'},
-      { id: 'imgtext', name: 'Description', placeholder: 'description of the file' },
-      { id: 'author', name: 'Author', placeholder: 'author of the file' }
+      { id: 'imgtitle', name: Joomla.JText._("JGLOBAL_TITLE"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_TITLE_HINT")},
+      { id: 'imgtext', name: Joomla.JText._("JGLOBAL_DESCRIPTION"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_DESCRIPTION_HINT")},
+      { id: 'author', name: Joomla.JText._("JAUTHOR"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_AUTHOR_HINT")}
     ],
   });
 
