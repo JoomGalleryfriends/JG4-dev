@@ -11,10 +11,8 @@
 // No direct access 
 defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
@@ -40,6 +38,12 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 // Add language strings to JavaScript
 Text::script('COM_JOOMGALLERY_DEBUG_INFORMATION');
 Text::script('JCLOSE');
+Text::script('JGLOBAL_TITLE');
+Text::script('JAUTHOR');
+Text::script('JGLOBAL_DESCRIPTION');
+Text::script('COM_JOOMGALLERY_FILE_TITLE_HINT');
+Text::script('COM_JOOMGALLERY_FILE_DESCRIPTION_HINT');
+Text::script('COM_JOOMGALLERY_FILE_AUTHOR_HINT');
 
 // Add variables to JavaScript
 $js_vars = new stdClass();
@@ -56,7 +60,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . 
     aria-label="<?php echo Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD', true); ?>" >
 
     <div class="row align-items-start">
-      <div class="col-xxl-auto col-md-6 mb">
+      <div class="col-xxl-auto col-md-6 mb"> 
         <div class="card">
           <div class="card-header">
             <h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE_SELECTION'); ?></h2>
@@ -95,7 +99,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . 
       </div>
     </div>
 
-    <input type="hidden" name="task" value=""/>
+    <input type="hidden" name="task" value="multipleadd"/>
     <?php echo HTMLHelper::_('form.token'); ?>
   </form>
   <div id="popup-area"></div>
