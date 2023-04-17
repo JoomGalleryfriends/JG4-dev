@@ -19,7 +19,6 @@ use \Joomla\CMS\Filesystem\File;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\GifFrameExtractor;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * IMGtools Base Class
@@ -151,7 +150,11 @@ abstract class IMGtools implements IMGtoolsInterface
    */
   public function __construct($keep_metadata=false, $keep_anim=false)
   {
-    $this->jg = JoomHelper::getComponent();
+    // Load application
+    $this->getApp();
+    
+    // Load component
+    $this->getComponent();
 
     $this->keep_metadata = $keep_metadata;
     $this->keep_anim     = $keep_anim;
@@ -169,7 +172,7 @@ abstract class IMGtools implements IMGtoolsInterface
   public function types(): void
   {
     $types = \implode(', ', $this->get('supported_types'));
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUPPORTED_TYPES', $types));
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUPPORTED_TYPES', $types));
 
     return;
   }
@@ -306,7 +309,7 @@ abstract class IMGtools implements IMGtoolsInterface
 
         if($this->res_imginfo['animation'] == true)
         {
-          $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_UPLOAD_ANIMATED_WEBP'));
+          $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_UPLOAD_ANIMATED_WEBP'));
 
           return false;
         }
@@ -484,7 +487,7 @@ abstract class IMGtools implements IMGtoolsInterface
     // Path must point to an existing file
     if(!(File::exists($img)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'));
 
       return false;
     }
@@ -1339,7 +1342,7 @@ abstract class IMGtools implements IMGtoolsInterface
                             11 => 4,        // Float
                             12 => 8 );      // Double
 
-    $tmp_folder = Factory::getApplication()->get('tmp_path');
+    $tmp_folder = $this->app->get('tmp_path');
     $tmp_file   = $tmp_folder.'/tmp.txt';
 
     if(isset($exifdata))

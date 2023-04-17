@@ -13,19 +13,16 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Association\AssociationServiceInterface;
 use Joomla\CMS\Association\AssociationServiceTrait;
-use Joomla\CMS\Categories\CategoryServiceTrait;
 use Joomla\CMS\Component\Router\RouterServiceInterface;
 use Joomla\CMS\Component\Router\RouterServiceTrait;
 use Joomla\CMS\Extension\BootableExtensionInterface;
 use Joomla\CMS\Extension\MVCComponent;
 use Joomla\CMS\HTML\HTMLRegistryAwareTrait;
-use Joomla\CMS\Tag\TagServiceTrait;
 use Psr\Container\ContainerInterface;
-use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomConfig;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\MessageTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceTrait;
@@ -40,7 +37,7 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsSer
 use Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerServiceTraitInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerServiceTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusServiceTrait;
 
@@ -52,22 +49,10 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusService
  */
 class JoomgalleryComponent extends MVCComponent implements BootableExtensionInterface, RouterServiceInterface
 {
-  /**
-   * Array of supported image types
-   *
-   * @var array
-   */
-  public $supported_types = null;
-
   use MessageTrait;
 	use AssociationServiceTrait;
 	use RouterServiceTrait;
 	use HTMLRegistryAwareTrait;
-	use CategoryServiceTrait, TagServiceTrait
-  {
-		CategoryServiceTrait::getTableNameForSection insteadof TagServiceTrait;
-		CategoryServiceTrait::getStateColumnForSection insteadof TagServiceTrait;
-	}
 
   /**
    * JoomGallery services

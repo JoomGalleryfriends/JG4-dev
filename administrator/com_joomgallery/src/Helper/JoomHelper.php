@@ -586,16 +586,10 @@ class JoomHelper
     }
     else
     {
-      if($root)
-      {
-        $path =  JPATH_ROOT.'/media/com_joomgallery/images/no-image.png';
-      }
-      else
-      {
-        $path =  '/media/com_joomgallery/images/no-image.png';
-      }
+      // Create file manager service
+			$manager    = self::getService('FileManager');
 
-      return Path::clean($path);
+      return $manager->getImgPath(0, $type, false, false, $root);
     }
   }
 }

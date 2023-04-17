@@ -31,6 +31,22 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  */
 class CategoryTable extends Table implements VersionableTableInterface
 { 
+  /**
+   * Object property to hold the path of the new location reference node.
+   *
+   * @var    string
+   * @since  4.0.0
+   */
+  protected $_new_location_path = null;
+
+  /**
+   * Object property to hold the path of the old location reference node.
+   *
+   * @var    string
+   * @since  4.0.0
+   */
+  protected $_old_location_path = null;
+
 	/**
 	 * Check if a field is unique
 	 *
@@ -87,6 +103,29 @@ class CategoryTable extends Table implements VersionableTableInterface
 	{
 		return $this->typeAlias;
 	}
+
+  /**
+   * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
+   *
+   * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
+   *                           If not set the instance property value is used.
+   * @param   boolean  $reset  True to reset the default values before loading the new row.
+   *
+   * @return  boolean  True if successful. False if row not found.
+   *
+   * @since   4.0.0
+   */
+  public function load($keys = null, $reset = true)
+  {
+    $res = parent::load($keys, $reset);
+
+    if(isset($this->path))
+    {
+      $this->_old_location_path = $this->path;
+    }
+
+    return $res;
+  }
 
 	/**
 	 * Overloaded bind function to pre-process the params.
@@ -207,8 +246,32 @@ class CategoryTable extends Table implements VersionableTableInterface
 	 */
 	public function store($updateNulls = true)
 	{
+    $this->setPathWithLocation();
+
 		return parent::store($updateNulls);
 	}
+
+  /**
+	 * Method to set path based on the location properties.
+	 *
+	 * @param   boolean  $old  To use the old location path.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+  public function setPathWithLocation($old = false)
+  {
+    // Check with new categories and category data changes!!
+    if($old && $this->_old_location_path)
+    {
+      $this->path = $this->_old_location_path;
+    }
+    elseif($this->_new_location_path)
+    {
+      $this->path = \str_replace('{alias}', $this->alias, $this->_new_location_path);
+    }
+  }
 
 	/**
 	 * This function convert an array of Access objects into an rules array.
@@ -288,6 +351,40 @@ class CategoryTable extends Table implements VersionableTableInterface
 
 		return parent::check();
 	}
+
+  /**
+   * Method to set the location of a node in the tree object.  This method does not
+   * save the new location to the database, but will set it in the object so
+   * that when the node is stored it will be stored in the new location.
+   *
+   * @param   integer  $referenceId  The primary key of the node to reference new location by.
+   * @param   string   $position     Location type string.
+   *
+   * @return  void
+   *
+   * @note    Since 3.0.0 this method returns void and throws an \InvalidArgumentException when an invalid position is passed.
+   * @see     Nested::$_validLocations
+   * @since   1.7.0
+   * @throws  \InvalidArgumentException
+   */
+  public function setLocation($referenceId, $position = 'after')
+  {
+    parent::setLocation($referenceId, $position);
+
+    if($referenceId !== 0 && !empty($this->id))
+    {
+      $referenceObj = JoomHelper::getRecord('category', $referenceId);
+
+      if(empty($referenceObj->path))
+      {
+        $this->_new_location_path = '{alias}';
+      }
+      else
+      {
+        $this->_new_location_path = $referenceObj->path.'/{alias}';
+      }      
+    }
+  }
 
 	/**
 	 * Define a namespaced asset name for inclusion in the #__assets table

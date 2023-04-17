@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
 
@@ -78,16 +79,25 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @since   4.0.0
    */
   public function __construct(string $filesystem = '')
-  {  
+  {
+    // Load application
+    $this->getApp();
+
     // Load component
     $this->getComponent();
 
-    // instantiate config service
+    // Instantiate config service
     $this->component->createConfig();
 
     if($filesystem != '')
     {
+      // Define filesystem adapter based on service creation parameter
       $this->filesystem = $filesystem;
+    }
+    else
+    {
+      // Define filesystem adapter based on configuration 'jg_filesystem'
+      $this->component->getConfig()->get('jg_filesystem','local-images');
     }
 
     // Load language of com_media
@@ -114,116 +124,22 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * optionally replace extension if present
    * replace special chars defined in the configuration
    *
-   * @param   string    $file            The file name
-   * @param   integer   $with_ext        0: strip extension, 1: force extension, 2: leave it as it is (default: 2)
-   * @param   string    $use_ext         Extension to use if $file given without extension
-   * @param   string    $replace_chars   Characters to be replaced
+   * @param   string    $file        The file name
+   * @param   integer   $with_ext    0: strip extension, 1: force extension, 2: leave it as it is (default: 2)
+   * @param   string    $def_ext     Extension to use if $file given without extension
    *
    * @return  mixed     cleaned name on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function cleanFilename(string $file, int $with_ext=2, string $use_ext='jpg', string $replace_chars='')
+  public function cleanFilename(string $file, int $with_ext=2, string $def_ext='jpg')
   {
-    // Check if multibyte support installed
-    if(\in_array ('mbstring', \get_loaded_extensions()))
-    {
-      // Get the funcs from mb
-      $funcs = \get_extension_funcs('mbstring');
-      if(\in_array ('mb_detect_encoding', $funcs) && \in_array ('mb_strtolower', $funcs))
-      {
-        // Try to check if the name contains UTF-8 characters
-        $isUTF = \mb_detect_encoding($file, 'UTF-8', true);
-        if($isUTF)
-        {
-          // Try to lower the UTF-8 characters
-          $file = \mb_strtolower($file, 'UTF-8');
-        }
-        else
-        {
-          // Try to lower the one byte characters
-          $file = \strtolower($file);
-        }
-      }
-      else
-      {
-        // TODO mbstring loaded but no needed functions
-        // --> server misconfiguration
-        $file = \strtolower($file);
-      }
-    }
-    else
-    {
-      // TODO no mbstring loaded, appropriate server for Joomla?
-      $file = \strtolower($file);
-    }
-
-    // Replace special chars
-    $filenamesearch  = array();
-    $filenamereplace = array();
-
-    $items = \explode(',', $replace_chars);
-    if($items != false)
-    {
-      // Contains pairs of <specialchar>|<replaced char(s)>
-      foreach($items as $item)
-      {
-        if(!empty($item))
-        {
-          $workarray = \explode('|', \trim($item));
-          if($workarray != false && isset($workarray[0]) && !empty($workarray[0]) && isset($workarray[1]) && !empty($workarray[1]))
-          {
-            \array_push($filenamesearch, \preg_quote($workarray[0]));
-            \array_push($filenamereplace, \preg_quote($workarray[1]));
-          }
-        }
-      }
-    }
-
-    // Replace whitespace with underscore
-    \array_push($filenamesearch, '\s');
-    \array_push($filenamereplace, '_');
-    // Replace slash with underscore
-    \array_push($filenamesearch, '/');
-    \array_push($filenamereplace, '_');
-    // Replace backslash with underscore
-    \array_push($filenamesearch, '\\\\');
-    \array_push($filenamereplace, '_');
-    // Replace other stuff
-    \array_push($filenamesearch, '[^a-z_0-9-]');
-    \array_push($filenamereplace, '');
-
-    // Checks for different array-length
-    $lengthsearch  = \count($filenamesearch);
-    $lengthreplace = \count($filenamereplace);
-    if($lengthsearch > $lengthreplace)
-    {
-      while($lengthsearch > $lengthreplace)
-      {
-        \array_push($filenamereplace, '');
-        $lengthreplace = $lengthreplace + 1;
-      }
-    }
-    else
-    {
-      if($lengthreplace > $lengthsearch)
-      {
-        while($lengthreplace > $lengthsearch)
-        {
-          \array_push($filenamesearch, '');
-          $lengthsearch = $lengthsearch + 1;
-        }
-      }
-    }
-
-    $detect_ext = JFile::getExt($file);
+    $ext = $this->getExt($file);
 
     // Replace extension if present
-    if($detect_ext)
+    if($ext)
     {
-      $fileextensionlength  = \strlen($detect_ext);
-      $filenamelength       = \strlen($file);
-      $filename             = \substr($file, -$filenamelength, -$fileextensionlength - 1);
+      $filename = \substr($file, 0, -\strlen($ext) - 1);
     }
     else
     {
@@ -231,95 +147,42 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       $filename = $file;
     }
 
-    // Perform the replace
-    for($i = 0; $i < $lengthreplace; $i++)
+    if(Factory::getConfig()->get('unicodeslugs') == 1)
     {
-      $searchstring = '!'.$filenamesearch[$i].'+!i';
-      $filename     = \preg_replace($searchstring, $filenamereplace[$i], $filename);
+      $filename = OutputFilter::stringURLUnicodeSlug(trim($filename));
+    }
+    else
+    {
+      $filename = OutputFilter::stringURLSafe(trim($filename));
     }
 
-    switch($with_ext)
+    switch ($with_ext)
     {
       case 0:
         // strip extension
         break;
 
       case 1:
-        // add extension
-        if($detect_ext)
+        // force extension
+        if($ext)
         {
-          $filename = $filename.'.'. \strtolower($detect_ext);
+          $filename = $filename.'.'. \strtolower($ext);
         }
         else
         {
-          $filename = $filename.'.'. \strtolower($use_ext);
+          $filename = $filename.'.'. \strtolower($def_ext);
         }
         break;
       
       default:
-        // leave it as it is
-        if($detect_ext)
+        if($ext)
         {
-          $filename = $filename.'.'. \strtolower($detect_ext);
+          $filename = $filename.'.'. \strtolower($ext);
         }
         break;
     }
 
     return $filename;
-  }
-
-  /**
-   * Check filename if it's valid for the filesystem
-   *
-   * @param   string    $nameb          filename before any processing
-   * @param   string    $namea          filename after processing in e.g. fixFilename
-   * @param   bool      $checkspecial   True if the filename shall be checked for special characters only
-   *
-   * @return  bool      True if the filename is valid, false otherwise
-   *
-   * @since   4.0.0
-  */
-  public function checkFilename(string $nameb, string $namea = '', bool $checkspecial = false): bool
-  {
-    // TODO delete this function and the call of them?
-    // return true;
-
-    // Check only for special characters
-    if($checkspecial)
-    {
-      $pattern = '/[^0-9A-Za-z -_]/';
-      $check = \preg_match($pattern, $nameb);
-      if($check == 0)
-      {
-        // No special characters found
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-    // Remove extension from names
-    $nameb = JFile::stripExt($nameb);
-    $namea = JFile::stripExt($namea);
-
-    // Check the old filename for containing only underscores
-    if(\strlen($nameb) - \substr_count($nameb, '_') == 0)
-    {
-      $nameb_onlyus = true;
-    }
-    else
-    {
-      $nameb_onlyus = false;
-    }
-    if(empty($namea) || (!$nameb_onlyus && strlen($namea) == substr_count($nameb, '_')))
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
   }
 
   /**
@@ -382,6 +245,33 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     else
     {
       return JPath::setPermissions(JPath::clean($path), null, $val);
+    }
+  }
+
+  /**
+   * Get the file extension of a file.
+   *
+   * @param   string   $path   The filename or file path including extension
+   *
+   * @return  string   Extension (lowercase) if found, empty string otherwise.
+   *
+   * @since   4.0.0
+   */
+  public function getExt(string $file): string
+  {
+    $ext = JFile::getExt($file);
+
+    // Check if it is a valid extension
+    $valid_rex = !\boolval(\preg_match('/[^a-zA-Z]/', $ext));  // File extension has to be only letters
+    $valid_len = \strlen($ext) < 9; // File extension has to be shorter than 9 chars
+
+    if($valid_rex && $valid_len)
+    {
+      return \strtolower($ext);
+    }
+    else
+    {
+      return '';
     }
   }
 
@@ -450,7 +340,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $file->adapter = $adapter;
 
     $event = new FetchMediaItemEvent('onFetchMediaItem', ['item' => $file]);
-    Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+    $this->app->getDispatcher()->dispatch($event->getName(), $event);
 
     return $event->getArgument('item');
   }
@@ -521,7 +411,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $files = array_values($files);
 
     $event = new FetchMediaItemsEvent('onFetchMediaItems', ['items' => $files]);
-    Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+    $this->app->getDispatcher()->dispatch($event->getName(), $event);
 
     return $event->getArgument('items');
   }
@@ -561,7 +451,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       throw new FileExistsException();
     }
 
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->name      = $name;
@@ -569,7 +458,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     PluginHelper::importPlugin('content');
 
-    $result = $app->triggerEvent('onContentBeforeSave', ['com_media.folder', $object, true, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.folder', $object, true, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -578,7 +467,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $object->name = $this->getAdapter($object->adapter)->createFolder($object->name, $object->path);
 
-    $app->triggerEvent('onContentAfterSave', ['com_media.folder', $object, true, $object]);
+    $this->app->triggerEvent('onContentAfterSave', ['com_media.folder', $object, true, $object]);
 
     return $object->name;
   }
@@ -624,7 +513,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->name      = $name;
@@ -637,7 +525,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Also include the filesystem plugins, perhaps they support batch processing too
     PluginHelper::importPlugin('media-action');
 
-    $result = $app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, true, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, true, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -646,7 +534,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $object->name = $this->getAdapter($object->adapter)->createFile($object->name, $object->path, $object->data);
 
-    $app->triggerEvent('onContentAfterSave', ['com_media.file', $object, true, $object]);
+    $this->app->triggerEvent('onContentAfterSave', ['com_media.file', $object, true, $object]);
 
     return $object->name;
   }
@@ -676,7 +564,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->name      = $name;
@@ -689,7 +576,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Also include the filesystem plugins, perhaps they support batch processing too
     PluginHelper::importPlugin('media-action');
 
-    $result = $app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, false, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.file', $object, false, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -698,7 +585,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $this->getAdapter($object->adapter)->updateFile($object->name, $object->path, $object->data);
 
-    $app->triggerEvent('onContentAfterSave', ['com_media.file', $object, false, $object]);
+    $this->app->triggerEvent('onContentAfterSave', ['com_media.file', $object, false, $object]);
   }
 
   /**
@@ -727,7 +614,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
 
     $type              = $file->type === 'file' ? 'file' : 'folder';
-    $app               = Factory::getApplication();
     $object            = new CMSObject();
     $object->adapter   = $adapter;
     $object->path      = $path;
@@ -737,7 +623,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Also include the filesystem plugins, perhaps they support batch processing too
     PluginHelper::importPlugin('media-action');
 
-    $result = $app->triggerEvent('onContentBeforeDelete', ['com_media.' . $type, $object]);
+    $result = $this->app->triggerEvent('onContentBeforeDelete', ['com_media.' . $type, $object]);
 
     if(in_array(false, $result, true))
     {
@@ -746,7 +632,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $this->getAdapter($object->adapter)->delete($object->path);
 
-    $app->triggerEvent('onContentAfterDelete', ['com_media.' . $type, $object]);
+    $this->app->triggerEvent('onContentAfterDelete', ['com_media.' . $type, $object]);
   }
 
   /**
@@ -818,7 +704,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $url = $this->getAdapter($adapter)->getUrl($path);
 
     $event = new FetchMediaItemUrlEvent('onFetchMediaFileUrl', ['adapter' => $adapter, 'path' => $path, 'url' => $url]);
-    Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+    $this->app->getDispatcher()->dispatch($event->getName(), $event);
 
     return $event->getArgument('url');
   }
@@ -892,7 +778,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    *
    * @since   4.0.0
    */
-  private function isAllowedFile(string $path): bool
+  public function isAllowedFile(string $path): bool
   {
     // Check if there is an extension available
     if(!strrpos($path, '.'))

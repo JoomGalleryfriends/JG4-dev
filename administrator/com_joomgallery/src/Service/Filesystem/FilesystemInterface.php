@@ -39,26 +39,12 @@ interface FilesystemInterface
    * @param   string    $file            The file name
    * @param   integer   $with_ext        0: strip extension, 1: force extension, 2: leave it as it is (default: 2)
    * @param   string    $use_ext         Extension to use if $file given without extension
-   * @param   string    $replace_chars   Characters to be replaced
    *
    * @return  mixed     cleaned name on success, false otherwise
    *
    * @since   4.0.0
   */
-  public function cleanFilename(string $file, int $with_ext=2, string $use_ext='jpg', string $replace_chars='');
-
-  /**
-   * Check filename if it's valid for the filesystem
-   *
-   * @param   string    $nameb          filename before any processing
-   * @param   string    $namea          filename after processing in e.g. fixFilename
-   * @param   bool      $checkspecial   True if the filename shall be checked for special characters only
-   *
-   * @return  bool      True if the filename is valid, false otherwise
-   *
-   * @since   4.0.0
-  */
-  public function checkFilename(string $nameb, string $namea = '', bool $checkspecial = false): bool;
+  public function cleanFilename(string $file, int $with_ext=2, string $use_ext='jpg');
 
   /**
    * Sets the permission of a given file or folder recursively.

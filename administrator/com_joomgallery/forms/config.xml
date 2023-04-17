@@ -145,7 +145,7 @@
       <field name="jg_useorigfilename"
              type="radio"
              default="0"
-             class="btn-group unused"
+             class="btn-group"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_ORIGINAL_FILENAME"
              description="COM_JOOMGALLERY_CONFIG_ORIGINAL_FILENAME_LONG" >
@@ -237,16 +237,26 @@
     </fieldset>
 
     <fieldset type="tab" name="general-messages" label="COM_JOOMGALLERY_CONFIG_TAB_MESSAGES">
+      <field name="jg_msg_global_from"
+             type="radio"
+             default="0"
+             class="btn-group unused"
+             layout="joomla.form.field.radio.switcher"
+             label="COM_JOOMGALLERY_CONFIG_GS_MS_GLOBAL_FROM"
+             description="COM_JOOMGALLERY_CONFIG_GS_MS_GLOBAL_FROM_LONG" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
+
       <field name="jg_msg_upload_type"
              type="list"
-             default="0"
+             default="none"
              class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_TYPE"
              description="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_TYPE_LONG" >
-        <option value="0">JNONE</option>
-        <option value="1">COM_JOOMGALLERY_CONFIG_MS_OPTION_MAIL</option>
-        <option value="2">COM_JOOMGALLERY_CONFIG_MS_OPTION_PM</option>
-        <option value="3">COM_JOOMGALLERY_CONFIG_MS_OPTION_BOTH</option>
+        <option value="none">JNONE</option>
+        <option value="mail">COM_JOOMGALLERY_CONFIG_MS_OPTION_MAIL</option>
+        <option value="pm">COM_JOOMGALLERY_CONFIG_MS_OPTION_PM</option>
       </field>
 
       <field name="jg_msg_upload_recipients"
@@ -255,7 +265,7 @@
              class="unused"
              label="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS"
              description="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS_LONG"
-             showon="jg_msg_upload_type:1,2,3">
+             showon="jg_msg_upload_type:mail,pm">
         <option value="-1">COM_JOOMGALLERY_CONFIG_MS_DEFAULT_RECIPIENTS</option>
       </field>
 
@@ -367,17 +377,6 @@
         <option value="1">COM_JOOMGALLERY_CONFIG_MS_OPTION_MAIL</option>
         <option value="2">COM_JOOMGALLERY_CONFIG_MS_OPTION_PM</option>
         <option value="3">COM_JOOMGALLERY_CONFIG_MS_OPTION_BOTH</option>
-      </field>
-
-      <field name="jg_msg_global_from"
-             type="radio"
-             default="0"
-             class="btn-group unused"
-             layout="joomla.form.field.radio.switcher"
-             label="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS"
-             description="COM_JOOMGALLERY_CONFIG_MS_UPLOAD_RECIPIENTS_LONG" >
-        <option value="0">JNO</option>
-        <option value="1">JYES</option>
       </field>
     </fieldset>
   </fieldset>

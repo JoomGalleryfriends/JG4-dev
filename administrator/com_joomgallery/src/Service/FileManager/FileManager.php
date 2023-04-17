@@ -12,10 +12,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Filesystem\Path as JPath;
-use \Joomla\CMS\Filesystem\File as JFile;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
@@ -55,6 +52,13 @@ class FileManager implements FileManagerInterface
   protected $imagetypes_dict = array();
 
   /**
+   * No image path
+   *
+   * @var string
+   */
+  protected $no_image = '/images/joomgallery/no-image.png';
+
+  /**
    * Constructor
    *
    * @return  void
@@ -63,13 +67,19 @@ class FileManager implements FileManagerInterface
    */
   public function __construct()
   {
+    // Load application
+    $this->getApp();
+
     // Load component
     $this->getComponent();
 
-    // instantiate config service
+    // Instantiate config service
     $this->component->createConfig();
 
-    // get imagetypes
+    // Instantiate filesystem service
+    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
+
+    // Get imagetypes
     $this->getImagetypes();
   }
 
@@ -88,12 +98,6 @@ class FileManager implements FileManagerInterface
    */
   public function createImages($source, $filename, $cat=2): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
-    // Fix filename
-    $filename = $this->component->getFilesystem()->cleanFilename($filename, 1, JFile::getExt($source));
-
     if(!$filename)
     {
       // Debug info
@@ -330,9 +334,6 @@ class FileManager implements FileManagerInterface
    */
   public function deleteImages($img): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Loop through all imagetypes
     $error = false;
     foreach($this->imagetypes as $key => $imagetype)
@@ -385,9 +386,6 @@ class FileManager implements FileManagerInterface
   {
     $images = array();
 
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Loop through all imagetypes
     foreach($this->imagetypes as $key => $imagetype)
     {
@@ -431,9 +429,6 @@ class FileManager implements FileManagerInterface
    */
   public function moveImages($img, $dest, $filename=false, $copy=false): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Switch method
     $method = 'MOVE';
     if($copy)
@@ -560,9 +555,6 @@ class FileManager implements FileManagerInterface
    */
   public function renameImages($img, $filename): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Loop through all imagetypes
     $error = false;
     foreach($this->imagetypes as $key => $imagetype)
@@ -621,9 +613,6 @@ class FileManager implements FileManagerInterface
    */
   public function createCategory($foldername, $parent=1): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Loop through all imagetypes
     $error = false;
     foreach($this->imagetypes as $key => $imagetype)
@@ -684,9 +673,6 @@ class FileManager implements FileManagerInterface
    */
   public function deleteCategory($cat, $del_images=false): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Check if we are allowed to delete the category
     if(!$del_images)
     {
@@ -788,9 +774,6 @@ class FileManager implements FileManagerInterface
   {
     $folders = array();
 
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Loop through all imagetypes
     foreach($this->imagetypes as $key => $imagetype)
     {
@@ -828,9 +811,6 @@ class FileManager implements FileManagerInterface
    */
   public function moveCategory($cat, $dest, $foldername=false, $copy=false): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Switch method
     $method = 'MOVE';
     if($copy)
@@ -913,9 +893,6 @@ class FileManager implements FileManagerInterface
    */
   public function renameCategory($cat, $foldername): bool
   {
-    // Create filesystem service
-    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
-
     // Loop through all imagetypes
     $error = false;
     foreach($this->imagetypes as $key => $imagetype)
@@ -1009,7 +986,7 @@ class FileManager implements FileManagerInterface
 
         if($img === false || \is_null($img->id))
         {
-          Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error');
+          $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error');
 
           return false;
         }
@@ -1020,7 +997,21 @@ class FileManager implements FileManagerInterface
       // We got nothing to work with
       else
       {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
+        if($img === 0)
+        {
+          // ID: 0. Return no-image path
+          $path = $this->no_image;
+
+          // add root to path if needed
+          if($root)
+          {
+            $path = JPATH_ROOT.\DIRECTORY_SEPARATOR.$path;
+          }
+
+          return $this->component->getFilesystem()->cleanPath($path);
+        }
+
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
 
         return false;
       }
@@ -1042,7 +1033,7 @@ class FileManager implements FileManagerInterface
       $path = JPATH_ROOT.\DIRECTORY_SEPARATOR.$path;
     }
 
-    return JPath::clean($path);
+    return $this->component->getFilesystem()->cleanPath($path);
   }
 
   /**
@@ -1084,7 +1075,7 @@ class FileManager implements FileManagerInterface
 
       if($cat === false)
       {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error');
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error');
 
         return false;
       }
@@ -1097,7 +1088,14 @@ class FileManager implements FileManagerInterface
       // We got a valid parent category object
       if(\is_object($parent) && $parent instanceof \Joomla\CMS\Object\CMSObject && isset($parent->path))
       {
-        $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        if(empty($parent->path))
+        {
+          $path = $alias;
+        }
+        else
+        {
+          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        }
       }
       // We got a parent category path
       elseif(\is_string($parent) && $this->is_path($parent))
@@ -1117,18 +1115,25 @@ class FileManager implements FileManagerInterface
 
         if($parent === false)
         {
-          Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error');
+          $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error');
 
           return false;
         }
 
-        $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        if(empty($parent->path))
+        {
+          $path = $alias;
+        }
+        else
+        {
+          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+        }
       }
     }
     // We got nothing to work with
     else
     {
-      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error');
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error');
 
       return false;
     }
@@ -1145,14 +1150,14 @@ class FileManager implements FileManagerInterface
       $path = JPATH_ROOT.\DIRECTORY_SEPARATOR.$path;
     }
 
-    return JPath::clean($path);
+    return $this->component->getFilesystem()->cleanPath($path);
   }
 
   /**
    * Generates image filenames
    * e.g. <Name/Title>_<Filecounter (opt.)>_<Date>_<Random Number>.<Extension>
    *
-   * @param   string    $filename     Original upload name e.g. 'malta.jpg'
+   * @param   string    $filename     Original upload name without extension
    * @param   string    $tag          File extension e.g. 'jpg'
    * @param   int       $filecounter  Optinally a filecounter
    *
@@ -1163,13 +1168,6 @@ class FileManager implements FileManagerInterface
   public function genFilename($filename, $tag, $filecounter = null): string
   {
     $filedate = date('Ymd');
-
-    // Remove filetag = $tag incl '.'
-    // Only if exists in filename
-    if(stristr($filename, $tag))
-    {
-      $filename = substr($filename, 0, strlen($filename)-strlen($tag)-1);
-    }
 
     mt_srand();
     $randomnumber = mt_rand(1000000000, 2099999999);

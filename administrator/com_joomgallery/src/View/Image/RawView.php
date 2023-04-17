@@ -47,7 +47,13 @@ class RawView extends JoomGalleryView
     $img_path = JoomHelper::getImg($id, $type, false, false);
 
     // Create filesystem service
-    $this->component->createFilesystem();
+    $adapter = '';
+    if($id === 0)
+    {
+      // Force local-images adapter to load the no-image file
+      $adapter = 'local-images';
+    }
+    $this->component->createFilesystem($adapter);
 
     // Get image ressource
     try
@@ -71,7 +77,5 @@ class RawView extends JoomGalleryView
 
     \ob_end_clean(); //required here or large files will not work
     \fpassthru($ressource);
-
-    //echo \stream_get_contents($ressource);
   }
 }

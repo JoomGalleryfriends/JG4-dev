@@ -14,11 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Configuration Class
@@ -66,6 +64,9 @@ abstract class Config implements ConfigInterface
    */
   public function __construct($context = 'com_joomgallery', $id = null)
   {
+    // Load application
+    $this->getApp();
+
     // Load component
     $this->getComponent();
 
@@ -77,7 +78,7 @@ abstract class Config implements ConfigInterface
         (\count($context_array) > 2 && $context_array[2] != 'id')
       )
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
+      $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
 
       $this->context = false;
     }
@@ -101,7 +102,7 @@ abstract class Config implements ConfigInterface
           break;
 
         case 'image':
-          $img = JoomHelper::getRecord('image', $id);
+          $img = $this->component->getMVCFactory()->createModel('image')->getItem($id);
 
           $this->ids['user']     = Factory::getUser()->get('id');
           $this->ids['image']    = (int) $id;
@@ -196,7 +197,7 @@ abstract class Config implements ConfigInterface
 	 */
 	protected function getParamsByID($id = 1)
 	{
-    $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
+    $com_obj = $this->app->bootComponent('com_joomgallery');
     $model   = $com_obj->getMVCFactory()->createModel('Config');
 
     $id   = intval($id);

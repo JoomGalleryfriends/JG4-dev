@@ -131,13 +131,13 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   {
     if($version = $this->version)
     {
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
+      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
 
       return;
     }
     else
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
 
       return;
     }
@@ -166,7 +166,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       if(\trim($disabled_function) == 'exec')
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_EXEC_DISABLED'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_EXEC_DISABLED'));
 
         return false;
       }
@@ -194,7 +194,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       }
       else
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_IM_NOTFOUND'));
 
         return false;
       }
@@ -221,7 +221,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Analysis and validation of the source image
     if($this->analyse($file, $is_stream) == false)
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
 
       return false;
     }
@@ -240,7 +240,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->commands['strip'] = ' -strip';
     }
 
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_USED_PROCESSOR', $version));
 
     return true;
   }
@@ -292,7 +292,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     {
       $this->commands['auto-orient'] = ' -auto-orient';
 
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_IMAGE'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_IMAGE'));
     }
 
     if($this->auto_orient && $this->method == 3)
@@ -346,7 +346,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $file);
 
         return false;
@@ -354,9 +354,9 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Debugoutput: shell command
-    if(Factory::getApplication()->get('debug', false))
+    if($this->app->get('debug', false))
     {
-      $this->jg->addDebug('<strong>Shell command:</strong><br />'.$convert);
+      $this->component->addDebug('<strong>Shell command:</strong><br />'.$convert);
     }
 
     // If there is watermarking perform this last
@@ -367,7 +367,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if(!File::exists($wtm_files['dst_file']))
       {
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'));
 
         return false;
       }
@@ -377,7 +377,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Debugoutput: success
-    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_MANIPULATION_SUCCESSFUL'));
+    $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_MANIPULATION_SUCCESSFUL'));
 
     // Delete watermarked temp file if existing
     if($this->watermarking && File::exists($wtm_files['dst_file']) && \strpos($wtm_files['dst_file'], 'tmp_wtm_img') !== false)
@@ -429,12 +429,12 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Define temporary image file to be created
-    $tmp_folder = Factory::getApplication()->get('tmp_path');
+    $tmp_folder = $this->app->get('tmp_path');
     $tmp_file   = $tmp_folder.'/tmp_img.'.\strtolower($this->dst_type);
 
     if(!$this->write($tmp_file, $quality))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'));
       $this->rollback('', $tmp_file);
 
       return false;
@@ -545,7 +545,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     if($noResize)
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_NOT_NEEDED'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_NOT_NEEDED'));
 
       return true;
     }
@@ -553,7 +553,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Generate informations about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
 
       return false;
     }
@@ -562,17 +562,17 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     switch($method)
     {
       case 1:
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_HEIGHT'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_HEIGHT'));
         break;
       case 2:
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_WIDTH'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_WIDTH'));
         break;
       case 3:
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_MAX'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_MAX'));
         break;
       case 4:
         // Free resizing and cropping
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_CROP'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_RESIZE_TO_CROP'));
         break;
       default:
         break;
@@ -647,7 +647,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($angle == 0 && !$auto_orient)
     {
       // Nothing to do
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
 
       return true;
     }
@@ -671,7 +671,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if($angle == 0 && $this->dst_imginfo['flip'] == 'none')
       {
         // Nothing to do
-        $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ROTATE_NOT_NEEDED'));
 
         return true;
       }
@@ -697,7 +697,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$this->auto_orient && $this->dst_imginfo['angle'] > 0)
     {
       $this->commands['rotate'] = ' -rotate "-'.$angle.'"';
-      $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ROTATE_BY_ANGLE', $angle));
+      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ROTATE_BY_ANGLE', $angle));
     }
 
     // Clean up working area (imginfo)
@@ -733,7 +733,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     if($direction == 0)
     {
       // Nothing to do
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_FLIP_NOT_NEEDED'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_FLIP_NOT_NEEDED'));
 
       return true;
     }
@@ -793,7 +793,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Add debugoutput
-    $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FLIP_BY', $this->dst_imginfo['flip']));
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FLIP_BY', $this->dst_imginfo['flip']));
 
     // Clean up working area (imginfo)
     $this->res_imginfo                = $this->src_imginfo;
@@ -861,7 +861,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Checks if watermark file is existent
     if(!File::exists($wtm_file))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARK_NOT_EXIST'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARK_NOT_EXIST'));
 
       return false;
     }
@@ -871,7 +871,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $tmp_src_type    = $this->src_type;
     if(!($this->src_imginfo = $this->analyse($wtm_file)))
     {
-      $this->jg->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_WTMFILE'));
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_WTMFILE'));
 
       return false;
     }
@@ -883,7 +883,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->dst_type    = $tmp_src_type;
 
     // Create debugoutput
-    $this->jg->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_WATERMARKING'));
+    $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_WATERMARKING'));
 
     // Set watermark hint
     $this->watermarking = true;
@@ -1128,7 +1128,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       if(!$dst_file)
       {
         // Define temporary image file to be created
-        $tmp_folder = Factory::getApplication()->get('tmp_path');
+        $tmp_folder = $this->app->get('tmp_path');
         $dst_file   = $tmp_folder.'/tmp_wtm_img.'.\strtolower($this->src_type); 
       }
 
@@ -1175,7 +1175,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $dst_file);
 
         return false;
@@ -1183,9 +1183,9 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Debugoutput: shell command
-    if(Factory::getApplication()->get('debug', false))
+    if($this->app->get('debug', false))
     {
-      $this->jg->addDebug('<strong>Shell command (watermarking):</strong><br />'.$convert);
+      $this->component->addDebug('<strong>Shell command (watermarking):</strong><br />'.$convert);
     }
 
     return array('dst_file'=>$dst_file, 'wtm_file'=>$wtm_file);
@@ -1202,7 +1202,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   protected function execWatermarkResize(): string
   {
     // Define temporary image file to be created
-    $tmp_folder = Factory::getApplication()->get('tmp_path');
+    $tmp_folder = $this->app->get('tmp_path');
     $tmp_file   = $tmp_folder.'/tmp_wtm.'.\strtolower($this->wtm_type);
 
     // Apply temp file to commands
@@ -1247,7 +1247,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
       if($return_var != 0 || !$filecheck)
       {
-        $this->jg->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SERVERPROBLEM_EXEC','exec('.$convert.');'));
         $this->rollback($this->src_file, $tmp_file);
 
         return false;
@@ -1255,9 +1255,9 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Debugoutput: shell command
-    if(Factory::getApplication()->get('debug', false))
+    if($this->app->get('debug', false))
     {
-      $this->jg->addDebug('<strong>Shell command (watermark-resize):</strong><br />'.$convert);
+      $this->component->addDebug('<strong>Shell command (watermark-resize):</strong><br />'.$convert);
     }
 
     // unset wtm-resize command
