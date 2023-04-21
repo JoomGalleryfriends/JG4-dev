@@ -8,7 +8,7 @@ import { Uppy, Dashboard, Tus } from "./uppy-3.7.0.min.js"
  * @param  {Integer} formID    The id of the form element
  * @param  {String}  uuid	     The id of the uploaded element
  *
- * @returns  {void}
+ * @returns  {String}  Response
  */
 function uploadAjax(formID, destination, uuid) {
 
@@ -30,7 +30,7 @@ function uploadAjax(formID, destination, uuid) {
     let response = await fetch(url, parameters);
     if (!response.ok) {
         // on network error
-        console.log("Network-Error: " + response.status + ", " + response.statusText);
+        return "Network-Error: " + response.status + ", " + response.statusText;
     }
     else
     {
@@ -41,6 +41,7 @@ function uploadAjax(formID, destination, uuid) {
 
   postData(destination, parameters).then(res => {
       // what to do after fetching
+      return res;
   });
 }
 
@@ -70,7 +71,7 @@ function getUuid(uploadURL) {
  * @param  {Integer}   id	         The id of the modal
  * @param  {String}    content	   Modal body content
  *
- * @returns  {void}
+ * @returns  {String}   The html string of the popup
  */
 function createPopup(id, content) {
   let html =    '<div class="joomla-modal modal fade" id="modal'+id+'" tabindex="-1" aria-labelledby="modal'+id+'Label" aria-hidden="true">';
@@ -96,22 +97,55 @@ function createPopup(id, content) {
 /**
  * Add button to uppy upload form
  *
- * @param  {Object}   result	   Response data from the remote endpoint.
- * @param  {String}   type	     Button type. success or danger
- *
- * @returns  {void}
+ * @param  {Object}   file	  The Uppy file that was uploaded.
+ * @param  {String}   type	  Button type. success or danger
  */
-function createBtn(result, type) {
-  let uuid = getUuid(result.uploadURL);
-
+function createBtn(file, type) {
   // Create button
   let btn = document.createElement('div');
-  btn.innerHTML = '<button type="button" class="btn btn-'+type+' btn-sm" data-bs-toggle="modal" data-bs-target="#modal'+uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
+  btn.innerHTML = '<button type="button" class="btn btn-'+type+' btn-sm" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
   btn.classList.add('uppy-Dashboard-Item-debug-msg');
   btn.classList.add('success');
 
   // Add button to form
-  document.getElementById('uppy_'+result.id).lastChild.firstChild.appendChild(btn);
+  document.getElementById('uppy_'+file.id).lastChild.firstChild.appendChild(btn);
+}
+
+/**
+ * Set a synchronous pause.
+ * 
+ * @param  {Integer}    Time to wait in milliseconds
+ */
+function wait(ms) {
+  let start = Date.now();
+  let now = start;
+  while (now - start < ms) {
+    now = Date.now();
+  }
+}
+
+/**
+ * Set an error in a specific uppy file
+ * 
+ * @param  {String}           error      Error message
+ * @param  {object}           uppy       The uppy object
+ * @param  {object|Integer}   file       Object or ID of the uppy file
+ * @param  {object}           response   Response object
+ */
+function uppySetFileError(error, uppy, file, response) {
+  let errorMsg = error || 'Unknown error';
+  let fileID = (typeof file == 'number') ? file : file.id;
+
+  // Add error to global uppy object
+  uppy.setState({ error: errorMsg });
+
+  // Add error to specific uppy file
+  if (fileID in uppy.getState().files) {
+    uppy.setFileState(fileID, {
+      error: errorMsg,
+      response,
+    });
+  }
 }
 
 var callback = function() {
@@ -158,21 +192,25 @@ var callback = function() {
   uppy.on('upload-success', (file, response) => {
     // single uppy upload was successful
     console.log('Upload of '+file.name+' successful.');
-    console.log(response);
-    console.log(file);
+
+    // custom function
+    wait(5000);
+
+    // Set error if custom function fails
+    uppySetFileError('Image manipulation failed...', uppy, file.id, response);
 
     // Resolve uuid
-    let uuid = getUuid(response.uploadURL);
+    file.uuid = getUuid(response.uploadURL);
 
     // Add Button to upload form
-    createBtn(response, 'success');
+    createBtn(file, 'success');
 
     // Add Popup
     let div = document.createElement('div');
-    div.innerHTML = createPopup(uuid, 'Upload of file "'+response.name+'" using Uppy successful.<br />Upload-ID: '+uuid+'<br />Debug-Info will be added here...');
+    div.innerHTML = createPopup(file.uuid, 'Upload of file "'+file.name+'" using Uppy successful.<br />Upload-ID: '+file.uuid+'<br />Debug-Info will be added here...');
     document.getElementById('popup-area').appendChild(div);
 
-    new bootstrap.Modal(document.getElementById('modal'+uuid));
+    new bootstrap.Modal(document.getElementById('modal'+file.uuid));
   });
 
   uppy.on('upload-error', (file, error, response) => {
@@ -180,19 +218,20 @@ var callback = function() {
     console.log('Upload of '+file.name+' failed.');
     console.log(response);
     console.log(file);
+    console.log(uppy.getState());
 
     // Resolve uuid
-    let uuid = getUuid(response.uploadURL);
+    file.uuid = getUuid(response.uploadURL);
 
     // Add Button to upload form
-    createBtn(response, 'danger');
+    createBtn(file, 'danger');
 
     // Add Popup
     let div = document.createElement('div');
-    div.innerHTML = createPopup(uuid, 'Upload not successful.<br />Debug-Info flow. To be added...');
+    div.innerHTML = createPopup(file.uuid, 'Upload not successful.<br />Debug-Info flow. To be added...');
     document.getElementById('popup-area').appendChild(div);
 
-    new bootstrap.Modal(document.getElementById('modal'+uuid));
+    new bootstrap.Modal(document.getElementById('modal'+file.uuid));
   });
 
   uppy.on('complete', (result) => {
@@ -203,13 +242,13 @@ var callback = function() {
     // Add message for successful images
     for (let index = 0; index < result.successful.length; ++index) {
       let res = result.failed[index];
-      createBtn(res, 'success');
+      //createBtn(res, 'success');
     }
 
     // Add message for failed images
     for (let index = 0; index < result.failed.length; ++index) {
       let res = result.failed[index];
-      createBtn(res, 'danger');
+      //createBtn(res, 'danger');
     }
   });
 
