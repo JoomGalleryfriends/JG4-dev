@@ -10,26 +10,15 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
 /**
-* Interface for the filesystem classes
+* Filesystem service interface
 *
 * @since  4.0.0
 */
 interface FilesystemInterface
 {
-	/**
-   * Constructor enables the connection to the filesystem
-   * in which the images should be stored
-   *
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-   */
-  public function __construct();
-
   /**
    * Function to strip additional / or \ in a path name.
    *
@@ -39,90 +28,8 @@ interface FilesystemInterface
    * @return  string  The cleaned path
    *
    * @since   4.0.0
-   */
-  public function cleanPath($path, $ds=\DIRECTORY_SEPARATOR): string;
-
-  /**
-   * Moves a file from local folder to storage
-   *
-   * @param   string  $src   File name at local folder
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function uploadFile($src): bool;
-
-  /**
-   * Moves a file from the storage to a local folder
-   *
-   * @param   string  $dest  File name at local folder
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function downloadFile($dest): bool;
-
-  /**
-   * Moves a file at the storage filesystem
-   *
-   * @param   string  $src   Source file name
-   * @param   string  $dest  Destination file name
-   * @param   bool    $copy  True, if you want to copy the file (default: false)
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function moveFile($src, $dest, $copy = false): bool;
-
-  /**
-   * Delete a file or array of files
-   *
-   * @param   mixed  $file   The file name or an array of file names
-   *
-   * @return  bool   true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function deleteFile($file): bool;
-
-  /**
-   * Rename a file.
-   *
-   * @param   string  $file      The file name.
-   * @param   string  $newName   The new name of the file.
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function renameFile($file, $newName): bool;
-
-  /**
-   * Checks a file for existence, validity and size
-   *
-   * @param   string  $file  The file name
-   *
-   * @return  mixed   file size on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function checkFile($file);
-
-  /**
-   * Check filename if it's valid for the filesystem
-   *
-   * @param   string    $nameb          filename before any processing
-   * @param   string    $namea          filename after processing in e.g. fixFilename
-   * @param   bool      $checkspecial   True if the filename shall be checked for special characters only
-   *
-   * @return  bool      True if the filename is valid, false otherwise
-   *
-   * @since   2.0.0
   */
-  public function checkFilename($nameb, $namea = '', $checkspecial = false): bool;
+  public function cleanPath(string $path, string $ds=\DIRECTORY_SEPARATOR): string;
 
   /**
    * Cleaning of file/category name
@@ -130,76 +37,14 @@ interface FilesystemInterface
    * replace special chars defined in the configuration
    *
    * @param   string    $file            The file name
-   * @param   bool      $strip_ext       True for stripping the extension
-   * @param   string    $replace_chars   Characters to be replaced
+   * @param   integer   $with_ext        0: strip extension, 1: force extension, 2: leave it as it is (default: 2)
+   * @param   string    $use_ext         Extension to use if $file given without extension
    *
    * @return  mixed     cleaned name on success, false otherwise
    *
-   * @since   1.0.0
-   */
-  public function cleanFilename($file, $strip_ext=false, $replace_chars='');
-
-  /**
-   * Create a folder and all necessary parent folders (local and storage).
-   *
-   * @param   string  $path   A path to create from the base path.
-   * @param   bool    $index  True to create an index.html file (default: false)
-   *
-   * @return  bool    true on success, false otherwise
-   *
    * @since   4.0.0
-   */
-  public function createFolder($path, $index=false): bool;
-
-  /**
-   * Moves a folder including all all files and subfolders (local and storage).
-   *
-   * @param   string  $src    The path to the source folder.
-   * @param   string  $dest   The path to the destination folder.
-   * @param   bool    $copy   True, if you want to copy the folder (default: false)
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function moveFolder($src, $dest, $copy = false): bool;
-
-  /**
-   * Delete a folder including all files and subfolders (local and storage).
-   *
-   * @param   string  $path   The path to the folder to delete.
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function deleteFolder($path): bool;
-
-  /**
-   * Rename a folder.
-   *
-   * @param   string  $path      The path to the folder to rename.
-   * @param   string  $newName   The new name of the folder.
-   *
-   * @return  bool    true on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function renameFolder($path, $newName): bool;
-
-  /**
-   * Checks a folder for existence (local and storage).
-   *
-   * @param   string  $path      The path to the folder to check.
-   * @param   bool    $files     True to return a list of files in the folder
-   * @param   bool    $folders   True to return a list of subfolders of the folder
-   * @param   int     $maxLevel  The maximum number of levels to recursively read (default: 3).
-   *
-   * @return  mixed   Array with files and folders on success, false otherwise
-   *
-   * @since   4.0.0
-   */
-  public function checkFolder($path, $files = false, $folders = false, $maxLevel = 3);
+  */
+  public function cleanFilename(string $file, int $with_ext=2, string $use_ext='jpg');
 
   /**
    * Sets the permission of a given file or folder recursively.
@@ -212,16 +57,17 @@ interface FilesystemInterface
    *
    * @since   4.0.0
    */
-  public function chmod($path, $val, $mode=true): bool;
+  public function chmod(string $path, string $val, bool $mode=true): bool;
 
   /**
    * Copies an index.html file into a specified folder
    *
    * @param   string   $path    The path where the index.html should be created
    * 
-   * @return  bool     True on success, false otherwise
+   * @return  string
    * 
    * @since   4.0.0
+   * @throws  \Exception
    */
-  public function createIndexHtml($path): bool;
+  public function createIndexHtml(string $path): string;
 }

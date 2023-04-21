@@ -105,10 +105,13 @@ class ConfigTable extends Table implements VersionableTableInterface
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
-		if($task == 'apply' || $task == 'save')
+		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
 			$array['modified_by'] = Factory::getUser()->id;
 		}
+
+    // Support for multiple field: jg_replaceshowwarning
+    $this->multipleFieldSupport($array, 'jg_replaceshowwarning');
 
 		// Support for multiple field: jg_uploadorder
     $this->multipleFieldSupport($array, 'jg_uploadorder');

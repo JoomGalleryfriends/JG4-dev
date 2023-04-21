@@ -16,6 +16,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Language\LanguageFactoryInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerInterface;
 
 /**
@@ -28,6 +29,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\Messenger
  */
 abstract class Messenger implements MessengerInterface
 {
+  use ServiceTrait;
+
   /**
    * Number of messanges successfully sent
    * 
@@ -65,10 +68,14 @@ abstract class Messenger implements MessengerInterface
    */
   public function __construct()
   {
-    $this->jg       = Factory::getApplication()->bootComponent('com_joomgallery');
-    $this->language = Factory::getApplication()->getLanguage();
+    // Load application
+    $this->getApp();
+    
+    // Load component
+    $this->getComponent();
 
-    $this->addTemplateData(array('sitename' => Factory::getApplication()->get('sitename'), 'siteurl' => Uri::root()));
+    $this->language = $this->app->getLanguage();
+    $this->addTemplateData(array('sitename' => $this->app->get('sitename'), 'siteurl' => Uri::root()));
   }
 
   /**

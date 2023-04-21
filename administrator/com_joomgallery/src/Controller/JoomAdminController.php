@@ -69,6 +69,17 @@ class JoomAdminController extends BaseAdminController
      */
     public function execute($task)
     {
+      // Switch for TUS server
+      if($task === 'tusupload')
+      {
+        // Create server
+        $this->component->createTusServer();
+        $server = $this->component->getTusServer();
+
+        // Run server
+        $server->process(true);
+      }
+
       // Before execution of the task
       if(!empty($task))
       {

@@ -355,12 +355,6 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
-        // Recrate path
-        if(empty($table->path))
-        {
-          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
-        }
-
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
@@ -375,20 +369,20 @@ class CategoryModel extends JoomAdminModel
         // Handle folders if parent category was changed
         if(!$isNew && $catMoved)
 			  {
+          // Get path back from old location temporarely
+          $table->setPathWithLocation(true);
+
           // Move folder (including files and subfolders)
 					$manager->moveCategory($table, $table->parent_id);
 
-          // Recrate path
-          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
+          // Reset path
+          $table->setPathWithLocation(false);
         }
         // Handle folders if alias was changed
         elseif (!$isNew && $aliasChanged)
         {
           // Rename folder
 					$manager->renameCategory($table, $table->alias);
-
-          // Recrate path
-          $table->path = $manager->getCatPath(0, false, $table->parent_id, $table->alias);
         }
         else
         {

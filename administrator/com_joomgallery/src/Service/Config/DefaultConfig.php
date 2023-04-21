@@ -50,7 +50,7 @@ class DefaultConfig extends Config implements ConfigInterface
 
     if($glob_params == false || empty($glob_params))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
 
       return;
     }
@@ -84,7 +84,7 @@ class DefaultConfig extends Config implements ConfigInterface
 
       if($parents === false && empty($parents))
       {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
         return;
       }
 
@@ -106,7 +106,7 @@ class DefaultConfig extends Config implements ConfigInterface
 
       if($image === false && empty($image))
       {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
         return;
       }
 
@@ -119,11 +119,11 @@ class DefaultConfig extends Config implements ConfigInterface
     if(isset($this->ids['menu']))
     {
       // Load menu item
-      $menu = Factory::getApplication()->getMenu()->getItem($this->ids['menu']);
+      $menu = $this->app->getMenu()->getItem($this->ids['menu']);
 
       if($menu === false && empty($menu))
       {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
         return;
       }
       

@@ -8,43 +8,38 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 
 \defined('JPATH_PLATFORM') or die;
 
+use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
+
 /**
-* The Filesystem service
+* The TUS server service
 *
 * @since  4.0.0
 */
-interface FilesystemServiceInterface
+interface TusServiceInterface
 {
   /**
-	 * Storage for the filesystem helper class.
-	 *
-	 * @var FilesystemInterface
-	 *
-	 * @since  4.0.0
-	 */
-	private $filesystem;
-
-  /**
-	 * Creates the filesystem helper class
-   *
-   * @param   string  $filesystem  Name of the filesystem adapter to be used
+	 * Creates the tus server class
+   * 
+   * @param   string   Upload folder path
+   * @param   string   TUS server implementation location (URI)
+   * @param   bool     True if debug mode should be activated
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createFilesystem($filesystem): void;
+	public function createTusServer(string $folder='', string $location = '', bool $debug=false): void;
 
 	/**
-	 * Returns the filesystem helper class.
+	 * Returns the tus server class.
 	 *
-	 * @return  FilesystemInterface
+	 * @return  ServerInterface
 	 *
 	 * @since  4.0.0
 	 */
-	public function getFilesystem(): FilesystemInterface;
+	public function getTusServer(): ServerInterface;
 }

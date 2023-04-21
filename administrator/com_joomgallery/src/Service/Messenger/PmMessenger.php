@@ -45,7 +45,7 @@ class PmMessenger extends Messenger implements MessengerInterface
 
     if(empty($template))
     {
-      $this->jg->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_MSG_INVALID_TEMPLATE', $this->template_id));
+      $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_MSG_INVALID_TEMPLATE', $this->template_id));
 
       return false;
     }
@@ -71,7 +71,7 @@ class PmMessenger extends Messenger implements MessengerInterface
 
       if(!$recipient instanceof \Joomla\CMS\User\User)
       {
-        $this->jg->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_USER_NOT_FOUND'));
+        $this->component->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_USER_NOT_FOUND'));
         continue;
       }
 
@@ -94,11 +94,11 @@ class PmMessenger extends Messenger implements MessengerInterface
         ];
 
         // Get the model for private messages
-        $modelMessage = Factory::getApplication()->bootComponent('com_messages')->getMVCFactory()->createModel('Message', 'Administrator');
+        $modelMessage = $this->app->bootComponent('com_messages')->getMVCFactory()->createModel('Message', 'Administrator');
 
         if(!$modelMessage->save($message))
         {
-          $this->jg->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_FAILED'));
+          $this->component->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_FAILED'));
           continue;
         }
 

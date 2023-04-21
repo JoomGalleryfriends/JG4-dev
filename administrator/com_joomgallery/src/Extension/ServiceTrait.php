@@ -13,6 +13,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 \defined('JPATH_PLATFORM') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Application\CMSApplicationInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
 
 /**
 * Trait to implement basic methods
@@ -25,9 +27,16 @@ trait ServiceTrait
   /**
    * JoomGallery extension class
    * 
-   * @var Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   * @var JoomgalleryComponent
    */
-  protected $jg = null;
+  protected $component = null;
+
+  /**
+   * Current application object
+   *
+   * @var    CMSApplicationInterface
+   */
+  protected $app = null;
 
   /**
 	 * Sets a default value if not already assigned
@@ -146,5 +155,17 @@ trait ServiceTrait
   public function getComponent()
   {
     $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+  }
+
+  /**
+	 * Gets the current application object
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+  public function getApp()
+  {
+    $this->app = Factory::getApplication();
   }
 }
