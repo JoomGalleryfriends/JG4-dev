@@ -55,6 +55,7 @@
 
     <field name="published"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            class="btn-group"
            default="1"
            label="JPUBLISHED">
@@ -80,7 +81,7 @@
            label="JGRID_HEADING_LANGUAGE"
            >
            <option value="*">JALL</option>
-		</field>
+    </field>
 
     <field name="description"
            type="editor"
@@ -92,6 +93,7 @@
 
     <field name="hidden"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_HIDDEN"
@@ -102,6 +104,7 @@
 
     <field name="exclude_toplist"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_FIELDS_EXCLUDE_FROM_TOPLISTS"
@@ -112,6 +115,7 @@
 
     <field name="exclude_search"
            type="radio"
+           layout="joomla.form.field.radio.switcher"
            default="0"
            class="btn-group"
            label="COM_JOOMGALLERY_FIELDS_EXCLUDE_FROM_SEARCH"
@@ -165,7 +169,9 @@
            rows="5"
            filter="safehtml"
            label="JGLOBAL_DESCRIPTION"
-           description="JFIELD_META_DESCRIPTION_LABEL" />
+           description="JFIELD_META_DESCRIPTION_LABEL"
+           maxlength="160"
+           charcounter="true" />
 
     <field name="metakey"
            type="textarea"
