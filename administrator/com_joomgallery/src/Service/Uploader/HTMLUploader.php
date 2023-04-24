@@ -41,6 +41,14 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 	public function retrieveImage(&$data, $filename=True): bool
   {
     $user = Factory::getUser();
+    $app  = Factory::getApplication();
+
+    // Retrieve request image file data
+    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image']))
+    {
+      $data['images'] = array();
+      \array_push($data['images'], $app->input->files->get('jform')['image']);
+    }
 
     if(\count($data['images']) > 1)
     {
@@ -160,6 +168,30 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
     else
     {
       return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN'));
+    }
+  }
+
+  /**
+   * Detect if there is an image uploaded
+   * 
+   * @param   array    $data      Form data
+   * 
+   * @return  bool     True if file is detected, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function isImgUploaded($data): bool
+  {
+    $app  = Factory::getApplication();
+
+    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
+    && $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
+		{
+      return true;
+    }
+    else
+    {
+      return false;
     }
   }
 }

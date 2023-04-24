@@ -13,13 +13,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('JPATH_PLATFORM') or die;
 
-use \Joomla\CMS\MVC\Controller\AdminController as BaseAdminController;
+use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomla\Input\Input;
 
 /**
- * JoomGallery Base of Joomla Administrator Controller
+ * JoomGallery Base of Joomla Form Controller
  * 
  * Controller (controllers are where you put all the actual code) Provides basic
  * functionality, such as rendering views (aka displaying templates).
@@ -27,7 +27,7 @@ use \Joomla\Input\Input;
  * @package JoomGallery
  * @since   4.0.0
  */
-class JoomAdminController extends BaseAdminController
+class JoomFormController extends BaseFormController
 {
   /**
    * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
@@ -38,20 +38,21 @@ class JoomAdminController extends BaseAdminController
   var $component;
 
   /**
-	 * Constructor.
-	 *
-	 * @param   array                $config   An optional associative array of configuration settings.
-	 *                                         Recognized key values include 'name', 'default_task', 'model_path', and
-	 *                                         'view_path' (this list is not meant to be comprehensive).
-	 * @param   MVCFactoryInterface  $factory  The factory.
-	 * @param   CMSApplication       $app      The Application for the dispatcher
-	 * @param   Input                $input    The Input object for the request
-	 *
-	 * @since   3.0
-	 */
-	public function __construct($config = array(), MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
-	{
-		parent::__construct($config, $factory, $app, $input);
+   * Constructor.
+   *
+   * @param   array                 $config       An optional associative array of configuration settings.
+   *                                              Recognized key values include 'name', 'default_task', 'model_path', and
+   *                                              'view_path' (this list is not meant to be comprehensive).
+   * @param   MVCFactoryInterface   $factory      The factory.
+   * @param   CMSApplication        $app          The Application for the dispatcher
+   * @param   Input                 $input        Input
+   * @param   FormFactoryInterface  $formFactory  The form factory.
+   *
+   * @since   3.0
+   */
+  public function __construct($config = [], MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null, FormFactoryInterface $formFactory = null)
+  {
+    parent::__construct($config, $factory, $app, $input, $formFactory);
 
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
   }
@@ -69,28 +70,18 @@ class JoomAdminController extends BaseAdminController
    */
   public function execute($task)
   {
-    // Switch for TUS server
-    if($task === 'tusupload')
-    {
-      // Create server
-      $this->component->createTusServer();
-      $server = $this->component->getTusServer();
-
-      // Run server
-      $server->process(true);
-    }
-
     // Before execution of the task
     if(!empty($task))
     {
       $this->component->msgUserStateKey = 'com_joomgallery.'.$task.'.messages';
     }
-    
+
     if(!$this->component->isRawTask($this->context))
     {
       // Get messages from session
       $this->component->msgFromSession();
     }
+    
 
     // execute the task
     $res = parent::execute($task);
