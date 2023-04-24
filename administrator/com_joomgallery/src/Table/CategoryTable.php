@@ -31,6 +31,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  */
 class CategoryTable extends Table implements VersionableTableInterface
 { 
+  use JoomTableTrait;
+  
   /**
    * Object property to hold the path of the new location reference node.
    *
@@ -508,37 +510,6 @@ class CategoryTable extends Table implements VersionableTableInterface
     }
 
     return $rootId;
-  }
-
-  /**
-   * Support for multiple field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function multipleFieldSupport(&$data, $fieldName)
-  {
-    if(isset($data[$fieldName]))
-		{
-			if(is_array($data[$fieldName]))
-			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
-			}
-			elseif(strpos($data[$fieldName], ',') != false)
-			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
-			}
-			elseif(strlen($data[$fieldName]) == 0)
-			{
-				$data[$fieldName] = '';
-			}
-		}
-		else
-		{
-			$data[$fieldName] = '';
-		}
   }
 
   /**

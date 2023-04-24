@@ -16,14 +16,14 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
-$uppy_version = '3.7.0'; // Uppy version to use
-
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
-$wa->registerAndUseStyle('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.min.css');
-$wa->registerAndUseScript('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.js', [], ['type' => 'module', 'defer' => true]);
+//$wa->registerAndUseStyle('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.min.css');
+//$wa->registerAndUseScript('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.js', [], ['type' => 'module', 'defer' => true]);
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
+   ->useScript('com_joomgallery.uppy-uploader')
+   ->useStyle('com_joomgallery.uppy')
    ->useStyle('com_joomgallery.admin');
 
 HTMLHelper::_('bootstrap.tooltip');
@@ -50,14 +50,14 @@ $js_vars = new stdClass();
 $js_vars->maxFileSize = 262144000;
 $js_vars->TUSlocation = $this->item->tus_location;
 
-$wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . '\');', ['position' => 'before'], [], ['com_joomgallery.uppy']);
+$wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . '\');', ['position' => 'before'], [], ['com_joomgallery.uppy-uploader']);
 ?>
 
 <div class="jg jg-upload">
   <form
-    action="<?php echo Route::_('index.php?option=com_joomgallery&layout='.$layout.$tmpl); ?>"
-    method="post" enctype="multipart/form-data" name="adminForm" id="image-form" class="form-validate"
-    aria-label="<?php echo Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD', true); ?>" >
+    action="<?php echo Route::_('index.php?option=com_joomgallery&controller=image'); ?>"
+    method="post" enctype="multipart/form-data" name="adminForm" id="image-form" class="needs-validation"
+    novalidate aria-label="<?php echo Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD', true); ?>" >
 
     <div class="row align-items-start">
       <div class="col-xxl-auto col-md-6 mb"> 
@@ -95,11 +95,14 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . 
             <?php echo $this->form->getLabel('imgtext'); ?>
             <?php echo $this->form->getInput('imgtext'); ?>
           </fieldset>
+          <input type="text" id="jform_id" class="hidden form-control readonly" name="jform[id]" value="" readonly/>
         </div>
       </div>
     </div>
 
-    <input type="hidden" name="task" value="multipleadd"/>
+    <input type="hidden" name="task" value="image.ajaxsave"/>
+    <input type="hidden" name="jform[uploader]" value="tus" />
+    <input type="hidden" name="id" value="0" />
     <?php echo HTMLHelper::_('form.token'); ?>
   </form>
   <div id="popup-area"></div>

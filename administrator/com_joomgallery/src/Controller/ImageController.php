@@ -12,9 +12,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\MVC\Controller\FormController;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Factory;
+use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Response\JsonResponse;
 
 /**
  * Image controller class.
@@ -22,7 +21,7 @@ use Joomla\CMS\Factory;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImageController extends FormController
+class ImageController extends JoomFormController
 {
 	protected $view_list = 'images';
 
@@ -70,8 +69,7 @@ class ImageController extends FormController
 
         $this->setRedirect(
             Route::_(
-                'index.php?option=' . $this->option . '&view=' . $this->view_list
-                . $this->getRedirectToListAppend(),
+                'index.php?option=' . $this->option . '&view=' . $this->view_list . $this->getRedirectToListAppend(),
                 false
             )
         );
@@ -85,12 +83,48 @@ class ImageController extends FormController
     // Redirect to the edit screen.
     $this->setRedirect(
         Route::_(
-            'index.php?option=' . $this->option . '&view=' . $this->view_item
-            . '&layout=' . $layout,
+            'index.php?option=' . $this->option . '&view=' . $this->view_item . '&layout=' . $layout,
             false
         )
     );
 
     return true;
+  }
+
+  /**
+   * Method to add multiple new image records.
+   *
+   * @return  boolean  True if the record can be added, false if not.
+   *
+   * @since   4.0
+   */
+  public function ajaxsave()
+  {
+    $result  = array('error' => false);
+
+    try
+    {
+      if(!parent::save())
+      {
+        $result['success'] = false;
+        $result['error']   = $this->message;
+      }
+      else
+      {
+        $result['success'] = true;
+        $result['record'] = $this->component->cache->get('imgObj');
+      }
+
+      $json = json_encode($result, JSON_FORCE_OBJECT);
+      echo new JsonResponse($json);
+
+      $this->app->close();
+    }
+    catch(\Exception $e)
+    {
+      echo new JsonResponse($e);
+
+      $this->app->close();
+    }
   }
 }

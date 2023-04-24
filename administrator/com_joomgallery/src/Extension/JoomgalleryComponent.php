@@ -23,7 +23,6 @@ use Joomla\CMS\Extension\BootableExtensionInterface;
 use Joomla\CMS\Extension\MVCComponent;
 use Joomla\CMS\HTML\HTMLRegistryAwareTrait;
 use Psr\Container\ContainerInterface;
-use Joomgallery\Component\Joomgallery\Administrator\Extension\MessageTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderServiceInterface;
@@ -74,6 +73,13 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   use TusServiceTrait;
 
   /**
+   * Set to true if a error occured
+   *
+   * @var MVCStorage
+   */
+  public $cache = false;
+
+  /**
 	 * Booting the extension. This is the function to set up the environment of the extension like
 	 * registering new class loaders, etc.
 	 *
@@ -91,6 +97,11 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
     if(!\defined('_JOOM_OPTION'))
     {
       require_once JPATH_ADMINISTRATOR . '/components/com_joomgallery/includes/defines.php';
+    }
+
+    if(!$this->cache)
+    {
+      $this->cache = new JoomCache();
     }
   }
 }

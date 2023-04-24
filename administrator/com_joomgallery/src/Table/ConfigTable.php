@@ -28,6 +28,8 @@ use \Joomla\Registry\Registry;
  */
 class ConfigTable extends Table implements VersionableTableInterface
 {
+  use JoomTableTrait;
+  
 	/**
 	 * Constructor
 	 *
@@ -400,69 +402,5 @@ class ConfigTable extends Table implements VersionableTableInterface
     $result = parent::delete($pk);
 
     return $result;
-  }
-
-  /**
-   * Support for multiple field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function multipleFieldSupport(&$data, $fieldName)
-  {
-    if(isset($data[$fieldName]))
-		{
-			if(is_array($data[$fieldName]))
-			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
-			}
-			elseif(strpos($data[$fieldName], ',') != false)
-			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
-			}
-			elseif(strlen($data[$fieldName]) == 0)
-			{
-				$data[$fieldName] = '';
-			}
-		}
-		else
-		{
-			$data[$fieldName] = '';
-		}
-  }
-
-  /**
-   * Support for number field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function numberFieldSupport(&$data, $fieldName)
-  {
-    if($data[$fieldName] === '')
-		{
-			$data[$fieldName] = null;
-			$this->{$fieldName} = null;
-		}
-  }
-
-  /**
-   * Support for number field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function subformFieldSupport(&$data, $fieldName)
-  {
-    if((!empty($data[$fieldName]) && (is_array($data[$fieldName]))))
-    {
-      \array_push($this->_jsonEncode, $fieldName);
-    }
   }
 }

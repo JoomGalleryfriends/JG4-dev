@@ -58,15 +58,8 @@ class TUSUploader extends BaseUploader implements UploaderInterface
   {
 		$user = Factory::getUser();
 
-    if(\count($data['images']) < 1)
-    {
-      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_UPLOADED'));
-
-      return false;
-    }
-
     // Load tus upload
-    $uuid = $data['images'][0];
+    $uuid = $data['uuid'];
     $this->component->getTusServer()->loadUpload($uuid);
 
     // Check for upload errors
@@ -79,7 +72,7 @@ class TUSUploader extends BaseUploader implements UploaderInterface
     }
 
     // Check for upload error codes
-    if($data['error'] > 0)
+    if(\array_key_exists('error', $data) && $data['error'] > 0)
     {
       $this->component->addDebug($this->checkError($data['error']));
       $this->error = true;
@@ -181,6 +174,31 @@ class TUSUploader extends BaseUploader implements UploaderInterface
     else
     {
       return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN'));
+    }
+  }
+
+  /**
+   * Detect if there is an image uploaded
+   * 
+   * @param   array    $data      Form data
+   * 
+   * @return  bool     True if file is detected, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function isImgUploaded($data): bool
+  {
+    if(isset($data['uuid']) && !empty($data['uuid']))
+    {
+      // Load tus upload
+      $uuid = $data['uuid'];
+      $this->component->getTusServer()->loadUpload($uuid);
+
+      return $this->component->getTusServer()->getMetaDataValue('isfinal');
+    }
+    else
+    {
+      return false;
     }
   }
 }

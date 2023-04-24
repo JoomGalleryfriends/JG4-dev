@@ -22,11 +22,11 @@ interface UploaderServiceInterface
     /**
 	 * Creates the Uploader helper class based on the selected upload method
 	 *
-     * @param   string  $uploadMethod   Name of the upload method to be used
+   * @param   string  $uploadMethod   Name of the upload method to be used
 	 * @param   bool    $multiple       True, if it is a multiple upload  (default: false)
 	 *
-     * @return  void
-     *
+   * @return  void
+   *
 	 * @since  4.0.0
 	 */
 	public function createUploader($uploadMethod, $multiple=false): void;
