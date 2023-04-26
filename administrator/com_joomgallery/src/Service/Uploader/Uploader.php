@@ -474,13 +474,34 @@ abstract class Uploader implements UploaderInterface
       $this->component->getFileManager()->deleteImages($data_row);
     }
 
-    // Delete temp image
-    if(isset($this->src_file) && !empty($this->src_file) && \file_exists($this->src_file))
-    {
-      JFile::delete($this->src_file);
-    }
+    // Delete temp images
+    $this->deleteTmp();
 
     $this->resetUserStates();
+  }
+
+  /**
+   * Delete all temporary created files which were created during upload
+   * 
+   * @return  bool     True if files are deleted, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function deleteTmp(): bool
+  {
+    $files = array();
+
+    if(isset($this->src_file) && !empty($this->src_file) && \file_exists($this->src_file))
+    {
+      \array_push($files, $this->src_file);
+    }
+
+    if(isset($this->src_tmp) && !empty($this->src_tmp) && \file_exists($this->src_tmp))
+    {
+      \array_push($files, $this->src_tmp);
+    }
+
+    return JFile::delete($files);
   }
 
   /**

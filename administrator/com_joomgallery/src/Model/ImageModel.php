@@ -380,6 +380,7 @@ class ImageModel extends JoomAdminModel
 				if(!$uploader->retrieveImage($data, $createFilename))
 				{
 					$this->setError($this->component->getDebug(true));
+          $uploader->rollback();
 
 					return false;
 				}
@@ -388,6 +389,7 @@ class ImageModel extends JoomAdminModel
 				if(!$uploader->overrideData($data))
 				{
 					$this->setError($this->component->getDebug(true));
+          $uploader->rollback();
 
 					return false;
 				}
@@ -410,6 +412,7 @@ class ImageModel extends JoomAdminModel
 			if(!$table->bind($data))
 			{
 				$this->setError($table->getError());
+        $uploader->rollback();
 
 				return false;
 			}
@@ -421,6 +424,7 @@ class ImageModel extends JoomAdminModel
 			if(!$table->check())
 			{
 				$this->setError($table->getError());
+        $uploader->rollback();
 
 				return false;
 			}
@@ -449,6 +453,7 @@ class ImageModel extends JoomAdminModel
 			if(!$table->store())
 			{
 				$this->setError($table->getError());
+        $uploader->rollback();
 
 				return false;
 			}
@@ -495,8 +500,8 @@ class ImageModel extends JoomAdminModel
 				// (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
 				if(!$uploader->createImage($table))
 				{
-					$uploader->rollback();
 					$this->setError($this->component->getDebug(true));
+          $uploader->rollback($table);
 
 					return false;
 				}
@@ -506,7 +511,7 @@ class ImageModel extends JoomAdminModel
 			{
         if($imgUploaded)
 				{
-        	$uploader->rollback();
+        	$uploader->rollback($table);
 				}
 				$this->setError($table->getError());
 
@@ -519,6 +524,9 @@ class ImageModel extends JoomAdminModel
         $this->component->cache->set('imgObj', $table->getFieldsValues(array('form', 'imgmetadata', 'params', 'created_by', 'modified_by', 'checked_out')));
       }
 
+      // All done. Clean created temp files
+      $uploader->deleteTmp();
+
 			// Clean the cache.
 			$this->cleanCache();
 
@@ -529,7 +537,7 @@ class ImageModel extends JoomAdminModel
 		{
 			if($imgUploaded)
 			{
-				$uploader->rollback();
+				$uploader->rollback($table);
 			}
 			$this->setError($e->getMessage());
 

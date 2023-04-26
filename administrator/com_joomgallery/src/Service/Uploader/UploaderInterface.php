@@ -99,4 +99,13 @@ interface UploaderInterface
    * @since   4.0.0
    */
   public function isImgUploaded($data): bool;
+
+  /**
+   * Delete all temporary created files which were created during upload
+   * 
+   * @return  bool     True if files are deleted, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function deleteTmp(): bool;
 }
