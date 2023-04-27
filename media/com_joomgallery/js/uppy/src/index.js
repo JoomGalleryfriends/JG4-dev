@@ -260,11 +260,21 @@ var callback = function() {
 
     // When upload starts, save the data of the form
     window.formData = new FormData(form);
+
+    // Add class to file to apply styles during saving process
+    data.fileIDs.forEach((fileID) => {
+      item = document.getElementById(fileID);
+      item.classList.add('is-saving');
+    });
   });
 
   uppy.on('upload-success', (file, response) => {
-    // file upload was successful
+    // File upload was successful
     console.log('Upload of '+file.name+' successful.');
+
+    // Remove is-complete class from file
+    let item = document.getElementById(file.id);
+    item.classList.remove('is-complete');
 
     // Resolve uuid
     file.uuid = getUuid(response.uploadURL);
@@ -293,12 +303,23 @@ var callback = function() {
       document.getElementById('popup-area').appendChild(div);
 
       new bootstrap.Modal(document.getElementById('modal'+file.uuid));
+
+      // Remove class from file to remove styles from saving process
+      let item = document.getElementById(file.id);
+      item.classList.remove('is-saving');
+
+      // Add is-complete class to file
+      item.classList.add('is-complete');
     });
   });
 
   uppy.on('upload-error', (file, error, response) => {
     // file upload failed
     console.log('Upload of '+file.name+' failed.');
+
+    // Remove class from file to remove styles from saving process
+    item = document.getElementById(file.id);
+    item.classList.remove('is-saving');
   });
 
   uppy.on('complete', (result) => {
