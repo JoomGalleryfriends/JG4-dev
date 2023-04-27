@@ -8,6 +8,24 @@
 .head-row .control-group .control-label {
   width: 150px;
 }
+.mt {
+  margin-top: 1rem !important;
+}
+.mb {
+  margin-bottom: 1rem !important;
+}
+.ml {
+  margin-left: 1rem !important;
+}
+.mr {
+  margin-right: 1rem !important;
+}
+.modal .modal-body {
+  margin: 1rem 2rem;
+}
+.modal .modal-body {
+  margin: 1rem 2rem;
+}
 .jcc-color-box {
   float: left;
   width: 15px;
@@ -115,21 +133,18 @@ joomla-field-image .jg_minithumb {
 .uppy-Dashboard-Item {
   height: auto !important;
 }
-.mt {
-  margin-top: 1rem !important;
+.uppy-Dashboard-Item.is-saving .uppy-Dashboard-Item-previewInnerWrap::after {
+  background-color: #000000a6;
+  bottom: 0;
+  content: "";
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1001;
 }
-.mb {
-  margin-bottom: 1rem !important;
-}
-.ml {
-  margin-left: 1rem !important;
-}
-.mr {
-  margin-right: 1rem !important;
-}
-.modal .modal-body {
-  margin: 1rem 2rem;
-}
-.modal .modal-body {
-  margin: 1rem 2rem;
+.uppy-Dashboard-Item.is-saving .uppy-Dashboard-Item-progressIcon--circle,
+.uppy-Dashboard-Item.is-saving .uppy-Dashboard-Item-progressIcon--check {
+  fill: #ffd700;
 }
