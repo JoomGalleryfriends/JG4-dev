@@ -14,6 +14,11 @@
            filter="unset" />
 
     <field name="uploader"
+           default="html"
+           type="hidden" />
+
+    <field name="multiple"
+           default="0"
            type="hidden" />
 
     <field name="uuid"
@@ -67,7 +72,7 @@
            label="JGLOBAL_TITLE"
            message="COM_JOOMGALLERY_COMMON_ALERT_IMAGE_MUST_HAVE_TITLE" />
 
-    <field name="numbering"
+    <field name="filecounter"
            type="number"
            default="1"
            min="1"

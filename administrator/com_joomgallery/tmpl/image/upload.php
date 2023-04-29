@@ -40,17 +40,16 @@ Text::script('COM_JOOMGALLERY_DEBUG_INFORMATION');
 Text::script('JCLOSE');
 Text::script('JGLOBAL_TITLE');
 Text::script('JAUTHOR');
-Text::script('JGLOBAL_DESCRIPTION');
+Text::script('JGLOBAL_DESCRIPTION'); 
 Text::script('COM_JOOMGALLERY_FILE_TITLE_HINT');
 Text::script('COM_JOOMGALLERY_FILE_DESCRIPTION_HINT');
 Text::script('COM_JOOMGALLERY_FILE_AUTHOR_HINT');
+Text::script('COM_JOOMGALLERY_SUCCESS_UPPY_UPLOAD');
+Text::script('COM_JOOMGALLERY_ERROR_UPPY_UPLOAD');
+Text::script('COM_JOOMGALLERY_ERROR_UPPY_FORM');
+Text::script('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD');
 
-// Add variables to JavaScript
-$js_vars = new stdClass();
-$js_vars->maxFileSize = 262144000;
-$js_vars->TUSlocation = $this->item->tus_location;
-
-$wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . '\');', ['position' => 'before'], [], ['com_joomgallery.uppy-uploader']);
+$wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_vars) . '\');', ['position' => 'before'], [], ['com_joomgallery.uppy-uploader']);
 ?>
 
 <div class="jg jg-upload">
@@ -84,7 +83,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . 
           <?php if(!$this->config->get('jg_useorigfilename')): ?>
             <?php echo $this->form->renderField('imgtitle'); ?>
             <?php if($this->config->get('jg_filenamenumber')): ?>
-              <?php echo $this->form->renderField('numbering'); ?>
+              <?php echo $this->form->renderField('filecounter'); ?>
             <?php endif; ?>
           <?php endif; ?>
           <?php echo $this->form->renderField('imgauthor'); ?>
@@ -102,6 +101,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . 
 
     <input type="hidden" name="task" value="image.ajaxsave"/>
     <input type="hidden" name="jform[uploader]" value="tus" />
+    <input type="hidden" name="jform[multiple]" value="1" />
     <input type="hidden" name="id" value="0" />
     <?php echo HTMLHelper::_('form.token'); ?>
   </form>

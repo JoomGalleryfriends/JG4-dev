@@ -106,8 +106,7 @@ abstract class Uploader implements UploaderInterface
     $this->error       = $this->app->getUserStateFromRequest($this->userStateKey.'.error', 'error', false, 'bool');
     $this->catid       = $this->app->getUserStateFromRequest($this->userStateKey.'.catid', 'catid', 0, 'int');
     $this->imgtitle    = $this->app->getUserStateFromRequest($this->userStateKey.'.imgtitle', 'imgtitle', '', 'string');
-    $this->filecounter = $this->app->getUserStateFromRequest($this->userStateKey.'.filecounter', 'filecounter', 0, 'post', 'int');
-
+    $this->filecounter = $this->app->getUserStateFromRequest($this->userStateKey.'.filecounter', 'filecounter', 1, 'post', 'int');
     $this->component->addDebug($this->app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
     $this->component->addWarning($this->app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
   }
@@ -182,6 +181,13 @@ abstract class Uploader implements UploaderInterface
       // Generate image filename
       $this->component->createFileManager();
       $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
+
+      // Generate image title and alias
+      if($filecounter)
+      {
+        $data['imgtitle'] = $data['imgtitle'].'-'.$filecounter;
+        $data['alias']    = $data['imgtitle'].'-'.$filecounter;
+      }
     }
 
     // Trigger onJoomBeforeUpload
@@ -545,7 +551,7 @@ abstract class Uploader implements UploaderInterface
     // Check if the initial value is already calculated
     if(isset($this->filecounter))
     {
-      $this->filecounter++;
+      //$this->filecounter++;
 
       // Store the next value in the session
       $this->app->setUserState($this->userStateKey.'.filecounter', $this->filecounter + 1);
@@ -582,7 +588,7 @@ abstract class Uploader implements UploaderInterface
   protected function resetUserStates()
   {
     // Reset file counter, delete original and create special gif selection and debug information
-    $this->app->setUserState($this->userStateKey.'.filecounter', 0);
+    $this->app->setUserState($this->userStateKey.'.filecounter', 1);
     $this->app->setUserState($this->userStateKey.'.error', false);
     $this->app->setUserState($this->userStateKey.'.debugoutput', null);
     $this->app->setUserState($this->userStateKey.'.warningoutput', null);
