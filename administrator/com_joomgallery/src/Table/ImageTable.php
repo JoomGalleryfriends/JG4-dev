@@ -119,6 +119,17 @@ class ImageTable extends Table implements VersionableTableInterface
 				}
 			}
 		}
+    else
+    {
+      if(Factory::getConfig()->get('unicodeslugs') == 1)
+      {
+        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
+      }
+      else
+      {
+        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
+      }
+    }
 
 		// Support for multiple or not foreign key field: catid
 			if(!empty($array['catid']))

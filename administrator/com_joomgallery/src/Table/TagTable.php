@@ -116,6 +116,17 @@ class TagTable extends Table implements VersionableTableInterface
 				}
 			}
 		}
+    else
+    {
+      if(Factory::getConfig()->get('unicodeslugs') == 1)
+      {
+        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
+      }
+      else
+      {
+        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
+      }
+    }
 
 		if($array['id'] == 0)
 		{

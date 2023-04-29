@@ -11,9 +11,9 @@ window.formData = false;
 
 // initialize sema object
 window.sema = new Sema(
-  4, // Allow 4 concurrent async calls
+  window.uppyVars.semaCalls, 
   {
-    capacity: 100 // Prealloc space for 100 tokens
+    capacity: window.uppyVars.semaTokens 
   }
 );
 
@@ -110,20 +110,20 @@ function createPopup(file, response) {
   // Create popup body
   let popupBody = '';
   if(response.success) {
-    popupBody = 'Upload of file "'+file.name+'" using Uppy successful.';
+    popupBody = Joomla.JText._('COM_JOOMGALLERY_SUCCESS_UPPY_UPLOAD').replace('{filename}', file.name);
   } else {
-    popupBody = 'Upload of file "'+file.name+'" failed.';
+    popupBody = Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_UPLOAD').replace('{filename}', file.name);
   }
   if(response.message) {
     popupBody = popupBody + '<br /><br />' + response.message;
   }
-  if(response.messages.notice && popupBody == '') {
+  if(response.messages.notice) {
     popupBody = popupBody + '<br /><br />' + response.messages.notice;
   }
-  if(response.messages.warning && popupBody == '') {
+  if(response.messages.warning) {
     popupBody = popupBody + '<br /><br />' + response.messages.warning;
   }
-  if(response.messages.error && popupBody == '') {
+  if(response.messages.error) {
     popupBody = popupBody + '<br /><br />' + response.messages.error;
   }
 
@@ -132,14 +132,14 @@ function createPopup(file, response) {
   html = html +   '<div class="modal-dialog modal-lg">';
   html = html +      '<div class="modal-content">';
   html = html +           '<div class="modal-header">';
-  html = html +               '<h3 class="modal-title" id="modal'+file.uuid+'Label">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</h3>';
-  html = html +               '<button type="button" class="btn-close novalidate" data-bs-dismiss="modal" aria-label="'+Joomla.JText._("JCLOSE")+'"></button>';
+  html = html +               '<h3 class="modal-title" id="modal'+file.uuid+'Label">'+Joomla.JText._('COM_JOOMGALLERY_DEBUG_INFORMATION')+'</h3>';
+  html = html +               '<button type="button" class="btn-close novalidate" data-bs-dismiss="modal" aria-label="'+Joomla.JText._('JCLOSE')+'"></button>';
   html = html +           '</div>';
   html = html +           '<div class="modal-body">';
   html = html +               '<div id="'+file.uuid+'-ModalBody">'+popupBody+'</div>';
   html = html +           '</div>';
   html = html +           '<div class="modal-footer">';
-  html = html +               '<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'+Joomla.JText._("JCLOSE")+'">'+Joomla.JText._("JCLOSE")+'</button>';
+  html = html +               '<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'+Joomla.JText._('JCLOSE')+'">'+Joomla.JText._('JCLOSE')+'</button>';
   html = html +           '</div>';
   html = html +      '</div>';
   html = html +   '</div>';
@@ -218,7 +218,7 @@ var callback = function() {
     autoProceed: false,
     restrictions: {
       maxFileSize: window.uppyVars.maxFileSize,
-      allowedFileTypes: ['image/*', 'video/*', 'audio/*', 'text/*', 'application/*'],
+      allowedFileTypes: window.uppyVars.allowedTypes,
     }
   });
 
@@ -229,20 +229,20 @@ var callback = function() {
 
   uppy.use(Dashboard, {
     inline: true,
-    target: '#drag-drop-area',
+    target: window.uppyVars.uppyTarget,
     showProgressDetails: true,
     metaFields: [
-      { id: 'title', name: Joomla.JText._("JGLOBAL_TITLE"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_TITLE_HINT")},
-      { id: 'description', name: Joomla.JText._("JGLOBAL_DESCRIPTION"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_DESCRIPTION_HINT")},
-      { id: 'owner', name: Joomla.JText._("JAUTHOR"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_AUTHOR_HINT")}
+      { id: 'title', name: Joomla.JText._('JGLOBAL_TITLE'), placeholder: Joomla.JText._('COM_JOOMGALLERY_FILE_TITLE_HINT')},
+      { id: 'description', name: Joomla.JText._('JGLOBAL_DESCRIPTION'), placeholder: Joomla.JText._('COM_JOOMGALLERY_FILE_DESCRIPTION_HINT')},
+      { id: 'owner', name: Joomla.JText._('JAUTHOR'), placeholder: Joomla.JText._('COM_JOOMGALLERY_FILE_AUTHOR_HINT')}
     ],
   });
 
   uppy.use(Tus, {
     endpoint: window.uppyVars.TUSlocation,
-    retryDelays: [0, 1000, 3000, 5000],
+    retryDelays: window.uppyVars.uppyDelays,
     allowedMetaFields: null,
-    limit: 5
+    limit: window.uppyVars.uppyLimit
   });
 
   uppy.on('upload', (data) => {
@@ -254,8 +254,8 @@ var callback = function() {
     let form = document.getElementById('adminForm');
     if(!form.checkValidity()) {
       // Cancel upload if form is not valid
-      uppyStopAll('Please fill in the form first!', uppy);
-      console.log('Please fill in the form first!');
+      uppyStopAll(Joomla.JText._('COM_JOOMGALLERY_FILE_AUTHOR_HINT'), uppy);
+      console.log('Please fill in the form before starting to upload.');
     }
     form.classList.add('was-validated');
 
@@ -290,7 +290,7 @@ var callback = function() {
       if(response.success == false)  {
         // Save record failed
         console.log('Save record to database of file '+file.name+' failed.');
-        uppySetFileError('Save record to database of file '+file.name+' failed.', uppy, file.id, response);
+        uppySetFileError(Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD').replace('{filename}', file.name), uppy, file.id, response);
 
         // Add Button to upload form
         createBtn(file, 'danger');

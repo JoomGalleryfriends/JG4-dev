@@ -350,17 +350,21 @@ class ImageModel extends JoomAdminModel
 			$app->setUserState(_JOOM_OPTION.'.image.upload', $data);
 
       // Detect uploader service
+      $upload_service  = 'html';
       if(isset($data['uploader']) && !empty($data['uploader']))
       {
         $upload_service = $data['uploader'];
       }
-      else
+
+      // Detect multiple upload service
+      $upload_multiple  = false;
+      if(isset($data['multiple']) && !empty($data['multiple']))
       {
-        $upload_service = 'html';
+        $upload_multiple = \boolval($data['multiple']);
       }
 
       // Create uploader service
-			$uploader = JoomHelper::getService('uploader', array($upload_service, false));
+			$uploader = JoomHelper::getService('uploader', array($upload_service, $upload_multiple));
 
       // Detect uploaded file
       $imgUploaded = $uploader->isImgUploaded($data);
