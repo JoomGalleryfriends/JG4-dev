@@ -232,9 +232,9 @@ var callback = function() {
     target: '#drag-drop-area',
     showProgressDetails: true,
     metaFields: [
-      { id: 'imgtitle', name: Joomla.JText._("JGLOBAL_TITLE"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_TITLE_HINT")},
-      { id: 'imgtext', name: Joomla.JText._("JGLOBAL_DESCRIPTION"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_DESCRIPTION_HINT")},
-      { id: 'author', name: Joomla.JText._("JAUTHOR"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_AUTHOR_HINT")}
+      { id: 'title', name: Joomla.JText._("JGLOBAL_TITLE"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_TITLE_HINT")},
+      { id: 'description', name: Joomla.JText._("JGLOBAL_DESCRIPTION"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_DESCRIPTION_HINT")},
+      { id: 'owner', name: Joomla.JText._("JAUTHOR"), placeholder: Joomla.JText._("COM_JOOMGALLERY_FILE_AUTHOR_HINT")}
     ],
   });
 
@@ -242,6 +242,7 @@ var callback = function() {
     endpoint: window.uppyVars.TUSlocation,
     retryDelays: [0, 1000, 3000, 5000],
     allowedMetaFields: null,
+    limit: 5
   });
 
   uppy.on('upload', (data) => {
@@ -262,10 +263,11 @@ var callback = function() {
     window.formData = new FormData(form);
 
     // Add class to file to apply styles during saving process
-    data.fileIDs.forEach((fileID) => {
-      item = document.getElementById(fileID);
-      item.classList.add('is-saving');
-    });
+    for (let i = 0; i < data.fileIDs.length; i++) {
+      let item    = document.getElementById('uppy_'+data.fileIDs[i]);
+      let preview = item.querySelector('.uppy-Dashboard-Item-preview');
+      preview.classList.add('is-saving');
+    };
   });
 
   uppy.on('upload-success', (file, response) => {
@@ -273,11 +275,15 @@ var callback = function() {
     console.log('Upload of '+file.name+' successful.');
 
     // Remove is-complete class from file
-    let item = document.getElementById(file.id);
+    let item    = document.getElementById('uppy_'+file.id);
+    let preview = item.querySelector('.uppy-Dashboard-Item-preview');
     item.classList.remove('is-complete');
 
     // Resolve uuid
     file.uuid = getUuid(response.uploadURL);
+
+    // Variable to store the save state
+    let successful = false;
 
     // Save the uploaded file to the database 
     uploadAjax('image-form', file.uuid).then(response => {
@@ -293,20 +299,26 @@ var callback = function() {
         // Save record successful
         console.log('Save record to database of file '+file.name+' successful.');
 
+        // Change save state
+        successful = true;
+
         // Add Button to upload form
-        createBtn(file, 'success');
+        if(window.formData.get('jform[debug]') == 1) {
+          createBtn(file, 'success');
+        }
       }
 
       // Add Popup
-      let div       = document.createElement('div');
-      div.innerHTML = createPopup(file, response);
-      document.getElementById('popup-area').appendChild(div);
+      if(!successful || (successful && window.formData.get('jform[debug]') == 1)) {
+        let div       = document.createElement('div');
+        div.innerHTML = createPopup(file, response);
+        document.getElementById('popup-area').appendChild(div);
 
-      new bootstrap.Modal(document.getElementById('modal'+file.uuid));
+        new bootstrap.Modal(document.getElementById('modal'+file.uuid));
+      }
 
       // Remove class from file to remove styles from saving process
-      let item = document.getElementById(file.id);
-      item.classList.remove('is-saving');
+      preview.classList.remove('is-saving');
 
       // Add is-complete class to file
       item.classList.add('is-complete');
@@ -317,19 +329,30 @@ var callback = function() {
     // file upload failed
     console.log('Upload of '+file.name+' failed.');
 
+    // Add Button to upload form
+    createBtn(file, 'danger');
+
+    // Add Popup
+    let temp_resp = {success: false};
+    let div       = document.createElement('div');
+    div.innerHTML = createPopup(file, temp_resp);
+    document.getElementById('popup-area').appendChild(div);
+
+    new bootstrap.Modal(document.getElementById('modal'+file.uuid));
+
     // Remove class from file to remove styles from saving process
-    item = document.getElementById(file.id);
+    item = document.getElementById('uppy_'+file.id);
     item.classList.remove('is-saving');
   });
 
   uppy.on('complete', (result) => {
     // complete uppy upload was successful
-    console.log('Upload was successful.');
+    console.log('Upload completely successful.');
   });
 
   uppy.on('error', (error) => {
     // complete uppy upload failed
-    console.log('Upload failed.');
+    console.log('Upload completely failed.');
   });
 
 }; //end callback
