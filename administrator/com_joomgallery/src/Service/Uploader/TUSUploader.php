@@ -117,9 +117,6 @@ class TUSUploader extends BaseUploader implements UploaderInterface
       return false;
     }
 
-    // Delete info file
-    JFile::delete($this->src_tmp.'.info');
-
     // Set permissions of uploaded file
     JPath::setPermissions($this->src_file, '0644', null);
     $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_UPLOAD_COMPLETE', filesize($this->src_file) / 1000));
@@ -144,6 +141,35 @@ class TUSUploader extends BaseUploader implements UploaderInterface
     {
       $data['imgdate'] = date('Y-m-d');
     }
+
+    // Get tus metadata
+    if(isset($data['uuid']) && !empty($data['uuid']))
+    {
+      // Load tus upload
+      $uuid = $data['uuid'];
+      $this->component->getTusServer()->loadUpload($uuid);
+
+      // Override title with tus metadata
+      if($title = $this->component->getTusServer()->getMetaDataValue('title'))
+      {
+        $data['imgtitle'] = $title;
+      }
+
+      // Override description with tus metadata
+      if($desc = $this->component->getTusServer()->getMetaDataValue('description'))
+      {
+        $data['imgtext'] = $desc;
+      }
+
+      // Override author with tus metadata
+      if($author = $this->component->getTusServer()->getMetaDataValue('owner'))
+      {
+        $data['imgauthor'] = $author;
+      }
+    }
+
+    // Delete info file
+    JFile::delete($this->src_tmp.'.info');
 
     // Override form data with image metadata
     return parent::overrideData($data);

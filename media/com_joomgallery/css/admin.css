@@ -133,7 +133,7 @@ joomla-field-image .jg_minithumb {
 .uppy-Dashboard-Item {
   height: auto !important;
 }
-.uppy-Dashboard-Item.is-saving .uppy-Dashboard-Item-previewInnerWrap::after {
+.uppy-Dashboard-Item-preview.is-saving .uppy-Dashboard-Item-previewInnerWrap::after {
   background-color: #000000a6;
   bottom: 0;
   content: "";
@@ -144,7 +144,9 @@ joomla-field-image .jg_minithumb {
   top: 0;
   z-index: 1001;
 }
-.uppy-Dashboard-Item.is-saving .uppy-Dashboard-Item-progressIcon--circle,
-.uppy-Dashboard-Item.is-saving .uppy-Dashboard-Item-progressIcon--check {
+.uppy-Dashboard-Item-preview.is-saving .uppy-Dashboard-Item-progressIcon--circle,
+.uppy-Dashboard-Item-preview.is-saving .uppy-Dashboard-Item-progressIcon--check,
+.uppy-Dashboard-Item-preview.is-saving .uppy-Dashboard-Item-progressIcon--circle circle,
+.uppy-Dashboard-Item-preview.is-saving .uppy-Dashboard-Item-progressIcon--circle polygon {
   fill: #ffd700;
 }
