@@ -56,7 +56,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($js_vars) . 
 <div class="jg jg-upload">
   <form
     action="<?php echo Route::_('index.php?option=com_joomgallery&controller=image'); ?>"
-    method="post" enctype="multipart/form-data" name="adminForm" id="image-form" class="needs-validation"
+    method="post" enctype="multipart/form-data" name="adminForm" id="adminForm" class="needs-validation"
     novalidate aria-label="<?php echo Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD', true); ?>" >
 
     <div class="row align-items-start">
