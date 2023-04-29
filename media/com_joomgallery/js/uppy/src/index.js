@@ -251,7 +251,7 @@ var callback = function() {
     console.log('Starting upload '+data.id+' for files '+data.fileIDs);
 
     // Check and validate the form
-    let form = document.getElementById('image-form');
+    let form = document.getElementById('adminForm');
     if(!form.checkValidity()) {
       // Cancel upload if form is not valid
       uppyStopAll('Please fill in the form first!', uppy);
@@ -286,7 +286,7 @@ var callback = function() {
     let successful = false;
 
     // Save the uploaded file to the database 
-    uploadAjax('image-form', file.uuid).then(response => {
+    uploadAjax('adminForm', file.uuid).then(response => {
       if(response.success == false)  {
         // Save record failed
         console.log('Save record to database of file '+file.name+' failed.');
