@@ -441,9 +441,10 @@ class TagsModel extends JoomListModel
 
     foreach($tags as $key => $tag)
     {
-      if(strpos($tag, '#new#') !== false)
+
+      if(strpos($tag->title, '#new#') !== false)
       {
-        $title = \str_replace('#new#', '', $tag);
+        $title = \str_replace('#new#', '', $tag->title);
 
         // create tag
         $data = array();
