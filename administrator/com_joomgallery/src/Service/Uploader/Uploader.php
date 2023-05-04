@@ -83,15 +83,23 @@ abstract class Uploader implements UploaderInterface
   protected $multiple = false;
 
   /**
+   * Set to true if it is a asynchronous upload
+   *
+   * @var bool
+   */
+  protected $async = false;
+
+  /**
    * Constructor
    * 
    * @param   bool   $multiple     True, if it is a multiple upload  (default: false)
+   * @param   bool   $async        True, if it is a asynchronous upload  (default: false)
    *
    * @return  void
    *
    * @since   1.0.0
    */
-  public function __construct($multiple=false)
+  public function __construct($multiple=false, $async=false)
   {
     // Load application
     $this->getApp();
@@ -102,6 +110,7 @@ abstract class Uploader implements UploaderInterface
     $this->component->createConfig();
 
     $this->multiple    = $multiple;
+    $this->async       = $async;
 
     $this->error       = $this->app->getUserStateFromRequest($this->userStateKey.'.error', 'error', false, 'bool');
     $this->catid       = $this->app->getUserStateFromRequest($this->userStateKey.'.catid', 'catid', 0, 'int');
@@ -551,10 +560,14 @@ abstract class Uploader implements UploaderInterface
     // Check if the initial value is already calculated
     if(isset($this->filecounter))
     {
-      //$this->filecounter++;
+      if(!$this->async)
+      {
+        // In asynchronous uploads, the filecounter is upcounted in the frontend
+        $this->filecounter++;
 
-      // Store the next value in the session
-      $this->app->setUserState($this->userStateKey.'.filecounter', $this->filecounter + 1);
+        // Store the next value in the session
+        $this->app->setUserState($this->userStateKey.'.filecounter', $this->filecounter + 1);
+      }
 
       return $this->filecounter;
     }

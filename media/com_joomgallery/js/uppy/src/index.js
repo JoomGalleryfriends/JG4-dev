@@ -21,11 +21,12 @@ window.sema = new Sema(
  * Asynchronous fetch request of form data
  *
  * @param  {Integer}   formID    The id of the form element
- * @param  {String}    uuid	     The id of the uploaded element
+ * @param  {String}    uuid	     The id of the tus upload
+ * @param  {String}    fileID    The id of the uploaded file
  *
  * @returns  {String}  Response
  */
-async function uploadAjax(formID, uuid) {
+async function uploadAjax(formID, uuid, fileID) {
   await window.sema.acquire();
 
   // initialize variable
@@ -36,6 +37,7 @@ async function uploadAjax(formID, uuid) {
     let form = document.getElementById(formID);
     let formData = window.formData;
     formData.append('jform[uuid]', uuid);
+    formData.append('jform[filecounter]', window.filecounters[fileID]);
     let url = form.getAttribute('action');
 
     // Set request parameters
@@ -267,6 +269,9 @@ var callback = function() {
       let item    = document.getElementById('uppy_'+data.fileIDs[i]);
       let preview = item.querySelector('.uppy-Dashboard-Item-preview');
       preview.classList.add('is-saving');
+
+      // Store a global list to store the filecounter
+      window.filecounters[data.fileIDs[i]] = i;
     };
   });
 
@@ -286,7 +291,7 @@ var callback = function() {
     let successful = false;
 
     // Save the uploaded file to the database 
-    uploadAjax('adminForm', file.uuid).then(response => {
+    uploadAjax('adminForm', file.uuid, file.id).then(response => {
       if(response.success == false)  {
         // Save record failed
         console.log('Save record to database of file '+file.name+' failed.');

@@ -83,7 +83,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
           <?php if(!$this->config->get('jg_useorigfilename')): ?>
             <?php echo $this->form->renderField('imgtitle'); ?>
             <?php if($this->config->get('jg_filenamenumber')): ?>
-              <?php echo $this->form->renderField('filecounter'); ?>
+              <?php echo $this->form->renderField('nmb_start'); ?>
             <?php endif; ?>
           <?php endif; ?>
           <?php echo $this->form->renderField('imgauthor'); ?>
