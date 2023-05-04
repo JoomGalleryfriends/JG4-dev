@@ -364,7 +364,7 @@ class ImageModel extends JoomAdminModel
       }
 
       // Create uploader service
-			$uploader = JoomHelper::getService('uploader', array($upload_service, $upload_multiple));
+			$uploader = JoomHelper::getService('uploader', array($upload_service, $upload_multiple, $isAjax));
 
       // Detect uploaded file
       $imgUploaded = $uploader->isImgUploaded($data);

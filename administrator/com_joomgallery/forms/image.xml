@@ -76,6 +76,12 @@
            type="number"
            default="1"
            min="1"
+           step="1" />
+
+    <field name="nmb_start"
+           type="number"
+           default="1"
+           min="1"
            step="1"
            label="COM_JOOMGALLERY_FIELDS_NUMBERING_START"
            description="COM_JOOMGALLERY_FIELDS_NUMBERING_START_DESC" />
