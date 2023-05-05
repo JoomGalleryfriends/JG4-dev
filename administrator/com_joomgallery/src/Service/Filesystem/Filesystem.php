@@ -721,7 +721,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @since   4.0.0
    * @throws \Exception
    */
-  public function search(string $path = '/', string $needle, bool $recursive = false): array
+  public function search(string $path, string $needle, bool $recursive = false): array
   {
     $adapter = $this->getFilesystem();
     $path    = $this->cleanPath($this->adjustPath($path), '/');
