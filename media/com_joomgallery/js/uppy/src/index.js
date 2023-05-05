@@ -9,6 +9,9 @@ const { Sema } = require('async-sema');
 // initialize formData object
 window.formData = false;
 
+// initialize filecounters array
+window.filecounters = [];
+
 // initialize sema object
 window.sema = new Sema(
   window.uppyVars.semaCalls,
@@ -361,11 +364,12 @@ var callback = function() {
         addText(file.id, 'Saving successful');
 
         // Exchange title of the upload file
-        changeFileTitle(file.id, response.record.imgtitle);
+        changeFileTitle(file.id, response.data.record.imgtitle);
 
         // Add Button to upload form
         if(window.formData.get('jform[debug]') == 1) {
           addBtn(file, 'success');
+          console.log(response.data.record);
         }
       }
 
