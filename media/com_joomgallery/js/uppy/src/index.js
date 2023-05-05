@@ -11,7 +11,7 @@ window.formData = false;
 
 // initialize sema object
 window.sema = new Sema(
-  window.uppyVars.semaCalls, 
+  window.uppyVars.semaCalls,
   {
     capacity: window.uppyVars.semaTokens 
   }
@@ -20,7 +20,7 @@ window.sema = new Sema(
 /**
  * Asynchronous fetch request of form data
  *
- * @param  {Integer}   formID    The id of the form element
+ * @param  {String}    formID    The id of the form element
  * @param  {String}    uuid	     The id of the tus upload
  * @param  {String}    fileID    The id of the uploaded file
  *
@@ -151,20 +151,61 @@ function createPopup(file, response) {
 }
 
 /**
- * Add button to uppy upload form
+ * Add debug button to uppy upload form
  *
  * @param  {Object}   file	  The Uppy file that was uploaded.
- * @param  {String}   type	  Button type. success or danger
+ * @param  {String}   type	  Button type. (success or danger)
  */
-function createBtn(file, type) {
-  // Create button
-  let btn = document.createElement('div');
-  btn.innerHTML = '<button type="button" class="btn btn-'+type+' btn-sm" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
-  btn.classList.add('uppy-Dashboard-Item-debug-msg');
-  btn.classList.add('success');
+function addBtn(file, type) {
+  // Remove old element
+  let old = document.getElementById('uppy_'+file.id+'_msgbox');
+  if(old) {
+    old.remove();
+  }
 
-  // Add button to form
-  document.getElementById('uppy_'+file.id).lastChild.firstChild.appendChild(btn);
+  // Create button element
+  let div = document.createElement('div');
+  div.setAttribute('id', 'uppy_'+file.id+'_msgbox');
+  div.innerHTML = '<button type="button" class="btn btn-'+type+' btn-sm" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
+  div.classList.add('uppy-Dashboard-Item-debug-msg');
+  div.classList.add('success');
+
+  // Add element to form
+  document.getElementById('uppy_'+file.id).lastChild.firstChild.appendChild(div);
+}
+
+/**
+ * Add text message to uppy upload form
+ *
+ * @param  {Ineger}   fileID	 The Uppy file that was uploaded.
+ * @param  {String}   text	   The text content to be added.
+ */
+function addText(fileID, text) {
+  // Remove old element
+  let old = document.getElementById('uppy_'+fileID+'_msgbox');
+  if(old) {
+    old.remove();
+  }
+
+  // Create text element
+  let div = document.createElement('div');
+  div.setAttribute('id', 'uppy_'+fileID+'_msgbox');
+  div.innerHTML = '<p>'+text+'</p>';
+  div.classList.add('uppy-Dashboard-Item-text-msg');
+
+  // Add element to form
+  document.getElementById('uppy_'+fileID).lastChild.firstChild.appendChild(div);
+}
+
+/**
+ * Add a new title to an uploaded file
+ *
+ * @param  {Integer}  fileID	 The Uppy file that was uploaded.
+ * @param  {String}   title	   The new title to be added
+ */
+function changeFileTitle(fileID, title) {
+  let elem = document.getElementById('uppy_'+fileID).querySelector('.uppy-Dashboard-Item-name');
+  elem.innerHTML = title;
 }
 
 /**
@@ -270,6 +311,9 @@ var callback = function() {
       let preview = item.querySelector('.uppy-Dashboard-Item-preview');
       preview.classList.add('is-saving');
 
+      // Add text uploading to file element
+      addText(data.fileIDs[i], 'uploading...');
+
       // Store a global list to store the filecounter
       window.filecounters[data.fileIDs[i]] = i;
     };
@@ -290,6 +334,9 @@ var callback = function() {
     // Variable to store the save state
     let successful = false;
 
+    // Add text saving to file element
+    addText(file.id, 'saving...');
+
     // Save the uploaded file to the database 
     uploadAjax('adminForm', file.uuid, file.id).then(response => {
       if(response.success == false)  {
@@ -297,8 +344,11 @@ var callback = function() {
         console.log('Save record to database of file '+file.name+' failed.');
         uppySetFileError(Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD').replace('{filename}', file.name), uppy, file.id, response);
 
+        // Add text saving to file element
+        addText(file.id, 'Saving failed');
+
         // Add Button to upload form
-        createBtn(file, 'danger');
+        addBtn(file, 'danger');
       }
       else  {
         // Save record successful
@@ -307,9 +357,15 @@ var callback = function() {
         // Change save state
         successful = true;
 
+        // Add text saving to file element
+        addText(file.id, 'Saving successful');
+
+        // Exchange title of the upload file
+        changeFileTitle(file.id, response.record.imgtitle);
+
         // Add Button to upload form
         if(window.formData.get('jform[debug]') == 1) {
-          createBtn(file, 'success');
+          addBtn(file, 'success');
         }
       }
 
@@ -334,8 +390,11 @@ var callback = function() {
     // file upload failed
     console.log('Upload of '+file.name+' failed.');
 
+    // Add text saving to file element
+    addText(file.id, 'Upload failed');
+
     // Add Button to upload form
-    createBtn(file, 'danger');
+    addBtn(file, 'danger');
 
     // Add Popup
     let temp_resp = {success: false};
