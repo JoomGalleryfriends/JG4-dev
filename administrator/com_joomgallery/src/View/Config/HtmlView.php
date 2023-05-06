@@ -36,6 +36,10 @@ class HtmlView extends JoomGalleryView
 
 	protected $form;
 
+  protected $fieldsets;
+
+  protected $is_global_config;
+
 	/**
 	 * Display the view
 	 *
@@ -50,33 +54,8 @@ class HtmlView extends JoomGalleryView
 		$this->state            = $this->get('State');
 		$this->item             = $this->get('Item');
 		$this->form             = $this->get('Form');
-    $this->fieldsets        = array();
+    $this->fieldsets        = $this->get('Fieldsets');
     $this->is_global_config = ($this->item->id === 1) ? true : false;
-    
-		// Add options to the replaceinfo field
-		JoomHelper::addReplaceinfoOptions($this->form);
-
-		// Fill fieldset array
-		foreach($this->form->getFieldsets() as $key => $fieldset)
-		{
-			$parts = \explode('-',$key);
-			$level = \count($parts);
-
-			$fieldset->level = $level;
-			$fieldset->title = \end($parts);
-
-			$this->setFieldset($key, array('this'=>$fieldset));
-		}
-
-		// Add permissions fieldset to level 1 fieldsets
-		$permissions = array('name' => 'permissions',
-							'label' => 'JGLOBAL_ACTION_PERMISSIONS_LABEL',
-							'description' => '',
-							'type' => 'tab',
-							'level' => 1,
-							'title' => 'permissions');
-		$this->fieldsets['permissions'] = array('this' => (object) $permissions);
-
 
 		// Check for errors
 		if(count($errors = $this->get('Errors')))
@@ -190,37 +169,6 @@ class HtmlView extends JoomGalleryView
 	}
 
   /**
-	 * Add a fieldset to the fieldset array.
-   * source: https://stackoverflow.com/questions/13308968/create-infinitely-deep-multidimensional-array-from-string-in-php
-   *
-   * @param  string  $key    path for the value in the array
-   * @param  string  $value  the value to be placed at the defined path
-	 *
-	 * @return void
-	 *
-	 */
-	protected function setFieldset($key, $value)
-	{
-    if(false === ($levels = explode('-',$key)))
-    {
-      return;
-    }
-
-    $pointer = &$this->fieldsets;
-    for ($i=0; $i < sizeof($levels); $i++)
-    {
-      if(!isset($pointer[$levels[$i]]))
-      {
-        $pointer[$levels[$i]] = array();
-      }
-
-      $pointer = &$pointer[$levels[$i]];
-    }
-
-    $pointer = $value;
-  }
-
-  /**
 	 * Method to get an array of JFormField objects in a given fieldset by name.
    *
    * @param    string  $name   name of the fieldset
@@ -230,100 +178,11 @@ class HtmlView extends JoomGalleryView
 	 */
   public function getFieldset($name)
 	{
-    $xml = null;
-
-    // Attempt to load the XML file.
-    $filename = JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'forms'.DIRECTORY_SEPARATOR.'config.xml';
-    if(file_exists($filename))
-    {
-      $xml = simplexml_load_file($filename);
-    }
-
-    // Initialise fields array
-    $fields = array();
-
-    // Make sure there is a valid Form XML document.
-		if(!($xml instanceof \SimpleXMLElement))
-		{
-			throw new \UnexpectedValueException('XML is not an instance of SimpleXMLElement');
-		}
-
-    /*
-		 * Get an array of <field /> elements that are underneath a <fieldset /> element
-		 * with the appropriate name attribute, and also any <field /> elements with
-		 * the appropriate fieldset attribute. To allow repeatable elements only fields
-		 * which are not descendants of other fields are selected.
-		 */
-    $elements = $xml->xpath('(//fieldset[@name="' . $name . '"]/field | //field[@fieldset="' . $name . '"])[not(ancestor::field)]');
-
-    // If no field elements were found return empty.
-		if(empty($elements))
-		{
-			return $fields;
-		}
-
-    // Build the result array from the found field elements.
-		foreach($elements as $element)
-		{
-			// Get the field groups for the element.
-			$attrs = $element->xpath('ancestor::fields[@name]/@name');
-			$groups = array_map('strval', $attrs ? $attrs : array());
-			$group = implode('.', $groups);
-
-			// If the field is successfully loaded add it to the result array.
-      // Get the field type.
-      $type = $element['type'] ? (string) $element['type'] : 'text';
-
-      // Load the FormField object for the field.
-      $field = FormHelper::loadFieldType($type);
-
-      // If the object could not be loaded, get a text field object.
-      if($field === false)
-      {
-        $field = FormHelper::loadFieldType('text');
-      }
-
-      /*
-      * Get the value for the form field if not set.
-      * Default to the translated version of the 'default' attribute
-      * if 'translate_default' attribute if set to 'true' or '1'
-      * else the value of the 'default' attribute for the field.
-      */
-      $default = (string) ($element['default'] ? $element['default'] : $element->default);
-
-      if(($translate = $element['translate_default']) && ((string) $translate === 'true' || (string) $translate === '1'))
-      {
-        $lang = Factory::getLanguage();
-
-        if($lang->hasKey($default))
-        {
-          $debug = $lang->setDebug(false);
-          $default = Text::_($default);
-          $lang->setDebug($debug);
-        }
-        else
-        {
-          $default = Text::_($default);
-        }
-      }
-
-      $value = $this->form->getValue((string) $element['name'], $group, $default);
-
-      // Setup the FormField object.
-      $field->setForm($this->form);
-      $field->setup($element, $value, $group);
-
-			if($field)
-			{
-				$fields[$field->id] = $field;
-			}
-		}
-
-		return $fields;
+    return $this->form->getFieldset($name);
   }
 
   /**
-  * Add the page title and toolbar.
+  * Render a single field.
   *
   * @param   object  $field   Field object to render
   *
@@ -331,33 +190,33 @@ class HtmlView extends JoomGalleryView
   */
   public function renderField($field)
   {
-	$global_only = false;
-	if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
-	{
-		$global_only = true;
-	}
+    $global_only = false;
+    if(!$this->is_global_config && !empty($field->getAttribute('global_only')) && $field->getAttribute('global_only') == true)
+    {
+      $global_only = true;
+    }
 
-	$sensitive = false;
-	if(!empty($field->getAttribute('sensitive')) && $field->getAttribute('sensitive') == true)
-	{
-		$sensitive = true;
-	}
+    $sensitive = false;
+    if(!empty($field->getAttribute('sensitive')) && $field->getAttribute('sensitive') == true)
+    {
+      $sensitive = true;
+    }
 
-	if($global_only)
-	{
-		// Fields with global_only attribute --> Not editable
-		$field_data = array(
-      'id' => $field->id,
-			'name' => $field->name,
-			'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array(), 'sensitive'=>$sensitive)),
-			'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
-			'description' => Text::_('COM_JOOMGALLERY_CONFIG_EDIT_ONLY_IN_GLOBAL'),
-		);
-		echo LayoutHelper::render('joomla.form.renderfield', $field_data);
-	}
-	else
-	{
-		echo $field->renderField(array('sensitive' => $sensitive));
-	}
+    if($global_only)
+    {
+      // Fields with global_only attribute --> Not editable
+      $field_data = array(
+        'id' => $field->id,
+        'name' => $field->name,
+        'label' => LayoutHelper::render('joomla.form.renderlabel', array('text'=>Text::_($field->getAttribute('label')), 'for'=>$field->id, 'required'=>false, 'classes'=>array(), 'sensitive'=>$sensitive)),
+        'input' => LayoutHelper::render('joomla.form.field.value', array('id'=>$field->id, 'value'=>$field->value, 'class'=>'')),
+        'description' => Text::_('COM_JOOMGALLERY_CONFIG_EDIT_ONLY_IN_GLOBAL'),
+      );
+      echo LayoutHelper::render('joomla.form.renderfield', $field_data);
+    }
+    else
+    {
+      echo $field->renderField(array('sensitive' => $sensitive));
+    }
   }
 }

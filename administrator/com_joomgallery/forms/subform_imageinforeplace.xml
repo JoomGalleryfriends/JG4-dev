@@ -20,6 +20,8 @@
            type="list"
            groupByFieldset="false"
            default="COMMENT"
+           dynamic="true"
+           script="getReplaceinfoOptions"
            label="COM_JOOMGALLERY_CONFIG_SOURCE_METADATA_FIELD"
            description="COM_JOOMGALLERY_CONFIG_SOURCE_METADATA_FIELD_LONG"
            EXIF="[['IFD0','270'],['EXIF','37510'],['IFD0','315'],['IFD0','33432'],['IFD0','306'],['EXIF','36867'],['EXIF','36868']]"

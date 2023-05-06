@@ -721,7 +721,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @since   4.0.0
    * @throws \Exception
    */
-  public function search(string $path = '/', string $needle, bool $recursive = false): array
+  public function search(string $path, string $needle, bool $recursive = false): array
   {
     $adapter = $this->getFilesystem();
     $path    = $this->cleanPath($this->adjustPath($path), '/');
@@ -909,5 +909,34 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
 
     return $path;
+  }
+
+  /**
+   * Obtain list of supported providers
+   *
+   * @return array
+   *
+   * @since 4.0.0
+   */
+  public function getProviders()
+  {
+    $results = array();
+
+    foreach($this->getProviderManager()->getProviders() as $provider)
+    {
+      $result               = new \stdClass();
+      $result->name         = $provider->getID();
+      $result->displayName  = $provider->getDisplayName();
+      $result->adapterNames = array();
+
+      foreach($provider->getAdapters() as $adapter)
+      {
+        $result->adapterNames[] = $adapter->getAdapterName();
+      }
+
+      $results[] = $result;
+    }
+
+    return $results;
   }
 }
