@@ -36,11 +36,13 @@ $layout  = $isModal ? 'modal' : 'edit';
 $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 
 // Add language strings to JavaScript
-Text::script('COM_JOOMGALLERY_DEBUG_INFORMATION');
 Text::script('JCLOSE');
 Text::script('JGLOBAL_TITLE');
 Text::script('JAUTHOR');
-Text::script('JGLOBAL_DESCRIPTION'); 
+Text::script('JGLOBAL_DESCRIPTION');
+Text::script('COM_JOOMGALLERY_UPLOADING');
+Text::script('COM_JOOMGALLERY_SAVING');
+Text::script('COM_JOOMGALLERY_DEBUG_INFORMATION'); 
 Text::script('COM_JOOMGALLERY_FILE_TITLE_HINT');
 Text::script('COM_JOOMGALLERY_FILE_DESCRIPTION_HINT');
 Text::script('COM_JOOMGALLERY_FILE_AUTHOR_HINT');
