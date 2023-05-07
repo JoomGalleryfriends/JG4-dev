@@ -334,6 +334,9 @@ var callback = function() {
     let preview = item.querySelector('.uppy-Dashboard-Item-preview');
     item.classList.remove('is-complete');
 
+    // Add text uploading to file element
+    addText(file.id, Joomla.JText._('COM_JOOMGALLERY_WAITING')+'...');
+
     // Resolve uuid
     file.uuid = getUuid(response.uploadURL);
 
