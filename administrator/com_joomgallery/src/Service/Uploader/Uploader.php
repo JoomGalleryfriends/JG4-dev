@@ -195,7 +195,7 @@ abstract class Uploader implements UploaderInterface
       if($filecounter)
       {
         $data['imgtitle'] = $data['imgtitle'].'-'.$filecounter;
-        $data['alias']    = $data['imgtitle'].'-'.$filecounter;
+        $data['alias']    = $data['imgtitle'];
       }
     }
 
