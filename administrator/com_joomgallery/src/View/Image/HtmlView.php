@@ -77,8 +77,8 @@ class HtmlView extends JoomGalleryView
       $js_vars->uppyLimit    = 5;                          // Number of concurrent tus upploads (only file upload)
       $js_vars->uppyDelays   = array(0, 1000, 3000, 5000); // Delay in ms between upload retrys
 
-      $js_vars->semaCalls    = 4;    // Number of concurrent async calls to save the record to DB (including image processing)
-      $js_vars->semaTokens   = 100;  // Prealloc space for 100 tokens
+      $js_vars->semaCalls    = $this->config->get('jg_parallelprocesses', 1); // Number of concurrent async calls to save the record to DB (including image processing)
+      $js_vars->semaTokens   = 100;                                           // Prealloc space for 100 tokens
 
       $this->js_vars = $js_vars;
     }

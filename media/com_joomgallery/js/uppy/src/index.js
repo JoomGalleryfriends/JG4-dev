@@ -36,6 +36,9 @@ async function uploadAjax(formID, uuid, fileID) {
   let res = '';
 
   try {
+    // Add text saving to file element
+    addText(fileID, Joomla.JText._('COM_JOOMGALLERY_SAVING')+'...');
+    
     // Catch form and data
     let form = document.getElementById(formID);
     let formData = window.formData;
@@ -315,7 +318,7 @@ var callback = function() {
       preview.classList.add('is-saving');
 
       // Add text uploading to file element
-      addText(data.fileIDs[i], 'uploading...');
+      addText(data.fileIDs[i], Joomla.JText._('COM_JOOMGALLERY_UPLOADING')+'...');
 
       // Store a global list to store the filecounter
       window.filecounters[data.fileIDs[i]] = i;
@@ -336,9 +339,6 @@ var callback = function() {
 
     // Variable to store the save state
     let successful = false;
-
-    // Add text saving to file element
-    addText(file.id, 'saving...');
 
     // Save the uploaded file to the database 
     uploadAjax('adminForm', file.uuid, file.id).then(response => {
@@ -416,11 +416,17 @@ var callback = function() {
   uppy.on('complete', (result) => {
     // complete uppy upload was successful
     console.log('Upload completely successful.');
+
+    // Re-initialize the form
+    document.getElementById('adminForm').classList.remove('was-validated');
   });
 
   uppy.on('error', (error) => {
     // complete uppy upload failed
     console.log('Upload completely failed.');
+
+    // Re-initialize the form
+    document.getElementById('adminForm').classList.remove('was-validated');
   });
 
 }; //end callback
