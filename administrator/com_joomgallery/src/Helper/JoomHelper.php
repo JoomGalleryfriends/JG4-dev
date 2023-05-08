@@ -34,7 +34,15 @@ class JoomHelper
    *
    * @var array
    */
-  protected static $content_types = array('category', 'config', 'field', 'image', 'imagetype', 'tag', 'user', 'vote');
+  protected static $content_types = array('category'  => _JOOM_TABLE_CATEGORIES,
+                                          'config'    => _JOOM_TABLE_CONFIGS,
+                                          'field'     => _JOOM_TABLE_FIELDS,
+                                          'image'     => _JOOM_TABLE_IMAGES,
+                                          'imagetype' => _JOOM_TABLE_IMG_TYPES,
+                                          'tag'       => _JOOM_TABLE_TAGS,
+                                          'user'      => _JOOM_TABLE_USERS,
+                                          'vote'      => _JOOM_TABLE_VOTES
+                                        );
 
   /**
 	 * Gets the JoomGallery component object
@@ -170,6 +178,101 @@ class JoomHelper
   }
 
   /**
+	 * Returns the creator of a database record
+   *
+   * @param   string          $name      The name of the record (available: category,image,tag,imagetype)
+   * @param   int|string      $id        The id of the primary key
+   * @param   bool            $parent    True to get the creator of the parent record (default:false)
+	 *
+	 * @return  int             User id of the creator on success, false on failure.
+	 *
+	 * @since   4.0.0
+	 */
+  public static function getCreator($name, $id, $parent=false)
+  {
+    // Check if content type is available
+    self::isAvailable($name);
+
+    $id = intval($id);
+
+    // We got a record id
+    if(\is_numeric($id) && $id > 0)
+    {
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+      $query = $db->getQuery(true);
+
+      if($parent && \in_array($name, array('image', 'category')))
+      {
+        // Get join selector id
+        $parent_id = ($name == 'category') ? 'a.parent_id' : 'a.catid';
+
+        // Create query
+        $query
+          ->select($db->quoteName('parent.created_by', 'created_by'))
+          ->join('LEFT', $db->quoteName(self::$content_types[$name], 'parent'), $db->quoteName('parent.id') . ' = ' . $db->quoteName($parent_id))
+          ->from($db->quoteName(self::$content_types[$name], 'a'))
+          ->where($db->quoteName('a.id') . ' = ' . $id);
+      }
+      else
+      {
+        // Create query
+        $query
+          ->select($db->quoteName('a.created_by', 'created_by'))
+          ->from($db->quoteName(self::$content_types[$name], 'a'))
+          ->where($db->quoteName('a.id') . ' = ' . $id);
+      }
+
+      $db->setQuery($query);
+
+      return $db->loadResult();
+    }
+
+    return false;
+  }
+
+  /**
+	 * Returns the id of the parent database record
+   *
+   * @param   string        $name      The name of the record (available: category,image)
+   * @param   int|string    $id        The id of the primary key
+	 *
+	 * @return  int           Parent id of the record on success, false on failure.
+	 *
+	 * @since   4.0.0
+	 */
+  public static function getParent($name, $id)
+  {
+    if(!\in_array($name, array('image', 'category')))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
+    }
+
+    $id = intval($id);
+
+    // We got a record id
+    if(\is_numeric($id) && $id > 0)
+    {
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+      $query = $db->getQuery(true);
+
+      // Get selector id
+      $parent_id = ($name == 'category') ? 'parent_id' : 'catid';
+
+      // Create query
+      $query
+      ->select($db->quoteName($parent_id))
+      ->from($db->quoteName(self::$content_types[$name]))
+      ->where($db->quoteName('id') . ' = ' . $id);
+
+      $db->setQuery($query);
+
+      return $db->loadResult();
+    }
+
+    return false;
+  }
+
+  /**
 	 * Returns a list of database records
    *
    * @param   string      $name      The name of the record (available: categories,images,tags,imagetypes)
@@ -210,30 +313,6 @@ class JoomHelper
   }
 
 	/**
-	 * Gets the files attached to an item
-	 *
-	 * @param   int     $pk     The item's id
-	 * @param   string  $table  The table's name
-	 * @param   string  $field  The field's name
-	 *
-	 * @return  array  The files
-	 */
-	public static function getFiles($pk, $table, $field)
-	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($field)
-			->from($table)
-			->where('id = ' . (int) $pk);
-
-		$db->setQuery($query);
-
-		return explode(',', $db->loadResult());
-	}
-
-	/**
 	 * Gets a list of the actions that can be performed.
    * 
    * @param   string  $type   The name of the content type of the item
@@ -259,7 +338,7 @@ class JoomHelper
       $assetName .= '.'.$id;
     }
 
-    $user   = Factory::getUser(); 
+    $user   = Factory::getUser();
 		$result = new CMSObject;
 
 		$actions = array(
@@ -477,7 +556,7 @@ class JoomHelper
 	 */
   protected static function isAvailable($name)
   {
-    if(!\in_array($name, self::$content_types))
+    if(!\in_array($name, \array_keys(self::$content_types)))
     {
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
