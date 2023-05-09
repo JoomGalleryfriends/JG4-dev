@@ -560,11 +560,9 @@ abstract class Uploader implements UploaderInterface
     // Check if the initial value is already calculated
     if(isset($this->filecounter))
     {
+      // In asynchronous uploads, the filecounter is upcounted in the frontend
       if(!$this->async)
       {
-        // In asynchronous uploads, the filecounter is upcounted in the frontend
-        $this->filecounter++;
-
         // Store the next value in the session
         $this->app->setUserState($this->userStateKey.'.filecounter', $this->filecounter + 1);
       }
