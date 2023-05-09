@@ -95,7 +95,7 @@ class TagTable extends Table implements VersionableTableInterface
 	public function bind($array, $ignore = '')
 	{
 		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task');
+		$task = (String) Factory::getApplication()->input->get('task');
 
     // Support for alias field: alias
 		if(empty($array['alias']))

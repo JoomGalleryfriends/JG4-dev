@@ -142,7 +142,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function bind($array, $ignore = '')
 	{
 		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task');
+		$task = (String) Factory::getApplication()->input->get('task');
 
 		if($array['id'] == 0)
 		{
