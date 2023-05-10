@@ -262,6 +262,9 @@ function uppyStopAll (error, uppy, { reason = 'user' } = {}) {
 
 var callback = function() {
   // document ready function
+
+  // Initialize the form
+  document.getElementById('adminForm').classList.remove('was-validated');
   
   let uppy = new Uppy({
     autoProceed: false,
@@ -298,6 +301,9 @@ var callback = function() {
     // data object consists of `id` with upload ID and `fileIDs` array
     // with file IDs in current upload
     console.log('Starting upload '+data.id+' for files '+data.fileIDs);
+
+    // Initialize the form
+    document.getElementById('adminForm').classList.remove('was-validated');
 
     // Check and validate the form
     let form = document.getElementById('adminForm');
@@ -427,9 +433,6 @@ var callback = function() {
   uppy.on('error', (error) => {
     // complete uppy upload failed
     console.log('Upload completely failed.');
-
-    // Re-initialize the form
-    document.getElementById('adminForm').classList.remove('was-validated');
   });
 
 }; //end callback
