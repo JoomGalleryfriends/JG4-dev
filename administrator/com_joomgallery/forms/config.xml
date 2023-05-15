@@ -129,7 +129,8 @@
              type="number"
              default="1"
              filter="int"
-             min="0"
+             min="1"
+             max="125"
              step="1"
              label="COM_JOOMGALLERY_CONFIG_PARALLEL_PROCESS"
              description="COM_JOOMGALLERY_CONFIG_PARALLEL_PROCESS_LONG" />
