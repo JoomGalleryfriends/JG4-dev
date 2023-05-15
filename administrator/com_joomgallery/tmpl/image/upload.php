@@ -107,6 +107,9 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
     <input type="hidden" name="task" value="image.ajaxsave"/>
     <input type="hidden" name="jform[uploader]" value="tus" />
     <input type="hidden" name="jform[multiple]" value="1" />
+    <?php if($this->config->get('jg_useorigfilename')): ?>
+      <input type="hidden" name="jform[imgtitle]" value="title" />
+    <?php endif; ?>
     <input type="hidden" name="id" value="0" />
     <?php echo HTMLHelper::_('form.token'); ?>
   </form>
