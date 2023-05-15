@@ -44,6 +44,11 @@ async function uploadAjax(formID, uuid, fileID) {
     let formData = window.formData;
     formData.append('jform[uuid]', uuid);
     formData.append('jform[filecounter]', window.filecounters[fileID]);
+    if(formData.get('jform[imgtext]').trim().length === 0) {
+      // Receive text content from editor
+      let txt = Joomla.editors.instances['jform_imgtext'].getValue();
+      formData.set('jform[imgtext]', txt);
+    }
     let url = form.getAttribute('action');
 
     // Set request parameters
