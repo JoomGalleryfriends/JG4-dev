@@ -328,6 +328,9 @@ var callback = function() {
     // When upload starts, save the data of the form
     window.formData = new FormData(form);
 
+    // Get numbering start value
+    let nmb_start = parseInt(document.getElementById('jform_nmb_start').value);
+
     // Add class to file to apply styles during saving process
     for (let i = 0; i < data.fileIDs.length; i++) {
       let item    = document.getElementById('uppy_'+data.fileIDs[i]);
@@ -338,7 +341,7 @@ var callback = function() {
       addText(data.fileIDs[i], Joomla.JText._('COM_JOOMGALLERY_UPLOADING')+'...');
 
       // Store a global list to store the filecounter
-      window.filecounters[data.fileIDs[i]] = i;
+      window.filecounters[data.fileIDs[i]] = nmb_start+i;
     };
   });
 
