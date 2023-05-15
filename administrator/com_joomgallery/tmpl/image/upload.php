@@ -37,9 +37,10 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
 // Add language strings to JavaScript
 Text::script('JCLOSE');
-Text::script('JGLOBAL_TITLE');
 Text::script('JAUTHOR');
+Text::script('JGLOBAL_TITLE');
 Text::script('JGLOBAL_DESCRIPTION');
+Text::script('JGLOBAL_VALIDATION_FORM_FAILED');
 Text::script('COM_JOOMGALLERY_UPLOADING');
 Text::script('COM_JOOMGALLERY_SAVING');
 Text::script('COM_JOOMGALLERY_WAITING');
@@ -51,6 +52,7 @@ Text::script('COM_JOOMGALLERY_SUCCESS_UPPY_UPLOAD');
 Text::script('COM_JOOMGALLERY_ERROR_UPPY_UPLOAD');
 Text::script('COM_JOOMGALLERY_ERROR_UPPY_FORM');
 Text::script('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD');
+Text::script('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS');
 
 $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_vars) . '\');', ['position' => 'before'], [], ['com_joomgallery.uppy-uploader']);
 ?>

@@ -310,7 +310,8 @@ var callback = function() {
     if(!form.checkValidity()) {
       // Cancel upload if form is not valid
       uppyStopAll(Joomla.JText._('COM_JOOMGALLERY_FILE_AUTHOR_HINT'), uppy);
-      console.log('Please fill in the form before starting to upload.');
+      Joomla.renderMessages({'error':[Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS')]});
+      console.log(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS'));
     }
     form.classList.add('was-validated');
 
