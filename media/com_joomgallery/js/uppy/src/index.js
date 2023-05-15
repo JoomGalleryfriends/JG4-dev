@@ -122,23 +122,28 @@ function getUuid(uploadURL) {
 function createPopup(file, response) {
   // Create popup body
   let popupBody = '';
-  if(response.success) {
+  if(Boolean(response.success) && Boolean(response.data) && Boolean(response.data.success)) {
     popupBody = Joomla.JText._('COM_JOOMGALLERY_SUCCESS_UPPY_UPLOAD').replace('{filename}', file.name);
   } else {
     popupBody = Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_UPLOAD').replace('{filename}', file.name);
   }
-  if(response.message) {
+  if(Boolean(response.message)) {
     popupBody = popupBody + '<br /><br />' + response.message;
   }
-  if(response.messages.notice) {
-    popupBody = popupBody + '<br /><br />' + response.messages.notice;
-  }
-  if(response.messages.warning) {
-    popupBody = popupBody + '<br /><br />' + response.messages.warning;
-  }
-  if(response.messages.error) {
-    popupBody = popupBody + '<br /><br />' + response.messages.error;
-  }
+  if(Boolean(response.messages)) {
+    if(Boolean(response.messages.notice)) {
+      popupBody = popupBody + '<br /><br />' + response.messages.notice;
+    }
+    if(Boolean(response.messages.warning)) {
+      popupBody = popupBody + '<br /><br />' + response.messages.warning;
+    }
+    if(Boolean(response.messages.error)) {
+      popupBody = popupBody + '<br /><br />' + response.messages.error;
+    }
+  } 
+  if(Boolean(response.data) && Boolean(response.data.error)) {
+    popupBody = popupBody + '<br /><br />' + response.data.error;
+  } 
 
   // Create popup
   let html =    '<div class="joomla-modal modal fade" id="modal'+file.uuid+'" tabindex="-1" aria-labelledby="modal'+file.uuid+'Label" aria-hidden="true">';
@@ -358,8 +363,10 @@ var callback = function() {
     // Save the uploaded file to the database 
     uploadAjax('adminForm', file.uuid, file.id).then(response => {
       if(response.success == false)  {
-        // Save record failed
-        console.log('Save record to database of file '+file.name+' failed.');
+        // Ajax request failed
+        console.log('Ajax request for file '+file.name+' failed.');
+        console.log(response.message);
+        console.log(response.messages);
         uppySetFileError(Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD').replace('{filename}', file.name), uppy, file.id, response);
 
         // Add text saving to file element
@@ -369,22 +376,39 @@ var callback = function() {
         addBtn(file, 'danger');
       }
       else  {
-        // Save record successful
-        console.log('Save record to database of file '+file.name+' successful.');
+        // Ajax request successful
+        if(!response.data.success)
+        {
+          // Save record failed
+          console.log('Save record to database of file '+file.name+' failed.');
+          console.log(response.data.error);
+          uppySetFileError(Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD').replace('{filename}', file.name), uppy, file.id, response);
 
-        // Change save state
-        successful = true;
+          // Add text saving to file element
+          addText(file.id, 'Saving failed');
 
-        // Add text saving to file element
-        addText(file.id, 'Saving successful');
+          // Add Button to upload form
+          addBtn(file, 'danger');
+        }
+        else
+        {
+          // Save record successful
+          console.log('Save record to database of file '+file.name+' successful.');
 
-        // Exchange title of the upload file
-        changeFileTitle(file.id, response.data.record.imgtitle);
+          // Change save state
+          successful = true;
 
-        // Add Button to upload form
-        if(window.formData.get('jform[debug]') == 1) {
-          addBtn(file, 'success');
-          console.log(response.data.record);
+          // Add text saving to file element
+          addText(file.id, 'Saving successful');
+
+          // Exchange title of the upload file
+          changeFileTitle(file.id, response.data.record.imgtitle);
+
+          // Add Button to upload form
+          if(window.formData.get('jform[debug]') == 1) {
+            addBtn(file, 'success');
+            console.log(response.data.record);
+          }
         }
       }
 
