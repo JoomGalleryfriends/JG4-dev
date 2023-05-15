@@ -31,14 +31,15 @@ class TUSUploader extends BaseUploader implements UploaderInterface
    * Constructor
    * 
    * @param   bool   $multiple     True, if it is a multiple upload  (default: false)
+   * @param   bool   $async        True, if it is a asynchronous upload  (default: false)
    *
    * @return  void
    *
    * @since   1.0.0
    */
-  public function __construct($multiple=false)
+  public function __construct($multiple=false, $async=false)
   {
-		parent::__construct($multiple);
+		parent::__construct($multiple, $async);
 
 		$this->component->createTusServer();
 	}
