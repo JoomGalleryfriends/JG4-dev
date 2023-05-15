@@ -330,6 +330,12 @@ class ImageTable extends Table implements VersionableTableInterface
       $this->metakey = $this->loadDefaultField('metakey');
     }
 
+    // Support for field metakey
+    if(empty($this->imgmetadata))
+    {
+      $this->imgmetadata = $this->loadDefaultField('imgmetadata');
+    }
+
 		return parent::check();
 	}
 

@@ -279,6 +279,7 @@
            type="editor"
            editor="codemirror"
            buttons="false"
+           default=""
            filter="JComponentHelper::filterText"
            label="COM_JOOMGALLERY_IMGMETADATA"
            description="COM_JOOMGALLERY_IMGMETADATA_DESC" />
