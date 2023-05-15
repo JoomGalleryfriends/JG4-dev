@@ -177,25 +177,30 @@ abstract class Uploader implements UploaderInterface
         $filecounter = $this->getSerial();
       }
 
-      // Create new filename
+      // Create filename, title and alias
       if($this->component->getConfig()->get('jg_useorigfilename'))
       {
-        $newfilename = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
+        $data['imgtitle'] = $this->src_name;        
+        $newfilename      = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
       }
       else
       {
-        $newfilename = $this->component->getFilesystem()->cleanFilename($data['imgtitle'], 0);
+        if(!\is_null($filecounter))
+        {
+          $data['imgtitle'] = $data['imgtitle'].'-'.$filecounter;
+        }
+
+        $newfilename = $this->component->getFilesystem()->cleanFilename($data['imgtitle'], 0);        
       }
 
       // Generate image filename
       $this->component->createFileManager();
       $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
 
-      // Generate image title and alias
-      if($filecounter)
+      // Make an alias proposition if not given
+      if(!\key_exists('alias', $data) || empty($data['alias']))
       {
-        $data['imgtitle'] = $data['imgtitle'].'-'.$filecounter;
-        $data['alias']    = $data['imgtitle'];
+        $data['alias'] = $data['imgtitle'];
       }
     }
 

@@ -329,7 +329,10 @@ var callback = function() {
     window.formData = new FormData(form);
 
     // Get numbering start value
-    let nmb_start = parseInt(document.getElementById('jform_nmb_start').value);
+    let nmb_start = 0;
+    if(document.getElementById('jform_nmb_start')) {
+      nmb_start = parseInt(document.getElementById('jform_nmb_start').value);
+    }
 
     // Add class to file to apply styles during saving process
     for (let i = 0; i < data.fileIDs.length; i++) {
