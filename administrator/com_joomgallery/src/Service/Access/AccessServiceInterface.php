@@ -31,13 +31,13 @@ interface AccessServiceInterface
   /**
 	 * Creates the access helper class
    * 
-   * @param   string   $context   Context of the content (default: com_joomgallery)
+   * @param   string   $option   Component option
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createAccess($context = 'com_joomgallery'): void;
+	public function createAccess($option = '');
 
 	/**
 	 * Returns the config helper class.

@@ -20,26 +20,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 interface AccessInterface
 {
   /**
-	 * The context.
-	 *
-	 * @var string
-	 *
-	 * @since  4.0.0
-	 */
-	protected $context;
-
-	/**
-   * Loading the calculated settings for a specific content
-   * to class properties
-   *
-   * @param   string   $context   Context of the content (default: com_joomgallery)
-   * @param   int      $id        ID of the content if needed (default: null)
+   * Initialize class for specific option
    *
    * @return  void
    *
    * @since   4.0.0 
    */
-  public function __construct(string $context = _JOOM_OPTION, $id = null);
+  public function __construct(string $option='');
 
   /**
    * Check the ACL permission for an asset on which to perform an action.
@@ -51,7 +38,28 @@ interface AccessInterface
    * @return  void
    *
    * @since   4.0.0
-   * @throws  \Exception
    */
   public function checkACL(string $action, string $asset='', int $pk=0): bool;
+
+  /**
+   * Change the component option on which to check the action.
+   *
+   * @param   string   $option    The new option.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function changeOption(string $option);
+
+  /**
+   * Set the user for which to check the access.
+   *
+   * @param   int|User   $user    The user id or a user object.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function setUser($user);
 }

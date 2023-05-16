@@ -13,7 +13,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
+use \Joomla\CMS\User\User;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -30,11 +31,18 @@ class Access implements AccessInterface
   use ServiceTrait;
 
   /**
-   * The asset.
+   * The option which component to check the ACL.
    *
    * @var string
    */
-  protected $asset = 'com_joomgallery';
+  protected $option = 'com_joomgallery';
+
+  /**
+   * Available content types of current component (this->option)
+   *
+   * @var array
+   */
+  protected $types = array('image', 'category', 'tag', 'config');
 
   /**
    * List of all the base acl rules mapped with actions.
@@ -44,17 +52,20 @@ class Access implements AccessInterface
   protected $aclMap = null;
 
   /**
-   * Loading the calculated settings for a specific content
-   * to class properties
+   * The user for which to check access
    *
-   * @param   string   $context   Context of the content (default: com_joomgallery)
-   * @param   int      $id        ID of the content if needed (default: null)
+   * @var  \Joomla\CMS\User\User
+   */
+  public $user;
+
+  /**
+   * Initialize class for specific option
    *
    * @return  void
    *
    * @since   4.0.0 
    */
-  public function __construct(string $context = _JOOM_OPTION, $id = null)
+  public function __construct(string $option='')
   {
     // Load application
     $this->getApp();
@@ -62,22 +73,14 @@ class Access implements AccessInterface
     // Load component
     $this->getComponent();
 
-    // Check context
-    $context_array = \explode('.', $context);
-
-    if( $context_array[0] != _JOOM_OPTION || 
-        (\count($context_array) > 1 && !\array_key_exists($context_array[1], $this->ids)) || 
-        (\count($context_array) > 2 && $context_array[2] != 'id')
-      )
+    // Set option
+    if($option)
     {
-      $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
+      $this->option = $option;
+    }
 
-      $this->context = false;
-    }
-    else
-    {
-      $this->context = $context;
-    }
+    // Set current user
+    $this->user = $this->app->getIdentity();
 
     // Create the acl map
     $base_rules = array('add'       => array('name' => 'add', 'rule' => 'core.create', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'inown'),
@@ -95,34 +98,20 @@ class Access implements AccessInterface
    *
    * @param   string   $action    The name of the action to check for permission.
    * @param   string   $asset     The name of the asset on which to perform the action.
-   * @param   integer  $pk        The primary key of the item.
+   * @param   integer  $pk        The primary key of the item. (optional)
    *
    * @return  void
    *
    * @since   4.0.0
-   * @throws  \Exception
    */
   public function checkACL(string $action, string $asset='', int $pk=0): bool
   {
-    $user = $this->app->getIdentity();
-
     // Prepare asset
-    if(!$asset)
-    {
-      $asset = $this->asset;
-    }
+    $asset = $this->prepareAsset($asset, $pk);
+
+    // Explode asset
     $asset_array  = \explode('.', $asset);
     $asset_lenght = \count($asset_array);
-
-
-    // Check asset
-    if( $asset_array[0] != 'com_joomgallery' || 
-        ($asset_lenght > 1 && !\array_key_exists($asset_array[1], $this->aclMap)) || 
-        ($asset_lenght > 2 && !\array_key_exists($asset_array[2], array('state', 'own', 'inown')))
-      )
-    {
-      throw new \Exception('Invalid context provided for ACL access check', 1);
-    }
 
     // Check if asset is available for this action
     if(!($asset_lenght == 1 && \in_array('.', $this->aclMap->{$action}->assets)) ||
@@ -143,7 +132,7 @@ class Access implements AccessInterface
     $allowed = false;
 
     // 1. Standard permission check
-    $allowed = $user->authorise($acl_rule, $asset);
+    $allowed = $this->user->authorise($acl_rule, $asset);
 
     // 2. Check permission if you perform an action on an item in your own category
     $categorized_types = array('image', 'category');
@@ -163,18 +152,18 @@ class Access implements AccessInterface
         if($asset_array[1] == 'image' && $action == 'add')
         {
           // Check for the category in general
-          $allowed = $user->authorise('joom.upload', $parent_asset);
+          $allowed = $this->user->authorise('joom.upload', $parent_asset);
 
           if(!$allowed)
           {
             // Check also against parent ownership
-            $allowed = $user->authorise('joom.upload.inown', $parent_asset) && $cat_owner == $user->get('id');
+            $allowed = $this->user->authorise('joom.upload.inown', $parent_asset) && $cat_owner == $user->get('id');
           }
         }
         else
         {
           $acl_rule = 'joom.'.$acl_rule_array[1].$this->aclMap->{$action}->own;
-          $allowed  = $user->authorise($acl_rule, $parent_asset) && $cat_owner == $user->get('id');
+          $allowed  = $this->user->authorise($acl_rule, $parent_asset) && $cat_owner == $user->get('id');
         }
       }
     }
@@ -189,10 +178,95 @@ class Access implements AccessInterface
       if($item_owner)
       {
         $acl_rule = 'joom.'.$acl_rule_array[1].$this->aclMap->{$action}->own;
-        $allowed  = $user->authorise($acl_rule, $asset) && $item_owner == $user->get('id');
+        $allowed  = $this->user->authorise($acl_rule, $asset) && $item_owner == $user->get('id');
       }
     }
 
     return $allowed;
+  }
+
+  /**
+   * Change the component option on which to check the action.
+   *
+   * @param   string   $option    The new option.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function changeOption(string $option)
+  {
+    $this->option = $option;
+  }
+
+  /**
+   * Set the user for which to check the access.
+   *
+   * @param   int|User   $user    The user id or a user object.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function setUser($user)
+  {
+    if(!\is_object($user) && \is_numeric($user))
+    {
+      // user id given
+      $this->user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user);
+    }
+    elseif(!\is_object($user) && \is_string($user))
+    {
+      // username given
+      $this->user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($user);
+    }
+    elseif($user instanceof User)
+    {
+      // user object given
+      $this->user = $user;
+    }
+  }
+
+  /**
+   * Prepare the entered asset to make it conform with $user->authorize method.
+   *
+   * @param   string   $asset    The given asset.
+   * @param   int      $pk       Primary key of the asset (optional).
+   *
+   * @return  string   The prepared asset.
+   *
+   * @since   4.0.0
+   * @throws  \Exception
+   */
+  protected function prepareAsset(string $asset, int $pk=0): string
+  {
+    // Prepare asset
+    if(!$asset)
+    {
+      $asset = $this->option;
+    }
+
+    // First entry has to be the option
+    if(strpos($asset, $this->option) !== 0)
+    {
+      $asset = $this->option . '.' . $asset;
+    }
+
+    // Last position has to be the primary key
+    if($pk > 0 && \substr($asset, -strlen($pk)) !== $pk)
+    {
+      $asset = $asset . '.' . $asset;
+    }
+
+    //Explode asset
+    $asset_array  = \explode('.', $asset);
+
+    // Check asset
+    if($asset_array[0] != 'com_joomgallery' || !\in_array($asset_array[1], $this->types))
+    {
+      throw new \Exception('Invalid asset provided for ACL access check', 1);
+    }
+
+    return $asset;
   }
 }

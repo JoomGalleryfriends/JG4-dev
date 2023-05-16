@@ -41,17 +41,15 @@ trait AccessServiceTrait
 	}
 
   /**
-	 * Creates the access helper class
-   * 
-   * @param   string   $context   Context of the content (default: com_joomgallery)
-	 *
+   * Initialize class for specific option
+   *
    * @return  void
    *
-	 * @since  4.0.0
-	 */
-	public function createAccess($context = 'com_joomgallery'): void
+   * @since   4.0.0 
+   */
+  public function __construct(string $option='')
 	{
-    $this->acl = new Access($context);
+    $this->acl = new Access($option);
 
     return;
 	}
