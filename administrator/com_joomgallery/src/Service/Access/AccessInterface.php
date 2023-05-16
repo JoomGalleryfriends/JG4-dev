@@ -45,12 +45,14 @@ interface AccessInterface
    * Change the component option on which to check the action.
    *
    * @param   string   $option    The new option.
+   * @param   array    $types     The new list of available content types.
+   * @param   array    $aclMap    The new mapping of acl actions with rules.
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function changeOption(string $option);
+  public function changeOption(string $option, array $types, array $aclMap);
 
   /**
    * Set the user for which to check the access.

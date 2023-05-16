@@ -20,7 +20,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 interface AccessServiceInterface
 {
   /**
-	 * Storage for the access helper class.
+	 * Storage for the access service class.
 	 *
 	 * @var AccessInterface
 	 *
@@ -29,7 +29,7 @@ interface AccessServiceInterface
 	private $acl;
 
   /**
-	 * Creates the access helper class
+	 * Creates the access service class
    * 
    * @param   string   $option   Component option
 	 *
@@ -40,7 +40,7 @@ interface AccessServiceInterface
 	public function createAccess($option = '');
 
 	/**
-	 * Returns the config helper class.
+	 * Returns the access service class.
 	 *
 	 * @return  AccessInterface
 	 *

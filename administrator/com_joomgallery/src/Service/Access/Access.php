@@ -13,10 +13,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User;
+use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Access Class
@@ -47,16 +48,22 @@ class Access implements AccessInterface
   /**
    * List of all the base acl rules mapped with actions.
    *
-   * @var \stdClass
+   * @var array
    */
-  protected $aclMap = null;
+  protected $aclMap = array('add'       => array('name' => 'add', 'rule' => 'core.create', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'inown'),
+                            'admin'     => array('name' => 'admin', 'rule' => 'core.admin', 'assets' => array('.'), 'own' => false),
+                            'delete'    => array('name' => 'delete', 'rule' => 'core.delete', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'own'),
+                            'edit'      => array('name' => 'edit', 'rule' => 'core.edit', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'own'),
+                            'editstate' => array('name' => 'editstate', 'rule' => 'core.edit.state', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => false),
+                            'manage'    => array('name' => 'manage', 'rule' => 'core.manage', 'assets' => array('.'), 'own' => false)
+                          );
 
   /**
    * The user for which to check access
    *
    * @var  \Joomla\CMS\User\User
    */
-  public $user;
+  protected $user;
 
   /**
    * Initialize class for specific option
@@ -82,15 +89,6 @@ class Access implements AccessInterface
     // Set current user
     $this->user = $this->app->getIdentity();
 
-    // Create the acl map
-    $base_rules = array('add'       => array('name' => 'add', 'rule' => 'core.create', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'inown'),
-                        'admin'     => array('name' => 'admin', 'rule' => 'core.admin', 'assets' => array('.'), 'own' => false),
-                        'delete'    => array('name' => 'delete', 'rule' => 'core.delete', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'own'),
-                        'edit'      => array('name' => 'edit', 'rule' => 'core.edit', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'own'),
-                        'editstate' => array('name' => 'editstate', 'rule' => 'core.edit.state', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => false),
-                        'manage'    => array('name' => 'manage', 'rule' => 'core.manage', 'assets' => array('.'), 'own' => false)
-                      );
-    $this->aclMap = (object) $base_rules;
   }
 
   /**
@@ -114,8 +112,8 @@ class Access implements AccessInterface
     $asset_lenght = \count($asset_array);
 
     // Check if asset is available for this action
-    if(!($asset_lenght == 1 && \in_array('.', $this->aclMap->{$action}->assets)) ||
-       !\in_array('.'.$asset_array[1], $this->aclMap->{$action}->assets)
+    if(($asset_lenght == 1 && !\in_array('.', $this->aclMap[$action]['assets'])) ||
+       !\in_array('.'.$asset_array[1], $this->aclMap[$action]['assets'])
       )
     {
       // Provided asset not available for this action. Access check failed.
@@ -123,7 +121,7 @@ class Access implements AccessInterface
     }
 
     // Get the acl rule for this action
-    $acl_rule       = $this->aclMap->{$action}->rule;
+    $acl_rule       = $this->aclMap[$action]['rule'];
     $acl_rule_array = \explode('.', $acl_rule);
 
 
@@ -137,7 +135,7 @@ class Access implements AccessInterface
     // 2. Check permission if you perform an action on an item in your own category
     $categorized_types = array('image', 'category');
     if( !$allowed && $asset_lenght > 1 && \in_array($asset_array[1], $categorized_types)
-        && $this->aclMap->{$action}->own !== false && $pk > 0
+        && $this->aclMap[$action]['own'] !== false && $pk > 0
       )
     {
       // Get the owner of the parent/category of the item
@@ -169,7 +167,7 @@ class Access implements AccessInterface
     }
 
     // 3. Check the permission if you perform an action on your own item
-    if(!$allowed && $asset_lenght > 1 && $this->aclMap->{$action}->own !== false && $pk > 0)
+    if(!$allowed && $asset_lenght > 1 && $this->aclMap[$action]['own'] !== false && $pk > 0)
     {
       // Get the owner of the item
       $item_owner = JoomHelper::getCreator($asset_array[1], $pk);
@@ -186,17 +184,22 @@ class Access implements AccessInterface
   }
 
   /**
-   * Change the component option on which to check the action.
+   * Change the component related properties of the class.
+   * Needed if you want to use this sercive for another component.
    *
    * @param   string   $option    The new option.
+   * @param   array    $types     The new list of available content types.
+   * @param   array    $aclMap    The new mapping of acl actions with rules.
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function changeOption(string $option)
+  public function changeOption(string $option, array $types, array $aclMap)
   {
     $this->option = $option;
+    $this->types  = $types;
+    $this->aclMap = $aclMap;
   }
 
   /**
@@ -247,15 +250,15 @@ class Access implements AccessInterface
     }
 
     // First entry has to be the option
-    if(strpos($asset, $this->option) !== 0)
+    if(\strpos($asset, $this->option) !== 0)
     {
       $asset = $this->option . '.' . $asset;
     }
 
     // Last position has to be the primary key
-    if($pk > 0 && \substr($asset, -strlen($pk)) !== $pk)
+    if($pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
     {
-      $asset = $asset . '.' . $asset;
+      $asset = $asset . '.' . \strval($pk);
     }
 
     //Explode asset

@@ -20,7 +20,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 trait AccessServiceTrait
 {
   /**
-	 * Storage for the access helper class.
+	 * Storage for the access service class.
 	 *
 	 * @var AccessInterface
 	 *
@@ -29,7 +29,7 @@ trait AccessServiceTrait
 	private $acl = null;
 
   /**
-	 * Returns the config helper class.
+	 * Returns the access service class.
 	 *
 	 * @return  AccessInterface
 	 *
@@ -41,13 +41,15 @@ trait AccessServiceTrait
 	}
 
   /**
-   * Initialize class for specific option
-   *
+	 * Creates the access service class
+   * 
+   * @param   string   $option   Component option
+	 *
    * @return  void
    *
-   * @since   4.0.0 
-   */
-  public function __construct(string $option='')
+	 * @since  4.0.0
+	 */
+	public function createAccess($option = '')
 	{
     $this->acl = new Access($option);
 
