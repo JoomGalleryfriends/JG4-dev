@@ -155,13 +155,13 @@ class Access implements AccessInterface
           if(!$allowed)
           {
             // Check also against parent ownership
-            $allowed = $this->user->authorise('joom.upload.inown', $parent_asset) && $cat_owner == $user->get('id');
+            $allowed = $this->user->authorise('joom.upload.inown', $parent_asset) && $cat_owner == $this->user->get('id');
           }
         }
         else
         {
-          $acl_rule = 'joom.'.$acl_rule_array[1].$this->aclMap->{$action}->own;
-          $allowed  = $this->user->authorise($acl_rule, $parent_asset) && $cat_owner == $user->get('id');
+          $acl_rule = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+          $allowed  = $this->user->authorise($acl_rule, $parent_asset) && $cat_owner == $this->user->get('id');
         }
       }
     }
@@ -175,8 +175,8 @@ class Access implements AccessInterface
       // Check against ownership
       if($item_owner)
       {
-        $acl_rule = 'joom.'.$acl_rule_array[1].$this->aclMap->{$action}->own;
-        $allowed  = $this->user->authorise($acl_rule, $asset) && $item_owner == $user->get('id');
+        $acl_rule = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+        $allowed  = $this->user->authorise($acl_rule, $asset) && $item_owner == $this->user->get('id');
       }
     }
 

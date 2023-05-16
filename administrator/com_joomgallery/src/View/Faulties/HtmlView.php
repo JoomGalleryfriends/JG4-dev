@@ -62,7 +62,7 @@ class HtmlView extends JoomGalleryView
     $this->component->createAccess();
     $acl = $this->component->getAccess();
     $acl->setUser(821);
-    $res = $acl->checkACL('edit','category', 21);
+    $res = $acl->checkACL('edit','category', 5);
 		dump($res);
 
 		$this->addToolbar();

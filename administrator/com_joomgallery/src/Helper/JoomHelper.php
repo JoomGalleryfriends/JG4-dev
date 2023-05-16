@@ -19,6 +19,7 @@ use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\Database\DatabaseInterface;
 
 /**
  * JoomGallery Helper for the Backend
