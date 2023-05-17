@@ -50,13 +50,7 @@ class Access implements AccessInterface
    *
    * @var array
    */
-  protected $aclMap = array('add'       => array('name' => 'add', 'rule' => 'core.create', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'inown'),
-                            'admin'     => array('name' => 'admin', 'rule' => 'core.admin', 'assets' => array('.'), 'own' => false),
-                            'delete'    => array('name' => 'delete', 'rule' => 'core.delete', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'own'),
-                            'edit'      => array('name' => 'edit', 'rule' => 'core.edit', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => 'own'),
-                            'editstate' => array('name' => 'editstate', 'rule' => 'core.edit.state', 'assets' => array('.', '.image', '.category', '.config', '.tag'), 'own' => false),
-                            'manage'    => array('name' => 'manage', 'rule' => 'core.manage', 'assets' => array('.'), 'own' => false)
-                          );
+  protected $aclMap = array();
 
   /**
    * The user for which to check access
@@ -88,6 +82,10 @@ class Access implements AccessInterface
 
     // Set current user
     $this->user = $this->app->getIdentity();
+
+    // Set acl map for joomgallery
+    require JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/rules.php';
+    $this->aclMap = $rules_map_array;
 
   }
 
