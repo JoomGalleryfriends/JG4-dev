@@ -1,18 +1,22 @@
 // Script to handle tu uppy upload form
 
+// Modify the prototype's method of the HTMLButton elements
+HTMLButtonElement.prototype.realAddEventListener = HTMLButtonElement.prototype.addEventListener;
+HTMLButtonElement.prototype.addEventListener = function(a,b,c) {
+  if(!this.lastListenerInfo) { this.lastListenerInfo = new Array() };
+  this.lastListenerInfo.push({a:a, b:b, c:c});
+  this.realAddEventListener(a,b,c);
+}
+
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
 import Tus from '@uppy/tus';
 
 const { Sema } = require('async-sema');
 
-// initialize formData object
+// Initialialisation
 window.formData = false;
-
-// initialize filecounters array
 window.filecounters = [];
-
-// initialize sema object
 window.sema = new Sema(
   window.uppyVars.semaCalls,
   {
@@ -164,7 +168,7 @@ function createPopup(file, response) {
   html = html + '</div>';
 
   return html;
-}
+} 
 
 /**
  * Add debug button to uppy upload form
@@ -249,7 +253,7 @@ function uppySetFileError(error, uppy, file, response) {
 }
 
 /**
- * Cancel the upload
+ * Cancel the current upload
  * 
  * @param  {String}   error      Error message
  * @param  {object}   uppy       The uppy object
@@ -267,6 +271,43 @@ function uppyStopAll (error, uppy, { reason = 'user' } = {}) {
     if (fileIDs.length) {
       uppy.removeFiles(fileIDs, 'cancel-all')
     }
+  }
+}
+
+/**
+ * 
+ */
+function clickUppyUploadBtn (event) {
+  let btn = document.querySelector(window.uppyVars.uppyTarget).querySelector('.uppy-StatusBar-actionBtn--upload');
+  
+  // Initialize the form
+  document.getElementById('adminForm').classList.remove('was-validated');
+  document.getElementById('system-message-container').innerHTML = '';
+
+  // Check and validate the form
+  let form = document.getElementById('adminForm');
+  
+  if(!form.checkValidity()) {
+    // Form falidation failed
+    // Cancel upload, render message
+    Joomla.renderMessages({'error':[Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS')]});
+    console.log(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS'));
+    form.classList.add('was-validated');
+    window.scrollTo(0, 0);
+  }
+  else
+  {
+    // Form falidation successful
+    // Start upload
+    form.classList.add('was-validated');
+    window.scrollTo(0, 0);
+
+    // Exchange the event on the uppy upload button
+    btn.removeEventListener('click', clickUppyUploadBtn, false);
+    btn.addEventListener(btn.lastListenerInfo[0].a, btn.lastListenerInfo[0].b, btn.lastListenerInfo[0].c);
+
+    // Click the button
+    btn.click();
   }
 }
 
@@ -307,23 +348,23 @@ var callback = function() {
     limit: window.uppyVars.uppyLimit
   });
 
+  uppy.on('file-added', (file) => {
+    setTimeout(function() {
+      let btn = document.querySelector(window.uppyVars.uppyTarget).querySelector('.uppy-StatusBar-actionBtn--upload');
+
+      // Exchange the event on the uppy upload button
+      btn.removeEventListener(btn.lastListenerInfo[0].a, btn.lastListenerInfo[0].b, btn.lastListenerInfo[0].c);
+      btn.addEventListener('click', clickUppyUploadBtn, false);
+    }, 200);
+  });
+
   uppy.on('upload', (data) => {
     // data object consists of `id` with upload ID and `fileIDs` array
     // with file IDs in current upload
     console.log('Starting upload '+data.id+' for files '+data.fileIDs);
 
-    // Initialize the form
-    document.getElementById('adminForm').classList.remove('was-validated');
-
     // Check and validate the form
     let form = document.getElementById('adminForm');
-    if(!form.checkValidity()) {
-      // Cancel upload if form is not valid
-      uppyStopAll(Joomla.JText._('COM_JOOMGALLERY_FILE_AUTHOR_HINT'), uppy);
-      Joomla.renderMessages({'error':[Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS')]});
-      console.log(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS'));
-    }
-    form.classList.add('was-validated');
 
     // When upload starts, save the data of the form
     window.formData = new FormData(form);
@@ -464,6 +505,7 @@ var callback = function() {
 
     // Re-initialize the form
     document.getElementById('adminForm').classList.remove('was-validated');
+    document.getElementById('system-message-container').innerHTML = '';
   });
 
   uppy.on('error', (error) => {
