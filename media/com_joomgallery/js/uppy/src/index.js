@@ -275,7 +275,34 @@ function uppyStopAll (error, uppy, { reason = 'user' } = {}) {
 }
 
 /**
+ * Apply validity class to catid choices select field
  * 
+ * @param  {Boolean}   ini      True to remove all validity classes
+ */
+function catidFieldValidity (ini = false) {
+  let catid = document.getElementById('jform_catid');
+
+  if(ini) {
+    catid.parentElement.classList.remove('is-invalid');
+    catid.parentElement.classList.remove('is-valid');
+
+    return;
+  }
+
+  if(catid.checkValidity()) {
+    // is-valid
+    catid.parentElement.classList.remove('is-invalid');
+    catid.parentElement.classList.add('is-valid');
+  }
+  else {
+    // is-invalid
+    catid.parentElement.classList.remove('is-valid');
+    catid.parentElement.classList.add('is-invalid');
+  }
+}
+
+/**
+ * Steps to do before start uploading the listed files
  */
 function clickUppyUploadBtn (event) {
   let btn = document.querySelector(window.uppyVars.uppyTarget).querySelector('.uppy-StatusBar-actionBtn--upload');
@@ -283,6 +310,7 @@ function clickUppyUploadBtn (event) {
   // Initialize the form
   document.getElementById('adminForm').classList.remove('was-validated');
   document.getElementById('system-message-container').innerHTML = '';
+  catidFieldValidity(true);
 
   // Check and validate the form
   let form = document.getElementById('adminForm');
@@ -293,6 +321,7 @@ function clickUppyUploadBtn (event) {
     Joomla.renderMessages({'error':[Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS')]});
     console.log(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS'));
     form.classList.add('was-validated');
+    catidFieldValidity();
     window.scrollTo(0, 0);
   }
   else
@@ -300,6 +329,7 @@ function clickUppyUploadBtn (event) {
     // Form falidation successful
     // Start upload
     form.classList.add('was-validated');
+    catidFieldValidity();
     window.scrollTo(0, 0);
 
     // Exchange the event on the uppy upload button
@@ -316,6 +346,7 @@ var callback = function() {
 
   // Initialize the form
   document.getElementById('adminForm').classList.remove('was-validated');
+  catidFieldValidity(true);
   
   let uppy = new Uppy({
     autoProceed: false,
@@ -506,6 +537,7 @@ var callback = function() {
     // Re-initialize the form
     document.getElementById('adminForm').classList.remove('was-validated');
     document.getElementById('system-message-container').innerHTML = '';
+    catidFieldValidity(true);
   });
 
   uppy.on('error', (error) => {
