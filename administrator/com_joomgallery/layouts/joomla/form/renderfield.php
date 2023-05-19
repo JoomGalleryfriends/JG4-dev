@@ -46,6 +46,7 @@ $id              = ($id ?? $name) . '-desc';
 $hideLabel       = !empty($options['hiddenLabel']);
 $hideDescription = empty($options['hiddenDescription']) ? false : $options['hiddenDescription'];
 $descClass       = ($options['descClass'] ?? '') ?: (!empty($options['inlineHelp']) ? 'hide-aware-inline-help d-none' : '');
+$externalConfig  = ($field->type == 'externalconfig') ? true : false;
 
 if((isset($sensitive) && $sensitive == true) || (!empty($options['sensitive']) && $options['sensitive'] == true))
 {
@@ -105,7 +106,7 @@ if($sensitive)
       <?php echo $label.$sensitiveLbl; ?>
     </div>
 	<?php endif; ?>
-	<div class="controls <?php echo $sensitive ? 'sensitive': ''; ?>">
+	<div class="controls <?php echo ($sensitive || $externalConfig) ? 'sensitive': ''; ?>">
     <?php echo $sensitiveBtn; ?><?php echo $input; ?>
 		<?php if (!$hideDescription && !empty($description)) : ?>
 			<div id="<?php echo $id; ?>" class="description <?php echo $descClass ?>">

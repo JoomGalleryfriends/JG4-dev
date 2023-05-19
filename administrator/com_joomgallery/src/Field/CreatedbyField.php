@@ -26,7 +26,7 @@ class CreatedbyField extends FormField
 	/**
 	 * The form field type.
 	 *
-	 * @var    tring
+	 * @var    string
 	 * @since  4.0.0
 	 */
 	protected $type = 'createdby';
