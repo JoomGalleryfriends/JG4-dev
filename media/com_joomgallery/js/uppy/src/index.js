@@ -68,13 +68,14 @@ async function uploadAjax(formID, uuid, fileID) {
     // Perform the fetch request
     let response = await fetch(url, parameters);
 
-    if (!response.ok) {
-      // Catch network error
-      return {success: false, status: response.status, message: response.statusText, messages: {}, data: null};
-    }
-
     // Resolve promise as text string
     res = await response.text();
+
+    if (!response.ok) {
+      // Catch network error
+      console.log(res);
+      return {success: false, status: response.status, message: response.statusText, messages: {}, data: {error: res}};
+    }
 
     if(res.startsWith('{"success"')) {
       // Response is of type json --> everything fine
