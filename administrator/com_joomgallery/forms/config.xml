@@ -125,6 +125,10 @@
     </fieldset>
 
     <fieldset type="tab" name="general-upload" label="COM_JOOMGALLERY_UPLOADS">
+      <field name="jg_ext_upload_maxsize"
+             type="externalconfig"
+             label="com_media.upload_maxsize" />
+
       <field name="jg_parallelprocesses"
              type="number"
              default="1"
