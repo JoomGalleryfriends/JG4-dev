@@ -11,6 +11,7 @@ HTMLButtonElement.prototype.addEventListener = function(a,b,c) {
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
 import Tus from '@uppy/tus';
+import JGPostProcessor from 'postprocessor.js';
 
 const { Sema } = require('async-sema');
 
@@ -378,6 +379,10 @@ var callback = function() {
     retryDelays: window.uppyVars.uppyDelays,
     allowedMetaFields: null,
     limit: window.uppyVars.uppyLimit
+  });
+
+  uppy.use(JGPostProcessor, {
+    
   });
 
   uppy.on('file-added', (file) => {
