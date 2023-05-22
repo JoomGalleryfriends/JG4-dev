@@ -498,21 +498,52 @@ export default class JGprocessor extends BasePlugin {
    *
    * @returns {Promise}  Promise to signal completion
    */
-  awaitSaveRequest(fileIDs, uploadID) {
-
-    Observable.observe(this.finishedFiles, changes => {
-      console.log('new observed finished file:');
-      changes.forEach(change => {
-        console.log(change.value.file.id);
-      });
-    });
-
-    console.log('already finished files:');
-    for (let key in this.finishedFiles) {
-      console.log(this.finishedFiles[key].file.id);
-    }
-
+  async awaitSaveRequest(fileIDs, uploadID) {
     console.log('start observing...');
+
+    const observeChanges = () => {
+      return new Promise((resolve) => {
+        let nmbFinished = 0;
+
+        Observable.observe(this.finishedFiles, changes => {
+          // Executed every time something changes in this.finishedFiles
+          nmbFinished++;
+
+          let c = 0;
+          changes.forEach(change => {
+            if(c === 0) {
+              let file = this.uppy.getFile(change.value.file.id);
+              this.uppy.emit('postprocess-complete', file);
+
+              console.log('new observed finished file:');
+              console.log(change.value.file.id);
+            }
+            c++;
+          });
+
+          if(nmbFinished >= fileIDs.length()) {
+            // Resolve the Promise when all observed changes are processed
+            resolve();
+          }
+        });
+
+        // Completion of files which are completed before observation starts
+        for (let key in this.finishedFiles) {
+          nmbFinished++;
+
+          let file = this.uppy.getFile(this.finishedFiles[key].file.id);
+          this.uppy.emit('postprocess-complete', file);
+
+          console.log('already finished files:');
+          console.log(this.finishedFiles[key].file.id);
+        }
+
+        if(nmbFinished >= fileIDs.length()) {
+          // Resolve the Promise when all observed changes are processed
+          resolve();
+        }
+      });
+    };
 
     // const observeChanges = () => {
     //   return new Promise((resolve) => {
@@ -526,16 +557,7 @@ export default class JGprocessor extends BasePlugin {
     //   });
     // };
 
-    // const emitPostprocessCompleteForAll = () => {
-    //   fileIds.forEach((fileId) => {
-    //     const file = this.uppy.getFile(fileID);
-    //     this.uppy.emit('postprocess-complete', file);
-    //   })
-    // };
-
-    // return observeChanges().then(() => {
-    //   console.log('All changes have been observed.');
-    // });
+    return observeChanges().then(() => {console.log('All changes have been observed. End of PostProcessing.');});
   }
 
   /**
