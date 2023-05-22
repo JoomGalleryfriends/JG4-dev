@@ -18,6 +18,7 @@
     "@uppy/core": "^3.2.0",
     "@uppy/dashboard": "^3.4.0",
     "@uppy/tus": "^3.1.0",
-    "async-sema": "^3.1.1"
+    "async-sema": "^3.1.1",
+    "@gullerya/object-observer": "^6.1.1"
   }
 }
