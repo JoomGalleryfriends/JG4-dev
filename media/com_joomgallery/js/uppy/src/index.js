@@ -1,15 +1,7 @@
 // Script to handle tu uppy upload form
-
-// Modify the prototype's method of the HTMLButton elements
-HTMLButtonElement.prototype.realAddEventListener = HTMLButtonElement.prototype.addEventListener;
-HTMLButtonElement.prototype.addEventListener = function(a,b,c) {
-  if(!this.lastListenerInfo) { this.lastListenerInfo = new Array() };
-  this.lastListenerInfo.push({a:a, b:b, c:c});
-  this.realAddEventListener(a,b,c);
-}
-
 import Uppy from '@uppy/core';
-import Dashboard from '@uppy/dashboard';
+import jgDashboard from './jgDashboard/index.js';
+//import Dashboard from '@uppy/dashboard';
 import Tus from '@uppy/tus';
 import JGprocessor from './jgprocessor.js';
 
@@ -40,46 +32,6 @@ function catidFieldValidity (ini = false) {
   }
 }
 
-/**
- * Steps to do before start uploading the listed files
- */
-function clickUppyUploadBtn (event) {
-  let btn = document.querySelector(window.uppyVars.uppyTarget).querySelector('.uppy-StatusBar-actionBtn--upload');
-  
-  // Initialize the form
-  document.getElementById('adminForm').classList.remove('was-validated');
-  document.getElementById('system-message-container').innerHTML = '';
-  catidFieldValidity(true);
-
-  // Check and validate the form
-  let form = document.getElementById('adminForm');
-  
-  if(!form.checkValidity()) {
-    // Form falidation failed
-    // Cancel upload, render message
-    Joomla.renderMessages({'error':[Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS')]});
-    console.log(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS'));
-    form.classList.add('was-validated');
-    catidFieldValidity();
-    window.scrollTo(0, 0);
-  }
-  else
-  {
-    // Form falidation successful
-    // Start upload
-    form.classList.add('was-validated');
-    catidFieldValidity();
-    window.scrollTo(0, 0);
-
-    // Exchange the event on the uppy upload button
-    btn.removeEventListener('click', clickUppyUploadBtn, false);
-    btn.addEventListener(btn.lastListenerInfo[0].a, btn.lastListenerInfo[0].b, btn.lastListenerInfo[0].c);
-
-    // Click the button
-    btn.click();
-  }
-}
-
 var callback = function() {
   // document ready function
 
@@ -101,7 +53,7 @@ var callback = function() {
     document.getElementById('drag-drop-area').innerHTML = '';
   }
 
-  uppy.use(Dashboard, {
+  uppy.use(jgDashboard, {
     inline: true,
     target: window.uppyVars.uppyTarget,
     showProgressDetails: true,
@@ -134,36 +86,42 @@ var callback = function() {
    * @returns {Boolean}  True to continue the upload, false to cancel it
    */
   function onBeforeUpload(files) {
-    console.log('onBeforeUpload function');
-    console.log(files);
+    // Initialize the form
+    document.getElementById('adminForm').classList.remove('was-validated');
+    document.getElementById('system-message-container').innerHTML = '';
+    catidFieldValidity(true);
 
-    return true;
+    // Check and validate the form
+    let form = document.getElementById('adminForm');
+    
+    if(!form.checkValidity()) {
+      // Form falidation failed
+      // Cancel upload, render message
+      Joomla.renderMessages({'error':[Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS')]});
+      console.log(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS'));
+      form.classList.add('was-validated');
+      catidFieldValidity();
+      window.scrollTo(0, 0);
+
+      return false;
+    }
+    else
+    {
+      // Form falidation successful
+      // Start upload
+      form.classList.add('was-validated');
+      catidFieldValidity();
+      window.scrollTo(0, 0);
+
+      return true;
+    }
   }
 
-  // Change the event happening when clicking the uppy upload button
-  uppy.on('file-added', (file) => {
-    setTimeout(function() {
-      let btn = document.querySelector(window.uppyVars.uppyTarget).querySelector('.uppy-StatusBar-actionBtn--upload');
-
-      // Exchange the event on the uppy upload button
-      btn.removeEventListener(btn.lastListenerInfo[0].a, btn.lastListenerInfo[0].b, btn.lastListenerInfo[0].c);
-      btn.addEventListener('click', clickUppyUploadBtn, false);
-    }, 200);
-  });
-
   uppy.on('complete', (result) => {
-    // complete uppy upload was successful
-    console.log('Upload completely successful.');
-
     // Re-initialize the form
     document.getElementById('adminForm').classList.remove('was-validated');
     document.getElementById('system-message-container').innerHTML = '';
     catidFieldValidity(true);
-  });
-
-  uppy.on('error', (error) => {
-    // complete uppy upload failed
-    console.log('Upload completely failed.');
   });
 
 }; //end callback

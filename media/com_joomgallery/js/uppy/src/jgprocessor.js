@@ -29,14 +29,16 @@ export default class JGprocessor extends BasePlugin {
     this.handleError      = this.handleError.bind(this);
     this.setFileError     = this.setFileError.bind(this);
     this.setFileSuccess   = this.setFileSuccess.bind(this);
-    this.addBtn           = this.addBtn.bind(this);
-    this.addText          = this.addText.bind(this);
+    this.addDebugBtn      = this.addDebugBtn.bind(this);
+    this.addStateTxt      = this.addStateTxt.bind(this);
     this.addTitle         = this.addTitle.bind(this);    
 
     // Define language strings
     this.defaultLocale = {
       strings: {
           savingImages: 'Saving image to database...',
+          savingFailed: 'Saving failed',
+          savingSuccessful: 'Saving successful',
       },
     };
 
@@ -136,51 +138,29 @@ export default class JGprocessor extends BasePlugin {
    *
    * @param  {Object}   file	    The Uppy file that was uploaded.
    * @param  {String}   type	    Button type. (success or danger)
-   * @param  {Boolean}  replace	  True if you want to replace the existing content. (default: false)
    * @param  {String}   style	    Class to add to the button
    */
-  addBtn (file, type, replace=false, style='') {
-    // Get existing content
-    let oldhtml = file.customfileinfo;
-
+  addDebugBtn (file, type, style='') {
     // Create button element
-    let btn = '<div class="uppy-Dashboard-Item-custom-btn">';
-    btn     = btn+'<button type="button" class="btn btn-'+type+' btn-sm '+style+'" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
-    btn     = btn+'</div>';
-
-    // add old content
-    if(oldhtml && !replace) {
-      btn = oldhtml+btn;
-    }
+    let btn = '<button type="button" class="btn btn-'+type+' btn-sm '+style+'" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
 
     // Add element FileInfo
-    this.uppy.setFileState(file.id, {customfileinfo: btn});
+    this.uppy.setFileState(file.id, {debughtml: btn});
   }
 
   /**
-   * Add text message to uppy upload form
+   * Add state text to preview in dashboard
    *
    * @param  {Object}   file	   The Uppy file that was uploaded.
    * @param  {String}   text	   The text content to be added.
-   * @param  {Boolean}  replace	 True if you want to replace the existing content. (default: false)
    * @param  {String}   style	   Class to add to the button
    */
-  addText (file, text, replace=false, style='') {
-    // Get existing content
-    let oldhtml = file.customfileinfo;
-
+  addStateTxt (file, text, style='') {
     // Create text element
-    let txt = '<div class="uppy-Dashboard-Item-custom-text">';
-    txt     = txt+'<p class="'+style+'">'+text+'</p>';
-    txt     = txt+'</div>';
-
-    // add old content
-    if(oldhtml && !replace) {
-      txt = oldhtml+txt;
-    }
+    let txt = txt+'<span class="'+style+'">'+text+'</span>';
 
     // Add element FileInfo
-    this.uppy.setFileState(file.id, {customfileinfo: txt});
+    this.uppy.setFileState(file.id, {statehtml: txt});
   }
 
   /**
@@ -358,7 +338,7 @@ export default class JGprocessor extends BasePlugin {
     for (let i = 0; i < data.fileIDs.length; i++) {
       // // Add text uploading to file element
       let file = this.uppy.getFile(data.fileIDs[i]);
-      this.addText(file, Joomla.JText._('COM_JOOMGALLERY_UPLOADING')+'...');
+      this.addStateTxt(file, Joomla.JText._('COM_JOOMGALLERY_UPLOADING')+'...');
 
       // Store the class property filecounter
       this.filecounters[data.fileIDs[i]] = nmb_start+i;
@@ -395,16 +375,16 @@ export default class JGprocessor extends BasePlugin {
       if(response.success == false)  {
         // Ajax request failed
         this.uppy.log('[PostProcessor] Ajax request for file '+file.name+' failed.', 'error');
-        console.log('Ajax request for file '+file.name+' failed.');
+        console.log('[PostProcessor] Ajax request for file '+file.name+' failed.');
         console.log(response.message);
         console.log(response.messages);
         this.setFileError(Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD').replace('{filename}', file.name), file, response);
 
         // Add text saving to file element
-        this.addText(file, 'Saving failed');
+        this.addStateTxt(file, 'Saving failed');
 
         // Add Button to upload form
-        this.addBtn(file, 'danger');
+        this.addDebugBtn(file, 'danger');
       }
       else  {
         // Ajax request successful
@@ -412,35 +392,35 @@ export default class JGprocessor extends BasePlugin {
         {
           // Save record failed
           this.uppy.log('[PostProcessor] Save record to database of file '+file.name+' failed.', 'error');
-          console.log('Save record to database of file '+file.name+' failed.');
+          console.log('[PostProcessor] Save record to database of file '+file.name+' failed.');
           console.log(response.data.error);
           this.setFileError(Joomla.JText._('COM_JOOMGALLERY_ERROR_UPPY_SAVE_RECORD').replace('{filename}', file.name), file, response);
 
           // Add text saving to file element
-          this.addText(file, 'Saving failed');
+          this.addStateTxt(file, 'Saving failed');
 
           // Add Button to upload form
-          this.addBtn(file, 'danger');
+          this.addDebugBtn(file, 'danger');
         }
         else
         {
           // Save record successful
           this.uppy.log('[PostProcessor] Save record to database of file '+file.name+' successful.');
-          console.log('Save record to database of file '+file.name+' successful.');
+          console.log('[PostProcessor] Save record to database of file '+file.name+' successful.');
           this.setFileSuccess(file, response);
 
           // Change save state
           successful = true;
 
           // Add text saving to file element
-          this.addText(file, 'Saving successful');
+          this.addStateTxt(file, 'Saving successful');
 
           // Exchange title of the upload file
           this.addTitle(file, response.data.record.imgtitle);
 
           // Add Button to upload form
           if(this.formData.get('jform[debug]') == 1) {
-            this.addBtn(file, 'success');
+            this.addDebugBtn(file, 'success');
             console.log(response.data.record);
           }
         }
@@ -474,10 +454,10 @@ export default class JGprocessor extends BasePlugin {
     console.log('Upload of '+file.name+' failed.');
 
     // Add text saving to file element
-    this.addText(file, 'Upload failed');
+    this.addStateTxt(file, 'Upload failed');
 
     // Add Button to upload form
-    this.addBtn(file, 'danger');
+    this.addDebugBtn(file, 'danger');
 
     // Add Popup
     let temp_resp = {success: false};
@@ -499,7 +479,7 @@ export default class JGprocessor extends BasePlugin {
    * @returns {Promise}  Promise to signal completion
    */
   async awaitSaveRequest(fileIDs, uploadID) {
-    console.log('start observing...');
+    //console.log('start observing...');
 
     const observeChanges = () => {
       return new Promise((resolve) => {
@@ -515,13 +495,13 @@ export default class JGprocessor extends BasePlugin {
               let file = this.uppy.getFile(change.value.file.id);
               this.uppy.emit('postprocess-complete', file);
 
-              console.log('new observed finished file:');
-              console.log(change.value.file.id);
+              //console.log('new observed finished file:');
+              //console.log(change.value.file.id);
             }
             c++;
           });
 
-          if(nmbFinished >= fileIDs.length()) {
+          if(nmbFinished >= fileIDs.length) {
             // Resolve the Promise when all observed changes are processed
             resolve();
           }
@@ -534,30 +514,17 @@ export default class JGprocessor extends BasePlugin {
           let file = this.uppy.getFile(this.finishedFiles[key].file.id);
           this.uppy.emit('postprocess-complete', file);
 
-          console.log('already finished files:');
-          console.log(this.finishedFiles[key].file.id);
+          //console.log('already finished files:');
+          //console.log(this.finishedFiles[key].file.id);
         }
 
-        if(nmbFinished >= fileIDs.length()) {
+        if(nmbFinished >= fileIDs.length) {
           // Resolve the Promise when all observed changes are processed
           resolve();
         }
       });
     };
-
-    // const observeChanges = () => {
-    //   return new Promise((resolve) => {
-    //     Observable.observe(this.observedObj, (changes) => {
-    //       changes.forEach((change) => {
-    //         // process observed changes
-    //         console.log(change);
-    //       });
-    //       resolve(); // Resolve the Promise when all observed changes are processed
-    //     });
-    //   });
-    // };
-
-    return observeChanges().then(() => {console.log('All changes have been observed. End of PostProcessing.');});
+    return observeChanges().then(() => {console.log('[PostProcessor] All records have been saved. End of PostProcessing.');});
   }
 
   /**
