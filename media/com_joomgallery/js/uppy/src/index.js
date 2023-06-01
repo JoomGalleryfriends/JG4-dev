@@ -1,7 +1,7 @@
 // Script to handle tu uppy upload form
 import Uppy from '@uppy/core';
-import jgDashboard from './jgDashboard/index.js';
-//import Dashboard from '@uppy/dashboard';
+//import jgDashboard from './jgDashboard/dist/jgdashboard.js';
+import Dashboard from '@uppy/dashboard';
 import Tus from '@uppy/tus';
 import JGprocessor from './jgprocessor.js';
 
@@ -53,7 +53,7 @@ var callback = function() {
     document.getElementById('drag-drop-area').innerHTML = '';
   }
 
-  uppy.use(jgDashboard, {
+  uppy.use(Dashboard, {
     inline: true,
     target: window.uppyVars.uppyTarget,
     showProgressDetails: true,

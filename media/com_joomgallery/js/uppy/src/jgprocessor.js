@@ -157,7 +157,7 @@ export default class JGprocessor extends BasePlugin {
    */
   addStateTxt (file, text, style='') {
     // Create text element
-    let txt = txt+'<span class="'+style+'">'+text+'</span>';
+    let txt = '<span class="'+style+'">'+text+'</span>';
 
     // Add element FileInfo
     this.uppy.setFileState(file.id, {statehtml: txt});
