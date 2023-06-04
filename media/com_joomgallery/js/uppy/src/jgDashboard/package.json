@@ -1,10 +1,10 @@
 {
   "name": "jgdashboard",
   "version": "1.0.0",
-  "description": "JavaScript app to create the multiple uploader",
+  "description": "JoomGallery UI plugin for Uppy.",
   "main": "index.js",
   "scripts": {
-    "build": "webpack"
+    "build": "babel src -d dist"
   },
   "keywords": [],
   "author": "JoomGallery::ProjectTeam",
@@ -50,5 +50,8 @@
     "memoize-one": "^6.0.0",
     "nanoid": "^4.0.0",
     "preact": "^10.5.13"    
+  },
+  "peerDependencies": {
+    "@uppy/core": "workspace:^"
   }
 }

@@ -1,13 +1,15 @@
 const path = require('path');
 
 module.exports = {
-  mode: 'production',
-  entry: path.resolve(__dirname, 'src/index.js'),
+  target: 'web',
+  //mode: 'production',
+  mode: 'development',
+  entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'jgdashboard.js',
   },
-  //transformations
+  //jsx compilation using babel
   module: {
     rules: [
       {

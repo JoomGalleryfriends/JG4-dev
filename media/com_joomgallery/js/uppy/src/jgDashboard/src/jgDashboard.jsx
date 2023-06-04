@@ -1,7 +1,7 @@
 import { h } from 'preact'
 import memoizeOne from 'memoize-one'
-import Dashboard from '@uppy/dashboard/src/Dashboard.jsx'
-import DashboardUI from './components/Dashboard.jsx'
+import Dashboard from '@uppy/dashboard/lib/Dashboard.js'
+import DashboardUI from './components/Dashboard.js'
 
 const memoize = memoizeOne.default || memoizeOne
 

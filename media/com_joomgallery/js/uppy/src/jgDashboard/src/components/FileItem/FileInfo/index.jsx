@@ -1,7 +1,7 @@
 import {  h, Fragment  } from 'preact'
 import prettierBytes from '@transloadit/prettier-bytes'
 import truncateString from '@uppy/utils/lib/truncateString'
-import MetaErrorMessage from '@uppy/dashboard/src/components/FileItem/MetaErrorMessage.jsx'
+import MetaErrorMessage from '@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js'
 
 const renderFileName = (props) => {
   const { author, name } = props.file.meta

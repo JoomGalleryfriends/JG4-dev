@@ -1,10 +1,10 @@
 import {  h, Component  } from 'preact'
 import classNames from 'classnames'
-import BaseFileItem from '@uppy/dashboard/src/components/FileItem/index.jsx'
-import FilePreviewAndLink from '@uppy/dashboard/src/components/FileItem/FilePreviewAndLink/index.jsx'
-import FileProgress from '@uppy/dashboard/src/components/FileItem/FileProgress/index.jsx'
-import FileInfo from './FileInfo/index.jsx'
-import Buttons from '@uppy/dashboard/src/components/FileItem/Buttons/index.jsx'
+import BaseFileItem from '@uppy/dashboard/lib/components/FileItem/index.js'
+import FilePreviewAndLink from '@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js'
+import FileProgress from '@uppy/dashboard/lib/components/FileItem/FileProgress/index.js'
+import FileInfo from './FileInfo/index.js'
+import Buttons from '@uppy/dashboard/lib/components/FileItem/Buttons/index.js'
 
 export default class FileItem extends BaseFileItem {
   render () {

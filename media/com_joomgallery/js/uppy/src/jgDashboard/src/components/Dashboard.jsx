@@ -1,14 +1,14 @@
 import { h } from 'preact'
 import classNames from 'classnames'
 import isDragDropSupported from '@uppy/utils/lib/isDragDropSupported'
-import FileList from './FileList.jsx'
-import AddFiles from '@uppy/dashboard/src/components/AddFiles.jsx'
-import AddFilesPanel from '@uppy/dashboard/src/components/AddFilesPanel.jsx'
-import PickerPanelContent from '@uppy/dashboard/src/components/PickerPanelContent.jsx'
-import EditorPanel from '@uppy/dashboard/src/components/EditorPanel.jsx'
-import PanelTopBar from '@uppy/dashboard/src/components/PickerPanelTopBar.jsx'
-import FileCard from '@uppy/dashboard/src/components/FileCard/index.jsx'
-import Slide from '@uppy/dashboard/src/components/Slide.jsx'
+import FileList from './FileList.js'
+import AddFiles from '@uppy/dashboard/lib/components/AddFiles.js'
+import AddFilesPanel from '@uppy/dashboard/lib/components/AddFilesPanel.js'
+import PickerPanelContent from '@uppy/dashboard/lib/components/PickerPanelContent.js'
+import EditorPanel from '@uppy/dashboard/lib/components/EditorPanel.js'
+import PanelTopBar from '@uppy/dashboard/lib/components/PickerPanelTopBar.js'
+import FileCard from '@uppy/dashboard/lib/components/FileCard/index.js'
+import Slide from '@uppy/dashboard/lib/components/Slide.js'
 
 // http://dev.edenspiekermann.com/2016/02/11/introducing-accessible-modal-dialog
 // https://github.com/ghosh/micromodal
