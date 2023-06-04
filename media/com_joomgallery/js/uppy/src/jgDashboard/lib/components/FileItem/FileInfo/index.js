@@ -60,13 +60,18 @@ const renderFileSize = props => props.file.size && h("div", {
   className: "uppy-Dashboard-Item-statusSize"
 }, prettierBytes(props.file.size));
 
-const renderDebug = props => props.file.debughtml && h("div", {
+const renderDebugBtn = props => props.file.debugBtn && h("div", {
   className: "uppy-Dashboard-Item-debug"
-}, props.file.debughtml);
+}, h("button", {
+    class: "btn btn-"+props.file.debugBtn.type+" btn-sm "+props.file.debugBtn.style,
+    type: "button",
+    'data-bs-toggle': "modal",
+    'data-bs-target': "#modal"+props.file.debugBtn.uuid,
+  }, props.file.debugBtn.txt));
 
-const renderState = props => props.file.statehtml && h("div", {
+const renderState = props => props.file.statetxt && h("div", {
   className: "uppy-Dashboard-Item-state"
-}, props.file.statehtml);
+}, props.file.statetxt);
 
 const ReSelectButton = props => props.file.isGhost && h("span", null, ' \u2022 ', h("button", {
   className: "uppy-u-reset uppy-c-btn uppy-Dashboard-Item-reSelect",
@@ -109,7 +114,7 @@ export default function FileInfo(props) {
 
   })), h("div", {
     className: "uppy-Dashboard-Item-status"
-  }, renderAuthor(props), renderFileSize(props), renderDebug(props), renderState(props), ReSelectButton(props)), h(MetaErrorMessage, {
+  }, renderAuthor(props), renderFileSize(props), renderState(props), renderDebugBtn(props), ReSelectButton(props)), h(MetaErrorMessage, {
     file: props.file,
     i18n: props.i18n,
     toggleFileCard: props.toggleFileCard,

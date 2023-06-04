@@ -138,14 +138,21 @@ export default class JGprocessor extends BasePlugin {
    *
    * @param  {Object}   file	    The Uppy file that was uploaded.
    * @param  {String}   type	    Button type. (success or danger)
-   * @param  {String}   style	    Class to add to the button
+   * @param  {String}   uuid	    The uppy upload id.
+   * @param  {String}   style	    Class to add to the button. (optional)
    */
-  addDebugBtn (file, type, style='') {
+  addDebugBtn (file, type, uuid, style='') {
     // Create button element
-    let btn = '<button type="button" class="btn btn-'+type+' btn-sm '+style+'" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
+    let btn = {
+      'type' : type,
+      'style' : style,
+      'uuid' : uuid,
+      'txt' : Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")
+    }
+    //let btn = '<button type="button" class="btn btn-'+type+' btn-sm '+style+'" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
 
     // Add element FileInfo
-    this.uppy.setFileState(file.id, {debughtml: btn});
+    this.uppy.setFileState(file.id, {debugBtn: btn});
   }
 
   /**
@@ -153,14 +160,10 @@ export default class JGprocessor extends BasePlugin {
    *
    * @param  {Object}   file	   The Uppy file that was uploaded.
    * @param  {String}   text	   The text content to be added.
-   * @param  {String}   style	   Class to add to the button
    */
-  addStateTxt (file, text, style='') {
-    // Create text element
-    let txt = '<span class="'+style+'">'+text+'</span>';
-
+  addStateTxt (file, text) {
     // Add element FileInfo
-    this.uppy.setFileState(file.id, {statehtml: txt});
+    this.uppy.setFileState(file.id, {statetxt: text});
   }
 
   /**
@@ -187,12 +190,13 @@ export default class JGprocessor extends BasePlugin {
   /**
    * Create the HTML string for a bootstrap modal
    *
-   * @param  {Object}   file        The Uppy file that was uploaded.
-   * @param  {Object}   response	  The response of the ajax request to save the file
-   *
+   * @param    {Object}   file        The Uppy file that was uploaded.
+   * @param    {String}   uuid	      The uppy upload id.
+   * @param    {Object}   response	  The response of the ajax request to save the file
+   * 
    * @returns  {String}   The html string of the popup
    */
-  createPopup (file, response) {
+  createPopup (file, uuid, response) {
     // Create popup body
     let popupBody = '';
 
@@ -220,15 +224,15 @@ export default class JGprocessor extends BasePlugin {
     } 
 
     // Create popup
-    let html =    '<div class="joomla-modal modal fade" id="modal'+file.uuid+'" tabindex="-1" aria-labelledby="modal'+file.uuid+'Label" aria-hidden="true">';
+    let html =    '<div class="joomla-modal modal fade" id="modal'+uuid+'" tabindex="-1" aria-labelledby="modal'+uuid+'Label" aria-hidden="true">';
     html = html +   '<div class="modal-dialog modal-lg">';
     html = html +      '<div class="modal-content">';
     html = html +           '<div class="modal-header">';
-    html = html +               '<h3 class="modal-title" id="modal'+file.uuid+'Label">'+Joomla.JText._('COM_JOOMGALLERY_DEBUG_INFORMATION')+'</h3>';
+    html = html +               '<h3 class="modal-title" id="modal'+uuid+'Label">'+Joomla.JText._('COM_JOOMGALLERY_DEBUG_INFORMATION')+'</h3>';
     html = html +               '<button type="button" class="btn-close novalidate" data-bs-dismiss="modal" aria-label="'+Joomla.JText._('JCLOSE')+'"></button>';
     html = html +           '</div>';
     html = html +           '<div class="modal-body">';
-    html = html +               '<div id="'+file.uuid+'-ModalBody">'+popupBody+'</div>';
+    html = html +               '<div id="'+uuid+'-ModalBody">'+popupBody+'</div>';
     html = html +           '</div>';
     html = html +           '<div class="modal-footer">';
     html = html +               '<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'+Joomla.JText._('JCLOSE')+'">'+Joomla.JText._('JCLOSE')+'</button>';
@@ -384,7 +388,7 @@ export default class JGprocessor extends BasePlugin {
         this.addStateTxt(file, 'Saving failed');
 
         // Add Button to upload form
-        this.addDebugBtn(file, 'danger');
+        this.addDebugBtn(file, 'danger', this.uploadID);
       }
       else  {
         // Ajax request successful
@@ -400,7 +404,7 @@ export default class JGprocessor extends BasePlugin {
           this.addStateTxt(file, 'Saving failed');
 
           // Add Button to upload form
-          this.addDebugBtn(file, 'danger');
+          this.addDebugBtn(file, 'danger', this.uploadID);
         }
         else
         {
@@ -420,7 +424,7 @@ export default class JGprocessor extends BasePlugin {
 
           // Add Button to upload form
           if(this.formData.get('jform[debug]') == 1) {
-            this.addDebugBtn(file, 'success');
+            this.addDebugBtn(file, 'success', this.uploadID);
             console.log(response.data.record);
           }
         }
@@ -433,7 +437,7 @@ export default class JGprocessor extends BasePlugin {
     // Add debug popup
     if(!successful || (successful && this.formData.get('jform[debug]') == 1)) {
       let div       = document.createElement('div');
-      div.innerHTML = this.createPopup(file, response);
+      div.innerHTML = this.createPopup(file, this.uploadID, response);
       document.getElementById('popup-area').appendChild(div);
 
       new bootstrap.Modal(document.getElementById('modal'+file.uuid));
@@ -457,12 +461,12 @@ export default class JGprocessor extends BasePlugin {
     this.addStateTxt(file, 'Upload failed');
 
     // Add Button to upload form
-    this.addDebugBtn(file, 'danger');
+    this.addDebugBtn(file, 'danger', this.uploadID);
 
     // Add Popup
     let temp_resp = {success: false};
     let div       = document.createElement('div');
-    div.innerHTML = this.createPopup(file, temp_resp);
+    div.innerHTML = this.createPopup(file, this.uploadID, temp_resp);
     document.getElementById('popup-area').appendChild(div);
 
     new bootstrap.Modal(document.getElementById('modal'+file.uuid));
