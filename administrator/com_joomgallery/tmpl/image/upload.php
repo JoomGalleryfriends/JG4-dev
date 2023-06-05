@@ -12,6 +12,7 @@
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomla\CMS\Layout\FileLayout;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
@@ -83,7 +84,17 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
           <h2><?php echo Text::_('JOPTIONS'); ?></h2>
         </div>
         <div class="card-body">
-          <p><?php echo Text::_('COM_JOOMGALLERY_GENERIC_UPLOAD_DATA'); ?></p>
+          <p>
+            <?php
+              $displayData = [
+                  'description' => Text::_('COM_JOOMGALLERY_GENERIC_UPLOAD_DATA'),
+                  'id'          => 'adminForm-desc',
+                  'small'       => true
+              ];
+              $renderer = new FileLayout('joomgallery.tip');
+            ?>
+            <?php echo $renderer->render($displayData); ?>
+          </p>
           <?php echo $this->form->renderField('catid'); ?>
           <?php if(!$this->config->get('jg_useorigfilename')): ?>
             <?php echo $this->form->renderField('imgtitle'); ?>
