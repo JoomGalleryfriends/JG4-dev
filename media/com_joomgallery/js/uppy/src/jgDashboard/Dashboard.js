@@ -1,63 +1,26 @@
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
+function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; };
 
 var id = 0;
+function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; };
 
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-import { h } from 'preact';
-import memoizeOne from 'memoize-one';
-import Dashboard from '@uppy/dashboard/lib/Dashboard.js'
+import Dashboard from '@uppy/dashboard/lib/Dashboard.js';
 import DashboardUI from "./components/Dashboard.js";
 
 const packageJson = {
   "version": "3.4.0"
 };
 
-const memoize = memoizeOne.default || memoizeOne;
-
-const TAB_KEY = 9;
-const ESC_KEY = 27;
-
-function createPromise() {
-  const o = {};
-  o.promise = new Promise((resolve, reject) => {
-    o.resolve = resolve;
-    o.reject = reject;
-  });
-  return o;
-}
-
-function defaultPickerIcon() {
-  return h("svg", {
-    "aria-hidden": "true",
-    focusable: "false",
-    width: "30",
-    height: "30",
-    viewBox: "0 0 30 30"
-  }, h("path", {
-    d: "M15 30c8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15C6.716 0 0 6.716 0 15c0 8.284 6.716 15 15 15zm4.258-12.676v6.846h-8.426v-6.846H5.204l9.82-12.364 9.82 12.364H19.26z"
-  }));
-}
 /**
- * Dashboard UI with previews, metadata editing, tabs for various services and more
- */
-
-
-var _disabledNodes = /*#__PURE__*/_classPrivateFieldLooseKey("disabledNodes");
-
+* Dashboard UI with previews, metadata editing, tabs for various services and more
+*/
+var _disabledNodes                      = /*#__PURE__*/_classPrivateFieldLooseKey("disabledNodes");
 var _generateLargeThumbnailIfSingleFile = /*#__PURE__*/_classPrivateFieldLooseKey("generateLargeThumbnailIfSingleFile");
-
-var _openFileEditorWhenFilesAdded = /*#__PURE__*/_classPrivateFieldLooseKey("openFileEditorWhenFilesAdded");
-
-var _attachRenderFunctionToTarget = /*#__PURE__*/_classPrivateFieldLooseKey("attachRenderFunctionToTarget");
-
-var _isTargetSupported = /*#__PURE__*/_classPrivateFieldLooseKey("isTargetSupported");
-
-var _getAcquirers = /*#__PURE__*/_classPrivateFieldLooseKey("getAcquirers");
-
-var _getProgressIndicators = /*#__PURE__*/_classPrivateFieldLooseKey("getProgressIndicators");
-
-var _getEditors = /*#__PURE__*/_classPrivateFieldLooseKey("getEditors");
+var _openFileEditorWhenFilesAdded       = /*#__PURE__*/_classPrivateFieldLooseKey("openFileEditorWhenFilesAdded");
+var _attachRenderFunctionToTarget       = /*#__PURE__*/_classPrivateFieldLooseKey("attachRenderFunctionToTarget");
+var _isTargetSupported                  = /*#__PURE__*/_classPrivateFieldLooseKey("isTargetSupported");
+var _getAcquirers                       = /*#__PURE__*/_classPrivateFieldLooseKey("getAcquirers");
+var _getProgressIndicators              = /*#__PURE__*/_classPrivateFieldLooseKey("getProgressIndicators");
+var _getEditors                         = /*#__PURE__*/_classPrivateFieldLooseKey("getEditors");
 
 export default class jgDashboard extends Dashboard {
   constructor(uppy, _opts) {
@@ -69,47 +32,6 @@ export default class jgDashboard extends Dashboard {
       writable: true,
       value: null
     });
-
-    // Object.defineProperty(this, _attachRenderFunctionToTarget, {
-    //   writable: true,
-    //   value: target => {
-    //     const plugin = this.uppy.getPlugin(target.id);
-    //     return { ...target,
-    //       icon: plugin.icon || this.opts.defaultPickerIcon,
-    //       render: plugin.render
-    //     };
-    //   }
-    // });
-    // Object.defineProperty(this, _isTargetSupported, {
-    //   writable: true,
-    //   value: target => {
-    //     const plugin = this.uppy.getPlugin(target.id); // If the plugin does not provide a `supported` check, assume the plugin works everywhere.
-
-    //     if (typeof plugin.isSupported !== 'function') {
-    //       return true;
-    //     }
-
-    //     return plugin.isSupported();
-    //   }
-    // });
-    // Object.defineProperty(this, _getAcquirers, {
-    //   writable: true,
-    //   value: memoize(targets => {
-    //     return targets.filter(target => target.type === 'acquirer' && _classPrivateFieldLooseBase(this, _isTargetSupported)[_isTargetSupported](target)).map(_classPrivateFieldLooseBase(this, _attachRenderFunctionToTarget)[_attachRenderFunctionToTarget]);
-    //   })
-    // });
-    // Object.defineProperty(this, _getProgressIndicators, {
-    //   writable: true,
-    //   value: memoize(targets => {
-    //     return targets.filter(target => target.type === 'progressindicator').map(_classPrivateFieldLooseBase(this, _attachRenderFunctionToTarget)[_attachRenderFunctionToTarget]);
-    //   })
-    // });
-    // Object.defineProperty(this, _getEditors, {
-    //   writable: true,
-    //   value: memoize(targets => {
-    //     return targets.filter(target => target.type === 'editor').map(_classPrivateFieldLooseBase(this, _attachRenderFunctionToTarget)[_attachRenderFunctionToTarget]);
-    //   })
-    // });
 
     this.render = state => {
       const pluginState = this.getPluginState();
@@ -243,4 +165,4 @@ export default class jgDashboard extends Dashboard {
   }
 
 }
-Dashboard.VERSION = packageJson.version;
+jgDashboard.VERSION = packageJson.version;

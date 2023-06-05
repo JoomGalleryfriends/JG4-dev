@@ -41,6 +41,47 @@ module.exports = function prettierBytes (num) {
 
 /***/ }),
 
+/***/ "./node_modules/@uppy/dashboard/node_modules/@transloadit/prettier-bytes/prettierBytes.js":
+/*!************************************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/node_modules/@transloadit/prettier-bytes/prettierBytes.js ***!
+  \************************************************************************************************/
+/***/ ((module) => {
+
+// Adapted from https://github.com/Flet/prettier-bytes/
+// Changing 1000 bytes to 1024, so we can keep uppercase KB vs kB
+// ISC License (c) Dan Flettre https://github.com/Flet/prettier-bytes/blob/master/LICENSE
+module.exports = function prettierBytes (num) {
+  if (typeof num !== 'number' || isNaN(num)) {
+    throw new TypeError('Expected a number, got ' + typeof num)
+  }
+
+  var neg = num < 0
+  var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+  if (neg) {
+    num = -num
+  }
+
+  if (num < 1) {
+    return (neg ? '-' : '') + num + ' B'
+  }
+
+  var exponent = Math.min(Math.floor(Math.log(num) / Math.log(1024)), units.length - 1)
+  num = Number(num / Math.pow(1024, exponent))
+  var unit = units[exponent]
+
+  if (num >= 10 || num % 1 === 0) {
+    // Do not show decimals when the number is two-digit, or if the number has no
+    // decimal component.
+    return (neg ? '-' : '') + num.toFixed(0) + ' ' + unit
+  } else {
+    return (neg ? '-' : '') + num.toFixed(1) + ' ' + unit
+  }
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/async-sema/lib/index.js":
 /*!**********************************************!*\
   !*** ./node_modules/async-sema/lib/index.js ***!
@@ -211,6 +252,75 @@ function RateLimit(rps, { timeUnit = 1000, uniformDistribution = false, } = {}) 
     };
 }
 exports.RateLimit = RateLimit;
+
+
+/***/ }),
+
+/***/ "./node_modules/classnames/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/classnames/index.js ***!
+  \******************************************/
+/***/ ((module, exports) => {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	Copyright (c) 2018 Jed Watson.
+	Licensed under the MIT License (MIT), see
+	http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+	var nativeCodeString = '[native code]';
+
+	function classNames() {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg)) {
+				if (arg.length) {
+					var inner = classNames.apply(null, arg);
+					if (inner) {
+						classes.push(inner);
+					}
+				}
+			} else if (argType === 'object') {
+				if (arg.toString !== Object.prototype.toString && !arg.toString.toString().includes('[native code]')) {
+					classes.push(arg.toString());
+					continue;
+				}
+
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if ( true && module.exports) {
+		classNames.default = classNames;
+		module.exports = classNames;
+	} else if (true) {
+		// register as 'classnames', consistent with npm package name
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+			return classNames;
+		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {}
+}());
 
 
 /***/ }),
@@ -723,6 +833,409 @@ function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
 
 /***/ }),
 
+/***/ "./node_modules/is-shallow-equal/index.js":
+/*!************************************************!*\
+  !*** ./node_modules/is-shallow-equal/index.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+module.exports = function isShallowEqual (a, b) {
+  if (a === b) return true
+  for (var i in a) if (!(i in b)) return false
+  for (var i in b) if (a[i] !== b[i]) return false
+  return true
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash.debounce/index.js":
+/*!***********************************************!*\
+  !*** ./node_modules/lodash.debounce/index.js ***!
+  \***********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/** Used to match leading and trailing whitespace. */
+var reTrim = /^\s+|\s+$/g;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof __webpack_require__.g == 'object' && __webpack_require__.g && __webpack_require__.g.Object === Object && __webpack_require__.g;
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max,
+    nativeMin = Math.min;
+
+/**
+ * Gets the timestamp of the number of milliseconds that have elapsed since
+ * the Unix epoch (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Date
+ * @returns {number} Returns the timestamp.
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => Logs the number of milliseconds it took for the deferred invocation.
+ */
+var now = function() {
+  return root.Date.now();
+};
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed `func` invocations and a `flush` method to immediately invoke them.
+ * Provide `options` to indicate whether `func` should be invoked on the
+ * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+ * with the last arguments provided to the debounced function. Subsequent
+ * calls to the debounced function return the result of the last `func`
+ * invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the debounced function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=false]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {number} [options.maxWait]
+ *  The maximum time `func` is allowed to be delayed before it's invoked.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // Avoid costly calculations while the window size is in flux.
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+ * jQuery(element).on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+ * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', debounced);
+ *
+ * // Cancel the trailing debounced invocation.
+ * jQuery(window).on('popstate', debounced.cancel);
+ */
+function debounce(func, wait, options) {
+  var lastArgs,
+      lastThis,
+      maxWait,
+      result,
+      timerId,
+      lastCallTime,
+      lastInvokeTime = 0,
+      leading = false,
+      maxing = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = toNumber(wait) || 0;
+  if (isObject(options)) {
+    leading = !!options.leading;
+    maxing = 'maxWait' in options;
+    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+
+  function invokeFunc(time) {
+    var args = lastArgs,
+        thisArg = lastThis;
+
+    lastArgs = lastThis = undefined;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+
+  function leadingEdge(time) {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time;
+    // Start the timer for the trailing edge.
+    timerId = setTimeout(timerExpired, wait);
+    // Invoke the leading edge.
+    return leading ? invokeFunc(time) : result;
+  }
+
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime,
+        result = wait - timeSinceLastCall;
+
+    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
+  }
+
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime;
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+  }
+
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+
+  function trailingEdge(time) {
+    timerId = undefined;
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = undefined;
+    return result;
+  }
+
+  function cancel() {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = undefined;
+  }
+
+  function flush() {
+    return timerId === undefined ? result : trailingEdge(now());
+  }
+
+  function debounced() {
+    var time = now(),
+        isInvoking = shouldInvoke(time);
+
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timerId === undefined) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        // Handle invocations in a tight loop.
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === undefined) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
+}
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && objectToString.call(value) == symbolTag);
+}
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = value.replace(reTrim, '');
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+module.exports = debounce;
+
+
+/***/ }),
+
 /***/ "./node_modules/lodash.throttle/index.js":
 /*!***********************************************!*\
   !*** ./node_modules/lodash.throttle/index.js ***!
@@ -1172,6 +1685,72 @@ module.exports = throttle;
 
 /***/ }),
 
+/***/ "./node_modules/memoize-one/dist/memoize-one.esm.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/memoize-one/dist/memoize-one.esm.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ memoizeOne)
+/* harmony export */ });
+var safeIsNaN = Number.isNaN ||
+    function ponyfill(value) {
+        return typeof value === 'number' && value !== value;
+    };
+function isEqual(first, second) {
+    if (first === second) {
+        return true;
+    }
+    if (safeIsNaN(first) && safeIsNaN(second)) {
+        return true;
+    }
+    return false;
+}
+function areInputsEqual(newInputs, lastInputs) {
+    if (newInputs.length !== lastInputs.length) {
+        return false;
+    }
+    for (var i = 0; i < newInputs.length; i++) {
+        if (!isEqual(newInputs[i], lastInputs[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function memoizeOne(resultFn, isEqual) {
+    if (isEqual === void 0) { isEqual = areInputsEqual; }
+    var cache = null;
+    function memoized() {
+        var newArgs = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            newArgs[_i] = arguments[_i];
+        }
+        if (cache && cache.lastThis === this && isEqual(newArgs, cache.lastArgs)) {
+            return cache.lastResult;
+        }
+        var lastResult = resultFn.apply(this, newArgs);
+        cache = {
+            lastResult: lastResult,
+            lastArgs: newArgs,
+            lastThis: this,
+        };
+        return lastResult;
+    }
+    memoized.clear = function clear() {
+        cache = null;
+    };
+    return memoized;
+}
+
+
+
+
+/***/ }),
+
 /***/ "./node_modules/mime-match/index.js":
 /*!******************************************!*\
   !*** ./node_modules/mime-match/index.js ***!
@@ -1376,6 +1955,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var n,l,u,i,t,o,r,f,e,c={},s=[],a=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,v=Array.isArray;function h(n,l){for(var u in l)n[u]=l[u];return n}function p(n){var l=n.parentNode;l&&l.removeChild(n)}function y(l,u,i){var t,o,r,f={};for(r in u)"key"==r?t=u[r]:"ref"==r?o=u[r]:f[r]=u[r];if(arguments.length>2&&(f.children=arguments.length>3?n.call(arguments,2):i),"function"==typeof l&&null!=l.defaultProps)for(r in l.defaultProps)void 0===f[r]&&(f[r]=l.defaultProps[r]);return d(l,f,t,o,null)}function d(n,i,t,o,r){var f={type:n,props:i,key:t,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,__h:null,constructor:void 0,__v:null==r?++u:r};return null==r&&null!=l.vnode&&l.vnode(f),f}function _(){return{current:null}}function k(n){return n.children}function b(n,l){this.props=n,this.context=l}function g(n,l){if(null==l)return n.__?g(n.__,n.__.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return"function"==typeof n.type?g(n):null}function m(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return m(n)}}function w(n){(!n.__d&&(n.__d=!0)&&t.push(n)&&!x.__r++||o!==l.debounceRendering)&&((o=l.debounceRendering)||r)(x)}function x(){var n,l,u,i,o,r,e,c;for(t.sort(f);n=t.shift();)n.__d&&(l=t.length,i=void 0,o=void 0,e=(r=(u=n).__v).__e,(c=u.__P)&&(i=[],(o=h({},r)).__v=r.__v+1,L(c,r,o,u.__n,void 0!==c.ownerSVGElement,null!=r.__h?[e]:null,i,null==e?g(r):e,r.__h),M(i,r),r.__e!=e&&m(r)),t.length>l&&t.sort(f));x.__r=0}function P(n,l,u,i,t,o,r,f,e,a){var h,p,y,_,b,m,w,x=i&&i.__k||s,P=x.length;for(u.__k=[],h=0;h<l.length;h++)if(null!=(_=u.__k[h]=null==(_=l[h])||"boolean"==typeof _||"function"==typeof _?null:"string"==typeof _||"number"==typeof _||"bigint"==typeof _?d(null,_,null,null,_):v(_)?d(k,{children:_},null,null,null):_.__b>0?d(_.type,_.props,_.key,_.ref?_.ref:null,_.__v):_)){if(_.__=u,_.__b=u.__b+1,null===(y=x[h])||y&&_.key==y.key&&_.type===y.type)x[h]=void 0;else for(p=0;p<P;p++){if((y=x[p])&&_.key==y.key&&_.type===y.type){x[p]=void 0;break}y=null}L(n,_,y=y||c,t,o,r,f,e,a),b=_.__e,(p=_.ref)&&y.ref!=p&&(w||(w=[]),y.ref&&w.push(y.ref,null,_),w.push(p,_.__c||b,_)),null!=b?(null==m&&(m=b),"function"==typeof _.type&&_.__k===y.__k?_.__d=e=C(_,e,n):e=$(n,_,y,x,b,e),"function"==typeof u.type&&(u.__d=e)):e&&y.__e==e&&e.parentNode!=n&&(e=g(y))}for(u.__e=m,h=P;h--;)null!=x[h]&&("function"==typeof u.type&&null!=x[h].__e&&x[h].__e==u.__d&&(u.__d=A(i).nextSibling),q(x[h],x[h]));if(w)for(h=0;h<w.length;h++)O(w[h],w[++h],w[++h])}function C(n,l,u){for(var i,t=n.__k,o=0;t&&o<t.length;o++)(i=t[o])&&(i.__=n,l="function"==typeof i.type?C(i,l,u):$(u,i,i,t,i.__e,l));return l}function S(n,l){return l=l||[],null==n||"boolean"==typeof n||(v(n)?n.some(function(n){S(n,l)}):l.push(n)),l}function $(n,l,u,i,t,o){var r,f,e;if(void 0!==l.__d)r=l.__d,l.__d=void 0;else if(null==u||t!=o||null==t.parentNode)n:if(null==o||o.parentNode!==n)n.appendChild(t),r=null;else{for(f=o,e=0;(f=f.nextSibling)&&e<i.length;e+=1)if(f==t)break n;n.insertBefore(t,o),r=o}return void 0!==r?r:t.nextSibling}function A(n){var l,u,i;if(null==n.type||"string"==typeof n.type)return n.__e;if(n.__k)for(l=n.__k.length-1;l>=0;l--)if((u=n.__k[l])&&(i=A(u)))return i;return null}function H(n,l,u,i,t){var o;for(o in u)"children"===o||"key"===o||o in l||T(n,o,null,u[o],i);for(o in l)t&&"function"!=typeof l[o]||"children"===o||"key"===o||"value"===o||"checked"===o||u[o]===l[o]||T(n,o,l[o],u[o],i)}function I(n,l,u){"-"===l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!=typeof u||a.test(l)?u:u+"px"}function T(n,l,u,i,t){var o;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else{if("string"==typeof i&&(n.style.cssText=i=""),i)for(l in i)u&&l in u||I(n.style,l,"");if(u)for(l in u)i&&u[l]===i[l]||I(n.style,l,u[l])}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/Capture$/,"")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=u,u?i||n.addEventListener(l,o?z:j,o):n.removeEventListener(l,o?z:j,o);else if("dangerouslySetInnerHTML"!==l){if(t)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!==l&&"height"!==l&&"href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&"rowSpan"!==l&&"colSpan"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null==u||!1===u&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,u))}}function j(n){return this.l[n.type+!1](l.event?l.event(n):n)}function z(n){return this.l[n.type+!0](l.event?l.event(n):n)}function L(n,u,i,t,o,r,f,e,c){var s,a,p,y,d,_,g,m,w,x,C,S,$,A,H,I=u.type;if(void 0!==u.constructor)return null;null!=i.__h&&(c=i.__h,e=u.__e=i.__e,u.__h=null,r=[e]),(s=l.__b)&&s(u);try{n:if("function"==typeof I){if(m=u.props,w=(s=I.contextType)&&t[s.__c],x=s?w?w.props.value:s.__:t,i.__c?g=(a=u.__c=i.__c).__=a.__E:("prototype"in I&&I.prototype.render?u.__c=a=new I(m,x):(u.__c=a=new b(m,x),a.constructor=I,a.render=B),w&&w.sub(a),a.props=m,a.state||(a.state={}),a.context=x,a.__n=t,p=a.__d=!0,a.__h=[],a._sb=[]),null==a.__s&&(a.__s=a.state),null!=I.getDerivedStateFromProps&&(a.__s==a.state&&(a.__s=h({},a.__s)),h(a.__s,I.getDerivedStateFromProps(m,a.__s))),y=a.props,d=a.state,a.__v=u,p)null==I.getDerivedStateFromProps&&null!=a.componentWillMount&&a.componentWillMount(),null!=a.componentDidMount&&a.__h.push(a.componentDidMount);else{if(null==I.getDerivedStateFromProps&&m!==y&&null!=a.componentWillReceiveProps&&a.componentWillReceiveProps(m,x),!a.__e&&null!=a.shouldComponentUpdate&&!1===a.shouldComponentUpdate(m,a.__s,x)||u.__v===i.__v){for(u.__v!==i.__v&&(a.props=m,a.state=a.__s,a.__d=!1),a.__e=!1,u.__e=i.__e,u.__k=i.__k,u.__k.forEach(function(n){n&&(n.__=u)}),C=0;C<a._sb.length;C++)a.__h.push(a._sb[C]);a._sb=[],a.__h.length&&f.push(a);break n}null!=a.componentWillUpdate&&a.componentWillUpdate(m,a.__s,x),null!=a.componentDidUpdate&&a.__h.push(function(){a.componentDidUpdate(y,d,_)})}if(a.context=x,a.props=m,a.__P=n,S=l.__r,$=0,"prototype"in I&&I.prototype.render){for(a.state=a.__s,a.__d=!1,S&&S(u),s=a.render(a.props,a.state,a.context),A=0;A<a._sb.length;A++)a.__h.push(a._sb[A]);a._sb=[]}else do{a.__d=!1,S&&S(u),s=a.render(a.props,a.state,a.context),a.state=a.__s}while(a.__d&&++$<25);a.state=a.__s,null!=a.getChildContext&&(t=h(h({},t),a.getChildContext())),p||null==a.getSnapshotBeforeUpdate||(_=a.getSnapshotBeforeUpdate(y,d)),P(n,v(H=null!=s&&s.type===k&&null==s.key?s.props.children:s)?H:[H],u,i,t,o,r,f,e,c),a.base=u.__e,u.__h=null,a.__h.length&&f.push(a),g&&(a.__E=a.__=null),a.__e=!1}else null==r&&u.__v===i.__v?(u.__k=i.__k,u.__e=i.__e):u.__e=N(i.__e,u,i,t,o,r,f,c);(s=l.diffed)&&s(u)}catch(n){u.__v=null,(c||null!=r)&&(u.__e=e,u.__h=!!c,r[r.indexOf(e)]=null),l.__e(n,u,i)}}function M(n,u){l.__c&&l.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u)})}catch(n){l.__e(n,u.__v)}})}function N(l,u,i,t,o,r,f,e){var s,a,h,y=i.props,d=u.props,_=u.type,k=0;if("svg"===_&&(o=!0),null!=r)for(;k<r.length;k++)if((s=r[k])&&"setAttribute"in s==!!_&&(_?s.localName===_:3===s.nodeType)){l=s,r[k]=null;break}if(null==l){if(null===_)return document.createTextNode(d);l=o?document.createElementNS("http://www.w3.org/2000/svg",_):document.createElement(_,d.is&&d),r=null,e=!1}if(null===_)y===d||e&&l.data===d||(l.data=d);else{if(r=r&&n.call(l.childNodes),a=(y=i.props||c).dangerouslySetInnerHTML,h=d.dangerouslySetInnerHTML,!e){if(null!=r)for(y={},k=0;k<l.attributes.length;k++)y[l.attributes[k].name]=l.attributes[k].value;(h||a)&&(h&&(a&&h.__html==a.__html||h.__html===l.innerHTML)||(l.innerHTML=h&&h.__html||""))}if(H(l,d,y,o,e),h)u.__k=[];else if(P(l,v(k=u.props.children)?k:[k],u,i,t,o&&"foreignObject"!==_,r,f,r?r[0]:i.__k&&g(i,0),e),null!=r)for(k=r.length;k--;)null!=r[k]&&p(r[k]);e||("value"in d&&void 0!==(k=d.value)&&(k!==l.value||"progress"===_&&!k||"option"===_&&k!==y.value)&&T(l,"value",k,y.value,!1),"checked"in d&&void 0!==(k=d.checked)&&k!==l.checked&&T(l,"checked",k,y.checked,!1))}return l}function O(n,u,i){try{"function"==typeof n?n(u):n.current=u}catch(n){l.__e(n,i)}}function q(n,u,i){var t,o;if(l.unmount&&l.unmount(n),(t=n.ref)&&(t.current&&t.current!==n.__e||O(t,null,u)),null!=(t=n.__c)){if(t.componentWillUnmount)try{t.componentWillUnmount()}catch(n){l.__e(n,u)}t.base=t.__P=null,n.__c=void 0}if(t=n.__k)for(o=0;o<t.length;o++)t[o]&&q(t[o],u,i||"function"!=typeof n.type);i||null==n.__e||p(n.__e),n.__=n.__e=n.__d=void 0}function B(n,l,u){return this.constructor(n,u)}function D(u,i,t){var o,r,f;l.__&&l.__(u,i),r=(o="function"==typeof t)?null:t&&t.__k||i.__k,f=[],L(i,u=(!o&&t||i).__k=y(k,null,[u]),r||c,c,void 0!==i.ownerSVGElement,!o&&t?[t]:r?null:i.firstChild?n.call(i.childNodes):null,f,!o&&t?t:r?r.__e:i.firstChild,o),M(f,u)}function E(n,l){D(n,l,E)}function F(l,u,i){var t,o,r,f,e=h({},l.props);for(r in l.type&&l.type.defaultProps&&(f=l.type.defaultProps),u)"key"==r?t=u[r]:"ref"==r?o=u[r]:e[r]=void 0===u[r]&&void 0!==f?f[r]:u[r];return arguments.length>2&&(e.children=arguments.length>3?n.call(arguments,2):i),d(l.type,e,t||l.key,o||l.ref,null)}function G(n,l){var u={__c:l="__cC"+e++,__:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var u,i;return this.getChildContext||(u=[],(i={})[l]=this,this.getChildContext=function(){return i},this.shouldComponentUpdate=function(n){this.props.value!==n.value&&u.some(function(n){n.__e=!0,w(n)})},this.sub=function(n){u.push(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){u.splice(u.indexOf(n),1),l&&l.call(n)}}),n.children}};return u.Provider.__=u.Consumer.contextType=u}n=s.slice,l={__e:function(n,l,u,i){for(var t,o,r;l=l.__;)if((t=l.__c)&&!t.__)try{if((o=t.constructor)&&null!=o.getDerivedStateFromError&&(t.setState(o.getDerivedStateFromError(n)),r=t.__d),null!=t.componentDidCatch&&(t.componentDidCatch(n,i||{}),r=t.__d),r)return t.__E=t}catch(l){n=l}throw n}},u=0,i=function(n){return null!=n&&void 0===n.constructor},b.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=h({},this.state),"function"==typeof n&&(n=n(h({},u),this.props)),n&&h(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),w(this))},b.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),w(this))},b.prototype.render=k,t=[],r="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,f=function(n,l){return n.__v.__b-l.__v.__b},x.__r=0,e=0;
 //# sourceMappingURL=preact.module.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/preact/hooks/dist/hooks.module.js":
+/*!********************************************************!*\
+  !*** ./node_modules/preact/hooks/dist/hooks.module.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   useCallback: () => (/* binding */ T),
+/* harmony export */   useContext: () => (/* binding */ q),
+/* harmony export */   useDebugValue: () => (/* binding */ x),
+/* harmony export */   useEffect: () => (/* binding */ p),
+/* harmony export */   useErrorBoundary: () => (/* binding */ P),
+/* harmony export */   useId: () => (/* binding */ V),
+/* harmony export */   useImperativeHandle: () => (/* binding */ A),
+/* harmony export */   useLayoutEffect: () => (/* binding */ y),
+/* harmony export */   useMemo: () => (/* binding */ F),
+/* harmony export */   useReducer: () => (/* binding */ s),
+/* harmony export */   useRef: () => (/* binding */ _),
+/* harmony export */   useState: () => (/* binding */ h)
+/* harmony export */ });
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+var t,r,u,i,o=0,f=[],c=[],e=preact__WEBPACK_IMPORTED_MODULE_0__.options.__b,a=preact__WEBPACK_IMPORTED_MODULE_0__.options.__r,v=preact__WEBPACK_IMPORTED_MODULE_0__.options.diffed,l=preact__WEBPACK_IMPORTED_MODULE_0__.options.__c,m=preact__WEBPACK_IMPORTED_MODULE_0__.options.unmount;function d(t,u){preact__WEBPACK_IMPORTED_MODULE_0__.options.__h&&preact__WEBPACK_IMPORTED_MODULE_0__.options.__h(r,t,o||u),o=0;var i=r.__H||(r.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({__V:c}),i.__[t]}function h(n){return o=1,s(B,n)}function s(n,u,i){var o=d(t++,2);if(o.t=n,!o.__c&&(o.__=[i?i(u):B(void 0,u),function(n){var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}))}],o.__c=r,!r.u)){var f=function(n,t,r){if(!o.__c.__H)return!0;var u=o.__c.__H.__.filter(function(n){return n.__c});if(u.every(function(n){return!n.__N}))return!c||c.call(this,n,t,r);var i=!1;return u.forEach(function(n){if(n.__N){var t=n.__[0];n.__=n.__N,n.__N=void 0,t!==n.__[0]&&(i=!0)}}),!(!i&&o.__c.props===n)&&(!c||c.call(this,n,t,r))};r.u=!0;var c=r.shouldComponentUpdate,e=r.componentWillUpdate;r.componentWillUpdate=function(n,t,r){if(this.__e){var u=c;c=void 0,f(n,t,r),c=u}e&&e.call(this,n,t,r)},r.shouldComponentUpdate=f}return o.__N||o.__}function p(u,i){var o=d(t++,3);!preact__WEBPACK_IMPORTED_MODULE_0__.options.__s&&z(o.__H,i)&&(o.__=u,o.i=i,r.__H.__h.push(o))}function y(u,i){var o=d(t++,4);!preact__WEBPACK_IMPORTED_MODULE_0__.options.__s&&z(o.__H,i)&&(o.__=u,o.i=i,r.__h.push(o))}function _(n){return o=5,F(function(){return{current:n}},[])}function A(n,t,r){o=6,y(function(){return"function"==typeof n?(n(t()),function(){return n(null)}):n?(n.current=t(),function(){return n.current=null}):void 0},null==r?r:r.concat(n))}function F(n,r){var u=d(t++,7);return z(u.__H,r)?(u.__V=n(),u.i=r,u.__h=n,u.__V):u.__}function T(n,t){return o=8,F(function(){return n},t)}function q(n){var u=r.context[n.__c],i=d(t++,9);return i.c=n,u?(null==i.__&&(i.__=!0,u.sub(r)),u.props.value):n.__}function x(t,r){preact__WEBPACK_IMPORTED_MODULE_0__.options.useDebugValue&&preact__WEBPACK_IMPORTED_MODULE_0__.options.useDebugValue(r?r(t):t)}function P(n){var u=d(t++,10),i=h();return u.__=n,r.componentDidCatch||(r.componentDidCatch=function(n,t){u.__&&u.__(n,t),i[1](n)}),[i[0],function(){i[1](void 0)}]}function V(){var n=d(t++,11);if(!n.__){for(var u=r.__v;null!==u&&!u.__m&&null!==u.__;)u=u.__;var i=u.__m||(u.__m=[0,0]);n.__="P"+i[0]+"-"+i[1]++}return n.__}function b(){for(var t;t=f.shift();)if(t.__P&&t.__H)try{t.__H.__h.forEach(k),t.__H.__h.forEach(w),t.__H.__h=[]}catch(r){t.__H.__h=[],preact__WEBPACK_IMPORTED_MODULE_0__.options.__e(r,t.__v)}}preact__WEBPACK_IMPORTED_MODULE_0__.options.__b=function(n){r=null,e&&e(n)},preact__WEBPACK_IMPORTED_MODULE_0__.options.__r=function(n){a&&a(n),t=0;var i=(r=n.__c).__H;i&&(u===r?(i.__h=[],r.__h=[],i.__.forEach(function(n){n.__N&&(n.__=n.__N),n.__V=c,n.__N=n.i=void 0})):(i.__h.forEach(k),i.__h.forEach(w),i.__h=[],t=0)),u=r},preact__WEBPACK_IMPORTED_MODULE_0__.options.diffed=function(t){v&&v(t);var o=t.__c;o&&o.__H&&(o.__H.__h.length&&(1!==f.push(o)&&i===preact__WEBPACK_IMPORTED_MODULE_0__.options.requestAnimationFrame||((i=preact__WEBPACK_IMPORTED_MODULE_0__.options.requestAnimationFrame)||j)(b)),o.__H.__.forEach(function(n){n.i&&(n.__H=n.i),n.__V!==c&&(n.__=n.__V),n.i=void 0,n.__V=c})),u=r=null},preact__WEBPACK_IMPORTED_MODULE_0__.options.__c=function(t,r){r.some(function(t){try{t.__h.forEach(k),t.__h=t.__h.filter(function(n){return!n.__||w(n)})}catch(u){r.some(function(n){n.__h&&(n.__h=[])}),r=[],preact__WEBPACK_IMPORTED_MODULE_0__.options.__e(u,t.__v)}}),l&&l(t,r)},preact__WEBPACK_IMPORTED_MODULE_0__.options.unmount=function(t){m&&m(t);var r,u=t.__c;u&&u.__H&&(u.__H.__.forEach(function(n){try{k(n)}catch(n){r=n}}),u.__H=void 0,r&&preact__WEBPACK_IMPORTED_MODULE_0__.options.__e(r,u.__v))};var g="function"==typeof requestAnimationFrame;function j(n){var t,r=function(){clearTimeout(u),g&&cancelAnimationFrame(t),setTimeout(n)},u=setTimeout(r,100);g&&(t=requestAnimationFrame(r))}function k(n){var t=r,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r=t}function w(n){var t=r;n.__c=n.__(),r=t}function z(n,t){return!n||n.length!==t.length||t.some(function(t,r){return t!==n[r]})}function B(n,t){return"function"==typeof t?t(n):t}
+//# sourceMappingURL=hooks.module.js.map
 
 
 /***/ }),
@@ -4408,10 +5016,10 @@ module.exports = function(text, test, separator) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/lib/Dashboard.js":
-/*!******************************************!*\
-  !*** ./src/jgDashboard/lib/Dashboard.js ***!
-  \******************************************/
+/***/ "./src/jgDashboard/Dashboard.js":
+/*!**************************************!*\
+  !*** ./src/jgDashboard/Dashboard.js ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -4419,17 +5027,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ jgDashboard)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var memoize_one__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! memoize-one */ "./src/jgDashboard/node_modules/memoize-one/dist/memoize-one.esm.js");
-/* harmony import */ var _uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/dashboard/lib/Dashboard.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/Dashboard.js");
-/* harmony import */ var _components_Dashboard_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/Dashboard.js */ "./src/jgDashboard/lib/components/Dashboard.js");
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
+/* harmony import */ var _uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/dashboard/lib/Dashboard.js */ "./node_modules/@uppy/dashboard/lib/Dashboard.js");
+/* harmony import */ var _components_Dashboard_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/Dashboard.js */ "./src/jgDashboard/components/Dashboard.js");
+function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; };
 
 var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-
+function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; };
 
 
 
@@ -4438,53 +5041,19 @@ const packageJson = {
   "version": "3.4.0"
 };
 
-const memoize = memoize_one__WEBPACK_IMPORTED_MODULE_3__["default"]["default"] || memoize_one__WEBPACK_IMPORTED_MODULE_3__["default"];
-
-const TAB_KEY = 9;
-const ESC_KEY = 27;
-
-function createPromise() {
-  const o = {};
-  o.promise = new Promise((resolve, reject) => {
-    o.resolve = resolve;
-    o.reject = reject;
-  });
-  return o;
-}
-
-function defaultPickerIcon() {
-  return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("svg", {
-    "aria-hidden": "true",
-    focusable: "false",
-    width: "30",
-    height: "30",
-    viewBox: "0 0 30 30"
-  }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("path", {
-    d: "M15 30c8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15C6.716 0 0 6.716 0 15c0 8.284 6.716 15 15 15zm4.258-12.676v6.846h-8.426v-6.846H5.204l9.82-12.364 9.82 12.364H19.26z"
-  }));
-}
 /**
- * Dashboard UI with previews, metadata editing, tabs for various services and more
- */
-
-
-var _disabledNodes = /*#__PURE__*/_classPrivateFieldLooseKey("disabledNodes");
-
+* Dashboard UI with previews, metadata editing, tabs for various services and more
+*/
+var _disabledNodes                      = /*#__PURE__*/_classPrivateFieldLooseKey("disabledNodes");
 var _generateLargeThumbnailIfSingleFile = /*#__PURE__*/_classPrivateFieldLooseKey("generateLargeThumbnailIfSingleFile");
+var _openFileEditorWhenFilesAdded       = /*#__PURE__*/_classPrivateFieldLooseKey("openFileEditorWhenFilesAdded");
+var _attachRenderFunctionToTarget       = /*#__PURE__*/_classPrivateFieldLooseKey("attachRenderFunctionToTarget");
+var _isTargetSupported                  = /*#__PURE__*/_classPrivateFieldLooseKey("isTargetSupported");
+var _getAcquirers                       = /*#__PURE__*/_classPrivateFieldLooseKey("getAcquirers");
+var _getProgressIndicators              = /*#__PURE__*/_classPrivateFieldLooseKey("getProgressIndicators");
+var _getEditors                         = /*#__PURE__*/_classPrivateFieldLooseKey("getEditors");
 
-var _openFileEditorWhenFilesAdded = /*#__PURE__*/_classPrivateFieldLooseKey("openFileEditorWhenFilesAdded");
-
-var _attachRenderFunctionToTarget = /*#__PURE__*/_classPrivateFieldLooseKey("attachRenderFunctionToTarget");
-
-var _isTargetSupported = /*#__PURE__*/_classPrivateFieldLooseKey("isTargetSupported");
-
-var _getAcquirers = /*#__PURE__*/_classPrivateFieldLooseKey("getAcquirers");
-
-var _getProgressIndicators = /*#__PURE__*/_classPrivateFieldLooseKey("getProgressIndicators");
-
-var _getEditors = /*#__PURE__*/_classPrivateFieldLooseKey("getEditors");
-
-class jgDashboard extends _uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
+class jgDashboard extends _uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(uppy, _opts) {
     var _this;
 
@@ -4494,47 +5063,6 @@ class jgDashboard extends _uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MOD
       writable: true,
       value: null
     });
-
-    // Object.defineProperty(this, _attachRenderFunctionToTarget, {
-    //   writable: true,
-    //   value: target => {
-    //     const plugin = this.uppy.getPlugin(target.id);
-    //     return { ...target,
-    //       icon: plugin.icon || this.opts.defaultPickerIcon,
-    //       render: plugin.render
-    //     };
-    //   }
-    // });
-    // Object.defineProperty(this, _isTargetSupported, {
-    //   writable: true,
-    //   value: target => {
-    //     const plugin = this.uppy.getPlugin(target.id); // If the plugin does not provide a `supported` check, assume the plugin works everywhere.
-
-    //     if (typeof plugin.isSupported !== 'function') {
-    //       return true;
-    //     }
-
-    //     return plugin.isSupported();
-    //   }
-    // });
-    // Object.defineProperty(this, _getAcquirers, {
-    //   writable: true,
-    //   value: memoize(targets => {
-    //     return targets.filter(target => target.type === 'acquirer' && _classPrivateFieldLooseBase(this, _isTargetSupported)[_isTargetSupported](target)).map(_classPrivateFieldLooseBase(this, _attachRenderFunctionToTarget)[_attachRenderFunctionToTarget]);
-    //   })
-    // });
-    // Object.defineProperty(this, _getProgressIndicators, {
-    //   writable: true,
-    //   value: memoize(targets => {
-    //     return targets.filter(target => target.type === 'progressindicator').map(_classPrivateFieldLooseBase(this, _attachRenderFunctionToTarget)[_attachRenderFunctionToTarget]);
-    //   })
-    // });
-    // Object.defineProperty(this, _getEditors, {
-    //   writable: true,
-    //   value: memoize(targets => {
-    //     return targets.filter(target => target.type === 'editor').map(_classPrivateFieldLooseBase(this, _attachRenderFunctionToTarget)[_attachRenderFunctionToTarget]);
-    //   })
-    // });
 
     this.render = state => {
       const pluginState = this.getPluginState();
@@ -4577,7 +5105,7 @@ class jgDashboard extends _uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MOD
         console.warn(`Unsupported option for "fileManagerSelectionType". Using default of "${this.opts.fileManagerSelectionType}".`);
       }
 
-      return (0,_components_Dashboard_js__WEBPACK_IMPORTED_MODULE_2__["default"])({
+      return (0,_components_Dashboard_js__WEBPACK_IMPORTED_MODULE_1__["default"])({
         state,
         isHidden: pluginState.isHidden,
         files,
@@ -4668,14 +5196,14 @@ class jgDashboard extends _uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MOD
   }
 
 }
-_uppy_dashboard_lib_Dashboard_js__WEBPACK_IMPORTED_MODULE_1__["default"].VERSION = packageJson.version;
+jgDashboard.VERSION = packageJson.version;
 
 /***/ }),
 
-/***/ "./src/jgDashboard/lib/components/Dashboard.js":
-/*!*****************************************************!*\
-  !*** ./src/jgDashboard/lib/components/Dashboard.js ***!
-  \*****************************************************/
+/***/ "./src/jgDashboard/components/Dashboard.js":
+/*!*************************************************!*\
+  !*** ./src/jgDashboard/components/Dashboard.js ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -4683,18 +5211,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Dashboard)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _uppy_utils_lib_isDragDropSupported__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isDragDropSupported */ "./src/jgDashboard/node_modules/@uppy/utils/lib/isDragDropSupported.js");
-/* harmony import */ var _FileList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FileList.js */ "./src/jgDashboard/lib/components/FileList.js");
-/* harmony import */ var _uppy_dashboard_lib_components_AddFiles_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/dashboard/lib/components/AddFiles.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFiles.js");
-/* harmony import */ var _uppy_dashboard_lib_components_AddFilesPanel_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/dashboard/lib/components/AddFilesPanel.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js");
-/* harmony import */ var _uppy_dashboard_lib_components_PickerPanelContent_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/dashboard/lib/components/PickerPanelContent.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js");
-/* harmony import */ var _uppy_dashboard_lib_components_EditorPanel_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/dashboard/lib/components/EditorPanel.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/EditorPanel.js");
-/* harmony import */ var _uppy_dashboard_lib_components_PickerPanelTopBar_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @uppy/dashboard/lib/components/PickerPanelTopBar.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js");
-/* harmony import */ var _uppy_dashboard_lib_components_FileCard_index_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileCard/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileCard/index.js");
-/* harmony import */ var _uppy_dashboard_lib_components_Slide_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @uppy/dashboard/lib/components/Slide.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/Slide.js");
+/* harmony import */ var _uppy_utils_lib_isDragDropSupported__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isDragDropSupported */ "./node_modules/@uppy/utils/lib/isDragDropSupported.js");
+/* harmony import */ var _FileList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FileList.js */ "./src/jgDashboard/components/FileList.js");
+/* harmony import */ var _uppy_dashboard_lib_components_AddFiles_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/dashboard/lib/components/AddFiles.js */ "./node_modules/@uppy/dashboard/lib/components/AddFiles.js");
+/* harmony import */ var _uppy_dashboard_lib_components_AddFilesPanel_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/dashboard/lib/components/AddFilesPanel.js */ "./node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js");
+/* harmony import */ var _uppy_dashboard_lib_components_PickerPanelContent_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/dashboard/lib/components/PickerPanelContent.js */ "./node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js");
+/* harmony import */ var _uppy_dashboard_lib_components_EditorPanel_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/dashboard/lib/components/EditorPanel.js */ "./node_modules/@uppy/dashboard/lib/components/EditorPanel.js");
+/* harmony import */ var _uppy_dashboard_lib_components_PickerPanelTopBar_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @uppy/dashboard/lib/components/PickerPanelTopBar.js */ "./node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js");
+/* harmony import */ var _uppy_dashboard_lib_components_FileCard_index_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileCard/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileCard/index.js");
+/* harmony import */ var _uppy_dashboard_lib_components_Slide_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @uppy/dashboard/lib/components/Slide.js */ "./node_modules/@uppy/dashboard/lib/components/Slide.js");
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 
@@ -4881,10 +5409,10 @@ function Dashboard(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/lib/components/FileItem/FileInfo/index.js":
-/*!*******************************************************************!*\
-  !*** ./src/jgDashboard/lib/components/FileItem/FileInfo/index.js ***!
-  \*******************************************************************/
+/***/ "./src/jgDashboard/components/FileItem/FileInfo/index.js":
+/*!***************************************************************!*\
+  !*** ./src/jgDashboard/components/FileItem/FileInfo/index.js ***!
+  \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -4892,11 +5420,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FileInfo)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @transloadit/prettier-bytes */ "./src/jgDashboard/node_modules/@transloadit/prettier-bytes/prettierBytes.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @transloadit/prettier-bytes */ "./node_modules/@transloadit/prettier-bytes/prettierBytes.js");
 /* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _uppy_utils_lib_truncateString__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/truncateString */ "./src/jgDashboard/node_modules/@uppy/utils/lib/truncateString.js");
-/* harmony import */ var _uppy_dashboard_lib_components_FileItem_MetaErrorMessage_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js");
+/* harmony import */ var _uppy_utils_lib_truncateString__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/truncateString */ "./node_modules/@uppy/utils/lib/truncateString.js");
+/* harmony import */ var _uppy_dashboard_lib_components_FileItem_MetaErrorMessage_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js");
 
 
 
@@ -5023,10 +5551,10 @@ function FileInfo(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/lib/components/FileItem/index.js":
-/*!**********************************************************!*\
-  !*** ./src/jgDashboard/lib/components/FileItem/index.js ***!
-  \**********************************************************/
+/***/ "./src/jgDashboard/components/FileItem/index.js":
+/*!******************************************************!*\
+  !*** ./src/jgDashboard/components/FileItem/index.js ***!
+  \******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5034,14 +5562,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FileItem)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _uppy_dashboard_lib_components_FileItem_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/index.js");
-/* harmony import */ var _uppy_dashboard_lib_components_FileItem_FilePreviewAndLink_index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js");
-/* harmony import */ var _uppy_dashboard_lib_components_FileItem_FileProgress_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/FileProgress/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js");
-/* harmony import */ var _FileInfo_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./FileInfo/index.js */ "./src/jgDashboard/lib/components/FileItem/FileInfo/index.js");
-/* harmony import */ var _uppy_dashboard_lib_components_FileItem_Buttons_index_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/Buttons/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js");
+/* harmony import */ var _uppy_dashboard_lib_components_FileItem_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/index.js");
+/* harmony import */ var _uppy_dashboard_lib_components_FileItem_FilePreviewAndLink_index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js");
+/* harmony import */ var _uppy_dashboard_lib_components_FileItem_FileProgress_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/FileProgress/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js");
+/* harmony import */ var _FileInfo_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./FileInfo/index.js */ "./src/jgDashboard/components/FileItem/FileInfo/index.js");
+/* harmony import */ var _uppy_dashboard_lib_components_FileItem_Buttons_index_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/dashboard/lib/components/FileItem/Buttons/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js");
 
 
 
@@ -5140,10 +5668,10 @@ class FileItem extends _uppy_dashboard_lib_components_FileItem_index_js__WEBPACK
 
 /***/ }),
 
-/***/ "./src/jgDashboard/lib/components/FileList.js":
-/*!****************************************************!*\
-  !*** ./src/jgDashboard/lib/components/FileList.js ***!
-  \****************************************************/
+/***/ "./src/jgDashboard/components/FileList.js":
+/*!************************************************!*\
+  !*** ./src/jgDashboard/components/FileList.js ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5151,10 +5679,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! preact/hooks */ "./src/jgDashboard/node_modules/preact/hooks/dist/hooks.module.js");
-/* harmony import */ var _FileItem_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FileItem/index.js */ "./src/jgDashboard/lib/components/FileItem/index.js");
-/* harmony import */ var _uppy_dashboard_lib_components_VirtualList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/dashboard/lib/components/VirtualList.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/VirtualList.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! preact/hooks */ "./node_modules/preact/hooks/dist/hooks.module.js");
+/* harmony import */ var _FileItem_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FileItem/index.js */ "./src/jgDashboard/components/FileItem/index.js");
+/* harmony import */ var _uppy_dashboard_lib_components_VirtualList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/dashboard/lib/components/VirtualList.js */ "./node_modules/@uppy/dashboard/lib/components/VirtualList.js");
 
 
 
@@ -5277,10 +5805,10 @@ function chunks(list, size) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/lib/index.js":
-/*!**************************************!*\
-  !*** ./src/jgDashboard/lib/index.js ***!
-  \**************************************/
+/***/ "./src/jgDashboard/index.js":
+/*!**********************************!*\
+  !*** ./src/jgDashboard/index.js ***!
+  \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5288,1456 +5816,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* reexport safe */ _Dashboard_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _Dashboard_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Dashboard.js */ "./src/jgDashboard/lib/Dashboard.js");
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@transloadit/prettier-bytes/prettierBytes.js":
-/*!***********************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@transloadit/prettier-bytes/prettierBytes.js ***!
-  \***********************************************************************************/
-/***/ ((module) => {
-
-// Adapted from https://github.com/Flet/prettier-bytes/
-// Changing 1000 bytes to 1024, so we can keep uppercase KB vs kB
-// ISC License (c) Dan Flettre https://github.com/Flet/prettier-bytes/blob/master/LICENSE
-module.exports = function prettierBytes (num) {
-  if (typeof num !== 'number' || isNaN(num)) {
-    throw new TypeError('Expected a number, got ' + typeof num)
-  }
-
-  var neg = num < 0
-  var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-  if (neg) {
-    num = -num
-  }
-
-  if (num < 1) {
-    return (neg ? '-' : '') + num + ' B'
-  }
-
-  var exponent = Math.min(Math.floor(Math.log(num) / Math.log(1024)), units.length - 1)
-  num = Number(num / Math.pow(1024, exponent))
-  var unit = units[exponent]
-
-  if (num >= 10 || num % 1 === 0) {
-    // Do not show decimals when the number is two-digit, or if the number has no
-    // decimal component.
-    return (neg ? '-' : '') + num.toFixed(0) + ' ' + unit
-  } else {
-    return (neg ? '-' : '') + num.toFixed(1) + ' ' + unit
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/node_modules/@transloadit/prettier-bytes/prettierBytes.js":
-/*!***********************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/node_modules/@transloadit/prettier-bytes/prettierBytes.js ***!
-  \***********************************************************************************************************/
-/***/ ((module) => {
-
-// Adapted from https://github.com/Flet/prettier-bytes/
-// Changing 1000 bytes to 1024, so we can keep uppercase KB vs kB
-// ISC License (c) Dan Flettre https://github.com/Flet/prettier-bytes/blob/master/LICENSE
-module.exports = function prettierBytes (num) {
-  if (typeof num !== 'number' || isNaN(num)) {
-    throw new TypeError(`Expected a number, got ${typeof num}`)
-  }
-
-  const neg = num < 0
-  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-  if (neg) {
-    num = -num
-  }
-
-  if (num < 1) {
-    return `${(neg ? '-' : '') + num} B`
-  }
-
-  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1024)), units.length - 1)
-  num = Number(num / Math.pow(1024, exponent))
-  const unit = units[exponent]
-
-  if (num >= 10 || num % 1 === 0) {
-    // Do not show decimals when the number is two-digit, or if the number has no
-    // decimal component.
-    return `${(neg ? '-' : '') + num.toFixed(0)} ${unit}`
-  }
-  return `${(neg ? '-' : '') + num.toFixed(1)} ${unit}`
-}
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/node_modules/@transloadit/prettier-bytes/prettierBytes.js":
-/*!*****************************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/node_modules/@transloadit/prettier-bytes/prettierBytes.js ***!
-  \*****************************************************************************************************************/
-/***/ ((module) => {
-
-// Adapted from https://github.com/Flet/prettier-bytes/
-// Changing 1000 bytes to 1024, so we can keep uppercase KB vs kB
-// ISC License (c) Dan Flettre https://github.com/Flet/prettier-bytes/blob/master/LICENSE
-module.exports = function prettierBytes (num) {
-  if (typeof num !== 'number' || isNaN(num)) {
-    throw new TypeError(`Expected a number, got ${typeof num}`)
-  }
-
-  const neg = num < 0
-  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-  if (neg) {
-    num = -num
-  }
-
-  if (num < 1) {
-    return `${(neg ? '-' : '') + num} B`
-  }
-
-  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1024)), units.length - 1)
-  num = Number(num / Math.pow(1024, exponent))
-  const unit = units[exponent]
-
-  if (num >= 10 || num % 1 === 0) {
-    // Do not show decimals when the number is two-digit, or if the number has no
-    // decimal component.
-    return `${(neg ? '-' : '') + num.toFixed(0)} ${unit}`
-  }
-  return `${(neg ? '-' : '') + num.toFixed(1)} ${unit}`
-}
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/classnames/index.js":
-/*!**********************************************************!*\
-  !*** ./src/jgDashboard/node_modules/classnames/index.js ***!
-  \**********************************************************/
-/***/ ((module, exports) => {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	Copyright (c) 2018 Jed Watson.
-	Licensed under the MIT License (MIT), see
-	http://jedwatson.github.io/classnames
-*/
-/* global define */
-
-(function () {
-	'use strict';
-
-	var hasOwn = {}.hasOwnProperty;
-	var nativeCodeString = '[native code]';
-
-	function classNames() {
-		var classes = [];
-
-		for (var i = 0; i < arguments.length; i++) {
-			var arg = arguments[i];
-			if (!arg) continue;
-
-			var argType = typeof arg;
-
-			if (argType === 'string' || argType === 'number') {
-				classes.push(arg);
-			} else if (Array.isArray(arg)) {
-				if (arg.length) {
-					var inner = classNames.apply(null, arg);
-					if (inner) {
-						classes.push(inner);
-					}
-				}
-			} else if (argType === 'object') {
-				if (arg.toString !== Object.prototype.toString && !arg.toString.toString().includes('[native code]')) {
-					classes.push(arg.toString());
-					continue;
-				}
-
-				for (var key in arg) {
-					if (hasOwn.call(arg, key) && arg[key]) {
-						classes.push(key);
-					}
-				}
-			}
-		}
-
-		return classes.join(' ');
-	}
-
-	if ( true && module.exports) {
-		classNames.default = classNames;
-		module.exports = classNames;
-	} else if (true) {
-		// register as 'classnames', consistent with npm package name
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
-			return classNames;
-		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {}
-}());
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/is-shallow-equal/index.js":
-/*!****************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/is-shallow-equal/index.js ***!
-  \****************************************************************/
-/***/ ((module) => {
-
-module.exports = function isShallowEqual (a, b) {
-  if (a === b) return true
-  for (var i in a) if (!(i in b)) return false
-  for (var i in b) if (a[i] !== b[i]) return false
-  return true
-}
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/lodash.debounce/index.js":
-/*!***************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/lodash.debounce/index.js ***!
-  \***************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-/**
- * lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash modularize exports="npm" -o ./`
- * Copyright jQuery Foundation and other contributors <https://jquery.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
-
-/** Used as the `TypeError` message for "Functions" methods. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/** Used as references for various `Number` constants. */
-var NAN = 0 / 0;
-
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/** Used to match leading and trailing whitespace. */
-var reTrim = /^\s+|\s+$/g;
-
-/** Used to detect bad signed hexadecimal string values. */
-var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-
-/** Used to detect binary string values. */
-var reIsBinary = /^0b[01]+$/i;
-
-/** Used to detect octal string values. */
-var reIsOctal = /^0o[0-7]+$/i;
-
-/** Built-in method references without a dependency on `root`. */
-var freeParseInt = parseInt;
-
-/** Detect free variable `global` from Node.js. */
-var freeGlobal = typeof __webpack_require__.g == 'object' && __webpack_require__.g && __webpack_require__.g.Object === Object && __webpack_require__.g;
-
-/** Detect free variable `self`. */
-var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-/** Used as a reference to the global object. */
-var root = freeGlobal || freeSelf || Function('return this')();
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax = Math.max,
-    nativeMin = Math.min;
-
-/**
- * Gets the timestamp of the number of milliseconds that have elapsed since
- * the Unix epoch (1 January 1970 00:00:00 UTC).
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Date
- * @returns {number} Returns the timestamp.
- * @example
- *
- * _.defer(function(stamp) {
- *   console.log(_.now() - stamp);
- * }, _.now());
- * // => Logs the number of milliseconds it took for the deferred invocation.
- */
-var now = function() {
-  return root.Date.now();
-};
-
-/**
- * Creates a debounced function that delays invoking `func` until after `wait`
- * milliseconds have elapsed since the last time the debounced function was
- * invoked. The debounced function comes with a `cancel` method to cancel
- * delayed `func` invocations and a `flush` method to immediately invoke them.
- * Provide `options` to indicate whether `func` should be invoked on the
- * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
- * with the last arguments provided to the debounced function. Subsequent
- * calls to the debounced function return the result of the last `func`
- * invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is
- * invoked on the trailing edge of the timeout only if the debounced function
- * is invoked more than once during the `wait` timeout.
- *
- * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
- * until to the next tick, similar to `setTimeout` with a timeout of `0`.
- *
- * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
- * for details over the differences between `_.debounce` and `_.throttle`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to debounce.
- * @param {number} [wait=0] The number of milliseconds to delay.
- * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=false]
- *  Specify invoking on the leading edge of the timeout.
- * @param {number} [options.maxWait]
- *  The maximum time `func` is allowed to be delayed before it's invoked.
- * @param {boolean} [options.trailing=true]
- *  Specify invoking on the trailing edge of the timeout.
- * @returns {Function} Returns the new debounced function.
- * @example
- *
- * // Avoid costly calculations while the window size is in flux.
- * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
- *
- * // Invoke `sendMail` when clicked, debouncing subsequent calls.
- * jQuery(element).on('click', _.debounce(sendMail, 300, {
- *   'leading': true,
- *   'trailing': false
- * }));
- *
- * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
- * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
- * var source = new EventSource('/stream');
- * jQuery(source).on('message', debounced);
- *
- * // Cancel the trailing debounced invocation.
- * jQuery(window).on('popstate', debounced.cancel);
- */
-function debounce(func, wait, options) {
-  var lastArgs,
-      lastThis,
-      maxWait,
-      result,
-      timerId,
-      lastCallTime,
-      lastInvokeTime = 0,
-      leading = false,
-      maxing = false,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  wait = toNumber(wait) || 0;
-  if (isObject(options)) {
-    leading = !!options.leading;
-    maxing = 'maxWait' in options;
-    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-
-  function invokeFunc(time) {
-    var args = lastArgs,
-        thisArg = lastThis;
-
-    lastArgs = lastThis = undefined;
-    lastInvokeTime = time;
-    result = func.apply(thisArg, args);
-    return result;
-  }
-
-  function leadingEdge(time) {
-    // Reset any `maxWait` timer.
-    lastInvokeTime = time;
-    // Start the timer for the trailing edge.
-    timerId = setTimeout(timerExpired, wait);
-    // Invoke the leading edge.
-    return leading ? invokeFunc(time) : result;
-  }
-
-  function remainingWait(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime,
-        result = wait - timeSinceLastCall;
-
-    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
-  }
-
-  function shouldInvoke(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime;
-
-    // Either this is the first call, activity has stopped and we're at the
-    // trailing edge, the system time has gone backwards and we're treating
-    // it as the trailing edge, or we've hit the `maxWait` limit.
-    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
-      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
-  }
-
-  function timerExpired() {
-    var time = now();
-    if (shouldInvoke(time)) {
-      return trailingEdge(time);
-    }
-    // Restart the timer.
-    timerId = setTimeout(timerExpired, remainingWait(time));
-  }
-
-  function trailingEdge(time) {
-    timerId = undefined;
-
-    // Only invoke if we have `lastArgs` which means `func` has been
-    // debounced at least once.
-    if (trailing && lastArgs) {
-      return invokeFunc(time);
-    }
-    lastArgs = lastThis = undefined;
-    return result;
-  }
-
-  function cancel() {
-    if (timerId !== undefined) {
-      clearTimeout(timerId);
-    }
-    lastInvokeTime = 0;
-    lastArgs = lastCallTime = lastThis = timerId = undefined;
-  }
-
-  function flush() {
-    return timerId === undefined ? result : trailingEdge(now());
-  }
-
-  function debounced() {
-    var time = now(),
-        isInvoking = shouldInvoke(time);
-
-    lastArgs = arguments;
-    lastThis = this;
-    lastCallTime = time;
-
-    if (isInvoking) {
-      if (timerId === undefined) {
-        return leadingEdge(lastCallTime);
-      }
-      if (maxing) {
-        // Handle invocations in a tight loop.
-        timerId = setTimeout(timerExpired, wait);
-        return invokeFunc(lastCallTime);
-      }
-    }
-    if (timerId === undefined) {
-      timerId = setTimeout(timerExpired, wait);
-    }
-    return result;
-  }
-  debounced.cancel = cancel;
-  debounced.flush = flush;
-  return debounced;
-}
-
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */
-function isObject(value) {
-  var type = typeof value;
-  return !!value && (type == 'object' || type == 'function');
-}
-
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && objectToString.call(value) == symbolTag);
-}
-
-/**
- * Converts `value` to a number.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to process.
- * @returns {number} Returns the number.
- * @example
- *
- * _.toNumber(3.2);
- * // => 3.2
- *
- * _.toNumber(Number.MIN_VALUE);
- * // => 5e-324
- *
- * _.toNumber(Infinity);
- * // => Infinity
- *
- * _.toNumber('3.2');
- * // => 3.2
- */
-function toNumber(value) {
-  if (typeof value == 'number') {
-    return value;
-  }
-  if (isSymbol(value)) {
-    return NAN;
-  }
-  if (isObject(value)) {
-    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-    value = isObject(other) ? (other + '') : other;
-  }
-  if (typeof value != 'string') {
-    return value === 0 ? value : +value;
-  }
-  value = value.replace(reTrim, '');
-  var isBinary = reIsBinary.test(value);
-  return (isBinary || reIsOctal.test(value))
-    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
-    : (reIsBadHex.test(value) ? NAN : +value);
-}
-
-module.exports = debounce;
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/lodash.throttle/index.js":
-/*!***************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/lodash.throttle/index.js ***!
-  \***************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-/**
- * lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash modularize exports="npm" -o ./`
- * Copyright jQuery Foundation and other contributors <https://jquery.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
-
-/** Used as the `TypeError` message for "Functions" methods. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/** Used as references for various `Number` constants. */
-var NAN = 0 / 0;
-
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/** Used to match leading and trailing whitespace. */
-var reTrim = /^\s+|\s+$/g;
-
-/** Used to detect bad signed hexadecimal string values. */
-var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-
-/** Used to detect binary string values. */
-var reIsBinary = /^0b[01]+$/i;
-
-/** Used to detect octal string values. */
-var reIsOctal = /^0o[0-7]+$/i;
-
-/** Built-in method references without a dependency on `root`. */
-var freeParseInt = parseInt;
-
-/** Detect free variable `global` from Node.js. */
-var freeGlobal = typeof __webpack_require__.g == 'object' && __webpack_require__.g && __webpack_require__.g.Object === Object && __webpack_require__.g;
-
-/** Detect free variable `self`. */
-var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-/** Used as a reference to the global object. */
-var root = freeGlobal || freeSelf || Function('return this')();
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax = Math.max,
-    nativeMin = Math.min;
-
-/**
- * Gets the timestamp of the number of milliseconds that have elapsed since
- * the Unix epoch (1 January 1970 00:00:00 UTC).
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Date
- * @returns {number} Returns the timestamp.
- * @example
- *
- * _.defer(function(stamp) {
- *   console.log(_.now() - stamp);
- * }, _.now());
- * // => Logs the number of milliseconds it took for the deferred invocation.
- */
-var now = function() {
-  return root.Date.now();
-};
-
-/**
- * Creates a debounced function that delays invoking `func` until after `wait`
- * milliseconds have elapsed since the last time the debounced function was
- * invoked. The debounced function comes with a `cancel` method to cancel
- * delayed `func` invocations and a `flush` method to immediately invoke them.
- * Provide `options` to indicate whether `func` should be invoked on the
- * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
- * with the last arguments provided to the debounced function. Subsequent
- * calls to the debounced function return the result of the last `func`
- * invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is
- * invoked on the trailing edge of the timeout only if the debounced function
- * is invoked more than once during the `wait` timeout.
- *
- * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
- * until to the next tick, similar to `setTimeout` with a timeout of `0`.
- *
- * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
- * for details over the differences between `_.debounce` and `_.throttle`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to debounce.
- * @param {number} [wait=0] The number of milliseconds to delay.
- * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=false]
- *  Specify invoking on the leading edge of the timeout.
- * @param {number} [options.maxWait]
- *  The maximum time `func` is allowed to be delayed before it's invoked.
- * @param {boolean} [options.trailing=true]
- *  Specify invoking on the trailing edge of the timeout.
- * @returns {Function} Returns the new debounced function.
- * @example
- *
- * // Avoid costly calculations while the window size is in flux.
- * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
- *
- * // Invoke `sendMail` when clicked, debouncing subsequent calls.
- * jQuery(element).on('click', _.debounce(sendMail, 300, {
- *   'leading': true,
- *   'trailing': false
- * }));
- *
- * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
- * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
- * var source = new EventSource('/stream');
- * jQuery(source).on('message', debounced);
- *
- * // Cancel the trailing debounced invocation.
- * jQuery(window).on('popstate', debounced.cancel);
- */
-function debounce(func, wait, options) {
-  var lastArgs,
-      lastThis,
-      maxWait,
-      result,
-      timerId,
-      lastCallTime,
-      lastInvokeTime = 0,
-      leading = false,
-      maxing = false,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  wait = toNumber(wait) || 0;
-  if (isObject(options)) {
-    leading = !!options.leading;
-    maxing = 'maxWait' in options;
-    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-
-  function invokeFunc(time) {
-    var args = lastArgs,
-        thisArg = lastThis;
-
-    lastArgs = lastThis = undefined;
-    lastInvokeTime = time;
-    result = func.apply(thisArg, args);
-    return result;
-  }
-
-  function leadingEdge(time) {
-    // Reset any `maxWait` timer.
-    lastInvokeTime = time;
-    // Start the timer for the trailing edge.
-    timerId = setTimeout(timerExpired, wait);
-    // Invoke the leading edge.
-    return leading ? invokeFunc(time) : result;
-  }
-
-  function remainingWait(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime,
-        result = wait - timeSinceLastCall;
-
-    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
-  }
-
-  function shouldInvoke(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime;
-
-    // Either this is the first call, activity has stopped and we're at the
-    // trailing edge, the system time has gone backwards and we're treating
-    // it as the trailing edge, or we've hit the `maxWait` limit.
-    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
-      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
-  }
-
-  function timerExpired() {
-    var time = now();
-    if (shouldInvoke(time)) {
-      return trailingEdge(time);
-    }
-    // Restart the timer.
-    timerId = setTimeout(timerExpired, remainingWait(time));
-  }
-
-  function trailingEdge(time) {
-    timerId = undefined;
-
-    // Only invoke if we have `lastArgs` which means `func` has been
-    // debounced at least once.
-    if (trailing && lastArgs) {
-      return invokeFunc(time);
-    }
-    lastArgs = lastThis = undefined;
-    return result;
-  }
-
-  function cancel() {
-    if (timerId !== undefined) {
-      clearTimeout(timerId);
-    }
-    lastInvokeTime = 0;
-    lastArgs = lastCallTime = lastThis = timerId = undefined;
-  }
-
-  function flush() {
-    return timerId === undefined ? result : trailingEdge(now());
-  }
-
-  function debounced() {
-    var time = now(),
-        isInvoking = shouldInvoke(time);
-
-    lastArgs = arguments;
-    lastThis = this;
-    lastCallTime = time;
-
-    if (isInvoking) {
-      if (timerId === undefined) {
-        return leadingEdge(lastCallTime);
-      }
-      if (maxing) {
-        // Handle invocations in a tight loop.
-        timerId = setTimeout(timerExpired, wait);
-        return invokeFunc(lastCallTime);
-      }
-    }
-    if (timerId === undefined) {
-      timerId = setTimeout(timerExpired, wait);
-    }
-    return result;
-  }
-  debounced.cancel = cancel;
-  debounced.flush = flush;
-  return debounced;
-}
-
-/**
- * Creates a throttled function that only invokes `func` at most once per
- * every `wait` milliseconds. The throttled function comes with a `cancel`
- * method to cancel delayed `func` invocations and a `flush` method to
- * immediately invoke them. Provide `options` to indicate whether `func`
- * should be invoked on the leading and/or trailing edge of the `wait`
- * timeout. The `func` is invoked with the last arguments provided to the
- * throttled function. Subsequent calls to the throttled function return the
- * result of the last `func` invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is
- * invoked on the trailing edge of the timeout only if the throttled function
- * is invoked more than once during the `wait` timeout.
- *
- * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
- * until to the next tick, similar to `setTimeout` with a timeout of `0`.
- *
- * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
- * for details over the differences between `_.throttle` and `_.debounce`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to throttle.
- * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
- * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=true]
- *  Specify invoking on the leading edge of the timeout.
- * @param {boolean} [options.trailing=true]
- *  Specify invoking on the trailing edge of the timeout.
- * @returns {Function} Returns the new throttled function.
- * @example
- *
- * // Avoid excessively updating the position while scrolling.
- * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
- *
- * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
- * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
- * jQuery(element).on('click', throttled);
- *
- * // Cancel the trailing throttled invocation.
- * jQuery(window).on('popstate', throttled.cancel);
- */
-function throttle(func, wait, options) {
-  var leading = true,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  if (isObject(options)) {
-    leading = 'leading' in options ? !!options.leading : leading;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-  return debounce(func, wait, {
-    'leading': leading,
-    'maxWait': wait,
-    'trailing': trailing
-  });
-}
-
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */
-function isObject(value) {
-  var type = typeof value;
-  return !!value && (type == 'object' || type == 'function');
-}
-
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && objectToString.call(value) == symbolTag);
-}
-
-/**
- * Converts `value` to a number.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to process.
- * @returns {number} Returns the number.
- * @example
- *
- * _.toNumber(3.2);
- * // => 3.2
- *
- * _.toNumber(Number.MIN_VALUE);
- * // => 5e-324
- *
- * _.toNumber(Infinity);
- * // => Infinity
- *
- * _.toNumber('3.2');
- * // => 3.2
- */
-function toNumber(value) {
-  if (typeof value == 'number') {
-    return value;
-  }
-  if (isSymbol(value)) {
-    return NAN;
-  }
-  if (isObject(value)) {
-    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-    value = isObject(other) ? (other + '') : other;
-  }
-  if (typeof value != 'string') {
-    return value === 0 ? value : +value;
-  }
-  value = value.replace(reTrim, '');
-  var isBinary = reIsBinary.test(value);
-  return (isBinary || reIsOctal.test(value))
-    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
-    : (reIsBadHex.test(value) ? NAN : +value);
-}
-
-module.exports = throttle;
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/memoize-one/dist/memoize-one.esm.js":
-/*!**************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/memoize-one/dist/memoize-one.esm.js ***!
-  \**************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ memoizeOne)
-/* harmony export */ });
-var safeIsNaN = Number.isNaN ||
-    function ponyfill(value) {
-        return typeof value === 'number' && value !== value;
-    };
-function isEqual(first, second) {
-    if (first === second) {
-        return true;
-    }
-    if (safeIsNaN(first) && safeIsNaN(second)) {
-        return true;
-    }
-    return false;
-}
-function areInputsEqual(newInputs, lastInputs) {
-    if (newInputs.length !== lastInputs.length) {
-        return false;
-    }
-    for (var i = 0; i < newInputs.length; i++) {
-        if (!isEqual(newInputs[i], lastInputs[i])) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function memoizeOne(resultFn, isEqual) {
-    if (isEqual === void 0) { isEqual = areInputsEqual; }
-    var cache = null;
-    function memoized() {
-        var newArgs = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            newArgs[_i] = arguments[_i];
-        }
-        if (cache && cache.lastThis === this && isEqual(newArgs, cache.lastArgs)) {
-            return cache.lastResult;
-        }
-        var lastResult = resultFn.apply(this, newArgs);
-        cache = {
-            lastResult: lastResult,
-            lastArgs: newArgs,
-            lastThis: this,
-        };
-        return lastResult;
-    }
-    memoized.clear = function clear() {
-        cache = null;
-    };
-    return memoized;
-}
-
-
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/mime-match/index.js":
-/*!**********************************************************!*\
-  !*** ./src/jgDashboard/node_modules/mime-match/index.js ***!
-  \**********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var wildcard = __webpack_require__(/*! wildcard */ "./src/jgDashboard/node_modules/wildcard/index.js");
-var reMimePartSplit = /[\/\+\.]/;
-
-/**
-  # mime-match
-
-  A simple function to checker whether a target mime type matches a mime-type
-  pattern (e.g. image/jpeg matches image/jpeg OR image/*).
-
-  ## Example Usage
-
-  <<< example.js
-
-**/
-module.exports = function(target, pattern) {
-  function test(pattern) {
-    var result = wildcard(pattern, target, reMimePartSplit);
-
-    // ensure that we have a valid mime type (should have two parts)
-    return result && result.length >= 2;
-  }
-
-  return pattern ? test(pattern.split(';')[0]) : test;
-};
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/namespace-emitter/index.js":
-/*!*****************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/namespace-emitter/index.js ***!
-  \*****************************************************************/
-/***/ ((module) => {
-
-/**
-* Create an event emitter with namespaces
-* @name createNamespaceEmitter
-* @example
-* var emitter = require('./index')()
-*
-* emitter.on('*', function () {
-*   console.log('all events emitted', this.event)
-* })
-*
-* emitter.on('example', function () {
-*   console.log('example event emitted')
-* })
-*/
-module.exports = function createNamespaceEmitter () {
-  var emitter = {}
-  var _fns = emitter._fns = {}
-
-  /**
-  * Emit an event. Optionally namespace the event. Handlers are fired in the order in which they were added with exact matches taking precedence. Separate the namespace and event with a `:`
-  * @name emit
-  * @param {String} event – the name of the event, with optional namespace
-  * @param {...*} data – up to 6 arguments that are passed to the event listener
-  * @example
-  * emitter.emit('example')
-  * emitter.emit('demo:test')
-  * emitter.emit('data', { example: true}, 'a string', 1)
-  */
-  emitter.emit = function emit (event, arg1, arg2, arg3, arg4, arg5, arg6) {
-    var toEmit = getListeners(event)
-
-    if (toEmit.length) {
-      emitAll(event, toEmit, [arg1, arg2, arg3, arg4, arg5, arg6])
-    }
-  }
-
-  /**
-  * Create en event listener.
-  * @name on
-  * @param {String} event
-  * @param {Function} fn
-  * @example
-  * emitter.on('example', function () {})
-  * emitter.on('demo', function () {})
-  */
-  emitter.on = function on (event, fn) {
-    if (!_fns[event]) {
-      _fns[event] = []
-    }
-
-    _fns[event].push(fn)
-  }
-
-  /**
-  * Create en event listener that fires once.
-  * @name once
-  * @param {String} event
-  * @param {Function} fn
-  * @example
-  * emitter.once('example', function () {})
-  * emitter.once('demo', function () {})
-  */
-  emitter.once = function once (event, fn) {
-    function one () {
-      fn.apply(this, arguments)
-      emitter.off(event, one)
-    }
-    this.on(event, one)
-  }
-
-  /**
-  * Stop listening to an event. Stop all listeners on an event by only passing the event name. Stop a single listener by passing that event handler as a callback.
-  * You must be explicit about what will be unsubscribed: `emitter.off('demo')` will unsubscribe an `emitter.on('demo')` listener,
-  * `emitter.off('demo:example')` will unsubscribe an `emitter.on('demo:example')` listener
-  * @name off
-  * @param {String} event
-  * @param {Function} [fn] – the specific handler
-  * @example
-  * emitter.off('example')
-  * emitter.off('demo', function () {})
-  */
-  emitter.off = function off (event, fn) {
-    var keep = []
-
-    if (event && fn) {
-      var fns = this._fns[event]
-      var i = 0
-      var l = fns ? fns.length : 0
-
-      for (i; i < l; i++) {
-        if (fns[i] !== fn) {
-          keep.push(fns[i])
-        }
-      }
-    }
-
-    keep.length ? this._fns[event] = keep : delete this._fns[event]
-  }
-
-  function getListeners (e) {
-    var out = _fns[e] ? _fns[e] : []
-    var idx = e.indexOf(':')
-    var args = (idx === -1) ? [e] : [e.substring(0, idx), e.substring(idx + 1)]
-
-    var keys = Object.keys(_fns)
-    var i = 0
-    var l = keys.length
-
-    for (i; i < l; i++) {
-      var key = keys[i]
-      if (key === '*') {
-        out = out.concat(_fns[key])
-      }
-
-      if (args.length === 2 && args[0] === key) {
-        out = out.concat(_fns[key])
-        break
-      }
-    }
-
-    return out
-  }
-
-  function emitAll (e, fns, args) {
-    var i = 0
-    var l = fns.length
-
-    for (i; i < l; i++) {
-      if (!fns[i]) break
-      fns[i].event = e
-      fns[i].apply(fns[i], args)
-    }
-  }
-
-  return emitter
-}
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/preact/dist/preact.module.js":
-/*!*******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/preact/dist/preact.module.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Component: () => (/* binding */ b),
-/* harmony export */   Fragment: () => (/* binding */ k),
-/* harmony export */   cloneElement: () => (/* binding */ F),
-/* harmony export */   createContext: () => (/* binding */ G),
-/* harmony export */   createElement: () => (/* binding */ y),
-/* harmony export */   createRef: () => (/* binding */ _),
-/* harmony export */   h: () => (/* binding */ y),
-/* harmony export */   hydrate: () => (/* binding */ E),
-/* harmony export */   isValidElement: () => (/* binding */ i),
-/* harmony export */   options: () => (/* binding */ l),
-/* harmony export */   render: () => (/* binding */ D),
-/* harmony export */   toChildArray: () => (/* binding */ S)
-/* harmony export */ });
-var n,l,u,i,t,o,r,f,e,c={},s=[],a=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,v=Array.isArray;function h(n,l){for(var u in l)n[u]=l[u];return n}function p(n){var l=n.parentNode;l&&l.removeChild(n)}function y(l,u,i){var t,o,r,f={};for(r in u)"key"==r?t=u[r]:"ref"==r?o=u[r]:f[r]=u[r];if(arguments.length>2&&(f.children=arguments.length>3?n.call(arguments,2):i),"function"==typeof l&&null!=l.defaultProps)for(r in l.defaultProps)void 0===f[r]&&(f[r]=l.defaultProps[r]);return d(l,f,t,o,null)}function d(n,i,t,o,r){var f={type:n,props:i,key:t,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,__h:null,constructor:void 0,__v:null==r?++u:r};return null==r&&null!=l.vnode&&l.vnode(f),f}function _(){return{current:null}}function k(n){return n.children}function b(n,l){this.props=n,this.context=l}function g(n,l){if(null==l)return n.__?g(n.__,n.__.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return"function"==typeof n.type?g(n):null}function m(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return m(n)}}function w(n){(!n.__d&&(n.__d=!0)&&t.push(n)&&!x.__r++||o!==l.debounceRendering)&&((o=l.debounceRendering)||r)(x)}function x(){var n,l,u,i,o,r,e,c;for(t.sort(f);n=t.shift();)n.__d&&(l=t.length,i=void 0,o=void 0,e=(r=(u=n).__v).__e,(c=u.__P)&&(i=[],(o=h({},r)).__v=r.__v+1,L(c,r,o,u.__n,void 0!==c.ownerSVGElement,null!=r.__h?[e]:null,i,null==e?g(r):e,r.__h),M(i,r),r.__e!=e&&m(r)),t.length>l&&t.sort(f));x.__r=0}function P(n,l,u,i,t,o,r,f,e,a){var h,p,y,_,b,m,w,x=i&&i.__k||s,P=x.length;for(u.__k=[],h=0;h<l.length;h++)if(null!=(_=u.__k[h]=null==(_=l[h])||"boolean"==typeof _||"function"==typeof _?null:"string"==typeof _||"number"==typeof _||"bigint"==typeof _?d(null,_,null,null,_):v(_)?d(k,{children:_},null,null,null):_.__b>0?d(_.type,_.props,_.key,_.ref?_.ref:null,_.__v):_)){if(_.__=u,_.__b=u.__b+1,null===(y=x[h])||y&&_.key==y.key&&_.type===y.type)x[h]=void 0;else for(p=0;p<P;p++){if((y=x[p])&&_.key==y.key&&_.type===y.type){x[p]=void 0;break}y=null}L(n,_,y=y||c,t,o,r,f,e,a),b=_.__e,(p=_.ref)&&y.ref!=p&&(w||(w=[]),y.ref&&w.push(y.ref,null,_),w.push(p,_.__c||b,_)),null!=b?(null==m&&(m=b),"function"==typeof _.type&&_.__k===y.__k?_.__d=e=C(_,e,n):e=$(n,_,y,x,b,e),"function"==typeof u.type&&(u.__d=e)):e&&y.__e==e&&e.parentNode!=n&&(e=g(y))}for(u.__e=m,h=P;h--;)null!=x[h]&&("function"==typeof u.type&&null!=x[h].__e&&x[h].__e==u.__d&&(u.__d=A(i).nextSibling),q(x[h],x[h]));if(w)for(h=0;h<w.length;h++)O(w[h],w[++h],w[++h])}function C(n,l,u){for(var i,t=n.__k,o=0;t&&o<t.length;o++)(i=t[o])&&(i.__=n,l="function"==typeof i.type?C(i,l,u):$(u,i,i,t,i.__e,l));return l}function S(n,l){return l=l||[],null==n||"boolean"==typeof n||(v(n)?n.some(function(n){S(n,l)}):l.push(n)),l}function $(n,l,u,i,t,o){var r,f,e;if(void 0!==l.__d)r=l.__d,l.__d=void 0;else if(null==u||t!=o||null==t.parentNode)n:if(null==o||o.parentNode!==n)n.appendChild(t),r=null;else{for(f=o,e=0;(f=f.nextSibling)&&e<i.length;e+=1)if(f==t)break n;n.insertBefore(t,o),r=o}return void 0!==r?r:t.nextSibling}function A(n){var l,u,i;if(null==n.type||"string"==typeof n.type)return n.__e;if(n.__k)for(l=n.__k.length-1;l>=0;l--)if((u=n.__k[l])&&(i=A(u)))return i;return null}function H(n,l,u,i,t){var o;for(o in u)"children"===o||"key"===o||o in l||T(n,o,null,u[o],i);for(o in l)t&&"function"!=typeof l[o]||"children"===o||"key"===o||"value"===o||"checked"===o||u[o]===l[o]||T(n,o,l[o],u[o],i)}function I(n,l,u){"-"===l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!=typeof u||a.test(l)?u:u+"px"}function T(n,l,u,i,t){var o;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else{if("string"==typeof i&&(n.style.cssText=i=""),i)for(l in i)u&&l in u||I(n.style,l,"");if(u)for(l in u)i&&u[l]===i[l]||I(n.style,l,u[l])}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/Capture$/,"")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=u,u?i||n.addEventListener(l,o?z:j,o):n.removeEventListener(l,o?z:j,o);else if("dangerouslySetInnerHTML"!==l){if(t)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!==l&&"height"!==l&&"href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&"rowSpan"!==l&&"colSpan"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null==u||!1===u&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,u))}}function j(n){return this.l[n.type+!1](l.event?l.event(n):n)}function z(n){return this.l[n.type+!0](l.event?l.event(n):n)}function L(n,u,i,t,o,r,f,e,c){var s,a,p,y,d,_,g,m,w,x,C,S,$,A,H,I=u.type;if(void 0!==u.constructor)return null;null!=i.__h&&(c=i.__h,e=u.__e=i.__e,u.__h=null,r=[e]),(s=l.__b)&&s(u);try{n:if("function"==typeof I){if(m=u.props,w=(s=I.contextType)&&t[s.__c],x=s?w?w.props.value:s.__:t,i.__c?g=(a=u.__c=i.__c).__=a.__E:("prototype"in I&&I.prototype.render?u.__c=a=new I(m,x):(u.__c=a=new b(m,x),a.constructor=I,a.render=B),w&&w.sub(a),a.props=m,a.state||(a.state={}),a.context=x,a.__n=t,p=a.__d=!0,a.__h=[],a._sb=[]),null==a.__s&&(a.__s=a.state),null!=I.getDerivedStateFromProps&&(a.__s==a.state&&(a.__s=h({},a.__s)),h(a.__s,I.getDerivedStateFromProps(m,a.__s))),y=a.props,d=a.state,a.__v=u,p)null==I.getDerivedStateFromProps&&null!=a.componentWillMount&&a.componentWillMount(),null!=a.componentDidMount&&a.__h.push(a.componentDidMount);else{if(null==I.getDerivedStateFromProps&&m!==y&&null!=a.componentWillReceiveProps&&a.componentWillReceiveProps(m,x),!a.__e&&null!=a.shouldComponentUpdate&&!1===a.shouldComponentUpdate(m,a.__s,x)||u.__v===i.__v){for(u.__v!==i.__v&&(a.props=m,a.state=a.__s,a.__d=!1),a.__e=!1,u.__e=i.__e,u.__k=i.__k,u.__k.forEach(function(n){n&&(n.__=u)}),C=0;C<a._sb.length;C++)a.__h.push(a._sb[C]);a._sb=[],a.__h.length&&f.push(a);break n}null!=a.componentWillUpdate&&a.componentWillUpdate(m,a.__s,x),null!=a.componentDidUpdate&&a.__h.push(function(){a.componentDidUpdate(y,d,_)})}if(a.context=x,a.props=m,a.__P=n,S=l.__r,$=0,"prototype"in I&&I.prototype.render){for(a.state=a.__s,a.__d=!1,S&&S(u),s=a.render(a.props,a.state,a.context),A=0;A<a._sb.length;A++)a.__h.push(a._sb[A]);a._sb=[]}else do{a.__d=!1,S&&S(u),s=a.render(a.props,a.state,a.context),a.state=a.__s}while(a.__d&&++$<25);a.state=a.__s,null!=a.getChildContext&&(t=h(h({},t),a.getChildContext())),p||null==a.getSnapshotBeforeUpdate||(_=a.getSnapshotBeforeUpdate(y,d)),P(n,v(H=null!=s&&s.type===k&&null==s.key?s.props.children:s)?H:[H],u,i,t,o,r,f,e,c),a.base=u.__e,u.__h=null,a.__h.length&&f.push(a),g&&(a.__E=a.__=null),a.__e=!1}else null==r&&u.__v===i.__v?(u.__k=i.__k,u.__e=i.__e):u.__e=N(i.__e,u,i,t,o,r,f,c);(s=l.diffed)&&s(u)}catch(n){u.__v=null,(c||null!=r)&&(u.__e=e,u.__h=!!c,r[r.indexOf(e)]=null),l.__e(n,u,i)}}function M(n,u){l.__c&&l.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u)})}catch(n){l.__e(n,u.__v)}})}function N(l,u,i,t,o,r,f,e){var s,a,h,y=i.props,d=u.props,_=u.type,k=0;if("svg"===_&&(o=!0),null!=r)for(;k<r.length;k++)if((s=r[k])&&"setAttribute"in s==!!_&&(_?s.localName===_:3===s.nodeType)){l=s,r[k]=null;break}if(null==l){if(null===_)return document.createTextNode(d);l=o?document.createElementNS("http://www.w3.org/2000/svg",_):document.createElement(_,d.is&&d),r=null,e=!1}if(null===_)y===d||e&&l.data===d||(l.data=d);else{if(r=r&&n.call(l.childNodes),a=(y=i.props||c).dangerouslySetInnerHTML,h=d.dangerouslySetInnerHTML,!e){if(null!=r)for(y={},k=0;k<l.attributes.length;k++)y[l.attributes[k].name]=l.attributes[k].value;(h||a)&&(h&&(a&&h.__html==a.__html||h.__html===l.innerHTML)||(l.innerHTML=h&&h.__html||""))}if(H(l,d,y,o,e),h)u.__k=[];else if(P(l,v(k=u.props.children)?k:[k],u,i,t,o&&"foreignObject"!==_,r,f,r?r[0]:i.__k&&g(i,0),e),null!=r)for(k=r.length;k--;)null!=r[k]&&p(r[k]);e||("value"in d&&void 0!==(k=d.value)&&(k!==l.value||"progress"===_&&!k||"option"===_&&k!==y.value)&&T(l,"value",k,y.value,!1),"checked"in d&&void 0!==(k=d.checked)&&k!==l.checked&&T(l,"checked",k,y.checked,!1))}return l}function O(n,u,i){try{"function"==typeof n?n(u):n.current=u}catch(n){l.__e(n,i)}}function q(n,u,i){var t,o;if(l.unmount&&l.unmount(n),(t=n.ref)&&(t.current&&t.current!==n.__e||O(t,null,u)),null!=(t=n.__c)){if(t.componentWillUnmount)try{t.componentWillUnmount()}catch(n){l.__e(n,u)}t.base=t.__P=null,n.__c=void 0}if(t=n.__k)for(o=0;o<t.length;o++)t[o]&&q(t[o],u,i||"function"!=typeof n.type);i||null==n.__e||p(n.__e),n.__=n.__e=n.__d=void 0}function B(n,l,u){return this.constructor(n,u)}function D(u,i,t){var o,r,f;l.__&&l.__(u,i),r=(o="function"==typeof t)?null:t&&t.__k||i.__k,f=[],L(i,u=(!o&&t||i).__k=y(k,null,[u]),r||c,c,void 0!==i.ownerSVGElement,!o&&t?[t]:r?null:i.firstChild?n.call(i.childNodes):null,f,!o&&t?t:r?r.__e:i.firstChild,o),M(f,u)}function E(n,l){D(n,l,E)}function F(l,u,i){var t,o,r,f,e=h({},l.props);for(r in l.type&&l.type.defaultProps&&(f=l.type.defaultProps),u)"key"==r?t=u[r]:"ref"==r?o=u[r]:e[r]=void 0===u[r]&&void 0!==f?f[r]:u[r];return arguments.length>2&&(e.children=arguments.length>3?n.call(arguments,2):i),d(l.type,e,t||l.key,o||l.ref,null)}function G(n,l){var u={__c:l="__cC"+e++,__:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var u,i;return this.getChildContext||(u=[],(i={})[l]=this,this.getChildContext=function(){return i},this.shouldComponentUpdate=function(n){this.props.value!==n.value&&u.some(function(n){n.__e=!0,w(n)})},this.sub=function(n){u.push(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){u.splice(u.indexOf(n),1),l&&l.call(n)}}),n.children}};return u.Provider.__=u.Consumer.contextType=u}n=s.slice,l={__e:function(n,l,u,i){for(var t,o,r;l=l.__;)if((t=l.__c)&&!t.__)try{if((o=t.constructor)&&null!=o.getDerivedStateFromError&&(t.setState(o.getDerivedStateFromError(n)),r=t.__d),null!=t.componentDidCatch&&(t.componentDidCatch(n,i||{}),r=t.__d),r)return t.__E=t}catch(l){n=l}throw n}},u=0,i=function(n){return null!=n&&void 0===n.constructor},b.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=h({},this.state),"function"==typeof n&&(n=n(h({},u),this.props)),n&&h(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),w(this))},b.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),w(this))},b.prototype.render=k,t=[],r="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,f=function(n,l){return n.__v.__b-l.__v.__b},x.__r=0,e=0;
-//# sourceMappingURL=preact.module.js.map
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/preact/hooks/dist/hooks.module.js":
-/*!************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/preact/hooks/dist/hooks.module.js ***!
-  \************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   useCallback: () => (/* binding */ T),
-/* harmony export */   useContext: () => (/* binding */ q),
-/* harmony export */   useDebugValue: () => (/* binding */ x),
-/* harmony export */   useEffect: () => (/* binding */ p),
-/* harmony export */   useErrorBoundary: () => (/* binding */ P),
-/* harmony export */   useId: () => (/* binding */ V),
-/* harmony export */   useImperativeHandle: () => (/* binding */ A),
-/* harmony export */   useLayoutEffect: () => (/* binding */ y),
-/* harmony export */   useMemo: () => (/* binding */ F),
-/* harmony export */   useReducer: () => (/* binding */ s),
-/* harmony export */   useRef: () => (/* binding */ _),
-/* harmony export */   useState: () => (/* binding */ h)
-/* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-var t,r,u,i,o=0,f=[],c=[],e=preact__WEBPACK_IMPORTED_MODULE_0__.options.__b,a=preact__WEBPACK_IMPORTED_MODULE_0__.options.__r,v=preact__WEBPACK_IMPORTED_MODULE_0__.options.diffed,l=preact__WEBPACK_IMPORTED_MODULE_0__.options.__c,m=preact__WEBPACK_IMPORTED_MODULE_0__.options.unmount;function d(t,u){preact__WEBPACK_IMPORTED_MODULE_0__.options.__h&&preact__WEBPACK_IMPORTED_MODULE_0__.options.__h(r,t,o||u),o=0;var i=r.__H||(r.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({__V:c}),i.__[t]}function h(n){return o=1,s(B,n)}function s(n,u,i){var o=d(t++,2);if(o.t=n,!o.__c&&(o.__=[i?i(u):B(void 0,u),function(n){var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}))}],o.__c=r,!r.u)){var f=function(n,t,r){if(!o.__c.__H)return!0;var u=o.__c.__H.__.filter(function(n){return n.__c});if(u.every(function(n){return!n.__N}))return!c||c.call(this,n,t,r);var i=!1;return u.forEach(function(n){if(n.__N){var t=n.__[0];n.__=n.__N,n.__N=void 0,t!==n.__[0]&&(i=!0)}}),!(!i&&o.__c.props===n)&&(!c||c.call(this,n,t,r))};r.u=!0;var c=r.shouldComponentUpdate,e=r.componentWillUpdate;r.componentWillUpdate=function(n,t,r){if(this.__e){var u=c;c=void 0,f(n,t,r),c=u}e&&e.call(this,n,t,r)},r.shouldComponentUpdate=f}return o.__N||o.__}function p(u,i){var o=d(t++,3);!preact__WEBPACK_IMPORTED_MODULE_0__.options.__s&&z(o.__H,i)&&(o.__=u,o.i=i,r.__H.__h.push(o))}function y(u,i){var o=d(t++,4);!preact__WEBPACK_IMPORTED_MODULE_0__.options.__s&&z(o.__H,i)&&(o.__=u,o.i=i,r.__h.push(o))}function _(n){return o=5,F(function(){return{current:n}},[])}function A(n,t,r){o=6,y(function(){return"function"==typeof n?(n(t()),function(){return n(null)}):n?(n.current=t(),function(){return n.current=null}):void 0},null==r?r:r.concat(n))}function F(n,r){var u=d(t++,7);return z(u.__H,r)?(u.__V=n(),u.i=r,u.__h=n,u.__V):u.__}function T(n,t){return o=8,F(function(){return n},t)}function q(n){var u=r.context[n.__c],i=d(t++,9);return i.c=n,u?(null==i.__&&(i.__=!0,u.sub(r)),u.props.value):n.__}function x(t,r){preact__WEBPACK_IMPORTED_MODULE_0__.options.useDebugValue&&preact__WEBPACK_IMPORTED_MODULE_0__.options.useDebugValue(r?r(t):t)}function P(n){var u=d(t++,10),i=h();return u.__=n,r.componentDidCatch||(r.componentDidCatch=function(n,t){u.__&&u.__(n,t),i[1](n)}),[i[0],function(){i[1](void 0)}]}function V(){var n=d(t++,11);if(!n.__){for(var u=r.__v;null!==u&&!u.__m&&null!==u.__;)u=u.__;var i=u.__m||(u.__m=[0,0]);n.__="P"+i[0]+"-"+i[1]++}return n.__}function b(){for(var t;t=f.shift();)if(t.__P&&t.__H)try{t.__H.__h.forEach(k),t.__H.__h.forEach(w),t.__H.__h=[]}catch(r){t.__H.__h=[],preact__WEBPACK_IMPORTED_MODULE_0__.options.__e(r,t.__v)}}preact__WEBPACK_IMPORTED_MODULE_0__.options.__b=function(n){r=null,e&&e(n)},preact__WEBPACK_IMPORTED_MODULE_0__.options.__r=function(n){a&&a(n),t=0;var i=(r=n.__c).__H;i&&(u===r?(i.__h=[],r.__h=[],i.__.forEach(function(n){n.__N&&(n.__=n.__N),n.__V=c,n.__N=n.i=void 0})):(i.__h.forEach(k),i.__h.forEach(w),i.__h=[],t=0)),u=r},preact__WEBPACK_IMPORTED_MODULE_0__.options.diffed=function(t){v&&v(t);var o=t.__c;o&&o.__H&&(o.__H.__h.length&&(1!==f.push(o)&&i===preact__WEBPACK_IMPORTED_MODULE_0__.options.requestAnimationFrame||((i=preact__WEBPACK_IMPORTED_MODULE_0__.options.requestAnimationFrame)||j)(b)),o.__H.__.forEach(function(n){n.i&&(n.__H=n.i),n.__V!==c&&(n.__=n.__V),n.i=void 0,n.__V=c})),u=r=null},preact__WEBPACK_IMPORTED_MODULE_0__.options.__c=function(t,r){r.some(function(t){try{t.__h.forEach(k),t.__h=t.__h.filter(function(n){return!n.__||w(n)})}catch(u){r.some(function(n){n.__h&&(n.__h=[])}),r=[],preact__WEBPACK_IMPORTED_MODULE_0__.options.__e(u,t.__v)}}),l&&l(t,r)},preact__WEBPACK_IMPORTED_MODULE_0__.options.unmount=function(t){m&&m(t);var r,u=t.__c;u&&u.__H&&(u.__H.__.forEach(function(n){try{k(n)}catch(n){r=n}}),u.__H=void 0,r&&preact__WEBPACK_IMPORTED_MODULE_0__.options.__e(r,u.__v))};var g="function"==typeof requestAnimationFrame;function j(n){var t,r=function(){clearTimeout(u),g&&cancelAnimationFrame(t),setTimeout(n)},u=setTimeout(r,100);g&&(t=requestAnimationFrame(r))}function k(n){var t=r,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r=t}function w(n){var t=r;n.__c=n.__(),r=t}function z(n,t){return!n||n.length!==t.length||t.some(function(t,r){return t!==n[r]})}function B(n,t){return"function"==typeof t?t(n):t}
-//# sourceMappingURL=hooks.module.js.map
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/wildcard/index.js":
-/*!********************************************************!*\
-  !*** ./src/jgDashboard/node_modules/wildcard/index.js ***!
-  \********************************************************/
-/***/ ((module) => {
-
-"use strict";
-/* jshint node: true */
-
-
-/**
-  # wildcard
-
-  Very simple wildcard matching, which is designed to provide the same
-  functionality that is found in the
-  [eve](https://github.com/adobe-webplatform/eve) eventing library.
-
-  ## Usage
-
-  It works with strings:
-
-  <<< examples/strings.js
-
-  Arrays:
-
-  <<< examples/arrays.js
-
-  Objects (matching against keys):
-
-  <<< examples/objects.js
-
-  While the library works in Node, if you are are looking for file-based
-  wildcard matching then you should have a look at:
-
-  <https://github.com/isaacs/node-glob>
-**/
-
-function WildcardMatcher(text, separator) {
-  this.text = text = text || '';
-  this.hasWild = ~text.indexOf('*');
-  this.separator = separator;
-  this.parts = text.split(separator);
-}
-
-WildcardMatcher.prototype.match = function(input) {
-  var matches = true;
-  var parts = this.parts;
-  var ii;
-  var partsCount = parts.length;
-  var testParts;
-
-  if (typeof input == 'string' || input instanceof String) {
-    if (!this.hasWild && this.text != input) {
-      matches = false;
-    } else {
-      testParts = (input || '').split(this.separator);
-      for (ii = 0; matches && ii < partsCount; ii++) {
-        if (parts[ii] === '*')  {
-          continue;
-        } else if (ii < testParts.length) {
-          matches = parts[ii] === testParts[ii];
-        } else {
-          matches = false;
-        }
-      }
-
-      // If matches, then return the component parts
-      matches = matches && testParts;
-    }
-  }
-  else if (typeof input.splice == 'function') {
-    matches = [];
-
-    for (ii = input.length; ii--; ) {
-      if (this.match(input[ii])) {
-        matches[matches.length] = input[ii];
-      }
-    }
-  }
-  else if (typeof input == 'object') {
-    matches = {};
-
-    for (var key in input) {
-      if (this.match(key)) {
-        matches[key] = input[key];
-      }
-    }
-  }
-
-  return matches;
-};
-
-module.exports = function(text, test, separator) {
-  var matcher = new WildcardMatcher(text, separator || /[\/\.]/);
-  if (typeof test != 'undefined') {
-    return matcher.match(test);
-  }
-
-  return matcher;
-};
+/* harmony import */ var _Dashboard_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Dashboard.js */ "./src/jgDashboard/Dashboard.js");
 
 
 /***/ }),
@@ -10673,5161 +9752,10 @@ function supportsUploadProgress(userAgent) {
 
 /***/ }),
 
-/***/ "./node_modules/@uppy/store-default/lib/index.js":
+/***/ "./node_modules/@uppy/dashboard/lib/Dashboard.js":
 /*!*******************************************************!*\
-  !*** ./node_modules/@uppy/store-default/lib/index.js ***!
+  !*** ./node_modules/@uppy/dashboard/lib/Dashboard.js ***!
   \*******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
-var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-const packageJson = {
-  "version": "3.0.3"
-};
-/**
- * Default store that keeps state in a simple object.
- */
-
-var _callbacks = /*#__PURE__*/_classPrivateFieldLooseKey("callbacks");
-
-var _publish = /*#__PURE__*/_classPrivateFieldLooseKey("publish");
-
-class DefaultStore {
-  constructor() {
-    Object.defineProperty(this, _publish, {
-      value: _publish2
-    });
-    Object.defineProperty(this, _callbacks, {
-      writable: true,
-      value: new Set()
-    });
-    this.state = {};
-  }
-
-  getState() {
-    return this.state;
-  }
-
-  setState(patch) {
-    const prevState = { ...this.state
-    };
-    const nextState = { ...this.state,
-      ...patch
-    };
-    this.state = nextState;
-
-    _classPrivateFieldLooseBase(this, _publish)[_publish](prevState, nextState, patch);
-  }
-
-  subscribe(listener) {
-    _classPrivateFieldLooseBase(this, _callbacks)[_callbacks].add(listener);
-
-    return () => {
-      _classPrivateFieldLooseBase(this, _callbacks)[_callbacks].delete(listener);
-    };
-  }
-
-}
-
-function _publish2() {
-  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
-  }
-
-  _classPrivateFieldLooseBase(this, _callbacks)[_callbacks].forEach(listener => {
-    listener(...args);
-  });
-}
-
-DefaultStore.VERSION = packageJson.version;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DefaultStore);
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/tus/lib/getFingerprint.js":
-/*!******************************************************!*\
-  !*** ./node_modules/@uppy/tus/lib/getFingerprint.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getFingerprint)
-/* harmony export */ });
-/* harmony import */ var tus_js_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tus-js-client */ "./node_modules/tus-js-client/lib.esm/browser/index.js");
-
-
-function isCordova() {
-  return typeof window !== 'undefined' && (typeof window.PhoneGap !== 'undefined' || typeof window.Cordova !== 'undefined' || typeof window.cordova !== 'undefined');
-}
-
-function isReactNative() {
-  return typeof navigator !== 'undefined' && typeof navigator.product === 'string' && navigator.product.toLowerCase() === 'reactnative';
-} // We override tus fingerprint to uppy’s `file.id`, since the `file.id`
-// now also includes `relativePath` for files added from folders.
-// This means you can add 2 identical files, if one is in folder a,
-// the other in folder b — `a/file.jpg` and `b/file.jpg`, when added
-// together with a folder, will be treated as 2 separate files.
-//
-// For React Native and Cordova, we let tus-js-client’s default
-// fingerprint handling take charge.
-
-
-function getFingerprint(uppyFileObj) {
-  return (file, options) => {
-    if (isCordova() || isReactNative()) {
-      return tus_js_client__WEBPACK_IMPORTED_MODULE_0__.defaultOptions.fingerprint(file, options);
-    }
-
-    const uppyFingerprint = ['tus', uppyFileObj.id, options.endpoint].join('-');
-    return Promise.resolve(uppyFingerprint);
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/tus/lib/index.js":
-/*!*********************************************!*\
-  !*** ./node_modules/@uppy/tus/lib/index.js ***!
-  \*********************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Tus)
-/* harmony export */ });
-/* harmony import */ var _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core/lib/BasePlugin.js */ "./node_modules/@uppy/core/lib/BasePlugin.js");
-/* harmony import */ var tus_js_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! tus-js-client */ "./node_modules/tus-js-client/lib.esm/browser/index.js");
-/* harmony import */ var _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/companion-client */ "./node_modules/@uppy/companion-client/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_emitSocketProgress__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/emitSocketProgress */ "./node_modules/@uppy/utils/lib/emitSocketProgress.js");
-/* harmony import */ var _uppy_utils_lib_getSocketHost__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/getSocketHost */ "./node_modules/@uppy/utils/lib/getSocketHost.js");
-/* harmony import */ var _uppy_utils_lib_EventTracker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/EventTracker */ "./node_modules/@uppy/utils/lib/EventTracker.js");
-/* harmony import */ var _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/NetworkError */ "./node_modules/@uppy/utils/lib/NetworkError.js");
-/* harmony import */ var _uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/utils/lib/isNetworkError */ "./node_modules/@uppy/utils/lib/isNetworkError.js");
-/* harmony import */ var _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @uppy/utils/lib/RateLimitedQueue */ "./node_modules/@uppy/utils/lib/RateLimitedQueue.js");
-/* harmony import */ var _uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @uppy/utils/lib/hasProperty */ "./node_modules/@uppy/utils/lib/hasProperty.js");
-/* harmony import */ var _uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @uppy/utils/lib/fileFilters */ "./node_modules/@uppy/utils/lib/fileFilters.js");
-/* harmony import */ var _getFingerprint_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./getFingerprint.js */ "./node_modules/@uppy/tus/lib/getFingerprint.js");
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
-var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-const packageJson = {
-  "version": "3.1.0"
-};
-/** @typedef {import('..').TusOptions} TusOptions */
-
-/** @typedef {import('tus-js-client').UploadOptions} RawTusOptions */
-
-/** @typedef {import('@uppy/core').Uppy} Uppy */
-
-/** @typedef {import('@uppy/core').UppyFile} UppyFile */
-
-/** @typedef {import('@uppy/core').FailedUppyFile<{}>} FailedUppyFile */
-
-/**
- * Extracted from https://github.com/tus/tus-js-client/blob/master/lib/upload.js#L13
- * excepted we removed 'fingerprint' key to avoid adding more dependencies
- *
- * @type {RawTusOptions}
- */
-
-const tusDefaultOptions = {
-  endpoint: '',
-  uploadUrl: null,
-  metadata: {},
-  uploadSize: null,
-  onProgress: null,
-  onChunkComplete: null,
-  onSuccess: null,
-  onError: null,
-  overridePatchMethod: false,
-  headers: {},
-  addRequestId: false,
-  chunkSize: Infinity,
-  retryDelays: [100, 1000, 3000, 5000],
-  parallelUploads: 1,
-  removeFingerprintOnSuccess: false,
-  uploadLengthDeferred: false,
-  uploadDataDuringCreation: false
-};
-/**
- * Tus resumable file uploader
- */
-
-var _retryDelayIterator = /*#__PURE__*/_classPrivateFieldLooseKey("retryDelayIterator");
-
-var _queueRequestSocketToken = /*#__PURE__*/_classPrivateFieldLooseKey("queueRequestSocketToken");
-
-var _upload = /*#__PURE__*/_classPrivateFieldLooseKey("upload");
-
-var _requestSocketToken = /*#__PURE__*/_classPrivateFieldLooseKey("requestSocketToken");
-
-var _uploadRemote = /*#__PURE__*/_classPrivateFieldLooseKey("uploadRemote");
-
-var _uploadFiles = /*#__PURE__*/_classPrivateFieldLooseKey("uploadFiles");
-
-var _handleUpload = /*#__PURE__*/_classPrivateFieldLooseKey("handleUpload");
-
-class Tus extends _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  /**
-   * @param {Uppy} uppy
-   * @param {TusOptions} opts
-   */
-  constructor(uppy, _opts) {
-    var _this$opts$rateLimite, _this$opts$retryDelay;
-
-    super(uppy, _opts);
-    Object.defineProperty(this, _uploadFiles, {
-      value: _uploadFiles2
-    });
-    Object.defineProperty(this, _uploadRemote, {
-      value: _uploadRemote2
-    });
-    Object.defineProperty(this, _upload, {
-      value: _upload2
-    });
-    Object.defineProperty(this, _retryDelayIterator, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _queueRequestSocketToken, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _requestSocketToken, {
-      writable: true,
-      value: async file => {
-        const Client = file.remote.providerOptions.provider ? _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.Provider : _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.RequestClient;
-        const client = new Client(this.uppy, file.remote.providerOptions);
-        const opts = { ...this.opts
-        };
-
-        if (file.tus) {
-          // Install file-specific upload overrides.
-          Object.assign(opts, file.tus);
-        }
-
-        const res = await client.post(file.remote.url, { ...file.remote.body,
-          endpoint: opts.endpoint,
-          uploadUrl: opts.uploadUrl,
-          protocol: 'tus',
-          size: file.data.size,
-          headers: opts.headers,
-          metadata: file.meta
-        });
-        return res.token;
-      }
-    });
-    Object.defineProperty(this, _handleUpload, {
-      writable: true,
-      value: async fileIDs => {
-        if (fileIDs.length === 0) {
-          this.uppy.log('[Tus] No files to upload');
-          return;
-        }
-
-        if (this.opts.limit === 0) {
-          this.uppy.log('[Tus] When uploading multiple files at once, consider setting the `limit` option (to `10` for example), to limit the number of concurrent uploads, which helps prevent memory and network issues: https://uppy.io/docs/tus/#limit-0', 'warning');
-        }
-
-        this.uppy.log('[Tus] Uploading...');
-        const filesToUpload = this.uppy.getFilesByIds(fileIDs);
-        await _classPrivateFieldLooseBase(this, _uploadFiles)[_uploadFiles](filesToUpload);
-      }
-    });
-    this.type = 'uploader';
-    this.id = this.opts.id || 'Tus';
-    this.title = 'Tus'; // set default options
-
-    const defaultOptions = {
-      useFastRemoteRetry: true,
-      limit: 20,
-      retryDelays: tusDefaultOptions.retryDelays,
-      withCredentials: false
-    }; // merge default options with the ones set by user
-
-    /** @type {import("..").TusOptions} */
-
-    this.opts = { ...defaultOptions,
-      ..._opts
-    };
-
-    if ((_opts == null ? void 0 : _opts.allowedMetaFields) === undefined && 'metaFields' in this.opts) {
-      throw new Error('The `metaFields` option has been renamed to `allowedMetaFields`.');
-    }
-
-    if ('autoRetry' in _opts) {
-      throw new Error('The `autoRetry` option was deprecated and has been removed.');
-    }
-    /**
-     * Simultaneous upload limiting is shared across all uploads with this plugin.
-     *
-     * @type {RateLimitedQueue}
-     */
-
-
-    this.requests = (_this$opts$rateLimite = this.opts.rateLimitedQueue) != null ? _this$opts$rateLimite : new _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_8__.RateLimitedQueue(this.opts.limit);
-    _classPrivateFieldLooseBase(this, _retryDelayIterator)[_retryDelayIterator] = (_this$opts$retryDelay = this.opts.retryDelays) == null ? void 0 : _this$opts$retryDelay.values();
-    this.uploaders = Object.create(null);
-    this.uploaderEvents = Object.create(null);
-    this.uploaderSockets = Object.create(null);
-    this.handleResetProgress = this.handleResetProgress.bind(this);
-    _classPrivateFieldLooseBase(this, _queueRequestSocketToken)[_queueRequestSocketToken] = this.requests.wrapPromiseFunction(_classPrivateFieldLooseBase(this, _requestSocketToken)[_requestSocketToken], {
-      priority: -1
-    });
-  }
-
-  handleResetProgress() {
-    const files = { ...this.uppy.getState().files
-    };
-    Object.keys(files).forEach(fileID => {
-      // Only clone the file object if it has a Tus `uploadUrl` attached.
-      if (files[fileID].tus && files[fileID].tus.uploadUrl) {
-        const tusState = { ...files[fileID].tus
-        };
-        delete tusState.uploadUrl;
-        files[fileID] = { ...files[fileID],
-          tus: tusState
-        };
-      }
-    });
-    this.uppy.setState({
-      files
-    });
-  }
-  /**
-   * Clean up all references for a file's upload: the tus.Upload instance,
-   * any events related to the file, and the Companion WebSocket connection.
-   *
-   * @param {string} fileID
-   */
-
-
-  resetUploaderReferences(fileID, opts) {
-    if (opts === void 0) {
-      opts = {};
-    }
-
-    if (this.uploaders[fileID]) {
-      const uploader = this.uploaders[fileID];
-      uploader.abort();
-
-      if (opts.abort) {
-        uploader.abort(true);
-      }
-
-      this.uploaders[fileID] = null;
-    }
-
-    if (this.uploaderEvents[fileID]) {
-      this.uploaderEvents[fileID].remove();
-      this.uploaderEvents[fileID] = null;
-    }
-
-    if (this.uploaderSockets[fileID]) {
-      this.uploaderSockets[fileID].close();
-      this.uploaderSockets[fileID] = null;
-    }
-  }
-  /**
-   * Create a new Tus upload.
-   *
-   * A lot can happen during an upload, so this is quite hard to follow!
-   * - First, the upload is started. If the file was already paused by the time the upload starts, nothing should happen.
-   *   If the `limit` option is used, the upload must be queued onto the `this.requests` queue.
-   *   When an upload starts, we store the tus.Upload instance, and an EventTracker instance that manages the event listeners
-   *   for pausing, cancellation, removal, etc.
-   * - While the upload is in progress, it may be paused or cancelled.
-   *   Pausing aborts the underlying tus.Upload, and removes the upload from the `this.requests` queue. All other state is
-   *   maintained.
-   *   Cancelling removes the upload from the `this.requests` queue, and completely aborts the upload-- the `tus.Upload`
-   *   instance is aborted and discarded, the EventTracker instance is destroyed (removing all listeners).
-   *   Resuming the upload uses the `this.requests` queue as well, to prevent selectively pausing and resuming uploads from
-   *   bypassing the limit.
-   * - After completing an upload, the tus.Upload and EventTracker instances are cleaned up, and the upload is marked as done
-   *   in the `this.requests` queue.
-   * - When an upload completed with an error, the same happens as on successful completion, but the `upload()` promise is
-   *   rejected.
-   *
-   * When working on this function, keep in mind:
-   *  - When an upload is completed or cancelled for any reason, the tus.Upload and EventTracker instances need to be cleaned
-   *    up using this.resetUploaderReferences().
-   *  - When an upload is cancelled or paused, for any reason, it needs to be removed from the `this.requests` queue using
-   *    `queuedRequest.abort()`.
-   *  - When an upload is completed for any reason, including errors, it needs to be marked as such using
-   *    `queuedRequest.done()`.
-   *  - When an upload is started or resumed, it needs to go through the `this.requests` queue. The `queuedRequest` variable
-   *    must be updated so the other uses of it are valid.
-   *  - Before replacing the `queuedRequest` variable, the previous `queuedRequest` must be aborted, else it will keep taking
-   *    up a spot in the queue.
-   *
-   * @param {UppyFile} file for use with upload
-   * @returns {Promise<void>}
-   */
-
-
-  /**
-   * See the comment on the upload() method.
-   *
-   * Additionally, when an upload is removed, completed, or cancelled, we need to close the WebSocket connection. This is
-   * handled by the resetUploaderReferences() function, so the same guidelines apply as in upload().
-   *
-   * @param {UppyFile} file
-   */
-  async connectToServerSocket(file) {
-    var _this = this;
-
-    return new Promise((resolve, reject) => {
-      const token = file.serverToken;
-      const host = (0,_uppy_utils_lib_getSocketHost__WEBPACK_IMPORTED_MODULE_4__["default"])(file.remote.companionUrl);
-      const socket = new _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.Socket({
-        target: `${host}/api/${token}`,
-        autoOpen: false
-      });
-      this.uploaderSockets[file.id] = socket;
-      this.uploaderEvents[file.id] = new _uppy_utils_lib_EventTracker__WEBPACK_IMPORTED_MODULE_5__["default"](this.uppy);
-      let queuedRequest;
-      this.onFileRemove(file.id, () => {
-        queuedRequest.abort();
-        socket.send('cancel', {});
-        this.resetUploaderReferences(file.id);
-        resolve(`upload ${file.id} was removed`);
-      });
-      this.onPause(file.id, isPaused => {
-        if (isPaused) {
-          // Remove this file from the queue so another file can start in its place.
-          queuedRequest.abort();
-          socket.send('pause', {});
-        } else {
-          // Resuming an upload should be queued, else you could pause and then
-          // resume a queued upload to make it skip the queue.
-          queuedRequest.abort();
-          queuedRequest = this.requests.run(() => {
-            socket.open();
-            socket.send('resume', {});
-            return () => socket.close();
-          });
-        }
-      });
-      this.onPauseAll(file.id, () => {
-        queuedRequest.abort();
-        socket.send('pause', {});
-      });
-      this.onCancelAll(file.id, function (_temp) {
-        let {
-          reason
-        } = _temp === void 0 ? {} : _temp;
-
-        if (reason === 'user') {
-          queuedRequest.abort();
-          socket.send('cancel', {});
-
-          _this.resetUploaderReferences(file.id);
-        }
-
-        resolve(`upload ${file.id} was canceled`);
-      });
-      this.onResumeAll(file.id, () => {
-        queuedRequest.abort();
-
-        if (file.error) {
-          socket.send('pause', {});
-        }
-
-        queuedRequest = this.requests.run(() => {
-          socket.open();
-          socket.send('resume', {});
-          return () => socket.close();
-        });
-      });
-      this.onRetry(file.id, () => {
-        // Only do the retry if the upload is actually in progress;
-        // else we could try to send these messages when the upload is still queued.
-        // We may need a better check for this since the socket may also be closed
-        // for other reasons, like network failures.
-        if (socket.isOpen) {
-          socket.send('pause', {});
-          socket.send('resume', {});
-        }
-      });
-      this.onRetryAll(file.id, () => {
-        // See the comment in the onRetry() call
-        if (socket.isOpen) {
-          socket.send('pause', {});
-          socket.send('resume', {});
-        }
-      });
-      socket.on('progress', progressData => (0,_uppy_utils_lib_emitSocketProgress__WEBPACK_IMPORTED_MODULE_3__["default"])(this, progressData, file));
-      socket.on('error', errData => {
-        const {
-          message
-        } = errData.error;
-        const error = Object.assign(new Error(message), {
-          cause: errData.error
-        }); // If the remote retry optimisation should not be used,
-        // close the socket—this will tell companion to clear state and delete the file.
-
-        if (!this.opts.useFastRemoteRetry) {
-          this.resetUploaderReferences(file.id); // Remove the serverToken so that a new one will be created for the retry.
-
-          this.uppy.setFileState(file.id, {
-            serverToken: null
-          });
-        } else {
-          socket.close();
-        }
-
-        this.uppy.emit('upload-error', file, error);
-        queuedRequest.done();
-        reject(error);
-      });
-      socket.on('success', data => {
-        const uploadResp = {
-          uploadURL: data.url
-        };
-        this.uppy.emit('upload-success', file, uploadResp);
-        this.resetUploaderReferences(file.id);
-        queuedRequest.done();
-        resolve();
-      });
-      queuedRequest = this.requests.run(() => {
-        if (file.isPaused) {
-          socket.send('pause', {});
-        } else {
-          socket.open();
-        } // Just close the socket here, the caller will take care of cancelling the upload itself
-        // using resetUploaderReferences(). This is because resetUploaderReferences() has to be
-        // called when this request is still in the queue, and has not been started yet, too. At
-        // that point this cancellation function is not going to be called.
-        // Also, we need to remove the request from the queue _without_ destroying everything
-        // related to this upload to handle pauses.
-
-
-        return () => socket.close();
-      });
-    });
-  }
-  /**
-   * Store the uploadUrl on the file options, so that when Golden Retriever
-   * restores state, we will continue uploading to the correct URL.
-   *
-   * @param {UppyFile} file
-   * @param {string} uploadURL
-   */
-
-
-  onReceiveUploadUrl(file, uploadURL) {
-    const currentFile = this.uppy.getFile(file.id);
-    if (!currentFile) return; // Only do the update if we didn't have an upload URL yet.
-
-    if (!currentFile.tus || currentFile.tus.uploadUrl !== uploadURL) {
-      this.uppy.log('[Tus] Storing upload url');
-      this.uppy.setFileState(currentFile.id, {
-        tus: { ...currentFile.tus,
-          uploadUrl: uploadURL
-        }
-      });
-    }
-  }
-  /**
-   * @param {string} fileID
-   * @param {function(string): void} cb
-   */
-
-
-  onFileRemove(fileID, cb) {
-    this.uploaderEvents[fileID].on('file-removed', file => {
-      if (fileID === file.id) cb(file.id);
-    });
-  }
-  /**
-   * @param {string} fileID
-   * @param {function(boolean): void} cb
-   */
-
-
-  onPause(fileID, cb) {
-    this.uploaderEvents[fileID].on('upload-pause', (targetFileID, isPaused) => {
-      if (fileID === targetFileID) {
-        // const isPaused = this.uppy.pauseResume(fileID)
-        cb(isPaused);
-      }
-    });
-  }
-  /**
-   * @param {string} fileID
-   * @param {function(): void} cb
-   */
-
-
-  onRetry(fileID, cb) {
-    this.uploaderEvents[fileID].on('upload-retry', targetFileID => {
-      if (fileID === targetFileID) {
-        cb();
-      }
-    });
-  }
-  /**
-   * @param {string} fileID
-   * @param {function(): void} cb
-   */
-
-
-  onRetryAll(fileID, cb) {
-    this.uploaderEvents[fileID].on('retry-all', () => {
-      if (!this.uppy.getFile(fileID)) return;
-      cb();
-    });
-  }
-  /**
-   * @param {string} fileID
-   * @param {function(): void} cb
-   */
-
-
-  onPauseAll(fileID, cb) {
-    this.uploaderEvents[fileID].on('pause-all', () => {
-      if (!this.uppy.getFile(fileID)) return;
-      cb();
-    });
-  }
-  /**
-   * @param {string} fileID
-   * @param {function(): void} eventHandler
-   */
-
-
-  onCancelAll(fileID, eventHandler) {
-    var _this2 = this;
-
-    this.uploaderEvents[fileID].on('cancel-all', function () {
-      if (!_this2.uppy.getFile(fileID)) return;
-      eventHandler(...arguments);
-    });
-  }
-  /**
-   * @param {string} fileID
-   * @param {function(): void} cb
-   */
-
-
-  onResumeAll(fileID, cb) {
-    this.uploaderEvents[fileID].on('resume-all', () => {
-      if (!this.uppy.getFile(fileID)) return;
-      cb();
-    });
-  }
-  /**
-   * @param {(UppyFile | FailedUppyFile)[]} files
-   */
-
-
-  install() {
-    this.uppy.setState({
-      capabilities: { ...this.uppy.getState().capabilities,
-        resumableUploads: true
-      }
-    });
-    this.uppy.addUploader(_classPrivateFieldLooseBase(this, _handleUpload)[_handleUpload]);
-    this.uppy.on('reset-progress', this.handleResetProgress);
-  }
-
-  uninstall() {
-    this.uppy.setState({
-      capabilities: { ...this.uppy.getState().capabilities,
-        resumableUploads: false
-      }
-    });
-    this.uppy.removeUploader(_classPrivateFieldLooseBase(this, _handleUpload)[_handleUpload]);
-  }
-
-}
-
-function _upload2(file) {
-  var _this3 = this;
-
-  this.resetUploaderReferences(file.id); // Create a new tus upload
-
-  return new Promise((resolve, reject) => {
-    let queuedRequest;
-    let qRequest;
-    let upload;
-    const opts = { ...this.opts,
-      ...(file.tus || {})
-    };
-
-    if (typeof opts.headers === 'function') {
-      opts.headers = opts.headers(file);
-    }
-    /** @type {RawTusOptions} */
-
-
-    const uploadOptions = { ...tusDefaultOptions,
-      ...opts
-    }; // We override tus fingerprint to uppy’s `file.id`, since the `file.id`
-    // now also includes `relativePath` for files added from folders.
-    // This means you can add 2 identical files, if one is in folder a,
-    // the other in folder b.
-
-    uploadOptions.fingerprint = (0,_getFingerprint_js__WEBPACK_IMPORTED_MODULE_11__["default"])(file);
-
-    uploadOptions.onBeforeRequest = req => {
-      const xhr = req.getUnderlyingObject();
-      xhr.withCredentials = !!opts.withCredentials;
-      let userProvidedPromise;
-
-      if (typeof opts.onBeforeRequest === 'function') {
-        userProvidedPromise = opts.onBeforeRequest(req, file);
-      }
-
-      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__["default"])(queuedRequest, 'shouldBeRequeued')) {
-        if (!queuedRequest.shouldBeRequeued) return Promise.reject();
-        let done;
-        const p = new Promise(res => {
-          // eslint-disable-line promise/param-names
-          done = res;
-        });
-        queuedRequest = this.requests.run(() => {
-          if (file.isPaused) {
-            queuedRequest.abort();
-          }
-
-          done();
-          return () => {};
-        }); // If the request has been requeued because it was rate limited by the
-        // remote server, we want to wait for `RateLimitedQueue` to dispatch
-        // the re-try request.
-        // Therefore we create a promise that the queue will resolve when
-        // enough time has elapsed to expect not to be rate-limited again.
-        // This means we can hold the Tus retry here with a `Promise.all`,
-        // together with the returned value of the user provided
-        // `onBeforeRequest` option callback (in case it returns a promise).
-
-        return Promise.all([p, userProvidedPromise]);
-      }
-
-      return userProvidedPromise;
-    };
-
-    uploadOptions.onError = err => {
-      var _queuedRequest;
-
-      this.uppy.log(err);
-      const xhr = err.originalRequest ? err.originalRequest.getUnderlyingObject() : null;
-
-      if ((0,_uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_7__["default"])(xhr)) {
-        // eslint-disable-next-line no-param-reassign
-        err = new _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_6__["default"](err, xhr);
-      }
-
-      this.resetUploaderReferences(file.id);
-      (_queuedRequest = queuedRequest) == null ? void 0 : _queuedRequest.abort();
-      this.uppy.emit('upload-error', file, err);
-      reject(err);
-    };
-
-    uploadOptions.onProgress = (bytesUploaded, bytesTotal) => {
-      this.onReceiveUploadUrl(file, upload.url);
-      this.uppy.emit('upload-progress', file, {
-        uploader: this,
-        bytesUploaded,
-        bytesTotal
-      });
-    };
-
-    uploadOptions.onSuccess = () => {
-      const uploadResp = {
-        uploadURL: upload.url
-      };
-      this.resetUploaderReferences(file.id);
-      queuedRequest.done();
-      this.uppy.emit('upload-success', file, uploadResp);
-
-      if (upload.url) {
-        this.uppy.log(`Download ${upload.file.name} from ${upload.url}`);
-      }
-
-      resolve(upload);
-    };
-
-    const defaultOnShouldRetry = err => {
-      var _err$originalResponse;
-
-      const status = err == null ? void 0 : (_err$originalResponse = err.originalResponse) == null ? void 0 : _err$originalResponse.getStatus();
-
-      if (status === 429) {
-        // HTTP 429 Too Many Requests => to avoid the whole download to fail, pause all requests.
-        if (!this.requests.isPaused) {
-          var _classPrivateFieldLoo;
-
-          const next = (_classPrivateFieldLoo = _classPrivateFieldLooseBase(this, _retryDelayIterator)[_retryDelayIterator]) == null ? void 0 : _classPrivateFieldLoo.next();
-
-          if (next == null || next.done) {
-            return false;
-          }
-
-          this.requests.rateLimit(next.value);
-        }
-      } else if (status > 400 && status < 500 && status !== 409) {
-        // HTTP 4xx, the server won't send anything, it's doesn't make sense to retry
-        return false;
-      } else if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        // The navigator is offline, let's wait for it to come back online.
-        if (!this.requests.isPaused) {
-          this.requests.pause();
-          window.addEventListener('online', () => {
-            this.requests.resume();
-          }, {
-            once: true
-          });
-        }
-      }
-
-      queuedRequest.abort();
-      queuedRequest = {
-        shouldBeRequeued: true,
-
-        abort() {
-          this.shouldBeRequeued = false;
-        },
-
-        done() {
-          throw new Error('Cannot mark a queued request as done: this indicates a bug');
-        },
-
-        fn() {
-          throw new Error('Cannot run a queued request: this indicates a bug');
-        }
-
-      };
-      return true;
-    };
-
-    if (opts.onShouldRetry != null) {
-      uploadOptions.onShouldRetry = function () {
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-
-        return opts.onShouldRetry(...args, defaultOnShouldRetry);
-      };
-    } else {
-      uploadOptions.onShouldRetry = defaultOnShouldRetry;
-    }
-
-    const copyProp = (obj, srcProp, destProp) => {
-      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__["default"])(obj, srcProp) && !(0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__["default"])(obj, destProp)) {
-        // eslint-disable-next-line no-param-reassign
-        obj[destProp] = obj[srcProp];
-      }
-    };
-    /** @type {Record<string, string>} */
-
-
-    const meta = {};
-    const allowedMetaFields = Array.isArray(opts.allowedMetaFields) ? opts.allowedMetaFields // Send along all fields by default.
-    : Object.keys(file.meta);
-    allowedMetaFields.forEach(item => {
-      meta[item] = file.meta[item];
-    }); // tusd uses metadata fields 'filetype' and 'filename'
-
-    copyProp(meta, 'type', 'filetype');
-    copyProp(meta, 'name', 'filename');
-    uploadOptions.metadata = meta;
-    upload = new tus_js_client__WEBPACK_IMPORTED_MODULE_1__.Upload(file.data, uploadOptions);
-    this.uploaders[file.id] = upload;
-    this.uploaderEvents[file.id] = new _uppy_utils_lib_EventTracker__WEBPACK_IMPORTED_MODULE_5__["default"](this.uppy); // eslint-disable-next-line prefer-const
-
-    qRequest = () => {
-      if (!file.isPaused) {
-        upload.start();
-      } // Don't do anything here, the caller will take care of cancelling the upload itself
-      // using resetUploaderReferences(). This is because resetUploaderReferences() has to be
-      // called when this request is still in the queue, and has not been started yet, too. At
-      // that point this cancellation function is not going to be called.
-      // Also, we need to remove the request from the queue _without_ destroying everything
-      // related to this upload to handle pauses.
-
-
-      return () => {};
-    };
-
-    upload.findPreviousUploads().then(previousUploads => {
-      const previousUpload = previousUploads[0];
-
-      if (previousUpload) {
-        this.uppy.log(`[Tus] Resuming upload of ${file.id} started at ${previousUpload.creationTime}`);
-        upload.resumeFromPreviousUpload(previousUpload);
-      }
-    });
-    queuedRequest = this.requests.run(qRequest);
-    this.onFileRemove(file.id, targetFileID => {
-      queuedRequest.abort();
-      this.resetUploaderReferences(file.id, {
-        abort: !!upload.url
-      });
-      resolve(`upload ${targetFileID} was removed`);
-    });
-    this.onPause(file.id, isPaused => {
-      queuedRequest.abort();
-
-      if (isPaused) {
-        // Remove this file from the queue so another file can start in its place.
-        upload.abort();
-      } else {
-        // Resuming an upload should be queued, else you could pause and then
-        // resume a queued upload to make it skip the queue.
-        queuedRequest = this.requests.run(qRequest);
-      }
-    });
-    this.onPauseAll(file.id, () => {
-      queuedRequest.abort();
-      upload.abort();
-    });
-    this.onCancelAll(file.id, function (_temp2) {
-      let {
-        reason
-      } = _temp2 === void 0 ? {} : _temp2;
-
-      if (reason === 'user') {
-        queuedRequest.abort();
-
-        _this3.resetUploaderReferences(file.id, {
-          abort: !!upload.url
-        });
-      }
-
-      resolve(`upload ${file.id} was canceled`);
-    });
-    this.onResumeAll(file.id, () => {
-      queuedRequest.abort();
-
-      if (file.error) {
-        upload.abort();
-      }
-
-      queuedRequest = this.requests.run(qRequest);
-    });
-  }).catch(err => {
-    this.uppy.emit('upload-error', file, err);
-    throw err;
-  });
-}
-
-async function _uploadRemote2(file) {
-  this.resetUploaderReferences(file.id);
-
-  try {
-    if (file.serverToken) {
-      return await this.connectToServerSocket(file);
-    }
-
-    const serverToken = await _classPrivateFieldLooseBase(this, _queueRequestSocketToken)[_queueRequestSocketToken](file);
-    if (!this.uppy.getState().files[file.id]) return undefined;
-    this.uppy.setFileState(file.id, {
-      serverToken
-    });
-    return await this.connectToServerSocket(this.uppy.getFile(file.id));
-  } catch (err) {
-    this.uppy.setFileState(file.id, {
-      serverToken: undefined
-    });
-    this.uppy.emit('upload-error', file, err);
-    throw err;
-  }
-}
-
-async function _uploadFiles2(files) {
-  const filesFiltered = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_10__.filterNonFailedFiles)(files);
-  const filesToEmit = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_10__.filterFilesToEmitUploadStarted)(filesFiltered);
-  this.uppy.emit('upload-start', filesToEmit);
-  await Promise.allSettled(filesFiltered.map((file, i) => {
-    const current = i + 1;
-    const total = files.length;
-
-    if (file.isRemote) {
-      return _classPrivateFieldLooseBase(this, _uploadRemote)[_uploadRemote](file, current, total);
-    }
-
-    return _classPrivateFieldLooseBase(this, _upload)[_upload](file, current, total);
-  }));
-}
-
-Tus.VERSION = packageJson.version;
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/ErrorWithCause.js":
-/*!********************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/ErrorWithCause.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _hasProperty_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hasProperty.js */ "./node_modules/@uppy/utils/lib/hasProperty.js");
-
-
-class ErrorWithCause extends Error {
-  constructor(message, options) {
-    if (options === void 0) {
-      options = {};
-    }
-
-    super(message);
-    this.cause = options.cause;
-
-    if (this.cause && (0,_hasProperty_js__WEBPACK_IMPORTED_MODULE_0__["default"])(this.cause, 'isNetworkError')) {
-      this.isNetworkError = this.cause.isNetworkError;
-    }
-  }
-
-}
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ErrorWithCause);
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/EventTracker.js":
-/*!******************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/EventTracker.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ EventTracker)
-/* harmony export */ });
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
-var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-var _emitter = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
-
-var _events = /*#__PURE__*/_classPrivateFieldLooseKey("events");
-
-/**
- * Create a wrapper around an event emitter with a `remove` method to remove
- * all events that were added using the wrapped emitter.
- */
-class EventTracker {
-  constructor(emitter) {
-    Object.defineProperty(this, _emitter, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _events, {
-      writable: true,
-      value: []
-    });
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter] = emitter;
-  }
-
-  on(event, fn) {
-    _classPrivateFieldLooseBase(this, _events)[_events].push([event, fn]);
-
-    return _classPrivateFieldLooseBase(this, _emitter)[_emitter].on(event, fn);
-  }
-
-  remove() {
-    for (const [event, fn] of _classPrivateFieldLooseBase(this, _events)[_events].splice(0)) {
-      _classPrivateFieldLooseBase(this, _emitter)[_emitter].off(event, fn);
-    }
-  }
-
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/NetworkError.js":
-/*!******************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/NetworkError.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-class NetworkError extends Error {
-  constructor(error, xhr) {
-    if (xhr === void 0) {
-      xhr = null;
-    }
-
-    super(`This looks like a network error, the endpoint might be blocked by an internet provider or a firewall.`);
-    this.cause = error;
-    this.isNetworkError = true;
-    this.request = xhr;
-  }
-
-}
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (NetworkError);
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/RateLimitedQueue.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/RateLimitedQueue.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   RateLimitedQueue: () => (/* binding */ RateLimitedQueue),
-/* harmony export */   internalRateLimitedQueue: () => (/* binding */ internalRateLimitedQueue)
-/* harmony export */ });
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
-var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-function createCancelError(cause) {
-  return new Error('Cancelled', {
-    cause
-  });
-}
-
-function abortOn(signal) {
-  if (signal != null) {
-    const abortPromise = () => this.abort(signal.reason);
-
-    signal.addEventListener('abort', abortPromise, {
-      once: true
-    });
-
-    const removeAbortListener = () => {
-      signal.removeEventListener('abort', abortPromise);
-    };
-
-    this.then(removeAbortListener, removeAbortListener);
-  }
-
-  return this;
-}
-
-var _activeRequests = /*#__PURE__*/_classPrivateFieldLooseKey("activeRequests");
-
-var _queuedHandlers = /*#__PURE__*/_classPrivateFieldLooseKey("queuedHandlers");
-
-var _paused = /*#__PURE__*/_classPrivateFieldLooseKey("paused");
-
-var _pauseTimer = /*#__PURE__*/_classPrivateFieldLooseKey("pauseTimer");
-
-var _downLimit = /*#__PURE__*/_classPrivateFieldLooseKey("downLimit");
-
-var _upperLimit = /*#__PURE__*/_classPrivateFieldLooseKey("upperLimit");
-
-var _rateLimitingTimer = /*#__PURE__*/_classPrivateFieldLooseKey("rateLimitingTimer");
-
-var _call = /*#__PURE__*/_classPrivateFieldLooseKey("call");
-
-var _queueNext = /*#__PURE__*/_classPrivateFieldLooseKey("queueNext");
-
-var _next = /*#__PURE__*/_classPrivateFieldLooseKey("next");
-
-var _queue = /*#__PURE__*/_classPrivateFieldLooseKey("queue");
-
-var _dequeue = /*#__PURE__*/_classPrivateFieldLooseKey("dequeue");
-
-var _resume = /*#__PURE__*/_classPrivateFieldLooseKey("resume");
-
-var _increaseLimit = /*#__PURE__*/_classPrivateFieldLooseKey("increaseLimit");
-
-class RateLimitedQueue {
-  constructor(limit) {
-    Object.defineProperty(this, _dequeue, {
-      value: _dequeue2
-    });
-    Object.defineProperty(this, _queue, {
-      value: _queue2
-    });
-    Object.defineProperty(this, _next, {
-      value: _next2
-    });
-    Object.defineProperty(this, _queueNext, {
-      value: _queueNext2
-    });
-    Object.defineProperty(this, _call, {
-      value: _call2
-    });
-    Object.defineProperty(this, _activeRequests, {
-      writable: true,
-      value: 0
-    });
-    Object.defineProperty(this, _queuedHandlers, {
-      writable: true,
-      value: []
-    });
-    Object.defineProperty(this, _paused, {
-      writable: true,
-      value: false
-    });
-    Object.defineProperty(this, _pauseTimer, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _downLimit, {
-      writable: true,
-      value: 1
-    });
-    Object.defineProperty(this, _upperLimit, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _rateLimitingTimer, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _resume, {
-      writable: true,
-      value: () => this.resume()
-    });
-    Object.defineProperty(this, _increaseLimit, {
-      writable: true,
-      value: () => {
-        if (_classPrivateFieldLooseBase(this, _paused)[_paused]) {
-          _classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase(this, _increaseLimit)[_increaseLimit], 0);
-          return;
-        }
-
-        _classPrivateFieldLooseBase(this, _downLimit)[_downLimit] = this.limit;
-        this.limit = Math.ceil((_classPrivateFieldLooseBase(this, _upperLimit)[_upperLimit] + _classPrivateFieldLooseBase(this, _downLimit)[_downLimit]) / 2);
-
-        for (let i = _classPrivateFieldLooseBase(this, _downLimit)[_downLimit]; i <= this.limit; i++) {
-          _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
-        }
-
-        if (_classPrivateFieldLooseBase(this, _upperLimit)[_upperLimit] - _classPrivateFieldLooseBase(this, _downLimit)[_downLimit] > 3) {
-          _classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase(this, _increaseLimit)[_increaseLimit], 2000);
-        } else {
-          _classPrivateFieldLooseBase(this, _downLimit)[_downLimit] = Math.floor(_classPrivateFieldLooseBase(this, _downLimit)[_downLimit] / 2);
-        }
-      }
-    });
-
-    if (typeof limit !== 'number' || limit === 0) {
-      this.limit = Infinity;
-    } else {
-      this.limit = limit;
-    }
-  }
-
-  run(fn, queueOptions) {
-    if (!_classPrivateFieldLooseBase(this, _paused)[_paused] && _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] < this.limit) {
-      return _classPrivateFieldLooseBase(this, _call)[_call](fn);
-    }
-
-    return _classPrivateFieldLooseBase(this, _queue)[_queue](fn, queueOptions);
-  }
-
-  wrapPromiseFunction(fn, queueOptions) {
-    var _this = this;
-
-    return function () {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      let queuedRequest;
-      const outerPromise = new Promise((resolve, reject) => {
-        queuedRequest = _this.run(() => {
-          let cancelError;
-          let innerPromise;
-
-          try {
-            innerPromise = Promise.resolve(fn(...args));
-          } catch (err) {
-            innerPromise = Promise.reject(err);
-          }
-
-          innerPromise.then(result => {
-            if (cancelError) {
-              reject(cancelError);
-            } else {
-              queuedRequest.done();
-              resolve(result);
-            }
-          }, err => {
-            if (cancelError) {
-              reject(cancelError);
-            } else {
-              queuedRequest.done();
-              reject(err);
-            }
-          });
-          return cause => {
-            cancelError = createCancelError(cause);
-          };
-        }, queueOptions);
-      });
-
-      outerPromise.abort = cause => {
-        queuedRequest.abort(cause);
-      };
-
-      outerPromise.abortOn = abortOn;
-      return outerPromise;
-    };
-  }
-
-  resume() {
-    _classPrivateFieldLooseBase(this, _paused)[_paused] = false;
-    clearTimeout(_classPrivateFieldLooseBase(this, _pauseTimer)[_pauseTimer]);
-
-    for (let i = 0; i < this.limit; i++) {
-      _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
-    }
-  }
-
-  /**
-   * Freezes the queue for a while or indefinitely.
-   *
-   * @param {number | null } [duration] Duration for the pause to happen, in milliseconds.
-   *                                    If omitted, the queue won't resume automatically.
-   */
-  pause(duration) {
-    if (duration === void 0) {
-      duration = null;
-    }
-
-    _classPrivateFieldLooseBase(this, _paused)[_paused] = true;
-    clearTimeout(_classPrivateFieldLooseBase(this, _pauseTimer)[_pauseTimer]);
-
-    if (duration != null) {
-      _classPrivateFieldLooseBase(this, _pauseTimer)[_pauseTimer] = setTimeout(_classPrivateFieldLooseBase(this, _resume)[_resume], duration);
-    }
-  }
-  /**
-   * Pauses the queue for a duration, and lower the limit of concurrent requests
-   * when the queue resumes. When the queue resumes, it tries to progressively
-   * increase the limit in `this.#increaseLimit` until another call is made to
-   * `this.rateLimit`.
-   * Call this function when using the RateLimitedQueue for network requests and
-   * the remote server responds with 429 HTTP code.
-   *
-   * @param {number} duration in milliseconds.
-   */
-
-
-  rateLimit(duration) {
-    clearTimeout(_classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer]);
-    this.pause(duration);
-
-    if (this.limit > 1 && Number.isFinite(this.limit)) {
-      _classPrivateFieldLooseBase(this, _upperLimit)[_upperLimit] = this.limit - 1;
-      this.limit = _classPrivateFieldLooseBase(this, _downLimit)[_downLimit];
-      _classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase(this, _increaseLimit)[_increaseLimit], duration);
-    }
-  }
-
-  get isPaused() {
-    return _classPrivateFieldLooseBase(this, _paused)[_paused];
-  }
-
-}
-
-function _call2(fn) {
-  _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] += 1;
-  let done = false;
-  let cancelActive;
-
-  try {
-    cancelActive = fn();
-  } catch (err) {
-    _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] -= 1;
-    throw err;
-  }
-
-  return {
-    abort: cause => {
-      if (done) return;
-      done = true;
-      _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] -= 1;
-      cancelActive(cause);
-
-      _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
-    },
-    done: () => {
-      if (done) return;
-      done = true;
-      _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] -= 1;
-
-      _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
-    }
-  };
-}
-
-function _queueNext2() {
-  // Do it soon but not immediately, this allows clearing out the entire queue synchronously
-  // one by one without continuously _advancing_ it (and starting new tasks before immediately
-  // aborting them)
-  queueMicrotask(() => _classPrivateFieldLooseBase(this, _next)[_next]());
-}
-
-function _next2() {
-  if (_classPrivateFieldLooseBase(this, _paused)[_paused] || _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] >= this.limit) {
-    return;
-  }
-
-  if (_classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].length === 0) {
-    return;
-  } // Dispatch the next request, and update the abort/done handlers
-  // so that cancelling it does the Right Thing (and doesn't just try
-  // to dequeue an already-running request).
-
-
-  const next = _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].shift();
-
-  const handler = _classPrivateFieldLooseBase(this, _call)[_call](next.fn);
-
-  next.abort = handler.abort;
-  next.done = handler.done;
-}
-
-function _queue2(fn, options) {
-  if (options === void 0) {
-    options = {};
-  }
-
-  const handler = {
-    fn,
-    priority: options.priority || 0,
-    abort: () => {
-      _classPrivateFieldLooseBase(this, _dequeue)[_dequeue](handler);
-    },
-    done: () => {
-      throw new Error('Cannot mark a queued request as done: this indicates a bug');
-    }
-  };
-
-  const index = _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].findIndex(other => {
-    return handler.priority > other.priority;
-  });
-
-  if (index === -1) {
-    _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].push(handler);
-  } else {
-    _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].splice(index, 0, handler);
-  }
-
-  return handler;
-}
-
-function _dequeue2(handler) {
-  const index = _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].indexOf(handler);
-
-  if (index !== -1) {
-    _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].splice(index, 1);
-  }
-}
-
-const internalRateLimitedQueue = Symbol('__queue');
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/Translator.js":
-/*!****************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/Translator.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Translator)
-/* harmony export */ });
-/* harmony import */ var _hasProperty_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hasProperty.js */ "./node_modules/@uppy/utils/lib/hasProperty.js");
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
-var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-
-
-function insertReplacement(source, rx, replacement) {
-  const newParts = [];
-  source.forEach(chunk => {
-    // When the source contains multiple placeholders for interpolation,
-    // we should ignore chunks that are not strings, because those
-    // can be JSX objects and will be otherwise incorrectly turned into strings.
-    // Without this condition we’d get this: [object Object] hello [object Object] my <button>
-    if (typeof chunk !== 'string') {
-      return newParts.push(chunk);
-    }
-
-    return rx[Symbol.split](chunk).forEach((raw, i, list) => {
-      if (raw !== '') {
-        newParts.push(raw);
-      } // Interlace with the `replacement` value
-
-
-      if (i < list.length - 1) {
-        newParts.push(replacement);
-      }
-    });
-  });
-  return newParts;
-}
-/**
- * Takes a string with placeholder variables like `%{smart_count} file selected`
- * and replaces it with values from options `{smart_count: 5}`
- *
- * @license https://github.com/airbnb/polyglot.js/blob/master/LICENSE
- * taken from https://github.com/airbnb/polyglot.js/blob/master/lib/polyglot.js#L299
- *
- * @param {string} phrase that needs interpolation, with placeholders
- * @param {object} options with values that will be used to replace placeholders
- * @returns {any[]} interpolated
- */
-
-
-function interpolate(phrase, options) {
-  const dollarRegex = /\$/g;
-  const dollarBillsYall = '$$$$';
-  let interpolated = [phrase];
-  if (options == null) return interpolated;
-
-  for (const arg of Object.keys(options)) {
-    if (arg !== '_') {
-      // Ensure replacement value is escaped to prevent special $-prefixed
-      // regex replace tokens. the "$$$$" is needed because each "$" needs to
-      // be escaped with "$" itself, and we need two in the resulting output.
-      let replacement = options[arg];
-
-      if (typeof replacement === 'string') {
-        replacement = dollarRegex[Symbol.replace](replacement, dollarBillsYall);
-      } // We create a new `RegExp` each time instead of using a more-efficient
-      // string replace so that the same argument can be replaced multiple times
-      // in the same phrase.
-
-
-      interpolated = insertReplacement(interpolated, new RegExp(`%\\{${arg}\\}`, 'g'), replacement);
-    }
-  }
-
-  return interpolated;
-}
-/**
- * Translates strings with interpolation & pluralization support.
- * Extensible with custom dictionaries and pluralization functions.
- *
- * Borrows heavily from and inspired by Polyglot https://github.com/airbnb/polyglot.js,
- * basically a stripped-down version of it. Differences: pluralization functions are not hardcoded
- * and can be easily added among with dictionaries, nested objects are used for pluralization
- * as opposed to `||||` delimeter
- *
- * Usage example: `translator.translate('files_chosen', {smart_count: 3})`
- */
-
-
-var _apply = /*#__PURE__*/_classPrivateFieldLooseKey("apply");
-
-class Translator {
-  /**
-   * @param {object|Array<object>} locales - locale or list of locales.
-   */
-  constructor(locales) {
-    Object.defineProperty(this, _apply, {
-      value: _apply2
-    });
-    this.locale = {
-      strings: {},
-
-      pluralize(n) {
-        if (n === 1) {
-          return 0;
-        }
-
-        return 1;
-      }
-
-    };
-
-    if (Array.isArray(locales)) {
-      locales.forEach(_classPrivateFieldLooseBase(this, _apply)[_apply], this);
-    } else {
-      _classPrivateFieldLooseBase(this, _apply)[_apply](locales);
-    }
-  }
-
-  /**
-   * Public translate method
-   *
-   * @param {string} key
-   * @param {object} options with values that will be used later to replace placeholders in string
-   * @returns {string} translated (and interpolated)
-   */
-  translate(key, options) {
-    return this.translateArray(key, options).join('');
-  }
-  /**
-   * Get a translation and return the translated and interpolated parts as an array.
-   *
-   * @param {string} key
-   * @param {object} options with values that will be used to replace placeholders
-   * @returns {Array} The translated and interpolated parts, in order.
-   */
-
-
-  translateArray(key, options) {
-    if (!(0,_hasProperty_js__WEBPACK_IMPORTED_MODULE_0__["default"])(this.locale.strings, key)) {
-      throw new Error(`missing string: ${key}`);
-    }
-
-    const string = this.locale.strings[key];
-    const hasPluralForms = typeof string === 'object';
-
-    if (hasPluralForms) {
-      if (options && typeof options.smart_count !== 'undefined') {
-        const plural = this.locale.pluralize(options.smart_count);
-        return interpolate(string[plural], options);
-      }
-
-      throw new Error('Attempted to use a string with plural forms, but no value was given for %{smart_count}');
-    }
-
-    return interpolate(string, options);
-  }
-
-}
-
-function _apply2(locale) {
-  if (!(locale != null && locale.strings)) {
-    return;
-  }
-
-  const prevLocale = this.locale;
-  this.locale = { ...prevLocale,
-    strings: { ...prevLocale.strings,
-      ...locale.strings
-    }
-  };
-  this.locale.pluralize = locale.pluralize || prevLocale.pluralize;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/emitSocketProgress.js":
-/*!************************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/emitSocketProgress.js ***!
-  \************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var lodash_throttle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash.throttle */ "./node_modules/lodash.throttle/index.js");
-
-
-function emitSocketProgress(uploader, progressData, file) {
-  const {
-    progress,
-    bytesUploaded,
-    bytesTotal
-  } = progressData;
-
-  if (progress) {
-    uploader.uppy.log(`Upload progress: ${progress}`);
-    uploader.uppy.emit('upload-progress', file, {
-      uploader,
-      bytesUploaded,
-      bytesTotal
-    });
-  }
-}
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (lodash_throttle__WEBPACK_IMPORTED_MODULE_0__(emitSocketProgress, 300, {
-  leading: true,
-  trailing: true
-}));
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/fetchWithNetworkError.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/fetchWithNetworkError.js ***!
-  \***************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ fetchWithNetworkError)
-/* harmony export */ });
-/* harmony import */ var _NetworkError_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NetworkError.js */ "./node_modules/@uppy/utils/lib/NetworkError.js");
-
-/**
- * Wrapper around window.fetch that throws a NetworkError when appropriate
- */
-
-function fetchWithNetworkError() {
-  return fetch(...arguments).catch(err => {
-    if (err.name === 'AbortError') {
-      throw err;
-    } else {
-      throw new _NetworkError_js__WEBPACK_IMPORTED_MODULE_0__["default"](err);
-    }
-  });
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/fileFilters.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/fileFilters.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   filterFilesToEmitUploadStarted: () => (/* binding */ filterFilesToEmitUploadStarted),
-/* harmony export */   filterNonFailedFiles: () => (/* binding */ filterNonFailedFiles)
-/* harmony export */ });
-function filterNonFailedFiles(files) {
-  const hasError = file => 'error' in file && file.error;
-
-  return files.filter(file => !hasError(file));
-} // Don't double-emit upload-started for Golden Retriever-restored files that were already started
-
-function filterFilesToEmitUploadStarted(files) {
-  return files.filter(file => !file.progress.uploadStarted || !file.isRestored);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/findDOMElement.js":
-/*!********************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/findDOMElement.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ findDOMElement)
-/* harmony export */ });
-/* harmony import */ var _isDOMElement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isDOMElement.js */ "./node_modules/@uppy/utils/lib/isDOMElement.js");
-
-/**
- * Find a DOM element.
- *
- * @param {Node|string} element
- * @returns {Node|null}
- */
-
-function findDOMElement(element, context) {
-  if (context === void 0) {
-    context = document;
-  }
-
-  if (typeof element === 'string') {
-    return context.querySelector(element);
-  }
-
-  if ((0,_isDOMElement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element)) {
-    return element;
-  }
-
-  return null;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/generateFileID.js":
-/*!********************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/generateFileID.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ generateFileID),
-/* harmony export */   getSafeFileId: () => (/* binding */ getSafeFileId)
-/* harmony export */ });
-/* harmony import */ var _getFileType_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileType.js */ "./node_modules/@uppy/utils/lib/getFileType.js");
-
-
-function encodeCharacter(character) {
-  return character.charCodeAt(0).toString(32);
-}
-
-function encodeFilename(name) {
-  let suffix = '';
-  return name.replace(/[^A-Z0-9]/ig, character => {
-    suffix += `-${encodeCharacter(character)}`;
-    return '/';
-  }) + suffix;
-}
-/**
- * Takes a file object and turns it into fileID, by converting file.name to lowercase,
- * removing extra characters and adding type, size and lastModified
- *
- * @param {object} file
- * @returns {string} the fileID
- */
-
-
-function generateFileID(file) {
-  // It's tempting to do `[items].filter(Boolean).join('-')` here, but that
-  // is slower! simple string concatenation is fast
-  let id = 'uppy';
-
-  if (typeof file.name === 'string') {
-    id += `-${encodeFilename(file.name.toLowerCase())}`;
-  }
-
-  if (file.type !== undefined) {
-    id += `-${file.type}`;
-  }
-
-  if (file.meta && typeof file.meta.relativePath === 'string') {
-    id += `-${encodeFilename(file.meta.relativePath.toLowerCase())}`;
-  }
-
-  if (file.data.size !== undefined) {
-    id += `-${file.data.size}`;
-  }
-
-  if (file.data.lastModified !== undefined) {
-    id += `-${file.data.lastModified}`;
-  }
-
-  return id;
-} // If the provider has a stable, unique ID, then we can use that to identify the file.
-// Then we don't have to generate our own ID, and we can add the same file many times if needed (different path)
-
-function hasFileStableId(file) {
-  if (!file.isRemote || !file.remote) return false; // These are the providers that it seems like have stable IDs for their files. The other's I haven't checked yet.
-
-  const stableIdProviders = new Set(['box', 'dropbox', 'drive', 'facebook', 'unsplash']);
-  return stableIdProviders.has(file.remote.provider);
-}
-
-function getSafeFileId(file) {
-  if (hasFileStableId(file)) return file.id;
-  const fileType = (0,_getFileType_js__WEBPACK_IMPORTED_MODULE_0__["default"])(file);
-  return generateFileID({ ...file,
-    type: fileType
-  });
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/getFileNameAndExtension.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/getFileNameAndExtension.js ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getFileNameAndExtension)
-/* harmony export */ });
-/**
- * Takes a full filename string and returns an object {name, extension}
- *
- * @param {string} fullFileName
- * @returns {object} {name, extension}
- */
-function getFileNameAndExtension(fullFileName) {
-  const lastDot = fullFileName.lastIndexOf('.'); // these count as no extension: "no-dot", "trailing-dot."
-
-  if (lastDot === -1 || lastDot === fullFileName.length - 1) {
-    return {
-      name: fullFileName,
-      extension: undefined
-    };
-  }
-
-  return {
-    name: fullFileName.slice(0, lastDot),
-    extension: fullFileName.slice(lastDot + 1)
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/getFileType.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/getFileType.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getFileType)
-/* harmony export */ });
-/* harmony import */ var _getFileNameAndExtension_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileNameAndExtension.js */ "./node_modules/@uppy/utils/lib/getFileNameAndExtension.js");
-/* harmony import */ var _mimeTypes_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mimeTypes.js */ "./node_modules/@uppy/utils/lib/mimeTypes.js");
-
-
-function getFileType(file) {
-  var _getFileNameAndExtens;
-
-  if (file.type) return file.type;
-  const fileExtension = file.name ? (_getFileNameAndExtens = (0,_getFileNameAndExtension_js__WEBPACK_IMPORTED_MODULE_0__["default"])(file.name).extension) == null ? void 0 : _getFileNameAndExtens.toLowerCase() : null;
-
-  if (fileExtension && fileExtension in _mimeTypes_js__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-    // else, see if we can map extension to a mime type
-    return _mimeTypes_js__WEBPACK_IMPORTED_MODULE_1__["default"][fileExtension];
-  } // if all fails, fall back to a generic byte stream type
-
-
-  return 'application/octet-stream';
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/getSocketHost.js":
-/*!*******************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/getSocketHost.js ***!
-  \*******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getSocketHost)
-/* harmony export */ });
-function getSocketHost(url) {
-  // get the host domain
-  const regex = /^(?:https?:\/\/|\/\/)?(?:[^@\n]+@)?(?:www\.)?([^\n]+)/i;
-  const host = regex.exec(url)[1];
-  const socketProtocol = /^http:\/\//i.test(url) ? 'ws' : 'wss';
-  return `${socketProtocol}://${host}`;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/getTextDirection.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/getTextDirection.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/**
- * Get the declared text direction for an element.
- *
- * @param {Node} element
- * @returns {string|undefined}
- */
-function getTextDirection(element) {
-  var _element;
-
-  // There is another way to determine text direction using getComputedStyle(), as done here:
-  // https://github.com/pencil-js/text-direction/blob/2a235ce95089b3185acec3b51313cbba921b3811/text-direction.js
-  //
-  // We do not use that approach because we are interested specifically in the _declared_ text direction.
-  // If no text direction is declared, we have to provide our own explicit text direction so our
-  // bidirectional CSS style sheets work.
-  while (element && !element.dir) {
-    // eslint-disable-next-line no-param-reassign
-    element = element.parentNode;
-  }
-
-  return (_element = element) == null ? void 0 : _element.dir;
-}
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getTextDirection);
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/getTimeStamp.js":
-/*!******************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/getTimeStamp.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getTimeStamp)
-/* harmony export */ });
-/**
- * Adds zero to strings shorter than two characters.
- *
- * @param {number} number
- * @returns {string}
- */
-function pad(number) {
-  return number < 10 ? `0${number}` : number.toString();
-}
-/**
- * Returns a timestamp in the format of `hours:minutes:seconds`
- */
-
-
-function getTimeStamp() {
-  const date = new Date();
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-  return `${hours}:${minutes}:${seconds}`;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/hasProperty.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/hasProperty.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ has)
-/* harmony export */ });
-function has(object, key) {
-  return Object.prototype.hasOwnProperty.call(object, key);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/isDOMElement.js":
-/*!******************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/isDOMElement.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ isDOMElement)
-/* harmony export */ });
-/**
- * Check if an object is a DOM element. Duck-typing based on `nodeType`.
- *
- * @param {*} obj
- */
-function isDOMElement(obj) {
-  return (obj == null ? void 0 : obj.nodeType) === Node.ELEMENT_NODE;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/isNetworkError.js":
-/*!********************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/isNetworkError.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-function isNetworkError(xhr) {
-  if (!xhr) {
-    return false;
-  }
-
-  return xhr.readyState !== 0 && xhr.readyState !== 4 || xhr.status === 0;
-}
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (isNetworkError);
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/mimeTypes.js":
-/*!***************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/mimeTypes.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-// ___Why not add the mime-types package?
-//    It's 19.7kB gzipped, and we only need mime types for well-known extensions (for file previews).
-// ___Where to take new extensions from?
-//    https://github.com/jshttp/mime-db/blob/master/db.json
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  md: 'text/markdown',
-  markdown: 'text/markdown',
-  mp4: 'video/mp4',
-  mp3: 'audio/mp3',
-  svg: 'image/svg+xml',
-  jpg: 'image/jpeg',
-  png: 'image/png',
-  webp: 'image/webp',
-  gif: 'image/gif',
-  heic: 'image/heic',
-  heif: 'image/heif',
-  yaml: 'text/yaml',
-  yml: 'text/yaml',
-  csv: 'text/csv',
-  tsv: 'text/tab-separated-values',
-  tab: 'text/tab-separated-values',
-  avi: 'video/x-msvideo',
-  mks: 'video/x-matroska',
-  mkv: 'video/x-matroska',
-  mov: 'video/quicktime',
-  dicom: 'application/dicom',
-  doc: 'application/msword',
-  docm: 'application/vnd.ms-word.document.macroenabled.12',
-  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  dot: 'application/msword',
-  dotm: 'application/vnd.ms-word.template.macroenabled.12',
-  dotx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
-  xla: 'application/vnd.ms-excel',
-  xlam: 'application/vnd.ms-excel.addin.macroenabled.12',
-  xlc: 'application/vnd.ms-excel',
-  xlf: 'application/x-xliff+xml',
-  xlm: 'application/vnd.ms-excel',
-  xls: 'application/vnd.ms-excel',
-  xlsb: 'application/vnd.ms-excel.sheet.binary.macroenabled.12',
-  xlsm: 'application/vnd.ms-excel.sheet.macroenabled.12',
-  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  xlt: 'application/vnd.ms-excel',
-  xltm: 'application/vnd.ms-excel.template.macroenabled.12',
-  xltx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
-  xlw: 'application/vnd.ms-excel',
-  txt: 'text/plain',
-  text: 'text/plain',
-  conf: 'text/plain',
-  log: 'text/plain',
-  pdf: 'application/pdf',
-  zip: 'application/zip',
-  '7z': 'application/x-7z-compressed',
-  rar: 'application/x-rar-compressed',
-  tar: 'application/x-tar',
-  gz: 'application/gzip',
-  dmg: 'application/x-apple-diskimage'
-});
-
-/***/ }),
-
-/***/ "./node_modules/js-base64/base64.mjs":
-/*!*******************************************!*\
-  !*** ./node_modules/js-base64/base64.mjs ***!
-  \*******************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Base64: () => (/* binding */ gBase64),
-/* harmony export */   VERSION: () => (/* binding */ VERSION),
-/* harmony export */   atob: () => (/* binding */ _atob),
-/* harmony export */   atobPolyfill: () => (/* binding */ atobPolyfill),
-/* harmony export */   btoa: () => (/* binding */ _btoa),
-/* harmony export */   btoaPolyfill: () => (/* binding */ btoaPolyfill),
-/* harmony export */   btou: () => (/* binding */ btou),
-/* harmony export */   decode: () => (/* binding */ decode),
-/* harmony export */   encode: () => (/* binding */ encode),
-/* harmony export */   encodeURI: () => (/* binding */ encodeURI),
-/* harmony export */   encodeURL: () => (/* binding */ encodeURI),
-/* harmony export */   extendBuiltins: () => (/* binding */ extendBuiltins),
-/* harmony export */   extendString: () => (/* binding */ extendString),
-/* harmony export */   extendUint8Array: () => (/* binding */ extendUint8Array),
-/* harmony export */   fromBase64: () => (/* binding */ decode),
-/* harmony export */   fromUint8Array: () => (/* binding */ fromUint8Array),
-/* harmony export */   isValid: () => (/* binding */ isValid),
-/* harmony export */   toBase64: () => (/* binding */ encode),
-/* harmony export */   toUint8Array: () => (/* binding */ toUint8Array),
-/* harmony export */   utob: () => (/* binding */ utob),
-/* harmony export */   version: () => (/* binding */ version)
-/* harmony export */ });
-/**
- *  base64.ts
- *
- *  Licensed under the BSD 3-Clause License.
- *    http://opensource.org/licenses/BSD-3-Clause
- *
- *  References:
- *    http://en.wikipedia.org/wiki/Base64
- *
- * @author Dan Kogai (https://github.com/dankogai)
- */
-const version = '3.7.5';
-/**
- * @deprecated use lowercase `version`.
- */
-const VERSION = version;
-const _hasatob = typeof atob === 'function';
-const _hasbtoa = typeof btoa === 'function';
-const _hasBuffer = typeof Buffer === 'function';
-const _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
-const _TE = typeof TextEncoder === 'function' ? new TextEncoder() : undefined;
-const b64ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-const b64chs = Array.prototype.slice.call(b64ch);
-const b64tab = ((a) => {
-    let tab = {};
-    a.forEach((c, i) => tab[c] = i);
-    return tab;
-})(b64chs);
-const b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
-const _fromCC = String.fromCharCode.bind(String);
-const _U8Afrom = typeof Uint8Array.from === 'function'
-    ? Uint8Array.from.bind(Uint8Array)
-    : (it) => new Uint8Array(Array.prototype.slice.call(it, 0));
-const _mkUriSafe = (src) => src
-    .replace(/=/g, '').replace(/[+\/]/g, (m0) => m0 == '+' ? '-' : '_');
-const _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, '');
-/**
- * polyfill version of `btoa`
- */
-const btoaPolyfill = (bin) => {
-    // console.log('polyfilled');
-    let u32, c0, c1, c2, asc = '';
-    const pad = bin.length % 3;
-    for (let i = 0; i < bin.length;) {
-        if ((c0 = bin.charCodeAt(i++)) > 255 ||
-            (c1 = bin.charCodeAt(i++)) > 255 ||
-            (c2 = bin.charCodeAt(i++)) > 255)
-            throw new TypeError('invalid character found');
-        u32 = (c0 << 16) | (c1 << 8) | c2;
-        asc += b64chs[u32 >> 18 & 63]
-            + b64chs[u32 >> 12 & 63]
-            + b64chs[u32 >> 6 & 63]
-            + b64chs[u32 & 63];
-    }
-    return pad ? asc.slice(0, pad - 3) + "===".substring(pad) : asc;
-};
-/**
- * does what `window.btoa` of web browsers do.
- * @param {String} bin binary string
- * @returns {string} Base64-encoded string
- */
-const _btoa = _hasbtoa ? (bin) => btoa(bin)
-    : _hasBuffer ? (bin) => Buffer.from(bin, 'binary').toString('base64')
-        : btoaPolyfill;
-const _fromUint8Array = _hasBuffer
-    ? (u8a) => Buffer.from(u8a).toString('base64')
-    : (u8a) => {
-        // cf. https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string/12713326#12713326
-        const maxargs = 0x1000;
-        let strs = [];
-        for (let i = 0, l = u8a.length; i < l; i += maxargs) {
-            strs.push(_fromCC.apply(null, u8a.subarray(i, i + maxargs)));
-        }
-        return _btoa(strs.join(''));
-    };
-/**
- * converts a Uint8Array to a Base64 string.
- * @param {boolean} [urlsafe] URL-and-filename-safe a la RFC4648 §5
- * @returns {string} Base64 string
- */
-const fromUint8Array = (u8a, urlsafe = false) => urlsafe ? _mkUriSafe(_fromUint8Array(u8a)) : _fromUint8Array(u8a);
-// This trick is found broken https://github.com/dankogai/js-base64/issues/130
-// const utob = (src: string) => unescape(encodeURIComponent(src));
-// reverting good old fationed regexp
-const cb_utob = (c) => {
-    if (c.length < 2) {
-        var cc = c.charCodeAt(0);
-        return cc < 0x80 ? c
-            : cc < 0x800 ? (_fromCC(0xc0 | (cc >>> 6))
-                + _fromCC(0x80 | (cc & 0x3f)))
-                : (_fromCC(0xe0 | ((cc >>> 12) & 0x0f))
-                    + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
-                    + _fromCC(0x80 | (cc & 0x3f)));
-    }
-    else {
-        var cc = 0x10000
-            + (c.charCodeAt(0) - 0xD800) * 0x400
-            + (c.charCodeAt(1) - 0xDC00);
-        return (_fromCC(0xf0 | ((cc >>> 18) & 0x07))
-            + _fromCC(0x80 | ((cc >>> 12) & 0x3f))
-            + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
-            + _fromCC(0x80 | (cc & 0x3f)));
-    }
-};
-const re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
-/**
- * @deprecated should have been internal use only.
- * @param {string} src UTF-8 string
- * @returns {string} UTF-16 string
- */
-const utob = (u) => u.replace(re_utob, cb_utob);
-//
-const _encode = _hasBuffer
-    ? (s) => Buffer.from(s, 'utf8').toString('base64')
-    : _TE
-        ? (s) => _fromUint8Array(_TE.encode(s))
-        : (s) => _btoa(utob(s));
-/**
- * converts a UTF-8-encoded string to a Base64 string.
- * @param {boolean} [urlsafe] if `true` make the result URL-safe
- * @returns {string} Base64 string
- */
-const encode = (src, urlsafe = false) => urlsafe
-    ? _mkUriSafe(_encode(src))
-    : _encode(src);
-/**
- * converts a UTF-8-encoded string to URL-safe Base64 RFC4648 §5.
- * @returns {string} Base64 string
- */
-const encodeURI = (src) => encode(src, true);
-// This trick is found broken https://github.com/dankogai/js-base64/issues/130
-// const btou = (src: string) => decodeURIComponent(escape(src));
-// reverting good old fationed regexp
-const re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
-const cb_btou = (cccc) => {
-    switch (cccc.length) {
-        case 4:
-            var cp = ((0x07 & cccc.charCodeAt(0)) << 18)
-                | ((0x3f & cccc.charCodeAt(1)) << 12)
-                | ((0x3f & cccc.charCodeAt(2)) << 6)
-                | (0x3f & cccc.charCodeAt(3)), offset = cp - 0x10000;
-            return (_fromCC((offset >>> 10) + 0xD800)
-                + _fromCC((offset & 0x3FF) + 0xDC00));
-        case 3:
-            return _fromCC(((0x0f & cccc.charCodeAt(0)) << 12)
-                | ((0x3f & cccc.charCodeAt(1)) << 6)
-                | (0x3f & cccc.charCodeAt(2)));
-        default:
-            return _fromCC(((0x1f & cccc.charCodeAt(0)) << 6)
-                | (0x3f & cccc.charCodeAt(1)));
-    }
-};
-/**
- * @deprecated should have been internal use only.
- * @param {string} src UTF-16 string
- * @returns {string} UTF-8 string
- */
-const btou = (b) => b.replace(re_btou, cb_btou);
-/**
- * polyfill version of `atob`
- */
-const atobPolyfill = (asc) => {
-    // console.log('polyfilled');
-    asc = asc.replace(/\s+/g, '');
-    if (!b64re.test(asc))
-        throw new TypeError('malformed base64.');
-    asc += '=='.slice(2 - (asc.length & 3));
-    let u24, bin = '', r1, r2;
-    for (let i = 0; i < asc.length;) {
-        u24 = b64tab[asc.charAt(i++)] << 18
-            | b64tab[asc.charAt(i++)] << 12
-            | (r1 = b64tab[asc.charAt(i++)]) << 6
-            | (r2 = b64tab[asc.charAt(i++)]);
-        bin += r1 === 64 ? _fromCC(u24 >> 16 & 255)
-            : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255)
-                : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
-    }
-    return bin;
-};
-/**
- * does what `window.atob` of web browsers do.
- * @param {String} asc Base64-encoded string
- * @returns {string} binary string
- */
-const _atob = _hasatob ? (asc) => atob(_tidyB64(asc))
-    : _hasBuffer ? (asc) => Buffer.from(asc, 'base64').toString('binary')
-        : atobPolyfill;
-//
-const _toUint8Array = _hasBuffer
-    ? (a) => _U8Afrom(Buffer.from(a, 'base64'))
-    : (a) => _U8Afrom(_atob(a).split('').map(c => c.charCodeAt(0)));
-/**
- * converts a Base64 string to a Uint8Array.
- */
-const toUint8Array = (a) => _toUint8Array(_unURI(a));
-//
-const _decode = _hasBuffer
-    ? (a) => Buffer.from(a, 'base64').toString('utf8')
-    : _TD
-        ? (a) => _TD.decode(_toUint8Array(a))
-        : (a) => btou(_atob(a));
-const _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == '-' ? '+' : '/'));
-/**
- * converts a Base64 string to a UTF-8 string.
- * @param {String} src Base64 string.  Both normal and URL-safe are supported
- * @returns {string} UTF-8 string
- */
-const decode = (src) => _decode(_unURI(src));
-/**
- * check if a value is a valid Base64 string
- * @param {String} src a value to check
-  */
-const isValid = (src) => {
-    if (typeof src !== 'string')
-        return false;
-    const s = src.replace(/\s+/g, '').replace(/={0,2}$/, '');
-    return !/[^\s0-9a-zA-Z\+/]/.test(s) || !/[^\s0-9a-zA-Z\-_]/.test(s);
-};
-//
-const _noEnum = (v) => {
-    return {
-        value: v, enumerable: false, writable: true, configurable: true
-    };
-};
-/**
- * extend String.prototype with relevant methods
- */
-const extendString = function () {
-    const _add = (name, body) => Object.defineProperty(String.prototype, name, _noEnum(body));
-    _add('fromBase64', function () { return decode(this); });
-    _add('toBase64', function (urlsafe) { return encode(this, urlsafe); });
-    _add('toBase64URI', function () { return encode(this, true); });
-    _add('toBase64URL', function () { return encode(this, true); });
-    _add('toUint8Array', function () { return toUint8Array(this); });
-};
-/**
- * extend Uint8Array.prototype with relevant methods
- */
-const extendUint8Array = function () {
-    const _add = (name, body) => Object.defineProperty(Uint8Array.prototype, name, _noEnum(body));
-    _add('toBase64', function (urlsafe) { return fromUint8Array(this, urlsafe); });
-    _add('toBase64URI', function () { return fromUint8Array(this, true); });
-    _add('toBase64URL', function () { return fromUint8Array(this, true); });
-};
-/**
- * extend Builtin prototypes with relevant methods
- */
-const extendBuiltins = () => {
-    extendString();
-    extendUint8Array();
-};
-const gBase64 = {
-    version: version,
-    VERSION: VERSION,
-    atob: _atob,
-    atobPolyfill: atobPolyfill,
-    btoa: _btoa,
-    btoaPolyfill: btoaPolyfill,
-    fromBase64: decode,
-    toBase64: encode,
-    encode: encode,
-    encodeURI: encodeURI,
-    encodeURL: encodeURI,
-    utob: utob,
-    btou: btou,
-    decode: decode,
-    isValid: isValid,
-    fromUint8Array: fromUint8Array,
-    toUint8Array: toUint8Array,
-    extendString: extendString,
-    extendUint8Array: extendUint8Array,
-    extendBuiltins: extendBuiltins,
-};
-// makecjs:CUT //
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// and finally,
-
-
-
-/***/ }),
-
-/***/ "./node_modules/nanoid/non-secure/index.js":
-/*!*************************************************!*\
-  !*** ./node_modules/nanoid/non-secure/index.js ***!
-  \*************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   customAlphabet: () => (/* binding */ customAlphabet),
-/* harmony export */   nanoid: () => (/* binding */ nanoid)
-/* harmony export */ });
-let urlAlphabet =
-  'useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict'
-let customAlphabet = (alphabet, defaultSize = 21) => {
-  return (size = defaultSize) => {
-    let id = ''
-    let i = size
-    while (i--) {
-      id += alphabet[(Math.random() * alphabet.length) | 0]
-    }
-    return id
-  }
-}
-let nanoid = (size = 21) => {
-  let id = ''
-  let i = size
-  while (i--) {
-    id += urlAlphabet[(Math.random() * 64) | 0]
-  }
-  return id
-}
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/BasePlugin.js":
-/*!*******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/BasePlugin.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ BasePlugin)
-/* harmony export */ });
-/* harmony import */ var _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/Translator */ "./src/jgDashboard/node_modules/@uppy/utils/lib/Translator.js");
-/**
- * Core plugin logic that all plugins share.
- *
- * BasePlugin does not contain DOM rendering so it can be used for plugins
- * without a user interface.
- *
- * See `Plugin` for the extended version with Preact rendering for interfaces.
- */
-
-class BasePlugin {
-  constructor(uppy, opts) {
-    if (opts === void 0) {
-      opts = {};
-    }
-
-    this.uppy = uppy;
-    this.opts = opts;
-  }
-
-  getPluginState() {
-    const {
-      plugins
-    } = this.uppy.getState();
-    return plugins[this.id] || {};
-  }
-
-  setPluginState(update) {
-    const {
-      plugins
-    } = this.uppy.getState();
-    this.uppy.setState({
-      plugins: { ...plugins,
-        [this.id]: { ...plugins[this.id],
-          ...update
-        }
-      }
-    });
-  }
-
-  setOptions(newOpts) {
-    this.opts = { ...this.opts,
-      ...newOpts
-    };
-    this.setPluginState(); // so that UI re-renders with new options
-
-    this.i18nInit();
-  }
-
-  i18nInit() {
-    const translator = new _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__["default"]([this.defaultLocale, this.uppy.locale, this.opts.locale]);
-    this.i18n = translator.translate.bind(translator);
-    this.i18nArray = translator.translateArray.bind(translator);
-    this.setPluginState(); // so that UI re-renders and we see the updated locale
-  }
-  /**
-   * Extendable methods
-   * ==================
-   * These methods are here to serve as an overview of the extendable methods as well as
-   * making them not conditional in use, such as `if (this.afterUpdate)`.
-   */
-  // eslint-disable-next-line class-methods-use-this
-
-
-  addTarget() {
-    throw new Error('Extend the addTarget method to add your plugin to another plugin\'s target');
-  } // eslint-disable-next-line class-methods-use-this
-
-
-  install() {} // eslint-disable-next-line class-methods-use-this
-
-
-  uninstall() {}
-  /**
-   * Called when plugin is mounted, whether in DOM or into another plugin.
-   * Needed because sometimes plugins are mounted separately/after `install`,
-   * so this.el and this.parent might not be available in `install`.
-   * This is the case with @uppy/react plugins, for example.
-   */
-
-
-  render() {
-    throw new Error('Extend the render method to add your plugin to a DOM element');
-  } // eslint-disable-next-line class-methods-use-this
-
-
-  update() {} // Called after every state update, after everything's mounted. Debounced.
-  // eslint-disable-next-line class-methods-use-this
-
-
-  afterUpdate() {}
-
-}
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/Restricter.js":
-/*!*******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/Restricter.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Restricter: () => (/* binding */ Restricter),
-/* harmony export */   RestrictionError: () => (/* binding */ RestrictionError),
-/* harmony export */   defaultOptions: () => (/* binding */ defaultOptions)
-/* harmony export */ });
-/* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @transloadit/prettier-bytes */ "./src/jgDashboard/node_modules/@uppy/core/node_modules/@transloadit/prettier-bytes/prettierBytes.js");
-/* harmony import */ var mime_match__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mime-match */ "./src/jgDashboard/node_modules/mime-match/index.js");
-/* eslint-disable max-classes-per-file, class-methods-use-this */
-
-
-const defaultOptions = {
-  maxFileSize: null,
-  minFileSize: null,
-  maxTotalFileSize: null,
-  maxNumberOfFiles: null,
-  minNumberOfFiles: null,
-  allowedFileTypes: null,
-  requiredMetaFields: []
-};
-
-class RestrictionError extends Error {
-  constructor(message, _temp) {
-    let {
-      isUserFacing = true,
-      file
-    } = _temp === void 0 ? {} : _temp;
-    super(message);
-    this.isRestriction = true;
-    this.isUserFacing = isUserFacing;
-    if (file != null) this.file = file; // only some restriction errors are related to a particular file
-  }
-
-}
-
-class Restricter {
-  constructor(getOpts, i18n) {
-    this.i18n = i18n;
-
-    this.getOpts = () => {
-      const opts = getOpts();
-
-      if (opts.restrictions.allowedFileTypes != null && !Array.isArray(opts.restrictions.allowedFileTypes)) {
-        throw new TypeError('`restrictions.allowedFileTypes` must be an array');
-      }
-
-      return opts;
-    };
-  } // Because these operations are slow, we cannot run them for every file (if we are adding multiple files)
-
-
-  validateAggregateRestrictions(existingFiles, addingFiles) {
-    const {
-      maxTotalFileSize,
-      maxNumberOfFiles
-    } = this.getOpts().restrictions;
-
-    if (maxNumberOfFiles) {
-      const nonGhostFiles = existingFiles.filter(f => !f.isGhost);
-
-      if (nonGhostFiles.length + addingFiles.length > maxNumberOfFiles) {
-        throw new RestrictionError(`${this.i18n('youCanOnlyUploadX', {
-          smart_count: maxNumberOfFiles
-        })}`);
-      }
-    }
-
-    if (maxTotalFileSize) {
-      let totalFilesSize = existingFiles.reduce((total, f) => total + f.size, 0);
-
-      for (const addingFile of addingFiles) {
-        if (addingFile.size != null) {
-          // We can't check maxTotalFileSize if the size is unknown.
-          totalFilesSize += addingFile.size;
-
-          if (totalFilesSize > maxTotalFileSize) {
-            throw new RestrictionError(this.i18n('exceedsSize', {
-              size: _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_0__(maxTotalFileSize),
-              file: addingFile.name
-            }));
-          }
-        }
-      }
-    }
-  }
-
-  validateSingleFile(file) {
-    const {
-      maxFileSize,
-      minFileSize,
-      allowedFileTypes
-    } = this.getOpts().restrictions;
-
-    if (allowedFileTypes) {
-      const isCorrectFileType = allowedFileTypes.some(type => {
-        // check if this is a mime-type
-        if (type.includes('/')) {
-          if (!file.type) return false;
-          return mime_match__WEBPACK_IMPORTED_MODULE_1__(file.type.replace(/;.*?$/, ''), type);
-        } // otherwise this is likely an extension
-
-
-        if (type[0] === '.' && file.extension) {
-          return file.extension.toLowerCase() === type.slice(1).toLowerCase();
-        }
-
-        return false;
-      });
-
-      if (!isCorrectFileType) {
-        const allowedFileTypesString = allowedFileTypes.join(', ');
-        throw new RestrictionError(this.i18n('youCanOnlyUploadFileTypes', {
-          types: allowedFileTypesString
-        }), {
-          file
-        });
-      }
-    } // We can't check maxFileSize if the size is unknown.
-
-
-    if (maxFileSize && file.size != null && file.size > maxFileSize) {
-      throw new RestrictionError(this.i18n('exceedsSize', {
-        size: _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_0__(maxFileSize),
-        file: file.name
-      }), {
-        file
-      });
-    } // We can't check minFileSize if the size is unknown.
-
-
-    if (minFileSize && file.size != null && file.size < minFileSize) {
-      throw new RestrictionError(this.i18n('inferiorSize', {
-        size: _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_0__(minFileSize)
-      }), {
-        file
-      });
-    }
-  }
-
-  validate(existingFiles, addingFiles) {
-    addingFiles.forEach(addingFile => {
-      this.validateSingleFile(addingFile);
-    });
-    this.validateAggregateRestrictions(existingFiles, addingFiles);
-  }
-
-  validateMinNumberOfFiles(files) {
-    const {
-      minNumberOfFiles
-    } = this.getOpts().restrictions;
-
-    if (Object.keys(files).length < minNumberOfFiles) {
-      throw new RestrictionError(this.i18n('youHaveToAtLeastSelectX', {
-        smart_count: minNumberOfFiles
-      }));
-    }
-  }
-
-  getMissingRequiredMetaFields(file) {
-    const error = new RestrictionError(this.i18n('missingRequiredMetaFieldOnFile', {
-      fileName: file.name
-    }));
-    const {
-      requiredMetaFields
-    } = this.getOpts().restrictions;
-    const missingFields = [];
-
-    for (const field of requiredMetaFields) {
-      if (!Object.hasOwn(file.meta, field) || file.meta[field] === '') {
-        missingFields.push(field);
-      }
-    }
-
-    return {
-      missingFields,
-      error
-    };
-  }
-
-}
-
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/UIPlugin.js":
-/*!*****************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/UIPlugin.js ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _uppy_utils_lib_findDOMElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/findDOMElement */ "./src/jgDashboard/node_modules/@uppy/utils/lib/findDOMElement.js");
-/* harmony import */ var _uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/getTextDirection */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getTextDirection.js");
-/* harmony import */ var _BasePlugin_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./BasePlugin.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/BasePlugin.js");
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
-var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-
-
-
-
-/**
- * Defer a frequent call to the microtask queue.
- *
- * @param {() => T} fn
- * @returns {Promise<T>}
- */
-
-function debounce(fn) {
-  let calling = null;
-  let latestArgs = null;
-  return function () {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    latestArgs = args;
-
-    if (!calling) {
-      calling = Promise.resolve().then(() => {
-        calling = null; // At this point `args` may be different from the most
-        // recent state, if multiple calls happened since this task
-        // was queued. So we use the `latestArgs`, which definitely
-        // is the most recent call.
-
-        return fn(...latestArgs);
-      });
-    }
-
-    return calling;
-  };
-}
-/**
- * UIPlugin is the extended version of BasePlugin to incorporate rendering with Preact.
- * Use this for plugins that need a user interface.
- *
- * For plugins without an user interface, see BasePlugin.
- */
-
-
-var _updateUI = /*#__PURE__*/_classPrivateFieldLooseKey("updateUI");
-
-class UIPlugin extends _BasePlugin_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
-  constructor() {
-    super(...arguments);
-    Object.defineProperty(this, _updateUI, {
-      writable: true,
-      value: void 0
-    });
-  }
-
-  getTargetPlugin(target) {
-    let targetPlugin;
-
-    if (typeof target === 'object' && target instanceof UIPlugin) {
-      // Targeting a plugin *instance*
-      targetPlugin = target;
-    } else if (typeof target === 'function') {
-      // Targeting a plugin type
-      const Target = target; // Find the target plugin instance.
-
-      this.uppy.iteratePlugins(p => {
-        if (p instanceof Target) {
-          targetPlugin = p;
-        }
-      });
-    }
-
-    return targetPlugin;
-  }
-  /**
-   * Check if supplied `target` is a DOM element or an `object`.
-   * If it’s an object — target is a plugin, and we search `plugins`
-   * for a plugin with same name and return its target.
-   */
-
-
-  mount(target, plugin) {
-    const callerPluginName = plugin.id;
-    const targetElement = (0,_uppy_utils_lib_findDOMElement__WEBPACK_IMPORTED_MODULE_1__["default"])(target);
-
-    if (targetElement) {
-      this.isTargetDOMEl = true; // When target is <body> with a single <div> element,
-      // Preact thinks it’s the Uppy root element in there when doing a diff,
-      // and destroys it. So we are creating a fragment (could be empty div)
-
-      const uppyRootElement = document.createElement('div');
-      uppyRootElement.classList.add('uppy-Root'); // API for plugins that require a synchronous rerender.
-
-      _classPrivateFieldLooseBase(this, _updateUI)[_updateUI] = debounce(state => {
-        // plugin could be removed, but this.rerender is debounced below,
-        // so it could still be called even after uppy.removePlugin or uppy.close
-        // hence the check
-        if (!this.uppy.getPlugin(this.id)) return;
-        (0,preact__WEBPACK_IMPORTED_MODULE_0__.render)(this.render(state), uppyRootElement);
-        this.afterUpdate();
-      });
-      this.uppy.log(`Installing ${callerPluginName} to a DOM element '${target}'`);
-
-      if (this.opts.replaceTargetContent) {
-        // Doing render(h(null), targetElement), which should have been
-        // a better way, since because the component might need to do additional cleanup when it is removed,
-        // stopped working — Preact just adds null into target, not replacing
-        targetElement.innerHTML = '';
-      }
-
-      (0,preact__WEBPACK_IMPORTED_MODULE_0__.render)(this.render(this.uppy.getState()), uppyRootElement);
-      this.el = uppyRootElement;
-      targetElement.appendChild(uppyRootElement); // Set the text direction if the page has not defined one.
-
-      uppyRootElement.dir = this.opts.direction || (0,_uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_2__["default"])(uppyRootElement) || 'ltr';
-      this.onMount();
-      return this.el;
-    }
-
-    const targetPlugin = this.getTargetPlugin(target);
-
-    if (targetPlugin) {
-      this.uppy.log(`Installing ${callerPluginName} to ${targetPlugin.id}`);
-      this.parent = targetPlugin;
-      this.el = targetPlugin.addTarget(plugin);
-      this.onMount();
-      return this.el;
-    }
-
-    this.uppy.log(`Not installing ${callerPluginName}`);
-    let message = `Invalid target option given to ${callerPluginName}.`;
-
-    if (typeof target === 'function') {
-      message += ' The given target is not a Plugin class. ' + 'Please check that you\'re not specifying a React Component instead of a plugin. ' + 'If you are using @uppy/* packages directly, make sure you have only 1 version of @uppy/core installed: ' + 'run `npm ls @uppy/core` on the command line and verify that all the versions match and are deduped correctly.';
-    } else {
-      message += 'If you meant to target an HTML element, please make sure that the element exists. ' + 'Check that the <script> tag initializing Uppy is right before the closing </body> tag at the end of the page. ' + '(see https://github.com/transloadit/uppy/issues/1042)\n\n' + 'If you meant to target a plugin, please confirm that your `import` statements or `require` calls are correct.';
-    }
-
-    throw new Error(message);
-  }
-
-  update(state) {
-    if (this.el != null) {
-      var _classPrivateFieldLoo, _classPrivateFieldLoo2;
-
-      (_classPrivateFieldLoo = (_classPrivateFieldLoo2 = _classPrivateFieldLooseBase(this, _updateUI))[_updateUI]) == null ? void 0 : _classPrivateFieldLoo.call(_classPrivateFieldLoo2, state);
-    }
-  }
-
-  unmount() {
-    if (this.isTargetDOMEl) {
-      var _this$el;
-
-      (_this$el = this.el) == null ? void 0 : _this$el.remove();
-    }
-
-    this.onUnmount();
-  } // eslint-disable-next-line class-methods-use-this
-
-
-  onMount() {} // eslint-disable-next-line class-methods-use-this
-
-
-  onUnmount() {}
-
-}
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UIPlugin);
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/Uppy.js":
-/*!*************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/Uppy.js ***!
-  \*************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/Translator */ "./src/jgDashboard/node_modules/@uppy/utils/lib/Translator.js");
-/* harmony import */ var namespace_emitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! namespace-emitter */ "./src/jgDashboard/node_modules/namespace-emitter/index.js");
-/* harmony import */ var nanoid_non_secure__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! nanoid/non-secure */ "./src/jgDashboard/node_modules/nanoid/non-secure/index.js");
-/* harmony import */ var lodash_throttle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash.throttle */ "./src/jgDashboard/node_modules/lodash.throttle/index.js");
-/* harmony import */ var _uppy_store_default__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/store-default */ "./src/jgDashboard/node_modules/@uppy/store-default/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_getFileType__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/getFileType */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getFileType.js");
-/* harmony import */ var _uppy_utils_lib_getFileNameAndExtension__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/getFileNameAndExtension */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getFileNameAndExtension.js");
-/* harmony import */ var _uppy_utils_lib_generateFileID__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/generateFileID */ "./src/jgDashboard/node_modules/@uppy/utils/lib/generateFileID.js");
-/* harmony import */ var _supportsUploadProgress_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./supportsUploadProgress.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/supportsUploadProgress.js");
-/* harmony import */ var _getFileName_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./getFileName.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/getFileName.js");
-/* harmony import */ var _loggers_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./loggers.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/loggers.js");
-/* harmony import */ var _Restricter_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Restricter.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/Restricter.js");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./locale.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/locale.js");
-let _Symbol$for, _Symbol$for2;
-
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
-var id = 0;
-
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-/* eslint-disable max-classes-per-file */
-
-/* global AggregateError */
-
-
-
-
-
-
-
-
-
-
-
-
-const packageJson = {
-  "version": "3.2.0"
-};
-
-/**
- * Uppy Core module.
- * Manages plugins, state updates, acts as an event bus,
- * adds/removes files and metadata.
- */
-
-var _plugins = /*#__PURE__*/_classPrivateFieldLooseKey("plugins");
-
-var _restricter = /*#__PURE__*/_classPrivateFieldLooseKey("restricter");
-
-var _storeUnsubscribe = /*#__PURE__*/_classPrivateFieldLooseKey("storeUnsubscribe");
-
-var _emitter = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
-
-var _preProcessors = /*#__PURE__*/_classPrivateFieldLooseKey("preProcessors");
-
-var _uploaders = /*#__PURE__*/_classPrivateFieldLooseKey("uploaders");
-
-var _postProcessors = /*#__PURE__*/_classPrivateFieldLooseKey("postProcessors");
-
-var _informAndEmit = /*#__PURE__*/_classPrivateFieldLooseKey("informAndEmit");
-
-var _checkRequiredMetaFieldsOnFile = /*#__PURE__*/_classPrivateFieldLooseKey("checkRequiredMetaFieldsOnFile");
-
-var _checkRequiredMetaFields = /*#__PURE__*/_classPrivateFieldLooseKey("checkRequiredMetaFields");
-
-var _assertNewUploadAllowed = /*#__PURE__*/_classPrivateFieldLooseKey("assertNewUploadAllowed");
-
-var _transformFile = /*#__PURE__*/_classPrivateFieldLooseKey("transformFile");
-
-var _startIfAutoProceed = /*#__PURE__*/_classPrivateFieldLooseKey("startIfAutoProceed");
-
-var _checkAndUpdateFileState = /*#__PURE__*/_classPrivateFieldLooseKey("checkAndUpdateFileState");
-
-var _addListeners = /*#__PURE__*/_classPrivateFieldLooseKey("addListeners");
-
-var _updateOnlineStatus = /*#__PURE__*/_classPrivateFieldLooseKey("updateOnlineStatus");
-
-var _createUpload = /*#__PURE__*/_classPrivateFieldLooseKey("createUpload");
-
-var _getUpload = /*#__PURE__*/_classPrivateFieldLooseKey("getUpload");
-
-var _removeUpload = /*#__PURE__*/_classPrivateFieldLooseKey("removeUpload");
-
-var _runUpload = /*#__PURE__*/_classPrivateFieldLooseKey("runUpload");
-
-_Symbol$for = Symbol.for('uppy test: getPlugins');
-_Symbol$for2 = Symbol.for('uppy test: createUpload');
-
-class Uppy {
-  /** @type {Record<string, BasePlugin[]>} */
-
-  /**
-   * Instantiate Uppy
-   *
-   * @param {object} opts — Uppy options
-   */
-  constructor(_opts) {
-    Object.defineProperty(this, _runUpload, {
-      value: _runUpload2
-    });
-    Object.defineProperty(this, _removeUpload, {
-      value: _removeUpload2
-    });
-    Object.defineProperty(this, _getUpload, {
-      value: _getUpload2
-    });
-    Object.defineProperty(this, _createUpload, {
-      value: _createUpload2
-    });
-    Object.defineProperty(this, _addListeners, {
-      value: _addListeners2
-    });
-    Object.defineProperty(this, _checkAndUpdateFileState, {
-      value: _checkAndUpdateFileState2
-    });
-    Object.defineProperty(this, _startIfAutoProceed, {
-      value: _startIfAutoProceed2
-    });
-    Object.defineProperty(this, _transformFile, {
-      value: _transformFile2
-    });
-    Object.defineProperty(this, _assertNewUploadAllowed, {
-      value: _assertNewUploadAllowed2
-    });
-    Object.defineProperty(this, _checkRequiredMetaFields, {
-      value: _checkRequiredMetaFields2
-    });
-    Object.defineProperty(this, _checkRequiredMetaFieldsOnFile, {
-      value: _checkRequiredMetaFieldsOnFile2
-    });
-    Object.defineProperty(this, _informAndEmit, {
-      value: _informAndEmit2
-    });
-    Object.defineProperty(this, _plugins, {
-      writable: true,
-      value: Object.create(null)
-    });
-    Object.defineProperty(this, _restricter, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _storeUnsubscribe, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _emitter, {
-      writable: true,
-      value: namespace_emitter__WEBPACK_IMPORTED_MODULE_1__()
-    });
-    Object.defineProperty(this, _preProcessors, {
-      writable: true,
-      value: new Set()
-    });
-    Object.defineProperty(this, _uploaders, {
-      writable: true,
-      value: new Set()
-    });
-    Object.defineProperty(this, _postProcessors, {
-      writable: true,
-      value: new Set()
-    });
-    Object.defineProperty(this, _updateOnlineStatus, {
-      writable: true,
-      value: this.updateOnlineStatus.bind(this)
-    });
-    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_11__["default"];
-    const defaultOptions = {
-      id: 'uppy',
-      autoProceed: false,
-      allowMultipleUploadBatches: true,
-      debug: false,
-      restrictions: _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.defaultOptions,
-      meta: {},
-      onBeforeFileAdded: currentFile => currentFile,
-      onBeforeUpload: files => files,
-      store: new _uppy_store_default__WEBPACK_IMPORTED_MODULE_3__["default"](),
-      logger: _loggers_js__WEBPACK_IMPORTED_MODULE_9__.justErrorsLogger,
-      infoTimeout: 5000
-    }; // Merge default options with the ones set by user,
-    // making sure to merge restrictions too
-
-    this.opts = { ...defaultOptions,
-      ..._opts,
-      restrictions: { ...defaultOptions.restrictions,
-        ...(_opts && _opts.restrictions)
-      }
-    }; // Support debug: true for backwards-compatability, unless logger is set in opts
-    // opts instead of this.opts to avoid comparing objects — we set logger: justErrorsLogger in defaultOptions
-
-    if (_opts && _opts.logger && _opts.debug) {
-      this.log('You are using a custom `logger`, but also set `debug: true`, which uses built-in logger to output logs to console. Ignoring `debug: true` and using your custom `logger`.', 'warning');
-    } else if (_opts && _opts.debug) {
-      this.opts.logger = _loggers_js__WEBPACK_IMPORTED_MODULE_9__.debugLogger;
-    }
-
-    this.log(`Using Core v${this.constructor.VERSION}`);
-    this.i18nInit(); // ___Why throttle at 500ms?
-    //    - We must throttle at >250ms for superfocus in Dashboard to work well
-    //    (because animation takes 0.25s, and we want to wait for all animations to be over before refocusing).
-    //    [Practical Check]: if thottle is at 100ms, then if you are uploading a file,
-    //    and click 'ADD MORE FILES', - focus won't activate in Firefox.
-    //    - We must throttle at around >500ms to avoid performance lags.
-    //    [Practical Check] Firefox, try to upload a big file for a prolonged period of time. Laptop will start to heat up.
-
-    this.calculateProgress = lodash_throttle__WEBPACK_IMPORTED_MODULE_2__(this.calculateProgress.bind(this), 500, {
-      leading: true,
-      trailing: true
-    });
-    this.store = this.opts.store;
-    this.setState({
-      plugins: {},
-      files: {},
-      currentUploads: {},
-      allowNewUpload: true,
-      capabilities: {
-        uploadProgress: (0,_supportsUploadProgress_js__WEBPACK_IMPORTED_MODULE_7__["default"])(),
-        individualCancellation: true,
-        resumableUploads: false
-      },
-      totalProgress: 0,
-      meta: { ...this.opts.meta
-      },
-      info: [],
-      recoveredState: null
-    });
-    _classPrivateFieldLooseBase(this, _restricter)[_restricter] = new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.Restricter(() => this.opts, this.i18n);
-    _classPrivateFieldLooseBase(this, _storeUnsubscribe)[_storeUnsubscribe] = this.store.subscribe((prevState, nextState, patch) => {
-      this.emit('state-update', prevState, nextState, patch);
-      this.updateAll(nextState);
-    }); // Exposing uppy object on window for debugging and testing
-
-    if (this.opts.debug && typeof window !== 'undefined') {
-      window[this.opts.id] = this;
-    }
-
-    _classPrivateFieldLooseBase(this, _addListeners)[_addListeners]();
-  }
-
-  emit(event) {
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter].emit(event, ...args);
-  }
-
-  on(event, callback) {
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter].on(event, callback);
-
-    return this;
-  }
-
-  once(event, callback) {
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter].once(event, callback);
-
-    return this;
-  }
-
-  off(event, callback) {
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter].off(event, callback);
-
-    return this;
-  }
-  /**
-   * Iterate on all plugins and run `update` on them.
-   * Called each time state changes.
-   *
-   */
-
-
-  updateAll(state) {
-    this.iteratePlugins(plugin => {
-      plugin.update(state);
-    });
-  }
-  /**
-   * Updates state with a patch
-   *
-   * @param {object} patch {foo: 'bar'}
-   */
-
-
-  setState(patch) {
-    this.store.setState(patch);
-  }
-  /**
-   * Returns current state.
-   *
-   * @returns {object}
-   */
-
-
-  getState() {
-    return this.store.getState();
-  }
-
-  patchFilesState(filesWithNewState) {
-    const existingFilesState = this.getState().files;
-    this.setState({
-      files: { ...existingFilesState,
-        ...Object.fromEntries(Object.entries(filesWithNewState).map(_ref => {
-          let [fileID, newFileState] = _ref;
-          return [fileID, { ...existingFilesState[fileID],
-            ...newFileState
-          }];
-        }))
-      }
-    });
-  }
-  /**
-   * Shorthand to set state for a specific file.
-   */
-
-
-  setFileState(fileID, state) {
-    if (!this.getState().files[fileID]) {
-      throw new Error(`Can’t set state for ${fileID} (the file could have been removed)`);
-    }
-
-    this.patchFilesState({
-      [fileID]: state
-    });
-  }
-
-  i18nInit() {
-    const translator = new _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__["default"]([this.defaultLocale, this.opts.locale]);
-    this.i18n = translator.translate.bind(translator);
-    this.i18nArray = translator.translateArray.bind(translator);
-    this.locale = translator.locale;
-  }
-
-  setOptions(newOpts) {
-    this.opts = { ...this.opts,
-      ...newOpts,
-      restrictions: { ...this.opts.restrictions,
-        ...(newOpts && newOpts.restrictions)
-      }
-    };
-
-    if (newOpts.meta) {
-      this.setMeta(newOpts.meta);
-    }
-
-    this.i18nInit();
-
-    if (newOpts.locale) {
-      this.iteratePlugins(plugin => {
-        plugin.setOptions(newOpts);
-      });
-    } // Note: this is not the preact `setState`, it's an internal function that has the same name.
-
-
-    this.setState(); // so that UI re-renders with new options
-  }
-
-  resetProgress() {
-    const defaultProgress = {
-      percentage: 0,
-      bytesUploaded: 0,
-      uploadComplete: false,
-      uploadStarted: null
-    };
-    const files = { ...this.getState().files
-    };
-    const updatedFiles = {};
-    Object.keys(files).forEach(fileID => {
-      updatedFiles[fileID] = { ...files[fileID],
-        progress: { ...files[fileID].progress,
-          ...defaultProgress
-        }
-      };
-    });
-    this.setState({
-      files: updatedFiles,
-      totalProgress: 0,
-      allowNewUpload: true,
-      error: null,
-      recoveredState: null
-    });
-    this.emit('reset-progress');
-  }
-
-  addPreProcessor(fn) {
-    _classPrivateFieldLooseBase(this, _preProcessors)[_preProcessors].add(fn);
-  }
-
-  removePreProcessor(fn) {
-    return _classPrivateFieldLooseBase(this, _preProcessors)[_preProcessors].delete(fn);
-  }
-
-  addPostProcessor(fn) {
-    _classPrivateFieldLooseBase(this, _postProcessors)[_postProcessors].add(fn);
-  }
-
-  removePostProcessor(fn) {
-    return _classPrivateFieldLooseBase(this, _postProcessors)[_postProcessors].delete(fn);
-  }
-
-  addUploader(fn) {
-    _classPrivateFieldLooseBase(this, _uploaders)[_uploaders].add(fn);
-  }
-
-  removeUploader(fn) {
-    return _classPrivateFieldLooseBase(this, _uploaders)[_uploaders].delete(fn);
-  }
-
-  setMeta(data) {
-    const updatedMeta = { ...this.getState().meta,
-      ...data
-    };
-    const updatedFiles = { ...this.getState().files
-    };
-    Object.keys(updatedFiles).forEach(fileID => {
-      updatedFiles[fileID] = { ...updatedFiles[fileID],
-        meta: { ...updatedFiles[fileID].meta,
-          ...data
-        }
-      };
-    });
-    this.log('Adding metadata:');
-    this.log(data);
-    this.setState({
-      meta: updatedMeta,
-      files: updatedFiles
-    });
-  }
-
-  setFileMeta(fileID, data) {
-    const updatedFiles = { ...this.getState().files
-    };
-
-    if (!updatedFiles[fileID]) {
-      this.log('Was trying to set metadata for a file that has been removed: ', fileID);
-      return;
-    }
-
-    const newMeta = { ...updatedFiles[fileID].meta,
-      ...data
-    };
-    updatedFiles[fileID] = { ...updatedFiles[fileID],
-      meta: newMeta
-    };
-    this.setState({
-      files: updatedFiles
-    });
-  }
-  /**
-   * Get a file object.
-   *
-   * @param {string} fileID The ID of the file object to return.
-   */
-
-
-  getFile(fileID) {
-    return this.getState().files[fileID];
-  }
-  /**
-   * Get all files in an array.
-   */
-
-
-  getFiles() {
-    const {
-      files
-    } = this.getState();
-    return Object.values(files);
-  }
-
-  getFilesByIds(ids) {
-    return ids.map(id => this.getFile(id));
-  }
-
-  getObjectOfFilesPerState() {
-    const {
-      files: filesObject,
-      totalProgress,
-      error
-    } = this.getState();
-    const files = Object.values(filesObject);
-    const inProgressFiles = files.filter(_ref2 => {
-      let {
-        progress
-      } = _ref2;
-      return !progress.uploadComplete && progress.uploadStarted;
-    });
-    const newFiles = files.filter(file => !file.progress.uploadStarted);
-    const startedFiles = files.filter(file => file.progress.uploadStarted || file.progress.preprocess || file.progress.postprocess);
-    const uploadStartedFiles = files.filter(file => file.progress.uploadStarted);
-    const pausedFiles = files.filter(file => file.isPaused);
-    const completeFiles = files.filter(file => file.progress.uploadComplete);
-    const erroredFiles = files.filter(file => file.error);
-    const inProgressNotPausedFiles = inProgressFiles.filter(file => !file.isPaused);
-    const processingFiles = files.filter(file => file.progress.preprocess || file.progress.postprocess);
-    return {
-      newFiles,
-      startedFiles,
-      uploadStartedFiles,
-      pausedFiles,
-      completeFiles,
-      erroredFiles,
-      inProgressFiles,
-      inProgressNotPausedFiles,
-      processingFiles,
-      isUploadStarted: uploadStartedFiles.length > 0,
-      isAllComplete: totalProgress === 100 && completeFiles.length === files.length && processingFiles.length === 0,
-      isAllErrored: !!error && erroredFiles.length === files.length,
-      isAllPaused: inProgressFiles.length !== 0 && pausedFiles.length === inProgressFiles.length,
-      isUploadInProgress: inProgressFiles.length > 0,
-      isSomeGhost: files.some(file => file.isGhost)
-    };
-  }
-  /*
-  * @constructs
-  * @param { Error[] } errors
-  * @param { undefined } file
-  */
-
-  /*
-  * @constructs
-  * @param { RestrictionError } error
-  */
-
-
-  validateRestrictions(file, files) {
-    if (files === void 0) {
-      files = this.getFiles();
-    }
-
-    try {
-      _classPrivateFieldLooseBase(this, _restricter)[_restricter].validate(files, [file]);
-    } catch (err) {
-      return err;
-    }
-
-    return null;
-  }
-
-  checkIfFileAlreadyExists(fileID) {
-    const {
-      files
-    } = this.getState();
-
-    if (files[fileID] && !files[fileID].isGhost) {
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * Create a file state object based on user-provided `addFile()` options.
-   */
-
-
-  /**
-   * Add a new file to `state.files`. This will run `onBeforeFileAdded`,
-   * try to guess file type in a clever way, check file against restrictions,
-   * and start an upload if `autoProceed === true`.
-   *
-   * @param {object} file object to add
-   * @returns {string} id for the added file
-   */
-  addFile(file) {
-    _classPrivateFieldLooseBase(this, _assertNewUploadAllowed)[_assertNewUploadAllowed](file);
-
-    const {
-      nextFilesState,
-      validFilesToAdd,
-      errors
-    } = _classPrivateFieldLooseBase(this, _checkAndUpdateFileState)[_checkAndUpdateFileState]([file]);
-
-    const restrictionErrors = errors.filter(error => error.isRestriction);
-
-    _classPrivateFieldLooseBase(this, _informAndEmit)[_informAndEmit](restrictionErrors);
-
-    if (errors.length > 0) throw errors[0];
-    this.setState({
-      files: nextFilesState
-    });
-    const [firstValidFileToAdd] = validFilesToAdd;
-    this.emit('file-added', firstValidFileToAdd);
-    this.emit('files-added', validFilesToAdd);
-    this.log(`Added file: ${firstValidFileToAdd.name}, ${firstValidFileToAdd.id}, mime type: ${firstValidFileToAdd.type}`);
-
-    _classPrivateFieldLooseBase(this, _startIfAutoProceed)[_startIfAutoProceed]();
-
-    return firstValidFileToAdd.id;
-  }
-  /**
-   * Add multiple files to `state.files`. See the `addFile()` documentation.
-   *
-   * If an error occurs while adding a file, it is logged and the user is notified.
-   * This is good for UI plugins, but not for programmatic use.
-   * Programmatic users should usually still use `addFile()` on individual files.
-   */
-
-
-  addFiles(fileDescriptors) {
-    _classPrivateFieldLooseBase(this, _assertNewUploadAllowed)[_assertNewUploadAllowed]();
-
-    const {
-      nextFilesState,
-      validFilesToAdd,
-      errors
-    } = _classPrivateFieldLooseBase(this, _checkAndUpdateFileState)[_checkAndUpdateFileState](fileDescriptors);
-
-    const restrictionErrors = errors.filter(error => error.isRestriction);
-
-    _classPrivateFieldLooseBase(this, _informAndEmit)[_informAndEmit](restrictionErrors);
-
-    const nonRestrictionErrors = errors.filter(error => !error.isRestriction);
-
-    if (nonRestrictionErrors.length > 0) {
-      let message = 'Multiple errors occurred while adding files:\n';
-      nonRestrictionErrors.forEach(subError => {
-        message += `\n * ${subError.message}`;
-      });
-      this.info({
-        message: this.i18n('addBulkFilesFailed', {
-          smart_count: nonRestrictionErrors.length
-        }),
-        details: message
-      }, 'error', this.opts.infoTimeout);
-
-      if (typeof AggregateError === 'function') {
-        throw new AggregateError(nonRestrictionErrors, message);
-      } else {
-        const err = new Error(message);
-        err.errors = nonRestrictionErrors;
-        throw err;
-      }
-    } // OK, we haven't thrown an error, we can start updating state and emitting events now:
-
-
-    this.setState({
-      files: nextFilesState
-    });
-    validFilesToAdd.forEach(file => {
-      this.emit('file-added', file);
-    });
-    this.emit('files-added', validFilesToAdd);
-
-    if (validFilesToAdd.length > 5) {
-      this.log(`Added batch of ${validFilesToAdd.length} files`);
-    } else {
-      Object.values(validFilesToAdd).forEach(file => {
-        this.log(`Added file: ${file.name}\n id: ${file.id}\n type: ${file.type}`);
-      });
-    }
-
-    if (validFilesToAdd.length > 0) {
-      _classPrivateFieldLooseBase(this, _startIfAutoProceed)[_startIfAutoProceed]();
-    }
-  }
-
-  removeFiles(fileIDs, reason) {
-    const {
-      files,
-      currentUploads
-    } = this.getState();
-    const updatedFiles = { ...files
-    };
-    const updatedUploads = { ...currentUploads
-    };
-    const removedFiles = Object.create(null);
-    fileIDs.forEach(fileID => {
-      if (files[fileID]) {
-        removedFiles[fileID] = files[fileID];
-        delete updatedFiles[fileID];
-      }
-    }); // Remove files from the `fileIDs` list in each upload.
-
-    function fileIsNotRemoved(uploadFileID) {
-      return removedFiles[uploadFileID] === undefined;
-    }
-
-    Object.keys(updatedUploads).forEach(uploadID => {
-      const newFileIDs = currentUploads[uploadID].fileIDs.filter(fileIsNotRemoved); // Remove the upload if no files are associated with it anymore.
-
-      if (newFileIDs.length === 0) {
-        delete updatedUploads[uploadID];
-        return;
-      }
-
-      const {
-        capabilities
-      } = this.getState();
-
-      if (newFileIDs.length !== currentUploads[uploadID].fileIDs.length && !capabilities.individualCancellation) {
-        throw new Error('individualCancellation is disabled');
-      }
-
-      updatedUploads[uploadID] = { ...currentUploads[uploadID],
-        fileIDs: newFileIDs
-      };
-    });
-    const stateUpdate = {
-      currentUploads: updatedUploads,
-      files: updatedFiles
-    }; // If all files were removed - allow new uploads,
-    // and clear recoveredState
-
-    if (Object.keys(updatedFiles).length === 0) {
-      stateUpdate.allowNewUpload = true;
-      stateUpdate.error = null;
-      stateUpdate.recoveredState = null;
-    }
-
-    this.setState(stateUpdate);
-    this.calculateTotalProgress();
-    const removedFileIDs = Object.keys(removedFiles);
-    removedFileIDs.forEach(fileID => {
-      this.emit('file-removed', removedFiles[fileID], reason);
-    });
-
-    if (removedFileIDs.length > 5) {
-      this.log(`Removed ${removedFileIDs.length} files`);
-    } else {
-      this.log(`Removed files: ${removedFileIDs.join(', ')}`);
-    }
-  }
-
-  removeFile(fileID, reason) {
-    if (reason === void 0) {
-      reason = null;
-    }
-
-    this.removeFiles([fileID], reason);
-  }
-
-  pauseResume(fileID) {
-    if (!this.getState().capabilities.resumableUploads || this.getFile(fileID).uploadComplete) {
-      return undefined;
-    }
-
-    const wasPaused = this.getFile(fileID).isPaused || false;
-    const isPaused = !wasPaused;
-    this.setFileState(fileID, {
-      isPaused
-    });
-    this.emit('upload-pause', fileID, isPaused);
-    return isPaused;
-  }
-
-  pauseAll() {
-    const updatedFiles = { ...this.getState().files
-    };
-    const inProgressUpdatedFiles = Object.keys(updatedFiles).filter(file => {
-      return !updatedFiles[file].progress.uploadComplete && updatedFiles[file].progress.uploadStarted;
-    });
-    inProgressUpdatedFiles.forEach(file => {
-      const updatedFile = { ...updatedFiles[file],
-        isPaused: true
-      };
-      updatedFiles[file] = updatedFile;
-    });
-    this.setState({
-      files: updatedFiles
-    });
-    this.emit('pause-all');
-  }
-
-  resumeAll() {
-    const updatedFiles = { ...this.getState().files
-    };
-    const inProgressUpdatedFiles = Object.keys(updatedFiles).filter(file => {
-      return !updatedFiles[file].progress.uploadComplete && updatedFiles[file].progress.uploadStarted;
-    });
-    inProgressUpdatedFiles.forEach(file => {
-      const updatedFile = { ...updatedFiles[file],
-        isPaused: false,
-        error: null
-      };
-      updatedFiles[file] = updatedFile;
-    });
-    this.setState({
-      files: updatedFiles
-    });
-    this.emit('resume-all');
-  }
-
-  retryAll() {
-    const updatedFiles = { ...this.getState().files
-    };
-    const filesToRetry = Object.keys(updatedFiles).filter(file => {
-      return updatedFiles[file].error;
-    });
-    filesToRetry.forEach(file => {
-      const updatedFile = { ...updatedFiles[file],
-        isPaused: false,
-        error: null
-      };
-      updatedFiles[file] = updatedFile;
-    });
-    this.setState({
-      files: updatedFiles,
-      error: null
-    });
-    this.emit('retry-all', filesToRetry);
-
-    if (filesToRetry.length === 0) {
-      return Promise.resolve({
-        successful: [],
-        failed: []
-      });
-    }
-
-    const uploadID = _classPrivateFieldLooseBase(this, _createUpload)[_createUpload](filesToRetry, {
-      forceAllowNewUpload: true // create new upload even if allowNewUpload: false
-
-    });
-
-    return _classPrivateFieldLooseBase(this, _runUpload)[_runUpload](uploadID);
-  }
-
-  cancelAll(_temp) {
-    let {
-      reason = 'user'
-    } = _temp === void 0 ? {} : _temp;
-    this.emit('cancel-all', {
-      reason
-    }); // Only remove existing uploads if user is canceling
-
-    if (reason === 'user') {
-      const {
-        files
-      } = this.getState();
-      const fileIDs = Object.keys(files);
-
-      if (fileIDs.length) {
-        this.removeFiles(fileIDs, 'cancel-all');
-      }
-
-      this.setState({
-        totalProgress: 0,
-        error: null,
-        recoveredState: null
-      });
-    }
-  }
-
-  retryUpload(fileID) {
-    this.setFileState(fileID, {
-      error: null,
-      isPaused: false
-    });
-    this.emit('upload-retry', fileID);
-
-    const uploadID = _classPrivateFieldLooseBase(this, _createUpload)[_createUpload]([fileID], {
-      forceAllowNewUpload: true // create new upload even if allowNewUpload: false
-
-    });
-
-    return _classPrivateFieldLooseBase(this, _runUpload)[_runUpload](uploadID);
-  }
-
-  logout() {
-    this.iteratePlugins(plugin => {
-      if (plugin.provider && plugin.provider.logout) {
-        plugin.provider.logout();
-      }
-    });
-  }
-
-  calculateProgress(file, data) {
-    if (file == null || !this.getFile(file.id)) {
-      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
-      return;
-    } // bytesTotal may be null or zero; in that case we can't divide by it
-
-
-    const canHavePercentage = Number.isFinite(data.bytesTotal) && data.bytesTotal > 0;
-    this.setFileState(file.id, {
-      progress: { ...this.getFile(file.id).progress,
-        bytesUploaded: data.bytesUploaded,
-        bytesTotal: data.bytesTotal,
-        percentage: canHavePercentage ? Math.round(data.bytesUploaded / data.bytesTotal * 100) : 0
-      }
-    });
-    this.calculateTotalProgress();
-  }
-
-  calculateTotalProgress() {
-    // calculate total progress, using the number of files currently uploading,
-    // multiplied by 100 and the summ of individual progress of each file
-    const files = this.getFiles();
-    const inProgress = files.filter(file => {
-      return file.progress.uploadStarted || file.progress.preprocess || file.progress.postprocess;
-    });
-
-    if (inProgress.length === 0) {
-      this.emit('progress', 0);
-      this.setState({
-        totalProgress: 0
-      });
-      return;
-    }
-
-    const sizedFiles = inProgress.filter(file => file.progress.bytesTotal != null);
-    const unsizedFiles = inProgress.filter(file => file.progress.bytesTotal == null);
-
-    if (sizedFiles.length === 0) {
-      const progressMax = inProgress.length * 100;
-      const currentProgress = unsizedFiles.reduce((acc, file) => {
-        return acc + file.progress.percentage;
-      }, 0);
-      const totalProgress = Math.round(currentProgress / progressMax * 100);
-      this.setState({
-        totalProgress
-      });
-      return;
-    }
-
-    let totalSize = sizedFiles.reduce((acc, file) => {
-      return acc + file.progress.bytesTotal;
-    }, 0);
-    const averageSize = totalSize / sizedFiles.length;
-    totalSize += averageSize * unsizedFiles.length;
-    let uploadedSize = 0;
-    sizedFiles.forEach(file => {
-      uploadedSize += file.progress.bytesUploaded;
-    });
-    unsizedFiles.forEach(file => {
-      uploadedSize += averageSize * (file.progress.percentage || 0) / 100;
-    });
-    let totalProgress = totalSize === 0 ? 0 : Math.round(uploadedSize / totalSize * 100); // hot fix, because:
-    // uploadedSize ended up larger than totalSize, resulting in 1325% total
-
-    if (totalProgress > 100) {
-      totalProgress = 100;
-    }
-
-    this.setState({
-      totalProgress
-    });
-    this.emit('progress', totalProgress);
-  }
-  /**
-   * Registers listeners for all global actions, like:
-   * `error`, `file-removed`, `upload-progress`
-   */
-
-
-  updateOnlineStatus() {
-    const online = typeof window.navigator.onLine !== 'undefined' ? window.navigator.onLine : true;
-
-    if (!online) {
-      this.emit('is-offline');
-      this.info(this.i18n('noInternetConnection'), 'error', 0);
-      this.wasOffline = true;
-    } else {
-      this.emit('is-online');
-
-      if (this.wasOffline) {
-        this.emit('back-online');
-        this.info(this.i18n('connectedToInternet'), 'success', 3000);
-        this.wasOffline = false;
-      }
-    }
-  }
-
-  getID() {
-    return this.opts.id;
-  }
-  /**
-   * Registers a plugin with Core.
-   *
-   * @param {object} Plugin object
-   * @param {object} [opts] object with options to be passed to Plugin
-   * @returns {object} self for chaining
-   */
-  // eslint-disable-next-line no-shadow
-
-
-  use(Plugin, opts) {
-    if (typeof Plugin !== 'function') {
-      const msg = `Expected a plugin class, but got ${Plugin === null ? 'null' : typeof Plugin}.` + ' Please verify that the plugin was imported and spelled correctly.';
-      throw new TypeError(msg);
-    } // Instantiate
-
-
-    const plugin = new Plugin(this, opts);
-    const pluginId = plugin.id;
-
-    if (!pluginId) {
-      throw new Error('Your plugin must have an id');
-    }
-
-    if (!plugin.type) {
-      throw new Error('Your plugin must have a type');
-    }
-
-    const existsPluginAlready = this.getPlugin(pluginId);
-
-    if (existsPluginAlready) {
-      const msg = `Already found a plugin named '${existsPluginAlready.id}'. ` + `Tried to use: '${pluginId}'.\n` + 'Uppy plugins must have unique `id` options. See https://uppy.io/docs/plugins/#id.';
-      throw new Error(msg);
-    }
-
-    if (Plugin.VERSION) {
-      this.log(`Using ${pluginId} v${Plugin.VERSION}`);
-    }
-
-    if (plugin.type in _classPrivateFieldLooseBase(this, _plugins)[_plugins]) {
-      _classPrivateFieldLooseBase(this, _plugins)[_plugins][plugin.type].push(plugin);
-    } else {
-      _classPrivateFieldLooseBase(this, _plugins)[_plugins][plugin.type] = [plugin];
-    }
-
-    plugin.install();
-    return this;
-  }
-  /**
-   * Find one Plugin by name.
-   *
-   * @param {string} id plugin id
-   * @returns {BasePlugin|undefined}
-   */
-
-
-  getPlugin(id) {
-    for (const plugins of Object.values(_classPrivateFieldLooseBase(this, _plugins)[_plugins])) {
-      const foundPlugin = plugins.find(plugin => plugin.id === id);
-      if (foundPlugin != null) return foundPlugin;
-    }
-
-    return undefined;
-  }
-
-  [_Symbol$for](type) {
-    return _classPrivateFieldLooseBase(this, _plugins)[_plugins][type];
-  }
-  /**
-   * Iterate through all `use`d plugins.
-   *
-   * @param {Function} method that will be run on each plugin
-   */
-
-
-  iteratePlugins(method) {
-    Object.values(_classPrivateFieldLooseBase(this, _plugins)[_plugins]).flat(1).forEach(method);
-  }
-  /**
-   * Uninstall and remove a plugin.
-   *
-   * @param {object} instance The plugin instance to remove.
-   */
-
-
-  removePlugin(instance) {
-    this.log(`Removing plugin ${instance.id}`);
-    this.emit('plugin-remove', instance);
-
-    if (instance.uninstall) {
-      instance.uninstall();
-    }
-
-    const list = _classPrivateFieldLooseBase(this, _plugins)[_plugins][instance.type]; // list.indexOf failed here, because Vue3 converted the plugin instance
-    // to a Proxy object, which failed the strict comparison test:
-    // obj !== objProxy
-
-
-    const index = list.findIndex(item => item.id === instance.id);
-
-    if (index !== -1) {
-      list.splice(index, 1);
-    }
-
-    const state = this.getState();
-    const updatedState = {
-      plugins: { ...state.plugins,
-        [instance.id]: undefined
-      }
-    };
-    this.setState(updatedState);
-  }
-  /**
-   * Uninstall all plugins and close down this Uppy instance.
-   */
-
-
-  close(_temp2) {
-    let {
-      reason
-    } = _temp2 === void 0 ? {} : _temp2;
-    this.log(`Closing Uppy instance ${this.opts.id}: removing all files and uninstalling plugins`);
-    this.cancelAll({
-      reason
-    });
-
-    _classPrivateFieldLooseBase(this, _storeUnsubscribe)[_storeUnsubscribe]();
-
-    this.iteratePlugins(plugin => {
-      this.removePlugin(plugin);
-    });
-
-    if (typeof window !== 'undefined' && window.removeEventListener) {
-      window.removeEventListener('online', _classPrivateFieldLooseBase(this, _updateOnlineStatus)[_updateOnlineStatus]);
-      window.removeEventListener('offline', _classPrivateFieldLooseBase(this, _updateOnlineStatus)[_updateOnlineStatus]);
-    }
-  }
-
-  hideInfo() {
-    const {
-      info
-    } = this.getState();
-    this.setState({
-      info: info.slice(1)
-    });
-    this.emit('info-hidden');
-  }
-  /**
-   * Set info message in `state.info`, so that UI plugins like `Informer`
-   * can display the message.
-   *
-   * @param {string | object} message Message to be displayed by the informer
-   * @param {string} [type]
-   * @param {number} [duration]
-   */
-
-
-  info(message, type, duration) {
-    if (type === void 0) {
-      type = 'info';
-    }
-
-    if (duration === void 0) {
-      duration = 3000;
-    }
-
-    const isComplexMessage = typeof message === 'object';
-    this.setState({
-      info: [...this.getState().info, {
-        type,
-        message: isComplexMessage ? message.message : message,
-        details: isComplexMessage ? message.details : null
-      }]
-    });
-    setTimeout(() => this.hideInfo(), duration);
-    this.emit('info-visible');
-  }
-  /**
-   * Passes messages to a function, provided in `opts.logger`.
-   * If `opts.logger: Uppy.debugLogger` or `opts.debug: true`, logs to the browser console.
-   *
-   * @param {string|object} message to log
-   * @param {string} [type] optional `error` or `warning`
-   */
-
-
-  log(message, type) {
-    const {
-      logger
-    } = this.opts;
-
-    switch (type) {
-      case 'error':
-        logger.error(message);
-        break;
-
-      case 'warning':
-        logger.warn(message);
-        break;
-
-      default:
-        logger.debug(message);
-        break;
-    }
-  }
-  /**
-   * Restore an upload by its ID.
-   */
-
-
-  restore(uploadID) {
-    this.log(`Core: attempting to restore upload "${uploadID}"`);
-
-    if (!this.getState().currentUploads[uploadID]) {
-      _classPrivateFieldLooseBase(this, _removeUpload)[_removeUpload](uploadID);
-
-      return Promise.reject(new Error('Nonexistent upload'));
-    }
-
-    return _classPrivateFieldLooseBase(this, _runUpload)[_runUpload](uploadID);
-  }
-  /**
-   * Create an upload for a bunch of files.
-   *
-   * @param {Array<string>} fileIDs File IDs to include in this upload.
-   * @returns {string} ID of this upload.
-   */
-
-
-  [_Symbol$for2]() {
-    return _classPrivateFieldLooseBase(this, _createUpload)[_createUpload](...arguments);
-  }
-
-  /**
-   * Add data to an upload's result object.
-   *
-   * @param {string} uploadID The ID of the upload.
-   * @param {object} data Data properties to add to the result object.
-   */
-  addResultData(uploadID, data) {
-    if (!_classPrivateFieldLooseBase(this, _getUpload)[_getUpload](uploadID)) {
-      this.log(`Not setting result for an upload that has been removed: ${uploadID}`);
-      return;
-    }
-
-    const {
-      currentUploads
-    } = this.getState();
-    const currentUpload = { ...currentUploads[uploadID],
-      result: { ...currentUploads[uploadID].result,
-        ...data
-      }
-    };
-    this.setState({
-      currentUploads: { ...currentUploads,
-        [uploadID]: currentUpload
-      }
-    });
-  }
-  /**
-   * Remove an upload, eg. if it has been canceled or completed.
-   *
-   * @param {string} uploadID The ID of the upload.
-   */
-
-
-  /**
-   * Start an upload for all the files that are not currently being uploaded.
-   *
-   * @returns {Promise}
-   */
-  upload() {
-    var _classPrivateFieldLoo;
-
-    if (!((_classPrivateFieldLoo = _classPrivateFieldLooseBase(this, _plugins)[_plugins].uploader) != null && _classPrivateFieldLoo.length)) {
-      this.log('No uploader type plugins are used', 'warning');
-    }
-
-    let {
-      files
-    } = this.getState();
-    const onBeforeUploadResult = this.opts.onBeforeUpload(files);
-
-    if (onBeforeUploadResult === false) {
-      return Promise.reject(new Error('Not starting the upload because onBeforeUpload returned false'));
-    }
-
-    if (onBeforeUploadResult && typeof onBeforeUploadResult === 'object') {
-      files = onBeforeUploadResult; // Updating files in state, because uploader plugins receive file IDs,
-      // and then fetch the actual file object from state
-
-      this.setState({
-        files
-      });
-    }
-
-    return Promise.resolve().then(() => _classPrivateFieldLooseBase(this, _restricter)[_restricter].validateMinNumberOfFiles(files)).catch(err => {
-      _classPrivateFieldLooseBase(this, _informAndEmit)[_informAndEmit]([err]);
-
-      throw err;
-    }).then(() => {
-      if (!_classPrivateFieldLooseBase(this, _checkRequiredMetaFields)[_checkRequiredMetaFields](files)) {
-        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError(this.i18n('missingRequiredMetaField'));
-      }
-    }).catch(err => {
-      // Doing this in a separate catch because we already emited and logged
-      // all the errors in `checkRequiredMetaFields` so we only throw a generic
-      // missing fields error here.
-      throw err;
-    }).then(() => {
-      const {
-        currentUploads
-      } = this.getState(); // get a list of files that are currently assigned to uploads
-
-      const currentlyUploadingFiles = Object.values(currentUploads).flatMap(curr => curr.fileIDs);
-      const waitingFileIDs = [];
-      Object.keys(files).forEach(fileID => {
-        const file = this.getFile(fileID); // if the file hasn't started uploading and hasn't already been assigned to an upload..
-
-        if (!file.progress.uploadStarted && currentlyUploadingFiles.indexOf(fileID) === -1) {
-          waitingFileIDs.push(file.id);
-        }
-      });
-
-      const uploadID = _classPrivateFieldLooseBase(this, _createUpload)[_createUpload](waitingFileIDs);
-
-      return _classPrivateFieldLooseBase(this, _runUpload)[_runUpload](uploadID);
-    }).catch(err => {
-      this.emit('error', err);
-      this.log(err, 'error');
-      throw err;
-    });
-  }
-
-}
-
-function _informAndEmit2(errors) {
-  for (const error of errors) {
-    const {
-      file,
-      isRestriction
-    } = error;
-
-    if (isRestriction) {
-      this.emit('restriction-failed', file, error);
-    } else {
-      this.emit('error', error);
-    }
-
-    this.log(error, 'warning');
-  }
-
-  const userFacingErrors = errors.filter(error => error.isUserFacing); // don't flood the user: only show the first 4 toasts
-
-  const maxNumToShow = 4;
-  const firstErrors = userFacingErrors.slice(0, maxNumToShow);
-  const additionalErrors = userFacingErrors.slice(maxNumToShow);
-  firstErrors.forEach(_ref3 => {
-    let {
-      message,
-      details = ''
-    } = _ref3;
-    this.info({
-      message,
-      details
-    }, 'error', this.opts.infoTimeout);
-  });
-
-  if (additionalErrors.length > 0) {
-    this.info({
-      message: this.i18n('additionalRestrictionsFailed', {
-        count: additionalErrors.length
-      })
-    });
-  }
-}
-
-function _checkRequiredMetaFieldsOnFile2(file) {
-  const {
-    missingFields,
-    error
-  } = _classPrivateFieldLooseBase(this, _restricter)[_restricter].getMissingRequiredMetaFields(file);
-
-  if (missingFields.length > 0) {
-    this.setFileState(file.id, {
-      missingRequiredMetaFields: missingFields
-    });
-    this.log(error.message);
-    this.emit('restriction-failed', file, error);
-    return false;
-  }
-
-  return true;
-}
-
-function _checkRequiredMetaFields2(files) {
-  let success = true;
-
-  for (const file of Object.values(files)) {
-    if (!_classPrivateFieldLooseBase(this, _checkRequiredMetaFieldsOnFile)[_checkRequiredMetaFieldsOnFile](file)) {
-      success = false;
-    }
-  }
-
-  return success;
-}
-
-function _assertNewUploadAllowed2(file) {
-  const {
-    allowNewUpload
-  } = this.getState();
-
-  if (allowNewUpload === false) {
-    const error = new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError(this.i18n('noMoreFilesAllowed'), {
-      file
-    });
-
-    _classPrivateFieldLooseBase(this, _informAndEmit)[_informAndEmit]([error]);
-
-    throw error;
-  }
-}
-
-function _transformFile2(fileDescriptorOrFile) {
-  // Uppy expects files in { name, type, size, data } format.
-  // If the actual File object is passed from input[type=file] or drag-drop,
-  // we normalize it to match Uppy file object
-  const fileDescriptor = fileDescriptorOrFile instanceof File ? {
-    name: fileDescriptorOrFile.name,
-    type: fileDescriptorOrFile.type,
-    size: fileDescriptorOrFile.size,
-    data: fileDescriptorOrFile
-  } : fileDescriptorOrFile;
-  const fileType = (0,_uppy_utils_lib_getFileType__WEBPACK_IMPORTED_MODULE_4__["default"])(fileDescriptor);
-  const fileName = (0,_getFileName_js__WEBPACK_IMPORTED_MODULE_8__["default"])(fileType, fileDescriptor);
-  const fileExtension = (0,_uppy_utils_lib_getFileNameAndExtension__WEBPACK_IMPORTED_MODULE_5__["default"])(fileName).extension;
-  const isRemote = Boolean(fileDescriptor.isRemote);
-  const id = (0,_uppy_utils_lib_generateFileID__WEBPACK_IMPORTED_MODULE_6__.getSafeFileId)(fileDescriptor);
-  const meta = fileDescriptor.meta || {};
-  meta.name = fileName;
-  meta.type = fileType; // `null` means the size is unknown.
-
-  const size = Number.isFinite(fileDescriptor.data.size) ? fileDescriptor.data.size : null;
-  return {
-    source: fileDescriptor.source || '',
-    id,
-    name: fileName,
-    extension: fileExtension || '',
-    meta: { ...this.getState().meta,
-      ...meta
-    },
-    type: fileType,
-    data: fileDescriptor.data,
-    progress: {
-      percentage: 0,
-      bytesUploaded: 0,
-      bytesTotal: size,
-      uploadComplete: false,
-      uploadStarted: null
-    },
-    size,
-    isRemote,
-    remote: fileDescriptor.remote || '',
-    preview: fileDescriptor.preview
-  };
-}
-
-function _startIfAutoProceed2() {
-  if (this.opts.autoProceed && !this.scheduledAutoProceed) {
-    this.scheduledAutoProceed = setTimeout(() => {
-      this.scheduledAutoProceed = null;
-      this.upload().catch(err => {
-        if (!err.isRestriction) {
-          this.log(err.stack || err.message || err);
-        }
-      });
-    }, 4);
-  }
-}
-
-function _checkAndUpdateFileState2(filesToAdd) {
-  const {
-    files: existingFiles
-  } = this.getState(); // create a copy of the files object only once
-
-  const nextFilesState = { ...existingFiles
-  };
-  const validFilesToAdd = [];
-  const errors = [];
-
-  for (const fileToAdd of filesToAdd) {
-    try {
-      var _existingFiles$newFil;
-
-      let newFile = _classPrivateFieldLooseBase(this, _transformFile)[_transformFile](fileToAdd); // If a file has been recovered (Golden Retriever), but we were unable to recover its data (probably too large),
-      // users are asked to re-select these half-recovered files and then this method will be called again.
-      // In order to keep the progress, meta and everthing else, we keep the existing file,
-      // but we replace `data`, and we remove `isGhost`, because the file is no longer a ghost now
-
-
-      if ((_existingFiles$newFil = existingFiles[newFile.id]) != null && _existingFiles$newFil.isGhost) {
-        const {
-          isGhost,
-          ...existingFileState
-        } = existingFiles[newFile.id];
-        newFile = { ...existingFileState,
-          data: fileToAdd.data
-        };
-        this.log(`Replaced the blob in the restored ghost file: ${newFile.name}, ${newFile.id}`);
-      }
-
-      if (this.checkIfFileAlreadyExists(newFile.id)) {
-        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError(this.i18n('noDuplicates', {
-          fileName: newFile.name
-        }), {
-          file: fileToAdd
-        });
-      }
-
-      const onBeforeFileAddedResult = this.opts.onBeforeFileAdded(newFile, nextFilesState);
-
-      if (onBeforeFileAddedResult === false) {
-        // Don’t show UI info for this error, as it should be done by the developer
-        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError('Cannot add the file because onBeforeFileAdded returned false.', {
-          isUserFacing: false,
-          file: fileToAdd
-        });
-      } else if (typeof onBeforeFileAddedResult === 'object' && onBeforeFileAddedResult !== null) {
-        newFile = onBeforeFileAddedResult;
-      }
-
-      _classPrivateFieldLooseBase(this, _restricter)[_restricter].validateSingleFile(newFile); // need to add it to the new local state immediately, so we can use the state to validate the next files too
-
-
-      nextFilesState[newFile.id] = newFile;
-      validFilesToAdd.push(newFile);
-    } catch (err) {
-      errors.push(err);
-    }
-  }
-
-  try {
-    // need to run this separately because it's much more slow, so if we run it inside the for-loop it will be very slow
-    // when many files are added
-    _classPrivateFieldLooseBase(this, _restricter)[_restricter].validateAggregateRestrictions(Object.values(existingFiles), validFilesToAdd);
-  } catch (err) {
-    errors.push(err); // If we have any aggregate error, don't allow adding this batch
-
-    return {
-      nextFilesState: existingFiles,
-      validFilesToAdd: [],
-      errors
-    };
-  }
-
-  return {
-    nextFilesState,
-    validFilesToAdd,
-    errors
-  };
-}
-
-function _addListeners2() {
-  /**
-   * @param {Error} error
-   * @param {object} [file]
-   * @param {object} [response]
-   */
-  const errorHandler = (error, file, response) => {
-    let errorMsg = error.message || 'Unknown error';
-
-    if (error.details) {
-      errorMsg += ` ${error.details}`;
-    }
-
-    this.setState({
-      error: errorMsg
-    });
-
-    if (file != null && file.id in this.getState().files) {
-      this.setFileState(file.id, {
-        error: errorMsg,
-        response
-      });
-    }
-  };
-
-  this.on('error', errorHandler);
-  this.on('upload-error', (file, error, response) => {
-    errorHandler(error, file, response);
-
-    if (typeof error === 'object' && error.message) {
-      const newError = new Error(error.message);
-      newError.isUserFacing = true; // todo maybe don't do this with all errors?
-
-      newError.details = error.message;
-
-      if (error.details) {
-        newError.details += ` ${error.details}`;
-      }
-
-      newError.message = this.i18n('failedToUpload', {
-        file: file == null ? void 0 : file.name
-      });
-
-      _classPrivateFieldLooseBase(this, _informAndEmit)[_informAndEmit]([newError]);
-    } else {
-      _classPrivateFieldLooseBase(this, _informAndEmit)[_informAndEmit]([error]);
-    }
-  });
-  let uploadStalledWarningRecentlyEmitted;
-  this.on('upload-stalled', (error, files) => {
-    const {
-      message
-    } = error;
-    const details = files.map(file => file.meta.name).join(', ');
-
-    if (!uploadStalledWarningRecentlyEmitted) {
-      this.info({
-        message,
-        details
-      }, 'warning', this.opts.infoTimeout);
-      uploadStalledWarningRecentlyEmitted = setTimeout(() => {
-        uploadStalledWarningRecentlyEmitted = null;
-      }, this.opts.infoTimeout);
-    }
-
-    this.log(`${message} ${details}`.trim(), 'warning');
-  });
-  this.on('upload', () => {
-    this.setState({
-      error: null
-    });
-  });
-
-  const onUploadStarted = files => {
-    const filesFiltered = files.filter(file => {
-      const exists = file != null && this.getFile(file.id);
-      if (!exists) this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
-      return exists;
-    });
-    const filesState = Object.fromEntries(filesFiltered.map(file => [file.id, {
-      progress: {
-        uploadStarted: Date.now(),
-        uploadComplete: false,
-        percentage: 0,
-        bytesUploaded: 0,
-        bytesTotal: file.size
-      }
-    }]));
-    this.patchFilesState(filesState);
-  };
-
-  this.on('upload-start', files => {
-    files.forEach(file => {
-      // todo backward compat, remove this event in a next major
-      this.emit('upload-started', file);
-    });
-    onUploadStarted(files);
-  });
-  this.on('upload-progress', this.calculateProgress);
-  this.on('upload-success', (file, uploadResp) => {
-    if (file == null || !this.getFile(file.id)) {
-      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
-      return;
-    }
-
-    const currentProgress = this.getFile(file.id).progress;
-    this.setFileState(file.id, {
-      progress: { ...currentProgress,
-        postprocess: _classPrivateFieldLooseBase(this, _postProcessors)[_postProcessors].size > 0 ? {
-          mode: 'indeterminate'
-        } : null,
-        uploadComplete: true,
-        percentage: 100,
-        bytesUploaded: currentProgress.bytesTotal
-      },
-      response: uploadResp,
-      uploadURL: uploadResp.uploadURL,
-      isPaused: false
-    }); // Remote providers sometimes don't tell us the file size,
-    // but we can know how many bytes we uploaded once the upload is complete.
-
-    if (file.size == null) {
-      this.setFileState(file.id, {
-        size: uploadResp.bytesUploaded || currentProgress.bytesTotal
-      });
-    }
-
-    this.calculateTotalProgress();
-  });
-  this.on('preprocess-progress', (file, progress) => {
-    if (file == null || !this.getFile(file.id)) {
-      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
-      return;
-    }
-
-    this.setFileState(file.id, {
-      progress: { ...this.getFile(file.id).progress,
-        preprocess: progress
-      }
-    });
-  });
-  this.on('preprocess-complete', file => {
-    if (file == null || !this.getFile(file.id)) {
-      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
-      return;
-    }
-
-    const files = { ...this.getState().files
-    };
-    files[file.id] = { ...files[file.id],
-      progress: { ...files[file.id].progress
-      }
-    };
-    delete files[file.id].progress.preprocess;
-    this.setState({
-      files
-    });
-  });
-  this.on('postprocess-progress', (file, progress) => {
-    if (file == null || !this.getFile(file.id)) {
-      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
-      return;
-    }
-
-    this.setFileState(file.id, {
-      progress: { ...this.getState().files[file.id].progress,
-        postprocess: progress
-      }
-    });
-  });
-  this.on('postprocess-complete', file => {
-    if (file == null || !this.getFile(file.id)) {
-      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
-      return;
-    }
-
-    const files = { ...this.getState().files
-    };
-    files[file.id] = { ...files[file.id],
-      progress: { ...files[file.id].progress
-      }
-    };
-    delete files[file.id].progress.postprocess;
-    this.setState({
-      files
-    });
-  });
-  this.on('restored', () => {
-    // Files may have changed--ensure progress is still accurate.
-    this.calculateTotalProgress();
-  });
-  this.on('dashboard:file-edit-complete', file => {
-    if (file) {
-      _classPrivateFieldLooseBase(this, _checkRequiredMetaFieldsOnFile)[_checkRequiredMetaFieldsOnFile](file);
-    }
-  }); // show informer if offline
-
-  if (typeof window !== 'undefined' && window.addEventListener) {
-    window.addEventListener('online', _classPrivateFieldLooseBase(this, _updateOnlineStatus)[_updateOnlineStatus]);
-    window.addEventListener('offline', _classPrivateFieldLooseBase(this, _updateOnlineStatus)[_updateOnlineStatus]);
-    setTimeout(_classPrivateFieldLooseBase(this, _updateOnlineStatus)[_updateOnlineStatus], 3000);
-  }
-}
-
-function _createUpload2(fileIDs, opts) {
-  if (opts === void 0) {
-    opts = {};
-  }
-
-  // uppy.retryAll sets this to true — when retrying we want to ignore `allowNewUpload: false`
-  const {
-    forceAllowNewUpload = false
-  } = opts;
-  const {
-    allowNewUpload,
-    currentUploads
-  } = this.getState();
-
-  if (!allowNewUpload && !forceAllowNewUpload) {
-    throw new Error('Cannot create a new upload: already uploading.');
-  }
-
-  const uploadID = (0,nanoid_non_secure__WEBPACK_IMPORTED_MODULE_12__.nanoid)();
-  this.emit('upload', {
-    id: uploadID,
-    fileIDs
-  });
-  this.setState({
-    allowNewUpload: this.opts.allowMultipleUploadBatches !== false && this.opts.allowMultipleUploads !== false,
-    currentUploads: { ...currentUploads,
-      [uploadID]: {
-        fileIDs,
-        step: 0,
-        result: {}
-      }
-    }
-  });
-  return uploadID;
-}
-
-function _getUpload2(uploadID) {
-  const {
-    currentUploads
-  } = this.getState();
-  return currentUploads[uploadID];
-}
-
-function _removeUpload2(uploadID) {
-  const currentUploads = { ...this.getState().currentUploads
-  };
-  delete currentUploads[uploadID];
-  this.setState({
-    currentUploads
-  });
-}
-
-async function _runUpload2(uploadID) {
-  const getCurrentUpload = () => {
-    const {
-      currentUploads
-    } = this.getState();
-    return currentUploads[uploadID];
-  };
-
-  let currentUpload = getCurrentUpload();
-  const steps = [..._classPrivateFieldLooseBase(this, _preProcessors)[_preProcessors], ..._classPrivateFieldLooseBase(this, _uploaders)[_uploaders], ..._classPrivateFieldLooseBase(this, _postProcessors)[_postProcessors]];
-
-  try {
-    for (let step = currentUpload.step || 0; step < steps.length; step++) {
-      if (!currentUpload) {
-        break;
-      }
-
-      const fn = steps[step];
-      this.setState({
-        currentUploads: { ...this.getState().currentUploads,
-          [uploadID]: { ...currentUpload,
-            step
-          }
-        }
-      });
-      const {
-        fileIDs
-      } = currentUpload; // TODO give this the `updatedUpload` object as its only parameter maybe?
-      // Otherwise when more metadata may be added to the upload this would keep getting more parameters
-
-      await fn(fileIDs, uploadID); // Update currentUpload value in case it was modified asynchronously.
-
-      currentUpload = getCurrentUpload();
-    }
-  } catch (err) {
-    _classPrivateFieldLooseBase(this, _removeUpload)[_removeUpload](uploadID);
-
-    throw err;
-  } // Set result data.
-
-
-  if (currentUpload) {
-    // Mark postprocessing step as complete if necessary; this addresses a case where we might get
-    // stuck in the postprocessing UI while the upload is fully complete.
-    // If the postprocessing steps do not do any work, they may not emit postprocessing events at
-    // all, and never mark the postprocessing as complete. This is fine on its own but we
-    // introduced code in the @uppy/core upload-success handler to prepare postprocessing progress
-    // state if any postprocessors are registered. That is to avoid a "flash of completed state"
-    // before the postprocessing plugins can emit events.
-    //
-    // So, just in case an upload with postprocessing plugins *has* completed *without* emitting
-    // postprocessing completion, we do it instead.
-    currentUpload.fileIDs.forEach(fileID => {
-      const file = this.getFile(fileID);
-
-      if (file && file.progress.postprocess) {
-        this.emit('postprocess-complete', file);
-      }
-    });
-    const files = currentUpload.fileIDs.map(fileID => this.getFile(fileID));
-    const successful = files.filter(file => !file.error);
-    const failed = files.filter(file => file.error);
-    await this.addResultData(uploadID, {
-      successful,
-      failed,
-      uploadID
-    }); // Update currentUpload value in case it was modified asynchronously.
-
-    currentUpload = getCurrentUpload();
-  } // Emit completion events.
-  // This is in a separate function so that the `currentUploads` variable
-  // always refers to the latest state. In the handler right above it refers
-  // to an outdated object without the `.result` property.
-
-
-  let result;
-
-  if (currentUpload) {
-    result = currentUpload.result;
-    this.emit('complete', result);
-
-    _classPrivateFieldLooseBase(this, _removeUpload)[_removeUpload](uploadID);
-  }
-
-  if (result == null) {
-    this.log(`Not setting result for an upload that has been removed: ${uploadID}`);
-  }
-
-  return result;
-}
-
-Uppy.VERSION = packageJson.version;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Uppy);
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/getFileName.js":
-/*!********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/getFileName.js ***!
-  \********************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getFileName)
-/* harmony export */ });
-function getFileName(fileType, fileDescriptor) {
-  if (fileDescriptor.name) {
-    return fileDescriptor.name;
-  }
-
-  if (fileType.split('/')[0] === 'image') {
-    return `${fileType.split('/')[0]}.${fileType.split('/')[1]}`;
-  }
-
-  return 'noname';
-}
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/index.js":
-/*!**************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/index.js ***!
-  \**************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   BasePlugin: () => (/* reexport safe */ _BasePlugin_js__WEBPACK_IMPORTED_MODULE_2__["default"]),
-/* harmony export */   UIPlugin: () => (/* reexport safe */ _UIPlugin_js__WEBPACK_IMPORTED_MODULE_1__["default"]),
-/* harmony export */   Uppy: () => (/* reexport safe */ _Uppy_js__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   debugLogger: () => (/* reexport safe */ _loggers_js__WEBPACK_IMPORTED_MODULE_3__.debugLogger),
-/* harmony export */   "default": () => (/* reexport safe */ _Uppy_js__WEBPACK_IMPORTED_MODULE_0__["default"])
-/* harmony export */ });
-/* harmony import */ var _Uppy_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Uppy.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/Uppy.js");
-/* harmony import */ var _UIPlugin_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UIPlugin.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/UIPlugin.js");
-/* harmony import */ var _BasePlugin_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BasePlugin.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/BasePlugin.js");
-/* harmony import */ var _loggers_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./loggers.js */ "./src/jgDashboard/node_modules/@uppy/core/lib/loggers.js");
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/locale.js":
-/*!***************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/locale.js ***!
-  \***************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  strings: {
-    addBulkFilesFailed: {
-      0: 'Failed to add %{smart_count} file due to an internal error',
-      1: 'Failed to add %{smart_count} files due to internal errors'
-    },
-    youCanOnlyUploadX: {
-      0: 'You can only upload %{smart_count} file',
-      1: 'You can only upload %{smart_count} files'
-    },
-    youHaveToAtLeastSelectX: {
-      0: 'You have to select at least %{smart_count} file',
-      1: 'You have to select at least %{smart_count} files'
-    },
-    exceedsSize: '%{file} exceeds maximum allowed size of %{size}',
-    missingRequiredMetaField: 'Missing required meta fields',
-    missingRequiredMetaFieldOnFile: 'Missing required meta fields in %{fileName}',
-    inferiorSize: 'This file is smaller than the allowed size of %{size}',
-    youCanOnlyUploadFileTypes: 'You can only upload: %{types}',
-    noMoreFilesAllowed: 'Cannot add more files',
-    noDuplicates: "Cannot add the duplicate file '%{fileName}', it already exists",
-    companionError: 'Connection with Companion failed',
-    authAborted: 'Authentication aborted',
-    companionUnauthorizeHint: 'To unauthorize to your %{provider} account, please go to %{url}',
-    failedToUpload: 'Failed to upload %{file}',
-    noInternetConnection: 'No Internet connection',
-    connectedToInternet: 'Connected to the Internet',
-    // Strings for remote providers
-    noFilesFound: 'You have no files or folders here',
-    noSearchResults: 'Unfortunately, there are no results for this search',
-    selectX: {
-      0: 'Select %{smart_count}',
-      1: 'Select %{smart_count}'
-    },
-    allFilesFromFolderNamed: 'All files from folder %{name}',
-    openFolderNamed: 'Open folder %{name}',
-    cancel: 'Cancel',
-    logOut: 'Log out',
-    filter: 'Filter',
-    resetFilter: 'Reset filter',
-    loading: 'Loading...',
-    authenticateWithTitle: 'Please authenticate with %{pluginName} to select files',
-    authenticateWith: 'Connect to %{pluginName}',
-    signInWithGoogle: 'Sign in with Google',
-    searchImages: 'Search for images',
-    enterTextToSearch: 'Enter text to search for images',
-    search: 'Search',
-    resetSearch: 'Reset search',
-    emptyFolderAdded: 'No files were added from empty folder',
-    addedNumFiles: 'Added %{numFiles} file(s)',
-    folderAlreadyAdded: 'The folder "%{folder}" was already added',
-    folderAdded: {
-      0: 'Added %{smart_count} file from %{folder}',
-      1: 'Added %{smart_count} files from %{folder}'
-    },
-    additionalRestrictionsFailed: '%{count} additional restrictions were not fulfilled'
-  }
-});
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/loggers.js":
-/*!****************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/loggers.js ***!
-  \****************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   debugLogger: () => (/* binding */ debugLogger),
-/* harmony export */   justErrorsLogger: () => (/* binding */ justErrorsLogger)
-/* harmony export */ });
-/* harmony import */ var _uppy_utils_lib_getTimeStamp__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/getTimeStamp */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getTimeStamp.js");
-/* eslint-disable no-console */
- // Swallow all logs, except errors.
-// default if logger is not set or debug: false
-
-const justErrorsLogger = {
-  debug: () => {},
-  warn: () => {},
-  error: function () {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return console.error(`[Uppy] [${(0,_uppy_utils_lib_getTimeStamp__WEBPACK_IMPORTED_MODULE_0__["default"])()}]`, ...args);
-  }
-}; // Print logs to console with namespace + timestamp,
-// set by logger: Uppy.debugLogger or debug: true
-
-const debugLogger = {
-  debug: function () {
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-
-    return console.debug(`[Uppy] [${(0,_uppy_utils_lib_getTimeStamp__WEBPACK_IMPORTED_MODULE_0__["default"])()}]`, ...args);
-  },
-  warn: function () {
-    for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-      args[_key3] = arguments[_key3];
-    }
-
-    return console.warn(`[Uppy] [${(0,_uppy_utils_lib_getTimeStamp__WEBPACK_IMPORTED_MODULE_0__["default"])()}]`, ...args);
-  },
-  error: function () {
-    for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-      args[_key4] = arguments[_key4];
-    }
-
-    return console.error(`[Uppy] [${(0,_uppy_utils_lib_getTimeStamp__WEBPACK_IMPORTED_MODULE_0__["default"])()}]`, ...args);
-  }
-};
-
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/core/lib/supportsUploadProgress.js":
-/*!*******************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/core/lib/supportsUploadProgress.js ***!
-  \*******************************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ supportsUploadProgress)
-/* harmony export */ });
-// Edge 15.x does not fire 'progress' events on uploads.
-// See https://github.com/transloadit/uppy/issues/945
-// And https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12224510/
-function supportsUploadProgress(userAgent) {
-  // Allow passing in userAgent for tests
-  if (userAgent == null && typeof navigator !== 'undefined') {
-    // eslint-disable-next-line no-param-reassign
-    userAgent = navigator.userAgent;
-  } // Assume it works because basically everything supports progress events.
-
-
-  if (!userAgent) return true;
-  const m = /Edge\/(\d+\.\d+)/.exec(userAgent);
-  if (!m) return true;
-  const edgeVersion = m[1];
-  let [major, minor] = edgeVersion.split('.');
-  major = parseInt(major, 10);
-  minor = parseInt(minor, 10); // Worked before:
-  // Edge 40.15063.0.0
-  // Microsoft EdgeHTML 15.15063
-
-  if (major < 15 || major === 15 && minor < 15063) {
-    return true;
-  } // Fixed in:
-  // Microsoft EdgeHTML 18.18218
-
-
-  if (major > 18 || major === 18 && minor >= 18218) {
-    return true;
-  } // other versions don't work.
-
-
-  return false;
-}
-
-/***/ }),
-
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/Dashboard.js":
-/*!***********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/Dashboard.js ***!
-  \***********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -15835,20 +9763,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Dashboard)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/core */ "./src/jgDashboard/node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _uppy_status_bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/status-bar */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/index.js");
-/* harmony import */ var _uppy_informer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/informer */ "./src/jgDashboard/node_modules/@uppy/informer/lib/index.js");
-/* harmony import */ var _uppy_thumbnail_generator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/thumbnail-generator */ "./src/jgDashboard/node_modules/@uppy/thumbnail-generator/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/findAllDOMElements */ "./src/jgDashboard/node_modules/@uppy/utils/lib/findAllDOMElements.js");
-/* harmony import */ var _uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/toArray */ "./src/jgDashboard/node_modules/@uppy/utils/lib/toArray.js");
-/* harmony import */ var _uppy_utils_lib_getDroppedFiles__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/utils/lib/getDroppedFiles */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/index.js");
-/* harmony import */ var nanoid_non_secure__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! nanoid/non-secure */ "./src/jgDashboard/node_modules/nanoid/non-secure/index.js");
-/* harmony import */ var memoize_one__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! memoize-one */ "./src/jgDashboard/node_modules/memoize-one/dist/memoize-one.esm.js");
-/* harmony import */ var _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/trapFocus.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/trapFocus.js");
-/* harmony import */ var _utils_createSuperFocus_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/createSuperFocus.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js");
-/* harmony import */ var _components_Dashboard_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/Dashboard.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/Dashboard.js");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./locale.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/locale.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
+/* harmony import */ var _uppy_status_bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/status-bar */ "./node_modules/@uppy/status-bar/lib/index.js");
+/* harmony import */ var _uppy_informer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/informer */ "./node_modules/@uppy/informer/lib/index.js");
+/* harmony import */ var _uppy_thumbnail_generator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/thumbnail-generator */ "./node_modules/@uppy/thumbnail-generator/lib/index.js");
+/* harmony import */ var _uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/findAllDOMElements */ "./node_modules/@uppy/utils/lib/findAllDOMElements.js");
+/* harmony import */ var _uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/toArray */ "./node_modules/@uppy/utils/lib/toArray.js");
+/* harmony import */ var _uppy_utils_lib_getDroppedFiles__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/utils/lib/getDroppedFiles */ "./node_modules/@uppy/utils/lib/getDroppedFiles/index.js");
+/* harmony import */ var nanoid_non_secure__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! nanoid/non-secure */ "./node_modules/nanoid/non-secure/index.js");
+/* harmony import */ var memoize_one__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! memoize-one */ "./node_modules/memoize-one/dist/memoize-one.esm.js");
+/* harmony import */ var _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/trapFocus.js */ "./node_modules/@uppy/dashboard/lib/utils/trapFocus.js");
+/* harmony import */ var _utils_createSuperFocus_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/createSuperFocus.js */ "./node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js");
+/* harmony import */ var _components_Dashboard_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/Dashboard.js */ "./node_modules/@uppy/dashboard/lib/components/Dashboard.js");
+/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/dashboard/lib/locale.js");
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 
 var id = 0;
@@ -17055,10 +10983,10 @@ Dashboard.VERSION = packageJson.version;
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFiles.js":
-/*!*********************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFiles.js ***!
-  \*********************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/AddFiles.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/AddFiles.js ***!
+  \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17066,7 +10994,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 let _Symbol$for;
 
 
@@ -17417,10 +11345,10 @@ class AddFiles extends preact__WEBPACK_IMPORTED_MODULE_0__.Component {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js":
-/*!**************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js ***!
-  \**************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js ***!
+  \**********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17428,9 +11356,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
-/* harmony import */ var _AddFiles_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AddFiles.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFiles.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var _AddFiles_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AddFiles.js */ "./node_modules/@uppy/dashboard/lib/components/AddFiles.js");
 
 
 
@@ -17457,10 +11385,10 @@ const AddFilesPanel = props => {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/Dashboard.js":
-/*!**********************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/Dashboard.js ***!
-  \**********************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/Dashboard.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/Dashboard.js ***!
+  \******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17468,17 +11396,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Dashboard)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
-/* harmony import */ var _uppy_utils_lib_isDragDropSupported__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isDragDropSupported */ "./src/jgDashboard/node_modules/@uppy/utils/lib/isDragDropSupported.js");
-/* harmony import */ var _FileList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FileList.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileList.js");
-/* harmony import */ var _AddFiles_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AddFiles.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFiles.js");
-/* harmony import */ var _AddFilesPanel_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./AddFilesPanel.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js");
-/* harmony import */ var _PickerPanelContent_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PickerPanelContent.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js");
-/* harmony import */ var _EditorPanel_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EditorPanel.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/EditorPanel.js");
-/* harmony import */ var _PickerPanelTopBar_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PickerPanelTopBar.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js");
-/* harmony import */ var _FileCard_index_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./FileCard/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileCard/index.js");
-/* harmony import */ var _Slide_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Slide.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/Slide.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var _uppy_utils_lib_isDragDropSupported__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isDragDropSupported */ "./node_modules/@uppy/utils/lib/isDragDropSupported.js");
+/* harmony import */ var _FileList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FileList.js */ "./node_modules/@uppy/dashboard/lib/components/FileList.js");
+/* harmony import */ var _AddFiles_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AddFiles.js */ "./node_modules/@uppy/dashboard/lib/components/AddFiles.js");
+/* harmony import */ var _AddFilesPanel_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./AddFilesPanel.js */ "./node_modules/@uppy/dashboard/lib/components/AddFilesPanel.js");
+/* harmony import */ var _PickerPanelContent_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PickerPanelContent.js */ "./node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js");
+/* harmony import */ var _EditorPanel_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EditorPanel.js */ "./node_modules/@uppy/dashboard/lib/components/EditorPanel.js");
+/* harmony import */ var _PickerPanelTopBar_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PickerPanelTopBar.js */ "./node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js");
+/* harmony import */ var _FileCard_index_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./FileCard/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileCard/index.js");
+/* harmony import */ var _Slide_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Slide.js */ "./node_modules/@uppy/dashboard/lib/components/Slide.js");
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 
@@ -17663,10 +11591,10 @@ function Dashboard(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/EditorPanel.js":
-/*!************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/EditorPanel.js ***!
-  \************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/EditorPanel.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/EditorPanel.js ***!
+  \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17674,8 +11602,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 
 
 
@@ -17715,10 +11643,10 @@ function EditorPanel(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileCard/RenderMetaFields.js":
-/*!**************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileCard/RenderMetaFields.js ***!
-  \**************************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileCard/RenderMetaFields.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileCard/RenderMetaFields.js ***!
+  \**********************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17726,7 +11654,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ RenderMetaFields)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 
 function RenderMetaFields(props) {
   const {
@@ -17770,10 +11698,10 @@ function RenderMetaFields(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileCard/index.js":
-/*!***************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileCard/index.js ***!
-  \***************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileCard/index.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileCard/index.js ***!
+  \***********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17781,14 +11709,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FileCard)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! preact/hooks */ "./src/jgDashboard/node_modules/preact/hooks/dist/hooks.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
-/* harmony import */ var nanoid_non_secure__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! nanoid/non-secure */ "./src/jgDashboard/node_modules/nanoid/non-secure/index.js");
-/* harmony import */ var _utils_getFileTypeIcon_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/getFileTypeIcon.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js");
-/* harmony import */ var _utils_ignoreEvent_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/ignoreEvent.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js");
-/* harmony import */ var _FilePreview_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../FilePreview.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FilePreview.js");
-/* harmony import */ var _RenderMetaFields_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./RenderMetaFields.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileCard/RenderMetaFields.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! preact/hooks */ "./node_modules/preact/hooks/dist/hooks.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var nanoid_non_secure__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! nanoid/non-secure */ "./node_modules/nanoid/non-secure/index.js");
+/* harmony import */ var _utils_getFileTypeIcon_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/getFileTypeIcon.js */ "./node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js");
+/* harmony import */ var _utils_ignoreEvent_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/ignoreEvent.js */ "./node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js");
+/* harmony import */ var _FilePreview_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../FilePreview.js */ "./node_modules/@uppy/dashboard/lib/components/FilePreview.js");
+/* harmony import */ var _RenderMetaFields_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./RenderMetaFields.js */ "./node_modules/@uppy/dashboard/lib/components/FileCard/RenderMetaFields.js");
 
 
 
@@ -17928,10 +11856,10 @@ function FileCard(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js":
-/*!***********************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js ***!
-  \***********************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js ***!
+  \*******************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17939,8 +11867,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Buttons)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _utils_copyToClipboard_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../utils/copyToClipboard.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/copyToClipboard.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var _utils_copyToClipboard_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../utils/copyToClipboard.js */ "./node_modules/@uppy/dashboard/lib/utils/copyToClipboard.js");
 
 
 
@@ -18100,10 +12028,10 @@ function Buttons(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FileInfo/index.js":
-/*!************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FileInfo/index.js ***!
-  \************************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileItem/FileInfo/index.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileItem/FileInfo/index.js ***!
+  \********************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18111,10 +12039,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FileInfo)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @transloadit/prettier-bytes */ "./src/jgDashboard/node_modules/@transloadit/prettier-bytes/prettierBytes.js");
-/* harmony import */ var _uppy_utils_lib_truncateString__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/truncateString */ "./src/jgDashboard/node_modules/@uppy/utils/lib/truncateString.js");
-/* harmony import */ var _MetaErrorMessage_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../MetaErrorMessage.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @transloadit/prettier-bytes */ "./node_modules/@uppy/dashboard/node_modules/@transloadit/prettier-bytes/prettierBytes.js");
+/* harmony import */ var _uppy_utils_lib_truncateString__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/truncateString */ "./node_modules/@uppy/utils/lib/truncateString.js");
+/* harmony import */ var _MetaErrorMessage_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../MetaErrorMessage.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js");
 
 
 
@@ -18229,10 +12157,10 @@ function FileInfo(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js":
-/*!**********************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js ***!
-  \**********************************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js":
+/*!******************************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js ***!
+  \******************************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18240,10 +12168,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilePreviewAndLink)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _FilePreview_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../FilePreview.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FilePreview.js");
-/* harmony import */ var _MetaErrorMessage_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../MetaErrorMessage.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js");
-/* harmony import */ var _utils_getFileTypeIcon_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../utils/getFileTypeIcon.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var _FilePreview_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../FilePreview.js */ "./node_modules/@uppy/dashboard/lib/components/FilePreview.js");
+/* harmony import */ var _MetaErrorMessage_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../MetaErrorMessage.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js");
+/* harmony import */ var _utils_getFileTypeIcon_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../utils/getFileTypeIcon.js */ "./node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js");
 
 
 
@@ -18283,10 +12211,10 @@ function FilePreviewAndLink(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js":
-/*!****************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js ***!
-  \****************************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js ***!
+  \************************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18294,7 +12222,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FileProgress)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 
 
 function onPauseResumeCancelRetry(props) {
@@ -18491,10 +12419,10 @@ function FileProgress(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js":
-/*!**************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js ***!
-  \**************************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileItem/MetaErrorMessage.js ***!
+  \**********************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18502,7 +12430,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ renderMissingMetaFieldsError)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 
 
 const metaFieldIdToName = (metaFieldId, metaFields) => {
@@ -18541,10 +12469,10 @@ function renderMissingMetaFieldsError(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/index.js":
-/*!***************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/index.js ***!
-  \***************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileItem/index.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileItem/index.js ***!
+  \***********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18552,13 +12480,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FileItem)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
-/* harmony import */ var is_shallow_equal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! is-shallow-equal */ "./src/jgDashboard/node_modules/is-shallow-equal/index.js");
-/* harmony import */ var _FilePreviewAndLink_index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FilePreviewAndLink/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js");
-/* harmony import */ var _FileProgress_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./FileProgress/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js");
-/* harmony import */ var _FileInfo_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./FileInfo/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/FileInfo/index.js");
-/* harmony import */ var _Buttons_index_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Buttons/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var is_shallow_equal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! is-shallow-equal */ "./node_modules/is-shallow-equal/index.js");
+/* harmony import */ var _FilePreviewAndLink_index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FilePreviewAndLink/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink/index.js");
+/* harmony import */ var _FileProgress_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./FileProgress/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/FileProgress/index.js");
+/* harmony import */ var _FileInfo_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./FileInfo/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/FileInfo/index.js");
+/* harmony import */ var _Buttons_index_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Buttons/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/Buttons/index.js");
 
 
 
@@ -18689,10 +12617,10 @@ class FileItem extends preact__WEBPACK_IMPORTED_MODULE_0__.Component {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileList.js":
-/*!*********************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileList.js ***!
-  \*********************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FileList.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FileList.js ***!
+  \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18700,10 +12628,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! preact/hooks */ "./src/jgDashboard/node_modules/preact/hooks/dist/hooks.module.js");
-/* harmony import */ var _FileItem_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FileItem/index.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FileItem/index.js");
-/* harmony import */ var _VirtualList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./VirtualList.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/VirtualList.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! preact/hooks */ "./node_modules/preact/hooks/dist/hooks.module.js");
+/* harmony import */ var _FileItem_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FileItem/index.js */ "./node_modules/@uppy/dashboard/lib/components/FileItem/index.js");
+/* harmony import */ var _VirtualList_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./VirtualList.js */ "./node_modules/@uppy/dashboard/lib/components/VirtualList.js");
 
 
 
@@ -18826,10 +12754,10 @@ function chunks(list, size) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FilePreview.js":
-/*!************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/FilePreview.js ***!
-  \************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/FilePreview.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/FilePreview.js ***!
+  \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18837,8 +12765,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilePreview)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _utils_getFileTypeIcon_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getFileTypeIcon.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var _utils_getFileTypeIcon_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getFileTypeIcon.js */ "./node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js");
 
 
 function FilePreview(props) {
@@ -18883,10 +12811,10 @@ function FilePreview(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js":
-/*!*******************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js ***!
-  \*******************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/PickerPanelContent.js ***!
+  \***************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18894,9 +12822,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
-/* harmony import */ var _utils_ignoreEvent_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/ignoreEvent.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var _utils_ignoreEvent_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/ignoreEvent.js */ "./node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js");
 
 
 
@@ -18940,10 +12868,10 @@ function PickerPanelContent(_ref) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js":
-/*!******************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js ***!
-  \******************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/PickerPanelTopBar.js ***!
+  \**************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18951,7 +12879,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 
 const uploadStates = {
   STATE_ERROR: 'error',
@@ -19103,10 +13031,10 @@ function PanelTopBar(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/Slide.js":
-/*!******************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/Slide.js ***!
-  \******************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/Slide.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/Slide.js ***!
+  \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19114,8 +13042,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 
 
 const transitionName = 'uppy-transition-slideDownUp';
@@ -19215,10 +13143,10 @@ class Slide extends preact__WEBPACK_IMPORTED_MODULE_0__.Component {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/VirtualList.js":
-/*!************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/components/VirtualList.js ***!
-  \************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/components/VirtualList.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/components/VirtualList.js ***!
+  \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19226,7 +13154,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 /**
@@ -19394,10 +13322,10 @@ class VirtualList extends preact__WEBPACK_IMPORTED_MODULE_0__.Component {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/locale.js":
-/*!********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/locale.js ***!
-  \********************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/locale.js":
+/*!****************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/locale.js ***!
+  \****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19500,10 +13428,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/copyToClipboard.js":
-/*!***********************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/copyToClipboard.js ***!
-  \***********************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/utils/copyToClipboard.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/utils/copyToClipboard.js ***!
+  \*******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19569,10 +13497,10 @@ function copyToClipboard(textToCopy, fallbackString) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js":
-/*!************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js ***!
-  \************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js ***!
+  \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19580,9 +13508,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ createSuperFocus)
 /* harmony export */ });
-/* harmony import */ var lodash_debounce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash.debounce */ "./src/jgDashboard/node_modules/lodash.debounce/index.js");
-/* harmony import */ var _uppy_utils_lib_FOCUSABLE_ELEMENTS__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/FOCUSABLE_ELEMENTS */ "./src/jgDashboard/node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js");
-/* harmony import */ var _getActiveOverlayEl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getActiveOverlayEl.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js");
+/* harmony import */ var lodash_debounce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash.debounce */ "./node_modules/lodash.debounce/index.js");
+/* harmony import */ var _uppy_utils_lib_FOCUSABLE_ELEMENTS__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/FOCUSABLE_ELEMENTS */ "./node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js");
+/* harmony import */ var _getActiveOverlayEl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getActiveOverlayEl.js */ "./node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js");
 
 
 
@@ -19638,10 +13566,10 @@ function createSuperFocus() {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js":
-/*!**************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js ***!
-  \**************************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js ***!
+  \**********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19664,10 +13592,10 @@ function getActiveOverlayEl(dashboardEl, activeOverlayType) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js":
-/*!***********************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js ***!
-  \***********************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/utils/getFileTypeIcon.js ***!
+  \*******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19675,7 +13603,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ getIconByMime)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 
 
 function iconImage() {
@@ -19856,10 +13784,10 @@ function getIconByMime(fileType) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js":
-/*!*******************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js ***!
-  \*******************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/utils/ignoreEvent.js ***!
+  \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19889,10 +13817,10 @@ function ignoreEvent(ev) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/trapFocus.js":
-/*!*****************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/trapFocus.js ***!
-  \*****************************************************************************/
+/***/ "./node_modules/@uppy/dashboard/lib/utils/trapFocus.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@uppy/dashboard/lib/utils/trapFocus.js ***!
+  \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19901,9 +13829,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   forInline: () => (/* binding */ forInline),
 /* harmony export */   forModal: () => (/* binding */ trapFocus)
 /* harmony export */ });
-/* harmony import */ var _uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/toArray */ "./src/jgDashboard/node_modules/@uppy/utils/lib/toArray.js");
-/* harmony import */ var _uppy_utils_lib_FOCUSABLE_ELEMENTS__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/FOCUSABLE_ELEMENTS */ "./src/jgDashboard/node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js");
-/* harmony import */ var _getActiveOverlayEl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getActiveOverlayEl.js */ "./src/jgDashboard/node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js");
+/* harmony import */ var _uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/toArray */ "./node_modules/@uppy/utils/lib/toArray.js");
+/* harmony import */ var _uppy_utils_lib_FOCUSABLE_ELEMENTS__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/FOCUSABLE_ELEMENTS */ "./node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js");
+/* harmony import */ var _getActiveOverlayEl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getActiveOverlayEl.js */ "./node_modules/@uppy/dashboard/lib/utils/getActiveOverlayEl.js");
 
 
 
@@ -19970,10 +13898,10 @@ function forInline(event, activeOverlayType, dashboardEl) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/informer/lib/FadeIn.js":
-/*!*******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/informer/lib/FadeIn.js ***!
-  \*******************************************************************/
+/***/ "./node_modules/@uppy/informer/lib/FadeIn.js":
+/*!***************************************************!*\
+  !*** ./node_modules/@uppy/informer/lib/FadeIn.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -19981,7 +13909,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FadeIn)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 
 const TRANSITION_MS = 300;
 class FadeIn extends preact__WEBPACK_IMPORTED_MODULE_0__.Component {
@@ -20016,10 +13944,10 @@ class FadeIn extends preact__WEBPACK_IMPORTED_MODULE_0__.Component {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/informer/lib/Informer.js":
-/*!*********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/informer/lib/Informer.js ***!
-  \*********************************************************************/
+/***/ "./node_modules/@uppy/informer/lib/Informer.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/@uppy/informer/lib/Informer.js ***!
+  \*****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20027,10 +13955,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Informer)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/core */ "./src/jgDashboard/node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _FadeIn_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FadeIn.js */ "./src/jgDashboard/node_modules/@uppy/informer/lib/FadeIn.js");
-/* harmony import */ var _TransitionGroup_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TransitionGroup.js */ "./src/jgDashboard/node_modules/@uppy/informer/lib/TransitionGroup.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
+/* harmony import */ var _FadeIn_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FadeIn.js */ "./node_modules/@uppy/informer/lib/FadeIn.js");
+/* harmony import */ var _TransitionGroup_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TransitionGroup.js */ "./node_modules/@uppy/informer/lib/TransitionGroup.js");
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions  */
 
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -20096,10 +14024,10 @@ Informer.VERSION = packageJson.version;
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/informer/lib/TransitionGroup.js":
-/*!****************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/informer/lib/TransitionGroup.js ***!
-  \****************************************************************************/
+/***/ "./node_modules/@uppy/informer/lib/TransitionGroup.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@uppy/informer/lib/TransitionGroup.js ***!
+  \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20107,7 +14035,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
 /* eslint-disable */
 
 /**
@@ -20425,10 +14353,10 @@ TransitionGroup.defaultProps = {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/informer/lib/index.js":
-/*!******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/informer/lib/index.js ***!
-  \******************************************************************/
+/***/ "./node_modules/@uppy/informer/lib/index.js":
+/*!**************************************************!*\
+  !*** ./node_modules/@uppy/informer/lib/index.js ***!
+  \**************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20436,15 +14364,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* reexport safe */ _Informer_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _Informer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Informer.js */ "./src/jgDashboard/node_modules/@uppy/informer/lib/Informer.js");
+/* harmony import */ var _Informer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Informer.js */ "./node_modules/@uppy/informer/lib/Informer.js");
 
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/Components.js":
-/*!*************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/lib/Components.js ***!
-  \*************************************************************************/
+/***/ "./node_modules/@uppy/status-bar/lib/Components.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/@uppy/status-bar/lib/Components.js ***!
+  \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20462,12 +14390,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   RetryBtn: () => (/* binding */ RetryBtn),
 /* harmony export */   UploadBtn: () => (/* binding */ UploadBtn)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
-/* harmony import */ var lodash_throttle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash.throttle */ "./src/jgDashboard/node_modules/lodash.throttle/index.js");
-/* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @transloadit/prettier-bytes */ "./src/jgDashboard/node_modules/@uppy/status-bar/node_modules/@transloadit/prettier-bytes/prettierBytes.js");
-/* harmony import */ var _uppy_utils_lib_prettyETA__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/prettyETA */ "./src/jgDashboard/node_modules/@uppy/utils/lib/prettyETA.js");
-/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./StatusBarStates.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarStates.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var lodash_throttle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash.throttle */ "./node_modules/lodash.throttle/index.js");
+/* harmony import */ var _transloadit_prettier_bytes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @transloadit/prettier-bytes */ "./node_modules/@transloadit/prettier-bytes/prettierBytes.js");
+/* harmony import */ var _uppy_utils_lib_prettyETA__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/prettyETA */ "./node_modules/@uppy/utils/lib/prettyETA.js");
+/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./StatusBarStates.js */ "./node_modules/@uppy/status-bar/lib/StatusBarStates.js");
 
 
 
@@ -20865,10 +14793,10 @@ function ProgressBarError(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBar.js":
-/*!************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBar.js ***!
-  \************************************************************************/
+/***/ "./node_modules/@uppy/status-bar/lib/StatusBar.js":
+/*!********************************************************!*\
+  !*** ./node_modules/@uppy/status-bar/lib/StatusBar.js ***!
+  \********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20876,13 +14804,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ StatusBar)
 /* harmony export */ });
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./src/jgDashboard/node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_getSpeed__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/getSpeed */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getSpeed.js");
-/* harmony import */ var _uppy_utils_lib_getBytesRemaining__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/getBytesRemaining */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getBytesRemaining.js");
-/* harmony import */ var _uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/getTextDirection */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getTextDirection.js");
-/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./StatusBarStates.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarStates.js");
-/* harmony import */ var _StatusBarUI_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./StatusBarUI.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarUI.js");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./locale.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/locale.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
+/* harmony import */ var _uppy_utils_lib_getSpeed__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/getSpeed */ "./node_modules/@uppy/utils/lib/getSpeed.js");
+/* harmony import */ var _uppy_utils_lib_getBytesRemaining__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/getBytesRemaining */ "./node_modules/@uppy/utils/lib/getBytesRemaining.js");
+/* harmony import */ var _uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/getTextDirection */ "./node_modules/@uppy/utils/lib/getTextDirection.js");
+/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./StatusBarStates.js */ "./node_modules/@uppy/status-bar/lib/StatusBarStates.js");
+/* harmony import */ var _StatusBarUI_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./StatusBarUI.js */ "./node_modules/@uppy/status-bar/lib/StatusBarUI.js");
+/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/status-bar/lib/locale.js");
 
 
 
@@ -21100,10 +15028,10 @@ StatusBar.VERSION = packageJson.version;
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarStates.js":
-/*!******************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarStates.js ***!
-  \******************************************************************************/
+/***/ "./node_modules/@uppy/status-bar/lib/StatusBarStates.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@uppy/status-bar/lib/StatusBarStates.js ***!
+  \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21122,10 +15050,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarUI.js":
-/*!**************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarUI.js ***!
-  \**************************************************************************/
+/***/ "./node_modules/@uppy/status-bar/lib/StatusBarUI.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/@uppy/status-bar/lib/StatusBarUI.js ***!
+  \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21133,11 +15061,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ StatusBar)
 /* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./src/jgDashboard/node_modules/preact/dist/preact.module.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./src/jgDashboard/node_modules/classnames/index.js");
-/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./StatusBarStates.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBarStates.js");
-/* harmony import */ var _calculateProcessingProgress_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./calculateProcessingProgress.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/calculateProcessingProgress.js");
-/* harmony import */ var _Components_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/Components.js");
+/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./StatusBarStates.js */ "./node_modules/@uppy/status-bar/lib/StatusBarStates.js");
+/* harmony import */ var _calculateProcessingProgress_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./calculateProcessingProgress.js */ "./node_modules/@uppy/status-bar/lib/calculateProcessingProgress.js");
+/* harmony import */ var _Components_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Components.js */ "./node_modules/@uppy/status-bar/lib/Components.js");
 
 
 
@@ -21360,10 +15288,10 @@ function StatusBar(props) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/calculateProcessingProgress.js":
-/*!******************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/lib/calculateProcessingProgress.js ***!
-  \******************************************************************************************/
+/***/ "./node_modules/@uppy/status-bar/lib/calculateProcessingProgress.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/@uppy/status-bar/lib/calculateProcessingProgress.js ***!
+  \**************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21408,10 +15336,10 @@ function calculateProcessingProgress(files) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/index.js":
-/*!********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/lib/index.js ***!
-  \********************************************************************/
+/***/ "./node_modules/@uppy/status-bar/lib/index.js":
+/*!****************************************************!*\
+  !*** ./node_modules/@uppy/status-bar/lib/index.js ***!
+  \****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21419,15 +15347,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* reexport safe */ _StatusBar_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _StatusBar_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StatusBar.js */ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/StatusBar.js");
+/* harmony import */ var _StatusBar_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StatusBar.js */ "./node_modules/@uppy/status-bar/lib/StatusBar.js");
 
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/status-bar/lib/locale.js":
-/*!*********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/status-bar/lib/locale.js ***!
-  \*********************************************************************/
+/***/ "./node_modules/@uppy/status-bar/lib/locale.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/@uppy/status-bar/lib/locale.js ***!
+  \*****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21487,10 +15415,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/store-default/lib/index.js":
-/*!***********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/store-default/lib/index.js ***!
-  \***********************************************************************/
+/***/ "./node_modules/@uppy/store-default/lib/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@uppy/store-default/lib/index.js ***!
+  \*******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21567,10 +15495,10 @@ DefaultStore.VERSION = packageJson.version;
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/thumbnail-generator/lib/index.js":
-/*!*****************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/thumbnail-generator/lib/index.js ***!
-  \*****************************************************************************/
+/***/ "./node_modules/@uppy/thumbnail-generator/lib/index.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@uppy/thumbnail-generator/lib/index.js ***!
+  \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21578,12 +15506,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ ThumbnailGenerator)
 /* harmony export */ });
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./src/jgDashboard/node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_dataURItoBlob__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/dataURItoBlob */ "./src/jgDashboard/node_modules/@uppy/utils/lib/dataURItoBlob.js");
-/* harmony import */ var _uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isObjectURL */ "./src/jgDashboard/node_modules/@uppy/utils/lib/isObjectURL.js");
-/* harmony import */ var _uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/isPreviewSupported */ "./src/jgDashboard/node_modules/@uppy/utils/lib/isPreviewSupported.js");
-/* harmony import */ var exifr_dist_mini_esm_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! exifr/dist/mini.esm.mjs */ "./src/jgDashboard/node_modules/exifr/dist/mini.esm.mjs");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./locale.js */ "./src/jgDashboard/node_modules/@uppy/thumbnail-generator/lib/locale.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
+/* harmony import */ var _uppy_utils_lib_dataURItoBlob__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/dataURItoBlob */ "./node_modules/@uppy/utils/lib/dataURItoBlob.js");
+/* harmony import */ var _uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isObjectURL */ "./node_modules/@uppy/utils/lib/isObjectURL.js");
+/* harmony import */ var _uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/isPreviewSupported */ "./node_modules/@uppy/utils/lib/isPreviewSupported.js");
+/* harmony import */ var exifr_dist_mini_esm_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! exifr/dist/mini.esm.mjs */ "./node_modules/exifr/dist/mini.esm.mjs");
+/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/thumbnail-generator/lib/locale.js");
 
 
 
@@ -21992,10 +15920,10 @@ ThumbnailGenerator.VERSION = packageJson.version;
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/thumbnail-generator/lib/locale.js":
-/*!******************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/thumbnail-generator/lib/locale.js ***!
-  \******************************************************************************/
+/***/ "./node_modules/@uppy/thumbnail-generator/lib/locale.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@uppy/thumbnail-generator/lib/locale.js ***!
+  \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22011,10 +15939,1028 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js":
-/*!****************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js ***!
-  \****************************************************************************/
+/***/ "./node_modules/@uppy/tus/lib/getFingerprint.js":
+/*!******************************************************!*\
+  !*** ./node_modules/@uppy/tus/lib/getFingerprint.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getFingerprint)
+/* harmony export */ });
+/* harmony import */ var tus_js_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tus-js-client */ "./node_modules/tus-js-client/lib.esm/browser/index.js");
+
+
+function isCordova() {
+  return typeof window !== 'undefined' && (typeof window.PhoneGap !== 'undefined' || typeof window.Cordova !== 'undefined' || typeof window.cordova !== 'undefined');
+}
+
+function isReactNative() {
+  return typeof navigator !== 'undefined' && typeof navigator.product === 'string' && navigator.product.toLowerCase() === 'reactnative';
+} // We override tus fingerprint to uppy’s `file.id`, since the `file.id`
+// now also includes `relativePath` for files added from folders.
+// This means you can add 2 identical files, if one is in folder a,
+// the other in folder b — `a/file.jpg` and `b/file.jpg`, when added
+// together with a folder, will be treated as 2 separate files.
+//
+// For React Native and Cordova, we let tus-js-client’s default
+// fingerprint handling take charge.
+
+
+function getFingerprint(uppyFileObj) {
+  return (file, options) => {
+    if (isCordova() || isReactNative()) {
+      return tus_js_client__WEBPACK_IMPORTED_MODULE_0__.defaultOptions.fingerprint(file, options);
+    }
+
+    const uppyFingerprint = ['tus', uppyFileObj.id, options.endpoint].join('-');
+    return Promise.resolve(uppyFingerprint);
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/tus/lib/index.js":
+/*!*********************************************!*\
+  !*** ./node_modules/@uppy/tus/lib/index.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Tus)
+/* harmony export */ });
+/* harmony import */ var _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core/lib/BasePlugin.js */ "./node_modules/@uppy/core/lib/BasePlugin.js");
+/* harmony import */ var tus_js_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! tus-js-client */ "./node_modules/tus-js-client/lib.esm/browser/index.js");
+/* harmony import */ var _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/companion-client */ "./node_modules/@uppy/companion-client/lib/index.js");
+/* harmony import */ var _uppy_utils_lib_emitSocketProgress__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/emitSocketProgress */ "./node_modules/@uppy/utils/lib/emitSocketProgress.js");
+/* harmony import */ var _uppy_utils_lib_getSocketHost__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/getSocketHost */ "./node_modules/@uppy/utils/lib/getSocketHost.js");
+/* harmony import */ var _uppy_utils_lib_EventTracker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/EventTracker */ "./node_modules/@uppy/utils/lib/EventTracker.js");
+/* harmony import */ var _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/NetworkError */ "./node_modules/@uppy/utils/lib/NetworkError.js");
+/* harmony import */ var _uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/utils/lib/isNetworkError */ "./node_modules/@uppy/utils/lib/isNetworkError.js");
+/* harmony import */ var _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @uppy/utils/lib/RateLimitedQueue */ "./node_modules/@uppy/utils/lib/RateLimitedQueue.js");
+/* harmony import */ var _uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @uppy/utils/lib/hasProperty */ "./node_modules/@uppy/utils/lib/hasProperty.js");
+/* harmony import */ var _uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @uppy/utils/lib/fileFilters */ "./node_modules/@uppy/utils/lib/fileFilters.js");
+/* harmony import */ var _getFingerprint_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./getFingerprint.js */ "./node_modules/@uppy/tus/lib/getFingerprint.js");
+function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
+
+var id = 0;
+
+function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+const packageJson = {
+  "version": "3.1.0"
+};
+/** @typedef {import('..').TusOptions} TusOptions */
+
+/** @typedef {import('tus-js-client').UploadOptions} RawTusOptions */
+
+/** @typedef {import('@uppy/core').Uppy} Uppy */
+
+/** @typedef {import('@uppy/core').UppyFile} UppyFile */
+
+/** @typedef {import('@uppy/core').FailedUppyFile<{}>} FailedUppyFile */
+
+/**
+ * Extracted from https://github.com/tus/tus-js-client/blob/master/lib/upload.js#L13
+ * excepted we removed 'fingerprint' key to avoid adding more dependencies
+ *
+ * @type {RawTusOptions}
+ */
+
+const tusDefaultOptions = {
+  endpoint: '',
+  uploadUrl: null,
+  metadata: {},
+  uploadSize: null,
+  onProgress: null,
+  onChunkComplete: null,
+  onSuccess: null,
+  onError: null,
+  overridePatchMethod: false,
+  headers: {},
+  addRequestId: false,
+  chunkSize: Infinity,
+  retryDelays: [100, 1000, 3000, 5000],
+  parallelUploads: 1,
+  removeFingerprintOnSuccess: false,
+  uploadLengthDeferred: false,
+  uploadDataDuringCreation: false
+};
+/**
+ * Tus resumable file uploader
+ */
+
+var _retryDelayIterator = /*#__PURE__*/_classPrivateFieldLooseKey("retryDelayIterator");
+
+var _queueRequestSocketToken = /*#__PURE__*/_classPrivateFieldLooseKey("queueRequestSocketToken");
+
+var _upload = /*#__PURE__*/_classPrivateFieldLooseKey("upload");
+
+var _requestSocketToken = /*#__PURE__*/_classPrivateFieldLooseKey("requestSocketToken");
+
+var _uploadRemote = /*#__PURE__*/_classPrivateFieldLooseKey("uploadRemote");
+
+var _uploadFiles = /*#__PURE__*/_classPrivateFieldLooseKey("uploadFiles");
+
+var _handleUpload = /*#__PURE__*/_classPrivateFieldLooseKey("handleUpload");
+
+class Tus extends _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  /**
+   * @param {Uppy} uppy
+   * @param {TusOptions} opts
+   */
+  constructor(uppy, _opts) {
+    var _this$opts$rateLimite, _this$opts$retryDelay;
+
+    super(uppy, _opts);
+    Object.defineProperty(this, _uploadFiles, {
+      value: _uploadFiles2
+    });
+    Object.defineProperty(this, _uploadRemote, {
+      value: _uploadRemote2
+    });
+    Object.defineProperty(this, _upload, {
+      value: _upload2
+    });
+    Object.defineProperty(this, _retryDelayIterator, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _queueRequestSocketToken, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _requestSocketToken, {
+      writable: true,
+      value: async file => {
+        const Client = file.remote.providerOptions.provider ? _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.Provider : _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.RequestClient;
+        const client = new Client(this.uppy, file.remote.providerOptions);
+        const opts = { ...this.opts
+        };
+
+        if (file.tus) {
+          // Install file-specific upload overrides.
+          Object.assign(opts, file.tus);
+        }
+
+        const res = await client.post(file.remote.url, { ...file.remote.body,
+          endpoint: opts.endpoint,
+          uploadUrl: opts.uploadUrl,
+          protocol: 'tus',
+          size: file.data.size,
+          headers: opts.headers,
+          metadata: file.meta
+        });
+        return res.token;
+      }
+    });
+    Object.defineProperty(this, _handleUpload, {
+      writable: true,
+      value: async fileIDs => {
+        if (fileIDs.length === 0) {
+          this.uppy.log('[Tus] No files to upload');
+          return;
+        }
+
+        if (this.opts.limit === 0) {
+          this.uppy.log('[Tus] When uploading multiple files at once, consider setting the `limit` option (to `10` for example), to limit the number of concurrent uploads, which helps prevent memory and network issues: https://uppy.io/docs/tus/#limit-0', 'warning');
+        }
+
+        this.uppy.log('[Tus] Uploading...');
+        const filesToUpload = this.uppy.getFilesByIds(fileIDs);
+        await _classPrivateFieldLooseBase(this, _uploadFiles)[_uploadFiles](filesToUpload);
+      }
+    });
+    this.type = 'uploader';
+    this.id = this.opts.id || 'Tus';
+    this.title = 'Tus'; // set default options
+
+    const defaultOptions = {
+      useFastRemoteRetry: true,
+      limit: 20,
+      retryDelays: tusDefaultOptions.retryDelays,
+      withCredentials: false
+    }; // merge default options with the ones set by user
+
+    /** @type {import("..").TusOptions} */
+
+    this.opts = { ...defaultOptions,
+      ..._opts
+    };
+
+    if ((_opts == null ? void 0 : _opts.allowedMetaFields) === undefined && 'metaFields' in this.opts) {
+      throw new Error('The `metaFields` option has been renamed to `allowedMetaFields`.');
+    }
+
+    if ('autoRetry' in _opts) {
+      throw new Error('The `autoRetry` option was deprecated and has been removed.');
+    }
+    /**
+     * Simultaneous upload limiting is shared across all uploads with this plugin.
+     *
+     * @type {RateLimitedQueue}
+     */
+
+
+    this.requests = (_this$opts$rateLimite = this.opts.rateLimitedQueue) != null ? _this$opts$rateLimite : new _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_8__.RateLimitedQueue(this.opts.limit);
+    _classPrivateFieldLooseBase(this, _retryDelayIterator)[_retryDelayIterator] = (_this$opts$retryDelay = this.opts.retryDelays) == null ? void 0 : _this$opts$retryDelay.values();
+    this.uploaders = Object.create(null);
+    this.uploaderEvents = Object.create(null);
+    this.uploaderSockets = Object.create(null);
+    this.handleResetProgress = this.handleResetProgress.bind(this);
+    _classPrivateFieldLooseBase(this, _queueRequestSocketToken)[_queueRequestSocketToken] = this.requests.wrapPromiseFunction(_classPrivateFieldLooseBase(this, _requestSocketToken)[_requestSocketToken], {
+      priority: -1
+    });
+  }
+
+  handleResetProgress() {
+    const files = { ...this.uppy.getState().files
+    };
+    Object.keys(files).forEach(fileID => {
+      // Only clone the file object if it has a Tus `uploadUrl` attached.
+      if (files[fileID].tus && files[fileID].tus.uploadUrl) {
+        const tusState = { ...files[fileID].tus
+        };
+        delete tusState.uploadUrl;
+        files[fileID] = { ...files[fileID],
+          tus: tusState
+        };
+      }
+    });
+    this.uppy.setState({
+      files
+    });
+  }
+  /**
+   * Clean up all references for a file's upload: the tus.Upload instance,
+   * any events related to the file, and the Companion WebSocket connection.
+   *
+   * @param {string} fileID
+   */
+
+
+  resetUploaderReferences(fileID, opts) {
+    if (opts === void 0) {
+      opts = {};
+    }
+
+    if (this.uploaders[fileID]) {
+      const uploader = this.uploaders[fileID];
+      uploader.abort();
+
+      if (opts.abort) {
+        uploader.abort(true);
+      }
+
+      this.uploaders[fileID] = null;
+    }
+
+    if (this.uploaderEvents[fileID]) {
+      this.uploaderEvents[fileID].remove();
+      this.uploaderEvents[fileID] = null;
+    }
+
+    if (this.uploaderSockets[fileID]) {
+      this.uploaderSockets[fileID].close();
+      this.uploaderSockets[fileID] = null;
+    }
+  }
+  /**
+   * Create a new Tus upload.
+   *
+   * A lot can happen during an upload, so this is quite hard to follow!
+   * - First, the upload is started. If the file was already paused by the time the upload starts, nothing should happen.
+   *   If the `limit` option is used, the upload must be queued onto the `this.requests` queue.
+   *   When an upload starts, we store the tus.Upload instance, and an EventTracker instance that manages the event listeners
+   *   for pausing, cancellation, removal, etc.
+   * - While the upload is in progress, it may be paused or cancelled.
+   *   Pausing aborts the underlying tus.Upload, and removes the upload from the `this.requests` queue. All other state is
+   *   maintained.
+   *   Cancelling removes the upload from the `this.requests` queue, and completely aborts the upload-- the `tus.Upload`
+   *   instance is aborted and discarded, the EventTracker instance is destroyed (removing all listeners).
+   *   Resuming the upload uses the `this.requests` queue as well, to prevent selectively pausing and resuming uploads from
+   *   bypassing the limit.
+   * - After completing an upload, the tus.Upload and EventTracker instances are cleaned up, and the upload is marked as done
+   *   in the `this.requests` queue.
+   * - When an upload completed with an error, the same happens as on successful completion, but the `upload()` promise is
+   *   rejected.
+   *
+   * When working on this function, keep in mind:
+   *  - When an upload is completed or cancelled for any reason, the tus.Upload and EventTracker instances need to be cleaned
+   *    up using this.resetUploaderReferences().
+   *  - When an upload is cancelled or paused, for any reason, it needs to be removed from the `this.requests` queue using
+   *    `queuedRequest.abort()`.
+   *  - When an upload is completed for any reason, including errors, it needs to be marked as such using
+   *    `queuedRequest.done()`.
+   *  - When an upload is started or resumed, it needs to go through the `this.requests` queue. The `queuedRequest` variable
+   *    must be updated so the other uses of it are valid.
+   *  - Before replacing the `queuedRequest` variable, the previous `queuedRequest` must be aborted, else it will keep taking
+   *    up a spot in the queue.
+   *
+   * @param {UppyFile} file for use with upload
+   * @returns {Promise<void>}
+   */
+
+
+  /**
+   * See the comment on the upload() method.
+   *
+   * Additionally, when an upload is removed, completed, or cancelled, we need to close the WebSocket connection. This is
+   * handled by the resetUploaderReferences() function, so the same guidelines apply as in upload().
+   *
+   * @param {UppyFile} file
+   */
+  async connectToServerSocket(file) {
+    var _this = this;
+
+    return new Promise((resolve, reject) => {
+      const token = file.serverToken;
+      const host = (0,_uppy_utils_lib_getSocketHost__WEBPACK_IMPORTED_MODULE_4__["default"])(file.remote.companionUrl);
+      const socket = new _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.Socket({
+        target: `${host}/api/${token}`,
+        autoOpen: false
+      });
+      this.uploaderSockets[file.id] = socket;
+      this.uploaderEvents[file.id] = new _uppy_utils_lib_EventTracker__WEBPACK_IMPORTED_MODULE_5__["default"](this.uppy);
+      let queuedRequest;
+      this.onFileRemove(file.id, () => {
+        queuedRequest.abort();
+        socket.send('cancel', {});
+        this.resetUploaderReferences(file.id);
+        resolve(`upload ${file.id} was removed`);
+      });
+      this.onPause(file.id, isPaused => {
+        if (isPaused) {
+          // Remove this file from the queue so another file can start in its place.
+          queuedRequest.abort();
+          socket.send('pause', {});
+        } else {
+          // Resuming an upload should be queued, else you could pause and then
+          // resume a queued upload to make it skip the queue.
+          queuedRequest.abort();
+          queuedRequest = this.requests.run(() => {
+            socket.open();
+            socket.send('resume', {});
+            return () => socket.close();
+          });
+        }
+      });
+      this.onPauseAll(file.id, () => {
+        queuedRequest.abort();
+        socket.send('pause', {});
+      });
+      this.onCancelAll(file.id, function (_temp) {
+        let {
+          reason
+        } = _temp === void 0 ? {} : _temp;
+
+        if (reason === 'user') {
+          queuedRequest.abort();
+          socket.send('cancel', {});
+
+          _this.resetUploaderReferences(file.id);
+        }
+
+        resolve(`upload ${file.id} was canceled`);
+      });
+      this.onResumeAll(file.id, () => {
+        queuedRequest.abort();
+
+        if (file.error) {
+          socket.send('pause', {});
+        }
+
+        queuedRequest = this.requests.run(() => {
+          socket.open();
+          socket.send('resume', {});
+          return () => socket.close();
+        });
+      });
+      this.onRetry(file.id, () => {
+        // Only do the retry if the upload is actually in progress;
+        // else we could try to send these messages when the upload is still queued.
+        // We may need a better check for this since the socket may also be closed
+        // for other reasons, like network failures.
+        if (socket.isOpen) {
+          socket.send('pause', {});
+          socket.send('resume', {});
+        }
+      });
+      this.onRetryAll(file.id, () => {
+        // See the comment in the onRetry() call
+        if (socket.isOpen) {
+          socket.send('pause', {});
+          socket.send('resume', {});
+        }
+      });
+      socket.on('progress', progressData => (0,_uppy_utils_lib_emitSocketProgress__WEBPACK_IMPORTED_MODULE_3__["default"])(this, progressData, file));
+      socket.on('error', errData => {
+        const {
+          message
+        } = errData.error;
+        const error = Object.assign(new Error(message), {
+          cause: errData.error
+        }); // If the remote retry optimisation should not be used,
+        // close the socket—this will tell companion to clear state and delete the file.
+
+        if (!this.opts.useFastRemoteRetry) {
+          this.resetUploaderReferences(file.id); // Remove the serverToken so that a new one will be created for the retry.
+
+          this.uppy.setFileState(file.id, {
+            serverToken: null
+          });
+        } else {
+          socket.close();
+        }
+
+        this.uppy.emit('upload-error', file, error);
+        queuedRequest.done();
+        reject(error);
+      });
+      socket.on('success', data => {
+        const uploadResp = {
+          uploadURL: data.url
+        };
+        this.uppy.emit('upload-success', file, uploadResp);
+        this.resetUploaderReferences(file.id);
+        queuedRequest.done();
+        resolve();
+      });
+      queuedRequest = this.requests.run(() => {
+        if (file.isPaused) {
+          socket.send('pause', {});
+        } else {
+          socket.open();
+        } // Just close the socket here, the caller will take care of cancelling the upload itself
+        // using resetUploaderReferences(). This is because resetUploaderReferences() has to be
+        // called when this request is still in the queue, and has not been started yet, too. At
+        // that point this cancellation function is not going to be called.
+        // Also, we need to remove the request from the queue _without_ destroying everything
+        // related to this upload to handle pauses.
+
+
+        return () => socket.close();
+      });
+    });
+  }
+  /**
+   * Store the uploadUrl on the file options, so that when Golden Retriever
+   * restores state, we will continue uploading to the correct URL.
+   *
+   * @param {UppyFile} file
+   * @param {string} uploadURL
+   */
+
+
+  onReceiveUploadUrl(file, uploadURL) {
+    const currentFile = this.uppy.getFile(file.id);
+    if (!currentFile) return; // Only do the update if we didn't have an upload URL yet.
+
+    if (!currentFile.tus || currentFile.tus.uploadUrl !== uploadURL) {
+      this.uppy.log('[Tus] Storing upload url');
+      this.uppy.setFileState(currentFile.id, {
+        tus: { ...currentFile.tus,
+          uploadUrl: uploadURL
+        }
+      });
+    }
+  }
+  /**
+   * @param {string} fileID
+   * @param {function(string): void} cb
+   */
+
+
+  onFileRemove(fileID, cb) {
+    this.uploaderEvents[fileID].on('file-removed', file => {
+      if (fileID === file.id) cb(file.id);
+    });
+  }
+  /**
+   * @param {string} fileID
+   * @param {function(boolean): void} cb
+   */
+
+
+  onPause(fileID, cb) {
+    this.uploaderEvents[fileID].on('upload-pause', (targetFileID, isPaused) => {
+      if (fileID === targetFileID) {
+        // const isPaused = this.uppy.pauseResume(fileID)
+        cb(isPaused);
+      }
+    });
+  }
+  /**
+   * @param {string} fileID
+   * @param {function(): void} cb
+   */
+
+
+  onRetry(fileID, cb) {
+    this.uploaderEvents[fileID].on('upload-retry', targetFileID => {
+      if (fileID === targetFileID) {
+        cb();
+      }
+    });
+  }
+  /**
+   * @param {string} fileID
+   * @param {function(): void} cb
+   */
+
+
+  onRetryAll(fileID, cb) {
+    this.uploaderEvents[fileID].on('retry-all', () => {
+      if (!this.uppy.getFile(fileID)) return;
+      cb();
+    });
+  }
+  /**
+   * @param {string} fileID
+   * @param {function(): void} cb
+   */
+
+
+  onPauseAll(fileID, cb) {
+    this.uploaderEvents[fileID].on('pause-all', () => {
+      if (!this.uppy.getFile(fileID)) return;
+      cb();
+    });
+  }
+  /**
+   * @param {string} fileID
+   * @param {function(): void} eventHandler
+   */
+
+
+  onCancelAll(fileID, eventHandler) {
+    var _this2 = this;
+
+    this.uploaderEvents[fileID].on('cancel-all', function () {
+      if (!_this2.uppy.getFile(fileID)) return;
+      eventHandler(...arguments);
+    });
+  }
+  /**
+   * @param {string} fileID
+   * @param {function(): void} cb
+   */
+
+
+  onResumeAll(fileID, cb) {
+    this.uploaderEvents[fileID].on('resume-all', () => {
+      if (!this.uppy.getFile(fileID)) return;
+      cb();
+    });
+  }
+  /**
+   * @param {(UppyFile | FailedUppyFile)[]} files
+   */
+
+
+  install() {
+    this.uppy.setState({
+      capabilities: { ...this.uppy.getState().capabilities,
+        resumableUploads: true
+      }
+    });
+    this.uppy.addUploader(_classPrivateFieldLooseBase(this, _handleUpload)[_handleUpload]);
+    this.uppy.on('reset-progress', this.handleResetProgress);
+  }
+
+  uninstall() {
+    this.uppy.setState({
+      capabilities: { ...this.uppy.getState().capabilities,
+        resumableUploads: false
+      }
+    });
+    this.uppy.removeUploader(_classPrivateFieldLooseBase(this, _handleUpload)[_handleUpload]);
+  }
+
+}
+
+function _upload2(file) {
+  var _this3 = this;
+
+  this.resetUploaderReferences(file.id); // Create a new tus upload
+
+  return new Promise((resolve, reject) => {
+    let queuedRequest;
+    let qRequest;
+    let upload;
+    const opts = { ...this.opts,
+      ...(file.tus || {})
+    };
+
+    if (typeof opts.headers === 'function') {
+      opts.headers = opts.headers(file);
+    }
+    /** @type {RawTusOptions} */
+
+
+    const uploadOptions = { ...tusDefaultOptions,
+      ...opts
+    }; // We override tus fingerprint to uppy’s `file.id`, since the `file.id`
+    // now also includes `relativePath` for files added from folders.
+    // This means you can add 2 identical files, if one is in folder a,
+    // the other in folder b.
+
+    uploadOptions.fingerprint = (0,_getFingerprint_js__WEBPACK_IMPORTED_MODULE_11__["default"])(file);
+
+    uploadOptions.onBeforeRequest = req => {
+      const xhr = req.getUnderlyingObject();
+      xhr.withCredentials = !!opts.withCredentials;
+      let userProvidedPromise;
+
+      if (typeof opts.onBeforeRequest === 'function') {
+        userProvidedPromise = opts.onBeforeRequest(req, file);
+      }
+
+      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__["default"])(queuedRequest, 'shouldBeRequeued')) {
+        if (!queuedRequest.shouldBeRequeued) return Promise.reject();
+        let done;
+        const p = new Promise(res => {
+          // eslint-disable-line promise/param-names
+          done = res;
+        });
+        queuedRequest = this.requests.run(() => {
+          if (file.isPaused) {
+            queuedRequest.abort();
+          }
+
+          done();
+          return () => {};
+        }); // If the request has been requeued because it was rate limited by the
+        // remote server, we want to wait for `RateLimitedQueue` to dispatch
+        // the re-try request.
+        // Therefore we create a promise that the queue will resolve when
+        // enough time has elapsed to expect not to be rate-limited again.
+        // This means we can hold the Tus retry here with a `Promise.all`,
+        // together with the returned value of the user provided
+        // `onBeforeRequest` option callback (in case it returns a promise).
+
+        return Promise.all([p, userProvidedPromise]);
+      }
+
+      return userProvidedPromise;
+    };
+
+    uploadOptions.onError = err => {
+      var _queuedRequest;
+
+      this.uppy.log(err);
+      const xhr = err.originalRequest ? err.originalRequest.getUnderlyingObject() : null;
+
+      if ((0,_uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_7__["default"])(xhr)) {
+        // eslint-disable-next-line no-param-reassign
+        err = new _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_6__["default"](err, xhr);
+      }
+
+      this.resetUploaderReferences(file.id);
+      (_queuedRequest = queuedRequest) == null ? void 0 : _queuedRequest.abort();
+      this.uppy.emit('upload-error', file, err);
+      reject(err);
+    };
+
+    uploadOptions.onProgress = (bytesUploaded, bytesTotal) => {
+      this.onReceiveUploadUrl(file, upload.url);
+      this.uppy.emit('upload-progress', file, {
+        uploader: this,
+        bytesUploaded,
+        bytesTotal
+      });
+    };
+
+    uploadOptions.onSuccess = () => {
+      const uploadResp = {
+        uploadURL: upload.url
+      };
+      this.resetUploaderReferences(file.id);
+      queuedRequest.done();
+      this.uppy.emit('upload-success', file, uploadResp);
+
+      if (upload.url) {
+        this.uppy.log(`Download ${upload.file.name} from ${upload.url}`);
+      }
+
+      resolve(upload);
+    };
+
+    const defaultOnShouldRetry = err => {
+      var _err$originalResponse;
+
+      const status = err == null ? void 0 : (_err$originalResponse = err.originalResponse) == null ? void 0 : _err$originalResponse.getStatus();
+
+      if (status === 429) {
+        // HTTP 429 Too Many Requests => to avoid the whole download to fail, pause all requests.
+        if (!this.requests.isPaused) {
+          var _classPrivateFieldLoo;
+
+          const next = (_classPrivateFieldLoo = _classPrivateFieldLooseBase(this, _retryDelayIterator)[_retryDelayIterator]) == null ? void 0 : _classPrivateFieldLoo.next();
+
+          if (next == null || next.done) {
+            return false;
+          }
+
+          this.requests.rateLimit(next.value);
+        }
+      } else if (status > 400 && status < 500 && status !== 409) {
+        // HTTP 4xx, the server won't send anything, it's doesn't make sense to retry
+        return false;
+      } else if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        // The navigator is offline, let's wait for it to come back online.
+        if (!this.requests.isPaused) {
+          this.requests.pause();
+          window.addEventListener('online', () => {
+            this.requests.resume();
+          }, {
+            once: true
+          });
+        }
+      }
+
+      queuedRequest.abort();
+      queuedRequest = {
+        shouldBeRequeued: true,
+
+        abort() {
+          this.shouldBeRequeued = false;
+        },
+
+        done() {
+          throw new Error('Cannot mark a queued request as done: this indicates a bug');
+        },
+
+        fn() {
+          throw new Error('Cannot run a queued request: this indicates a bug');
+        }
+
+      };
+      return true;
+    };
+
+    if (opts.onShouldRetry != null) {
+      uploadOptions.onShouldRetry = function () {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
+        return opts.onShouldRetry(...args, defaultOnShouldRetry);
+      };
+    } else {
+      uploadOptions.onShouldRetry = defaultOnShouldRetry;
+    }
+
+    const copyProp = (obj, srcProp, destProp) => {
+      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__["default"])(obj, srcProp) && !(0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_9__["default"])(obj, destProp)) {
+        // eslint-disable-next-line no-param-reassign
+        obj[destProp] = obj[srcProp];
+      }
+    };
+    /** @type {Record<string, string>} */
+
+
+    const meta = {};
+    const allowedMetaFields = Array.isArray(opts.allowedMetaFields) ? opts.allowedMetaFields // Send along all fields by default.
+    : Object.keys(file.meta);
+    allowedMetaFields.forEach(item => {
+      meta[item] = file.meta[item];
+    }); // tusd uses metadata fields 'filetype' and 'filename'
+
+    copyProp(meta, 'type', 'filetype');
+    copyProp(meta, 'name', 'filename');
+    uploadOptions.metadata = meta;
+    upload = new tus_js_client__WEBPACK_IMPORTED_MODULE_1__.Upload(file.data, uploadOptions);
+    this.uploaders[file.id] = upload;
+    this.uploaderEvents[file.id] = new _uppy_utils_lib_EventTracker__WEBPACK_IMPORTED_MODULE_5__["default"](this.uppy); // eslint-disable-next-line prefer-const
+
+    qRequest = () => {
+      if (!file.isPaused) {
+        upload.start();
+      } // Don't do anything here, the caller will take care of cancelling the upload itself
+      // using resetUploaderReferences(). This is because resetUploaderReferences() has to be
+      // called when this request is still in the queue, and has not been started yet, too. At
+      // that point this cancellation function is not going to be called.
+      // Also, we need to remove the request from the queue _without_ destroying everything
+      // related to this upload to handle pauses.
+
+
+      return () => {};
+    };
+
+    upload.findPreviousUploads().then(previousUploads => {
+      const previousUpload = previousUploads[0];
+
+      if (previousUpload) {
+        this.uppy.log(`[Tus] Resuming upload of ${file.id} started at ${previousUpload.creationTime}`);
+        upload.resumeFromPreviousUpload(previousUpload);
+      }
+    });
+    queuedRequest = this.requests.run(qRequest);
+    this.onFileRemove(file.id, targetFileID => {
+      queuedRequest.abort();
+      this.resetUploaderReferences(file.id, {
+        abort: !!upload.url
+      });
+      resolve(`upload ${targetFileID} was removed`);
+    });
+    this.onPause(file.id, isPaused => {
+      queuedRequest.abort();
+
+      if (isPaused) {
+        // Remove this file from the queue so another file can start in its place.
+        upload.abort();
+      } else {
+        // Resuming an upload should be queued, else you could pause and then
+        // resume a queued upload to make it skip the queue.
+        queuedRequest = this.requests.run(qRequest);
+      }
+    });
+    this.onPauseAll(file.id, () => {
+      queuedRequest.abort();
+      upload.abort();
+    });
+    this.onCancelAll(file.id, function (_temp2) {
+      let {
+        reason
+      } = _temp2 === void 0 ? {} : _temp2;
+
+      if (reason === 'user') {
+        queuedRequest.abort();
+
+        _this3.resetUploaderReferences(file.id, {
+          abort: !!upload.url
+        });
+      }
+
+      resolve(`upload ${file.id} was canceled`);
+    });
+    this.onResumeAll(file.id, () => {
+      queuedRequest.abort();
+
+      if (file.error) {
+        upload.abort();
+      }
+
+      queuedRequest = this.requests.run(qRequest);
+    });
+  }).catch(err => {
+    this.uppy.emit('upload-error', file, err);
+    throw err;
+  });
+}
+
+async function _uploadRemote2(file) {
+  this.resetUploaderReferences(file.id);
+
+  try {
+    if (file.serverToken) {
+      return await this.connectToServerSocket(file);
+    }
+
+    const serverToken = await _classPrivateFieldLooseBase(this, _queueRequestSocketToken)[_queueRequestSocketToken](file);
+    if (!this.uppy.getState().files[file.id]) return undefined;
+    this.uppy.setFileState(file.id, {
+      serverToken
+    });
+    return await this.connectToServerSocket(this.uppy.getFile(file.id));
+  } catch (err) {
+    this.uppy.setFileState(file.id, {
+      serverToken: undefined
+    });
+    this.uppy.emit('upload-error', file, err);
+    throw err;
+  }
+}
+
+async function _uploadFiles2(files) {
+  const filesFiltered = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_10__.filterNonFailedFiles)(files);
+  const filesToEmit = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_10__.filterFilesToEmitUploadStarted)(filesFiltered);
+  this.uppy.emit('upload-start', filesToEmit);
+  await Promise.allSettled(filesFiltered.map((file, i) => {
+    const current = i + 1;
+    const total = files.length;
+
+    if (file.isRemote) {
+      return _classPrivateFieldLooseBase(this, _uploadRemote)[_uploadRemote](file, current, total);
+    }
+
+    return _classPrivateFieldLooseBase(this, _upload)[_upload](file, current, total);
+  }));
+}
+
+Tus.VERSION = packageJson.version;
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/ErrorWithCause.js":
+/*!********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/ErrorWithCause.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _hasProperty_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hasProperty.js */ "./node_modules/@uppy/utils/lib/hasProperty.js");
+
+
+class ErrorWithCause extends Error {
+  constructor(message, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
+    super(message);
+    this.cause = options.cause;
+
+    if (this.cause && (0,_hasProperty_js__WEBPACK_IMPORTED_MODULE_0__["default"])(this.cause, 'isNetworkError')) {
+      this.isNetworkError = this.cause.isNetworkError;
+    }
+  }
+
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ErrorWithCause);
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/EventTracker.js":
+/*!******************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/EventTracker.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ EventTracker)
+/* harmony export */ });
+function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
+
+var id = 0;
+
+function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
+
+var _emitter = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
+
+var _events = /*#__PURE__*/_classPrivateFieldLooseKey("events");
+
+/**
+ * Create a wrapper around an event emitter with a `remove` method to remove
+ * all events that were added using the wrapped emitter.
+ */
+class EventTracker {
+  constructor(emitter) {
+    Object.defineProperty(this, _emitter, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _events, {
+      writable: true,
+      value: []
+    });
+    _classPrivateFieldLooseBase(this, _emitter)[_emitter] = emitter;
+  }
+
+  on(event, fn) {
+    _classPrivateFieldLooseBase(this, _events)[_events].push([event, fn]);
+
+    return _classPrivateFieldLooseBase(this, _emitter)[_emitter].on(event, fn);
+  }
+
+  remove() {
+    for (const [event, fn] of _classPrivateFieldLooseBase(this, _events)[_events].splice(0)) {
+      _classPrivateFieldLooseBase(this, _emitter)[_emitter].off(event, fn);
+    }
+  }
+
+}
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/FOCUSABLE_ELEMENTS.js ***!
+  \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22026,10 +16972,401 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/Translator.js":
-/*!********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/Translator.js ***!
-  \********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/NetworkError.js":
+/*!******************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/NetworkError.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+class NetworkError extends Error {
+  constructor(error, xhr) {
+    if (xhr === void 0) {
+      xhr = null;
+    }
+
+    super(`This looks like a network error, the endpoint might be blocked by an internet provider or a firewall.`);
+    this.cause = error;
+    this.isNetworkError = true;
+    this.request = xhr;
+  }
+
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (NetworkError);
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/RateLimitedQueue.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/RateLimitedQueue.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   RateLimitedQueue: () => (/* binding */ RateLimitedQueue),
+/* harmony export */   internalRateLimitedQueue: () => (/* binding */ internalRateLimitedQueue)
+/* harmony export */ });
+function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
+
+var id = 0;
+
+function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
+
+function createCancelError(cause) {
+  return new Error('Cancelled', {
+    cause
+  });
+}
+
+function abortOn(signal) {
+  if (signal != null) {
+    const abortPromise = () => this.abort(signal.reason);
+
+    signal.addEventListener('abort', abortPromise, {
+      once: true
+    });
+
+    const removeAbortListener = () => {
+      signal.removeEventListener('abort', abortPromise);
+    };
+
+    this.then(removeAbortListener, removeAbortListener);
+  }
+
+  return this;
+}
+
+var _activeRequests = /*#__PURE__*/_classPrivateFieldLooseKey("activeRequests");
+
+var _queuedHandlers = /*#__PURE__*/_classPrivateFieldLooseKey("queuedHandlers");
+
+var _paused = /*#__PURE__*/_classPrivateFieldLooseKey("paused");
+
+var _pauseTimer = /*#__PURE__*/_classPrivateFieldLooseKey("pauseTimer");
+
+var _downLimit = /*#__PURE__*/_classPrivateFieldLooseKey("downLimit");
+
+var _upperLimit = /*#__PURE__*/_classPrivateFieldLooseKey("upperLimit");
+
+var _rateLimitingTimer = /*#__PURE__*/_classPrivateFieldLooseKey("rateLimitingTimer");
+
+var _call = /*#__PURE__*/_classPrivateFieldLooseKey("call");
+
+var _queueNext = /*#__PURE__*/_classPrivateFieldLooseKey("queueNext");
+
+var _next = /*#__PURE__*/_classPrivateFieldLooseKey("next");
+
+var _queue = /*#__PURE__*/_classPrivateFieldLooseKey("queue");
+
+var _dequeue = /*#__PURE__*/_classPrivateFieldLooseKey("dequeue");
+
+var _resume = /*#__PURE__*/_classPrivateFieldLooseKey("resume");
+
+var _increaseLimit = /*#__PURE__*/_classPrivateFieldLooseKey("increaseLimit");
+
+class RateLimitedQueue {
+  constructor(limit) {
+    Object.defineProperty(this, _dequeue, {
+      value: _dequeue2
+    });
+    Object.defineProperty(this, _queue, {
+      value: _queue2
+    });
+    Object.defineProperty(this, _next, {
+      value: _next2
+    });
+    Object.defineProperty(this, _queueNext, {
+      value: _queueNext2
+    });
+    Object.defineProperty(this, _call, {
+      value: _call2
+    });
+    Object.defineProperty(this, _activeRequests, {
+      writable: true,
+      value: 0
+    });
+    Object.defineProperty(this, _queuedHandlers, {
+      writable: true,
+      value: []
+    });
+    Object.defineProperty(this, _paused, {
+      writable: true,
+      value: false
+    });
+    Object.defineProperty(this, _pauseTimer, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _downLimit, {
+      writable: true,
+      value: 1
+    });
+    Object.defineProperty(this, _upperLimit, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _rateLimitingTimer, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _resume, {
+      writable: true,
+      value: () => this.resume()
+    });
+    Object.defineProperty(this, _increaseLimit, {
+      writable: true,
+      value: () => {
+        if (_classPrivateFieldLooseBase(this, _paused)[_paused]) {
+          _classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase(this, _increaseLimit)[_increaseLimit], 0);
+          return;
+        }
+
+        _classPrivateFieldLooseBase(this, _downLimit)[_downLimit] = this.limit;
+        this.limit = Math.ceil((_classPrivateFieldLooseBase(this, _upperLimit)[_upperLimit] + _classPrivateFieldLooseBase(this, _downLimit)[_downLimit]) / 2);
+
+        for (let i = _classPrivateFieldLooseBase(this, _downLimit)[_downLimit]; i <= this.limit; i++) {
+          _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
+        }
+
+        if (_classPrivateFieldLooseBase(this, _upperLimit)[_upperLimit] - _classPrivateFieldLooseBase(this, _downLimit)[_downLimit] > 3) {
+          _classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase(this, _increaseLimit)[_increaseLimit], 2000);
+        } else {
+          _classPrivateFieldLooseBase(this, _downLimit)[_downLimit] = Math.floor(_classPrivateFieldLooseBase(this, _downLimit)[_downLimit] / 2);
+        }
+      }
+    });
+
+    if (typeof limit !== 'number' || limit === 0) {
+      this.limit = Infinity;
+    } else {
+      this.limit = limit;
+    }
+  }
+
+  run(fn, queueOptions) {
+    if (!_classPrivateFieldLooseBase(this, _paused)[_paused] && _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] < this.limit) {
+      return _classPrivateFieldLooseBase(this, _call)[_call](fn);
+    }
+
+    return _classPrivateFieldLooseBase(this, _queue)[_queue](fn, queueOptions);
+  }
+
+  wrapPromiseFunction(fn, queueOptions) {
+    var _this = this;
+
+    return function () {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      let queuedRequest;
+      const outerPromise = new Promise((resolve, reject) => {
+        queuedRequest = _this.run(() => {
+          let cancelError;
+          let innerPromise;
+
+          try {
+            innerPromise = Promise.resolve(fn(...args));
+          } catch (err) {
+            innerPromise = Promise.reject(err);
+          }
+
+          innerPromise.then(result => {
+            if (cancelError) {
+              reject(cancelError);
+            } else {
+              queuedRequest.done();
+              resolve(result);
+            }
+          }, err => {
+            if (cancelError) {
+              reject(cancelError);
+            } else {
+              queuedRequest.done();
+              reject(err);
+            }
+          });
+          return cause => {
+            cancelError = createCancelError(cause);
+          };
+        }, queueOptions);
+      });
+
+      outerPromise.abort = cause => {
+        queuedRequest.abort(cause);
+      };
+
+      outerPromise.abortOn = abortOn;
+      return outerPromise;
+    };
+  }
+
+  resume() {
+    _classPrivateFieldLooseBase(this, _paused)[_paused] = false;
+    clearTimeout(_classPrivateFieldLooseBase(this, _pauseTimer)[_pauseTimer]);
+
+    for (let i = 0; i < this.limit; i++) {
+      _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
+    }
+  }
+
+  /**
+   * Freezes the queue for a while or indefinitely.
+   *
+   * @param {number | null } [duration] Duration for the pause to happen, in milliseconds.
+   *                                    If omitted, the queue won't resume automatically.
+   */
+  pause(duration) {
+    if (duration === void 0) {
+      duration = null;
+    }
+
+    _classPrivateFieldLooseBase(this, _paused)[_paused] = true;
+    clearTimeout(_classPrivateFieldLooseBase(this, _pauseTimer)[_pauseTimer]);
+
+    if (duration != null) {
+      _classPrivateFieldLooseBase(this, _pauseTimer)[_pauseTimer] = setTimeout(_classPrivateFieldLooseBase(this, _resume)[_resume], duration);
+    }
+  }
+  /**
+   * Pauses the queue for a duration, and lower the limit of concurrent requests
+   * when the queue resumes. When the queue resumes, it tries to progressively
+   * increase the limit in `this.#increaseLimit` until another call is made to
+   * `this.rateLimit`.
+   * Call this function when using the RateLimitedQueue for network requests and
+   * the remote server responds with 429 HTTP code.
+   *
+   * @param {number} duration in milliseconds.
+   */
+
+
+  rateLimit(duration) {
+    clearTimeout(_classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer]);
+    this.pause(duration);
+
+    if (this.limit > 1 && Number.isFinite(this.limit)) {
+      _classPrivateFieldLooseBase(this, _upperLimit)[_upperLimit] = this.limit - 1;
+      this.limit = _classPrivateFieldLooseBase(this, _downLimit)[_downLimit];
+      _classPrivateFieldLooseBase(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase(this, _increaseLimit)[_increaseLimit], duration);
+    }
+  }
+
+  get isPaused() {
+    return _classPrivateFieldLooseBase(this, _paused)[_paused];
+  }
+
+}
+
+function _call2(fn) {
+  _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] += 1;
+  let done = false;
+  let cancelActive;
+
+  try {
+    cancelActive = fn();
+  } catch (err) {
+    _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] -= 1;
+    throw err;
+  }
+
+  return {
+    abort: cause => {
+      if (done) return;
+      done = true;
+      _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] -= 1;
+      cancelActive(cause);
+
+      _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
+    },
+    done: () => {
+      if (done) return;
+      done = true;
+      _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] -= 1;
+
+      _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
+    }
+  };
+}
+
+function _queueNext2() {
+  // Do it soon but not immediately, this allows clearing out the entire queue synchronously
+  // one by one without continuously _advancing_ it (and starting new tasks before immediately
+  // aborting them)
+  queueMicrotask(() => _classPrivateFieldLooseBase(this, _next)[_next]());
+}
+
+function _next2() {
+  if (_classPrivateFieldLooseBase(this, _paused)[_paused] || _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] >= this.limit) {
+    return;
+  }
+
+  if (_classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].length === 0) {
+    return;
+  } // Dispatch the next request, and update the abort/done handlers
+  // so that cancelling it does the Right Thing (and doesn't just try
+  // to dequeue an already-running request).
+
+
+  const next = _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].shift();
+
+  const handler = _classPrivateFieldLooseBase(this, _call)[_call](next.fn);
+
+  next.abort = handler.abort;
+  next.done = handler.done;
+}
+
+function _queue2(fn, options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  const handler = {
+    fn,
+    priority: options.priority || 0,
+    abort: () => {
+      _classPrivateFieldLooseBase(this, _dequeue)[_dequeue](handler);
+    },
+    done: () => {
+      throw new Error('Cannot mark a queued request as done: this indicates a bug');
+    }
+  };
+
+  const index = _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].findIndex(other => {
+    return handler.priority > other.priority;
+  });
+
+  if (index === -1) {
+    _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].push(handler);
+  } else {
+    _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].splice(index, 0, handler);
+  }
+
+  return handler;
+}
+
+function _dequeue2(handler) {
+  const index = _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].indexOf(handler);
+
+  if (index !== -1) {
+    _classPrivateFieldLooseBase(this, _queuedHandlers)[_queuedHandlers].splice(index, 1);
+  }
+}
+
+const internalRateLimitedQueue = Symbol('__queue');
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/Translator.js":
+/*!****************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/Translator.js ***!
+  \****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22037,7 +17374,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Translator)
 /* harmony export */ });
-/* harmony import */ var _hasProperty_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hasProperty.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/hasProperty.js");
+/* harmony import */ var _hasProperty_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hasProperty.js */ "./node_modules/@uppy/utils/lib/hasProperty.js");
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 
 var id = 0;
@@ -22209,10 +17546,10 @@ function _apply2(locale) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/dataURItoBlob.js":
-/*!***********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/dataURItoBlob.js ***!
-  \***********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/dataURItoBlob.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/dataURItoBlob.js ***!
+  \*******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22257,10 +17594,101 @@ function dataURItoBlob(dataURI, opts, toFile) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/findAllDOMElements.js":
-/*!****************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/findAllDOMElements.js ***!
-  \****************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/emitSocketProgress.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/emitSocketProgress.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var lodash_throttle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash.throttle */ "./node_modules/lodash.throttle/index.js");
+
+
+function emitSocketProgress(uploader, progressData, file) {
+  const {
+    progress,
+    bytesUploaded,
+    bytesTotal
+  } = progressData;
+
+  if (progress) {
+    uploader.uppy.log(`Upload progress: ${progress}`);
+    uploader.uppy.emit('upload-progress', file, {
+      uploader,
+      bytesUploaded,
+      bytesTotal
+    });
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (lodash_throttle__WEBPACK_IMPORTED_MODULE_0__(emitSocketProgress, 300, {
+  leading: true,
+  trailing: true
+}));
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/fetchWithNetworkError.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/fetchWithNetworkError.js ***!
+  \***************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ fetchWithNetworkError)
+/* harmony export */ });
+/* harmony import */ var _NetworkError_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NetworkError.js */ "./node_modules/@uppy/utils/lib/NetworkError.js");
+
+/**
+ * Wrapper around window.fetch that throws a NetworkError when appropriate
+ */
+
+function fetchWithNetworkError() {
+  return fetch(...arguments).catch(err => {
+    if (err.name === 'AbortError') {
+      throw err;
+    } else {
+      throw new _NetworkError_js__WEBPACK_IMPORTED_MODULE_0__["default"](err);
+    }
+  });
+}
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/fileFilters.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/fileFilters.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   filterFilesToEmitUploadStarted: () => (/* binding */ filterFilesToEmitUploadStarted),
+/* harmony export */   filterNonFailedFiles: () => (/* binding */ filterNonFailedFiles)
+/* harmony export */ });
+function filterNonFailedFiles(files) {
+  const hasError = file => 'error' in file && file.error;
+
+  return files.filter(file => !hasError(file));
+} // Don't double-emit upload-started for Golden Retriever-restored files that were already started
+
+function filterFilesToEmitUploadStarted(files) {
+  return files.filter(file => !file.progress.uploadStarted || !file.isRestored);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/findAllDOMElements.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/findAllDOMElements.js ***!
+  \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22268,7 +17696,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ findAllDOMElements)
 /* harmony export */ });
-/* harmony import */ var _isDOMElement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isDOMElement.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/isDOMElement.js");
+/* harmony import */ var _isDOMElement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isDOMElement.js */ "./node_modules/@uppy/utils/lib/isDOMElement.js");
 
 /**
  * Find one or more DOM elements.
@@ -22292,10 +17720,10 @@ function findAllDOMElements(element) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/findDOMElement.js":
-/*!************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/findDOMElement.js ***!
-  \************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/findDOMElement.js":
+/*!********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/findDOMElement.js ***!
+  \********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22303,7 +17731,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ findDOMElement)
 /* harmony export */ });
-/* harmony import */ var _isDOMElement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isDOMElement.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/isDOMElement.js");
+/* harmony import */ var _isDOMElement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isDOMElement.js */ "./node_modules/@uppy/utils/lib/isDOMElement.js");
 
 /**
  * Find a DOM element.
@@ -22330,10 +17758,10 @@ function findDOMElement(element, context) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/generateFileID.js":
-/*!************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/generateFileID.js ***!
-  \************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/generateFileID.js":
+/*!********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/generateFileID.js ***!
+  \********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22342,7 +17770,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ generateFileID),
 /* harmony export */   getSafeFileId: () => (/* binding */ getSafeFileId)
 /* harmony export */ });
-/* harmony import */ var _getFileType_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileType.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getFileType.js");
+/* harmony import */ var _getFileType_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileType.js */ "./node_modules/@uppy/utils/lib/getFileType.js");
 
 
 function encodeCharacter(character) {
@@ -22411,10 +17839,10 @@ function getSafeFileId(file) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getBytesRemaining.js":
-/*!***************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getBytesRemaining.js ***!
-  \***************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getBytesRemaining.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getBytesRemaining.js ***!
+  \***********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22428,10 +17856,10 @@ function getBytesRemaining(fileProgress) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/index.js":
-/*!*******************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/index.js ***!
-  \*******************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getDroppedFiles/index.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getDroppedFiles/index.js ***!
+  \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22439,8 +17867,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ getDroppedFiles)
 /* harmony export */ });
-/* harmony import */ var _utils_webkitGetAsEntryApi_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/webkitGetAsEntryApi/index.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/index.js");
-/* harmony import */ var _utils_fallbackApi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/fallbackApi.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/fallbackApi.js");
+/* harmony import */ var _utils_webkitGetAsEntryApi_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/webkitGetAsEntryApi/index.js */ "./node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/index.js");
+/* harmony import */ var _utils_fallbackApi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/fallbackApi.js */ "./node_modules/@uppy/utils/lib/getDroppedFiles/utils/fallbackApi.js");
 
 
 /**
@@ -22479,10 +17907,10 @@ async function getDroppedFiles(dataTransfer, _temp) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/fallbackApi.js":
-/*!*******************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/fallbackApi.js ***!
-  \*******************************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getDroppedFiles/utils/fallbackApi.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getDroppedFiles/utils/fallbackApi.js ***!
+  \***************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22490,7 +17918,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ fallbackApi)
 /* harmony export */ });
-/* harmony import */ var _toArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../toArray.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/toArray.js");
+/* harmony import */ var _toArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../toArray.js */ "./node_modules/@uppy/utils/lib/toArray.js");
  // .files fallback, should be implemented in any browser
 
 function fallbackApi(dataTransfer) {
@@ -22500,10 +17928,10 @@ function fallbackApi(dataTransfer) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/getFilesAndDirectoriesFromDirectory.js":
-/*!***************************************************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/getFilesAndDirectoriesFromDirectory.js ***!
-  \***************************************************************************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/getFilesAndDirectoriesFromDirectory.js":
+/*!***********************************************************************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/getFilesAndDirectoriesFromDirectory.js ***!
+  \***********************************************************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22545,10 +17973,10 @@ function getFilesAndDirectoriesFromDirectory(directoryReader, oldEntries, logDro
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/index.js":
-/*!*********************************************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/index.js ***!
-  \*********************************************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/index.js":
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/index.js ***!
+  \*****************************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22556,7 +17984,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ getFilesFromDataTransfer)
 /* harmony export */ });
-/* harmony import */ var _getFilesAndDirectoriesFromDirectory_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFilesAndDirectoriesFromDirectory.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/getFilesAndDirectoriesFromDirectory.js");
+/* harmony import */ var _getFilesAndDirectoriesFromDirectory_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFilesAndDirectoriesFromDirectory.js */ "./node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/getFilesAndDirectoriesFromDirectory.js");
 
 /**
  * Polyfill for the new (experimental) getAsFileSystemHandle API (using the popular webkitGetAsEntry behind the scenes)
@@ -22667,10 +18095,10 @@ async function* getFilesFromDataTransfer(dataTransfer, logDropError) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getFileNameAndExtension.js":
-/*!*********************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getFileNameAndExtension.js ***!
-  \*********************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getFileNameAndExtension.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getFileNameAndExtension.js ***!
+  \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22702,10 +18130,10 @@ function getFileNameAndExtension(fullFileName) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getFileType.js":
-/*!*********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getFileType.js ***!
-  \*********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getFileType.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getFileType.js ***!
+  \*****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22713,8 +18141,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ getFileType)
 /* harmony export */ });
-/* harmony import */ var _getFileNameAndExtension_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileNameAndExtension.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/getFileNameAndExtension.js");
-/* harmony import */ var _mimeTypes_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mimeTypes.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/mimeTypes.js");
+/* harmony import */ var _getFileNameAndExtension_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileNameAndExtension.js */ "./node_modules/@uppy/utils/lib/getFileNameAndExtension.js");
+/* harmony import */ var _mimeTypes_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mimeTypes.js */ "./node_modules/@uppy/utils/lib/mimeTypes.js");
 
 
 function getFileType(file) {
@@ -22734,10 +18162,31 @@ function getFileType(file) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getSpeed.js":
-/*!******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getSpeed.js ***!
-  \******************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getSocketHost.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getSocketHost.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getSocketHost)
+/* harmony export */ });
+function getSocketHost(url) {
+  // get the host domain
+  const regex = /^(?:https?:\/\/|\/\/)?(?:[^@\n]+@)?(?:www\.)?([^\n]+)/i;
+  const host = regex.exec(url)[1];
+  const socketProtocol = /^http:\/\//i.test(url) ? 'ws' : 'wss';
+  return `${socketProtocol}://${host}`;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/getSpeed.js":
+/*!**************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getSpeed.js ***!
+  \**************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22754,10 +18203,10 @@ function getSpeed(fileProgress) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getTextDirection.js":
-/*!**************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getTextDirection.js ***!
-  \**************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getTextDirection.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getTextDirection.js ***!
+  \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22792,10 +18241,10 @@ function getTextDirection(element) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/getTimeStamp.js":
-/*!**********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/getTimeStamp.js ***!
-  \**********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/getTimeStamp.js":
+/*!******************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/getTimeStamp.js ***!
+  \******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22827,10 +18276,10 @@ function getTimeStamp() {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/hasProperty.js":
-/*!*********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/hasProperty.js ***!
-  \*********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/hasProperty.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/hasProperty.js ***!
+  \*****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22844,10 +18293,10 @@ function has(object, key) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/isDOMElement.js":
-/*!**********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/isDOMElement.js ***!
-  \**********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/isDOMElement.js":
+/*!******************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/isDOMElement.js ***!
+  \******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22866,10 +18315,10 @@ function isDOMElement(obj) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/isDragDropSupported.js":
-/*!*****************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/isDragDropSupported.js ***!
-  \*****************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/isDragDropSupported.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/isDragDropSupported.js ***!
+  \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22902,10 +18351,33 @@ function isDragDropSupported() {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/isObjectURL.js":
-/*!*********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/isObjectURL.js ***!
-  \*********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/isNetworkError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/isNetworkError.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function isNetworkError(xhr) {
+  if (!xhr) {
+    return false;
+  }
+
+  return xhr.readyState !== 0 && xhr.readyState !== 4 || xhr.status === 0;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (isNetworkError);
+
+/***/ }),
+
+/***/ "./node_modules/@uppy/utils/lib/isObjectURL.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/isObjectURL.js ***!
+  \*****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22925,10 +18397,10 @@ function isObjectURL(url) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/isPreviewSupported.js":
-/*!****************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/isPreviewSupported.js ***!
-  \****************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/isPreviewSupported.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/isPreviewSupported.js ***!
+  \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22944,10 +18416,10 @@ function isPreviewSupported(fileType) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/mimeTypes.js":
-/*!*******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/mimeTypes.js ***!
-  \*******************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/mimeTypes.js":
+/*!***************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/mimeTypes.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23015,10 +18487,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/prettyETA.js":
-/*!*******************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/prettyETA.js ***!
-  \*******************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/prettyETA.js":
+/*!***************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/prettyETA.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23026,7 +18498,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ prettyETA)
 /* harmony export */ });
-/* harmony import */ var _secondsToTime_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./secondsToTime.js */ "./src/jgDashboard/node_modules/@uppy/utils/lib/secondsToTime.js");
+/* harmony import */ var _secondsToTime_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./secondsToTime.js */ "./node_modules/@uppy/utils/lib/secondsToTime.js");
 
 function prettyETA(seconds) {
   const time = (0,_secondsToTime_js__WEBPACK_IMPORTED_MODULE_0__["default"])(seconds); // Only display hours and minutes if they are greater than 0 but always
@@ -23041,10 +18513,10 @@ function prettyETA(seconds) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/secondsToTime.js":
-/*!***********************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/secondsToTime.js ***!
-  \***********************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/secondsToTime.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/secondsToTime.js ***!
+  \*******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23065,10 +18537,10 @@ function secondsToTime(rawSeconds) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/toArray.js":
-/*!*****************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/toArray.js ***!
-  \*****************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/toArray.js":
+/*!*************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/toArray.js ***!
+  \*************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23083,10 +18555,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/@uppy/utils/lib/truncateString.js":
-/*!************************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/@uppy/utils/lib/truncateString.js ***!
-  \************************************************************************/
+/***/ "./node_modules/@uppy/utils/lib/truncateString.js":
+/*!********************************************************!*\
+  !*** ./node_modules/@uppy/utils/lib/truncateString.js ***!
+  \********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23118,10 +18590,10 @@ function truncateString(string, maxLength) {
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/exifr/dist/mini.esm.mjs":
-/*!**************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/exifr/dist/mini.esm.mjs ***!
-  \**************************************************************/
+/***/ "./node_modules/exifr/dist/mini.esm.mjs":
+/*!**********************************************!*\
+  !*** ./node_modules/exifr/dist/mini.esm.mjs ***!
+  \**********************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23166,10 +18638,341 @@ function e(e,t,s){return t in e?Object.defineProperty(e,t,{value:s,enumerable:!0
 
 /***/ }),
 
-/***/ "./src/jgDashboard/node_modules/nanoid/non-secure/index.js":
-/*!*****************************************************************!*\
-  !*** ./src/jgDashboard/node_modules/nanoid/non-secure/index.js ***!
-  \*****************************************************************/
+/***/ "./node_modules/js-base64/base64.mjs":
+/*!*******************************************!*\
+  !*** ./node_modules/js-base64/base64.mjs ***!
+  \*******************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Base64: () => (/* binding */ gBase64),
+/* harmony export */   VERSION: () => (/* binding */ VERSION),
+/* harmony export */   atob: () => (/* binding */ _atob),
+/* harmony export */   atobPolyfill: () => (/* binding */ atobPolyfill),
+/* harmony export */   btoa: () => (/* binding */ _btoa),
+/* harmony export */   btoaPolyfill: () => (/* binding */ btoaPolyfill),
+/* harmony export */   btou: () => (/* binding */ btou),
+/* harmony export */   decode: () => (/* binding */ decode),
+/* harmony export */   encode: () => (/* binding */ encode),
+/* harmony export */   encodeURI: () => (/* binding */ encodeURI),
+/* harmony export */   encodeURL: () => (/* binding */ encodeURI),
+/* harmony export */   extendBuiltins: () => (/* binding */ extendBuiltins),
+/* harmony export */   extendString: () => (/* binding */ extendString),
+/* harmony export */   extendUint8Array: () => (/* binding */ extendUint8Array),
+/* harmony export */   fromBase64: () => (/* binding */ decode),
+/* harmony export */   fromUint8Array: () => (/* binding */ fromUint8Array),
+/* harmony export */   isValid: () => (/* binding */ isValid),
+/* harmony export */   toBase64: () => (/* binding */ encode),
+/* harmony export */   toUint8Array: () => (/* binding */ toUint8Array),
+/* harmony export */   utob: () => (/* binding */ utob),
+/* harmony export */   version: () => (/* binding */ version)
+/* harmony export */ });
+/**
+ *  base64.ts
+ *
+ *  Licensed under the BSD 3-Clause License.
+ *    http://opensource.org/licenses/BSD-3-Clause
+ *
+ *  References:
+ *    http://en.wikipedia.org/wiki/Base64
+ *
+ * @author Dan Kogai (https://github.com/dankogai)
+ */
+const version = '3.7.5';
+/**
+ * @deprecated use lowercase `version`.
+ */
+const VERSION = version;
+const _hasatob = typeof atob === 'function';
+const _hasbtoa = typeof btoa === 'function';
+const _hasBuffer = typeof Buffer === 'function';
+const _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
+const _TE = typeof TextEncoder === 'function' ? new TextEncoder() : undefined;
+const b64ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+const b64chs = Array.prototype.slice.call(b64ch);
+const b64tab = ((a) => {
+    let tab = {};
+    a.forEach((c, i) => tab[c] = i);
+    return tab;
+})(b64chs);
+const b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
+const _fromCC = String.fromCharCode.bind(String);
+const _U8Afrom = typeof Uint8Array.from === 'function'
+    ? Uint8Array.from.bind(Uint8Array)
+    : (it) => new Uint8Array(Array.prototype.slice.call(it, 0));
+const _mkUriSafe = (src) => src
+    .replace(/=/g, '').replace(/[+\/]/g, (m0) => m0 == '+' ? '-' : '_');
+const _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, '');
+/**
+ * polyfill version of `btoa`
+ */
+const btoaPolyfill = (bin) => {
+    // console.log('polyfilled');
+    let u32, c0, c1, c2, asc = '';
+    const pad = bin.length % 3;
+    for (let i = 0; i < bin.length;) {
+        if ((c0 = bin.charCodeAt(i++)) > 255 ||
+            (c1 = bin.charCodeAt(i++)) > 255 ||
+            (c2 = bin.charCodeAt(i++)) > 255)
+            throw new TypeError('invalid character found');
+        u32 = (c0 << 16) | (c1 << 8) | c2;
+        asc += b64chs[u32 >> 18 & 63]
+            + b64chs[u32 >> 12 & 63]
+            + b64chs[u32 >> 6 & 63]
+            + b64chs[u32 & 63];
+    }
+    return pad ? asc.slice(0, pad - 3) + "===".substring(pad) : asc;
+};
+/**
+ * does what `window.btoa` of web browsers do.
+ * @param {String} bin binary string
+ * @returns {string} Base64-encoded string
+ */
+const _btoa = _hasbtoa ? (bin) => btoa(bin)
+    : _hasBuffer ? (bin) => Buffer.from(bin, 'binary').toString('base64')
+        : btoaPolyfill;
+const _fromUint8Array = _hasBuffer
+    ? (u8a) => Buffer.from(u8a).toString('base64')
+    : (u8a) => {
+        // cf. https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string/12713326#12713326
+        const maxargs = 0x1000;
+        let strs = [];
+        for (let i = 0, l = u8a.length; i < l; i += maxargs) {
+            strs.push(_fromCC.apply(null, u8a.subarray(i, i + maxargs)));
+        }
+        return _btoa(strs.join(''));
+    };
+/**
+ * converts a Uint8Array to a Base64 string.
+ * @param {boolean} [urlsafe] URL-and-filename-safe a la RFC4648 §5
+ * @returns {string} Base64 string
+ */
+const fromUint8Array = (u8a, urlsafe = false) => urlsafe ? _mkUriSafe(_fromUint8Array(u8a)) : _fromUint8Array(u8a);
+// This trick is found broken https://github.com/dankogai/js-base64/issues/130
+// const utob = (src: string) => unescape(encodeURIComponent(src));
+// reverting good old fationed regexp
+const cb_utob = (c) => {
+    if (c.length < 2) {
+        var cc = c.charCodeAt(0);
+        return cc < 0x80 ? c
+            : cc < 0x800 ? (_fromCC(0xc0 | (cc >>> 6))
+                + _fromCC(0x80 | (cc & 0x3f)))
+                : (_fromCC(0xe0 | ((cc >>> 12) & 0x0f))
+                    + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
+                    + _fromCC(0x80 | (cc & 0x3f)));
+    }
+    else {
+        var cc = 0x10000
+            + (c.charCodeAt(0) - 0xD800) * 0x400
+            + (c.charCodeAt(1) - 0xDC00);
+        return (_fromCC(0xf0 | ((cc >>> 18) & 0x07))
+            + _fromCC(0x80 | ((cc >>> 12) & 0x3f))
+            + _fromCC(0x80 | ((cc >>> 6) & 0x3f))
+            + _fromCC(0x80 | (cc & 0x3f)));
+    }
+};
+const re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
+/**
+ * @deprecated should have been internal use only.
+ * @param {string} src UTF-8 string
+ * @returns {string} UTF-16 string
+ */
+const utob = (u) => u.replace(re_utob, cb_utob);
+//
+const _encode = _hasBuffer
+    ? (s) => Buffer.from(s, 'utf8').toString('base64')
+    : _TE
+        ? (s) => _fromUint8Array(_TE.encode(s))
+        : (s) => _btoa(utob(s));
+/**
+ * converts a UTF-8-encoded string to a Base64 string.
+ * @param {boolean} [urlsafe] if `true` make the result URL-safe
+ * @returns {string} Base64 string
+ */
+const encode = (src, urlsafe = false) => urlsafe
+    ? _mkUriSafe(_encode(src))
+    : _encode(src);
+/**
+ * converts a UTF-8-encoded string to URL-safe Base64 RFC4648 §5.
+ * @returns {string} Base64 string
+ */
+const encodeURI = (src) => encode(src, true);
+// This trick is found broken https://github.com/dankogai/js-base64/issues/130
+// const btou = (src: string) => decodeURIComponent(escape(src));
+// reverting good old fationed regexp
+const re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
+const cb_btou = (cccc) => {
+    switch (cccc.length) {
+        case 4:
+            var cp = ((0x07 & cccc.charCodeAt(0)) << 18)
+                | ((0x3f & cccc.charCodeAt(1)) << 12)
+                | ((0x3f & cccc.charCodeAt(2)) << 6)
+                | (0x3f & cccc.charCodeAt(3)), offset = cp - 0x10000;
+            return (_fromCC((offset >>> 10) + 0xD800)
+                + _fromCC((offset & 0x3FF) + 0xDC00));
+        case 3:
+            return _fromCC(((0x0f & cccc.charCodeAt(0)) << 12)
+                | ((0x3f & cccc.charCodeAt(1)) << 6)
+                | (0x3f & cccc.charCodeAt(2)));
+        default:
+            return _fromCC(((0x1f & cccc.charCodeAt(0)) << 6)
+                | (0x3f & cccc.charCodeAt(1)));
+    }
+};
+/**
+ * @deprecated should have been internal use only.
+ * @param {string} src UTF-16 string
+ * @returns {string} UTF-8 string
+ */
+const btou = (b) => b.replace(re_btou, cb_btou);
+/**
+ * polyfill version of `atob`
+ */
+const atobPolyfill = (asc) => {
+    // console.log('polyfilled');
+    asc = asc.replace(/\s+/g, '');
+    if (!b64re.test(asc))
+        throw new TypeError('malformed base64.');
+    asc += '=='.slice(2 - (asc.length & 3));
+    let u24, bin = '', r1, r2;
+    for (let i = 0; i < asc.length;) {
+        u24 = b64tab[asc.charAt(i++)] << 18
+            | b64tab[asc.charAt(i++)] << 12
+            | (r1 = b64tab[asc.charAt(i++)]) << 6
+            | (r2 = b64tab[asc.charAt(i++)]);
+        bin += r1 === 64 ? _fromCC(u24 >> 16 & 255)
+            : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255)
+                : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
+    }
+    return bin;
+};
+/**
+ * does what `window.atob` of web browsers do.
+ * @param {String} asc Base64-encoded string
+ * @returns {string} binary string
+ */
+const _atob = _hasatob ? (asc) => atob(_tidyB64(asc))
+    : _hasBuffer ? (asc) => Buffer.from(asc, 'base64').toString('binary')
+        : atobPolyfill;
+//
+const _toUint8Array = _hasBuffer
+    ? (a) => _U8Afrom(Buffer.from(a, 'base64'))
+    : (a) => _U8Afrom(_atob(a).split('').map(c => c.charCodeAt(0)));
+/**
+ * converts a Base64 string to a Uint8Array.
+ */
+const toUint8Array = (a) => _toUint8Array(_unURI(a));
+//
+const _decode = _hasBuffer
+    ? (a) => Buffer.from(a, 'base64').toString('utf8')
+    : _TD
+        ? (a) => _TD.decode(_toUint8Array(a))
+        : (a) => btou(_atob(a));
+const _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == '-' ? '+' : '/'));
+/**
+ * converts a Base64 string to a UTF-8 string.
+ * @param {String} src Base64 string.  Both normal and URL-safe are supported
+ * @returns {string} UTF-8 string
+ */
+const decode = (src) => _decode(_unURI(src));
+/**
+ * check if a value is a valid Base64 string
+ * @param {String} src a value to check
+  */
+const isValid = (src) => {
+    if (typeof src !== 'string')
+        return false;
+    const s = src.replace(/\s+/g, '').replace(/={0,2}$/, '');
+    return !/[^\s0-9a-zA-Z\+/]/.test(s) || !/[^\s0-9a-zA-Z\-_]/.test(s);
+};
+//
+const _noEnum = (v) => {
+    return {
+        value: v, enumerable: false, writable: true, configurable: true
+    };
+};
+/**
+ * extend String.prototype with relevant methods
+ */
+const extendString = function () {
+    const _add = (name, body) => Object.defineProperty(String.prototype, name, _noEnum(body));
+    _add('fromBase64', function () { return decode(this); });
+    _add('toBase64', function (urlsafe) { return encode(this, urlsafe); });
+    _add('toBase64URI', function () { return encode(this, true); });
+    _add('toBase64URL', function () { return encode(this, true); });
+    _add('toUint8Array', function () { return toUint8Array(this); });
+};
+/**
+ * extend Uint8Array.prototype with relevant methods
+ */
+const extendUint8Array = function () {
+    const _add = (name, body) => Object.defineProperty(Uint8Array.prototype, name, _noEnum(body));
+    _add('toBase64', function (urlsafe) { return fromUint8Array(this, urlsafe); });
+    _add('toBase64URI', function () { return fromUint8Array(this, true); });
+    _add('toBase64URL', function () { return fromUint8Array(this, true); });
+};
+/**
+ * extend Builtin prototypes with relevant methods
+ */
+const extendBuiltins = () => {
+    extendString();
+    extendUint8Array();
+};
+const gBase64 = {
+    version: version,
+    VERSION: VERSION,
+    atob: _atob,
+    atobPolyfill: atobPolyfill,
+    btoa: _btoa,
+    btoaPolyfill: btoaPolyfill,
+    fromBase64: decode,
+    toBase64: encode,
+    encode: encode,
+    encodeURI: encodeURI,
+    encodeURL: encodeURI,
+    utob: utob,
+    btou: btou,
+    decode: decode,
+    isValid: isValid,
+    fromUint8Array: fromUint8Array,
+    toUint8Array: toUint8Array,
+    extendString: extendString,
+    extendUint8Array: extendUint8Array,
+    extendBuiltins: extendBuiltins,
+};
+// makecjs:CUT //
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// and finally,
+
+
+
+/***/ }),
+
+/***/ "./node_modules/nanoid/non-secure/index.js":
+/*!*************************************************!*\
+  !*** ./node_modules/nanoid/non-secure/index.js ***!
+  \*************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23291,7 +19094,7 @@ var __webpack_exports__ = {};
   \**********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _jgDashboard_lib_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./jgDashboard/lib/index.js */ "./src/jgDashboard/lib/index.js");
+/* harmony import */ var _jgDashboard_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./jgDashboard/index.js */ "./src/jgDashboard/index.js");
 /* harmony import */ var _uppy_tus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/tus */ "./node_modules/@uppy/tus/lib/index.js");
 /* harmony import */ var _jgprocessor_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./jgprocessor.js */ "./src/jgprocessor.js");
 // Script to handle tu uppy upload form
@@ -23349,7 +19152,7 @@ var callback = function() {
     document.getElementById('drag-drop-area').innerHTML = '';
   }
 
-  uppy.use(_jgDashboard_lib_index_js__WEBPACK_IMPORTED_MODULE_1__["default"], {
+  uppy.use(_jgDashboard_index_js__WEBPACK_IMPORTED_MODULE_1__["default"], {
     inline: true,
     target: window.uppyVars.uppyTarget,
     showProgressDetails: true,
