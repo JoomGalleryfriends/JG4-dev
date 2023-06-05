@@ -51,7 +51,7 @@ class ImagesController extends JoomAdminController
 		$this->registerTask('featured', 'feature');
     $this->registerTask('unfeatured', 'feature');
 
-    $this->registerTask('approveded', 'approve');
+    $this->registerTask('approved', 'approve');
     $this->registerTask('unapproved', 'approve');
   }
 
@@ -211,7 +211,7 @@ class ImagesController extends JoomAdminController
         break;
 
       case 'approve':
-        $data  = array('approve' => 1, 'unapprove' => 0);
+        $data  = array('approved' => 1, 'unapproved' => 0);
         $msgs  = array('APPROVING', 'APPROVED', 'UNAPPROVED', '', '');
         break;
       
@@ -224,7 +224,7 @@ class ImagesController extends JoomAdminController
 
     $value = ArrayHelper::getValue($data, $task, 0, 'int');
 
-		if (empty($cid))
+		if(empty($cid))
 		{
 			$this->app->getLogger()->warning(Text::_($this->text_prefix . '_NO_ITEM_SELECTED'), array('image' => 'jerror'));
 		}
