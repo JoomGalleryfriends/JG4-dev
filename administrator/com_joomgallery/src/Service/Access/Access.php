@@ -102,6 +102,9 @@ class Access implements AccessInterface
    */
   public function checkACL(string $action, string $asset='', int $pk=0): bool
   {
+    // Prepare action
+    $action = $this->prepareAction($action);
+
     // Prepare asset
     $asset = $this->prepareAsset($asset, $pk);
 
@@ -269,5 +272,77 @@ class Access implements AccessInterface
     }
 
     return $asset;
+  }
+
+  /**
+   * Prepare the entered action to catch similar words.
+   *
+   * @param   string   $action    The given aaction.
+   *
+   * @return  string   The prepared action.
+   *
+   * @since   4.0.0
+   * @throws  \Exception
+   */
+  protected function prepareAction(string $action): string
+  {
+    // Synonyms for add
+    $addSyn    = array('add', 'create', 'new');
+    // Synonyms for delete
+    $delSyn    = array('delete', 'remove', 'drop', 'clear', 'erase');
+    // Synonyms for edit
+    $editSyn   = array('edit', 'change', 'modify', 'alter');
+    // Synonyms for editstate
+    $stateSyn  = array('editstate', 'feature', 'unfeature', 'publish', 'unpublish', 'approve', 'unapprove');
+    // Synonyms for admin
+    $adminSyn  = array('admin', 'acl');
+    // Synonyms for manage
+    $manageSyn = array('manage', 'options');
+
+    // Compose array
+    $composition = array($addSyn, $delSyn, $editSyn, $editSyn, $stateSyn, $adminSyn, $manageSyn);
+
+    // Get the correct action from composition array
+    if(!$res = $this->arrayRecursiveSearch($action, $composition))
+    {
+      throw new \Exception('Invalid action provided for ACL access check', 1);
+    }
+
+    return $res;
+  }
+
+  /**
+   * Search for a value in a nested array and return first value of
+   * current array level.
+   *
+   * @param   string   $needle    The serached value.
+   * @param   array    $array     The array.
+   *
+   * @return  string   First value in the array where needle was found.
+   *
+   * @since   4.0.0
+   */
+  protected function arrayRecursiveSearch(string $needle, array $array): string
+  {
+    foreach($array as $key => $value)
+    {
+      if($needle === $value)
+      {
+        // value found in this level
+        return $array[0];
+      }
+      elseif(is_array($value))
+      {
+        // perfom recursive search
+        $callback = $this->arrayRecursiveSearch($needle, $value);
+        
+        if($callback)
+        {
+          return $callback;
+        }
+      }
+    }
+
+    return false;
   }
 }

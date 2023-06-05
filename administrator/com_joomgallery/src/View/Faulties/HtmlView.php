@@ -59,12 +59,6 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
-    $this->component->createAccess();
-    $acl = $this->component->getAccess();
-    $acl->setUser(821);
-    $res = $acl->checkACL('edit','category', 5);
-		dump($res);
-
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();
