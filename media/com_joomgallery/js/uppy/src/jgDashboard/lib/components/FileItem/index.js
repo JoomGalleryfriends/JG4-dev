@@ -31,6 +31,8 @@ export default class FileItem extends BaseFileItem {
     const dashboardItemClass = classNames({
       'uppy-Dashboard-Item': true,
       'is-inprogress': uploadInProgress && !this.props.recoveredState,
+      'is-preprocessing': file.progress.preprocess,
+      'is-postprocessing': file.progress.postprocess,
       'is-processing': isProcessing,
       'is-complete': isUploaded,
       'is-error': !!error,

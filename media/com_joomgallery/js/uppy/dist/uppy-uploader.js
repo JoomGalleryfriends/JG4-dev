@@ -5075,6 +5075,8 @@ class FileItem extends _uppy_dashboard_lib_components_FileItem_index_js__WEBPACK
     const dashboardItemClass = classnames__WEBPACK_IMPORTED_MODULE_1___default()({
       'uppy-Dashboard-Item': true,
       'is-inprogress': uploadInProgress && !this.props.recoveredState,
+      'is-preprocessing': file.progress.preprocess,
+      'is-postprocessing': file.progress.postprocess,
       'is-processing': isProcessing,
       'is-complete': isUploaded,
       'is-error': !!error,
@@ -7186,18 +7188,18 @@ class JGprocessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
         }
       }
 
+      // Add debug popup to file preview
+      if(!successful || (successful && this.formData.get('jform[debug]') == 1)) {
+        let div       = document.createElement('div');
+        div.innerHTML = this.createPopup(file, this.uploadID, response);
+        document.getElementById('popup-area').appendChild(div);
+
+        new bootstrap.Modal(document.getElementById('modal'+this.uploadID));
+      }
+
       // Add file ID to the observed object of finished files
       this.finishedFiles[file.id] = {success: successful, file: file};
     });
-
-    // Add debug popup
-    if(!successful || (successful && this.formData.get('jform[debug]') == 1)) {
-      let div       = document.createElement('div');
-      div.innerHTML = this.createPopup(file, this.uploadID, response);
-      document.getElementById('popup-area').appendChild(div);
-
-      new bootstrap.Modal(document.getElementById('modal'+file.uuid));
-    }
   }
 
   /**
@@ -7239,7 +7241,7 @@ class JGprocessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
    * @returns {Promise}  Promise to signal completion
    */
   async awaitSaveRequest(fileIDs, uploadID) {
-    //console.log('start observing...');
+    // console.log('start observing...');
 
     const observeChanges = () => {
       return new Promise((resolve) => {
@@ -7255,8 +7257,8 @@ class JGprocessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
               let file = this.uppy.getFile(change.value.file.id);
               this.uppy.emit('postprocess-complete', file);
 
-              //console.log('new observed finished file:');
-              //console.log(change.value.file.id);
+              // console.log('new observed finished file:');
+              // console.log(change.value.file.id);
             }
             c++;
           });
@@ -7274,8 +7276,8 @@ class JGprocessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
           let file = this.uppy.getFile(this.finishedFiles[key].file.id);
           this.uppy.emit('postprocess-complete', file);
 
-          //console.log('already finished files:');
-          //console.log(this.finishedFiles[key].file.id);
+          // console.log('already finished files:');
+          // console.log(this.finishedFiles[key].file.id);
         }
 
         if(nmbFinished >= fileIDs.length) {
