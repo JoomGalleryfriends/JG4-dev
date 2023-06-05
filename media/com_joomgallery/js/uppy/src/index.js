@@ -3,7 +3,7 @@ import Uppy from '@uppy/core';
 import jgDashboard from './jgDashboard/index.js';
 //import Dashboard from '@uppy/dashboard';
 import Tus from '@uppy/tus';
-import JGprocessor from './jgprocessor.js';
+import jgProcessor from './jgprocessor.js';
 
 /**
  * Apply validity class to catid choices select field
@@ -71,7 +71,7 @@ var callback = function() {
     limit: window.uppyVars.uppyLimit
   });
 
-  uppy.use(JGprocessor, {
+  uppy.use(jgProcessor, {
     formID: 'adminForm',
     semaCalls: window.uppyVars.semaCalls,
     semaTokens: window.uppyVars.semaTokens

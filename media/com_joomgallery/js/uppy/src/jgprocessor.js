@@ -2,7 +2,7 @@ import { BasePlugin } from '@uppy/core';
 import Translator from '@uppy/utils/lib/Translator';
 import { Observable } from '@gullerya/object-observer';
 
-export default class JGprocessor extends BasePlugin {
+export default class jgProcessor extends BasePlugin {
   /**
    * Constructor
    * Doc: https://uppy.io/docs/guides/building-plugins/#creating-a-plugin
@@ -16,8 +16,8 @@ export default class JGprocessor extends BasePlugin {
   constructor(uppy, opts) {
     super(uppy, opts);
     this.type     = 'saver';
-    this.id       = this.opts.id || 'JGProcessor';
-    this.title    = 'JGProcessor';
+    this.id       = this.opts.id || 'jgProcessor';
+    this.title    = 'jgProcessor';
     this.formID   = this.opts.formID || 'adminForm';
     this.uploadID = this.opts.uploadID || '';
 
