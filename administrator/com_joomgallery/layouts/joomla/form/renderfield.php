@@ -46,7 +46,7 @@ $id              = ($id ?? $name) . '-desc';
 $hideLabel       = !empty($options['hiddenLabel']);
 $hideDescription = empty($options['hiddenDescription']) ? false : $options['hiddenDescription'];
 $descClass       = ($options['descClass'] ?? '') ?: (!empty($options['inlineHelp']) ? 'hide-aware-inline-help d-none' : '');
-$externalConfig  = ($field->type == 'externalconfig') ? true : false;
+$externalConfig  = (isset($field) && $field->type == 'externalconfig') ? true : false;
 
 if((isset($sensitive) && $sensitive == true) || (!empty($options['sensitive']) && $options['sensitive'] == true))
 {
