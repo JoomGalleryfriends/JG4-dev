@@ -2502,7 +2502,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
             $bNew = 0;
           }
           $rgbNew = ($rNew << 16) + ($gNew << 8) + $bNew;
-          \imageSetPixel($img, $x, $y, $rgbNew);
+          \imageSetPixel($img, $x, $y, (int) $rgbNew);
         }
       }
     }
