@@ -93,7 +93,7 @@ class ConfigTable extends Table implements VersionableTableInterface
 	public function bind($array, $ignore = '')
 	{
 		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task');
+		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
 		if($array['id'] == 0 && empty($array['created_by']))
 		{

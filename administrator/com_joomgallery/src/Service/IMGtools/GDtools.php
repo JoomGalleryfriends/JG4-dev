@@ -2451,7 +2451,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
           if(($rOrig != $rNew) || ($gOrig != $gNew) || ($bOrig != $bNew))
           {
-            $pixCol = \imageColorAllocate($img, $rNew, $gNew, $bNew);
+            $pixCol = \imageColorAllocate($img, (int) $rNew, (int) $gNew, (int) $bNew);
             \imageSetPixel($img, $x, $y, $pixCol);
           }
         }
@@ -2502,7 +2502,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
             $bNew = 0;
           }
           $rgbNew = ($rNew << 16) + ($gNew << 8) + $bNew;
-          \imageSetPixel($img, $x, $y, $rgbNew);
+          \imageSetPixel($img, $x, $y, (int) $rgbNew);
         }
       }
     }
