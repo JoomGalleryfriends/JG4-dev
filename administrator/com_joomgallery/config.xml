@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <fieldset label="COM_JOOMGALLERY" name="joomgallery">
+        <field name="config_note"
+               type="note"
+               class="alert alert-info"
+               label="COM_JOOMGALLERY_CONFIG_SETS"
+               description="COM_JOOMGALLERY_CONFIG_SETS_DESC"
+        />
         <field name="inheritance_config"
                type="list"
                default="default"
@@ -8,6 +14,36 @@
                description="COM_JOOMGALLERY_CONFIG_INHERITANCE_METHOD_DESC" >
           <option value="default">JDEFAULT</option>
         </field>
+
+        <field name="sef_ids"
+               type="radio"
+               layout="joomla.form.field.radio.switcher"
+               default="0"
+               label="JGLOBAL_SEF_NOIDS_LABEL"
+               description="JGLOBAL_SEF_NOIDS_DESC"
+               filter="integer" >
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+
+        <field name="save_history"
+               type="radio"
+               default="0"
+               label="JGLOBAL_SAVE_HISTORY_OPTIONS_LABEL"
+               description="JGLOBAL_SAVE_HISTORY_OPTIONS_DESC"
+               layout="joomla.form.field.radio.switcher" >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field name="history_limit"
+               type="text"
+               filter="integer"
+               label="JGLOBAL_HISTORY_LIMIT_OPTIONS_LABEL"
+               description="JGLOBAL_HISTORY_LIMIT_OPTIONS_DESC"
+               default="5"
+               showon="save_history:1"
+        />
     </fieldset>
 
     <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
@@ -20,33 +56,4 @@
                label="JCONFIG_PERMISSIONS_LABEL"
                section="component" />
 	  </fieldset>
-
-    <fieldset name="component">
-        <field
-            name="save_history"
-            type="radio"
-            default="0"
-            label="JGLOBAL_SAVE_HISTORY_OPTIONS_LABEL"
-            description="JGLOBAL_SAVE_HISTORY_OPTIONS_DESC"
-            layout="joomla.form.field.radio.switcher"
-            >
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-
-        <field name="history_limit" type="text" filter="integer" label="JGLOBAL_HISTORY_LIMIT_OPTIONS_LABEL" description="JGLOBAL_HISTORY_LIMIT_OPTIONS_DESC" default="5"/>
-
-        <field
-          name="sef_ids"
-          type="radio"
-          layout="joomla.form.field.radio.switcher"
-          default="0"
-          label="JGLOBAL_SEF_NOIDS_LABEL"
-          description="JGLOBAL_SEF_NOIDS_DESC"
-          filter="integer"
-          >
-          <option value="0">JNO</option>
-          <option value="1">JYES</option>
-        </field>
-    </fieldset>
 </config>
