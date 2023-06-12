@@ -108,9 +108,11 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    // Batch button
+    
     if($canDo->get('core.edit.state') || count($this->transitions))
     {
+
+      // Batch button
       if($canDo->get('core.edit'))
       {
         $batch_dropdown = $toolbar->dropdownButton('batch-group')
@@ -130,11 +132,11 @@ class HtmlView extends JoomGalleryView
           ->listCheck(true);
       }
 
-      // Image manipulation button
+      // Image processing button
       if($canDo->get('core.edit'))
       {
         $process_dropdown = $toolbar->dropdownButton('process-group')
-          ->text('Image Manipulation')
+          ->text('COM_JOOMGALLERY_CONFIG_TAB_IMAGE_PROCESSING')
           ->toggleSplit(false)
           ->icon('fas fa-images')
           ->buttonClass('btn btn-action')
@@ -144,8 +146,8 @@ class HtmlView extends JoomGalleryView
 
         // Recreate button inside image manipulation
         $process_childBar->standardButton('recreate')
-          ->text('recreate - comes later')
-          ->icon('fas fa-refresh')
+          ->text('COM_JOOMGALLERY_RECREATE')
+          ->icon('icon-refresh')
           ->task('images.recreate')
           ->listCheck(true);
       }

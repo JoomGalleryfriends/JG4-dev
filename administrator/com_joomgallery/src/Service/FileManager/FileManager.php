@@ -155,9 +155,18 @@ class FileManager implements FileManagerInterface
           // No
           $this->component->getIMGtools()->keep_anim = false;
         }
+
+        // Grap resource if needed
+        $isStream = false;
+        if(\strpos($this->component->getFilesystem()->getFilesystem(), 'local') === false)
+        {
+          // We are dealing with an external filesystem
+          $source   = $this->component->getFilesystem()->getResource($source);
+          $isStream = true;
+        }
         
         // Read source image
-        if(!$this->component->getIMGtools()->read($source))
+        if(!$this->component->getIMGtools()->read($source, $isStream))
         {
           // Destroy the IMGtools service
           $this->component->delIMGtools();
