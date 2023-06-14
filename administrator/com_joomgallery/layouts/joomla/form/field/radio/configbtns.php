@@ -93,7 +93,7 @@ $config = false;
 if(!empty($view) && $contextID > 0 && in_array($view, array('image', 'category')))
 {
   $config = true;
-  $comp->createConfig('com_joomgallery.'.$view, $contextID);
+  $comp->createConfig('com_joomgallery.'.$view, $contextID, false);
 }
 
 ?>
