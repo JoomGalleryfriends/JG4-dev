@@ -99,7 +99,7 @@ if(!empty($view) && $contextID > 0 && in_array($view, array('image', 'category')
 ?>
 <fieldset <?php echo implode(' ', $attribs); ?>>
     <legend class="visually-hidden">
-        <?php echo 'config-'.$label; ?>
+        <?php echo $label; ?>
     </legend>
     <div class="<?php echo $containerClass; ?>">
         <?php foreach ($options as $i => $option) : ?>
@@ -133,7 +133,7 @@ if(!empty($view) && $contextID > 0 && in_array($view, array('image', 'category')
                 $onchange   = !empty($option->onchange) ? 'onchange="' . $option->onchange . '"' : '';
                 $oid        = $id . $i;
                 $ovalue     = htmlspecialchars($option->value, ENT_COMPAT, 'UTF-8');
-                $attributes = array_filter([$checked, $disabled, ltrim($style), $onchange, $onclick]);
+                $attributes = array_filter(array($checked, $disabled, ltrim($style), $onchange, $onclick));
                 ?>
                 <?php if ($required) : ?>
                     <?php $attributes[] = 'required'; ?>
@@ -141,14 +141,14 @@ if(!empty($view) && $contextID > 0 && in_array($view, array('image', 'category')
                 <input class="<?php echo $classToggle; ?>" type="radio" id="<?php echo $oid; ?>" name="<?php echo $name; ?>" value="<?php echo $ovalue; ?>" <?php echo implode(' ', $attributes); ?>>
                 <label for="<?php echo $oid; ?>" class="<?php echo trim($optionClass); ?>"<?php echo $style; ?>>
                     <?php
-                      $value = false;
+                      $val = false;
                       if($config)
                       {
-                        $value = $comp->getConfig()->get($configName, false);
+                        $val = $comp->getConfig()->get($configName, false);
                       }
-                      $value = $value ? Text::_('JYES') : Text::_('JNO');
+                      $val = $value ? Text::_('JYES') : Text::_('JNO');
                     ?>
-                    <?php echo str_replace('%s', $value, $option->text); ?>
+                    <?php echo str_replace('%s', $val, $option->text); ?>
                 </label>
             <?php echo $blockEnd; ?>
         <?php endforeach; ?>
