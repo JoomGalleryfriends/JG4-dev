@@ -132,6 +132,7 @@
              type="number"
              default="1"
              filter="int"
+             sensitive="true"
              min="1"
              max="125"
              step="1"
