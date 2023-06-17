@@ -229,6 +229,10 @@ class FileManager implements FileManagerInterface
           }
         }
       }
+      else
+      {
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_MANIPULATION_NOT_NEEDED'));
+      }
 
       // Path to save image
       $file = $this->getImgPath(0, $imagetype->typename, $cat, $filename, false);

@@ -1016,6 +1016,9 @@ class ImageModel extends JoomAdminModel
 
         return false;
       }
+
+      // Clean the cache.
+			$this->cleanCache();
     }
     catch (\Exception $e)
 		{
@@ -1023,6 +1026,12 @@ class ImageModel extends JoomAdminModel
 			$this->setError($e->getMessage());
 
 			return false;
+		}
+
+    // Output debug data
+		if(\count($this->component->getDebug()) > 1)
+		{
+			$this->component->printDebug();
 		}
 
     return true;

@@ -12,10 +12,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Response\JsonResponse;
-use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
+use \Joomla\CMS\MVC\Controller\FormController;
+use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
 /**
@@ -152,10 +152,10 @@ class ImageController extends JoomFormController
     // Access check.
     if (!$this->allowSave($data, $id))
     {
-      $app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
+      $this->setMessage(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
 
       $this->setRedirect(
-        Route::_('index.php?option=' . _JOOM_OPTION . '&view=' . $this->view_list. $this->getRedirectToListAppend(),false)
+        Route::_('index.php?option=' . _JOOM_OPTION . '&view=' . $this->view_list . $this->getRedirectToListAppend(),false)
       );
 
       return false;
@@ -165,7 +165,7 @@ class ImageController extends JoomFormController
     $form = $model->getForm($data, false);
     if(!$form)
     {
-      $app->enqueueMessage($model->getError(), 'error');
+      $this->setMessage($model->getError(), 'error');
       return false;
     }
     $form->setFieldAttribute('imgtitle', 'required', false);
@@ -186,11 +186,11 @@ class ImageController extends JoomFormController
       {
         if ($errors[$i] instanceof \Exception)
         {
-          $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+          $this->setMessage($errors[$i]->getMessage(), 'warning');
         }
         else
         {
-          $app->enqueueMessage($errors[$i], 'warning');
+          $this->setMessage($errors[$i], 'warning');
         }
       }
 
@@ -212,7 +212,7 @@ class ImageController extends JoomFormController
       $app->setUserState($context . '.data', $validData);
 
       // Redirect back to the replace screen.
-      $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype']), $model->getError()), 'error');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype']), $model->getError()), 'error');
 
       $this->setRedirect(
           Route::_('index.php?option=' . _JOOM_OPTION . '&view=image&layout=replace&id=' . $id, false)
@@ -222,7 +222,7 @@ class ImageController extends JoomFormController
     }
 
     // Set message
-    $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_IMAGETYPE', \ucfirst($validData['replacetype'])));
+    $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype'])));
 
     // Clear the data from the session.
     $app->setUserState($context . '.data', null);
