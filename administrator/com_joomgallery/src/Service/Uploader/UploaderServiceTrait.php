@@ -14,6 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\HTMLUploader;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\TUSUploader;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\SingleUploader;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\BatchUploader;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\FTPUploader;
 
 /**
@@ -62,6 +64,13 @@ trait UploaderServiceTrait
       case 'TUS':
 			case 'tus':
         $this->uploader = new TUSUploader($multiple, $async);
+
+      case 'single':
+        $this->uploader = new SingleUploader($multiple);
+        break;
+
+      case 'batch':
+        $this->uploader = new BatchUploader($multiple);
         break;
 
       case 'FTP':

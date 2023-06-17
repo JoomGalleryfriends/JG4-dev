@@ -14,6 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Response\JsonResponse;
+use Joomla\CMS\MVC\Controller\FormController;
+use Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
 
 /**
  * Image controller class.
@@ -126,5 +129,116 @@ class ImageController extends JoomFormController
 
       $this->app->close();
     }
+  }
+
+  /**
+   * Method to exchange/replace an existing imagetype.
+   *
+   * @return  boolean  True if imagetype is successfully replaced, false if not.
+   *
+   * @since   4.0
+   */
+  public function replace()
+  {
+    // Check for request forgeries.
+    $this->checkToken();
+
+    $app     = $this->app;
+    $model   = $this->getModel();
+    $data    = $this->input->post->get('jform', [], 'array');
+    $context = (string) _JOOM_OPTION . '.' . $this->context . '.replace';
+    $id      = \intval($data['id']);
+
+    // Access check.
+    if (!$this->allowSave($data, $id))
+    {
+      $app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
+
+      $this->setRedirect(
+        Route::_('index.php?option=' . _JOOM_OPTION . '&view=' . $this->view_list. $this->getRedirectToListAppend(),false)
+      );
+
+      return false;
+    }
+
+    // Load form data
+    $form = $model->getForm($data, false);
+    if(!$form)
+    {
+      $app->enqueueMessage($model->getError(), 'error');
+      return false;
+    }
+    $form->setFieldAttribute('imgtitle', 'required', false);
+    $form->setFieldAttribute('replacetype', 'required', true);
+    $form->setFieldAttribute('image', 'required', true);
+
+    // Test whether the data is valid.
+    $validData = $model->validate($form, $data);
+
+    // Check for validation errors.
+    if($validData === false)
+    {
+      // Get the validation messages.
+      $errors = $model->getErrors();
+
+      // Push up to three validation messages out to the user.
+      for($i = 0, $n = \count($errors); $i < $n && $i < 3; $i++)
+      {
+        if ($errors[$i] instanceof \Exception)
+        {
+          $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+        }
+        else
+        {
+          $app->enqueueMessage($errors[$i], 'warning');
+        }
+      }
+
+      // Save the data in the session.
+      $app->setUserState($context . '.data', $data);
+
+      // Redirect back to the replace screen.
+      $this->setRedirect(
+        Route::_('index.php?option=' . _JOOM_OPTION . '&view=image&layout=replace&id=' . $id, false)
+      );
+
+      return false;
+    }
+
+    // Attempt to replace the image.
+    if(!$model->replace($validData))
+    {
+      // Save the data in the session.
+      $app->setUserState($context . '.data', $validData);
+
+      // Redirect back to the replace screen.
+      $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype']), $model->getError()), 'error');
+
+      $this->setRedirect(
+          Route::_('index.php?option=' . _JOOM_OPTION . '&view=image&layout=replace&id=' . $id, false)
+      );
+
+      return false;
+    }
+
+    // Set message
+    $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_IMAGETYPE', \ucfirst($validData['replacetype'])));
+
+    // Clear the data from the session.
+    $app->setUserState($context . '.data', null);
+
+    // Redirect to edit screen
+    $url = 'index.php?option=' . _JOOM_OPTION . '&view=image&layout=edit&id=' . $id;
+
+    // Check if there is a return value
+    $return = $this->input->get('return', null, 'base64');
+
+    if (!\is_null($return) && Uri::isInternal(base64_decode($return)))
+    {
+      $url = base64_decode($return);
+    }
+
+    // Redirect to the list screen.
+    $this->setRedirect(Route::_($url, false));
   }
 }
