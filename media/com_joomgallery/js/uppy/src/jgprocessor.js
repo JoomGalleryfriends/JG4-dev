@@ -300,6 +300,9 @@ export default class jgProcessor extends BasePlugin {
         res = JSON.parse(res);
         res.status = response.status;
         res.data   = JSON.parse(res.data);
+      } else if (res.includes('Fatal error')) {
+        // PHP fatal error occurred
+        res = {success: false, status: response.status, message: response.statusText, messages: {}, data: {error: res}};
       } else {
         // Response is not of type json --> probably some php warnings/notices
         let split = res.split('\n{"');

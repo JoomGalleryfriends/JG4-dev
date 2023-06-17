@@ -5830,7 +5830,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ JGprocessor)
+/* harmony export */   "default": () => (/* binding */ jgProcessor)
 /* harmony export */ });
 /* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
 /* harmony import */ var _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/Translator */ "./node_modules/@uppy/utils/lib/Translator.js");
@@ -5839,7 +5839,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class JGprocessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
+class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
   /**
    * Constructor
    * Doc: https://uppy.io/docs/guides/building-plugins/#creating-a-plugin
@@ -5853,8 +5853,8 @@ class JGprocessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
   constructor(uppy, opts) {
     super(uppy, opts);
     this.type     = 'saver';
-    this.id       = this.opts.id || 'JGProcessor';
-    this.title    = 'JGProcessor';
+    this.id       = this.opts.id || 'jgProcessor';
+    this.title    = 'jgProcessor';
     this.formID   = this.opts.formID || 'adminForm';
     this.uploadID = this.opts.uploadID || '';
 
@@ -6137,6 +6137,9 @@ class JGprocessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
         res = JSON.parse(res);
         res.status = response.status;
         res.data   = JSON.parse(res.data);
+      } else if (res.includes('Fatal error')) {
+        // PHP fatal error occurred
+        res = {success: false, status: response.status, message: response.statusText, messages: {}, data: {error: res}};
       } else {
         // Response is not of type json --> probably some php warnings/notices
         let split = res.split('\n{"');
