@@ -57,40 +57,48 @@ class JoomAdminController extends BaseAdminController
   }
 
   /**
-     * Execute a task by triggering a Method in the derived class.
-     *
-     * @param   string  $task    The task to perform. If no matching task is found, the '__default' task is executed, if
-     *                           defined.
-     *
-     * @return  mixed   The value returned by the called Method.
-     *
-     * @throws  Exception
-     * @since   4.2.0
-     */
-    public function execute($task)
+   * Execute a task by triggering a Method in the derived class.
+   *
+   * @param   string  $task    The task to perform. If no matching task is found, the '__default' task is executed, if
+   *                           defined.
+   *
+   * @return  mixed   The value returned by the called Method.
+   *
+   * @throws  Exception
+   * @since   4.2.0
+   */
+  public function execute($task)
+  {
+    // Switch for TUS server
+    if($task === 'tusupload')
     {
-      // Switch for TUS server
-      if($task === 'tusupload')
-      {
-        // Create server
-        $this->component->createTusServer();
-        $server = $this->component->getTusServer();
+      // Create server
+      $this->component->createTusServer();
+      $server = $this->component->getTusServer();
 
-        // Run server
-        $server->process(true);
-      }
+      // Run server
+      $server->process(true);
+    }
 
-      // Before execution of the task
-      if(!empty($task))
-      {
-        $this->component->msgUserStateKey = 'com_joomgallery.'.$task.'.messages';
-      }
+    // Before execution of the task
+    if(!empty($task))
+    {
+      $this->component->msgUserStateKey = 'com_joomgallery.'.$task.'.messages';
+    }
+    
+    if(!$this->component->isRawTask($this->context))
+    {
+      // Get messages from session
       $this->component->msgFromSession();
+    }
 
-      // execute the task
-      $res = parent::execute($task);
+    // execute the task
+    $res = parent::execute($task);
 
-      // After execution of the task
+    // After execution of the task
+    if(!$this->component->isRawTask($this->context))
+    {
+      // Print messages from session
       if(!$this->component->msgWithhold && $res->component->error)
       {
         $this->component->printError();
@@ -100,7 +108,8 @@ class JoomAdminController extends BaseAdminController
         $this->component->printWarning();
         $this->component->printDebug();
       }
-
-      return $res;
     }
+
+    return $res;
+  }
 }

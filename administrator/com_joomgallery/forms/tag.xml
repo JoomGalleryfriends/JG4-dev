@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
-  <fieldset>
+  <fieldset name="general">
     <field name="ordering"/>
 
     <field name="id"

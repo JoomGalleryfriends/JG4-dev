@@ -31,6 +31,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  */
 class CategoryTable extends Table implements VersionableTableInterface
 { 
+  use JoomTableTrait;
+  
   /**
    * Object property to hold the path of the new location reference node.
    *
@@ -169,7 +171,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['modified_time'] = $date->toSql();
 		}
 
-    	// Support for alias field: alias
+    // Support for alias field: alias
 		if(empty($array['alias']))
 		{
 			if(empty($array['title']))
@@ -188,6 +190,17 @@ class CategoryTable extends Table implements VersionableTableInterface
 				}
 			}
 		}
+    else
+    {
+      if(Factory::getConfig()->get('unicodeslugs') == 1)
+      {
+        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
+      }
+      else
+      {
+        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
+      }
+    }
 
 		// Support for multiple field: robots
 		$this->multipleFieldSupport($array, 'robots');
@@ -508,37 +521,6 @@ class CategoryTable extends Table implements VersionableTableInterface
     }
 
     return $rootId;
-  }
-
-  /**
-   * Support for multiple field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function multipleFieldSupport(&$data, $fieldName)
-  {
-    if(isset($data[$fieldName]))
-		{
-			if(is_array($data[$fieldName]))
-			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
-			}
-			elseif(strpos($data[$fieldName], ',') != false)
-			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
-			}
-			elseif(strlen($data[$fieldName]) == 0)
-			{
-				$data[$fieldName] = '';
-			}
-		}
-		else
-		{
-			$data[$fieldName] = '';
-		}
   }
 
   /**

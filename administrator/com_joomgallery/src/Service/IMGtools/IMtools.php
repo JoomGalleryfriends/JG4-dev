@@ -73,6 +73,14 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   public $watermarking = false;
 
   /**
+   * Random number between 1000 and 9999
+   * Used for generating the temp files
+   *
+   * @var string
+   */
+  protected $rndNumber = '0';
+
+  /**
    * Constructor
    *
    * @return  void
@@ -83,7 +91,8 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   {
     parent::__construct($keep_metadata, $keep_anim);
 
-    $this->impath = $impath;
+    $this->impath    = $impath;
+    $this->rndNumber = \strval(\mt_rand(1000, 9999));
   }
 
   /**
@@ -430,7 +439,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     // Define temporary image file to be created
     $tmp_folder = $this->app->get('tmp_path');
-    $tmp_file   = $tmp_folder.'/tmp_img.'.\strtolower($this->dst_type);
+    $tmp_file   = $tmp_folder.'/tmp_img_'.$this->rndNumber.'.'.\strtolower($this->dst_type);
 
     if(!$this->write($tmp_file, $quality))
     {
@@ -1129,7 +1138,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       {
         // Define temporary image file to be created
         $tmp_folder = $this->app->get('tmp_path');
-        $dst_file   = $tmp_folder.'/tmp_wtm_img.'.\strtolower($this->src_type); 
+        $dst_file   = $tmp_folder.'/tmp_wtm_img_'.$this->rndNumber.'.'.\strtolower($this->src_type); 
       }
 
       Path::clean($dst_file);
@@ -1203,7 +1212,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
   {
     // Define temporary image file to be created
     $tmp_folder = $this->app->get('tmp_path');
-    $tmp_file   = $tmp_folder.'/tmp_wtm.'.\strtolower($this->wtm_type);
+    $tmp_file   = $tmp_folder.'/tmp_wtm_'.$this->rndNumber.'.'.\strtolower($this->wtm_type);
 
     // Apply temp file to commands
     $this->commands['wtm-resize'] = \str_replace('{tmp_wtm_file}', $tmp_file, $this->commands['wtm-resize']);

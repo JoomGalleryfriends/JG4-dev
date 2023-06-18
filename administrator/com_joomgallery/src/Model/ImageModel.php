@@ -20,8 +20,6 @@ use Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\Utilities\ArrayHelper;
-use \Joomla\CMS\Object\CMSObject;
-use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
@@ -147,8 +145,13 @@ class ImageModel extends JoomAdminModel
 	 *
 	 * @since   4.0.0
 	 */
-	public function getItem($pk = null) 
+	public function getItem($pk = null)
 	{
+    if(!\is_null($this->item) && !empty($this->item->id))
+    {
+      return $this->item;
+    }
+
     $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 		$table = $this->getTable();
 
@@ -172,24 +175,9 @@ class ImageModel extends JoomAdminModel
 
 				return false;
 			}
-    	}
+    }
 
-    	// Convert to the CMSObject before adding other data.
-		$properties = $table->getProperties(1);
-		$item = ArrayHelper::toObject($properties, CMSObject::class);
-
-		if(property_exists($item, 'params'))
-		{
-			$registry = new Registry($item->params);
-			$item->params = $registry->toArray();
-		}
-
-		if(isset($item->params))
-		{
-		$item->params = json_encode($item->params);
-		}
-
-		return $item;
+		return $table->getFieldsValues();
 	}
 
 	/**
@@ -308,24 +296,22 @@ class ImageModel extends JoomAdminModel
 		$catMoved     = false;
 		$isNew        = true;
 		$isCopy       = false;
+    $isAjax       = false;
     $aliasChanged = false;
 
 		$key = $table->getKeyName();
 		$pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
 
 		// Are we going to copy the image record?
-    if($app->input->get('task') == 'save2copy')
+    if(\strpos($app->input->get('task'), 'save2copy') !== false)
 		{
 			$isCopy = true;
 		}
-		
-		// Rertrieve request image file data
-    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
-    && $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
+
+    // Are we going to save image in an ajax request?
+    if(\strpos($app->input->get('task'), 'ajaxsave') !== false)
 		{
-			$imgUploaded = true;
-			$data['images'] = array();
-			\array_push($data['images'], $app->input->files->get('jform')['image']);
+			$isAjax = true;
 		}
 
     // Change language to 'All' if multilangugae is not enabled
@@ -363,8 +349,25 @@ class ImageModel extends JoomAdminModel
 			// Save form data in session
 			$app->setUserState(_JOOM_OPTION.'.image.upload', $data);
 
+      // Detect uploader service
+      $upload_service  = 'html';
+      if(isset($data['uploader']) && !empty($data['uploader']))
+      {
+        $upload_service = $data['uploader'];
+      }
+
+      // Detect multiple upload service
+      $upload_multiple  = false;
+      if(isset($data['multiple']) && !empty($data['multiple']))
+      {
+        $upload_multiple = \boolval($data['multiple']);
+      }
+
       // Create uploader service
-			$uploader = JoomHelper::getService('uploader', array('html', false));
+			$uploader = JoomHelper::getService('uploader', array($upload_service, $upload_multiple, $isAjax));
+
+      // Detect uploaded file
+      $imgUploaded = $uploader->isImgUploaded($data);
 
 			// Retrieve image from request
 			if($imgUploaded)
@@ -381,6 +384,7 @@ class ImageModel extends JoomAdminModel
 				if(!$uploader->retrieveImage($data, $createFilename))
 				{
 					$this->setError($this->component->getDebug(true));
+          $uploader->rollback();
 
 					return false;
 				}
@@ -389,6 +393,7 @@ class ImageModel extends JoomAdminModel
 				if(!$uploader->overrideData($data))
 				{
 					$this->setError($this->component->getDebug(true));
+          $uploader->rollback();
 
 					return false;
 				}
@@ -411,6 +416,7 @@ class ImageModel extends JoomAdminModel
 			if(!$table->bind($data))
 			{
 				$this->setError($table->getError());
+        $uploader->rollback();
 
 				return false;
 			}
@@ -422,6 +428,7 @@ class ImageModel extends JoomAdminModel
 			if(!$table->check())
 			{
 				$this->setError($table->getError());
+        $uploader->rollback();
 
 				return false;
 			}
@@ -450,6 +457,7 @@ class ImageModel extends JoomAdminModel
 			if(!$table->store())
 			{
 				$this->setError($table->getError());
+        $uploader->rollback();
 
 				return false;
 			}
@@ -496,8 +504,8 @@ class ImageModel extends JoomAdminModel
 				// (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
 				if(!$uploader->createImage($table))
 				{
-					$uploader->rollback();
 					$this->setError($this->component->getDebug(true));
+          $uploader->rollback($table);
 
 					return false;
 				}
@@ -507,12 +515,21 @@ class ImageModel extends JoomAdminModel
 			{
         if($imgUploaded)
 				{
-        	$uploader->rollback();
+        	$uploader->rollback($table);
 				}
 				$this->setError($table->getError());
 
 				return false;
 			}
+
+      // Handle ajax uploads
+      if($isAjax)
+      {
+        $this->component->cache->set('imgObj', $table->getFieldsValues(array('form', 'imgmetadata', 'params', 'created_by', 'modified_by', 'checked_out')));
+      }
+
+      // All done. Clean created temp files
+      $uploader->deleteTmp();
 
 			// Clean the cache.
 			$this->cleanCache();
@@ -524,7 +541,7 @@ class ImageModel extends JoomAdminModel
 		{
 			if($imgUploaded)
 			{
-				$uploader->rollback();
+				$uploader->rollback($table);
 			}
 			$this->setError($e->getMessage());
 

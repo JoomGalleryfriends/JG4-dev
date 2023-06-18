@@ -385,10 +385,17 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     $db = Factory::getDbo();
 
-    $path       = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'CategoryTable.php';
+    // Load JoomTableTrait
+    $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
+    $traitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\JoomTableTrait';
+
+    require_once $trait_path;
+
+    // Load CategoryTable
+    $class_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'CategoryTable.php';
     $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable';
 
-    require_once $path;
+    require_once $class_path;
 
     if(class_exists($tableClass))
     {
@@ -456,10 +463,17 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     $db = Factory::getDbo();
 
-    $path       = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'ConfigTable.php';
+    // Load JoomTableTrait
+    $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
+    $traitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\JoomTableTrait';
+
+    require_once $trait_path;
+
+    // Load ConfigTable
+    $class_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'ConfigTable.php';
     $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\ConfigTable';
 
-    require_once $path;
+    require_once $class_path;
 
     if(class_exists($tableClass))
     {
