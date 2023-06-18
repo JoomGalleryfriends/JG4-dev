@@ -1124,7 +1124,7 @@ class ImageModel extends JoomAdminModel
     {
       if($this->canRecreate($table)) 
       {
-        $context = $this->option . '.' . $this->name;
+        $context = $this->option . '.' . $this->name . '.recreate';
 
         // Create file manager service
         $this->component->createFileManager();
@@ -1134,7 +1134,7 @@ class ImageModel extends JoomAdminModel
         $imagetypes_dict = $this->component->getFileManager()->get('imagetypes_dict');
 
         // Select image source
-        if(($type == 'original' || $type == 'orig') && $imagetypes[$imagetypes_dict['original']]->params->get('jg_imgtype'))
+        if(($type == 'original' || $type == 'orig') && $imagetypes[$imagetypes_dict['original']]->params->get('jg_imgtype', 1, 'int') > 0)
         {
           // Take original as source if available
           $type = 'original';
