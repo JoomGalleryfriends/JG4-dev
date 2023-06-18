@@ -30,35 +30,7 @@ use \Joomla\Registry\Registry;
  */
 class ImageTable extends Table implements VersionableTableInterface
 {
-	/**
-	 * Check if a field is unique
-	 *
-	 * @param   string   $field    Name of the field
-   * @param   integer  $catid    Category id (default=null)
-	 *
-	 * @return  bool    True if unique
-	 */
-	private function isUnique ($field, $catid=null)
-	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($db->quoteName($field))
-			->from($db->quoteName($this->_tbl))
-			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
-			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
-
-    if($catid > 0)
-    {
-      $query->where($db->quoteName('catid') . ' = ' . $db->quote($catid));
-    }
-
-		$db->setQuery($query);
-		$db->execute();
-
-		return ($db->getNumRows() == 0) ? true : false;
-	}
+  use JoomTableTrait;
 
 	/**
 	 * Constructor
@@ -74,48 +46,36 @@ class ImageTable extends Table implements VersionableTableInterface
 		$this->setColumnAlias('published', 'published');
 	}
 
-	/**
-	 * Get the type alias for the history table
-	 *
-	 * @return  string  The alias as described above
-	 *
-	 * @since   4.0.0
-	 */
-	public function getTypeAlias()
-	{
-		return $this->typeAlias;
-	}
-
   /**
-     * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
-     *
-     * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
-     *                           If not set the instance property value is used.
-     * @param   boolean  $reset  True to reset the default values before loading the new row.
-     *
-     * @return  boolean  True if successful. False if row not found.
-     *
-     * @since   1.7.0
-     * @throws  \InvalidArgumentException
-     * @throws  \RuntimeException
-     * @throws  \UnexpectedValueException
-     */
-    public function load($keys = null, $reset = true)
+   * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
+   *
+   * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
+   *                           If not set the instance property value is used.
+   * @param   boolean  $reset  True to reset the default values before loading the new row.
+   *
+   * @return  boolean  True if successful. False if row not found.
+   *
+   * @since   1.7.0
+   * @throws  \InvalidArgumentException
+   * @throws  \RuntimeException
+   * @throws  \UnexpectedValueException
+   */
+  public function load($keys = null, $reset = true)
+  {
+    $success = parent::load($keys, $reset);
+
+    if($success)
     {
-      $success = parent::load($keys, $reset);
+      // Record successfully loaded
+      // load Tags
+      $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
+      $tags_model = $com_obj->getMVCFactory()->createModel('Tags');
 
-      if($success)
-      {
-        // Record successfully loaded
-        // load Tags
-        $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
-        $tags_model = $com_obj->getMVCFactory()->createModel('Tags');
-
-        $this->tags = $tags_model->getMappedItems($this->id);
-      }
-      
-      return $success;
+      $this->tags = $tags_model->getMappedItems($this->id);
     }
+    
+    return $success;
+  }
 
 	/**
 	 * Overloaded bind function to pre-process the params.
@@ -134,6 +94,11 @@ class ImageTable extends Table implements VersionableTableInterface
 		$date = Factory::getDate();
 		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
+    // Support for id field
+    if(!\key_exists('id', $array))
+    {
+      $array['id'] = 0;
+    }
 
 		// Support for alias field: alias
 		if(empty($array['alias']))
@@ -154,6 +119,17 @@ class ImageTable extends Table implements VersionableTableInterface
 				}
 			}
 		}
+    else
+    {
+      if(Factory::getConfig()->get('unicodeslugs') == 1)
+      {
+        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
+      }
+      else
+      {
+        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
+      }
+    }
 
 		// Support for multiple or not foreign key field: catid
 			if(!empty($array['catid']))
@@ -177,7 +153,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['created_by']))
+		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
 		{
 			$array['created_by'] = Factory::getUser()->id;
 		}
@@ -187,7 +163,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['modified_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['modified_by']))
+		if($array['id'] == 0 && (!\key_exists('modified_by', $array) ||empty($array['modified_by'])))
 		{
 			$array['modified_by'] = Factory::getUser()->id;
 		}
@@ -201,7 +177,7 @@ class ImageTable extends Table implements VersionableTableInterface
 		$this->multipleFieldSupport($array, 'robots');
 
 		// Support for empty date field: imgdate
-		if($array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
+		if(!\key_exists('imgdate', $array) || $array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
 		{
 			$array['imgdate'] = $date->toSql();
 			$this->imgdate    = $date->toSql();
@@ -296,35 +272,6 @@ class ImageTable extends Table implements VersionableTableInterface
 	}
 
 	/**
-	 * This function convert an array of Access objects into an rules array.
-	 *
-	 * @param   array  $jaccessrules  An array of Access objects.
-	 *
-	 * @return  array
-	 */
-	private function JAccessRulestoArray($jaccessrules)
-	{
-		$rules = array();
-
-		foreach($jaccessrules as $action => $jaccess)
-		{
-			$actions = array();
-
-			if($jaccess)
-			{
-				foreach($jaccess->getData() as $group => $allow)
-				{
-					$actions[$group] = ((bool)$allow);
-				}
-			}
-
-			$rules[$action] = $actions;
-		}
-
-		return $rules;
-	}
-
-	/**
 	 * Overloaded check function
 	 *
 	 * @return bool
@@ -362,10 +309,32 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
 		// Support for subform field params
-		if(is_array($this->params))
+    if(empty($this->params))
+    {
+      $this->params = $this->loadDefaultField('params');
+    }
+		elseif(\is_array($this->params))
 		{
 			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
 		}
+
+    // Support for field metadesc
+    if(empty($this->metadesc))
+    {
+      $this->metadesc = $this->loadDefaultField('metadesc');
+    }
+
+    // Support for field metakey
+    if(empty($this->metakey))
+    {
+      $this->metakey = $this->loadDefaultField('metakey');
+    }
+
+    // Support for field metakey
+    if(empty($this->imgmetadata))
+    {
+      $this->imgmetadata = $this->loadDefaultField('imgmetadata');
+    }
 
 		return parent::check();
 	}
@@ -638,36 +607,5 @@ class ImageTable extends Table implements VersionableTableInterface
 	public function publish($pks = null, $state = 1, $userId = 0)
 	{
     return $this->changeState('publish', $pks, $state, $userId);
-  }
-
-  /**
-   * Support for multiple field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function multipleFieldSupport(&$data, $fieldName)
-  {
-    if(isset($data[$fieldName]))
-		{
-			if(is_array($data[$fieldName]))
-			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
-			}
-			elseif(strpos($data[$fieldName], ',') != false)
-			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
-			}
-			elseif(strlen($data[$fieldName]) == 0)
-			{
-				$data[$fieldName] = '';
-			}
-		}
-		else
-		{
-			$data[$fieldName] = '';
-		}
   } 
 }

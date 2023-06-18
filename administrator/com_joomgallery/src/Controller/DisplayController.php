@@ -17,7 +17,7 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\Input\Input;
-
+use Joomla\CMS\Factory;
 
 /**
  * Joomgallery master display controller.
@@ -34,6 +34,14 @@ class DisplayController extends BaseController
    * @var     object
    */
   var $component;
+
+  /**
+   * The context for storing internal data, e.g. record.
+   *
+   * @var    string
+   * @since  1.6
+   */
+  protected $context;
 
 	/**
 	 * The default view.
@@ -59,6 +67,16 @@ class DisplayController extends BaseController
   {
     parent::__construct($config, $factory, $app, $input);
 
+    // Guess the context based on the view input variable
+    if (empty($this->context))
+    {
+      // Get view variable
+      $view  = Factory::getApplication()->input->get('view', $this->default_view);
+
+      // Conduct the context
+      $this->context = _JOOM_OPTION.'.'.$view.'.display';
+    }
+
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
   }
 
@@ -79,19 +97,28 @@ class DisplayController extends BaseController
     {
       $this->component->msgUserStateKey = 'com_joomgallery.'.$task.'.messages';
     }
-    $this->component->msgFromSession();
+    
+    if(!$this->component->isRawTask($this->context))
+    {
+      // Get messages from session
+      $this->component->msgFromSession();
+    }
 
 		$res = parent::display();
 
     // After execution of the task
-    if(!$this->component->msgWithhold && $res->component->error)
+    if(!$this->component->isRawTask($this->context))
     {
-      $this->component->printError();
-    }
-    elseif(!$this->component->msgWithhold)
-    {
-      $this->component->printWarning();
-      $this->component->printDebug();
+      // Print messages from session
+      if(!$this->component->msgWithhold && $res->component->error)
+      {
+        $this->component->printError();
+      }
+      elseif(!$this->component->msgWithhold)
+      {
+        $this->component->printWarning();
+        $this->component->printDebug();
+      }
     }
 
     return $res;

@@ -1290,7 +1290,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     else
     {
       // Copy watermark, if no resize is needed
-      $this->dst_frames['image'] = $this->copyFrames_GD($this->src_frames['image'], $this->src_imginfo, $this->src_imginfo['transparency']);
+      $this->dst_frames = $this->copyFrames_GD($this->src_frames, $this->src_imginfo, $this->src_imginfo['transparency']);
     }
 
     // Check for failures

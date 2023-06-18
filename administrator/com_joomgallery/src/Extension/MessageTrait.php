@@ -37,6 +37,14 @@ trait MessageTrait
   public $msgWithhold = false;
 
   /**
+   * List of raw tasks without graphical output
+   * and therefore without message possibility
+   *
+   * @var array
+  */
+  public $rawTasks = array('image.ajaxsave');
+
+  /**
 	 * Session storage path
 	 *
 	 * @var string
@@ -481,6 +489,28 @@ trait MessageTrait
       default:
         throw new Exception("Selected storage does not exist.");
         return false;
+    }
+  }
+
+  /**
+	 * Checks if the current task is a raw tasks
+   * --> without message possibility
+	 *
+	 * @param   string   $context  controller.task
+	 *
+	 * @return  bool  True on success, false otherwise
+	 *
+	 * @since   4.0.0 
+	*/
+  public function isRawTask($context)
+  {
+    if(\in_array($context, $this->rawTasks))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
     }
   }
 }

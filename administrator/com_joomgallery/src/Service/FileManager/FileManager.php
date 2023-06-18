@@ -296,7 +296,21 @@ class FileManager implements FileManagerInterface
         $this->component->delIMGtools();
 
         // Debug info
-        $this->component->addDebug($e->getMessage());
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()));
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+        $error = true;
+
+        continue;
+      }
+      catch (\Exception $e)
+      {
+        // Any other error during file creation
+
+        // Destroy the IMGtools service
+        $this->component->delIMGtools();
+
+        // Debug info
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()));
         $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
         $error = true;
 

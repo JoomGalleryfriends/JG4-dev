@@ -141,13 +141,13 @@ class ConfigModel extends JoomAdminModel
 		// Check the session for previously entered form data.
 		$data = $this->app->getUserState(_JOOM_OPTION.'.edit.config.data', array());
 
+    if($this->item === null)
+    {
+      $this->item = $this->getItem();
+    }
+
 		if(empty($data))
 		{
-			if($this->item === null)
-			{
-				$this->item = $this->getItem();
-			}
-
 			$data = $this->item;
 		}
 
