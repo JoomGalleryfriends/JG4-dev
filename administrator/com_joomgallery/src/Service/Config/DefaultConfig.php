@@ -119,7 +119,7 @@ class DefaultConfig extends Config implements ConfigInterface
         return;
       }
 
-      if($context_array[1] == 'image' && $image['id'] == $id && !$inclOwn)
+      if($context_array[1] == 'image' && $image->id == $id && !$inclOwn)
       {
         // Skip own image settings
       }
