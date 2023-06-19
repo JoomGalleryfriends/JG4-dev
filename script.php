@@ -123,14 +123,28 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $this->new_code    = $parent->getManifest()->version;
     }
 
-    // rename old JoomGallery tables (JGv1-3)
-    $jgtables = $this->detectJGtables();
-    if($jgtables && ($type == 'install' || ($type == 'update' && preg_match('/^([1-3]\.)(\d+\.)(\d+)*(.+)/', $this->act_code))))
+    // Prepare for migration JG1-3 to JG4.x
+    if($type == 'install' || ($type == 'update' && preg_match('/^([1-3]\.)(\d+\.)(\d+)*(.+)/', $this->act_code)))
     {
-      $db = Factory::getDbo();
-      foreach($jgtables as $oldTable)
+      // rename old JoomGallery tables (JGv1-3)
+      $jgtables = $this->detectJGtables();
+      if($jgtables)
       {
-        $db->renameTable($oldTable, $oldTable.'_old');
+        $db = Factory::getDbo();
+        foreach($jgtables as $oldTable)
+        {
+          $db->renameTable($oldTable, $oldTable.'_old');
+        }
+      }
+
+      // remove old JoomGallery files and folders
+      foreach($this->detectJGfolders() as $folder)
+      {
+        Folder::delete($folder);
+      }
+      foreach($this->detectJGfiles() as $file)
+      {
+        File::delete($file);
       }
     }
 
@@ -936,5 +950,60 @@ class com_joomgalleryInstallerScript extends InstallerScript
     }
 
     return $tables;
+  }
+
+  /**
+	 * Detect old joomgallery folders (< v4.0.0)
+	 *
+	 * @return  array|bool   List of folder paths or false if no folders detected
+	 */
+	private function detectJGfolders()
+	{
+    $folders = array(
+      JPATH_ROOT.'/components/com_joomgallery',
+      JPATH_ROOT.'/media/joomgallery',
+      JPATH_ROOT.'/administrator/components/com_joomgallery',
+      JPATH_ROOT.'/layouts/joomgallery',
+      JPATH_ROOT.'/views/vote'
+    );
+
+    return $folders;
+  }
+
+  /**
+	 * Detect old joomgallery files (< v4.0.0)
+	 *
+	 * @return  array|bool   List of file paths or false if no folders detected
+	 */
+	private function detectJGfiles()
+	{
+    $files = array();
+
+    $folders = array(
+      '/administrator/language',
+      '/administrator/logs',
+      '/language',      
+    );
+
+    // Search folder for files containing "com_joomgallery"
+    foreach($folders as $folder)
+    {
+      $files = array_merge($files, glob(JPATH_ROOT.$folder.'/*com*[j,J]oomgallery*'));
+      $files = array_merge($files, glob(JPATH_ROOT.$folder.'/*/*com*[j,J]oomgallery*'));
+      $files = array_merge($files, glob(JPATH_ROOT.$folder.'/*/*/*com*[j,J]oomgallery*'));
+    }
+
+    // Cache file of the newsfeed for the update checker JoomGallery < 3.3.5
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('http://www.joomgallery.net/components/com_newversion/rss/extensions2.rss').'.spc';
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('http://www.en.joomgallery.net/components/com_newversion/rss/extensions2.rss').'.spc';
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('http://www.joomgallery.net/components/com_newversion/rss/extensions3.rss').'.spc';
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('http://www.en.joomgallery.net/components/com_newversion/rss/extensions3.rss').'.spc';
+    // Cache file of the newsfeed for the update checker JoomGallery >= 3.3.5
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('https://www.joomgalleryfriends.net/components/com_newversion/rss/extensions2.rss').'.spc';
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('https://www.en.joomgalleryfriends.net/components/com_newversion/rss/extensions2.rss').'.spc';
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('https://www.joomgalleryfriends.net/components/com_newversion/rss/extensions3.rss').'.spc';
+    $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('https://www.en.joomgalleryfriends.net/components/com_newversion/rss/extensions3.rss').'.spc';
+
+    return $files;
   }
 }
