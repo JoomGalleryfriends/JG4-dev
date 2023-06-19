@@ -39,7 +39,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 *
 	 * @var  string
 	 */
-	protected $minPhp = '7.3.0';
+	protected $minPhp = '7.4.0';
 
   /**
    * Release code of the currently installed version
@@ -121,6 +121,17 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
 
       $this->new_code    = $parent->getManifest()->version;
+    }
+
+    // rename old JoomGallery tables (JGv1-3)
+    $jgtables = $this->detectJGtables();
+    if($jg3tables && ($type == 'install' || ($type == 'update' && preg_match('^([1-3]\.)(\d+\.)(\d+)*(.+)', $this->act_code))))
+    {
+      $db = Factory::getDbo();
+      foreach($jgtables as $oldTable)
+      {
+        $db->renameTable($oldTable, $oldTable.'_old');
+      }
     }
 
 		// logic for preflight before install
@@ -891,5 +902,39 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $msg = '';
 
     return $msg;
+  }
+
+  /**
+	 * Detect already installed joomgallery tables
+	 *
+	 * @return  array|bool   List of  table names or false if no tables detected
+	 */
+	private function detectJGtables()
+	{
+    try
+    {
+      $db = Factory::getDbo();
+      $tables = $db->getTableList();
+
+      if(empty($tables))
+      {
+        return false;
+      }
+
+      foreach($tables as $key => $table)
+      {
+        if(strpos($table, 'joomgallery') === false)
+        {
+          unset($tables[$key]);
+        }
+      }
+      $tables = array_values($tables);
+    }
+    catch(Exception $e)
+    {
+      return false;
+    }
+
+    return $tables;
   }
 }
