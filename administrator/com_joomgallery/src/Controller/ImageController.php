@@ -241,4 +241,26 @@ class ImageController extends JoomFormController
     // Redirect to the list screen.
     $this->setRedirect(Route::_($url, false));
   }
+
+  /**
+     * Method to cancel an edit.
+     *
+     * @param   string  $key  The name of the primary key of the URL variable.
+     *
+     * @return  boolean  True if access level checks pass, false otherwise.
+     *
+     * @since   1.6
+     */
+    public function cancel($key = null)
+    {
+      parent::cancel($key);
+
+      if($this->input->get('layout', 'edit', 'cmd') == 'replace')
+      {
+        // Redirect to the edit screen.
+        $this->setRedirect(
+          Route::_('index.php?option=' . $this->option . '&view=image&layout=edit&id=' . $this->input->getInt('id'), false)
+        );
+      }
+    }
 }

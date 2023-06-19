@@ -248,6 +248,9 @@ class HtmlView extends JoomGalleryView
 		{
 			ToolbarHelper::save('image.replace', 'COM_JOOMGALLERY_REPLACE');
 		}
+
+    // Add cancel button
+    ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CANCEL');
   }
 
   /**

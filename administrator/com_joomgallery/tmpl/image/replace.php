@@ -68,6 +68,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
       </div>
     </div>
 
+    <input type="hidden" name="id" value="<?php echo $this->item->id; ?>"/>
+    <input type="hidden" name="layout" value="replace"/>
     <input type="hidden" name="task" value=""/>
     <?php echo HTMLHelper::_('form.token'); ?>
   </form>
