@@ -125,7 +125,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     // rename old JoomGallery tables (JGv1-3)
     $jgtables = $this->detectJGtables();
-    if($jg3tables && ($type == 'install' || ($type == 'update' && preg_match('^([1-3]\.)(\d+\.)(\d+)*(.+)', $this->act_code))))
+    if($jgtables && ($type == 'install' || ($type == 'update' && preg_match('^([1-3]\.)(\d+\.)(\d+)*(.+)', $this->act_code))))
     {
       $db = Factory::getDbo();
       foreach($jgtables as $oldTable)
