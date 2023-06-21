@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--See also /administrator/com_joomgallery/includes/rules.php-->
 <access component="com_joomgallery">
 	<section name="component">
 		<action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC" />
@@ -11,7 +12,7 @@
 		<action name="joom.delete.own" title="COM_JOOMGALLERY_ACTION_DELETE_OWN" description="COM_JOOMGALLERY_ACTION_COMPONENT_DELETE_OWN_DESC" />
 		<action name="core.edit" title="JACTION_EDIT" description="COM_JOOMGALLERY_ACTION_COMPONENT_EDIT_DESC" />
 		<action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_JOOMGALLERY_ACTION_COMPONENT_EDITSTATE_DESC" />
-		<action name="core.edit.own" title="JACTION_EDITOWN" description="COM_JOOMGALLERY_ACTION_COMPONENT_EDITOWN_DESC" />
+		<action name="joom.edit.own" title="JACTION_EDITOWN" description="COM_JOOMGALLERY_ACTION_COMPONENT_EDITOWN_DESC" />
 	</section>
 
   <section name="image">
@@ -20,7 +21,7 @@
     <action name="joom.delete.own" title="COM_JOOMGALLERY_ACTION_DELETE_OWN" description="COM_JOOMGALLERY_ACTION_IMAGE_DELETE_OWN_DESC" />
     <action name="core.edit" title="JACTION_EDIT" description="COM_JOOMGALLERY_ACTION_IMAGE_EDIT_DESC" />
     <action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_JOOMGALLERY_ACTION_IMAGE_EDITSTATE_DESC" />
-    <action name="core.edit.own" title="JACTION_EDITOWN" description="COM_JOOMGALLERY_ACTION_IMAGE_EDITOWN_DESC" />
+    <action name="joom.edit.own" title="JACTION_EDITOWN" description="COM_JOOMGALLERY_ACTION_IMAGE_EDITOWN_DESC" />
 	</section>
 
   <section name="category">
@@ -32,7 +33,7 @@
 		<action name="joom.delete.own" title="COM_JOOMGALLERY_ACTION_DELETE_OWN" description="COM_JOOMGALLERY_ACTION_CATEGORY_DELETE_OWN_DESC" />
 		<action name="core.edit" title="JACTION_EDIT" description="COM_JOOMGALLERY_ACTION_CATEGORY_EDIT_DESC" />
 		<action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_JOOMGALLERY_ACTION_CATEGORY_EDITSTATE_DESC" />
-		<action name="core.edit.own" title="JACTION_EDITOWN" description="COM_JOOMGALLERY_ACTION_CATEGORY_EDITOWN_DESC" />
+		<action name="joom.edit.own" title="JACTION_EDITOWN" description="COM_JOOMGALLERY_ACTION_CATEGORY_EDITOWN_DESC" />
 	</section>
 
   <section name="config">
@@ -40,6 +41,13 @@
 		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE" />
 		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT" />
 		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE" />
-		<action name="core.edit.own" title="JACTION_EDITOWN" description="JACTION_EDITOWN" />
+		<action name="joom.edit.own" title="JACTION_EDITOWN" description="JACTION_EDITOWN" />
+	</section>
+
+  <section name="tag">
+		<action name="core.create" title="JACTION_CREATE" description="JACTION_CREATE" />
+		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE" />
+		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT" />
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE" />
 	</section>
 </access>
