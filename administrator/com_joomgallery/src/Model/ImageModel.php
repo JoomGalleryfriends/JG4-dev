@@ -998,6 +998,9 @@ class ImageModel extends JoomAdminModel
       $uploader->type         = $data['replacetype'];
       $uploader->processImage = \boolval($data['replaceprocess']);
 
+      // Set filename in data since it will not be new created during retrieveImage()
+      $data['filename']       = $table->filename;
+
       // Retrieve image
       // (check upload, check user upload limit, create filename, onJoomBeforeSave)
       if(!$uploader->retrieveImage($data, false))
