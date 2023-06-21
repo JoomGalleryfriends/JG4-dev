@@ -146,7 +146,7 @@ if(!empty($view) && $contextID > 0 && in_array($view, array('image', 'category')
                       {
                         $val = $comp->getConfig()->get($configName, false);
                       }
-                      $val = $value ? Text::_('JYES') : Text::_('JNO');
+                      $val = $val ? Text::_('JYES') : Text::_('JNO');
                     ?>
                     <?php echo str_replace('%s', $val, $option->text); ?>
                 </label>
