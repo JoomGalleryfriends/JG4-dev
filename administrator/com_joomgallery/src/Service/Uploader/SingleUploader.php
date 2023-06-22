@@ -66,7 +66,7 @@ class SingleUploader extends BaseUploader implements UploaderInterface
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_IMAGE_NBR_PROCESSING', $this->filecounter + 1));
     }
 
-    $image = $data['images'][$this->filecounter];
+    $image = $data['images'][$this->filecounter-1];
 
     // Check for upload error codes
     if($image['error'] > 0)
