@@ -141,18 +141,22 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
 	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
 	<div class="row">
-    <div class="col-lg-12">
-      <fieldset class="form-vertical">
-				<legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
-				<?php echo $this->form->renderField('params'); ?>
-				<?php if ($this->state->params->get('save_history', 1)) : ?>
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('version_note'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('version_note'); ?></div>
-					</div>
-				<?php endif; ?>
+    <div class="col-12 <?php echo ($this->state->params->get('save_history', 1)) ? 'col-lg-6' : ''; ?>">
+      <fieldset id="fieldset-images-params" class="options-form">
+				<legend><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
+        <div class="control-group">
+          <div class="controls"><?php echo $this->form->getInput('params'); ?></div>
+        </div>
 			</fieldset>
-		</div>
+    </div>
+    <?php if ($this->state->params->get('save_history', 1)) : ?>
+      <div class="col-12 col-lg-6">
+        <fieldset id="fieldset-images-version" class="options-form">
+          <legend><?php echo Text::_('JVERSION'); ?></legend>
+          <?php echo $this->form->renderField('version_note'); ?>
+        </fieldset>
+		  </div>
+    <?php endif; ?>
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
