@@ -106,23 +106,6 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			return $result;
 		}
 
-    if($type == 'update')
-    {
-      // save release code information
-      //-------------------------------
-      if (File::exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml'))
-      {
-        $xml = simplexml_load_file(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml');
-        $this->act_code = $xml->version;
-      }
-      else
-      {
-        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 'note');
-      }
-
-      $this->new_code    = $parent->getManifest()->version;
-    }
-
     // Prepare for migration JG1-3 to JG4.x
     if($type == 'install' || ($type == 'update' && preg_match('/^([1-3]\.)(\d+\.)(\d+)*(.+)/', $this->act_code)))
     {
@@ -146,6 +129,30 @@ class com_joomgalleryInstallerScript extends InstallerScript
       {
         File::delete($file);
       }
+
+      // remove records in #__schemas table
+      if($type == 'update')
+      {
+        $ext = $this->getDBextension();
+        $this->removeSchemas($ext->extension_id);
+      }
+    }
+
+    if($type == 'update')
+    {
+      // save release code information
+      //-------------------------------
+      if (File::exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml'))
+      {
+        $xml = simplexml_load_file(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml');
+        $this->act_code = $xml->version;
+      }
+      else
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 'note');
+      }
+
+      $this->new_code    = $parent->getManifest()->version;
     }
 
 		// logic for preflight before install
@@ -1005,5 +1012,49 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $files[] = JPATH_ADMINISTRATOR.'/cache/'.md5('https://www.en.joomgalleryfriends.net/components/com_newversion/rss/extensions3.rss').'.spc';
 
     return $files;
+  }
+
+  /**
+	 * Get DB extension record of JoomGallery
+	 *
+	 * @return  object|bool   DB record on success, false otherwise
+	 */
+  private function getDBextension()
+  {
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->select('*')
+					->from('#__extensions')
+					->where(
+						array(
+							'type LIKE ' . $db->quote('component'),
+							'element LIKE ' . $db->quote('com_joomgallery')
+						)
+					);
+		
+    $db->setQuery($query);
+		
+    return $db->loadResult();
+  }
+
+  /**
+	 * Remove all schemas of a specific extension
+   * 
+   * @param   int           Extension id
+	 *
+	 * @return  object|bool   DB record on success, false otherwise
+	 */
+  private function removeSchemas($id)
+  {
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->delete($db->quoteName('#__schemas'));
+    $query->where('extension_id = ' . $db->quote($id));
+
+    $db->setQuery($query);
+
+    return $db->execute();
   }
 }
