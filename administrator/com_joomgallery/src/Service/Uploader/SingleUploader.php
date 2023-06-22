@@ -224,4 +224,28 @@ class SingleUploader extends BaseUploader implements UploaderInterface
       return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN'));
     }
   }
+
+  /**
+   * Detect if there is an image uploaded
+   * 
+   * @param   array    $data      Form data
+   * 
+   * @return  bool     True if file is detected, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function isImgUploaded($data): bool
+  {
+    $app  = Factory::getApplication();
+
+    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
+    && $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
+		{
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 }
