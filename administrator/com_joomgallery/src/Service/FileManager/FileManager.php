@@ -60,12 +60,14 @@ class FileManager implements FileManagerInterface
 
   /**
    * Constructor
+   * 
+   * @param   array|bool     $selection    List of imagetypes to consider or false to consider all (default: False)
    *
    * @return  void
    *
    * @since   1.0.0
    */
-  public function __construct()
+  public function __construct($selection=False)
   {
     // Load application
     $this->getApp();
@@ -81,6 +83,12 @@ class FileManager implements FileManagerInterface
 
     // Get imagetypes
     $this->getImagetypes();
+
+    // Apply imagetype selection
+    if($selection !== False)
+    {
+      $this->selectImagetypes($selection);
+    }
   }
 
   /**
@@ -88,15 +96,16 @@ class FileManager implements FileManagerInterface
    * Source file has to be given with a full system path.
    * 
    *
-   * @param   string               $source     Source file with which the image types shall be created
-   * @param   string               $filename   Name for the files to be created
-   * @param   object|int|string    $cat        Object, ID or alias of the corresponding category (default: 2)
+   * @param   string               $source        Source file with which the image types shall be created
+   * @param   string               $filename      Name for the files to be created
+   * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
+   * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
    * 
    * @return  bool                 True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $cat=2): bool
+  public function createImages($source, $filename, $cat=2, $processing=True): bool
   {
     if(!$filename)
     {
@@ -122,99 +131,107 @@ class FileManager implements FileManagerInterface
       // Debug info
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
 
-      // Keep metadata only for original images
-      if($imagetype->typename == 'original')
+      // Process image
+      if($processing)
       {
-        $this->component->getIMGtools()->keep_metadata = true;
-      }
-      else
-      {
-        $this->component->getIMGtools()->keep_metadata = false;
-      }
-
-      // Do we need to keep animation?
-      if($imagetype->params->get('jg_imgtypeanim', 0) == 1)
-      {
-        // Yes
-        $this->component->getIMGtools()->keep_anim = true;
-      }
-      else
-      {
-        // No
-        $this->component->getIMGtools()->keep_anim = false;
-      }
-      
-      // Read source image
-      if(!$this->component->getIMGtools()->read($source))
-      {
-        // Destroy the IMGtools service
-        $this->component->delIMGtools();
-
-        // Debug info
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-
-        continue;
-      }
-
-      // Do we need to auto orient?
-      if($imagetype->params->get('jg_imgtypeorinet', 0) == 1)
-      {
-        // Yes
-        if(!$this->component->getIMGtools()->orient())
-        {  
-          // Destroy the IMGtools service
-          $this->component->delIMGtools();
-
-          // Debug info
-          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-          $error = true;
-
-          continue;
+        // Keep metadata only for original images
+        if($imagetype->typename == 'original')
+        {
+          $this->component->getIMGtools()->keep_metadata = true;
         }
-      }
+        else
+        {
+          $this->component->getIMGtools()->keep_metadata = false;
+        }
 
-      // Need for resize?
-      if($imagetype->params->get('jg_imgtyperesize', 0) > 0)
-      {
-        // Yes
-        if(!$this->component->getIMGtools()->resize($imagetype->params->get('jg_imgtyperesize', 3),
-                                             $imagetype->params->get('jg_imgtypewidth', 5000),
-                                             $imagetype->params->get('jg_imgtypeheight', 5000),
-                                             $imagetype->params->get('jg_cropposition', 2),
-                                             $imagetype->params->get('jg_imgtypesharpen', 0))
-          )
+        // Do we need to keep animation?
+        if($imagetype->params->get('jg_imgtypeanim', 0) == 1)
+        {
+          // Yes
+          $this->component->getIMGtools()->keep_anim = true;
+        }
+        else
+        {
+          // No
+          $this->component->getIMGtools()->keep_anim = false;
+        }
+        
+        // Read source image
+        if(!$this->component->getIMGtools()->read($source))
         {
           // Destroy the IMGtools service
           $this->component->delIMGtools();
 
           // Debug info
           $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-          $error = true;
 
           continue;
+        }
+
+        // Do we need to auto orient?
+        if($imagetype->params->get('jg_imgtypeorinet', 0) == 1)
+        {
+          // Yes
+          if(!$this->component->getIMGtools()->orient())
+          {  
+            // Destroy the IMGtools service
+            $this->component->delIMGtools();
+
+            // Debug info
+            $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+            $error = true;
+
+            continue;
+          }
+        }
+
+        // Need for resize?
+        if($imagetype->params->get('jg_imgtyperesize', 0) > 0)
+        {
+          // Yes
+          if(!$this->component->getIMGtools()->resize($imagetype->params->get('jg_imgtyperesize', 3),
+                                              $imagetype->params->get('jg_imgtypewidth', 5000),
+                                              $imagetype->params->get('jg_imgtypeheight', 5000),
+                                              $imagetype->params->get('jg_cropposition', 2),
+                                              $imagetype->params->get('jg_imgtypesharpen', 0))
+            )
+          {
+            // Destroy the IMGtools service
+            $this->component->delIMGtools();
+
+            // Debug info
+            $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+            $error = true;
+
+            continue;
+          }
+        }
+
+        // Need for watermarking?
+        if($imagetype->params->get('jg_imgtypewatermark', 0) == 1)
+        {
+          // Yes
+          if(!$this->component->getIMGtools()->watermark(JPATH_ROOT.\DIRECTORY_SEPARATOR.$this->component->getConfig()->get('jg_wmfile'),
+                                                  $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkpos', 9),
+                                                  $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkzoom', 0),
+                                                  $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarksize', 15),
+                                                  $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkopacity', 80))
+            )
+          {
+            // Destroy the IMGtools service
+            $this->component->delIMGtools();
+
+            // Debug info
+            $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+            $error = true;
+
+            continue;
+          }
         }
       }
-
-      // Need for watermarking?
-      if($imagetype->params->get('jg_imgtypewatermark', 0) == 1)
+      else
       {
-        // Yes
-        if(!$this->component->getIMGtools()->watermark(JPATH_ROOT.\DIRECTORY_SEPARATOR.$this->component->getConfig()->get('jg_wmfile'),
-                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkpos', 9),
-                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkzoom', 0),
-                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarksize', 15),
-                                                $imagetype->params->get('jg_imgtypewtmsettings.jg_watermarkopacity', 80))
-          )
-        {
-          // Destroy the IMGtools service
-          $this->component->delIMGtools();
-
-          // Debug info
-          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-          $error = true;
-
-          continue;
-        }
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_MANIPULATION_NOT_NEEDED'));
       }
 
       // Path to save image
@@ -254,9 +271,16 @@ class FileManager implements FileManagerInterface
         continue;
       }
 
-      // Write image to file
-      $image_content = $this->component->getIMGtools()->stream($imagetype->params->get('jg_imgtypequality', 100), false);
-      //$this->component->getIMGtools()->write($file, $imagetype->params->get('jg_imgtypequality', 100))
+      // Get image stream
+      if($processing)
+      {
+        $image_content = $this->component->getIMGtools()->stream($imagetype->params->get('jg_imgtypequality', 100), false);
+      }
+      else
+      {
+        $image_content = \file_get_contents($source);
+      }
+
       if(!$image_content)
       {
         // Destroy the IMGtools service
@@ -1258,6 +1282,45 @@ class FileManager implements FileManagerInterface
     $this->imagetypes = \array_reverse($this->imagetypes);
 
     // create dictionary for imagetypes array
+    foreach ($this->imagetypes as $key => $imagetype)
+    {
+      $this->imagetypes_dict[$imagetype->typename] = $key;
+    }
+  }
+
+  /**
+   * Delete all imagetypes which are not selected
+   * 
+   * @param   array||string    $selection    Name or list of names of imagetypes to consider
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  protected function selectImagetypes($selection)
+  {
+    if(empty($this->imagetypes))
+    {
+      return;
+    }
+
+    if(!\is_array($selection))
+    {
+      $selection = array($selection);
+    }
+
+    foreach($this->imagetypes as $key =>$imagetype)
+    {
+      if(!\in_array($imagetype->typename, $selection))
+      {
+        // unselected imagetype
+        unset($this->imagetypes[$key]);
+      }
+    }
+
+    $this->imagetypes = array_values($this->imagetypes);
+
+    // update dictionary for imagetypes array
     foreach ($this->imagetypes as $key => $imagetype)
     {
       $this->imagetypes_dict[$imagetype->typename] = $key;

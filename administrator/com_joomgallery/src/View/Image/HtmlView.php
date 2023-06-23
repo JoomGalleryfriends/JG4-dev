@@ -82,6 +82,15 @@ class HtmlView extends JoomGalleryView
 
       $this->js_vars = $js_vars;
     }
+    elseif($this->_layout == 'replace')
+    {
+      if($this->item->id == 0)
+      {
+        throw new \Exception("View needs an image ID to be loaded.", 1);
+      }
+      $this->addToolbarReplace();
+      $this->modifyFieldsReplace();
+    }
     else
     {
       $this->addToolbarEdit();
@@ -217,5 +226,57 @@ class HtmlView extends JoomGalleryView
     }
 
     return $types;
+  }
+
+  /**
+	 * Add the page title and toolbar for the imagetype replace form.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
+	protected function addToolbarReplace()
+	{
+    Factory::getApplication()->input->set('hidemainmenu', true);
+
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_REPLACE'), "image");
+
+    $canDo = JoomHelper::getActions();
+
+    // Add replace button
+		if($canDo->get('core.edit'))
+		{
+			ToolbarHelper::save('image.replace', 'COM_JOOMGALLERY_REPLACE');
+		}
+
+    // Add cancel button
+    ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CANCEL');
+  }
+
+  /**
+	 * Modify form fields according to view needs.
+	 *
+	 * @return void
+	 *
+	 */
+	protected function modifyFieldsReplace()
+	{
+    $this->form->setFieldAttribute('imgtitle', 'required', false);
+    $this->form->setFieldAttribute('replacetype', 'required', true);
+    $this->form->setFieldAttribute('image', 'required', true);
+    $this->form->setFieldAttribute('catid', 'required', false);
+
+    $this->form->setFieldAttribute('id', 'type', 'hidden');
+
+    $this->form->setFieldAttribute('imgtitle', 'readonly', true);
+    $this->form->setFieldAttribute('alias', 'readonly', true);
+    $this->form->setFieldAttribute('catid', 'readonly', true);
+
+    if($this->app->input->get('type', '', 'string') !== '')
+    {
+      $this->form->setFieldAttribute('replacetype', 'readonly', true);
+    }    
+
+    $this->form->setFieldAttribute('replacetype', 'default', $this->app->input->get('type', 'original', 'string'));
   }
 }
