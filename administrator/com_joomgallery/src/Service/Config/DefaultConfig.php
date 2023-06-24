@@ -34,14 +34,18 @@ class DefaultConfig extends Config implements ConfigInterface
    *
    * @param   string   $context   Context of the content (default: com_joomgallery)
    * @param   int      $id        ID of the content if needed (default: null)
+   * @param   bool		 $inclOwn   True, if you want to include settings of current item (default: true)
    *
    * @return  void
    *
    * @since   4.0.0 
    */
-  public function __construct($context = 'com_joomgallery', $id = null)
+  public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true)
   {
     parent::__construct($context, $id);
+
+    // Check context
+    $context_array = \explode('.', $context);
 
     //---------Level 1---------
 
@@ -91,6 +95,11 @@ class DefaultConfig extends Config implements ConfigInterface
       // Override class properties based on category params
       foreach ($parents as $key => $cat)
       {
+        if($context_array[1] == 'category' && $cat['id'] == $id && !$inclOwn)
+        {
+          // Skip own category settings
+          continue;
+        }
         $category   = $cat_model->getItem($cat['id']);
         $cat_params = \json_decode($category->params);
         $this->setParamsToClass($cat_params);
@@ -110,10 +119,17 @@ class DefaultConfig extends Config implements ConfigInterface
         return;
       }
 
-      // Override class properties based on image params
-      $img_params = \json_decode($image->params);
-      $this->setParamsToClass($img_params);
-    }    
+      if($context_array[1] == 'image' && $image->id == $id && !$inclOwn)
+      {
+        // Skip own image settings
+      }
+      else
+      {
+        // Override class properties based on image params
+        $img_params = \json_decode($image->params);
+        $this->setParamsToClass($img_params);
+      }
+    }
 
     //---------Level 5---------
     if(isset($this->ids['menu']))

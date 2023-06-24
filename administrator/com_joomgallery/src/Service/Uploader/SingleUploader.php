@@ -16,18 +16,33 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
-
+use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader as BaseUploader;
 
 /**
-* Uploader helper class (Standard HTML Upload)
+* Uploader helper class (Single Image Upload)
 *
 * @since  4.0.0
 */
-class HTMLUploader extends BaseUploader implements UploaderInterface
+class SingleUploader extends BaseUploader implements UploaderInterface
 {
-	/**
+
+  /**
+   * The imagetype to create
+   *
+   * @var string
+   */
+  public $type = 'original';
+
+  /**
+   * Does images have to be processed?
+   *
+   * @var bool
+   */
+  public $processImage = False;
+
+  /**
 	 * Method to retrieve an uploaded image. Step 1.
    * (check upload, check user upload limit, create filename, onJoomBeforeUpload)
 	 *
@@ -41,14 +56,6 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
 	public function retrieveImage(&$data, $filename=True): bool
   {
     $user = Factory::getUser();
-    $app  = Factory::getApplication();
-
-    // Retrieve request image file data
-    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image']))
-    {
-      $data['images'] = array();
-      \array_push($data['images'], $app->input->files->get('jform')['image']);
-    }
 
     if(\count($data['images']) > 1)
     {
@@ -76,27 +83,39 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
       return false;
     }
 
-    // Get number of uploaded images of the current user
-    $counter = $this->getImageNumber($user->get('id'));
-
-    // Check if user already exceeds its upload limit
-    if($this->app->isClient('site') && $counter > ($this->component->getConfig()->get('jg_maxuserimage') - 1) && $user->get('id'))
-    {
-      $timespan = $this->component->getConfig()->get('jg_maxuserimage_timespan');
-      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_UPLOAD_OUTPUT_MAY_ADD_MAX_OF', $this->component->getConfig()->get('jg_maxuserimage'), $timespan > 0 ? Text::plural('COM_JOOMGALLERY_UPLOAD_NEW_IMAGE_MAXCOUNT_TIMESPAN', $timespan) : ''));
-
-      return false;
-    }
-
     $this->src_tmp  = $image['tmp_name'];
     $this->src_name = $image['name'];
     $this->src_size = $image['size'];
 
-    // Perform the parent method
-    // - check tag and size
-    // - create filename
-    // - trigger onJoomBeforeUpload
-    if(!parent::retrieveImage($data, $filename))
+    // Create filesystem service
+    $this->component->createFilesystem();
+
+    // Get extension
+    $tag = $this->component->getFilesystem()->getExt($this->src_name);
+
+    // Get supported formats of image processor
+    $this->component->createIMGtools($this->component->getConfig()->get('jg_imgprocessor'));
+    $supported_ext = $this->component->getIMGtools()->get('supported_types');
+    $allowed_imgtools = \in_array(\strtoupper($tag), $supported_ext);
+    $this->component->delIMGtools();
+
+    // Get supported formats of filesystem    
+    $allowed_filesystem = $this->component->getFilesystem()->isAllowedFile($this->src_name);
+
+    // Check for supported image format
+    if(!$allowed_imgtools || !$allowed_filesystem || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
+    {
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'));
+      $this->error  = true;
+
+      return false;
+    }
+
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $this->src_name));
+
+    // Trigger onJoomBeforeUpload
+    $plugins  = $this->app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
+    if(in_array(false, $plugins, true))
     {
       return false;
     }
@@ -132,14 +151,49 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
    */
   public function overrideData(&$data): bool
   {
-    // Get upload date
-    if(empty($data['imgdate']) || \strpos($data['imgdate'], '1900-01-01') !== false)
+    return true;
+  }
+
+  /**
+	 * Method to create uploaded image files. Step 3.
+   * (create imagetype, upload imagetypes to storage, onJoomAfterUpload)
+	 *
+   * @param   ImageTable   $data_row     Image object
+   *
+	 * @return  bool         True on success, false otherwise
+	 *
+	 * @since  4.0.0
+	 */
+	public function createImage($data_row): bool
+  {
+    // Check if filename was set
+    if(!isset($data_row->filename) || empty($data_row->filename))
     {
-      $data['imgdate'] = $data['created_time'];
+      throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_UPLOAD_CHECK_FILENAME'));
+    }    
+    
+    // Create file manager service
+    $this->component->createFileManager(array($this->type));
+
+    // Process image to create imagetype
+    if(!$this->component->getFileManager()->createImages($this->src_file, $data_row->filename, $data_row->catid, $this->processImage))
+    {
+      $this->rollback($data_row);
+      $this->error = true;
+
+      return false;
     }
 
-    // Override form data with image metadata
-    return parent::overrideData($data);
+    $this->component->addDebug(' ');
+    $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE_END'));
+    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_FILENAME', $data_row->filename));
+
+    $this->app->triggerEvent('onJoomAfterUpload', array($data_row));
+
+    // Reset user states
+    $this->resetUserStates();
+
+    return !$this->error;
   }
 
   /**

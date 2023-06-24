@@ -26,17 +26,20 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 interface FileManagerInterface
 {
   /**
-   * Creation of image types
+   * Creation of image types based on source file.
+   * Source file has to be given with a full system path.
+   * 
    *
-   * @param   string               $source     Source file for which the image types shall be created
-   * @param   string               $filename   Name for the files to be created
-   * @param   object|int|string    $cat        Object, ID or alias of the corresponding category (default: 2)
+   * @param   string               $source        Source file with which the image types shall be created
+   * @param   string               $filename      Name for the files to be created
+   * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
+   * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
    * 
    * @return  bool                 True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $cat=2): bool;
+  public function createImages($source, $filename, $cat=2, $processing=True): bool;
 
   /**
    * Deletion of image types

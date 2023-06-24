@@ -49,19 +49,20 @@ trait ConfigServiceTrait
    * 
    * @param   string   $context   Context of the content (default: com_joomgallery)
    * @param   int      $id        ID of the content if needed (default: null)
+	 * @param   bool		 $inclOwn   True, if you want to include settings of current item (default: true)
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createConfig($context = 'com_joomgallery', $id = null): void
+	public function createConfig($context = 'com_joomgallery', $id = null, $inclOwn = true): void
 	{
     $inheritance = ComponentHelper::getParams(_JOOM_OPTION)->get('inheritance_config', 'default');
 
     switch($inheritance)
     {
       default:
-        $this->config = new DefaultConfig($context, $id);
+        $this->config = new DefaultConfig($context, $id, $inclOwn);
         break;
     }
 

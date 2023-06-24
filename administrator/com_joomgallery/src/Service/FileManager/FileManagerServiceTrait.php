@@ -44,14 +44,16 @@ trait FileManagerServiceTrait
 
   /**
 	 * Creates the file manager helper class
+   * 
+   * @param   array|bool     $selection    List of imagetypes to consider or false to consider all (default: False)
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createFileManager(): void
+	public function createFileManager($selection=False): void
 	{
-    $this->fileManager = new FileManager();
+    $this->fileManager = new FileManager($selection);
 
     return;
 	}
