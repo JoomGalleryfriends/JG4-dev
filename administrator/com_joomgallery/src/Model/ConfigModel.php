@@ -639,13 +639,16 @@ class ConfigModel extends JoomAdminModel
     }
 
     // support for jg_imgtype
-    if(!\array_key_exists('jg_imgtype', $data) && \array_key_exists('jg_imgtype', $old_data))
+    if(!\array_key_exists('jg_imgtype', $data))
     {
-      $data['jg_imgtype'] = $old_data['jg_imgtype'];
-    }
-    else
-    {
-      $data['jg_imgtype'] = 1;
+      if(\array_key_exists('jg_imgtype', $old_data))
+      {
+        $data['jg_imgtype'] = $old_data['jg_imgtype'];
+      }
+      else
+      {
+        $data['jg_imgtype'] = 1;
+      }      
     }
 
     return json_encode($data);
