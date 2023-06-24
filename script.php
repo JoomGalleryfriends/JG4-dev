@@ -56,6 +56,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
    */
   protected $new_code = '';
 
+  /**
+   * True to skip output during install() method
+   *
+   * @var  bool
+   */
+  protected $installSkipMsg = false;
+
 
 	/**
 	 * Method called before install/update the component. Note: This method won't be called during uninstall process.
@@ -192,6 +199,16 @@ class com_joomgalleryInstallerScript extends InstallerScript
 		$this->installModules($parent);
 
     $this->copyImgFiles();
+
+    if($this->installSkipMsg)
+    {
+      return;
+    }
+
+    $act_version = explode('.',$this->act_code);
+    $new_version = explode('.',$this->new_code);
+
+    $install_message = $this->getInstallerMSG($act_version, $new_version, 'install');
     ?>
 
     <div class="text-center">
@@ -222,13 +239,23 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function update($parent)
 	{
+    if(preg_match('/^([1-3]\.)(\d+\.)(\d+)*(.+)/', $this->act_code))
+    {
+      // We update from an old version (JG 1-3)
+      $this->installSkipMsg = true;
+      $this->install($parent);
+    }
+    else
+    {
+      // We update from a new version (JG 4.x)
+      $this->installPlugins($parent);
+		  $this->installModules($parent);
+    }
+
     $act_version = explode('.',$this->act_code);
     $new_version = explode('.',$this->new_code);
 
     $update_message = $this->getInstallerMSG($act_version, $new_version, 'update');
-
-		$this->installPlugins($parent);
-		$this->installModules($parent);
     ?>
 
     <div class="text-center">
