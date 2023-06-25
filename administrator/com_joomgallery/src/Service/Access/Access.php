@@ -254,10 +254,18 @@ class Access implements AccessInterface
    */
   protected function prepareAsset(string $asset, int $pk=0): string
   {
-    // Prepare asset
-    if(!$asset)
+    // Do we have a global asset?
+    $global = false;
+    if(!$asset || $asset === \str_replace('com_', '', $this->option))
     {
-      $asset = $this->option;
+      $asset  = $this->option;
+      $global = true;
+    }
+
+    // Option in asset partially given?
+    if(\strpos($asset, \str_replace('com_', '', $this->option)) === 0)
+    {
+      $asset = 'com_' . $asset;
     }
 
     // First entry has to be the option
@@ -267,7 +275,7 @@ class Access implements AccessInterface
     }
 
     // Last position has to be the primary key
-    if($pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
+    if(!$global && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
     {
       $asset = $asset . '.' . \strval($pk);
     }
