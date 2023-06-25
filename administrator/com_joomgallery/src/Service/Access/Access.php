@@ -98,6 +98,7 @@ class Access implements AccessInterface
    * @return  void
    *
    * @since   4.0.0
+   * @throws  \Exception
    */
   public function checkACL(string $action, string $asset='', int $pk=0): bool
   {
@@ -111,13 +112,23 @@ class Access implements AccessInterface
     $asset_array  = \explode('.', $asset);
     $asset_lenght = \count($asset_array);
 
+    // Get imagetype from asset
+    if($asset_lenght > 1)
+    {
+      $asset_type = $asset_array[1];
+    }
+    else
+    {
+      $asset_type = false;
+    }
+
     // Check if asset is available for this action
-    if(($asset_lenght == 1 && !\in_array('.', $this->aclMap[$action]['assets'])) ||
-       !\in_array('.'.$asset_array[1], $this->aclMap[$action]['assets'])
+    if( ($asset_lenght == 1 && !\in_array('.', $this->aclMap[$action]['assets'])) ||
+        (!\in_array('.'.$asset_type, $this->aclMap[$action]['assets']))
       )
     {
-      // Provided asset not available for this action. Access check failed.
-      return false;
+      // Action not available for this asset.
+      throw new \Exception("Action not available for this asset. Access can not be checked. Please provide reasonable inputs.", 1);
     }
 
     // Get the acl rule for this action
@@ -134,7 +145,7 @@ class Access implements AccessInterface
 
     // 2. Check permission if you perform an action on an item in your own category
     $categorized_types = array('image', 'category');
-    if( !$allowed && $asset_lenght > 1 && \in_array($asset_array[1], $categorized_types)
+    if( !$allowed && $asset_lenght > 1 && \in_array($asset_type, $categorized_types)
         && $this->aclMap[$action]['own'] !== false && $pk > 0
       )
     {
@@ -265,7 +276,7 @@ class Access implements AccessInterface
     $asset_array  = \explode('.', $asset);
 
     // Check asset
-    if($asset_array[0] != 'com_joomgallery' || !\in_array($asset_array[1], $this->types))
+    if($asset_array[0] != 'com_joomgallery' || (\count($asset_array) > 1 && !\in_array($asset_array[1], $this->types)))
     {
       throw new \Exception('Invalid asset provided for ACL access check', 1);
     }

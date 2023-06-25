@@ -59,22 +59,6 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
-    $data = array();
-    $data['images'] = array('143d88130588f2fc5a43fff9dad8f87a');
-    $data['error'] = 0;
-    $data['filename'] = '';
-    $data['catid'] = 2;
-    $data['imgtitle'] = 'MyImage';
-    $data['start_nbr'] = 1;
-    $data['imgtext'] = '<p>Meine Beschreibung...</p>';
-    $data['imgauthor'] = 'Manuel';
-    $data['published'] = 1;
-    $data['access'] = 1;
-
-    $this->component->createUploader('tus');
-    $upload = $this->component->getUploader();
-    $res = $upload->retrieveImage($data);
-
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();
