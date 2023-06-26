@@ -15,12 +15,14 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Form\Form;
+use \Joomla\CMS\Log\Log;
+use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
@@ -32,6 +34,24 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
  */
 class ImageModel extends JoomAdminModel
 {
+  /**
+   * The event to trigger after recreation of imagetypes.
+   *
+   * @var    string
+   * 
+   * @since  4.0.0
+   */
+  protected $event_after_recreate = null;
+
+  /**
+   * The event to trigger before recreation of imagetypes.
+   *
+   * @var    string
+   * 
+   * @since  4.0.0
+   */
+  protected $event_before_recreate = null;
+
 	/**
 	 * @var    string  The prefix to use with controller messages.
 	 *
@@ -52,6 +72,49 @@ class ImageModel extends JoomAdminModel
 	 * @since  4.0.0
 	 */
 	protected $item = null;
+
+  /**
+   * Constructor.
+   *
+   * @param   array                 $config       An array of configuration options (name, state, dbo, table_path, ignore_request).
+   * @param   MVCFactoryInterface   $factory      The factory.
+   * @param   FormFactoryInterface  $formFactory  The form factory.
+   *
+   * @since   1.6
+   * @throws  \Exception
+   */
+  public function __construct($config = [], MVCFactoryInterface $factory = null, FormFactoryInterface $formFactory = null)
+  {
+    parent::__construct($config, $factory, $formFactory);
+
+    // Set event after recreate
+    if(isset($config['event_after_recreate']))
+    {
+      $this->event_after_recreate = $config['event_after_recreate'];
+    }
+    elseif(empty($this->event_after_recreate))
+    {
+      $this->event_after_recreate = 'onJoomAfterRecreate';
+    }
+
+    // Set event before recreate
+    if(isset($config['event_before_recreate']))
+    {
+      $this->event_before_recreate = $config['event_before_recreate'];
+    }
+    elseif(empty($this->event_before_recreate))
+    {
+      $this->event_before_recreate = 'onJoomBeforeRecreate';
+    }
+
+    // Update events map
+    $this->events_map = array_merge(
+      [
+        'recreate' => 'joomgallery',
+      ],
+      $this->events_map
+    );
+  }
 
 	/**
 	 * Returns a reference to the a Table object, always creating it.
@@ -677,7 +740,7 @@ class ImageModel extends JoomAdminModel
 		return true;
 	}
 
-  	/**
+  /**
 	 * Method to delete one or more images.
 	 *
 	 * @param   array  &$pks  An array of record primary keys.
@@ -837,7 +900,7 @@ class ImageModel extends JoomAdminModel
 	 * Method to change the state of one or more records.
 	 *
 	 * @param   array    &$pks   A list of the primary keys to change.
-     * @param   string   $type   Name of the state to be changed
+   * @param   string   $type   Name of the state to be changed
 	 * @param   integer  $value  The value of the state.
 	 *
 	 * @return  boolean  True on success.
@@ -1038,6 +1101,119 @@ class ImageModel extends JoomAdminModel
 		}
 
     return true;
+  }
+
+  /**
+   * Method to recreate the imagetypes for one Image.
+   *
+   * @param   int     $pk    The record primary key.
+   * @param   string  $type  The imagetype to use as source for the recreation
+   *
+   * @return  boolean  True if successful, false if an error occurs.
+   *
+   * @since   4.0
+   */
+  public function recreate(int $pk, $type='original'): bool
+  {
+		$table = $this->getTable();
+
+		// Include the plugins for the recreate events.
+		PluginHelper::importPlugin($this->events_map['recreate']);
+
+    if($table->load($pk))
+    {
+      if($this->canRecreate($table)) 
+      {
+        $context = $this->option . '.' . $this->name . '.recreate';
+
+        // Create file manager service
+        $this->component->createFileManager();
+
+        // Get imagetypes
+        $imagetypes      = $this->component->getFileManager()->get('imagetypes');
+        $imagetypes_dict = $this->component->getFileManager()->get('imagetypes_dict');
+
+        // Select image source
+        if(($type == 'original' || $type == 'orig') && $imagetypes[$imagetypes_dict['original']]->params->get('jg_imgtype', 1, 'int') > 0)
+        {
+          // Take original as source if available
+          $type = 'original';
+        }
+        else
+        {
+          $type = 'detail';
+        }
+
+        // Get source file path
+        $source = $this->component->getFileManager()->getImgPath($table, $type);
+
+        // Trigger the before recreate event.
+        $result = Factory::getApplication()->triggerEvent($this->event_before_recreate, array($table, $imagetypes, $source));
+
+        if(\in_array(false, $result, true))
+        {
+          $this->setError($table->getError());
+
+          return false;
+        }
+
+        // Perform the recreation
+        if(!$this->component->getFileManager()->createImages($source, $table->filename, $table->catid))
+        {
+          $this->setError($table->getError());
+
+          return false;
+        }
+
+        // Trigger the after event.
+        Factory::getApplication()->triggerEvent($this->event_after_recreate, array($context, $table));
+      }
+      else
+      {
+        // Prune items that you can't change.
+        unset($pks[$i]);
+        $error = $this->getError();
+
+        if($error)
+        {
+          Log::add($error, Log::WARNING, 'jerror');
+
+          return false;
+        }
+        else
+        {
+          Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+
+          return false;
+        }
+      }
+    }
+    else
+    {
+      $this->setError($table->getError());
+
+      return false;
+    }
+
+		// Clear the component's cache
+		$this->cleanCache();
+
+		return true;
+  }
+
+
+  /**
+   * Method to test whether a record can be recreated.
+   *
+   * @param   object  $record  A record object.
+   *
+   * @return  boolean  True if allowed to recreate the record. Defaults to the permission for the component.
+   *
+   * @since   4.0
+   */
+  protected function canRecreate($record)
+  {
+    return Factory::getUser()->authorise('core.edit', $this->typeAlias);
   }
 
 	/**

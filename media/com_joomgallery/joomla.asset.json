@@ -10,6 +10,11 @@
       "uri": "com_joomgallery/admin.css"
     },
     {
+      "name": "com_joomgallery.refresher",
+      "type": "style",
+      "uri": "com_joomgallery/refresher.css"
+    },
+    {
       "name": "com_joomgallery.admin",
       "type": "script",
       "uri": "com_joomgallery/admin.js",

@@ -17,6 +17,8 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Layout\FileLayout;
 use \Joomla\CMS\Document\HtmlDocument;
+use Joomla\CMS\WebAsset\WebAssetRegistry;
+use Joomla\CMS\WebAsset\WebAssetManager;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\RefresherInterface;
 
@@ -118,55 +120,55 @@ class Refresher implements RefresherInterface
     // set controller
     if(isset($params['controller']))
     {
-      $this->_controller    = $params['controller'];
+      $this->_controller = $params['controller'];
     }
     else
     {
-      $this->_controller    = $this->app->input->get('controller', '', 'cmd');
+      $this->_controller = $this->app->input->get('controller', '', 'cmd');
     }
 
     // set task
     if(isset($params['task']))
     {
-      $this->_task          = $params['task'];
+      $this->_task = $params['task'];
     }
     else
     {
-      $this->_task          = $this->app->input->get('task', '', 'cmd');
+      $this->_task = $this->app->input->get('task', '', 'cmd');
     }
 
     // set message
     if(isset($params['msg']))
     {
-      $this->_msg           = $params['msg'];
+      $this->_msg = $params['msg'];
     }
     else
     {
-      $this->_msg           = false;
+      $this->_msg = false;
     }
 
     // set progress information
     if(isset($params['remaining']))
     {
-      $this->_remaining     = $params['remaining'];
+      $this->_remaining = $params['remaining'];
 
       if(isset($params['start']) && $params['start'])
       {
-        $this->_total       = $params['remaining'];
+        $this->_total = $params['remaining'];
         $this->app->setUserState('joom.refresher.total', $this->_total);
       }
       else
       {
-        $this->_total       = $this->app->getUserState('joom.refresher.total');
+        $this->_total = $this->app->getUserState('joom.refresher.total');
       }
 
-      $this->_showprogress  = $this->_total ? true : false;
+      $this->_showprogress = $this->_total ? true : false;
     }
 
     // set task name
     if(isset($params['name']) && $params['name'])
     {
-      $this->_name          = $params['name'];
+      $this->_name = $params['name'];
     }
 
     $this->init();
@@ -214,28 +216,28 @@ class Refresher implements RefresherInterface
   {
     if(!is_null($remaining))
     {
-      $this->_remaining     = $remaining;
+      $this->_remaining = $remaining;
 
       if(!is_null($start) && $start)
       {
-        $this->_total       = $remaining;
+        $this->_total = $remaining;
         $this->app->setUserState('joom.refresher.total', $this->_total);
       }
       else
       {
-        $this->_total       = $this->app->getUserState('joom.refresher.total');
+        $this->_total = $this->app->getUserState('joom.refresher.total');
       }
 
-      $this->_showprogress  = $this->_total ? true : false;
+      $this->_showprogress = $this->_total ? true : false;
     }
     else
     {
-      $this->_showprogress  = false;
+      $this->_showprogress = false;
     }
 
     if(!is_null($name) && $name)
     {
-      $this->_name          = $name;
+      $this->_name = $name;
     }
   }
 
@@ -270,7 +272,7 @@ class Refresher implements RefresherInterface
    *
    * @since   1.5.5
    */
-  public function refresh($remaining, $task, $msg, $type, $controller)
+  public function refresh($remaining, $task=false, $msg=false, $type=false, $controller=false)
   {
     if($remaining)
     {
@@ -307,29 +309,57 @@ class Refresher implements RefresherInterface
       }
     }
 
-    // create html document
+    // Create html document
     $doc = new HtmlDocument();
-    $head = array('title' => Text::_('COM_JOOMGALLERY_WORK_IN_PROGRESS'),
-                  'description' => '',
-                  'link' => ''
-                 );
+
+    // Get template specific data
+    switch(Factory::getApplication()->getClientId())
+    {
+      case 0:
+          $tmpName       = 'cassiopeia';
+          $tmpDir        = JPATH_BASE . DIRECTORY_SEPARATOR . 'templates';
+          $tmpIndexFile  = 'component.php';
+          $tmpAssetFile  = 'templates/cassiopeia/joomla.asset.json';
+          $compAssetFile = 'media/com_joomgallery/joomla.asset.json';
+          break;
+      default:
+          $tmpName  = 'atum';
+          $tmpDir        = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'templates';
+          $tmpIndexFile  = 'component.php';
+          $tmpAssetFile  = 'administrator/templates/atum/joomla.asset.json';
+          $compAssetFile = 'media/com_joomgallery/joomla.asset.json';          
+          break;
+    }
+
+    // Fill head of document
+    $head = array( 'title' => Text::_('COM_JOOMGALLERY_WORK_IN_PROGRESS'), 
+                   'description' => '',
+                   'link' => '',
+                   'assetManager' => array('registryFiles' => array($tmpAssetFile, $compAssetFile)));
     $doc->setHeadData($head);
     $doc->setHtml5(true);
 
-    // create html output of main section
-    $data    = array('name' => $this->_name, 'maxtime' => $this->_maxtime, 'showprogress' => $this->_showprogress);
+    // Add styles
+    $wa = $doc->getWebAssetManager();
+    $wa->useStyle('template.'.$tmpName.'.ltr')
+       ->useStyle('template.user')
+       ->useStyle('com_joomgallery.refresher');
+
+    // Create html output of the component section
+    $data    = array('name' => $this->_name, 'maxtime' => $this->_maxtime, 'showprogress' => $this->_showprogress, 'total' => $this->_total, 'remaining' => $this->_remaining);
     $layout  = new FileLayout('refresher', null, array('component' => 'com_joomgallery', 'client' => 1));
     $buffer  = $layout->render($data);
     $buffer .= '<script type="text/javascript">document.location.href="index.php?option='._JOOM_OPTION.'&controller='.$controller.'&task='.$task.'"</script>';
-    $doc->setBuffer($buffer);
+    $doc->setBuffer($buffer, 'component');
 
-    // render the html document
-    $tmpl = array('directory' => JPATH_THEMES,
-                  'template' => 'cassiopeia',
-                  'file' => 'component.php'
+    // Render the html document
+    $tmpl = array('directory' => $tmpDir,
+                  'template' => $tmpName,
+                  'file' => $tmpIndexFile
                 );
-    echo $doc->render($tmpl);
+    echo $doc->render(false, $tmpl);
 
+    // Return the output
     $this->app->close();
   }
 }

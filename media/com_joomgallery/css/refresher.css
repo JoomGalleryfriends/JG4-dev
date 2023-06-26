@@ -1,0 +1,16 @@
+.card {
+  background-color: var(--gray-100);
+  border: 1px solid var(--border);
+}
+.head img {
+  display: block;
+  max-width: 800px;
+  margin: 0 auto 2rem;  
+}
+.joom-loader {
+  margin: 2rem;
+}
+.task-name {
+  font-weight: 500;
+  color: var(--success);
+}

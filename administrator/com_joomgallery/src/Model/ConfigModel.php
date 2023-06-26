@@ -373,7 +373,7 @@ class ConfigModel extends JoomAdminModel
       // update data
       $imagetype_db->typename = $staticprocessing['jg_imgtypename'];
       $imagetype_db->path     = $staticprocessing['jg_imgtypepath'];
-      $imagetype_db->params   = $this->encodeParams($staticprocessing);
+      $imagetype_db->params   = $this->updateParams($staticprocessing, $imagetype_db->params);
 
       if(empty($imagetype_db->typename))
       {
@@ -605,24 +605,50 @@ class ConfigModel extends JoomAdminModel
   }
 
   /**
-	 * Encode params string.
+	 * Update the staticprocessing params string.
 	 *
-   * @param   array    $data     Form data
+   * @param   array    $data       New submitted params form data
+   * @param   string   $old_data   JSON string of old params
    * 
-	 * @return  string   Params json string
+	 * @return  string   Params JSON string
 	 *
 	 * @since   4.0.0
 	 */
-  protected function encodeParams($data)
+  protected function updateParams(array $data, string $old_data=''): string
   {
+    // Decode old params string
+    if($old_data === '')
+    {
+      $old_data = array();
+    }
+    else
+    {
+      $old_data = \json_decode($old_data, true);
+    }
+
+    // support for jg_imgtypename
     if(\array_key_exists('jg_imgtypename', $data))
     {
       unset($data['jg_imgtypename']);
     }
 
+    // support for jg_imgtypepath
     if(\array_key_exists('jg_imgtypepath', $data))
     {
       unset($data['jg_imgtypepath']);
+    }
+
+    // support for jg_imgtype
+    if(!\array_key_exists('jg_imgtype', $data))
+    {
+      if(\array_key_exists('jg_imgtype', $old_data))
+      {
+        $data['jg_imgtype'] = $old_data['jg_imgtype'];
+      }
+      else
+      {
+        $data['jg_imgtype'] = 1;
+      }      
     }
 
     return json_encode($data);
