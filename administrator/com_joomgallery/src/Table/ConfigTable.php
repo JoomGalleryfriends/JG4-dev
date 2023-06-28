@@ -15,9 +15,11 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Table\Table as Table;
+use \Joomla\CMS\Table\Asset;
+use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\Registry\Registry;
 
 /**
@@ -119,8 +121,7 @@ class ConfigTable extends Table implements VersionableTableInterface
 	protected function _getAssetParentId($table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
-		//$assetParent = Table::getInstance('Asset');
-		$assetTable = Factory::getContainer()->get('JTable' . ucfirst('Asset'));
+		$assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
 
 		// The item has the component as asset-parent
 		$assetTable->loadByName(_JOOM_OPTION);
