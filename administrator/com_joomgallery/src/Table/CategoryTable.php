@@ -50,6 +50,21 @@ class CategoryTable extends Table implements VersionableTableInterface
   protected $_old_location_path = null;
 
 	/**
+	 * Constructor
+	 *
+	 * @param   JDatabase  &$db  A database connector object
+	 */
+	public function __construct(DatabaseDriver $db)
+	{
+		$this->typeAlias = _JOOM_OPTION.'.category';
+
+		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
+
+		$this->setColumnAlias('published', 'published');
+		$this->getRootId();
+	}
+
+  /**
 	 * Check if a field is unique
 	 *
 	 * @param   string   $field    Name of the field
@@ -80,21 +95,6 @@ class CategoryTable extends Table implements VersionableTableInterface
 	}
 
 	/**
-	 * Constructor
-	 *
-	 * @param   JDatabase  &$db  A database connector object
-	 */
-	public function __construct(DatabaseDriver $db)
-	{
-		$this->typeAlias = _JOOM_OPTION.'.category';
-
-		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
-
-		$this->setColumnAlias('published', 'published');
-		$this->getRootId();
-	}
-
-	/**
 	 * Get the type alias for the history table
 	 *
 	 * @return  string  The alias as described above
@@ -104,6 +104,74 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function getTypeAlias()
 	{
 		return $this->typeAlias;
+	}
+
+  /**
+	 * Define a namespaced asset name for inclusion in the #__assets table
+	 *
+	 * @return string The asset name
+	 *
+	 * @see Table::_getAssetName
+	 */
+	protected function _getAssetName()
+	{
+		$k = $this->_tbl_key;
+
+		return $this->typeAlias . '.' . (int) $this->$k;
+	}
+
+  /**
+	 * Method to return the title to use for the asset table.
+	 *
+	 * @return  string
+	 *
+	 * @since   4.0.0
+	 */
+	protected function _getAssetTitle()
+	{
+		return $this->title;
+	}
+
+	/**
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+	 *
+	 * @param   Table   $table  Table name
+	 * @param   integer  $id     Id
+	 *
+	 * @see Table::_getAssetParentId
+	 *
+	 * @return mixed The id on success, false on failure.
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
+	{
+		// We will retrieve the parent-asset from the Asset-table
+		//$assetParent = Table::getInstance('Asset');
+    $assetTable = Factory::getContainer()->get('JTable' . ucfirst('Asset'));
+
+		if($this->parent_id)
+		{
+			// The image has a category as asset-parent
+			$catId = (int) $this->parent_id;
+			$assetTable->loadByName(_JOOM_OPTION.'category'.$parent_id);
+		}
+		else
+		{
+			// The image has the component as asset-parent
+			$assetTable->loadByName(_JOOM_OPTION);
+		}
+
+		// Return the found asset-parent-id
+		if($assetTable->id)
+		{
+			$assetParentId = $assetTable->id;
+		}
+		else
+		{
+			// If no asset-parent can be found we take the global asset
+			$assetParentId = $assetTable->getRootId();
+		}
+
+		return $assetParentId;
 	}
 
   /**
@@ -398,50 +466,6 @@ class CategoryTable extends Table implements VersionableTableInterface
       }      
     }
   }
-
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-		$assetParent = Table::getInstance('Asset');
-
-		// Default: if no asset-parent can be found we take the global asset
-		$assetParentId = $assetParent->getRootId();
-
-		// The item has the component as asset-parent
-		$assetParent->loadByName(_JOOM_OPTION);
-
-		// Return the found asset-parent-id
-		if($assetParent->id)
-		{
-			$assetParentId = $assetParent->id;
-		}
-
-		return $assetParentId;
-	}
 
   /**
    * Delete a record by id
