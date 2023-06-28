@@ -205,12 +205,12 @@ class JoomHelper
       if($parent && \in_array($name, array('image', 'category')))
       {
         // Get join selector id
-        $parent_id = ($name == 'category') ? 'a.parent_id' : 'a.catid';
+        $parent_id   = ($name == 'category') ? 'a.parent_id' : 'a.catid';
 
         // Create query
         $query
           ->select($db->quoteName('parent.created_by', 'created_by'))
-          ->join('LEFT', $db->quoteName(self::$content_types[$name], 'parent'), $db->quoteName('parent.id') . ' = ' . $db->quoteName($parent_id))
+          ->join('LEFT', $db->quoteName(self::$content_types['category'], 'parent'), $db->quoteName('parent.id') . ' = ' . $db->quoteName($parent_id))
           ->from($db->quoteName(self::$content_types[$name], 'a'))
           ->where($db->quoteName('a.id') . ' = ' . $id);
       }

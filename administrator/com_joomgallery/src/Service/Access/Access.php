@@ -17,7 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Base\AccessOwn;
 
 /**
  * Access Class
@@ -44,6 +44,13 @@ class Access implements AccessInterface
    * @var array
    */
   protected $types = array('image', 'category', 'tag', 'config');
+
+  /**
+   * Content types of current component which are categorised
+   *
+   * @var array
+   */
+  protected $categorized_types = array('image', 'category');
 
   /**
    * List of all the base acl rules mapped with actions.
@@ -140,56 +147,46 @@ class Access implements AccessInterface
     //---------------------
     $allowed = false;
 
-    // 1. Standard permission check
-    $allowed = $this->user->authorise($acl_rule, $asset);
+    // 1. Default permission checks based on asset table
+    // (Global Configuration -> Recursive assets)
+    // (Recursive assets for image: com_joomgallery -> com_joomgallery.parent_category -> com_joomgallery.category -> com_joomgallery.image)
+    $res1 = $this->user->authorise($acl_rule, $asset);
 
-    // 2. Check permission if you perform an action on an item in your own category
-    $categorized_types = array('image', 'category');
-    if( !$allowed && $asset_lenght > 1 && \in_array($asset_type, $categorized_types)
-        && $this->aclMap[$action]['own'] !== false && $pk > 0
-      )
+    if($this->user->get('isRoot') === true)
     {
-      // Get the owner of the parent/category of the item
-      $cat_owner = JoomHelper::getCreator($asset_array[1], $pk, true);
-      $cat_id    = JoomHelper::getParent($asset_array[1], $pk);
+      // If it is the super user
+      return true;
+    }
 
-      // Check against parent ownership
-      if($cat_owner && $cat_id)
+    if($asset_lenght >= 3)
+    {
+      // 2. Permission checks based on asset table and owner
+      if($this->aclMap[$action]['own'] !== false && $pk > 0)
       {
-        $parent_asset = _JOOM_OPTION.'.category.'.$cat_id;
+        // Current user is the owner
+        $acl_rule  = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+        $res2 = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
+      }
 
-        if($asset_array[1] == 'image' && $action == 'add')
-        {
-          // Check for the category in general
-          $allowed = $this->user->authorise('joom.upload', $parent_asset);
+      // 3. Permission check for adding categorised items
+      if(\in_array($asset_type, $this->categorized_types) && $action == 'add')
+      {
+        // Get parent/category info
+        $parent_id     = JoomHelper::getParent($asset_array[1], $pk);
+        $parent_asset  = $this->option.'.category.'.$parent_id;
+        $parent_action = ($pk > 0) ? 'joom.upload'.$pk : 'joom.upload';
 
-          if(!$allowed)
-          {
-            // Check also against parent ownership
-            $allowed = $this->user->authorise('joom.upload.inown', $parent_asset) && $cat_owner == $this->user->get('id');
-          }
-        }
-        else
-        {
-          $acl_rule = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
-          $allowed  = $this->user->authorise($acl_rule, $parent_asset) && $cat_owner == $this->user->get('id');
-        }
+        // Check for the category in general
+        $res3 = Access::check($this->user->get('id'), $parent_action, $parent_asset);
+        //$this->user->authorise('joom.upload', $parent_asset);
+
+        // Check also against parent ownership
+        $res4 = Access::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
+        //$allowed = $this->user->authorise('joom.upload.inown', $parent_asset);
       }
     }
 
-    // 3. Check the permission if you perform an action on your own item
-    if(!$allowed && $asset_lenght > 1 && $this->aclMap[$action]['own'] !== false && $pk > 0)
-    {
-      // Get the owner of the item
-      $item_owner = JoomHelper::getCreator($asset_array[1], $pk);
-
-      // Check against ownership
-      if($item_owner)
-      {
-        $acl_rule = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
-        $allowed  = $this->user->authorise($acl_rule, $asset) && $item_owner == $this->user->get('id');
-      }
-    }
+    dump('Zwischenresultat', array('default' => $res1, 'own' => $res2, 'cat-upload' => $res3, 'cat-upload-own' => $res4));
 
     return $allowed;
   }
