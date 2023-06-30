@@ -71,7 +71,7 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	protected function _getAssetTitle()
 	{
-		return $this->title;
+		return $this->imgtitle;
 	}
 
 	/**
@@ -93,7 +93,7 @@ class ImageTable extends Table implements VersionableTableInterface
 		{
 			// The image has a category as asset-parent
 			$catId = (int) $this->catid;
-			$assetTable->loadByName(_JOOM_OPTION.'category'.$catId);
+			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$catId);
 		}
 
 		// Return the found asset-parent-id

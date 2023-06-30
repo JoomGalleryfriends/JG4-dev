@@ -153,7 +153,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 		{
 			// The image has a category as asset-parent
 			$catId = (int) $this->parent_id;
-			$assetTable->loadByName(_JOOM_OPTION.'category'.$parent_id);
+			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$parent_id);
 		}
 		else
 		{
