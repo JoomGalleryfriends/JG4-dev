@@ -285,9 +285,9 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
 
       // Create image types
-      $img_types = array('original'  => array('path' => '/images/joomgallery/originals', 'alias' => 'orig'),
-                        'detail'    => array('path' => '/images/joomgallery/details', 'alias' => 'det'),
-                        'thumbnail' => array('path' => '/images/joomgallery/thumbnails', 'alias' => 'thumb')
+      $img_types = array( 'original'  => array('path' => '/images/joomgallery/originals', 'alias' => 'orig'),
+                          'detail'    => array('path' => '/images/joomgallery/details', 'alias' => 'det'),
+                          'thumbnail' => array('path' => '/images/joomgallery/thumbnails', 'alias' => 'thumb')
                         );
       $this->count = 0;
       foreach ($img_types as $key => $type)
@@ -867,6 +867,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $dst   = JPATH_ROOT.'/images/joomgallery/';
 
     $error = false;
+
+    // Create destination folder if not exists
+    if(!Folder::exists($dst))
+    {
+      Folder::create($dst);
+    }
 
     // Copy files
     foreach ($files as $file)
