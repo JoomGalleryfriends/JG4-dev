@@ -59,17 +59,6 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
-    define("JGDEBUG_ON", true);
-
-    $this->component->createAccess();
-    $acl = $this->component->getAccess();
-    $acl->setUser(821); // optional: manuel
-    $res = $acl->checkACL('delete', 'image', 19);
-    dump(array('Intermediate result' => $acl->allowed));
-    dump($res);
-
-    define("JGDEBUG_OFF", true);
-
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();
