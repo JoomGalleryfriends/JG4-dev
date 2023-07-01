@@ -67,6 +67,13 @@ class Access implements AccessInterface
   protected $user;
 
   /**
+   * Storage containing all applied acl checks.
+   *
+   * @var array
+   */
+  public $allowed = array('default' => null, 'own' => null, 'cat-upload' => null, 'cat-upload-own' => null);
+
+  /**
    * Initialize class for specific option
    *
    * @return  void
@@ -145,12 +152,12 @@ class Access implements AccessInterface
 
     // Apply the acl check
     //---------------------
-    $allowed = false;
+    $this->allowed = array('default' => null, 'own' => null, 'cat-upload' => null, 'cat-upload-own' => null);
 
     // 1. Default permission checks based on asset table
     // (Global Configuration -> Recursive assets)
     // (Recursive assets for image: com_joomgallery -> com_joomgallery.parent_category -> com_joomgallery.category -> com_joomgallery.image)
-    $res1 = $this->user->authorise($acl_rule, $asset);
+    $this->allowed['default'] = $this->user->authorise($acl_rule, $asset);
 
     if($this->user->get('isRoot') === true)
     {
@@ -164,8 +171,8 @@ class Access implements AccessInterface
       if($this->aclMap[$action]['own'] !== false && $pk > 0)
       {
         // Current user is the owner
-        $acl_rule  = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
-        $res2 = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
+        $acl_rule             = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+        $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
       }
 
       // 3. Permission check for adding categorised items
@@ -177,18 +184,25 @@ class Access implements AccessInterface
         $parent_action = ($pk > 0) ? 'joom.upload'.$pk : 'joom.upload';
 
         // Check for the category in general
-        $res3 = Access::check($this->user->get('id'), $parent_action, $parent_asset);
-        //$this->user->authorise('joom.upload', $parent_asset);
+        $this->allowed['cat-upload']     = Access::check($this->user->get('id'), $parent_action, $parent_asset);
 
         // Check also against parent ownership
-        $res4 = Access::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
-        //$allowed = $this->user->authorise('joom.upload.inown', $parent_asset);
+        $this->allowed['cat-upload-own'] = Access::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
       }
     }
 
-    dump('Zwischenresultat', array('default' => $res1, 'own' => $res2, 'cat-upload' => $res3, 'cat-upload-own' => $res4));
+    // Apply the results
+    $results    = array('own', 'cat-upload', 'cat-upload-own');
+    $allowedRes = $this->allowed['default'];
+    foreach ($results as $res)
+    {
+      if($this->allowed[$res] !== null)
+      {
+        $allowedRes = $this->allowed[$res];
+      }
+    }
 
-    return $allowed;
+    return $allowedRes;
   }
 
   /**
