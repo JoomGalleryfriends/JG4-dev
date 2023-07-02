@@ -46,11 +46,18 @@ class Access implements AccessInterface
   protected $types = array('image', 'category', 'tag', 'config');
 
   /**
-   * Content types of current component which are categorised
+   * List of content types with appended media (containing upload rules)
    *
    * @var array
    */
-  protected $categorized_types = array('image', 'category');
+  protected $media_types = array('image', 'category');
+
+  /**
+   * Component specific prefix for rules.
+   *
+   * @var string
+   */
+  protected $prefix = 'joom';
 
   /**
    * List of all the base acl rules mapped with actions.
@@ -97,9 +104,13 @@ class Access implements AccessInterface
     // Set current user
     $this->user = $this->app->getIdentity();
 
-    // Set acl map for joomgallery
-    require JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/rules.php';
-    $this->aclMap = $rules_map_array;
+    // Set acl map for components with advanced rules
+    $mapPath = JPATH_ADMINISTRATOR.'/components/'.$this->option.'/includes/rules.php';
+    if(\file_exists($mapPath))
+    {
+      require $mapPath;
+      $this->aclMap = $rules_map_array;
+    }
   }
 
   /**
@@ -117,10 +128,13 @@ class Access implements AccessInterface
   public function checkACL(string $action, string $asset='', int $pk=0): bool
   {
     // Prepare action
-    $action = $this->prepareAction($action);
+    if(!empty($this->aclMap))
+    {
+      $action = $this->prepareAction($action);
+    }
 
     // Prepare asset
-    $asset = $this->prepareAsset($asset, $pk);
+    $asset  = $this->prepareAsset($asset, $pk);
 
     // Explode asset
     $asset_array  = \explode('.', $asset);
@@ -136,17 +150,25 @@ class Access implements AccessInterface
       $asset_type = false;
     }
 
-    // Check if asset is available for this action
-    if( ($asset_lenght == 1 && !\in_array('.', $this->aclMap[$action]['assets'])) ||
-        (!\in_array('.'.$asset_type, $this->aclMap[$action]['assets']))
-      )
+    if(!empty($this->aclMap))
     {
-      // Action not available for this asset.
-      throw new \Exception("Action not available for this asset. Access can not be checked. Please provide reasonable inputs.", 1);
-    }
+      // Check if asset is available for this action
+      if( ($asset_lenght == 1 && !\in_array('.', $this->aclMap[$action]['assets'])) ||
+          (!\in_array('.'.$asset_type, $this->aclMap[$action]['assets']))
+        )
+      {
+        // Action not available for this asset.
+        throw new \Exception("Action not available for this asset. Access can not be checked. Please provide reasonable inputs.", 1);
+      }
 
-    // Get the acl rule for this action
-    $acl_rule       = $this->aclMap[$action]['rule'];
+      // Get the acl rule for this action
+      $acl_rule = $this->aclMap[$action]['rule'];
+    }
+    else
+    {
+      $acl_rule = $action;
+    }
+    
     $acl_rule_array = \explode('.', $acl_rule);
 
 
@@ -168,20 +190,20 @@ class Access implements AccessInterface
     if($asset_lenght >= 3)
     {
       // 2. Permission checks based on asset table and owner
-      if($this->aclMap[$action]['own'] !== false && $pk > 0)
+      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0)
       {
         // Current user is the owner
-        $acl_rule             = 'joom.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+        $acl_rule             = $this->prefix.'.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
         $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
       }
 
-      // 3. Permission check for adding categorised items
-      if(\in_array($asset_type, $this->categorized_types) && $action == 'add')
+      // 3. Permission check if adding assets with media items
+      if(\in_array($asset_type, $this->media_types) && $action == 'add')
       {
         // Get parent/category info
         $parent_id     = JoomHelper::getParent($asset_array[1], $pk);
         $parent_asset  = $this->option.'.category.'.$parent_id;
-        $parent_action = ($pk > 0) ? 'joom.upload'.$pk : 'joom.upload';
+        $parent_action = ($pk > 0) ? $this->prefix.'.upload'.$pk : $this->prefix.'.upload';
 
         // Check for the category in general
         $this->allowed['cat-upload']     = Access::check($this->user->get('id'), $parent_action, $parent_asset);
@@ -194,7 +216,7 @@ class Access implements AccessInterface
     // Apply the results
     $results    = array('own', 'cat-upload', 'cat-upload-own');
     $allowedRes = $this->allowed['default'];
-    foreach ($results as $res)
+    foreach($results as $res)
     {
       if($this->allowed[$res] !== null)
       {
@@ -295,7 +317,7 @@ class Access implements AccessInterface
     $asset_array  = \explode('.', $asset);
 
     // Check asset
-    if($asset_array[0] != 'com_joomgallery' || (\count($asset_array) > 1 && !\in_array($asset_array[1], $this->types)))
+    if($asset_array[0] != $this->option || (\count($asset_array) > 1 && !\in_array($asset_array[1], $this->types)))
     {
       throw new \Exception('Invalid asset provided for ACL access check', 1);
     }
