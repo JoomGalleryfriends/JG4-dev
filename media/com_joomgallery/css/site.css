@@ -18,6 +18,7 @@
 .joom-image {
   position: relative;
   min-height: 100px;
+  width: 100%;
 }
 .joom-image > .joom-loader {
   position: absolute;
