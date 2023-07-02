@@ -148,7 +148,7 @@ class JoomHelper
       }
 
       // Create the model
-      $model = $com_obj->getMVCFactory()->createModel($name);
+      $model = $com_obj->getMVCFactory()->createModel($name, 'administrator');
 
       if(\is_null($model))
       {
@@ -196,7 +196,7 @@ class JoomHelper
       $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
     }
 
-    $model = $com_obj->getMVCFactory()->createModel($name);
+    $model = $com_obj->getMVCFactory()->createModel($name, 'administrator');
 
     if(\is_null($model))
     {

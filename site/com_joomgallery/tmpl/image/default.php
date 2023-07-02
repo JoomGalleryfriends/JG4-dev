@@ -17,6 +17,7 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Session\Session;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 $canEdit = Factory::getUser()->authorise('core.edit', 'com_joomgallery.' . $this->item->id);
 
@@ -24,12 +25,16 @@ if (!$canEdit && Factory::getUser()->authorise('core.edit.own', 'com_joomgallery
 {
 	$canEdit = Factory::getUser()->id == $this->item->created_by;
 }
+
+$wa = $this->document->getWebAssetManager();
+$wa->useStyle('com_joomgallery.site');
 ?>
 
 <h2><?php echo $this->item->imgtitle; ?></h2>
 
-<figure class="figure text-center" style="width: 100%;">
-  <img class="figure-img img-fluid rounded" src="<?php echo URI::root().'/images/joomgallery/details/'.strtolower($this->item->catid).'/'.$this->item->filename; ?>" alt="<?php echo $this->item->imgtitle; ?>" style="width:auto;" itemprop="image" loading="lazy">
+<figure class="figure joom-image text-center center">
+  <div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>
+  <img src="<?php echo JoomHelper::getImg($this->item, 'detail'); ?>" class="figure-img img-fluid rounded" alt="<?php echo $this->item->imgtitle; ?>" style="width:auto;" itemprop="image" loading="lazy">
   <figcaption class="figure-caption"><?php echo nl2br($this->item->imgtext); ?></figcaption>
 </figure>
 

@@ -199,7 +199,7 @@ abstract class Config implements ConfigInterface
 	protected function getParamsByID($id = 1)
 	{
     $com_obj = $this->app->bootComponent('com_joomgallery');
-    $model   = $com_obj->getMVCFactory()->createModel('Config');
+    $model   = $com_obj->getMVCFactory()->createModel('Config', 'administrator');
 
     $id   = intval($id);
     $item = $model->getItem($id);

@@ -69,7 +69,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Record successfully loaded
       // load Tags
       $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
-      $tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+      $tags_model = $com_obj->getMVCFactory()->createModel('Tags', 'administrator');
 
       $this->tags = $tags_model->getMappedItems($this->id);
     }
