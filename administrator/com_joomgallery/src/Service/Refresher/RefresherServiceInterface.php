@@ -29,13 +29,15 @@ interface RefresherServiceInterface
 	private $refresher;
 
   /**
-	 * Creates the Refresher helper class
+	 * Creates the refresher helper class
+   * 
+   * @param   array  $params   An array with optional parameters
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createRefresher(): void;
+	public function createRefresher($params): void;
 
 	/**
 	 * Returns the Refresher helper class.

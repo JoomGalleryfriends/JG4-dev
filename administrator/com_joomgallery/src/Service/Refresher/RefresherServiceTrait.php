@@ -44,14 +44,16 @@ trait RefresherServiceTrait
 
   /**
 	 * Creates the refresher helper class
+   * 
+   * @param   array  $params   An array with optional parameters
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createRefresher(): void
+	public function createRefresher($params = array()): void
 	{
-    $this->refresher = new Refresher;
+    $this->refresher = new Refresher($params);
 
     return;
 	}

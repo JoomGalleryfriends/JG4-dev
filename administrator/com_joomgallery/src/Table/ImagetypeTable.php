@@ -80,6 +80,12 @@ class ImagetypeTable extends Table
 			$this->ordering = self::getNextOrder();
 		}
 
+    // Support for subform field params
+		if(is_array($this->params))
+		{
+			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
+		}
+
 		return parent::check();
 	}
 
@@ -174,6 +180,14 @@ class ImagetypeTable extends Table
 					$array['type_alias'] = substr(OutputFilter::stringURLSafe(trim($array['typename'])), 0, 4);
 				}
 			}
+		}
+
+    // Support for params field
+    if(isset($array['params']) && is_array($array['params']))
+		{
+			$registry = new Registry;
+			$registry->loadArray($array['params']);
+			$array['params'] = (string) $registry;
 		}
 
     return parent::bind($array, $ignore);
