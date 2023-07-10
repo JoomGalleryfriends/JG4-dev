@@ -207,10 +207,10 @@ class Access implements AccessInterface
         $parent_action = ($pk > 0) ? $this->prefix.'.upload'.$pk : $this->prefix.'.upload';
 
         // Check for the category in general
-        $this->allowed['cat-upload']     = Access::check($this->user->get('id'), $parent_action, $parent_asset);
+        $this->allowed['cat-upload']     = AccessOwn::check($this->user->get('id'), $parent_action, $parent_asset);
 
         // Check also against parent ownership
-        $this->allowed['cat-upload-own'] = Access::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
+        $this->allowed['cat-upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
       }
     }
 
