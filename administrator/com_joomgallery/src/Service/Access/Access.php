@@ -16,6 +16,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User;
 use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Base\AccessOwn;
 
