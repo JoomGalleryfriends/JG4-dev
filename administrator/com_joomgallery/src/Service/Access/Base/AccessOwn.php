@@ -98,9 +98,7 @@ class AccessOwn extends Access
 
       $collected[$i] = self::$assetPermissionsParentIdMapping[$extensionName][$id];
 
-      // Convert json to object
-      $collected[$i]->rules = \json_decode($collected[$i]->rules);
-
+      // Add owner to collection
       $ancArray = \explode('.', $collected[$i]->name);
       if(\count($ancArray) >= 3)
       {
@@ -137,16 +135,19 @@ class AccessOwn extends Access
 
     foreach($ancestors as $key => $ancestor)
     {
-      if(!\in_array($action, \array_keys(\get_object_vars($ancestor->rules))))
+      // Get rules
+      $rules = \json_decode($ancestor->rules);
+      if(!\in_array($action, \array_keys(\get_object_vars($rules))))
       {
         // This ancestor does not contain any rule for the current action
         continue;
       }
-      
+
+      // Get owner      
       if($ancestor->owner == $userId)
       {
         // User is owner of this ancestor
-        foreach($ancestor->rules->{$action} as $groupId => $allowed)
+        foreach($rules->{$action} as $groupId => $allowed)
         {
           if(\in_array($groupId, $groupsOfUser))
           {

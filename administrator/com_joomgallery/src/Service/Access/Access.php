@@ -16,6 +16,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User;
 use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomla\CMS\Access\Access as AccessBase;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Base\AccessOwn;
@@ -204,10 +205,10 @@ class Access implements AccessInterface
         // Get parent/category info
         $parent_id     = JoomHelper::getParent($asset_array[1], $pk);
         $parent_asset  = $this->option.'.category.'.$parent_id;
-        $parent_action = ($pk > 0) ? $this->prefix.'.upload'.$pk : $this->prefix.'.upload';
+        $parent_action = $this->prefix.'.upload';
 
         // Check for the category in general
-        $this->allowed['cat-upload']     = AccessOwn::check($this->user->get('id'), $parent_action, $parent_asset);
+        $this->allowed['cat-upload']     = AccessBase::check($this->user->get('id'), $parent_action, $parent_asset);
 
         // Check also against parent ownership
         $this->allowed['cat-upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
