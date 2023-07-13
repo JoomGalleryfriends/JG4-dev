@@ -48,7 +48,7 @@ class Access implements AccessInterface
   protected $types = array('image', 'category', 'tag', 'config');
 
   /**
-   * List of content types with appended media (containing upload rules)
+   * List of content types with appended media (categorized, containing upload rules)
    *
    * @var array
    */
