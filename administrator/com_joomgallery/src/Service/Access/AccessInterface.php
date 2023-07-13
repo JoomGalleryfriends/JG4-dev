@@ -34,12 +34,13 @@ interface AccessInterface
    * @param   string   $action    The name of the action to check for permission.
    * @param   string   $asset     The name of the asset on which to perform the action.
    * @param   integer  $pk        The primary key of the item.
+   * @param   bool     $parent_pk True to show that the given primary key is its parent key.
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function checkACL(string $action, string $asset='', int $pk=0): bool;
+  public function checkACL(string $action, string $asset='', int $pk=0, bool $parent_pk=false): bool;
 
   /**
    * Change the component option on which to check the action.

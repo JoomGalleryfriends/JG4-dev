@@ -52,7 +52,7 @@ class Access implements AccessInterface
    *
    * @var array
    */
-  protected $media_types = array('image', 'category');
+  protected $media_types = array('image');
 
   /**
    * Component specific prefix for rules.
@@ -120,14 +120,14 @@ class Access implements AccessInterface
    *
    * @param   string   $action    The name of the action to check for permission.
    * @param   string   $asset     The name of the asset on which to perform the action.
-   * @param   integer  $pk        The primary key of the item. (optional)
+   * @param   integer  $pk        The primary key of the item.
+   * @param   bool     $parent_pk True to show that the given primary key is its parent key.
    *
    * @return  void
    *
    * @since   4.0.0
-   * @throws  \Exception
    */
-  public function checkACL(string $action, string $asset='', int $pk=0): bool
+  public function checkACL(string $action, string $asset='', int $pk=0, bool $parent_pk=false): bool
   {
     // Prepare action
     if(!empty($this->aclMap))
@@ -136,7 +136,7 @@ class Access implements AccessInterface
     }
 
     // Prepare asset
-    $asset  = $this->prepareAsset($asset, $pk);
+    $asset  = $this->prepareAsset($asset, $pk, $parent_pk);
 
     // Explode asset
     $asset_array  = \explode('.', $asset);
@@ -173,6 +173,12 @@ class Access implements AccessInterface
     
     $acl_rule_array = \explode('.', $acl_rule);
 
+    // Check that parent_pk flag is set to yes if adding assets with media items
+    if(\in_array($asset_type, $this->media_types) && $action == 'add' && !$parent_pk)
+    {
+      // Flag parent_pk has to be set to yes
+      throw new \Exception("You want to check the permission to add a content type with attached media items, but parent_pk is not set. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add into.", 1);
+    }
 
     // Apply the acl check
     //---------------------
@@ -279,15 +285,16 @@ class Access implements AccessInterface
   /**
    * Prepare the entered asset to make it conform with $user->authorize method.
    *
-   * @param   string   $asset    The given asset.
-   * @param   int      $pk       Primary key of the asset (optional).
+   * @param   string   $asset      The given asset.
+   * @param   int      $pk         Primary key of the asset (optional).
+   * @param   bool     $parent_pk  True if given pk is key of parent asset.
    *
    * @return  string   The prepared asset.
    *
    * @since   4.0.0
    * @throws  \Exception
    */
-  protected function prepareAsset(string $asset, int $pk=0): string
+  protected function prepareAsset(string $asset, int $pk=0, bool $parent_pk=false): string
   {
     // Do we have a global asset?
     $global = false;
@@ -310,7 +317,7 @@ class Access implements AccessInterface
     }
 
     // Last position has to be the primary key
-    if(!$global && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
+    if(!$global && !$parent_pk && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
     {
       $asset = $asset . '.' . \strval($pk);
     }
@@ -330,7 +337,7 @@ class Access implements AccessInterface
   /**
    * Prepare the entered action to catch similar words.
    *
-   * @param   string   $action    The given aaction.
+   * @param   string   $action     The given aaction.
    *
    * @return  string   The prepared action.
    *
