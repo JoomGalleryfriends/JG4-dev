@@ -201,7 +201,15 @@ class Access implements AccessInterface
       if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0)
       {
         // Current user is the owner
-        $acl_rule             = $this->prefix.'.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+        if($acl_rule_array[1] === 'edit')
+        {
+          $acl_rule = 'core.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+        }
+        else
+        {
+          $acl_rule = $this->prefix.'.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+        }
+        
         $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
       }
 

@@ -117,7 +117,7 @@ if($saveOrder && !empty($this->items))
                 $ordering   = ($listOrder == 'a.ordering');
                 $canCreate  = $user->authorise('core.create', _JOOM_OPTION.'.category.'.$item->id);
                 $canEdit    = $user->authorise('core.edit', _JOOM_OPTION.'.category.'.$item->id);
-                $canEditOwn = $user->authorise('joom.edit.own', _JOOM_OPTION.'.category.'.$item->id) && $item->created_by == $userId;
+                $canEditOwn = $user->authorise('core.edit.own', _JOOM_OPTION.'.category.'.$item->id) && $item->created_by == $userId;
                 $canCheckin = $user->authorise('core.admin', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
                 $canChange  = $user->authorise('core.edit.state', _JOOM_OPTION.'.category.'.$item->id);
 
