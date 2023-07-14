@@ -80,7 +80,7 @@ class Access implements AccessInterface
    *
    * @var array
    */
-  public $allowed = array('default' => null, 'own' => null, 'cat-upload' => null, 'cat-upload-own' => null);
+  public $allowed = array('default' => null, 'own' => null, 'upload' => null, 'upload-own' => null);
 
   /**
    * Initialize class for specific option
@@ -182,7 +182,7 @@ class Access implements AccessInterface
 
     // Apply the acl check
     //---------------------
-    $this->allowed = array('default' => null, 'own' => null, 'cat-upload' => null, 'cat-upload-own' => null);
+    $this->allowed = array('default' => null, 'own' => null, 'upload' => null, 'upload-own' => null);
 
     // 1. Default permission checks based on asset table
     // (Global Configuration -> Recursive assets)
@@ -214,15 +214,15 @@ class Access implements AccessInterface
         $parent_action = $this->prefix.'.upload';
 
         // Check for the category in general
-        $this->allowed['cat-upload']     = AccessBase::check($this->user->get('id'), $parent_action, $parent_asset);
+        $this->allowed['upload']     = AccessBase::check($this->user->get('id'), $parent_action, $parent_asset);
 
         // Check also against parent ownership
-        $this->allowed['cat-upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
+        $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
       }
     }
 
     // Apply the results
-    $results    = array('own', 'cat-upload', 'cat-upload-own');
+    $results    = array('own', 'upload', 'upload-own');
     $allowedRes = $this->allowed['default'];
     foreach($results as $res)
     {

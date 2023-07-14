@@ -344,7 +344,7 @@ class JoomHelper
 
 		$actions = array(
 			'core.admin', 'core.manage', 'joom.upload', 'joom.upload.inown', 'core.create', 'joom.create.inown',
-      'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+      'core.edit', 'joom.edit.own', 'core.edit.state', 'core.delete'
 		);
 
 		foreach($actions as $action)

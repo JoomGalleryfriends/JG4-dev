@@ -90,12 +90,6 @@ class AccessOwn extends Access
         continue;
       }
 
-      // If empty asset to not add to rules.
-      if(self::$assetPermissionsParentIdMapping[$extensionName][$id]->rules === '{}')
-      {
-        continue;
-      }
-
       $collected[$i] = self::$assetPermissionsParentIdMapping[$extensionName][$id];
 
       // Add owner to collection
@@ -109,8 +103,6 @@ class AccessOwn extends Access
         $collected[$i]->owner = false;
       }
     }
-
-
 
     return self::allowOwn($userId, $action, $collected);
   }
@@ -132,6 +124,7 @@ class AccessOwn extends Access
     $result = null;
 
     $groupsOfUser = self::$identities[$userId];
+    $assetOwner   = \end($ancestors)->owner;
 
     foreach($ancestors as $key => $ancestor)
     {
@@ -142,9 +135,8 @@ class AccessOwn extends Access
         // This ancestor does not contain any rule for the current action
         continue;
       }
-
-      // Get owner      
-      if($ancestor->owner == $userId)
+    
+      if($assetOwner == $userId)
       {
         // User is owner of this ancestor
         foreach($rules->{$action} as $groupId => $allowed)

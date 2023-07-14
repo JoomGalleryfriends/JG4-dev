@@ -132,10 +132,10 @@ if($saveOrder && !empty($this->items))
               $ordering         = ($listOrder == 'a.ordering');
               $canEdit          = $user->authorise('core.edit',       'com_joomgallery.image.'.$item->id);
               $canCheckin       = $user->authorise('core.manage',     'com_joomgallery') || $item->checked_out == $userId || is_null($item->checked_out);
-              $canEditOwn       = $user->authorise('core.edit.own',   'com_joomgallery.image.'.$item->id) && $item->created_by_id == $userId;
+              $canEditOwn       = $user->authorise('joom.edit.own',   'com_joomgallery.image.'.$item->id) && $item->created_by_id == $userId;
               $canChange        = $user->authorise('core.edit.state', 'com_joomgallery.image.'.$item->id) && $canCheckin;
               $canEditCat       = $user->authorise('core.edit',       'com_joomgallery.category.'.$item->catid);
-              $canEditOwnCat    = $user->authorise('core.edit.own',   'com_joomgallery.category.'.$item->catid) && $item->cat_uid == $userId;
+              $canEditOwnCat    = $user->authorise('joom.edit.own',   'com_joomgallery.category.'.$item->catid) && $item->cat_uid == $userId;
               ?>
 
               <tr class="row<?php echo $i % 2; ?>">
