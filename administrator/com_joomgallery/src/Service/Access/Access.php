@@ -136,7 +136,7 @@ class Access implements AccessInterface
     }
 
     // Prepare asset
-    $asset  = $this->prepareAsset($asset, $pk, $parent_pk);
+    $asset = $this->prepareAsset($asset, $pk, $parent_pk);
 
     // Explode asset
     $asset_array  = \explode('.', $asset);
@@ -173,11 +173,11 @@ class Access implements AccessInterface
     
     $acl_rule_array = \explode('.', $acl_rule);
 
-    // Check that parent_pk flag is set to yes if adding assets with media items
-    if(\in_array($asset_type, $this->media_types) && $action == 'add' && !$parent_pk)
+    // Check that parent_pk flag is set to yes if adding into a nested asset
+    if($action == 'add' && \in_array('.'.$asset_type, $this->aclMap[$action]['assets']) && !$parent_pk)
     {
       // Flag parent_pk has to be set to yes
-      throw new \Exception("You want to check the permission to add a content type with attached media items, but parent_pk is not set. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add into.", 1);
+      throw new \Exception("Error in provided command: You want to check the permission to add an asset within a nested group of assets, but parent_pk has not been set. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
     }
 
     // Apply the acl check
@@ -193,6 +193,15 @@ class Access implements AccessInterface
     {
       // If it is the super user
       return true;
+    }
+
+    // Adjust asset for further checks
+    if($parent_pk)
+    {
+      // Get asset for parent checks
+      $asset_ini    = $asset;
+      $asset        = $asset_array[0].'.category.'.$pk;
+      $asset_lenght = \count(\explode('.', $asset));
     }
 
     if($asset_lenght >= 3)
@@ -217,7 +226,7 @@ class Access implements AccessInterface
       if(\in_array($asset_type, $this->media_types) && $action == 'add')
       {
         // Get parent/category info
-        $parent_id     = JoomHelper::getParent($asset_array[1], $pk);
+        $parent_id     = $parent_pk ? $pk : JoomHelper::getParent($asset_array[1], $pk);
         $parent_asset  = $this->option.'.category.'.$parent_id;
         $parent_action = $this->prefix.'.upload';
 
@@ -330,7 +339,7 @@ class Access implements AccessInterface
       $asset = $asset . '.' . \strval($pk);
     }
 
-    //Explode asset
+    // Explode asset
     $asset_array  = \explode('.', $asset);
 
     // Check asset
