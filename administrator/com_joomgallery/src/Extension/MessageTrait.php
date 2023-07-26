@@ -129,7 +129,7 @@ trait MessageTrait
    *
    * @since   4.0.0
   */
-  public function addLogger()
+  protected function addLogger()
   {
     if(!$this->log)
     {
@@ -149,7 +149,7 @@ trait MessageTrait
    *
    * @since   4.0.0
   */
-  public function addLog($txt, $priority)
+  protected function addLog($txt, $priority)
   {
     Log::add($txt, $priority, 'com_joomgallery');
   }
