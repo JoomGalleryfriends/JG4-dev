@@ -48,6 +48,13 @@ class Access implements AccessInterface
   protected $types = array('image', 'category', 'tag', 'config');
 
   /**
+   * List of parent content types
+   *
+   * @var array
+   */
+  protected $parents = array('image' => 'category', 'category' => 'category');
+
+  /**
    * List of content types with appended media (categorized, containing upload rules)
    *
    * @var array
@@ -118,10 +125,10 @@ class Access implements AccessInterface
   /**
    * Check the ACL permission for an asset on which to perform an action.
    *
-   * @param   string   $action    The name of the action to check for permission.
-   * @param   string   $asset     The name of the asset on which to perform the action.
-   * @param   integer  $pk        The primary key of the item.
-   * @param   bool     $parent_pk True to show that the given primary key is its parent key.
+   * @param   string   $action     The name of the action to check for permission.
+   * @param   string   $asset      The name of the asset on which to perform the action.
+   * @param   integer  $pk         The primary key of the item.
+   * @param   bool     $parent_pk  True to show that the given primary key is its parent key.
    *
    * @return  void
    *
@@ -174,19 +181,21 @@ class Access implements AccessInterface
     $acl_rule_array = \explode('.', $acl_rule);
 
     // Check that parent_pk flag is set to yes if adding into a nested asset
-    if($action == 'add' && \in_array('.'.$asset_type, $this->aclMap[$action]['assets']) && !$parent_pk)
+    if($action == 'add' && \in_array($asset_type, \array_keys($this->parents)) && !$parent_pk)
     {
       // Flag parent_pk has to be set to yes
-      throw new \Exception("Error in provided command: You want to check the permission to add an asset within a nested group of assets, but parent_pk has not been set. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
+      throw new \Exception("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
     }
 
     // Apply the acl check
     //---------------------
+    
+    // Reset allowed array
     $this->allowed = array('default' => null, 'own' => null, 'upload' => null, 'upload-own' => null);
 
     // 1. Default permission checks based on asset table
     // (Global Configuration -> Recursive assets)
-    // (Recursive assets for image: com_joomgallery -> com_joomgallery.parent_category -> com_joomgallery.category -> com_joomgallery.image)
+    // (Recursive assets for image: global -> component -> grand-parent -> parent -> type)
     $this->allowed['default'] = $this->user->authorise($acl_rule, $asset);
 
     if($this->user->get('isRoot') === true)
@@ -195,12 +204,12 @@ class Access implements AccessInterface
       return true;
     }
 
-    // Adjust asset for further checks
+    // Adjust asset for further checks when only parent given
     if($parent_pk)
     {
       // Get asset for parent checks
-      $asset_ini    = $asset;
-      $asset        = $asset_array[0].'.category.'.$pk;
+      $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
+      $asset        = $asset_array[0].'.'.$parent_type.'.'.$pk;
       $asset_lenght = \count(\explode('.', $asset));
     }
 
@@ -227,14 +236,15 @@ class Access implements AccessInterface
       {
         // Get parent/category info
         $parent_id     = $parent_pk ? $pk : JoomHelper::getParent($asset_array[1], $pk);
-        $parent_asset  = $this->option.'.category.'.$parent_id;
+        $parent_type   = $asset_type ? $this->parents[$asset_type] : 'category';
+        $parent_asset  = $this->option.'.'.$parent_type.'.'.$parent_id;
         $parent_action = $this->prefix.'.upload';
 
         // Check for the category in general
         $this->allowed['upload']     = AccessBase::check($this->user->get('id'), $parent_action, $parent_asset);
 
         // Check also against parent ownership
-        $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action, $parent_asset);
+        $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action.'.'.$this->aclMap[$action]['own'], $parent_asset);
       }
     }
 

@@ -24,7 +24,9 @@ $rules_map_array = array
                           'rule'   => 'core.create', 
                           'assets' => array(  '.', 
                                               '.image', 
-                                              '.category'
+                                              '.category',
+                                              '.config',
+                                              '.tag'
                                             ),
                           'own'    => 'inown'
                       ),

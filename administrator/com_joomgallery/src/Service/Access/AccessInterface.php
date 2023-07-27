@@ -31,10 +31,10 @@ interface AccessInterface
   /**
    * Check the ACL permission for an asset on which to perform an action.
    *
-   * @param   string   $action    The name of the action to check for permission.
-   * @param   string   $asset     The name of the asset on which to perform the action.
-   * @param   integer  $pk        The primary key of the item.
-   * @param   bool     $parent_pk True to show that the given primary key is its parent key.
+   * @param   string   $action     The name of the action to check for permission.
+   * @param   string   $asset      The name of the asset on which to perform the action.
+   * @param   integer  $pk         The primary key of the item.
+   * @param   bool     $parent_pk  True to show that the given primary key is its parent key.
    *
    * @return  void
    *
