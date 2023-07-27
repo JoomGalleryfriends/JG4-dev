@@ -149,10 +149,10 @@ class CategoryTable extends Table implements VersionableTableInterface
 		// We will retrieve the parent-asset from the Asset-table
     $assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
 
-		if($this->parent_id)
+		if($this->parent_id && \intval($this->parent_id) > 1)
 		{
 			// The image has a category as asset-parent
-			$parent_id = (int) $this->parent_id;
+			$parent_id = \intval($this->parent_id);
 			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$parent_id);
 		}
 		else

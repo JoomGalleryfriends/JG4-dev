@@ -59,29 +59,6 @@ class HtmlView extends JoomGalleryView
 			throw new \Exception(implode("\n", $errors));
 		}
 
-
-
-    $this->component->createAccess();
-    $acl = $this->component->getAccess();
-    $acl->setUser(821); // optional
-
-    $checks = array( 'delete'    => array('delete', 'image', 21, false),
-                     'edit'      => array('edit', 'image', 21, false),
-                     'editstate' => array('editstate', 'image', 21, false),
-                     'add'       => array('add', 'image', 27, true)
-                   );
-
-    foreach($checks as $key => $check)
-    {
-      echo '<h2>Action: '.$key.'</h2>';
-      $res = $acl->checkACL($check[0], $check[1], $check[2], $check[3]);
-      dump($acl->allowed);
-      echo '<h5>Result:</h5>';
-      dump($res);
-      echo '<hr />';
-    }
-    
-
 		$this->addToolbar();
 
 		$this->sidebar = Sidebar::render();

@@ -193,6 +193,15 @@ class Access implements AccessInterface
     // Reset allowed array
     $this->allowed = array('default' => null, 'own' => null, 'upload' => null, 'upload-own' => null);
 
+    // Adjust asset for further checks when only parent given
+    if($action == 'add' && $parent_pk)
+    {
+      // Get asset for parent checks
+      $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
+      $asset        = $asset_array[0].'.'.$parent_type.'.'.$pk;
+      $asset_lenght = \count(\explode('.', $asset));
+    }
+
     // 1. Default permission checks based on asset table
     // (Global Configuration -> Recursive assets)
     // (Recursive assets for image: global -> component -> grand-parent -> parent -> type)
@@ -202,15 +211,6 @@ class Access implements AccessInterface
     {
       // If it is the super user
       return true;
-    }
-
-    // Adjust asset for further checks when only parent given
-    if($parent_pk)
-    {
-      // Get asset for parent checks
-      $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
-      $asset        = $asset_array[0].'.'.$parent_type.'.'.$pk;
-      $asset_lenght = \count(\explode('.', $asset));
     }
 
     if($asset_lenght >= 3)
