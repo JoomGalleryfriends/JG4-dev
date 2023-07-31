@@ -42,6 +42,8 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusService
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderServiceTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationServiceInterface;
+use Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationServiceTrait;
 
 /**
  * Component class for Joomgallery
@@ -75,6 +77,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   use RefresherServiceTrait;
   use TusServiceTrait;
   use UploaderServiceTrait;
+  use MigrationServiceTrait;
 
   /**
    * Storage for the component cache object

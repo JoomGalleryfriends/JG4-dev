@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
+  <fieldset name="source" description="COM_JOOMGALLERY_FIELDS_SOURCE_DESC" label="COM_JOOMGALLERY_FIELDS_SOURCE_LBL">
+    <field name="same_joomla"
+           type="radio"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           default="1"
+           label="COM_JOOMGALLERY_FIELDS_SAMEJOOMLA_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_SAMEJOOMLA_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+    <field name="joomla_path"
+           type="text"
+           filter="string"
+           showon="same_joomla:0"
+           label="COM_JOOMGALLERY_FIELDS_JOOMLAPATH_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_JOOMLAPATH_DESC"
+    />
+    <field name="orig_path"
+           type="text"
+           filter="string"
+           required="true"
+           default="images/joomgallery/originals/"
+           label="COM_JOOMGALLERY_FIELDS_ORIGPATH_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_ORIGPATH_DESC"
+    />
+    <field name="detail_path"
+           type="text"
+           filter="string"
+           required="true"
+           default="images/joomgallery/details/"
+           label="COM_JOOMGALLERY_FIELDS_DETAILPATH_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_DETAILPATH_DESC"
+    />
+    <field name="thumb_path"
+           type="text"
+           filter="string"
+           required="true"
+           default="images/joomgallery/thumbnails/"
+           label="COM_JOOMGALLERY_FIELDS_THUMBPATH_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_THUMBPATH_DESC"
+    />
+    <field name="same_db"
+           type="radio"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           default="1"
+           label="COM_JOOMGALLERY_FIELDS_SAMEDB_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_SAMEDB_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+    <field name="db_type"
+           type="databaseconnection"
+           supported="mysql,mysqli"
+           default="mysqli"
+           filter="string"
+           showon="same_db:0"
+           label="COM_JOOMGALLERY_FIELDS_DATABASE_TYPE_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_DATABASE_TYPE_DESC"
+      />
+      <field name="db_host"
+             type="text"
+             default="localhost"
+             showon="same_db:0"
+             label="COM_JOOMGALLERY_FIELDS_DATABASE_HOST_LABEL"
+             description="COM_JOOMGALLERY_FIELDS_DATABASE_HOST_DESC"
+      />
+      <field name="db_user"
+             type="text"
+             showon="same_db:0"
+             label="COM_JOOMGALLERY_FIELDS_DATABASE_USER_LABEL"
+             description="COM_JOOMGALLERY_FIELDS_DATABASE_USER_DESC"
+      />
+      <field name="db_pass"
+             type="password"
+             filter="raw"
+             showon="same_db:0"
+             label="COM_JOOMGALLERY_FIELDS_DATABASE_PASS_LABEL"
+             description="COM_JOOMGALLERY_FIELDS_DATABASE_PASS_DESC"
+      />
+      <field name="db_name"
+             type="text"
+             showon="same_db:0"
+             label="COM_JOOMGALLERY_FIELDS_DATABASE_NAME_LABEL"
+             description="COM_JOOMGALLERY_FIELDS_DATABASE_NAME_DESC"
+      />
+      <field name="db_prefix"
+           type="text"
+           filter="string"
+           size="10"
+           default="jos_"
+           validate="prefix"
+           showon="same_joomla:0"           
+           label="COM_JOOMGALLERY_FIELDS_DATABASE_PREFIX_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_DATABASE_PREFIX_DESC"
+    />
+  </fieldset>
+
+  <fieldset name="destination" description="COM_JOOMGALLERY_FIELDS_DEST_DESC" label="COM_JOOMGALLERY_FIELDS_DEST_LBL">
+    <field name="check_owner"
+           type="radio"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           default="0"
+           label="COM_JOOMGALLERY_FIELDS_CHECKOWNER_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_CHECKOWNER_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+    <field name="copy_images"
+           type="radio"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           default="0"
+           label="COM_JOOMGALLERY_FIELDS_COPYIMAGES_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_COPYIMAGES_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+    <field name="map_orig"
+           type="jgimagetype"
+           required="true"
+           label="COM_JOOMGALLERY_FIELDS_MAPORIG_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_MAPORIG_DESC"
+    />
+    <field name="map_detail"
+           type="jgimagetype"
+           required="true"
+           label="COM_JOOMGALLERY_FIELDS_MAPDETAIL_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_MAPDETAIL_DESC"
+    />
+    <field name="map_thumb"
+           type="jgimagetype"
+           required="true"
+           label="COM_JOOMGALLERY_FIELDS_MAPTHUMB_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_MAPTHUMB_DESC"
+    />
+  </fieldset>
+</form>

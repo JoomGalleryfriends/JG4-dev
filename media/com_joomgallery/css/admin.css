@@ -60,6 +60,10 @@ img.jg-controlpanel-logo {
 .mr {
   margin-right: 1rem !important;
 }
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
 .modal .modal-body {
   margin: 1rem 2rem;
 }
@@ -198,4 +202,13 @@ joomla-field-image .jg_minithumb {
 }
 .uppy-Dashboard-Item-name {
   white-space: nowrap;
+}
+.jg-migration .card img {
+  max-width: 120px;
+}
+.jg-migration .card img {
+  max-width: 120px;
+}
+.jg-migration .navigation {
+  margin: 0 0 2rem;
 }
