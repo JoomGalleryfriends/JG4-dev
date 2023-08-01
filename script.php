@@ -996,17 +996,19 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     try
     {
-      $db = Factory::getDbo();
+      $db     = Factory::getDbo();
       $tables = $db->getTableList();
+      $prefix = Factory::getApplication()->get('dbprefix');
 
       if(empty($tables))
       {
         return false;
       }
 
+      // remove non joomgallery tables and tables with other prefixes
       foreach($tables as $key => $table)
       {
-        if(strpos($table, 'joomgallery') === false)
+        if(strpos($table, 'joomgallery') === false || strpos($table, $prefix) === false)
         {
           unset($tables[$key]);
         }
