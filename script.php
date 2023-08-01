@@ -161,6 +161,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
         }
       }
 
+      // deactivate old JoomGallery extensions
+      foreach($this->detectJGExtensions() as $extension_id)
+      {
+        $this->deactivateExtension($extension_id);
+      }
+
       if($type == 'update')
       {
         $ext = $this->getDBextension();
@@ -642,6 +648,27 @@ class com_joomgalleryInstallerScript extends InstallerScript
     return true;
   }
 
+  /**
+	 * Deactivate an extension based on its id
+	 *
+	 * @param  int   $id  The ID of the extension to be deactivated
+	 *
+	 * @return void
+	 */
+	private function deactivateExtension($id)
+	{
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->update($db->quoteName('#__extensions'))
+          ->set($db->quoteName('enabled'). ' = 0')
+					->where($db->quoteName('extension_id') . ' = ' . $id);
+		
+    $db->setQuery($query);
+		
+    return $db->execute();
+  }
+
 	/**
 	 * Installs plugins for this component
 	 *
@@ -985,6 +1012,38 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $msg = '';
 
     return $msg;
+  }
+
+  /**
+	 * Detect already installed joomgallery extensions (< v4.0.0)
+	 *
+	 * @return  array   List of extension id's
+	 */
+	private function detectJGExtensions()
+	{
+    $db = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    // List of all extensions that could negatively impact
+    // the JoomGallery > v4.0.0 from running
+    $extensions = array( 'plg_finderjoomgallery', 'plg_systemjgfinder', 'joomadditionalimagefields', 'joomadditionalcategoryfields',
+                         'joomplu', 'joomautocat', 'plg_quickicon_joomgallery', 'plg_search_joomgallery', 'joommediaformfield',
+                         'mod_joomstats', 'mod_joomadmstats', 'mod_joomfacebookcomments', 'mod_joomimg', 'mod_joomcat', 'mod_joomsearch',
+                         'mod_jgtreeview'
+                       );
+
+    $query->select('extension_id')
+					->from('#__extensions')
+					->where('folder LIKE ' . $db->quote('joomgallery'));
+    
+    foreach($extensions as $key => $extName)
+    {
+      $query->orWhere('element LIKE ' . $db->quote($extName));
+    }
+		
+    $db->setQuery($query);
+		
+    return $db->loadColumn();
   }
 
   /**
