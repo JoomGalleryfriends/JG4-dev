@@ -1024,8 +1024,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db = Factory::getDbo();
     $query = $db->getQuery(true);
 
-    // List of all extensions that could negatively impact
-    // the JoomGallery > v4.0.0 from running
+    // List of all extensions that could negatively impact the JoomGallery (> v4.0.0) from running.
+    // Plugins of group "joomgallery" don't have to be listed.
     $extensions = array( 'plg_finderjoomgallery', 'plg_systemjgfinder', 'joomadditionalimagefields', 'joomadditionalcategoryfields',
                          'joomplu', 'joomautocat', 'plg_quickicon_joomgallery', 'plg_search_joomgallery', 'joommediaformfield',
                          'mod_joomstats', 'mod_joomadmstats', 'mod_joomfacebookcomments', 'mod_joomimg', 'mod_joomcat', 'mod_joomsearch',
