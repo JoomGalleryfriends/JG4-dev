@@ -14,17 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use Joomla\CMS\Form\Form;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Uri\Uri;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Folder;
-use \Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use \Joomla\CMS\MVC\Model\FormModelInterface;
-use \Joomla\CMS\MVC\Model\FormBehaviorTrait;
-use \Joomla\CMS\Form\FormFactoryAwareInterface;
-use \Joomla\CMS\Form\FormFactoryAwareTrait;
-use \Joomla\CMS\Form\FormFactoryInterface;
-use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use \Joomla\CMS\MVC\Model\FormModel;
 
 /**
  * Migration model.
@@ -32,20 +25,8 @@ use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
  * @package JoomGallery
  * @since   4.0.0
  */
-class MigrationModel extends BaseDatabaseModel implements FormFactoryAwareInterface, FormModelInterface
+class MigrationModel extends FormModel
 {
-    use FormBehaviorTrait;
-    use FormFactoryAwareTrait;
-
-  /**
-   * Maps events to plugin groups.
-   *
-   * @var    array
-   * 
-   * @since  3.6
-   */
-  protected $events_map = null;
-
 	/**
 	 * @var    string  The prefix to use with controller messages.
 	 *
@@ -64,28 +45,17 @@ class MigrationModel extends BaseDatabaseModel implements FormFactoryAwareInterf
    * Constructor
    *
    * @param   array                 $config       An array of configuration options (name, state, dbo, table_path, ignore_request).
-   * @param   MVCFactoryInterface   $factory      The factory.
-   * @param   FormFactoryInterface  $formFactory  The form factory.
    *
-   * @since   3.6
+   * @since   4.0.0
    * @throws  \Exception
    */
-  public function __construct($config = [], MVCFactoryInterface $factory = null, FormFactoryInterface $formFactory = null)
+  public function __construct($config = array())
   {
-    $config['events_map'] = $config['events_map'] ?? [];
-
-    $this->events_map = array_merge(
-        ['validate' => 'content'],
-        $config['events_map']
-    );
-
-    parent::__construct($config, $factory);
+    parent::__construct($config);
 
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
     $this->user      = Factory::getUser();
-
-    $this->setFormFactory($formFactory);
   }
 
   /**

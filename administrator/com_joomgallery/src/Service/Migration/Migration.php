@@ -169,7 +169,7 @@ abstract class Migration implements MigrationInterface
   protected function getForm(): Form
   {
     // Try to load language file of the migration script
-    $this->app->getLanguage()->load('com_joomgallery.migrate'.$this->name, JPATH_ADMINISTRATOR);
+    $this->app->getLanguage()->load('com_joomgallery.migration'.$this->name, JPATH_ADMINISTRATOR);
 
     // Form options
     $name    = _JOOM_OPTION.'.migration.'.$this->name; // The name of the form.
