@@ -500,31 +500,38 @@ class CategoryTable extends Table implements VersionableTableInterface
 
     if(empty($db->loadAssoc()))
     {
-      $query = $db->getQuery(true)
-      ->insert(_JOOM_TABLE_CATEGORIES)
-      ->set('parent_id = 0')
-      ->set('lft = 0')
-      ->set('rgt = 1')
-      ->set('level = 0')
-      ->set('path = ' . $db->quote(''))
-      ->set('title = ' . $db->quote('Root'))
-      ->set('alias = ' . $db->quote('root'))
-      ->set('description = ' . $db->quote(''))
-      ->set('access = 1')
-      ->set('published = 1')
-      ->set('params = ' . $db->quote(''))
-      ->set('language = ' . $db->quote('*'))
-      ->set('metadesc = ' . $db->quote(''))
-      ->set('metakey = ' . $db->quote(''));
-      
-      $db->setQuery($query);
+      $table = new CategoryTable($db);
 
-      if(!$db->execute())
+      $data = array();
+      $data["id"] = null;
+      $data["asset_id"] = null;
+      $data["parent_id"] = 0;
+      $data["level"] = 0;
+      $data["path"] = '';
+      $data["title"] = 'Root';
+      $data["alias"] = 'root';
+      $data["description"] = '';
+      $data["access"] = 1;
+      $data["published"] = 1;
+      $data["params"] = '';
+      $data["language"] = '*';
+      $data["metadesc"] = '';
+      $data["metakey"] = '';
+
+      if(!$table->bind($data))
       {
+        Factory::getApplication()->enqueueMessage(Text::_('Error bind root category'), 'error');
+
+        return false;
+      }
+      if(!$table->store($data))
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Error store root category'), 'error');
+
         return false;
       }
       
-      return $db->insertid();
+      return $table->id;
     }
 
     return true;
