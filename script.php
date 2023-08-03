@@ -410,7 +410,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     require_once $class_path;
 
     if(class_exists($tableClass))
-    {
+    {      
       $table = new $tableClass($db);
     }
     else
@@ -421,8 +421,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     }
 
     $data = array();
-    $data["id"] = NULL;
-    $data["asset_id"] = NULL;
+    $data["id"] = null;
+    $data["asset_id"] = null;
     $data["parent_id"] = 1;
     $data["level"] = 1;
     $data["path"] = "uncategorised";

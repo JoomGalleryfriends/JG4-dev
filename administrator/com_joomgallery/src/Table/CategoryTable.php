@@ -149,15 +149,15 @@ class CategoryTable extends Table implements VersionableTableInterface
 		// We will retrieve the parent-asset from the Asset-table
     $assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
 
-		if($this->parent_id && \intval($this->parent_id) > 1)
+		if($this->parent_id && \intval($this->parent_id) >= 1)
 		{
-			// The image has a category as asset-parent
+			// The item has a category as asset-parent
 			$parent_id = \intval($this->parent_id);
 			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$parent_id);
 		}
 		else
 		{
-			// The image has the component as asset-parent
+			// The item has the component as asset-parent
 			$assetTable->loadByName(_JOOM_OPTION);
 		}
 
@@ -489,9 +489,6 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public function addRoot()
   {
-    // Make sure this method is only called once per request
-    Factory::getApplication()->setUserState(_JOOM_OPTION.'.category.addRoot', true);
-
     $db = Factory::getDbo();
 
     $checkQuery = $db->getQuery(true);
@@ -501,40 +498,78 @@ class CategoryTable extends Table implements VersionableTableInterface
 
     $db->setQuery($checkQuery);
 
+    // Add root category
     if(empty($db->loadAssoc()))
     {
-      $table = new CategoryTable($db);
-
-      $data = array();
-      $data["id"] = null;
-      $data["asset_id"] = null;
-      $data["parent_id"] = 0;
-      $data["level"] = 0;
-      $data["path"] = '';
-      $data["title"] = 'Root';
-      $data["alias"] = 'root';
-      $data["description"] = '';
-      $data["access"] = 1;
-      $data["published"] = 1;
-      $data["params"] = '';
-      $data["language"] = '*';
-      $data["metadesc"] = '';
-      $data["metakey"] = '';
-
-      if(!$table->bind($data))
-      {
-        Factory::getApplication()->enqueueMessage(Text::_('Error bind root category'), 'error');
-
-        return false;
-      }
-      if(!$table->store($data))
-      {
-        Factory::getApplication()->enqueueMessage(Text::_('Error store root category'), 'error');
-
-        return false;
-      }
+      $query = $db->getQuery(true)
+      ->insert(_JOOM_TABLE_CATEGORIES)
+      ->set('parent_id = 0')
+      ->set('lft = 0')
+      ->set('rgt = 1')
+      ->set('level = 0')
+      ->set('path = ' . $db->quote(''))
+      ->set('title = ' . $db->quote('Root'))
+      ->set('alias = ' . $db->quote('root'))
+      ->set('description = ' . $db->quote(''))
+      ->set('access = 1')
+      ->set('published = 1')
+      ->set('params = ' . $db->quote(''))
+      ->set('language = ' . $db->quote('*'))
+      ->set('metadesc = ' . $db->quote(''))
+      ->set('metakey = ' . $db->quote(''));
       
-      return $table->id;
+      $db->setQuery($query);
+
+      if(!$db->execute())
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Error create root category'), 'error');
+
+        return false;
+      }      
+      $root_catid = $db->insertid();
+
+      // Get parent id for asset
+      $old_parentID = $this->parent_id;
+      $this->parent_id = 0;
+      $parentId = $this->_getAssetParentId();
+      $this->parent_id = $old_parentID;
+      
+      // Get asset name
+      $name = $this->typeAlias . '.1';
+
+      // Create asset for root category
+      $assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+      $assetTable->loadByName($name);
+
+      if($assetTable->getError())
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Error load asset for root category creation'), 'error');
+
+        return false;
+      }
+      else
+      {
+        // Specify how a new or moved node asset is inserted into the tree.
+        if(empty($assetTable->id) || $assetTable->parent_id != $parentId)
+        {
+          $assetTable->setLocation($parentId, 'last-child');
+        }
+
+        // Prepare the asset to be stored.
+        $assetTable->parent_id = $parentId;
+        $assetTable->name      = $name;
+        $assetTable->title     = 'Root';
+        $assetTable->rules     = '{}';
+
+        if(!$assetTable->check() || !$assetTable->store(false))
+        {
+          Factory::getApplication()->enqueueMessage(Text::_('Error create asset for root category'), 'error');
+
+          return false;
+        }
+      }
+
+      return $root_catid;
     }
 
     return true;
@@ -549,10 +584,8 @@ class CategoryTable extends Table implements VersionableTableInterface
   {
     $rootId = parent::getRootId();
 
-    $app = Factory::getApplication();
-
     // If root is not set then create it.
-    if($rootId === false && $app->getUserState(_JOOM_OPTION.'.category.addRoot') !== true)
+    if($rootId === false)
     {
       $rootId = $this->addRoot();
     }
