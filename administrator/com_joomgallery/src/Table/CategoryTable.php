@@ -489,6 +489,9 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public function addRoot()
   {
+    // Make sure this method is only called once per request
+    Factory::getApplication()->setUserState(_JOOM_OPTION.'.category.addRoot', true);
+
     $db = Factory::getDbo();
 
     $checkQuery = $db->getQuery(true);
@@ -546,8 +549,10 @@ class CategoryTable extends Table implements VersionableTableInterface
   {
     $rootId = parent::getRootId();
 
-    // If root is not set then create it
-    if($rootId === false)
+    $app = Factory::getApplication();
+
+    // If root is not set then create it.
+    if($rootId === false && $app->getUserState(_JOOM_OPTION.'.category.addRoot') !== true)
     {
       $rootId = $this->addRoot();
     }
