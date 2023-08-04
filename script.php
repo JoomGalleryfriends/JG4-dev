@@ -442,26 +442,15 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
       return false;
     }
+
+    $table->setLocation(1, 'last-child');
+
     if (!$table->store($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error store default category'), 'error');
 
       return false;
     }
-
-    // Set level and parent_id
-    $fields = array(
-      $db->quoteName('parent_id') . ' = ' . $db->quote($data['parent_id']),
-      $db->quoteName('level') . ' = ' . $db->quote($data['level'])
-    );
-    $conditions = array (
-      $db->quoteName('alias') . ' = ' . $db->quote($data['alias'])
-    );
-    // insert to database
-    $query = $db->getQuery(true);
-    $query->update($db->quoteName(_JOOM_TABLE_CATEGORIES))->set($fields)->where($conditions);
-    $db->setQuery($query);
-    $db->execute();
 
     return true;
   }
