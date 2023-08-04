@@ -569,6 +569,18 @@ class CategoryTable extends Table implements VersionableTableInterface
         }
       }
 
+      // Connect root category with asset table
+      $query = $db->getQuery(true);
+      $query->update($db->quoteName(_JOOM_TABLE_CATEGORIES))->set($db->quoteName('asset_id') . ' = ' . $assetTable->id)->where($db->quoteName('id') . ' = ' . $root_catid);
+      $db->setQuery($query);
+
+      if(!$db->execute())
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Error connect root category with asset'), 'error');
+
+        return false;
+      }
+
       return $root_catid;
     }
 
