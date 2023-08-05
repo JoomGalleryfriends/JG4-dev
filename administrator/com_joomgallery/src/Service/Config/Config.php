@@ -103,7 +103,7 @@ abstract class Config implements ConfigInterface
           break;
 
         case 'image':
-          $img = $this->component->getMVCFactory()->createModel('image')->getItem($id);
+          $img = $this->component->getMVCFactory()->createModel('image', 'administrator')->getItem($id);
 
           $this->ids['user']     = Factory::getUser()->get('id');
           $this->ids['image']    = (int) $id;
