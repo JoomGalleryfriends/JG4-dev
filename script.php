@@ -59,11 +59,10 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	/**
 	 * Method called before install/update the component. Note: This method won't be called during uninstall process.
 	 *
-	 * @param   string $type   Type of process [install | update]
-	 * @param   mixed  $parent Object who called this method
+	 * @param   string   $type     Type of process [install | update | uninstall]
+	 * @param   mixed    $parent   Object who called this method
 	 *
-	 * @return boolean True if the process should continue, false otherwise
-   * @throws Exception
+	 * @return  boolean  True if the process should continue, false otherwise
 	 */
 	public function preflight($type, $parent)
 	{
@@ -139,58 +138,10 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function install($parent)
 	{
-    $app = Factory::getApplication();
     $act_version = explode('.',$this->act_code);
     $new_version = explode('.',$this->new_code);
 
-    $install_message = $this->getInstallerMSG($act_version, $new_version, 'install');
-
-    // Create default Category
-    if(!$this->addDefaultCategory())
-    {
-      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CATEGORY', 'error'));
-    }
-
-    // Create image types
-    $img_types = array('original'  => array('path' => '/images/joomgallery/originals', 'alias' => 'orig'),
-                       'detail'    => array('path' => '/images/joomgallery/details', 'alias' => 'det'),
-                       'thumbnail' => array('path' => '/images/joomgallery/thumbnails', 'alias' => 'thumb')
-                      );
-    $this->count = 0;
-    foreach ($img_types as $key => $type)
-    {
-      // Create default Image types records
-      if(!$this->addDefaultIMGtype($key, $type['alias'], $type['path']))
-      {
-        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_IMAGETYPE'), 'error');
-      }
-
-      // Create default Image types directories
-      if(!Folder::create(JPATH_ROOT.$type['path'].'/uncategorised'))
-      {
-        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', 'Uncategorised'), 'error');
-      }
-      $this->count = $this->count + 1;
-    }
-
-    // Create default Configuration-Set
-    if(!$this->addDefaultConfig())
-    {
-      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
-    }
-
-    // Create default mail templates
-    $suc_templates = true;
-
-    if(!$this->addMailTemplate('newimage', array('user_id', 'user_username', 'user_name', 'img_id', 'img_title', 'cat_id', 'cat_title')))
-    {
-      $suc_templates = false;
-    }
-
-    if(!$suc_templates)
-    {
-      $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
-    }      
+    $install_message = $this->getInstallerMSG($act_version, $new_version, 'install');     
 
 		$this->installPlugins($parent);
 		$this->installModules($parent);
@@ -314,6 +265,67 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	}
 
   /**
+   * Runs right after any installation action is performed on the component.
+   *
+   * @param   string $type    Type of process [install | update | uninstall]
+	 * @param   mixed  $parent  Object who called this method
+   *
+   * @return void
+   */
+  function postflight($type, $parent)
+  {
+    if($type == 'install')
+    {
+      $app = Factory::getApplication();
+
+      // Create default Category
+      if(!$this->addDefaultCategory())
+      {
+        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CATEGORY', 'error'));
+      }
+
+      // Create image types
+      $img_types = array( 'original'  => array('path' => '/images/joomgallery/originals', 'alias' => 'orig'),
+                          'detail'    => array('path' => '/images/joomgallery/details', 'alias' => 'det'),
+                          'thumbnail' => array('path' => '/images/joomgallery/thumbnails', 'alias' => 'thumb')
+                        );
+      $this->count = 0;
+      foreach ($img_types as $key => $type)
+      {
+        // Create default Image types records
+        if(!$this->addDefaultIMGtype($key, $type['alias'], $type['path']))
+        {
+          $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_IMAGETYPE'), 'error');
+        }
+
+        // Create default Image types directories
+        if(!Folder::create(JPATH_ROOT.$type['path'].'/uncategorised'))
+        {
+          $app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', 'Uncategorised'), 'error');
+        }
+        $this->count = $this->count + 1;
+      }
+
+      // Create default Configuration-Set
+      if(!$this->addDefaultConfig())
+      {
+        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
+      }
+
+      // Create default mail templates
+      $suc_templates = true;
+      if(!$this->addMailTemplate('newimage', array('user_id', 'user_username', 'user_name', 'img_id', 'img_title', 'cat_id', 'cat_title')))
+      {
+        $suc_templates = false;
+      }
+      if(!$suc_templates)
+      {
+        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
+      }
+    }
+  }
+
+  /**
 	 * Add a mail template to the ´#__mail_templates´ table
    *
    * @param  string  context_id  Name of the mail template
@@ -398,7 +410,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     require_once $class_path;
 
     if(class_exists($tableClass))
-    {
+    {      
       $table = new $tableClass($db);
     }
     else
@@ -409,8 +421,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     }
 
     $data = array();
-    $data["id"] = NULL;
-    $data["asset_id"] = NULL;
+    $data["id"] = null;
+    $data["asset_id"] = null;
     $data["parent_id"] = 1;
     $data["level"] = 1;
     $data["path"] = "uncategorised";
@@ -430,26 +442,15 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
       return false;
     }
+
+    $table->setLocation(1, 'last-child');
+
     if (!$table->store($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error store default category'), 'error');
 
       return false;
     }
-
-    // Set level and parent_id
-    $fields = array(
-      $db->quoteName('parent_id') . ' = ' . $db->quote($data['parent_id']),
-      $db->quoteName('level') . ' = ' . $db->quote($data['level'])
-    );
-    $conditions = array (
-      $db->quoteName('alias') . ' = ' . $db->quote($data['alias'])
-    );
-    // insert to database
-    $query = $db->getQuery(true);
-    $query->update($db->quoteName(_JOOM_TABLE_CATEGORIES))->set($fields)->where($conditions);
-    $db->setQuery($query);
-    $db->execute();
 
     return true;
   }
@@ -855,6 +856,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $dst   = JPATH_ROOT.'/images/joomgallery/';
 
     $error = false;
+
+    // Create destination folder if not exists
+    if(!Folder::exists($dst))
+    {
+      Folder::create($dst);
+    }
 
     // Copy files
     foreach ($files as $file)
