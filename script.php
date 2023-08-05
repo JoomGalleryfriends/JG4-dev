@@ -1021,19 +1021,21 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     // List of all extensions that could negatively impact the JoomGallery (> v4.0.0) from running.
     // Plugins of group "joomgallery" don't have to be listed.
-    $extensions = array( 'plg_finderjoomgallery', 'plg_systemjgfinder', 'joomadditionalimagefields', 'joomadditionalcategoryfields',
-                         'joomplu', 'joomautocat', 'plg_quickicon_joomgallery', 'plg_search_joomgallery', 'joommediaformfield',
+    $extensions = array( 'plg_finderjoomgallery', 'plg_systemjgfinder', 'joomadditionalimagefields', 'joomadditionalcategoryfields', 'jgfinder',
+                         'joomplu', 'joombu', 'joomautocat', 'plg_quickicon_joomgallery', 'plg_search_joomgallery', 'joommediaformfield',
                          'mod_joomstats', 'mod_joomadmstats', 'mod_joomfacebookcomments', 'mod_joomimg', 'mod_joomcat', 'mod_joomsearch',
                          'mod_jgtreeview'
                        );
 
     $query->select('extension_id')
 					->from('#__extensions')
-					->where('folder LIKE ' . $db->quote('joomgallery'));
+					->where('folder LIKE ' . $db->quote('joomgallery'))
+          ->orWhere(array('element LIKE ' . $db->quote('joomgallery'), 'type != ' . $db->quote('component')));
     
     foreach($extensions as $key => $extName)
     {
-      $query->orWhere('element LIKE ' . $db->quote($extName));
+      $query->orWhere(array('element LIKE ' . $db->quote(strtolower($extName)), 'element LIKE ' . $db->quote(strtoupper($extName))), 'OR')
+            ->orWhere(array('name LIKE ' . $db->quote(strtolower($extName)), 'name LIKE ' . $db->quote(strtoupper($extName))), 'OR');
     }
 		
     $db->setQuery($query);
