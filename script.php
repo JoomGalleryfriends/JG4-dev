@@ -196,11 +196,6 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function install($parent)
 	{
-    $act_version = explode('.',$this->act_code);
-    $new_version = explode('.',$this->new_code);
-
-    $install_message = $this->getInstallerMSG($act_version, $new_version, 'install');     
-
 		$this->installPlugins($parent);
 		$this->installModules($parent);
 
