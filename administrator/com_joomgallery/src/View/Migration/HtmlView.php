@@ -41,9 +41,9 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-    $this->scripts = $this->get('Scripts');
-    $this->script  = $this->app->input->get('script', '', 'cmd');
-    $this->layout  = $this->app->input->get('layout', 'default', 'cmd');
+    $this->script  = $this->get('Script');
+    $this->scripts = $this->get('Scripts');    
+    $this->layout  = $this->app->input->get('layout', 'default', 'cmd');    
     $this->error   = array();
 
     // Add page title
@@ -55,10 +55,22 @@ class HtmlView extends JoomGalleryView
       ToolbarHelper::cancel('migration.cancel', 'JTOOLBAR_CLOSE');
 
       // Check if requested script exists
-      if(!\in_array($this->script, \array_keys($this->scripts)))
+      if(!\in_array($this->script->name, \array_keys($this->scripts)))
       {
         // Requested script does not exists
         \array_push($this->error, 'COM_JOOMGALLERY_MIGRATION_SCRIPT_NOT_EXIST');
+      }
+      else
+      {
+        // Load migration form data
+        $this->form = $this->get('Form');
+      }
+
+      // Check if form parameters exists
+      if(false)
+      {
+        // Requested script does not exists
+        \array_push($this->error, 'COM_JOOMGALLERY_MIGRATION_PARAMS_NOT_EXIST');
       }
     }
 

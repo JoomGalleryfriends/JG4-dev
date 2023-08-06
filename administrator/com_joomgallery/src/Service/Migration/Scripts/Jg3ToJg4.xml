@@ -92,7 +92,6 @@
            filter="string"
            size="10"
            default="jos_"
-           validate="prefix"
            showon="same_joomla:0"           
            label="COM_JOOMGALLERY_FIELDS_DATABASE_PREFIX_LABEL"
            description="COM_JOOMGALLERY_FIELDS_DATABASE_PREFIX_DESC"

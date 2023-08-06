@@ -31,25 +31,14 @@ interface MigrationInterface
   public function __construct();
 
   /**
-   * Step 1
-   * Renders the form for configuring a migration using an XML file
-   * which has the same name than the migration script
-   *
-   * @return  string  HTML of the rendered form
-   * 
-   * @since   4.0.0
-   */
-  public function renderForm(): string;
-
-  /**
    * Step 2
    * Perform pre migration checks.
    *
-   * @return  void
+   * @return  array|boolean  An array containing the precheck results on success.
    * 
    * @since   4.0.0
    */
-  public function checkPre();
+  public function checkPre(): array;
 
   /**
    * Step 4

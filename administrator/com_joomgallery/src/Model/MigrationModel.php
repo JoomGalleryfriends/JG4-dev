@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\MVC\Model\FormModel;
 
@@ -59,6 +59,34 @@ class MigrationModel extends FormModel
   }
 
   /**
+	 * Method to get info array of current migration script.
+	 *
+	 * @return  object|boolean   Migration info object.
+	 *
+	 * @since   4.0.0
+	 */
+  public function getScript()
+  {
+    // Retreive script variable
+    $name = $this->app->input->get('script', '', 'cmd');
+
+    if(!$name)
+    {
+      $tmp = new \stdClass;
+      $tmp->name = '';
+      
+      return $tmp;
+    }
+    
+    if(!$this->component->getMigration())
+    {
+      $this->component->createMigration($name);
+    }
+
+    return $this->component->getMigration()->get('info');
+  }
+
+  /**
 	 * Method to get all available migration scripts.
 	 *
 	 * @return  array|boolean   List of paths of all available scripts.
@@ -80,32 +108,41 @@ class MigrationModel extends FormModel
     return $scripts;
   }
 
-	/**
+  /**
 	 * Method to get the migration form.
 	 *
 	 * @param   array    $data      An optional array of data for the form to interogate.
 	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
-	 * @return  string   html output of the migration form
+	 * @return  Form|boolean  A \JForm object on success, false on failure
 	 *
 	 * @since   4.0.0
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
     // Retreive script
-    $script = $this->app->input->get('script', '', 'cmd');
+    $script = $this->getScript();
 
-		// Use migration service for that
-    if($script)
+    if(!$script)
     {
-      $this->component->createMigration($script);
-
-      return $this->component->getMigration()->renderForm();
+      return false;
     }
-    else
-    {
-      return '';
-    }    
+
+    // Add migration form paths
+    Form::addFormPath(JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/src/Service/Migration/Scripts');
+    Form::addFormPath(JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/forms');
+
+		// Get the form.
+    $name   = _JOOM_OPTION.'.migration.'.$this->component->getMigration()->get('name');
+    $source = $this->component->getMigration()->get('name');
+		$form   = $this->loadForm($name, $source,	array('control' => 'jform_'.$source, 'load_data' => true));
+
+		if(empty($form))
+		{
+			return false;
+		}
+    
+    return $form;
 	}
 
 	/**
@@ -117,6 +154,38 @@ class MigrationModel extends FormModel
 	 */
 	protected function loadFormData()
 	{
-		// Use migration service for that
+    if(!$this->component->getMigration())
+    {
+      $this->getScript();
+    }
+
+		// Check the session for previously entered form data.
+    $name = _JOOM_OPTION.'.migration.'.$this->component->getMigration()->get('name');
+		$data = $this->app->getUserState($name.'.step2.data', array());
+
+    // Check the session for validated migration parameters
+    $params = $this->app->getUserState($name.'.params', array());
+
+		return (empty($params)) ? $data : $params;
 	}
+
+  /**
+	 * Method to perform the pre migration checks.
+   * 
+   * @param   array  $params  The migration parameters entered in the migration form
+	 *
+	 * @return  array|boolean  An array containing the precheck results on success.
+	 *
+	 * @since   4.0.0
+	 */
+  public function precheck($params)
+  {
+    $info = $this->getScript();
+
+    // Set the migration parameters
+    $this->component->getMigration()->set('params', (object) $params);
+
+    // Perform the prechecks
+    return $this->component->getMigration()->checkPre();
+  }
 }

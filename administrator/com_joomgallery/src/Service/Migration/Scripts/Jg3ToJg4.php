@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Migration;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationInterface;
 
@@ -33,4 +34,16 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 	 * @since  4.0.0
 	 */
 	protected $name = 'Jg3ToJg4';
+
+  /**
+   * Constructor
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function __construct()
+  {
+    parent::__construct();
+  }
 }

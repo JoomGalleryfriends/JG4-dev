@@ -131,7 +131,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     // Clean the session data and redirect.
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.data', null);
-    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.result', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.result', null);
 
     // Redirect to the list screen.
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
@@ -206,7 +206,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
           }
       }
 
-      // Save the data in the session.
+      // Save the form data in the session.
       $this->app->setUserState($context . '.data', $data);
 
       // Redirect back to the edit screen.
@@ -215,8 +215,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       return false;
     }
 
-    // Save the data in the session.
-    $this->app->setUserState($context . '.data', $validData);
+    // Save the migration parameters in the session.
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $validData);
 
     // Perform the pre migration checks
     $res = $model->precheck($validData);

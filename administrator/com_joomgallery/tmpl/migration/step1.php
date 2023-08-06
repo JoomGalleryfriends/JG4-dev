@@ -47,5 +47,32 @@ $wa->useStyle('com_joomgallery.admin')
     <?php return; ?>
   <?php endif; ?>
 
-  <?php echo $this->get('Form'); ?>
+  <div class="alert alert-primary" role="alert">
+    <h4><?php echo $this->script->title; ?></h4>
+    <?php echo $this->script->description; ?>
+  </div>
+
+  <form action="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&task=migration.precheck'); ?>" method="post" enctype="multipart/form-data" 
+        name="adminForm" id="migration-form" class="form-validate card" aria-label="COM_JOOMGALLERY_MIGRATION_STEP1_TITLE">
+
+    <div class="card-body">
+      <?php foreach($this->form->getFieldsets() as $key => $fieldset) : ?>
+        <div class="row">
+          <div class="col-12 col-lg-9">
+            <fieldset class="options-form">
+              <legend><?php echo Text::_($fieldset->label); ?></legend>
+              <div>
+                <?php echo $this->form->renderFieldset($fieldset->name);; ?>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      <?php endforeach; ?>
+
+      <input type="hidden" name="task" value="migration.precheck"/>
+      <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
+      <?php echo HTMLHelper::_('form.token'); ?>
+      <input type="submit" class="btn btn-primary" value="<?php echo $this->script->startBtnText; ?>"/>
+    </div>
+  </form>
 </div>
