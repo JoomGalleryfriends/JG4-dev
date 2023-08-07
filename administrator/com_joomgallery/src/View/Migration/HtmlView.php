@@ -43,7 +43,7 @@ class HtmlView extends JoomGalleryView
 	{
     $this->script  = $this->get('Script');
     $this->scripts = $this->get('Scripts');    
-    $this->layout  = $this->app->input->get('layout', 'default', 'cmd');    
+    $this->layout  = $this->app->input->get('layout', 'default', 'cmd');
     $this->error   = array();
 
     // Add page title
@@ -62,15 +62,43 @@ class HtmlView extends JoomGalleryView
       }
       else
       {
-        // Load migration form data
-        $this->form = $this->get('Form');
+        // Try to load the migration params
+        $this->params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.params', null);
+
+        // Check if migration params exist
+        if(\is_null($this->params) && $this->layout != 'step1')
+        {
+          // Requested script does not exists
+          \array_push($this->error, 'COM_JOOMGALLERY_MIGRATION_PARAMS_NOT_EXIST');
+        }
       }
 
-      // Check if form parameters exists
-      if(false)
+      switch($this->layout) 
       {
-        // Requested script does not exists
-        \array_push($this->error, 'COM_JOOMGALLERY_MIGRATION_PARAMS_NOT_EXIST');
+        case 'step1':
+          // Load migration form
+          $this->form = $this->get('Form');
+          break;
+
+        case 'step2':
+          // Load precheck results
+          $this->precheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step2.results', array());
+          $this->success  = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step2.success', false);
+          break;
+
+        case 'step3':
+          // Load migration results
+          $this->migration = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step3.results', array());
+          break;
+
+        case 'step4':
+          // Load postcheck results
+          $this->postcheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step4.results', array());
+          break;
+        
+        default:
+          # code...
+          break;
       }
     }
 

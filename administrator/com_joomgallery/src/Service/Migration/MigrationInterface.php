@@ -38,7 +38,7 @@ interface MigrationInterface
    * 
    * @since   4.0.0
    */
-  public function checkPre(): array;
+  public function precheck(): array;
 
   /**
    * Step 4
@@ -48,7 +48,7 @@ interface MigrationInterface
    * 
    * @since   4.0.0
    */
-  public function checkPost();
+  public function postcheck();
 
   /**
    * Step 3

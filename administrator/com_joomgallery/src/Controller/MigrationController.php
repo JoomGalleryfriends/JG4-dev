@@ -130,8 +130,12 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     }
 
     // Clean the session data and redirect.
-    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.data', null);
-    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.result', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.data', null);    
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.results', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step3.results', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step4.results', null);
 
     // Redirect to the list screen.
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
@@ -219,24 +223,25 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $validData);
 
     // Perform the pre migration checks
-    $res = $model->precheck($validData);
-    if($res === false)
+    list($success, $res) = $model->precheck($validData);
+    if(!$success)
     {
-      // Pre-checks failed. Go back to step 1 and show a notice.
+      // Pre-checks not successful. Show error message.
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_MIGRATION_STEP2_FAILED', $model->getError()), 'error');
-      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step1&script=' . $script, false));
-
-      return false;
+    }
+    else
+    {
+      // Pre-checks successful. Show success message.
+      $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_STEP2_SUCCESSFUL'));
     }
 
-    // Pre-checks successful.
-    // Save the data in the session.
-    $this->app->setUserState($context . '.result', $res);
+    // Save the results of the pre migration checks in the session.
+    $this->app->setUserState($context . '.results', $res);
+    $this->app->setUserState($context . '.success', $success);
 
-    // Output message and redirect to the next step
-    $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_STEP2_SUCCESSFUL'));
+    // Redirect to the screen to show the results (View of Step 2)
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2&script=' . $script, false));
 
-    return true;
+    return;
   }
 }

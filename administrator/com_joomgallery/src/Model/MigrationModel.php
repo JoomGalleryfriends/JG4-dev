@@ -174,7 +174,7 @@ class MigrationModel extends FormModel
    * 
    * @param   array  $params  The migration parameters entered in the migration form
 	 *
-	 * @return  array|boolean  An array containing the precheck results on success.
+	 * @return  array  An array containing the precheck results.
 	 *
 	 * @since   4.0.0
 	 */
@@ -186,6 +186,46 @@ class MigrationModel extends FormModel
     $this->component->getMigration()->set('params', (object) $params);
 
     // Perform the prechecks
-    return $this->component->getMigration()->checkPre();
+    return $this->component->getMigration()->precheck();
+  }
+
+  /**
+	 * Method to perform the pre migration checks.
+   * 
+   * @param   array  $params  The migration parameters entered in the migration form
+	 *
+	 * @return  array|boolean  An array containing the precheck results on success.
+	 *
+	 * @since   4.0.0
+	 */
+  public function postcheck($params)
+  {
+    $info = $this->getScript();
+
+    // Set the migration parameters
+    $this->component->getMigration()->set('params', (object) $params);
+
+    // Perform the prechecks
+    return $this->component->getMigration()->postcheck();
+  }
+
+  /**
+	 * Method to perform the pre migration checks.
+   * 
+   * @param   array  $params  The migration parameters entered in the migration form
+	 *
+	 * @return  array|boolean  An array containing the precheck results on success.
+	 *
+	 * @since   4.0.0
+	 */
+  public function migrate($params)
+  {
+    $info = $this->getScript();
+
+    // Set the migration parameters
+    $this->component->getMigration()->set('params', (object) $params);
+
+    // Perform the prechecks
+    return $this->component->getMigration()->migrate();
   }
 }

@@ -47,5 +47,69 @@ $wa->useStyle('com_joomgallery.admin')
     <?php return; ?>
   <?php endif; ?>
 
+  <div class="alert alert-primary" role="alert">
+    <h3><?php echo $this->script->title; ?></h3>
+    <?php echo $this->script->description; ?>
+  </div>
+
+  <br />
+
+  <form action="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&task=migration.migrate'); ?>" method="post" enctype="multipart/form-data" 
+        name="adminForm" id="migration-form" class="form-validate" aria-label="COM_JOOMGALLERY_MIGRATION_STEP2_TITLE">
+
+      <?php if(empty($this->error)) : ?>
+        <h3>Results of the migration check</h3>
+
+        <?php // Loop through all available check-categories ?>
+        <?php foreach ($this->precheck as $cat) : ?>
+          <div class="card">
+            <?php if($cat->title): ?>
+              <div class="card-body">
+                <h4><?php echo $cat->title; ?></h4>
+                <?php if($cat->desc): ?>
+                  <span><?php echo $cat->desc; ?></span>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
+            <div class="card-body">
+              <table class="table">
+                <caption class="visually-hidden"><?php echo $cat->title; ?></caption>
+                <thead>
+                  <tr>
+                    <th class="w-70" scope="col"><?php echo $cat->colTitle; ?></th>
+                    <th scope="col"><?php echo Text::_('JSTATUS'); ?></th>
+                    <th class="w-10" scope="col"><?php echo Text::_('JTOOLBAR_HELP'); ?></th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <?php // Loop through all available check-categories ?>
+                    <?php foreach ($cat->checks as $check) : ?>
+                      <tr>
+                        <td>
+                          <strong><?php echo $check->title; ?></strong><br />
+                          <small><?php echo $check->description; ?></small>
+                        </td>
+                        <td><span class="badge bg-<?php echo $check->result ? 'success' : 'danger'; ?>"><?php echo $check->result ? 'success' : 'failed'; ?></span></td>
+                        <td><a href="#" class="btn btn-outline-secondary" data-text="<?php echo $check->help; ?>"><span class="icon-question" aria-hidden="true"></span></a></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <?php endforeach; ?>
+
+        <br />
+        <input type="submit" class="btn btn-primary" value="<?php echo $this->script->startBtnText; ?>"/>
+      <?php endif; ?>
+
+      <input type="hidden" name="task" value="migration.migrate"/>
+      <input type="hidden" name="precheck" value="<?php echo $this->success ? '1' : '0'; ?>"/>
+      <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
+      <?php echo HTMLHelper::_('form.token'); ?>
+  </form>
+
   
 </div>

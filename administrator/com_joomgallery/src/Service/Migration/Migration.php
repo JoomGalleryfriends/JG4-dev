@@ -95,13 +95,35 @@ abstract class Migration implements MigrationInterface
    * Step 2
    * Perform pre migration checks.
    *
-   * @return  array|boolean  An array containing the precheck results on success.
+   * @return  \stdClass[]  An array containing the precheck results.
    * 
    * @since   4.0.0
    */
-  public function checkPre(): array
+  public function precheck(): array
   {
-    return array('php' => true);
+    $checks = array((object) array('name' => 'directories',
+                                    'title' => 'Existence of directories',
+                                    'colTitle' => 'Folder',
+                                    'desc' => 'Are the nessecary directories available and writeable?',
+                                    'checks' => array( (object) array(
+                                                          'name' => 'originals',
+                                                          'result' => true,
+                                                          'title' => 'Original images',
+                                                          'description' => '/joomla3/images/joomgallery/originals/',
+                                                          'help' => 'Folder (/joomla3/images/joomgallery/originals/) exist and is writeable.'
+                                                        ),
+                                                        (object) array(
+                                                          'name' => 'thumbs',
+                                                          'result' => false,
+                                                          'title' => 'Thumbnail images',
+                                                          'description' => '/joomla3/images/joomgallery/thumbnails/',
+                                                          'help' => 'Folder (/joomla3/images/joomgallery/thumbnails/) is not writeable. make sure the permissions are set correctly for this folder.'
+                                                        ),
+                                                      )
+                                    )
+                                );
+
+    return array(true, $checks);
   }
 
   /**
@@ -112,7 +134,7 @@ abstract class Migration implements MigrationInterface
    * 
    * @since   4.0.0
    */
-  public function checkPost()
+  public function postcheck()
   {
     return;
   }

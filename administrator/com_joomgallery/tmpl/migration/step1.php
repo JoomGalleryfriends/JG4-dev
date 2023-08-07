@@ -56,23 +56,26 @@ $wa->useStyle('com_joomgallery.admin')
         name="adminForm" id="migration-form" class="form-validate card" aria-label="COM_JOOMGALLERY_MIGRATION_STEP1_TITLE">
 
     <div class="card-body">
-      <?php foreach($this->form->getFieldsets() as $key => $fieldset) : ?>
-        <div class="row">
-          <div class="col-12 col-lg-9">
-            <fieldset class="options-form">
-              <legend><?php echo Text::_($fieldset->label); ?></legend>
-              <div>
-                <?php echo $this->form->renderFieldset($fieldset->name);; ?>
-              </div>
-            </fieldset>
+      <?php if(empty($this->error)) : ?>
+        <?php foreach($this->form->getFieldsets() as $key => $fieldset) : ?>
+          <div class="row">
+            <div class="col-12 col-lg-9">
+              <fieldset class="options-form">
+                <legend><?php echo Text::_($fieldset->label); ?></legend>
+                <div>
+                  <?php echo $this->form->renderFieldset($fieldset->name);; ?>
+                </div>
+              </fieldset>
+            </div>
           </div>
-        </div>
-      <?php endforeach; ?>
+        <?php endforeach; ?>
+
+        <input type="submit" class="btn btn-primary" value="<?php echo $this->script->startBtnText; ?>"/>
+      <?php endif; ?>
 
       <input type="hidden" name="task" value="migration.precheck"/>
       <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
-      <?php echo HTMLHelper::_('form.token'); ?>
-      <input type="submit" class="btn btn-primary" value="<?php echo $this->script->startBtnText; ?>"/>
+      <?php echo HTMLHelper::_('form.token'); ?>      
     </div>
   </form>
 </div>
