@@ -144,7 +144,7 @@ if ($saveOrder && !empty($this->items))
                 <th scope="row" class="has-context">
                   <div class="break-word">
                     <?php if (isset($item->checked_out) && $item->checked_out && ($canEdit || $canChange)) : ?>
-                      <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'images.', $canCheckin); ?>
+                      <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'configs.', $canCheckin); ?>
                     <?php endif; ?>
 
                     <?php if ($canEdit || $canEditOwn) : ?>
