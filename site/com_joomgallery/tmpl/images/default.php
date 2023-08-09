@@ -45,15 +45,15 @@ $wa->useStyle('com_joomgallery.list');
 			<thead>
 			<tr>
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_ID', 'a.id', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_FIELD_ID_LABEL', 'a.id', $listDirn, $listOrder); ?>
 					</th>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_IMAGES_NAME', 'a.imgtitle', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
 					</th>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_HITS', 'a.hits', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_HITS', 'a.hits', $listDirn, $listOrder); ?>
 					</th>
 
 					<th class=''>
@@ -61,12 +61,12 @@ $wa->useStyle('com_joomgallery.list');
 					</th>
 
           <th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_CATEGORY', 'a.catid', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JCATEGORY', 'a.catid', $listDirn, $listOrder); ?>
 					</th>
 
           <?php if ($canEdit || $canDelete): ?>
             <th class="center">
-              <?php echo Text::_('COM_JOOMGALLERY_COMMON_ACTION'); ?>
+              <?php echo Text::_('COM_JOOMGALLERY_ACTIONS'); ?>
             </th>
 					<?php endif; ?>
 
@@ -137,7 +137,7 @@ $wa->useStyle('com_joomgallery.list');
 	<?php if ($canCreate) : ?>
 		<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=imageform.edit&id=0', false, 0); ?>" class="btn btn-success btn-small">
       <i class="icon-plus"></i>
-			<?php echo Text::_('COM_JOOMGALLERY_COMMON_UPLOAD_NEW_IMAGE'); ?>
+			<?php echo Text::_('COM_JOOMGALLERY_IMG_UPLOAD_IMAGE'); ?>
     </a>
 	<?php endif; ?>
 

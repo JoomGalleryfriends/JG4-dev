@@ -37,9 +37,9 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
 		<h2><?php throw new \Exception(Text::_('COM_JOOMGALLERY_COMMON_MSG_NOT_ALLOWED_TO_EDIT_CATEGORY'), 403); ?></h2>
 	<?php else : ?>
 		<?php if (!empty($this->item->id)): ?>
-			<h2><?php echo Text::_('COM_JOOMGALLERY_COMMON_EDIT_CATEGORY_TIPCAPTION').': '.$this->item->id; ?></h1>
+			<h2><?php echo Text::_('COM_JOOMGALLERY_CATEGORY_EDIT').': '.$this->item->id; ?></h1>
 		<?php else: ?>
-			<h2><?php echo Text::_('COM_JOOMGALLERY_COMMON_NEW_CATEGORY'); ?></h1>
+			<h2><?php echo Text::_('JGLOBAL_ADD_CUSTOM_CATEGORY'); ?></h1>
 		<?php endif; ?>
 
 		<form id="form-category" action="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.save'); ?>"
@@ -59,7 +59,7 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
 
       <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'category')); ?>
 
-      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'category', Text::_('COM_JOOMGALLERY_COMMON_CATEGORY', true)); ?>
+      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'category', Text::_('JCATEGORY', true)); ?>
         <?php echo $this->form->renderField('title'); ?>
 
         <?php echo $this->form->renderField('alias'); ?>
@@ -106,7 +106,9 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
 	    <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
 	    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Displayparams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
-	      <?php echo $this->form->renderField('params'); ?>
+        <div class="control-group">
+          <div class="controls"><?php echo $this->form->getInput('params'); ?></div>
+        </div>
 	    <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
       <?php if (Factory::getUser()->authorise('core.admin','joomgallery')): ?>

@@ -295,7 +295,7 @@ class CategoryformModel extends FormModel
         }
       }
 
-      if(!empty($array)
+      if(!empty($array))
       {
         $data->robots = $array;
       }

@@ -413,7 +413,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     // Create the model
     $com_mails  = Factory::getApplication()->bootComponent('com_mails');
-    $tableClass = $com_mails->getMVCFactory()->createTable('template');
+    $tableClass = $com_mails->getMVCFactory()->createTable('template', 'administrator');
 
     if(class_exists($tableClass))
     {

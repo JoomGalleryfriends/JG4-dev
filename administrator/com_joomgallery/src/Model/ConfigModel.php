@@ -347,8 +347,8 @@ class ConfigModel extends JoomAdminModel
     // id of the data to be saved
     $id = intval($data['id']);
 
-    $mod_items = $this->component->getMVCFactory()->createModel('imagetypes');
-    $model     = $this->component->getMVCFactory()->createModel('imagetype');
+    $mod_items = $this->component->getMVCFactory()->createModel('imagetypes', 'administrator');
+    $model     = $this->component->getMVCFactory()->createModel('imagetype', 'administrator');
 
     // get all existing imagetypes in the database
     $imagetypes_list = $mod_items->getItems();

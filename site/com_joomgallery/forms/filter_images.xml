@@ -35,8 +35,8 @@
             <option value="category_name DESC">JCATEGORY_DESC</option>
             <option value="access_level ASC">JGRID_HEADING_ACCESS_ASC</option>
             <option value="access_level DESC">JGRID_HEADING_ACCESS_DESC</option>
-            <option value="a.owner ASC">COM_JOOMGALLERY_OWNER_ASC</option>
-            <option value="a.owner DESC">COM_JOOMGALLERY_FIELDS_OWNER_DESC</option>
+            <option value="a.owner ASC">COM_JOOMGALLERY_CREATEDBY_ASC</option>
+            <option value="a.owner DESC">COM_JOOMGALLERY_CREATEDBY_DESC</option>
             <option value="a.imgauthor ASC">JAUTHOR_ASC</option>
             <option value="a.imgauthor DESC">JAUTHOR_DESC</option>
             <option value="a.imgdate ASC">JDATE_ASC</option>

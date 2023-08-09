@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-    <layout title="Image album" option="View">
+    <layout title="Category View" option="View">
       <message>
-        <![CDATA[Image album containing a wall of filtered thumbnails]]>
+        <![CDATA[View containing a wall of filtered thumbnails of a specific category]]>
       </message>
     </layout>
     <fields name="request">
