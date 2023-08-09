@@ -61,8 +61,9 @@ trait UploaderServiceTrait
     switch ($uploadMethod)
     {
       case 'TUS':
-			case 'tus':
+      case 'tus':
         $this->uploader = new TUSUploader($multiple, $async);
+        break;
 
       case 'single':
         $this->uploader = new SingleUploader($multiple);
