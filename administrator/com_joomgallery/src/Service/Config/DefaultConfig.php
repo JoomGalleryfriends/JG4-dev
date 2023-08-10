@@ -83,7 +83,7 @@ class DefaultConfig extends Config implements ConfigInterface
     if(isset($this->ids['category']))
     {
       // Load parent categories
-      $cat_model = $this->component->getMVCFactory()->createModel('Category');
+      $cat_model = $this->component->getMVCFactory()->createModel('Category', 'administrator');
       $parents   = $cat_model->getParents($this->ids['category'], true);
 
       if($parents === false && empty($parents))
@@ -110,7 +110,7 @@ class DefaultConfig extends Config implements ConfigInterface
     if(isset($this->ids['image']))
     {
       // Load image
-      $img_model  = $this->component->getMVCFactory()->createModel('Image');
+      $img_model  = $this->component->getMVCFactory()->createModel('Image', 'administrator');
       $image      = $img_model->getItem($this->ids['image']);
 
       if($image === false && empty($image))
