@@ -194,10 +194,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 *
 	 * @since 0.2b
 	 */
-	public function install($parent)
-	{
-		$this->installPlugins($parent);
-		$this->installModules($parent);
+  public function install($parent)
+  {
+    $app = Factory::getApplication();
+
+    $this->installPlugins($parent);
+    $this->installModules($parent);
 
     $this->copyImgFiles();
 
@@ -205,6 +207,27 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       return;
     }
+
+    // Create news feed module
+    $subdomain = '';
+    $language = Factory::getLanguage();
+    if(strpos($language->getTag(), 'de-') === false)
+    {
+      $subdomain = 'en.';
+    }
+    $feed_params = array('cache'=>1,
+                         'cache_time'=>15,
+                         'moduleclass_sfx'=>'',
+                         'rssurl'=>'https://www.'.$subdomain.'joomgalleryfriends.net/?format=feed&amp;type=rss',
+                         'rssrtl'=>0,
+                         'rsstitle'=>1,
+                         'rssdesc'=>0,
+                         'rssimage'=>1,
+                         'rssitems'=>3,
+                         'rssitemdesc'=>1,
+                         'word_count'=>200);
+    $feed_params = json_encode($feed_params);
+    $this->createModule('JoomGallery News', 'joom_cpanel', 'mod_feed', 1, $app->getCfg('access'), 1, $feed_params, 1, '*');
 
     $act_version = explode('.',$this->act_code);
     $new_version = explode('.',$this->new_code);
@@ -902,7 +925,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         $modules = $parent->get('manifest')->modules;
       }
 
-      if(count($modules->children()))
+      if(!empty($modules->children()) && count($modules->children()))
       {
         $modules = $modules->children();
       }
@@ -1216,5 +1239,78 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db->setQuery($query);
 
     return $db->execute();
+  }
+
+  /**
+   * Creates and publishes a module (extension need to be installed)
+   *
+   * @param   string   $title      title of the module
+   * @param   string   $position   position fo the module to be placed
+   * @param   string   $module     installation name of the module extension
+   * @param   integer  $ordering   number of the sort order
+   * @param   integer  $access     id of the access level
+   * @param   integer  $showTitle  show or hide module title (0: hide, 1: show)
+   * @param   string   $params     module params (json)
+   * @param   integer  $client_id  module of which client (0: client, 1: admin)
+   * @param   string   $lang       langage tag (language filter / *: all languages)
+   *
+   * @return  boolean True on success, false otherwise
+   */
+  private function createModule($title, $position, $module, $ordering, $access, $showTitle, $params, $client_id, $lang)
+  {
+    // check if the module already exists
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true)
+                ->select('id')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('position').' = '.$db->quote($position))
+                ->where($db->quoteName('module').' = '.$db->quote($module));
+    $db->setQuery($query);
+    $module_id = $db->loadResult();
+
+    // create module if it is not yet created
+    if (empty($module_id))
+    {
+      $row = JTable::getInstance('module');
+      $row->title     = $title;
+      $row->ordering  = $ordering;
+      $row->position  = $position;
+      $row->published = 1;
+      $row->module    = $module;
+      $row->access    = $access;
+      $row->showtitle = $showTitle;
+      $row->params    = $params;
+      $row->client_id = $client_id;
+      $row->language  = $lang;
+      if(!$row->store())
+      {
+        $app->enqueueMessage(JText::_('Unable to create "'.$title.'" module!'), 'error');
+
+        return false;
+      }
+
+      $db    = Factory::getDbo();
+      $query = $db->getQuery(true);
+      $query->insert('#__modules_menu');
+      $query->set('moduleid = '.$row->id);
+      $query->set('menuid = 0');
+      $db->setQuery($query);
+
+      // $db->execute();
+
+      try
+      {
+        $db->execute();
+      }
+      catch (\RuntimeException $e)
+      {
+        // geht nicht $app->enqueueMessage(JText::_('Unable to assign "'.$title.'" module!'), 'error');
+
+        // return false;
+      }
+
+    }
+
+    return true;
   }
 }
