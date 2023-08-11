@@ -364,7 +364,7 @@ class CategoriesModel extends JoomListModel
     $db = $this->getDbo();
 
     $categoryId = ArrayHelper::toInteger($categoryId);
-    $categoryTable = $this->getMVCFactory()->createTable('Category');
+    $categoryTable = $this->getMVCFactory()->createTable('Category', 'administrator');
     $subCatItemsWhere = array();
 
     foreach($categoryId as $key => $filter_catid)

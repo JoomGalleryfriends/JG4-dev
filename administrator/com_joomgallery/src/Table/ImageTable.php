@@ -15,10 +15,12 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Table\Table as Table;
+use \Joomla\CMS\Table\Asset;
+use \Joomla\CMS\Table\Table;
 use Joomla\CMS\Event\AbstractEvent;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomla\Database\DatabaseDriver;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Registry\Registry;
 
@@ -46,6 +48,68 @@ class ImageTable extends Table implements VersionableTableInterface
 		$this->setColumnAlias('published', 'published');
 	}
 
+	/**
+	 * Define a namespaced asset name for inclusion in the #__assets table
+	 *
+	 * @return string The asset name
+	 *
+	 * @see Table::_getAssetName
+	 */
+	protected function _getAssetName()
+	{
+		$k = $this->_tbl_key;
+
+		return $this->typeAlias . '.' . (int) $this->$k;
+	}
+
+	/**
+	 * Method to return the title to use for the asset table.
+	 *
+	 * @return  string
+	 *
+	 * @since   1.6
+	 */
+	protected function _getAssetTitle()
+	{
+		return $this->imgtitle;
+	}
+
+	/**
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+	 *
+	 * @param   Table   $table  Table name
+	 * @param   integer  $id     Id
+	 *
+	 * @see Table::_getAssetParentId
+	 *
+	 * @return mixed The id on success, false on failure.
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
+	{
+		// We will retrieve the parent-asset from the Asset-table
+		$assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+
+		if($this->catid)
+		{
+			// The image has a category as asset-parent
+			$catId = (int) $this->catid;
+			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$catId);
+		}
+
+		// Return the found asset-parent-id
+		if($assetTable->id)
+		{
+			$assetParentId = $assetTable->id;
+		}
+		else
+		{
+			// If no asset-parent can be found we take the global asset
+			$assetParentId = $assetTable->getRootId();
+		}
+
+		return $assetParentId;
+	}
+
   /**
    * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
    *
@@ -69,7 +133,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Record successfully loaded
       // load Tags
       $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
-      $tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+      $tags_model = $com_obj->getMVCFactory()->createModel('Tags', 'administrator');
 
       $this->tags = $tags_model->getMappedItems($this->id);
     }
@@ -250,7 +314,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Record successfully stored
      	// Store Tags
 	  	$com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
-    	$tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+    	$tags_model = $com_obj->getMVCFactory()->createModel('Tags', 'administrator');
 
       // Create tags
       $this->tags = $tags_model->storeTagsList($this->tags);
@@ -339,50 +403,6 @@ class ImageTable extends Table implements VersionableTableInterface
 		return parent::check();
 	}
 
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-		$assetParent = Table::getInstance('Asset');
-
-		// Default: if no asset-parent can be found we take the global asset
-		$assetParentId = $assetParent->getRootId();
-
-		// The item has the component as asset-parent
-		$assetParent->loadByName(_JOOM_OPTION);
-
-		// Return the found asset-parent-id
-		if($assetParent->id)
-		{
-			$assetParentId = $assetParent->id;
-		}
-
-		return $assetParentId;
-	}
-
   /**
    * Delete a record by id
    *
@@ -400,7 +420,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Record successfully deleted
       // Delete Tag mapping
       $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
-      $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+      $tag_model = $com_obj->getMVCFactory()->createModel('Tag', 'administrator');
 
       // remove tag from mapping
       foreach($this->tags as $tag)

@@ -12,7 +12,7 @@
                    query="SELECT 0 as `id`, 'New Category' as `title` UNION SELECT `id`,`title` FROM #__joomgallery_categories ORDER BY `id`"
                    key_field="id"
                    value_field="title"
-                   label="COM_JOOMGALLERY_COMMON_CATEGORY"
+                   label="JCATEGORY"
                    require="true" >
             </field>
         </fieldset>

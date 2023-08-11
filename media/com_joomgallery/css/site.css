@@ -1,0 +1,38 @@
+.wrapper .container-main {
+  overflow: hidden;
+}
+.mt {
+  margin-top: 1rem !important;
+}
+.mb {
+  margin-bottom: 1rem !important;
+}
+.ml {
+  margin-left: 1rem !important;
+}
+.mr {
+  margin-right: 1rem !important;
+}
+
+/* Single image view */
+.joom-image {
+  position: relative;
+  min-height: 100px;
+  width: 100%;
+}
+.joom-image > .joom-loader {
+  position: absolute;
+  text-align: center;
+  margin: 1rem auto;  
+  width: 100%;
+}
+.joom-image > img {
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  background-color: var(--body-bg);
+}
+.joom-image.center > img {
+  display: block;
+  margin: 0 auto;
+}

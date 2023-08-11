@@ -37,9 +37,9 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
 		<h2><?php throw new \Exception(Text::_('COM_JOOMGALLERY_COMMON_MSG_NOT_ALLOWED_TO_EDIT_IMAGE'), 403); ?></h2>
 	<?php else : ?>
 		<?php if (!empty($this->item->id)): ?>
-			<h2><?php echo Text::_('COM_JOOMGALLERY_COMMON_EDIT_IMAGE_TIPCAPTION').': '.$this->item->id; ?></h2>
+			<h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE_NEW').': '.$this->item->id; ?></h2>
 		<?php else: ?>
-			<h2><?php echo Text::_('COM_JOOMGALLERY_COMMON_NEW_IMAGE'); ?></h2>
+			<h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE_NEW'); ?></h2>
 		<?php endif; ?>
 
 		<form id="form-image" action="<?php echo Route::_('index.php?option=com_joomgallery&task=imageform.save'); ?>"
@@ -111,7 +111,9 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
       <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
-        <?php echo $this->form->renderField('params'); ?>
+        <div class="control-group">
+          <div class="controls"><?php echo $this->form->getInput('params'); ?></div>
+        </div>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
       <?php if (!Factory::getUser()->authorise('core.admin','joomgallery')): ?>

@@ -437,7 +437,7 @@ class TagsModel extends JoomListModel
 	public function storeTagsList($tags)
 	{
 		$com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
-    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag', 'administrator');
 
     foreach($tags as $key => $tag)
     {
@@ -489,7 +489,7 @@ class TagsModel extends JoomListModel
     $current_tags = ArrayHelper::toInteger($current_tags);
 
     $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
-    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag', 'administrator');
 
     $success = true;
     foreach($new_tags as $tag_id)
