@@ -204,12 +204,6 @@ abstract class Uploader implements UploaderInterface
       }
     }
 
-    // Image approved by default
-    if(!$this->component->getConfig()->get('jg_approve'))
-    {
-      $data['approved'] = 1;
-    }
-
     // Trigger onJoomBeforeUpload
     $plugins  = $this->app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
     if(in_array(false, $plugins, true))
