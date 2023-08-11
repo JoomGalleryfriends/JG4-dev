@@ -14,8 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Table\Table as Table;
+use \Joomla\CMS\Table\Asset;
+use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\Filter\OutputFilter;
 
 /**
@@ -51,6 +53,64 @@ class ImagetypeTable extends Table
 	}
 
 	/**
+	 * Define a namespaced asset name for inclusion in the #__assets table
+	 *
+	 * @return string The asset name
+	 *
+	 * @see Table::_getAssetName
+	 */
+	protected function _getAssetName()
+	{
+		$k = $this->_tbl_key;
+
+		return $this->typeAlias . '.' . (int) $this->$k;
+	}
+
+	/**
+	 * Method to return the title to use for the asset table.
+	 *
+	 * @return  string
+	 *
+	 * @since   1.6
+	 */
+	protected function _getAssetTitle()
+	{
+		return $this->typename;
+	}
+
+	/**
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+	 *
+	 * @param   Table   $table  Table name
+	 * @param   integer  $id     Id
+	 *
+	 * @see Table::_getAssetParentId
+	 *
+	 * @return mixed The id on success, false on failure.
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
+	{
+		// We will retrieve the parent-asset from the Asset-table
+		$assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+
+		// The item has the component as asset-parent
+		$assetTable->loadByName(_JOOM_OPTION);
+
+		// Return the found asset-parent-id
+		if($assetTable->id)
+		{
+			$assetParentId = $assetTable->id;
+		}
+		else
+		{
+			// If no asset-parent can be found we take the global asset
+			$assetParentId = $assetTable->getRootId();
+		}
+
+		return $assetParentId;
+	}
+
+	/**
 	 * Method to store a row in the database from the Table instance properties.
 	 *
 	 * If a primary key value is set the row with that primary key value will be updated with the instance property values.
@@ -80,51 +140,13 @@ class ImagetypeTable extends Table
 			$this->ordering = self::getNextOrder();
 		}
 
-		return parent::check();
-	}
-
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-		$assetParent = Table::getInstance('Asset');
-
-		// Default: if no asset-parent can be found we take the global asset
-		$assetParentId = $assetParent->getRootId();
-
-		// The item has the component as asset-parent
-		$assetParent->loadByName(_JOOM_OPTION);
-
-		// Return the found asset-parent-id
-		if($assetParent->id)
+    // Support for subform field params
+		if(is_array($this->params))
 		{
-			$assetParentId = $assetParent->id;
+			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
 		}
 
-		return $assetParentId;
+		return parent::check();
 	}
 
   /**
@@ -174,6 +196,14 @@ class ImagetypeTable extends Table
 					$array['type_alias'] = substr(OutputFilter::stringURLSafe(trim($array['typename'])), 0, 4);
 				}
 			}
+		}
+
+    // Support for params field
+    if(isset($array['params']) && is_array($array['params']))
+		{
+			$registry = new Registry;
+			$registry->loadArray($array['params']);
+			$array['params'] = (string) $registry;
 		}
 
     return parent::bind($array, $ignore);

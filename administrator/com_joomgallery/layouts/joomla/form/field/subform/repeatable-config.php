@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 extract($displayData);
 
@@ -35,16 +34,7 @@ extract($displayData);
  * @var   bool    $groupByFieldset  Whether group the subform fields by it`s fieldset
  */
 
-// Add options to the replaceinfo field
-if($fieldname == 'jg_replaceinfo')
-{
-  foreach ($forms as $form)
-  {
-    JoomHelper::addReplaceinfoOptions($form);
-  }
-}
-
- if ($multiple)
+if($multiple)
 {
 	// Add script
 	Factory::getApplication()

@@ -16,8 +16,10 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Form\FormFactory;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 use \Joomla\CMS\Filesystem\File;
@@ -50,7 +52,21 @@ class ConfigModel extends JoomAdminModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $item = null;	
+	protected $item = null;
+
+  /**
+	 * @var    null  Form object
+	 *
+	 * @since  4.0.0
+	 */
+	protected $form = null;
+
+  /**
+	 * @var    array  Fieldset array
+	 *
+	 * @since  4.0.0
+	 */
+	protected $fieldsets = array();
 
 	/**
 	 * Returns a reference to the a Table object, always creating it.
@@ -81,9 +97,9 @@ class ConfigModel extends JoomAdminModel
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
-		$form = $this->loadForm($this->typeAlias, 'config', array('control' => 'jform', 'load_data' => $loadData));
+		$this->form = $this->loadForm($this->typeAlias, 'config', array('control' => 'jform', 'load_data' => $loadData));
 
-		if(empty($form))
+		if(empty($this->form))
 		{
 			return false;
 		}
@@ -91,12 +107,27 @@ class ConfigModel extends JoomAdminModel
     // Special threatment for Global Configuration set
     if($this->item->id === 1)
     {
-      $form->setFieldAttribute('title', 'readonly', 'true');
-      $form->setFieldAttribute('group_id', 'readonly', 'true');
+      $this->form->setFieldAttribute('title', 'readonly', 'true');
+      $this->form->setFieldAttribute('group_id', 'readonly', 'true');
     }
 
-		return $form;
+		return $this->form;
 	}
+
+  /**
+   * Get the FormFactoryInterface.
+   *
+   * @return  FormFactoryInterface
+   *
+   * @since   4.0.0
+   * @throws  \UnexpectedValueException May be thrown if the FormFactory has not been set.
+   */
+  public function getFormFactory(): FormFactoryInterface
+  {
+    $formFactory = new FormFactory;
+
+    return $formFactory;
+  }
 
 	/**
 	 * Method to get the data that should be injected in the form.
@@ -110,18 +141,49 @@ class ConfigModel extends JoomAdminModel
 		// Check the session for previously entered form data.
 		$data = $this->app->getUserState(_JOOM_OPTION.'.edit.config.data', array());
 
+    if($this->item === null)
+    {
+      $this->item = $this->getItem();
+    }
+
 		if(empty($data))
 		{
-			if($this->item === null)
-			{
-				$this->item = $this->getItem();
-			}
-
 			$data = $this->item;
 		}
 
 		return $data;
 	}
+
+  /**
+   * Method to allow derived classes to preprocess the form.
+   *
+   * @param   Form    $form   A Form object.
+   * @param   mixed   $data   The data expected for the form.
+   * @param   string  $group  The name of the plugin group to import (defaults to "content").
+   *
+   * @return  void
+   *
+   * @see     FormField
+   * @since   4.0.0
+   * @throws  \Exception if there is an error in the form event.
+   */
+  protected function preprocessForm(Form $form, $data, $group = 'content')
+  {
+    // Get fields with dynamic options
+    $dyn_fields = $form->getDynamicFields();
+
+    // Add options to dynamic fields
+    foreach($dyn_fields as $key => $field)
+    {
+      $form->setDynamicOptions($field);
+    }
+
+    // Import the appropriate plugin group.
+    PluginHelper::importPlugin($group);
+
+    // Trigger the form preparation event.
+    Factory::getApplication()->triggerEvent('onContentPrepareForm', array($form, $data));
+  }
 
 	/**
 	 * Method to get a single record.
@@ -147,6 +209,70 @@ class ConfigModel extends JoomAdminModel
 
     return $item;
 	}
+
+  /**
+	 * Method to get all available fieldsets from form.
+	 *
+	 * @return  array   Array with available fieldsets
+	 *
+	 * @since   4.0.0
+	 */
+  public function getFieldsets()
+  {
+    // Fill fieldset array
+		foreach($this->form->getFieldsets() as $key => $fieldset)
+		{
+			$parts = \explode('-',$key);
+			$level = \count($parts);
+
+			$fieldset->level = $level;
+			$fieldset->title = \end($parts);
+
+			$this->setFieldset($key, array('this'=>$fieldset));
+		}
+
+		// Add permissions fieldset to level 1 fieldsets
+		$permissions = array('name' => 'permissions',
+							'label' => 'JGLOBAL_ACTION_PERMISSIONS_LABEL',
+							'description' => '',
+							'type' => 'tab',
+							'level' => 1,
+							'title' => 'permissions');
+		$this->fieldsets['permissions'] = array('this' => (object) $permissions);
+
+    return $this->fieldsets;
+  }
+
+  /**
+	 * Add a fieldset to the fieldset array.
+   * source: https://stackoverflow.com/questions/13308968/create-infinitely-deep-multidimensional-array-from-string-in-php
+   *
+   * @param  string  $key    path for the value in the array
+   * @param  string  $value  the value to be placed at the defined path
+	 *
+	 * @return void
+	 *
+	 */
+	protected function setFieldset($key, $value)
+	{
+    if(false === ($levels = \explode('-',$key)))
+    {
+      return;
+    }
+
+    $pointer = &$this->fieldsets;
+    for ($i=0; $i < \sizeof($levels); $i++)
+    {
+      if(!isset($pointer[$levels[$i]]))
+      {
+        $pointer[$levels[$i]] = array();
+      }
+
+      $pointer = &$pointer[$levels[$i]];
+    }
+
+    $pointer = $value;
+  }
 
 	/**
 	 * Method to duplicate an Config
@@ -221,8 +347,8 @@ class ConfigModel extends JoomAdminModel
     // id of the data to be saved
     $id = intval($data['id']);
 
-    $mod_items = $this->component->getMVCFactory()->createModel('imagetypes');
-    $model     = $this->component->getMVCFactory()->createModel('imagetype');
+    $mod_items = $this->component->getMVCFactory()->createModel('imagetypes', 'administrator');
+    $model     = $this->component->getMVCFactory()->createModel('imagetype', 'administrator');
 
     // get all existing imagetypes in the database
     $imagetypes_list = $mod_items->getItems();
@@ -247,7 +373,7 @@ class ConfigModel extends JoomAdminModel
       // update data
       $imagetype_db->typename = $staticprocessing['jg_imgtypename'];
       $imagetype_db->path     = $staticprocessing['jg_imgtypepath'];
-      $imagetype_db->params   = $this->encodeParams($staticprocessing);
+      $imagetype_db->params   = $this->updateParams($staticprocessing, $imagetype_db->params);
 
       if(empty($imagetype_db->typename))
       {
@@ -479,24 +605,50 @@ class ConfigModel extends JoomAdminModel
   }
 
   /**
-	 * Encode params string.
+	 * Update the staticprocessing params string.
 	 *
-   * @param   array    $data     Form data
+   * @param   array    $data       New submitted params form data
+   * @param   string   $old_data   JSON string of old params
    * 
-	 * @return  string   Params json string
+	 * @return  string   Params JSON string
 	 *
 	 * @since   4.0.0
 	 */
-  protected function encodeParams($data)
+  protected function updateParams(array $data, string $old_data=''): string
   {
+    // Decode old params string
+    if($old_data === '')
+    {
+      $old_data = array();
+    }
+    else
+    {
+      $old_data = \json_decode($old_data, true);
+    }
+
+    // support for jg_imgtypename
     if(\array_key_exists('jg_imgtypename', $data))
     {
       unset($data['jg_imgtypename']);
     }
 
+    // support for jg_imgtypepath
     if(\array_key_exists('jg_imgtypepath', $data))
     {
       unset($data['jg_imgtypepath']);
+    }
+
+    // support for jg_imgtype
+    if(!\array_key_exists('jg_imgtype', $data))
+    {
+      if(\array_key_exists('jg_imgtype', $old_data))
+      {
+        $data['jg_imgtype'] = $old_data['jg_imgtype'];
+      }
+      else
+      {
+        $data['jg_imgtype'] = 1;
+      }      
     }
 
     return json_encode($data);

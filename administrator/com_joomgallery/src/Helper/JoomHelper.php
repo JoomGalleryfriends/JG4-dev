@@ -19,7 +19,7 @@ use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Filesystem\Path;
-use \Joomla\CMS\Form\Form;
+use \Joomla\Database\DatabaseInterface;
 
 /**
  * JoomGallery Helper for the Backend
@@ -35,7 +35,15 @@ class JoomHelper
    *
    * @var array
    */
-  protected static $content_types = array('category', 'config', 'field', 'image', 'imagetype', 'tag', 'user', 'vote');
+  protected static $content_types = array('category'  => _JOOM_TABLE_CATEGORIES,
+                                          'config'    => _JOOM_TABLE_CONFIGS,
+                                          'field'     => _JOOM_TABLE_FIELDS,
+                                          'image'     => _JOOM_TABLE_IMAGES,
+                                          'imagetype' => _JOOM_TABLE_IMG_TYPES,
+                                          'tag'       => _JOOM_TABLE_TAGS,
+                                          'user'      => _JOOM_TABLE_USERS,
+                                          'vote'      => _JOOM_TABLE_VOTES
+                                        );
 
   /**
 	 * Gets the JoomGallery component object
@@ -149,7 +157,7 @@ class JoomHelper
       }
 
       // Create the model
-      $model = $com_obj->getMVCFactory()->createModel($name);
+      $model = $com_obj->getMVCFactory()->createModel($name, 'administrator');
 
       if(\is_null($model))
       {
@@ -168,6 +176,101 @@ class JoomHelper
 
       return false;
     }
+  }
+
+  /**
+	 * Returns the creator of a database record
+   *
+   * @param   string          $name      The name of the record (available: category,image,tag,imagetype)
+   * @param   int|string      $id        The id of the primary key
+   * @param   bool            $parent    True to get the creator of the parent record (default:false)
+	 *
+	 * @return  int             User id of the creator on success, false on failure.
+	 *
+	 * @since   4.0.0
+	 */
+  public static function getCreator($name, $id, $parent=false)
+  {
+    // Check if content type is available
+    self::isAvailable($name);
+
+    $id = intval($id);
+
+    // We got a record id
+    if(\is_numeric($id) && $id > 0)
+    {
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+      $query = $db->getQuery(true);
+
+      if($parent && \in_array($name, array('image', 'category')))
+      {
+        // Get join selector id
+        $parent_id   = ($name == 'category') ? 'a.parent_id' : 'a.catid';
+
+        // Create query
+        $query
+          ->select($db->quoteName('parent.created_by', 'created_by'))
+          ->join('LEFT', $db->quoteName(self::$content_types['category'], 'parent'), $db->quoteName('parent.id') . ' = ' . $db->quoteName($parent_id))
+          ->from($db->quoteName(self::$content_types[$name], 'a'))
+          ->where($db->quoteName('a.id') . ' = ' . $id);
+      }
+      else
+      {
+        // Create query
+        $query
+          ->select($db->quoteName('a.created_by', 'created_by'))
+          ->from($db->quoteName(self::$content_types[$name], 'a'))
+          ->where($db->quoteName('a.id') . ' = ' . $id);
+      }
+
+      $db->setQuery($query);
+
+      return $db->loadResult();
+    }
+
+    return false;
+  }
+
+  /**
+	 * Returns the id of the parent database record
+   *
+   * @param   string        $name      The name of the record (available: category,image)
+   * @param   int|string    $id        The id of the primary key
+	 *
+	 * @return  int           Parent id of the record on success, false on failure.
+	 *
+	 * @since   4.0.0
+	 */
+  public static function getParent($name, $id)
+  {
+    if(!\in_array($name, array('image', 'category')))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
+    }
+
+    $id = intval($id);
+
+    // We got a record id
+    if(\is_numeric($id) && $id > 0)
+    {
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+      $query = $db->getQuery(true);
+
+      // Get selector id
+      $parent_id = ($name == 'category') ? 'parent_id' : 'catid';
+
+      // Create query
+      $query
+      ->select($db->quoteName($parent_id))
+      ->from($db->quoteName(self::$content_types[$name]))
+      ->where($db->quoteName('id') . ' = ' . $id);
+
+      $db->setQuery($query);
+
+      return $db->loadResult();
+    }
+
+    return false;
   }
 
   /**
@@ -197,7 +300,7 @@ class JoomHelper
       $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
     }
 
-    $model = $com_obj->getMVCFactory()->createModel($name);
+    $model = $com_obj->getMVCFactory()->createModel($name, 'administrator');
 
     if(\is_null($model))
     {
@@ -209,30 +312,6 @@ class JoomHelper
 
     return $return;
   }
-
-	/**
-	 * Gets the files attached to an item
-	 *
-	 * @param   int     $pk     The item's id
-	 * @param   string  $table  The table's name
-	 * @param   string  $field  The field's name
-	 *
-	 * @return  array  The files
-	 */
-	public static function getFiles($pk, $table, $field)
-	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($field)
-			->from($table)
-			->where('id = ' . (int) $pk);
-
-		$db->setQuery($query);
-
-		return explode(',', $db->loadResult());
-	}
 
 	/**
 	 * Gets a list of the actions that can be performed.
@@ -468,89 +547,6 @@ class JoomHelper
   }
 
   /**
-	 * Add dropdown options to the jg_replaceinfo->source form field
-   * based on its attributes
-   *
-   * @param   Form    $form    Form object to add replaceinfo options
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-  public static function addReplaceinfoOptions(&$form)
-  {
-    // Check if we got a valid form
-    if(\is_object($form) && $form instanceof \Joomla\CMS\Form\Form)
-    {
-      if($form->getName() == 'com_joomgallery.config')
-      {
-        // We got the complete config form
-        $formtype     = 'form';
-        $exif_options = $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('EXIF');
-        $iptc_options = $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('IPTC');
-      }
-      elseif(strpos($form->getName(), 'subform.jg_replaceinfo') !== false)
-      {
-        // We got a jg_replaceinfo subform
-        $formtype     = 'subform';
-        $exif_options = $form->getField('source')->getAttribute('EXIF');
-        $iptc_options = $form->getField('source')->getAttribute('IPTC');
-      }
-      else
-      {
-        throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
-      }
-
-      require JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/iptcarray.php';
-      require JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/includes/exifarray.php';
-      
-      $lang = Factory::getLanguage();
-      $lang->load(_JOOM_OPTION.'.exif', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
-      $lang->load(_JOOM_OPTION.'.iptc', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
-
-      // create dropdown list of metadata sources
-      $exif_options = \json_decode(\str_replace('\'', '"', $exif_options));
-      $iptc_options = \json_decode(\str_replace('\'', '"', $iptc_options));
-
-      foreach ($exif_options as $key => $exif_option)
-      {
-        // add all defined exif options
-        $text  = Text::_($exif_config_array[$exif_option[0]][$exif_option[1]]['Name']).' (exif)';
-        $value = $exif_option[0] . '-' . $exif_option[1];
-        if($formtype == 'subform')
-        {
-          $form->getField('source')->addOption($text, array('value'=>$value));
-        }
-        else
-        {
-          $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-        }
-      }
-
-      foreach ($iptc_options as $key => $iptc_option)
-      {
-        // add all defined iptc options
-        $text  = Text::_($iptc_config_array[$iptc_option[0]][$iptc_option[1]]['Name']).' (iptc)';
-        $value = $iptc_option[0] . '-' . $iptc_option[1];
-        if($formtype == 'subform')
-        {
-          $form->getField('source')->addOption($text, array('value'=>$value));
-        }
-        else
-        {
-          $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->addOption($text, array('value'=>$value));
-        }
-      }
-
-      return;
-    }
-    else
-    {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
-    }
-  }
-
-  /**
 	 * Checks if a specific content type is available
    *
    * @param   string    $name   Content type name
@@ -561,7 +557,7 @@ class JoomHelper
 	 */
   protected static function isAvailable($name)
   {
-    if(!\in_array($name, self::$content_types))
+    if(!\in_array($name, \array_keys(self::$content_types)))
     {
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }

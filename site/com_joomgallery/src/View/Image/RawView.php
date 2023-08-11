@@ -8,29 +8,20 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
+namespace Joomgallery\Component\Joomgallery\Site\View\Image;
 
-\defined('_JEXEC') or die;
+// No direct access
+defined('_JEXEC') or die;
 
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader as BaseUploader;
+use \Joomgallery\Component\Joomgallery\Administrator\View\Image\RawView as AdminRawView;
 
 /**
-* Uploader helper class (Ajax Upload)
-*
-* @since  4.0.0
-*/
-class AjaxUploader extends BaseUploader implements UploaderInterface
+ * Raw view class for a single Image.
+ * 
+ * @package JoomGallery
+ * @since   4.0.0
+ */
+class RawView extends AdminRawView
 {
-	/**
-	 * Method to upload a new image.
-	 *
-	 * @return  string   Message
-	 *
-	 * @since  4.0.0
-	 */
-	public function upload(): string
-  {
-    return 'Ajax upload successfully!';
-  }
+  // Use the RawView class from administrator application
 }

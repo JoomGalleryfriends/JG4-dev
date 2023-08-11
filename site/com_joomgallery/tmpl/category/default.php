@@ -35,7 +35,7 @@ if (!$canEdit && Factory::getUser()->authorise('core.edit.own', 'com_joomgallery
 
 <?php if($canEdit && $this->item->checked_out == 0): ?>
   <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$this->item->id); ?>">
-    <?php echo Text::_("COM_JOOMGALLERY_COMMON_EDIT_CATEGORY_TIPCAPTION"); ?>
+    <?php echo Text::_("COM_JOOMGALLERY_CATEGORY_EDIT"); ?>
   </a>
 <?php elseif($canCheckin && $this->item->checked_out > 0) : ?>
   <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.checkin&id=' . $this->item->id .'&'. Session::getFormToken() .'=1'); ?>">

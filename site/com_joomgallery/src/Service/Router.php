@@ -53,33 +53,34 @@ class Router extends RouterView
 	 */
 	private $categoryCache = [];
 
-	public function __construct(SiteApplication $app, AbstractMenu $menu, CategoryFactoryInterface $categoryFactory, DatabaseInterface $db)
+	public function __construct(SiteApplication $app, AbstractMenu $menu, ?CategoryFactoryInterface $categoryFactory, DatabaseInterface $db)
 	{
 		$params = Factory::getApplication()->getParams('com_joomgallery');
 
 		$this->noIDs = (bool) $params->get('sef_ids');
 		$this->categoryFactory = $categoryFactory;
-		
+
+
 		$images = new RouterViewConfiguration('images');
 		$this->registerView($images);
 
-    $image = new RouterViewConfiguration('image');
-    $image->setKey('id')->setParent($images);
-    $this->registerView($image);
+	    $image = new RouterViewConfiguration('image');
+	    $image->setKey('id')->setParent($images);
+	    $this->registerView($image);
 
-    $imageform = new RouterViewConfiguration('imageform');
-    $imageform->setKey('id');
+	    $imageform = new RouterViewConfiguration('imageform');
+	    $imageform->setKey('id');
 
-    $this->registerView($imageform);$categories = new RouterViewConfiguration('categories');
-		$this->registerView($categories);
+	    $this->registerView($imageform);$categories = new RouterViewConfiguration('categories');
+			$this->registerView($categories);
 
-    $category = new RouterViewConfiguration('category');
-    $category->setKey('id')->setParent($categories);
-    $this->registerView($category);
+	    $category = new RouterViewConfiguration('category');
+	    $category->setKey('id')->setParent($categories);
+	    $this->registerView($category);
 
-    $categoryform = new RouterViewConfiguration('categoryform');
-    $categoryform->setKey('id');
-    $this->registerView($categoryform);
+	    $categoryform = new RouterViewConfiguration('categoryform');
+	    $categoryform->setKey('id');
+	    $this->registerView($categoryform);
 
 		parent::__construct($app, $menu);
 

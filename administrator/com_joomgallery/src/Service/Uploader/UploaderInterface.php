@@ -88,4 +88,24 @@ interface UploaderInterface
    * @since   4.0.0
    */
   public function rollback($data_row=false);
+
+  /**
+   * Detect if there is an image uploaded
+   * 
+   * @param   array    $data      Form data
+   * 
+   * @return  bool     True if file is detected, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function isImgUploaded($data): bool;
+
+  /**
+   * Delete all temporary created files which were created during upload
+   * 
+   * @return  bool     True if files are deleted, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function deleteTmp(): bool;
 }

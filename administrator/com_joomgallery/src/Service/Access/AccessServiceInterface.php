@@ -8,29 +8,43 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 
 \defined('_JEXEC') or die;
 
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\Uploader as BaseUploader;
-
 /**
-* Uploader helper class (Batch Upload)
+* The Access service
 *
 * @since  4.0.0
 */
-class BatchUploader extends BaseUploader implements UploaderInterface
+interface AccessServiceInterface
 {
-	/**
-	 * Method to upload a new image.
+  /**
+	 * Storage for the access service class.
 	 *
-	 * @return  string   Message
+	 * @var AccessInterface
 	 *
 	 * @since  4.0.0
 	 */
-	public function upload(): string
-  {
-    return 'Batch upload successfully!';
-  }
+	private $acl;
+
+  /**
+	 * Creates the access service class
+   * 
+   * @param   string   $option   Component option
+	 *
+   * @return  void
+   *
+	 * @since  4.0.0
+	 */
+	public function createAccess($option = '');
+
+	/**
+	 * Returns the access service class.
+	 *
+	 * @return  AccessInterface
+	 *
+	 * @since  4.0.0
+	 */
+	public function getAccess(): AccessInterface;
 }

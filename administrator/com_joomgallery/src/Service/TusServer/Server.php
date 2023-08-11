@@ -1215,6 +1215,22 @@ class Server implements ServerInterface
     }
 
     /**
+     * Get the directory where the file is stored
+     * 
+     * @return string
+     */
+    public function getDirectory(): string
+    {
+      if(\substr($this->directory, -1) != '/')
+      {
+        // directory should end with a slash (/)
+        return $this->directory. '/';
+      }
+
+      return $this->directory;
+    }
+
+    /**
      * Get the location (uri) of the TUS server
      * 
      * @return string

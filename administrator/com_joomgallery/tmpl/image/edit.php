@@ -141,18 +141,22 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
 	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
 	<div class="row">
-    <div class="col-lg-12">
-      <fieldset class="form-vertical">
-				<legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
-				<?php echo $this->form->renderField('params'); ?>
-				<?php if ($this->state->params->get('save_history', 1)) : ?>
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('version_note'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('version_note'); ?></div>
-					</div>
-				<?php endif; ?>
+    <div class="col-12 <?php echo ($this->state->params->get('save_history', 1)) ? 'col-lg-6' : ''; ?>">
+      <fieldset id="fieldset-images-params" class="options-form">
+				<legend><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
+        <div class="control-group">
+          <div class="controls"><?php echo $this->form->getInput('params'); ?></div>
+        </div>
 			</fieldset>
-		</div>
+    </div>
+    <?php if ($this->state->params->get('save_history', 1)) : ?>
+      <div class="col-12 col-lg-6">
+        <fieldset id="fieldset-images-version" class="options-form">
+          <legend><?php echo Text::_('JVERSION'); ?></legend>
+          <?php echo $this->form->renderField('version_note'); ?>
+        </fieldset>
+		  </div>
+    <?php endif; ?>
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
@@ -164,6 +168,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	<?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
 	<input type="hidden" name="task" value=""/>
+  <input type="hidden" name="jform[uploader]" value="html" />
   <?php /* <input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
 	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
 	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
@@ -173,9 +178,10 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 </form>
 
 <?php
+// Image preview modal
 $options = array('modal-dialog-scrollable' => true,
                   'title'  => 'Test Title',
-                  'footer' => '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
+                  'footer' => '<a id="replaceBtn" class="btn" href="'.Route::_('index.php?option=com_joomgallery&view=image&layout=replace&id='.(int) $this->item->id).'">'.Text::_('COM_JOOMGALLERY_REPLACE').'</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
                 );
 
 echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div id="modal-body">Content set by ajax.</div>');
@@ -188,6 +194,7 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
 
     let modalTitle = modal.querySelector('.modal-title');
     let modalBody  = modal.querySelector('.modal-body');
+    let modalBtn   = document.getElementById('replaceBtn');
 
     <?php
       $imgURL   = '{';
@@ -211,6 +218,8 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
     body      = body + '<img src="' + imgURL[typename] + '" alt="' + imgTitle[typename] + '">';
     body      = body + '</div>';
     modalBody.innerHTML  = body;
+
+    modalBtn.href = modalBtn.href + '&type=' + typename;
 
     let bsmodal = new bootstrap.Modal(document.getElementById('image-modal-box'), {keyboard: false});
     bsmodal.show();

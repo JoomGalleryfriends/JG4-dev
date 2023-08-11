@@ -44,16 +44,16 @@ $wa->useStyle('com_joomgallery.list');
 			<thead>
 			<tr>
           <th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_COMMON_CATEGORY', 'a.title', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'JCATEGORY', 'a.title', $listDirn, $listOrder); ?>
 					</th>
 
 					<th class=''>
-						<?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_SHOW_PARENT_CATEGORY_LABEL', 'a.parent_id', $listDirn, $listOrder); ?>
+						<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_PARENT_CATEGORY', 'a.parent_id', $listDirn, $listOrder); ?>
 					</th>
 
           <?php if ($canEdit || $canDelete): ?>
             <th class="center">
-              <?php echo Text::_('COM_JOOMGALLERY_COMMON_ACTION'); ?>
+              <?php echo Text::_('COM_JOOMGALLERY_ACTIONS'); ?>
             </th>
 					<?php endif; ?>
 
@@ -117,7 +117,7 @@ $wa->useStyle('com_joomgallery.list');
 	</div>
 	<?php if ($canCreate) : ?>
 		<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.edit&id=0', false, 0); ?>" class="btn btn-success btn-small">
-      <i class="icon-plus"></i> <?php echo Text::_('COM_JOOMGALLERY_COMMON_NEW_CATEGORY'); ?>
+      <i class="icon-plus"></i> <?php echo Text::_('JGLOBAL_ADD_CUSTOM_CATEGORY'); ?>
     </a>
 	<?php endif; ?>
 

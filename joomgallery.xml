@@ -19,9 +19,9 @@
         </sql>
     </install>
     <update> <!-- Runs on update -->
-        <sql>
-            <file driver="mysql" charset="utf8">sql/update.mysql.utf8.sql</file>
-        </sql>
+      <schemas>
+        <schemapath type="mysql">sql/updates/mysql</schemapath>
+      </schemas>
     </update>
     <uninstall> <!-- Runs on uninstall -->
         <sql>

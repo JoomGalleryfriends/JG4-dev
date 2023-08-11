@@ -57,12 +57,13 @@ abstract class Config implements ConfigInterface
    *
    * @param   string   $context   Context of the content (default: com_joomgallery)
    * @param   int      $id        ID of the content if needed (default: null)
+   * @param   bool		 $inclOwn   True, if you want to include settings of current item (default: true)
    *
    * @return  void
    *
    * @since   4.0.0 
    */
-  public function __construct($context = 'com_joomgallery', $id = null)
+  public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true)
   {
     // Load application
     $this->getApp();
@@ -102,7 +103,7 @@ abstract class Config implements ConfigInterface
           break;
 
         case 'image':
-          $img = $this->component->getMVCFactory()->createModel('image')->getItem($id);
+          $img = $this->component->getMVCFactory()->createModel('image', 'administrator')->getItem($id);
 
           $this->ids['user']     = Factory::getUser()->get('id');
           $this->ids['image']    = (int) $id;
@@ -198,7 +199,7 @@ abstract class Config implements ConfigInterface
 	protected function getParamsByID($id = 1)
 	{
     $com_obj = $this->app->bootComponent('com_joomgallery');
-    $model   = $com_obj->getMVCFactory()->createModel('Config');
+    $model   = $com_obj->getMVCFactory()->createModel('Config', 'administrator');
 
     $id   = intval($id);
     $item = $model->getItem($id);

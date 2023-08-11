@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form addfieldprefix="Joomgallery\Component\Joomgallery\Site\Field">
-  <fieldset>
+<form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
+  <fieldset name="general">
     <field name="ordering"/>
 
     <field name="id"
@@ -14,14 +14,17 @@
            filter="unset" />
 
     <field name="hits"
-           default="0"
-           label="COM_JOOMGALLERY_COMMON_HITS"
-           hidden="true" />
+           type="text"
+           readonly="true"
+           class="readonly"
+           label="JGLOBAL_HITS" />
 
     <field name="downloads"
+           type="text"
+           readonly="true"
            default="0"
-           label="COM_JOOMGALLERY_DOWNLOADS"
-           hidden="true" />
+           class="readonly"
+           label="COM_JOOMGALLERY_DOWNLOADS" />
 
     <field name="imgvotes"
            default="0"
@@ -29,14 +32,21 @@
            hidden="true" />
 
     <field name="imgvotesum"
+           type="text"
+           readonly="true"
            default="0"
-           label="COM_JOOMGALLERY_VOTESUM"
-           hidden="true" />
+           class="readonly"
+           label="COM_JOOMGALLERY_IMAGE_RATING" />
 
     <field name="approved"
+           type="list"
+           readonly="true"
            default="0"
-           label="COM_JOOMGALLERY_FORM_LBL_IMAGE_APPROVED"
-           hidden="true" />
+           class="readonly"
+           label="COM_JOOMGALLERY_APPROVED">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
 
     <field name="useruploaded"
            default="0"
@@ -48,7 +58,7 @@
            maxlength="255"
            filter="safehtml"
            required="true"
-           label="COM_JOOMGALLERY_IMAGES_NAME"
+           label="JGLOBAL_TITLE"
            message="COM_JOOMGALLERY_COMMON_ALERT_IMAGE_MUST_HAVE_TITLE" />
 
     <field name="alias"
@@ -56,25 +66,29 @@
            class="inputbox"
            generator="imgtitle"
            label="JALIAS"
-           description="COM_JOOMGALLERY_IMGMAN_ALIAS_TIP"
+           description="JFIELD_ALIAS_DESC"
            maxlength="255" />
 
     <field name="catid"
-           type="foreignkey"
-           label="COM_JOOMGALLERY_COMMON_CATEGORY"
+           type="jgcategorydropdown"
+           label="JCATEGORY"
            default=""
-           input_type="list"
-           table="#__joomgallery_categories"
-           key_field="id"
-           translate="true"
-           value_field="title"
+           show_root="false"
            required="true"
            message="COM_JOOMGALLERY_COMMON_ALERT_YOU_MUST_SELECT_CATEGORY" />
+
+    <field name="tags"
+           type="jgtag"
+           label="JTAG"
+           description="COM_JOOMGALLERY_FIELDS_TAG_DESC"
+           class="inputbox span12 small"
+           multiple="true" />
 
     <field name="published"
            type="radio"
            class="btn-group"
-           default="0"
+           layout="joomla.form.field.radio.switcher"
+           default="1"
            size="1"
            label="JPUBLISHED">
         <option value="0">JNO</option>
@@ -91,7 +105,9 @@
     <field name="language"
            type="language"
            client="administrator"
-           label="JGRID_HEADING_LANGUAGE" />
+           label="JGRID_HEADING_LANGUAGE">
+           <option value="*">JALL</option>
+		</field>
 
     <field name="imgtext"
            type="editor"
@@ -109,6 +125,7 @@
            type="radio"
            default="0"
            class="btn-group"
+           layout="joomla.form.field.radio.switcher"
            label="COM_JOOMGALLERY_HIDDEN"
            description="COM_JOOMGALLERY_FIELDS_HIDDEN_DESC">
         <option value="0">JNO</option>
@@ -119,6 +136,7 @@
            type="radio"
            default="0"
            class="btn-group"
+           layout="joomla.form.field.radio.switcher"
            label="JFEATURED"
            description="COM_JOOMGALLERY_FIELDS_FEATURED_DESC">
         <option value="0">JNO</option>
@@ -126,13 +144,21 @@
     </field>
 
     <field name="created_time"
-           type="timecreated"
-           class="readonly"
-           readonly="true"
+           type="calendar"
+           translateformat="true"
+           showtime="true"
+           size="22"
+           filter="user_utc"
            label="JGLOBAL_FIELD_CREATED_LABEL" />
 
     <field name="modified_time"
-           type="timeupdated"
+           type="calendar"
+           class="form-control"
+           translateformat="true"
+           showtime="true"
+           size="22"
+           readonly="true"
+           filter="user_utc"
            label="JGLOBAL_FIELD_MODIFIED_LABEL" />
 
     <field name="metadesc"
@@ -143,6 +169,8 @@
            default=""
            label="JGLOBAL_DESCRIPTION"
            description="JFIELD_META_DESCRIPTION_LABEL"
+           maxlength="160"
+           charcounter="true"
     />
 
     <field name="metakey"
@@ -167,9 +195,8 @@
     </field>
 
     <field name="filename"
-           type="imagelist"
-           required="true"
-           label="COM_JOOMGALLERY_IMAGES" />
+           type="hidden"
+           filter="stirng" />
 
     <field name="imgdate"
            type="calendar"
@@ -182,7 +209,7 @@
            todaybutton="true"
            weeknumbers="false"
            filltable="false"
-           default="1900-01-01 00:00:00"
+           default=""
            label="COM_JOOMGALLERY_IMGDATE"
            description="COM_JOOMGALLERY_IMGDATE_DESC" />
 
@@ -190,13 +217,14 @@
            type="editor"
            editor="codemirror"
            buttons="false"
+           default=""
            filter="JComponentHelper::filterText"
            label="COM_JOOMGALLERY_IMGMETADATA"
            description="COM_JOOMGALLERY_IMGMETADATA_DESC" />
 
     <field name="params"
            type="subform"
-           formsource="components/com_joomgallery/forms/subform_imageparams.xml"
+           formsource="administrator/components/com_joomgallery/forms/subform_imageparams.xml"
            layout="joomla.form.field.subform.default"
            label="COM_JOOMGALLERY_PARAMETERS" />
 

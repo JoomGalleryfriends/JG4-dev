@@ -10,6 +10,16 @@
       "uri": "com_joomgallery/admin.css"
     },
     {
+      "name": "com_joomgallery.site",
+      "type": "style",
+      "uri": "com_joomgallery/site.css"
+    },
+    {
+      "name": "com_joomgallery.refresher",
+      "type": "style",
+      "uri": "com_joomgallery/refresher.css"
+    },
+    {
       "name": "com_joomgallery.admin",
       "type": "script",
       "uri": "com_joomgallery/admin.js",
@@ -56,6 +66,19 @@
       "attributes": {
         "type": "module"
       }
+    },
+    {
+      "name": "com_joomgallery.uppy-uploader",
+      "type": "script",
+      "uri": "com_joomgallery/uppy/dist/uppy-uploader.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.uppy",
+      "type": "style",
+      "uri": "com_joomgallery/uppy.css"
     }
   ]
 }

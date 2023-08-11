@@ -123,10 +123,12 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
 	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Displayparams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
 	<div class="row">
-    <div class="col-lg-12">
-      <fieldset class="form-vertical">
-        <legend class="visually-hidden"><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
-				<?php echo $this->form->renderField('params'); ?>
+    <div class="col-12">
+      <fieldset id="fieldset-images-params" class="options-form">
+        <legend><?php echo Text::_('COM_JOOMGALLERY_PARAMETERS'); ?></legend>
+				<div class="control-group">
+          <div class="controls"><?php echo $this->form->getInput('params'); ?></div>
+        </div>
 			</fieldset>
 		</div>
 	</div>

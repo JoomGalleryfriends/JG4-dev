@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
-  <fieldset>
+  <fieldset name="general">
     <field name="ordering"/>
 
     <field name="id"
@@ -37,6 +37,7 @@
     <field name="published"
            type="radio"
            class="btn-group"
+           layout="joomla.form.field.radio.switcher"
            default="1"
            label="JPUBLISHED">
         <option value="0">JNO</option>
@@ -102,5 +103,20 @@
            class="inputbox"
            size="45"
            labelclass="control-label" />
+  </fieldset>
+  <fieldset name="accesscontrol">
+    <field name="asset_id"
+           type="hidden"
+           filter="unset" />
+
+    <field name="rules"
+           type="rules"
+           label="JFIELD_RULES_LABEL"
+           translate_label="false"
+           filter="rules"
+           validate="rules"
+           class="inputbox"
+           component="com_joomgallery"
+           section="tag" />
   </fieldset>
 </form>
