@@ -19,7 +19,7 @@ use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\ImagesModel as AdminImagesModel;
 
 /**
- * Methods supporting a list of Joomgallery records.
+ * Methods supporting a list of image records.
  * 
  * @package JoomGallery
  * @since   4.0.0
@@ -86,13 +86,11 @@ class ImagesModel extends AdminImagesModel
 	 */
 	protected function populateState($ordering = 'a.ordering', $direction = 'ASC')
 	{
-    $app  = Factory::getApplication('com_joomgallery');
-
     // List state information.
 		parent::populateState($ordering, $direction);
 
     // Load the componen parameters.
-		$params       = $app->getParams();
+		$params       = Factory::getApplication('com_joomgallery')->getParams();
 		$params_array = $params->toArray();
 
 		if(isset($params_array['item_id']))
@@ -173,39 +171,6 @@ class ImagesModel extends AdminImagesModel
 	 */
 	protected function loadFormData()
 	{
-		$app              = Factory::getApplication();
-		$filters          = $app->getUserState($this->context . '.filter', array());
-		$error_dateformat = false;
-
-		foreach($filters as $key => $value)
-		{
-			if(strpos($key, '_dateformat') && !empty($value) && $this->isValidDate($value) == null)
-			{
-				$filters[$key]    = '';
-				$error_dateformat = true;
-			}
-		}
-
-		if($error_dateformat)
-		{
-			$app->enqueueMessage(Text::_("COM_JOOMGALLERY_SEARCH_FILTER_DATE_FORMAT"), "warning");
-			$app->setUserState($this->context . '.filter', $filters);
-		}
-
 		return parent::loadFormData();
-	}
-
-	/**
-	 * Checks if a given date is valid and in a specified format (YYYY-MM-DD)
-	 *
-	 * @param   string  $date  Date to be checked
-	 *
-	 * @return bool
-	 */
-	private function isValidDate($date)
-	{
-		$date = str_replace('/', '-', $date);
-    
-		return (date_create($date)) ? Factory::getDate($date)->format("Y-m-d") : null;
 	}
 }

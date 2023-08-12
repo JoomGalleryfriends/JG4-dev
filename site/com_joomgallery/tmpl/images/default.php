@@ -28,13 +28,13 @@ $wa->useStyle('com_joomgallery.list')
    ->useScript('table.columns')
    ->useScript('multiselect');
 
-$listOrder  = $this->state->get('list.ordering');
-$listDirn   = $this->state->get('list.direction');
+$listOrder = $this->state->get('list.ordering');
+$listDirn  = $this->state->get('list.direction');
 $canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.image');
 $canAdd    = $this->acl->checkACL('add', 'com_joomgallery.image', 1, true);
 $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.image');
-$canOrder   = $this->acl->checkACL('editstate', 'com_joomgallery.image');
-$saveOrder  = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
+$canOrder  = $this->acl->checkACL('editstate', 'com_joomgallery.image');
+$saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 
 if($saveOrder && !empty($this->items))
 {
@@ -87,7 +87,7 @@ if($saveOrder && !empty($this->items))
                     <?php echo HTMLHelper::_('grid.sort',  'JCATEGORY', 'a.catid', $listDirn, $listOrder); ?>
                   </th>
 
-                  <?php if ($canEdit || $canDelete): ?>
+                  <?php if($canEdit || $canDelete): ?>
                     <th scope="col" class="w-3 d-none d-lg-table-cell text-center">
                       <?php echo Text::_('COM_JOOMGALLERY_ACTIONS'); ?>
                     </th>
@@ -169,7 +169,7 @@ if($saveOrder && !empty($this->items))
                   </td>
 
                   <?php if($canEdit || $canDelete): ?>
-                    <td class="center">
+                    <td class="d-none d-lg-table-cell text-center">
                       <?php if($canEdit && $item->checked_out == 0): ?>
                         <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.edit&id=' . $item->id, false, 2); ?>" class="btn btn-mini" type="button"><i class="icon-edit" ></i></a>
                       <?php endif; ?>
@@ -178,6 +178,7 @@ if($saveOrder && !empty($this->items))
                       <?php endif; ?>
                     </td>
                   <?php endif; ?>
+                  
                   <td class="d-none d-lg-table-cell text-center">
                     <span class="badge bg-info">
                       <?php echo (int) $item->published; ?>

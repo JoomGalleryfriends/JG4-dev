@@ -365,7 +365,7 @@ class JoomHelper
    *
    * @return  mixed             URL or path to the image on success, false otherwise
    *
-   * @since   1.5.5
+   * @since   4.0.0
    */
   public static function getImg($img, $type, $url=true, $root=true)
   {
@@ -470,6 +470,50 @@ class JoomHelper
         return $manager->getImgPath($img, $type, false, false, false);
       }
     }
+  }
+
+  /**
+   * Returns the URL or the path to a category-image
+   *
+   * @param   string/object/int $cat     Alias, database object or ID of the category
+   * @param   string            $type    The image type
+   * @param   bool              $url     True to return an image URL, false for a system path (default: true)
+   * @param   bool              $root    True to add the system root to path. Only if $url=false. (default: true)
+   *
+   * @return  mixed             URL or path to the image on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public static function getCatImg($cat, $type, $url=true, $root=true)
+  {
+    if(!\is_object($cat))
+    {
+      if(\is_numeric($cat))
+      {
+        if($cat == 0)
+        {
+          // ID = 0 given
+          return self::getImgZero($type, $url, $root);          
+        }
+        else
+        {
+          // get category based on ID
+          $cat = self::getRecord('category', $cat);
+        }
+      }
+      elseif(\is_string($cat))
+      {
+        // get category id based on alias
+        $cat = self::getRecord('category', $cat);
+      }
+      else
+      {
+        // no category given
+        return self::getImgZero($type, $url, $root); 
+      }
+    }
+
+    return self::getImg($cat->thumbnail, $type, $url, $root);
   }
 
   /**
