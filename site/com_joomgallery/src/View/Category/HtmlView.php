@@ -14,7 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Category;
 // No direct access
 defined('_JEXEC') or die;
 
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use \Joomla\CMS\MVC\View\GenericDataException;
+use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 
@@ -26,13 +27,35 @@ use \Joomla\CMS\Language\Text;
  */
 class HtmlView extends BaseHtmlView
 {
-	protected $state;
-
+	/**
+	 * The category object
+	 *
+	 * @var  \stdClass
+	 */
 	protected $item;
 
-	protected $form;
+	/**
+	 * The page parameters
+	 *
+	 * @var    array
+	 *
+	 * @since  4.0.0
+	 */
+	protected $params = array();
 
-	protected $params;
+	/**
+	 * The model state
+	 *
+	 * @var   \Joomla\CMS\Object\CMSObject
+	 */
+	protected $state;
+
+	/**
+	 * The Access service class
+	 *
+	 * @var   \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Access
+	 */
+	protected $acl;
 
 	/**
 	 * Display the view
@@ -40,43 +63,26 @@ class HtmlView extends BaseHtmlView
 	 * @param   string  $tpl  Template name
 	 *
 	 * @return void
-	 *
 	 * @throws Exception
 	 */
 	public function display($tpl = null)
 	{
-		$app  = Factory::getApplication();
-		$user = Factory::getUser();
-
-		$this->state  = $this->get('State');
-		$this->item   = $this->get('Item');
-		$this->params = $app->getParams('com_joomgallery');
-
-		if(!empty($this->item))
-		{
-			$this->form = $this->get('Form');
-		}
+		$this->state     = $this->get('State');
+		$this->params    = $this->get('Params');
+		$this->acl       = $this->get('Acl');
+		$this->item      = $this->get('Item');
 
 		// Check for errors.
 		if(count($errors = $this->get('Errors')))
 		{
-			throw new \Exception(implode("\n", $errors));
+			throw new GenericDataException(implode("\n", $errors), 500);
 		}
 
-		if(!in_array($this->item->access, $user->getAuthorisedViewLevels()))
+		// Check acces view level
+		if(!in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
-      throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
     }
-
-		if($this->_layout == 'edit')
-		{
-			$authorised = $user->authorise('core.create', 'com_joomgallery');
-
-			if($authorised !== true)
-			{
-				throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'));
-			}
-		}
 
 		$this->_prepareDocument();
 
@@ -102,14 +108,14 @@ class HtmlView extends BaseHtmlView
 
 		if($menu)
 		{
-			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+			$this->params['menu']->def('page_heading', $this->params['menu']->get('page_title', $menu->title));
 		}
 		else
 		{
-			$this->params->def('page_heading', Text::_('JoomGallery'));
+			$this->params['menu']->def('page_heading', Text::_('JoomGallery'));
 		}
 
-		$title = $this->params->get('page_title', '');
+		$title = $this->params['menu']->get('page_title', '');
 
 		if(empty($title))
 		{
@@ -126,19 +132,19 @@ class HtmlView extends BaseHtmlView
 
 		$this->document->setTitle($title);
 
-		if($this->params->get('menu-meta_description'))
+		if($this->params['menu']->get('menu-meta_description'))
 		{
-			$this->document->setDescription($this->params->get('menu-meta_description'));
+			$this->document->setDescription($this->params['menu']->get('menu-meta_description'));
 		}
 
-		if($this->params->get('menu-meta_keywords'))
+		if($this->params['menu']->get('menu-meta_keywords'))
 		{
-			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $this->params['menu']->get('menu-meta_keywords'));
 		}
 
-		if($this->params->get('robots'))
+		if($this->params['menu']->get('robots'))
 		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
+			$this->document->setMetadata('robots', $this->params['menu']->get('robots'));
 		}
 
     // Add Breadcrumbs

@@ -12,18 +12,12 @@
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Session\Session;
 
-$canEdit = Factory::getUser()->authorise('core.edit', 'com_joomgallery.' . $this->item->id);
-
-if (!$canEdit && Factory::getUser()->authorise('core.edit.own', 'com_joomgallery' . $this->item->id))
-{
-	$canEdit = Factory::getUser()->id == $this->item->created_by;
-}
+$canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
+$canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
+$canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
 ?>
 
 <h2><?php echo $this->item->title; ?></h2>
@@ -31,22 +25,22 @@ if (!$canEdit && Factory::getUser()->authorise('core.edit.own', 'com_joomgallery
 
 </br />
 
-<?php $canCheckin = Factory::getUser()->authorise('core.manage', 'com_joomgallery.' . $this->item->id) || $this->item->checked_out == Factory::getUser()->id; ?>
-
-<?php if($canEdit && $this->item->checked_out == 0): ?>
+<?php if($canEdit): ?>
   <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$this->item->id); ?>">
-    <?php echo Text::_("COM_JOOMGALLERY_CATEGORY_EDIT"); ?>
-  </a>
-<?php elseif($canCheckin && $this->item->checked_out > 0) : ?>
-  <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.checkin&id=' . $this->item->id .'&'. Session::getFormToken() .'=1'); ?>">
-    <?php echo Text::_("JLIB_HTML_CHECKIN"); ?>
+    <?php echo Text::_("JACTION_EDIT"); ?>
   </a>
 <?php endif; ?>
 
-<?php if (Factory::getUser()->authorise('core.delete','com_joomgallery.category.'.$this->item->id)) : ?>
+<?php if($canAdd): ?>
+  <a class="btn btn-outline-success" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id=0'); ?>">
+    <?php echo Text::_("JGLOBAL_FIELD_ADD"); ?>
+  </a>
+<?php endif; ?>
+
+<?php if($canDelete) : ?>
 
 	<a class="btn btn-danger" rel="noopener noreferrer" href="#deleteModal" role="button" data-bs-toggle="modal">
-		<?php echo Text::_("COM_JOOMGALLERY_COMMON_DELETE_CATEGORY_TIPCAPTION"); ?>
+		<?php echo Text::_("JACTION_DELETE"); ?>
 	</a>
 
 	<?php echo HTMLHelper::_( 'bootstrap.renderModal',
@@ -62,5 +56,5 @@ if (!$canEdit && Factory::getUser()->authorise('core.edit.own', 'com_joomgallery
                             ),
                             Text::_('COM_JOOMGALLERY_COMMON_ALERT_SURE_DELETE_SELECTED_ITEM')
                           );
-?>
+  ?>
 <?php endif; ?>

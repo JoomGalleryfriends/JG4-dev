@@ -20,6 +20,7 @@ use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\MVC\Model\ItemModel;
 use \Joomla\CMS\Helper\TagsHelper;
 use \Joomla\CMS\Object\CMSObject;
+use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
 
 /**
@@ -30,7 +31,30 @@ use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
  */
 class CategoryModel extends ItemModel
 {
-	public $_item;
+	/**
+   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   *
+   * @access  protected
+   * @var     object
+   */
+  var $component;
+
+	/**
+	 * Constructor
+	 *
+	 * @param   array                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).
+	 * @param   MVCFactoryInterface  $factory  The factory.
+	 *
+	 * @since   3.0
+	 * @throws  \Exception
+	 */
+	public function __construct($config = [], $factory = null)
+	{
+		parent::__construct($config, $factory);
+
+		// JoomGallery extension class
+		$this->component = Factory::getApplication()->bootComponent(_JOOM_OPTION);
+	}
 
 	/**
 	 * Method to auto-populate the model state.
@@ -68,7 +92,7 @@ class CategoryModel extends ItemModel
 
 		$this->setState('category.id', $id);
 
-		// Load the parameters.
+		// Load the componen parameters.
 		$params       = $app->getParams();
 		$params_array = $params->toArray();
 
@@ -77,13 +101,20 @@ class CategoryModel extends ItemModel
 			$this->setState('category.id', $params_array['item_id']);
 		}
 
-		$this->setState('params', $params);
+		$this->setState('parameters.component', $params);
+
+		// Load the configs from config service
+		$this->component->createConfig('com_joomgallery.category', $id, true);
+		$configArray = $this->component->getConfig()->getProperties();
+		$configs     = new Registry($configArray);
+
+		$this->setState('parameters.configs', $configs);
 	}
 
 	/**
-	 * Method to get an object.
+	 * Method to get the category item object.
 	 *
-	 * @param   integer $id The id of the object to get.
+	 * @param   integer  $id   The id of the object to get.
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
@@ -100,25 +131,9 @@ class CategoryModel extends ItemModel
 				$id = $this->getState('category.id');
 			}
 
-			// Get a level row instance.
-			$table = $this->getTable();
-
-			// Attempt to load the row.
-			if($table && $table->load($id))
-			{
-				// Check published state.
-				if($published = $this->getState('filter.published'))
-				{
-					if(isset($table->state) && $table->state != $published)
-					{
-						throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 403);
-					}
-				}
-
-				// Convert the Table to a clean CMSObject.
-				$properties  = $table->getProperties(1);
-				$this->_item = ArrayHelper::toObject($properties, CMSObject::class);
-			}
+			// Attempt to load the item
+			$adminModel = $this->component->getMVCFactory()->createModel('category', 'administrator');
+			$this->_item = $adminModel->getItem($id);
 
 			if(empty($this->_item))
 			{
@@ -126,17 +141,58 @@ class CategoryModel extends ItemModel
 			}
 		}
 
+		// Add created by name
 		if(isset($this->_item->created_by))
 		{
 			$this->_item->created_by_name = Factory::getUser($this->_item->created_by)->name;
 		}
 
+		// Add modified by name
 		if(isset($this->_item->modified_by))
 		{
 			$this->_item->modified_by_name = Factory::getUser($this->_item->modified_by)->name;
 		}
 
+		// Delete unnessecary properties
+		$toDelete = array('asset_id', 'password', 'params');
+		foreach($toDelete as $property)
+		{
+			unset($this->_item->{$property});
+		}
+
+		// Get child items
+		$this->_item->children = $adminModel->getChildren($this->_item->id);
+
 		return $this->_item;
+	}
+
+	/**
+	 * Method to get parameters from model state.
+	 *
+	 * @return  array   List of parameters
+	 */
+	public function getParams()
+	{
+		$params = array('component' => $this->getState('parameters.component'),
+										'menu'      => $this->getState('parameters.menu'),
+									  'configs'   => $this->getState('parameters.configs')
+									);
+
+		return $params;
+	}
+
+	/**
+	 * Method to get the params object.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 *
+	 * @throws Exception
+	 */
+	public function getAcl()
+	{
+		$this->component->createAccess();
+
+		return $this->component->getAccess();
 	}
 
 	/**
@@ -154,124 +210,6 @@ class CategoryModel extends ItemModel
 	}
 
 	/**
-	 * Get the id of an item by alias
-	 *
-	 * @param   string $alias Item alias
-	 *
-	 * @return  mixed
-	 */
-	public function getItemIdByAlias($alias)
-	{
-		$table      = $this->getTable();
-		$properties = $table->getProperties();
-		$result     = null;
-		$aliasKey   = null;
-
-		if(method_exists($this, 'getAliasFieldNameByView'))
-		{
-			$aliasKey   = $this->getAliasFieldNameByView('category');
-		}
-
-		if(key_exists('alias', $properties))
-		{
-			$table->load(array('alias' => $alias));
-			$result = $table->id;
-		}
-		elseif(isset($aliasKey) && key_exists($aliasKey, $properties))
-		{
-			$table->load(array($aliasKey => $alias));
-			$result = $table->id;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Method to check in an item.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkin($id = null)
-	{
-		// Get the id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('category.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Attempt to check the row in.
-			if(method_exists($table, 'checkin'))
-			{
-				if(!$table->checkin($id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Method to check out an item for editing.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkout($id = null)
-	{
-		// Get the user id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('category.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Get the current user object.
-			$user = Factory::getUser();
-
-			// Attempt to check the row out.
-			if(method_exists($table, 'checkout'))
-			{
-				if(!$table->checkout($user->get('id'), $id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Publish the element
-	 *
-	 * @param   int $id    Item id
-	 * @param   int $state Publish state
-	 *
-	 * @return  boolean
-	 */
-	public function publish($id, $state)
-	{
-		$table = $this->getTable();
-
-		$table->load($id);
-		$table->state = $state;
-
-		return $table->store();
-	}
-
-	/**
 	 * Method to delete an item
 	 *
 	 * @param   int $id Element id
@@ -283,27 +221,5 @@ class CategoryModel extends ItemModel
 		$table = $this->getTable();
 
 		return $table->delete($id);
-	}
-
-  /**
-	 * Get alias based on view name
-   * 
-   * @param  string  $view  view name
-	 *
-	 * @return string
-	 */
-	public function getAliasFieldNameByView($view)
-	{
-		switch ($view)
-		{
-			case 'image':
-			case 'imageform':
-				return 'alias';
-			break;
-			case 'category':
-			case 'categoryform':
-				return 'alias';
-			break;
-		}
 	}
 }

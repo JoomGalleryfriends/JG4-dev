@@ -12,14 +12,14 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Application\SiteApplication;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Multilanguage;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\MVC\Controller\BaseController;
-use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Uri\Uri;
-use \Joomla\Utilities\ArrayHelper;
+use \Joomla\Input\Input;
+use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Application\CMSApplication;
+use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use \Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * Image class.
@@ -29,6 +29,33 @@ use \Joomla\Utilities\ArrayHelper;
  */
 class ImageController extends BaseController
 {
+	/**
+   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   *
+   * @access  protected
+   * @var     object
+   */
+  var $component;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   array                $config   An optional associative array of configuration settings.
+	 *                                         Recognized key values include 'name', 'default_task', 'model_path', and
+	 *                                         'view_path' (this list is not meant to be comprehensive).
+	 * @param   MVCFactoryInterface  $factory  The factory.
+	 * @param   CMSApplication       $app      The Application for the dispatcher
+	 * @param   Input                $input    The Input object for the request
+	 *
+	 * @since   3.0
+	 */
+	public function __construct($config = [], MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
+	{
+		parent::__construct($config, $factory, $app, $input);
+
+		$this->component = $this->app->bootComponent(_JOOM_OPTION);
+	}
+
 	/**
 	 * Method to check out an item for editing and redirect to the edit form.
 	 *
@@ -40,14 +67,12 @@ class ImageController extends BaseController
 	 */
 	public function edit()
 	{
-		$app = Factory::getApplication();
-
 		// Get the previous edit id (if any) and the current edit id.
-		$previousId = (int) $app->getUserState('com_joomgallery.edit.image.id');
-		$editId     = $app->input->getInt('id', 0);
+		$previousId = (int) $this->app->getUserState('com_joomgallery.edit.image.id');
+		$editId     = $this->input->getInt('id', 0);
 
 		// Set the user id for the user to edit in the session.
-		$app->setUserState('com_joomgallery.edit.image.id', $editId);
+		$this->app->setUserState('com_joomgallery.edit.image.id', $editId);
 
 		// Get the model.
 		$model = $this->getModel('Image', 'Site');
@@ -78,9 +103,6 @@ class ImageController extends BaseController
 	 */
 	public function publish()
 	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
 		// Checking if the user can remove object
 		$user = Factory::getUser();
 
@@ -89,8 +111,8 @@ class ImageController extends BaseController
 			$model = $this->getModel('Image', 'Site');
 
 			// Get the user data.
-			$id    = $app->input->getInt('id');
-			$state = $app->input->getInt('state');
+			$id    = $this->input->getInt('id');
+			$state = $this->input->getInt('state');
 
 			// Attempt to save the data.
 			$return = $model->publish($id, $state);
@@ -102,14 +124,14 @@ class ImageController extends BaseController
 			}
 
 			// Clear the profile id from the session.
-			$app->setUserState('com_joomgallery.edit.image.id', null);
+			$this->app->setUserState('com_joomgallery.edit.image.id', null);
 
 			// Flush the data from the session.
-			$app->setUserState('com_joomgallery.edit.image.data', null);
+			$this->app->setUserState('com_joomgallery.edit.image.data', null);
 
 			// Redirect to the list screen.
 			$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVED_SUCCESSFULLY'));
-			$menu = Factory::getApplication()->getMenu();
+			$menu = $this->app->getMenu();
 			$item = $menu->getActive();
 
 			if(!$item)
@@ -180,9 +202,6 @@ class ImageController extends BaseController
 	 */
 	public function remove()
 	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
 		// Checking if the user can remove object
 		$user = Factory::getUser();
 
@@ -191,7 +210,7 @@ class ImageController extends BaseController
 			$model = $this->getModel('Image', 'Site');
 
 			// Get the user data.
-			$id = $app->input->getInt('id', 0);
+			$id = $this->input->getInt('id', 0);
 
 			// Attempt to save the data.
 			$return = $model->delete($id);
@@ -209,15 +228,15 @@ class ImageController extends BaseController
 					$model->checkin($return);
 				}
 
-				$app->setUserState('com_joomgallery.edit.image.id', null);
-				$app->setUserState('com_joomgallery.edit.image.data', null);
+				$this->app->setUserState('com_joomgallery.edit.image.id', null);
+				$this->app->setUserState('com_joomgallery.edit.image.data', null);
 
-				$app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFULLY'), 'success');
-				$app->redirect(Route::_('index.php?option=com_joomgallery&view=images', false));
+				$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFULLY'), 'success');
+				$this->app->redirect(Route::_('index.php?option=com_joomgallery&view=images', false));
 			}
 
 			// Redirect to the list screen.
-			$menu = Factory::getApplication()->getMenu();
+			$menu = $this->app->getMenu();
 			$item = $menu->getActive();
 			$this->setRedirect(Route::_($item->link, false));
 		}
