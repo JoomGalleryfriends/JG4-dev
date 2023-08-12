@@ -19,7 +19,7 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\MVC\Model\FormModel;
 use \Joomla\CMS\Object\CMSObject;
-use \Joomla\CMS\Helper\TagsHelper;
+use \Joomla\Registry\Registry;
 
 /**
  * Joomgallery model.
@@ -29,7 +29,32 @@ use \Joomla\CMS\Helper\TagsHelper;
  */
 class ImageformModel extends FormModel
 {
-	private $item = null;	
+  /**
+   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   *
+   * @access  protected
+   * @var     object
+   */
+  var $component;
+
+	private $item = null;
+
+  /**
+	 * Constructor
+	 *
+	 * @param   array                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).
+	 * @param   MVCFactoryInterface  $factory  The factory.
+	 *
+	 * @since   3.0
+	 * @throws  \Exception
+	 */
+	public function __construct($config = [], $factory = null)
+	{
+		parent::__construct($config, $factory);
+
+		// JoomGallery extension class
+		$this->component = Factory::getApplication()->bootComponent(_JOOM_OPTION);
+	}
 
 	/**
 	 * Method to auto-populate the model state.
@@ -68,7 +93,14 @@ class ImageformModel extends FormModel
 			$this->setState('image.id', $params_array['item_id']);
 		}
 
-		$this->setState('params', $params);
+		$this->setState('parameters.component', $params);
+
+    // Load the configs from config service
+		$this->component->createConfig('com_joomgallery.image', $id, true);
+		$configArray = $this->component->getConfig()->getProperties();
+		$configs     = new Registry($configArray);
+
+		$this->setState('parameters.configs', $configs);
 	}
 
 	/**
@@ -136,6 +168,35 @@ class ImageformModel extends FormModel
 		}
 
 		return $this->item;
+	}
+
+  /**
+	 * Method to get parameters from model state.
+	 *
+	 * @return  array   List of parameters
+	 */
+	public function getParams()
+	{
+		$params = array('component' => $this->getState('parameters.component'),
+										'menu'      => $this->getState('parameters.menu'),
+									  'configs'   => $this->getState('parameters.configs')
+									);
+
+		return $params;
+	}
+
+  /**
+	 * Method to get the params object.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 *
+	 * @throws Exception
+	 */
+	public function getAcl()
+	{
+		$this->component->createAccess();
+
+		return $this->component->getAccess();
 	}
 
 	/**
@@ -388,18 +449,6 @@ class ImageformModel extends FormModel
 		}
 
 		return $id;		
-	}
-
-	/**
-	 * Check if data can be saved
-	 *
-	 * @return bool
-	 */
-	public function getCanSave()
-	{
-		$table = $this->getTable();
-
-		return $table !== false;
 	}
 
   /**

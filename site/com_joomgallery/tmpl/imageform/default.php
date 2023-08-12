@@ -15,7 +15,6 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
 
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
@@ -28,16 +27,16 @@ $lang->load('com_joomgallery', JPATH_SITE);
 $lang->load('com_joomgallery', JPATH_ADMINISTRATOR);
 $lang->load('joomla', JPATH_ADMINISTRATOR);
 
-$user    = Factory::getUser();
-$canEdit = JoomHelper::canUserEdit($this->item, $user);
+$canEdit  = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
+$canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
 ?>
 
 <div class="image-edit front-end-edit">
-	<?php if (!$canEdit) : ?>
+	<?php if(!$canEdit) : ?>
 		<h2><?php throw new \Exception(Text::_('COM_JOOMGALLERY_COMMON_MSG_NOT_ALLOWED_TO_EDIT_IMAGE'), 403); ?></h2>
 	<?php else : ?>
 		<?php if (!empty($this->item->id)): ?>
-			<h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE_NEW').': '.$this->item->id; ?></h2>
+			<h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE').': '.$this->item->id; ?></h2>
 		<?php else: ?>
 			<h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE_NEW'); ?></h2>
 		<?php endif; ?>
@@ -46,67 +45,42 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
 			    method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
 
       <input type="hidden" name="jform[ordering]" value="<?php echo isset($this->item->ordering) ? $this->item->ordering : ''; ?>" />
-
       <input type="hidden" name="jform[checked_out]" value="<?php echo isset($this->item->checked_out) ? $this->item->checked_out : ''; ?>" />
-
       <input type="hidden" name="jform[hits]" value="<?php echo isset($this->item->hits) ? $this->item->hits : ''; ?>" />
-
       <input type="hidden" name="jform[downloads]" value="<?php echo isset($this->item->downloads) ? $this->item->downloads : ''; ?>" />
-
       <input type="hidden" name="jform[imgvotes]" value="<?php echo isset($this->item->imgvotes) ? $this->item->imgvotes : ''; ?>" />
-
       <input type="hidden" name="jform[imgvotesum]" value="<?php echo isset($this->item->imgvotesum) ? $this->item->imgvotesum : ''; ?>" />
-
       <input type="hidden" name="jform[approved]" value="<?php echo isset($this->item->approved) ? $this->item->approved : ''; ?>" />
-
       <input type="hidden" name="jform[useruploaded]" value="<?php echo isset($this->item->useruploaded) ? $this->item->useruploaded : ''; ?>" />
 
       <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'Details')); ?>
       <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Details', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
         <?php echo $this->form->renderField('imgtitle'); ?>
-
         <?php echo $this->form->renderField('alias'); ?>
-
         <?php echo $this->form->renderField('catid'); ?>
-
         <?php echo $this->form->renderField('published'); ?>
-
         <?php echo $this->form->renderField('imgauthor'); ?>
-
         <?php echo $this->form->renderField('language'); ?>
-
         <?php echo $this->form->renderField('imgtext'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
       <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING', true)); ?>
         <?php echo $this->form->renderField('access'); ?>
-
         <?php echo $this->form->renderField('hidden'); ?>
-
         <?php echo $this->form->renderField('featured'); ?>
-
         <?php echo $this->form->renderField('created_time'); ?>
-
         <?php echo $this->form->renderField('created_by'); ?>
-
         <?php echo $this->form->renderField('modified_time'); ?>
-
         <?php echo $this->form->renderField('modified_by'); ?>
-
         <?php echo $this->form->renderField('id'); ?>
-
         <?php echo $this->form->renderField('metadesc'); ?>
-
         <?php echo $this->form->renderField('metakey'); ?>
-
         <?php echo $this->form->renderField('robots'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
       <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
         <?php echo $this->form->renderField('filename'); ?>
-
         <?php echo $this->form->renderField('imgdate'); ?>
-
         <?php echo $this->form->renderField('imgmetadata'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
@@ -127,7 +101,7 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
       <?php endif; ?>
 
-      <?php if (!Factory::getUser()->authorise('core.admin','joomgallery'))
+      <?php if(!Factory::getUser()->authorise('core.admin','joomgallery'))
       {
         $wa->addInlineScript("
             jQuery.noConflict();
@@ -144,11 +118,9 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
 
       <div class="control-group">
         <div class="controls">
-          <?php if ($this->canSave): ?>
-            <button type="submit" class="validate btn btn-primary">
-              <span class="fas fa-check" aria-hidden="true"></span> <?php echo Text::_('JSUBMIT'); ?>
-            </button>
-          <?php endif; ?>
+          <button type="submit" class="validate btn btn-primary">
+            <span class="fas fa-check" aria-hidden="true"></span> <?php echo Text::_('JSUBMIT'); ?>
+          </button>
           <a class="btn btn-danger" href="<?php echo Route::_('index.php?option=com_joomgallery&task=imageform.cancel'); ?>" title="<?php echo Text::_('JCANCEL'); ?>">
             <span class="fas fa-times" aria-hidden="true"></span> <?php echo Text::_('JCANCEL'); ?>
           </a>

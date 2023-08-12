@@ -30,45 +30,6 @@ use Joomla\Utilities\ArrayHelper;
 class ImageformController extends FormController
 {
 	/**
-	 * Method to check out an item for editing and redirect to the edit form.
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 *
-	 * @throws  Exception
-	 */
-	public function edit($key = NULL, $urlVar = NULL)
-	{
-		$app = Factory::getApplication();
-
-		// Get the previous edit id (if any) and the current edit id.
-		$previousId = (int) $app->getUserState('com_joomgallery.edit.image.id');
-		$editId     = $app->input->getInt('id', 0);
-
-		// Set the user id for the user to edit in the session.
-		$app->setUserState('com_joomgallery.edit.image.id', $editId);
-
-		// Get the model.
-		$model = $this->getModel('Imageform', 'Site');
-
-		// Check out the item
-		if($editId)
-		{
-			$model->checkout($editId);
-		}
-
-		// Check in the previous user.
-		if($previousId)
-		{
-			$model->checkin($previousId);
-		}
-
-		// Redirect to the edit screen.
-		$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=imageform&layout=edit', false));
-	}
-
-	/**
 	 * Method to save data.
 	 *
 	 * @return  void
