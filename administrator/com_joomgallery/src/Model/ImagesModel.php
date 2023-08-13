@@ -16,7 +16,6 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
-use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
@@ -105,23 +104,28 @@ class ImagesModel extends JoomListModel
 			$this->context .= '.' . $forcedLanguage;
 		}
 
+    // List state information.
+		parent::populateState($ordering, $direction);
+
+    // States with one value
     $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
-
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '*');
 		$this->setState('filter.published', $published);
-
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
 		$this->setState('filter.language', $language);
+    $showunapproved = $this->getUserStateFromRequest($this->context . '.filter.showunapproved', 'filter_showunapproved', '1');
+    $this->setState('filter.showunapproved', $showunapproved);
+    $showhidden = $this->getUserStateFromRequest($this->context . '.filter.showhidden', 'filter_showhidden', '1');
+    $this->setState('filter.showhidden', $showhidden);
 
-		$formSubmited = $app->input->post->get('form_submited');
-
-    // Gets the value of a user state variable and sets it in the session
+    // States with multiple values
 		$this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
 		$this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by');
 		$this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category');
 		//$this->getUserStateFromRequest($this->context . '.filter.tag', 'filter_tag', '');
 
+    $formSubmited = $app->input->post->get('form_submited');
     if($formSubmited)
 		{
 			$access = $app->input->post->get('access');
@@ -136,9 +140,6 @@ class ImagesModel extends JoomListModel
 			// $tag = $app->input->post->get('tag');
 			// $this->setState('filter.tag', $tag);
 		}
-
-		// List state information.
-		parent::populateState($ordering, $direction);
 
 		// Force a language
 		if (!empty($forcedLanguage))
@@ -164,12 +165,14 @@ class ImagesModel extends JoomListModel
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
-		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . serialize($this->getState('filter.access'));
-		$id .= ':' . $this->getState('filter.published');
-		$id .= ':' . serialize($this->getState('filter.category'));
-		$id .= ':' . serialize($this->getState('filter.created_by'));
+		$id .= ':' . $this->getState('filter.search');		
+		$id .= ':' . $this->getState('filter.published');		
 		$id .= ':' . $this->getState('filter.language');
+    $id .= ':' . $this->getState('filter.showunapproved');
+    $id .= ':' . $this->getState('filter.showhidden');
+    $id .= ':' . serialize($this->getState('filter.access'));
+    $id .= ':' . serialize($this->getState('filter.created_by'));
+    $id .= ':' . serialize($this->getState('filter.category'));
 		//$id .= ':' . serialize($this->getState('filter.tag'));
 
 		return parent::getStoreId($id);
@@ -317,6 +320,22 @@ class ImagesModel extends JoomListModel
 					->bind(':state', $state, ParameterType::INTEGER);
         }        
 			}
+		}
+
+    // Filter by hidden images
+    $showhidden = (bool) $this->getState('filter.showhidden');
+
+    if(!$showhidden)
+		{
+      $query->where($db->quoteName('a.hidden') . ' = 0');
+		}
+
+    // Filter by unapproved images
+    $showunapproved = (bool) $this->getState('filter.showunapproved');
+
+    if(!$showunapproved)
+		{
+      $query->where($db->quoteName('a.approved') . ' = 1');
 		}
 
     // Filter by categories

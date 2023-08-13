@@ -67,22 +67,28 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$this->state     = $this->get('State');
-		$this->params    = $this->get('Params');
-		$this->acl       = $this->get('Acl');
-		$this->item      = $this->get('Item');
-
-		// Check for errors.
-		if(count($errors = $this->get('Errors')))
-		{
-			throw new GenericDataException(implode("\n", $errors), 500);
-		}
+		$this->state  = $this->get('State');
+		$this->params = $this->get('Params');
+		$this->acl    = $this->get('Acl');
+		$this->item   = $this->get('Item');
 
 		// Check acces view level
 		if(!in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
     }
+
+    // Load subcategories
+    $this->item->children = $this->get('Children');
+
+    // Load images
+    $this->item->images = $this->get('Images');
+
+    // Check for errors.
+		if(count($errors = $this->get('Errors')))
+		{
+			throw new GenericDataException(implode("\n", $errors), 500);
+		}
 
 		$this->_prepareDocument();
 

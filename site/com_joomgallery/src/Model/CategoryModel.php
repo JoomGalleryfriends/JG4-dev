@@ -14,14 +14,11 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\MVC\Model\ItemModel;
-use \Joomla\CMS\Helper\TagsHelper;
-use \Joomla\CMS\Object\CMSObject;
 use \Joomla\Registry\Registry;
-use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
+use Joomla\CMS\Language\Multilanguage;
 
 /**
  * Joomgallery model.
@@ -118,7 +115,7 @@ class CategoryModel extends ItemModel
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function getItem($id = null)
 	{
@@ -165,6 +162,112 @@ class CategoryModel extends ItemModel
 
 		return $this->_item;
 	}
+
+  /**
+	 * Method to get the children categories.
+	 *
+	 * @return  array|false    Array of children on success, false on failure.
+	 *
+	 * @throws Exception
+	 */
+  public function getChildren()
+  {
+    if($this->_item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'administrator');
+    $listModel->getState();
+    
+    // Select fields to load
+    $fields = array('id', 'alias', 'title', 'description', 'thumbnail');
+    $fields = $this->addColumnPrefix('a', $fields);
+    $listModel->setState('list.select', $fields);
+
+    // Get current user
+    $user = Factory::getUser();
+
+    // Apply filters
+    $listModel->setState('filter.category', $this->_item->id);
+    $listModel->setState('filter.level', 2);
+    $listModel->setState('filter.showself', 0);
+    $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
+    $listModel->setState('filter.published', 1);
+    $listModel->setState('filter.showhidden', 0);
+    $listModel->setState('filter.showempty', 0);
+
+    if(Multilanguage::isEnabled())
+    {
+      $listModel->setState('filter.language', $this->_item->language);
+    }
+
+    // Apply ordering
+    $listModel->setState('list.fullordering', 'a.lft ASC');
+
+    // Get children
+    $items = $listModel->getItems();
+
+    if(!empty($listModel->getError()))
+    {
+      $this->setError($listModel->getError());
+    }
+
+    return $items;
+  }
+
+  /**
+	 * Method to get the images in this category.
+	 *
+	 * @return  array|false    Array of images on success, false on failure.
+	 *
+	 * @throws Exception
+	 */
+  public function getImages()
+  {
+    if($this->_item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load images list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'administrator');
+    $listModel->getState();
+
+    // Select fields to load
+    $fields = array('id', 'alias', 'imgtitle', 'imgtext', 'imgauthor', 'imgdate', 'hits', 'imgvotes', 'imgvotesum');
+    $fields = $this->addColumnPrefix('a', $fields);
+    $listModel->setState('list.select', $fields);
+
+    // Get current user
+    $user = Factory::getUser();
+
+    // Apply filters
+    $listModel->setState('filter.category', $this->_item->id);
+    $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
+    $listModel->setState('filter.published', 1);
+    $listModel->setState('filter.showunapproved', 0);
+    $listModel->setState('filter.showhidden', 0);
+
+    if(Multilanguage::isEnabled())
+    {
+      $listModel->setState('filter.language', $this->_item->language);
+    }
+
+    // Apply ordering
+    $listModel->setState('list.fullordering', 'a.id ASC');
+
+    // Get images
+    $items = $listModel->getItems();
+
+    if(!empty($listModel->getError()))
+    {
+      $this->setError($listModel->getError());
+    }
+
+    return $items;
+  }
 
 	/**
 	 * Method to get parameters from model state.
@@ -222,4 +325,27 @@ class CategoryModel extends ItemModel
 
 		return $table->delete($id);
 	}
+
+  /**
+	 * Method to add a prefix to a list of field names
+	 *
+	 * @param   string  $prefix   The prefix to apply
+   * @param   array   $fields   List of fields
+	 *
+	 * @return  array   List of fields with applied prefix
+	 */
+  protected function addColumnPrefix(string $prefix, array $fields): array
+  {
+    foreach($fields as $key => $field)
+    {
+      $field = (string) $field;
+
+      if(\strpos($field, $prefix.'.') === false)
+      {
+        $fields[$key] = $prefix . '.' . $field;
+      }
+    }
+
+    return $fields;
+  }
 }

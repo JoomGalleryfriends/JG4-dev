@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Images;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;

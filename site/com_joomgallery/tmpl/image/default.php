@@ -43,27 +43,31 @@ $wa->useStyle('com_joomgallery.site');
 	<table class="table">
 		<tr>
 			<th><?php echo Text::_('JCATEGORY'); ?></th>
-			<td><?php echo $this->item->catid; ?></td>
+			<td>
+        <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->catid); ?>">
+          <?php echo $this->escape($this->item->cat_title); ?>
+        </a>
+      </td>
 		</tr>
 
 		<tr>
 			<th><?php echo Text::_('JAUTHOR'); ?></th>
-			<td><?php echo $this->item->imgauthor; ?></td>
+			<td><?php echo $this->escape($this->item->imgauthor); ?></td>
 		</tr>
 
 		<tr>
 			<th><?php echo Text::_('COM_JOOMGALLERY_IMGDATE'); ?></th>
-			<td><?php echo $this->item->imgdate; ?></td>
+			<td><?php echo $this->escape($this->item->imgdate); ?></td>
 		</tr>
 
     <tr>
 			<th><?php echo Text::_('JGLOBAL_HITS'); ?></th>
-			<td><?php echo $this->item->hits; ?></td>
+			<td><?php echo (int) $this->item->hits; ?></td>
 		</tr>
 
     <tr>
 			<th><?php echo Text::_('COM_JOOMGALLERY_DOWNLOADS'); ?></th>
-			<td><?php echo $this->item->downloads; ?></td>
+			<td><?php echo (int) $this->item->downloads; ?></td>
 		</tr>
 
     <tr>

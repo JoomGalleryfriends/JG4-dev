@@ -42,7 +42,7 @@ if($saveOrder && !empty($this->items))
 }
 ?>
 
-<form action="<?php echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
+<form class="jg-images" action="<?php echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->filterForm)) { echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); } ?>
 	<div class="row">
 		<div class="col-md-12">
@@ -55,7 +55,7 @@ if($saveOrder && !empty($this->items))
       <?php else : ?>
         <div class="clearfix"></div>	
 				<div class="table-responsive">
-					<table class="table table-striped" id="categoryList">
+					<table class="table table-striped itemList" id="categoryList">
 						<caption class="visually-hidden">
               <?php echo Text::_('COM_JOOMGALLERY_CATEGORIES_TABLE_CAPTION'); ?>,
               <span id="orderedBy"><?php echo Text::_('JGLOBAL_SORTED_BY'); ?> </span>,
@@ -178,7 +178,7 @@ if($saveOrder && !empty($this->items))
                   </td>
 
 									<td class="d-none d-lg-table-cell text-center">
-										<?php echo $this->escape($item->parent_title); ?>
+										<?php echo ($item->parent_title == 'Root') ? '--' : $this->escape($item->parent_title); ?>
 									</td>
 
 									<?php if($canEdit || $canDelete): ?>
@@ -193,9 +193,7 @@ if($saveOrder && !empty($this->items))
 									<?php endif; ?>
 
 									<td class="d-none d-lg-table-cell text-center">
-                    <span class="badge bg-info">
-                      <?php echo (int) $item->published; ?>
-                    </span>
+                    <i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>"></i>
                   </td>
 
 								</tr>

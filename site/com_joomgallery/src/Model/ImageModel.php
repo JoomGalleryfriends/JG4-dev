@@ -155,7 +155,7 @@ class ImageModel extends ItemModel
 				}
 			}
 
-			$this->_item->catid = !empty($textValue) ? implode(', ', $textValue) : $this->_item->catid;
+			$this->_item->cat_title = implode(', ', $textValue);
 		}
 
 		if(isset($this->_item->created_by))
