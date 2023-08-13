@@ -84,6 +84,10 @@ class HtmlView extends JoomGalleryView
 		// Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR . '/src/View/Faulties';
 
+		// Show button back to control panel
+		$html = '<a href="index.php?option=com_joomgallery&amp;view=control" class="btn btn-primary"><span class="icon-arrow-left-4" title="'.Text::_('COM_JOOMGALLERY_CONTROL_PANEL').'"></span> '.Text::_('COM_JOOMGALLERY_CONTROL_PANEL').'</a>';
+		$toolbar->appendButton('Custom', $html);
+
 		if(file_exists($formPath))
 		{
 			if($canDo->get('core.create'))
