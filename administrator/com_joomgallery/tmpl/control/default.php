@@ -50,6 +50,7 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
           ?>
         </div>
       </div>
+      <hr>
 
       <?php // Render admin modules in position joom_cpanel ?>
       <?php foreach ($this->modules as $module)
@@ -63,12 +64,16 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
       $id      = '123';
 
       collapseContent($title, $content, $id);
-
       ?>
       <hr>
-      <?php
 
-      // Display system info
+      <?php // Display installed extensions ?>
+      <div class="card">
+        <?php DisplayInstalledExtensions($this->galleryinstalledextensionsdata); ?>
+      </div>
+      <hr>
+
+      <?php // Display system info
       $title   = Text::_('System info');
       $content = 'PHP version<br /> <br />memory_limit<br /> <br />Post Max Size<br /> <br />max_upload_size<br /> <br />max_input_vars<br /> <br /GD Available<br />...? ';
       $id      = '234';
@@ -120,11 +125,13 @@ function DisplayGalleryStatistic($statisticdata)
                   <th scope="col" class="w-10">
                     <?php echo Text::_('COM_JOOMGALLERY_CONTROL_CONTENT'); ?>
                   </th>
-                  <td class="w-1">
-                    <span class="icon-delete" title="<?php echo Text::_('JUNPUBLISHED'); ?>" aria-label="unpublished" data-bs-original-title="unpublished"></span>
+                  <td class="w-1 text-center">
+                    <?php echo Text::_('JUNPUBLISHED'); ?><br />
+                    <span class="icon-delete text-center" title="<?php echo Text::_('JUNPUBLISHED'); ?>" aria-label="unpublished" data-bs-original-title="unpublished"></span>
                   </td>
-                  <td class="w-1">
-                    <span class="icon-publish" title="<?php echo Text::_('JPUBLISHED'); ?>"></span>
+                  <td class="w-1 text-center">
+                    <?php echo Text::_('JPUBLISHED'); ?><br />
+                    <span class="icon-publish text-center" title="<?php echo Text::_('JPUBLISHED'); ?>"></span><br />
                   </td>
                 </tr>
               </thead>
@@ -133,7 +140,7 @@ function DisplayGalleryStatistic($statisticdata)
                   <th scope="col" class="w-10 d-md-table-cell">
                     <?php echo Text::_('JCATEGORIES'); ?>
                   </th>
-                  <td class="d-md-table-cell">
+                  <td class="d-md-table-cell text-center">
                   <?php if($statisticdata['unpublishedcategories'] > 0) : ?>
                     <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=0'); ?>">
                     <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedcategories']; ?></span>
@@ -142,7 +149,7 @@ function DisplayGalleryStatistic($statisticdata)
                     <span class="badge bg-info">0</span>
                   <?php endif; ?>
                   </td>
-                  <td class="d-md-table-cell">
+                  <td class="d-md-table-cell text-center">
                   <?php if($statisticdata['publishedcategories'] > 0) : ?>
                     <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=1'); ?>">
                     <span class="badge bg-info"><?php echo (int) $statisticdata['publishedcategories']; ?></span>
@@ -156,7 +163,7 @@ function DisplayGalleryStatistic($statisticdata)
                   <th scope="col" class="w-10 d-md-table-cell">
                     <?php echo Text::_('COM_JOOMGALLERY_IMAGES'); ?>
                   </th>
-                  <td class="d-md-table-cell">
+                  <td class="d-md-table-cell text-center">
                   <?php if($statisticdata['unpublishedimages'] > 0) : ?>
                     <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=2'); ?>">
                       <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedimages']; ?></span>
@@ -165,7 +172,7 @@ function DisplayGalleryStatistic($statisticdata)
                     <span class="badge bg-info">0</span>
                   <?php endif; ?>
                   </td>
-                  <td class="d-md-table-cell">
+                  <td class="d-md-table-cell text-center">
                   <?php if($statisticdata['publishedimages'] > 0) : ?>
                     <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=1'); ?>">
                       <span class="badge bg-info"><?php echo (int) $statisticdata['publishedimages']; ?></span>
@@ -179,7 +186,7 @@ function DisplayGalleryStatistic($statisticdata)
                   <th scope="col" class="w-10 d-md-table-cell">
                     <?php echo Text::_('COM_JOOMGALLERY_CONTROL_IMAGES_UNAPPROVED'); ?>
                   </th>
-                  <td class="d-md-table-cell">
+                  <td class="d-md-table-cell text-center">
                   <?php if($statisticdata['unapprovedimages'] > 0) : ?>
                     <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=4'); ?>">
                       <span class="badge bg-info"><?php echo (int) $statisticdata['unapprovedimages']; ?></span>
@@ -256,6 +263,94 @@ function DisplayGalleryInfo($manifest)
           </div>
 
 <?php   return;
+}
+
+/**
+ * Display installed extensions as collapsed
+ *
+ * @param   array  $manifest  Array with hold the extensions data, $manifest[0}=extension id, $manifest[1]=state, $manifest[2]=array of data
+ *
+ * @since 4.0.0
+ */
+function DisplayInstalledExtensions($manifest)
+{
+
+  $id     = 'installedextensions-100';
+  $itemId = $id . '-item';
+
+  ?>
+  <div class="accordion" id="<?php echo $id; ?>">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+          <?php echo Text::_('COM_JOOMGALLERY_CONTROL_INSTALLED_EXTENSIONS'); ?>
+        </button>
+      </h2>
+      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+        <div class="accordion-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <td class="w-5">
+                  <?php echo Text::_('Name'); ?>
+                </td>
+                <td class="w-10">
+                   <?php echo Text::_('JVERSION'); ?>
+                </td>
+                <td class="w-10">
+                  <?php echo Text::_('JDate'); ?>
+                </td>
+                <td class="w-10">
+                   <?php echo Text::_('JAUTHOR'); ?>
+                </td>
+                <td class="w-10">
+                   <?php echo Text::_('JENABLED'); ?>
+                </td>
+                <td class="w-10">
+                   <?php echo Text::_('ID'); ?>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($manifest as list($extension_id, $enabled, $extension_data)) {
+                $value = json_decode($extension_data, true); ?>
+                <tr>
+                  <td class="d-md-table-cell">
+                    <?php echo $value['name']; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value['version']; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value['creationDate']; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value['author']; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                        <?php if ($enabled === 1) : ?>
+                          <span class="icon-publish text-center" title="<?php echo Text::_('JENABLED'); ?>"></span>
+                        <?php else : ?>
+                          <span class="icon-delete text-center" title="<?php echo Text::_('JDISABLED'); ?>"></span>
+                        <?php endif; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $extension_id; ?>
+                  </td>
+                </tr>
+                <?php
+                } ?>
+            </tbody>
+          </table>
+        </div>
+      </div><!--/accordion-collapse-->
+    </div><!--/accordion-item-->
+  </div><!--/accordion -->
+
+  <?php return;
+
 }
 
 

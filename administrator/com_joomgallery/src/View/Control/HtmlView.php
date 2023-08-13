@@ -64,6 +64,9 @@ class HtmlView extends JoomGalleryView
     // get gallery info data
     $this->galleryinfodata = $this->getGalleryInfoData();
 
+    // get installed extensions data
+    $this->galleryinstalledextensionsdata = $this->getInstalledExtensionsData();
+
     $this->addToolbar();
 
 /*
@@ -186,6 +189,33 @@ protected function getGalleryInfoData()
   return $galleryinfodata;
 }
 
+/**
+ * Method to get the installed JoomgGallery extensions
+ *
+ * @return   array   Array with extensions data
+ *
+ * @since 4.0.0
+ */
+protected function getInstalledExtensionsData()
+{
+  $InstalledExtensionsData = array();
+
+  $db = Factory::getDbo();
+
+  $query = $db->getQuery(true)
+              ->select($db->quoteName(array('extension_id', 'enabled', 'manifest_cache')))
+              ->from($db->quoteName('#__extensions'))
+              ->where($db->quoteName('name')     . ' like ' . $db->quote('%joomgallery%'))
+              ->where($db->quoteName('name')     . ' != '   . $db->quote('com_joomgallery'))
+              ->orWhere($db->quoteName('folder') . ' like ' . $db->quote('%joomgallery%'));
+
+  $db->setQuery($query);
+
+  $InstalledExtensionsData = $db->loadRowList();
+
+  return $InstalledExtensionsData;
+}
+
   /**
    * Add the page title and toolbar.
    *
@@ -216,9 +246,12 @@ protected function getGalleryInfoData()
     $toolbar->appendButton('Custom', $html);
 
     // Configs button
-    $html = '<a href="index.php?option=com_joomgallery&amp;view=configs" class="btn btn-primary"><span class="icon-cogs" title="'.Text::_('COM_JOOMGALLERY_CONFIG_SETS').'"></span> '.Text::_('COM_JOOMGALLERY_CONFIG_SETS').'</a>';
+    $html = '<a href="index.php?option=com_joomgallery&amp;view=configs" class="btn btn-primary"><span class="icon-sliders-h" title="'.Text::_('COM_JOOMGALLERY_CONFIG_SETS').'"></span> '.Text::_('COM_JOOMGALLERY_CONFIG_SETS').'</a>';
     $toolbar->appendButton('Custom', $html);
 
+    // Maintenance button
+    $html = '<a href="index.php?option=com_joomgallery&amp;view=faulties" class="btn btn-primary"><span class="icon-wrench" title="'.Text::_('COM_JOOMGALLERY_MAINTENANCE').'"></span> '.Text::_('COM_JOOMGALLERY_MAINTENANCE').'</a>';
+    $toolbar->appendButton('Custom', $html);
 
     if($this->canDo->get('core.admin'))
     {
