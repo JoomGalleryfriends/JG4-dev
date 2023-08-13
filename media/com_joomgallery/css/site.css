@@ -14,7 +14,7 @@
   margin-right: 1rem !important;
 }
 
-/* Image list view */
+/* List view */
 .jg_minithumb {
   border: 0;
   height: 80px;
@@ -25,6 +25,12 @@ img.jg_minithumb {
   max-width: 80px;
   object-fit: contain;
   border: 1px solid #ddd;
+}
+table.itemList td [class^="icon-"],
+table.itemList td [class*=" icon-"],
+table.itemList th [class^="icon-"],
+table.itemList th [class*="icon-"] {
+  font-size: 1.4rem;
 }
 
 /* Single image view */

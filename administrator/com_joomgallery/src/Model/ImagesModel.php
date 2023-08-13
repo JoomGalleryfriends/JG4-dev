@@ -108,10 +108,10 @@ class ImagesModel extends JoomListModel
     $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '*');
 		$this->setState('filter.published', $published);
 
-		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
+		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
 		$this->setState('filter.language', $language);
 
 		$formSubmited = $app->input->post->get('form_submited');
@@ -122,7 +122,7 @@ class ImagesModel extends JoomListModel
 		$this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category');
 		//$this->getUserStateFromRequest($this->context . '.filter.tag', 'filter_tag', '');
 
-    if ($formSubmited)
+    if($formSubmited)
 		{
 			$access = $app->input->post->get('access');
 			$this->setState('filter.access', $access);
@@ -374,15 +374,7 @@ class ImagesModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'a.id'); 
 		$orderDirn = $this->state->get('list.direction', 'ASC');
-
-		// if($orderCol && $orderDirn)
-		// {
-    //   $query->order($db->escape($orderCol . ' ' . $orderDirn));
-		// }
-    // else
-    // {
-      $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
-    // }
+    $query->order($db->escape($this->state->get('list.fullordering', $orderCol.' '.$orderDirn)));
 
 		return $query;
 	}

@@ -89,6 +89,9 @@ class ImagesModel extends AdminImagesModel
     // List state information.
 		parent::populateState($ordering, $direction);
 
+    // Set filters based on how the view is used.
+    // e.g. user list of images: $this->setState('filter.created_by', Factory::getUser());
+
     // Load the componen parameters.
 		$params       = Factory::getApplication('com_joomgallery')->getParams();
 		$params_array = $params->toArray();

@@ -108,13 +108,13 @@ class CategoriesModel extends JoomListModel
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '*');
 		$this->setState('filter.published', $published);
 
     $level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level');
 		$this->setState('filter.level', $level);
 
-    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
+    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
 		$this->setState('filter.language', $language);
 
     $formSubmited = Factory::getApplication()->input->post->get('form_submited');
@@ -128,7 +128,7 @@ class CategoriesModel extends JoomListModel
     // List state information.
 		parent::populateState($ordering, $direction);
 
-    if ($formSubmited)
+    if($formSubmited)
 		{
 			$access = $app->input->post->get('access');
 			$this->setState('filter.access', $access);
@@ -341,11 +341,7 @@ class CategoriesModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', "a.lft");
 		$orderDirn = $this->state->get('list.direction', "ASC");
-
-		if($orderCol && $orderDirn)
-		{
-			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		}
+		$query->order($db->escape($this->state->get('list.fullordering', $orderCol.' '.$orderDirn)));
 
 		return $query;
 	}
