@@ -29,7 +29,21 @@ use \Joomla\CMS\Helper\TagsHelper;
  */
 class CategoryformModel extends FormModel
 {
-	private $item = null;	
+  /**
+   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   *
+   * @access  protected
+   * @var     object
+   */
+  protected $component;
+
+  /**
+   * Item object
+   *
+   * @access  protected
+   * @var     object
+   */
+	protected $item = null;
 
 	/**
 	 * Method to auto-populate the model state.
@@ -91,47 +105,13 @@ class CategoryformModel extends FormModel
 				$id = $this->getState('category.id');
 			}
 
-			// Get a level row instance.
-			$table = $this->getTable();
-			$properties = $table->getProperties();
-			$this->item = ArrayHelper::toObject($properties, CMSObject::class);
+			// Attempt to load the item
+			$adminModel = $this->component->getMVCFactory()->createModel('category', 'administrator');
+			$this->item = $adminModel->getItem($id);
 
-			if($table !== false && $table->load($id) && !empty($table->id))
+			if(empty($this->item))
 			{
-				$user = Factory::getUser();
-				$id   = $table->id;
-				
-				if($id)
-				{
-					$canEdit = $user->authorise('core.edit', 'com_joomgallery.category.' . $id) || $user->authorise('core.create', 'com_joomgallery.category.' . $id);
-				}
-				else
-				{
-					$canEdit = $user->authorise('core.edit', 'com_joomgallery') || $user->authorise('core.create', 'com_joomgallery');
-				}
-
-				if(!$canEdit && $user->authorise('core.edit.own', 'com_joomgallery.category.' . $id))
-				{
-					$canEdit = $user->id == $table->created_by;
-				}
-
-				if(!$canEdit)
-				{
-					throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-				}
-
-				// Check published state.
-				if($published = $this->getState('filter.published'))
-				{
-					if(isset($table->state) && $table->state != $published)
-					{
-						return $this->item;
-					}
-				}
-
-				// Convert the Table to a clean CMSObject.
-				$properties = $table->getProperties(1);
-				$this->item = ArrayHelper::toObject($properties, CMSObject::class);	
+				throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 404);
 			}
 		}
 

@@ -34,7 +34,15 @@ class CategoryModel extends ItemModel
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
+
+  /**
+   * Item object
+   *
+   * @access  protected
+   * @var     object
+   */
+	protected $item = null;
 
 	/**
 	 * Constructor

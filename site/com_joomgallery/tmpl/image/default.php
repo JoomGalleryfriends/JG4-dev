@@ -45,7 +45,7 @@ $wa->useStyle('com_joomgallery.site');
 			<th><?php echo Text::_('JCATEGORY'); ?></th>
 			<td>
         <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->catid); ?>">
-          <?php echo $this->escape($this->item->cat_title); ?>
+          <?php echo $this->escape($this->item->cattitle); ?>
         </a>
       </td>
 		</tr>

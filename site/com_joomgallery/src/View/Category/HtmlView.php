@@ -20,7 +20,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 
 /**
- * View class for a list of Joomgallery.
+ * View class for a category view of Joomgallery.
  * 
  * @package JoomGallery
  * @since   4.0.0

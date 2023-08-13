@@ -35,9 +35,15 @@ class ImageformModel extends FormModel
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
 
-	private $item = null;
+  /**
+   * Item object
+   *
+   * @access  protected
+   * @var     object
+   */
+	protected $item = null;
 
   /**
 	 * Constructor
@@ -123,47 +129,13 @@ class ImageformModel extends FormModel
 				$id = $this->getState('image.id');
 			}
 
-			// Get a level row instance.
-			$table = $this->getTable();
-			$properties = $table->getProperties();
-			$this->item = ArrayHelper::toObject($properties, CMSObject::class);
+			// Attempt to load the item
+			$adminModel = $this->component->getMVCFactory()->createModel('image', 'administrator');
+			$this->item = $adminModel->getItem($id);
 
-			if($table !== false && $table->load($id) && !empty($table->id))
+			if(empty($this->item))
 			{
-				$user = Factory::getUser();
-				$id   = $table->id;
-
-				if($id)
-				{
-					$canEdit = $user->authorise('core.edit', 'com_joomgallery.image.' . $id) || $user->authorise('core.create', 'com_joomgallery.image.' . $id);
-				}
-				else
-				{
-					$canEdit = $user->authorise('core.edit', 'com_joomgallery') || $user->authorise('core.create', 'com_joomgallery');
-				}
-
-				if(!$canEdit && $user->authorise('core.edit.own', 'com_joomgallery.image.' . $id))
-				{
-					$canEdit = $user->id == $table->created_by;
-				}
-
-				if(!$canEdit)
-				{
-					throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-				}
-
-				// Check published state.
-				if($published = $this->getState('filter.published'))
-				{
-					if(isset($table->state) && $table->state != $published)
-					{
-						return $this->item;
-					}
-				}
-
-				// Convert the Table to a clean CMSObject.
-				$properties = $table->getProperties(1);
-				$this->item = ArrayHelper::toObject($properties, CMSObject::class);	
+				throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 404);
 			}
 		}
 
@@ -211,29 +183,6 @@ class ImageformModel extends FormModel
 	public function getTable($type = 'Image', $prefix = 'Administrator', $config = array())
 	{
 		return parent::getTable($type, $prefix, $config);
-	}
-
-	/**
-	 * Get an item by alias
-	 *
-	 * @param   string $alias Alias string
-	 *
-	 * @return int Element id
-	 */
-	public function getItemIdByAlias($alias)
-	{
-		$table      = $this->getTable();
-		$properties = $table->getProperties();
-
-		if(!in_array('alias', $properties))
-		{
-			return null;
-		}
-
-		$table->load(array('alias' => $alias));
-		$id = $table->id;
-		
-		return $id;		
 	}
 
 	/**
@@ -449,27 +398,5 @@ class ImageformModel extends FormModel
 		}
 
 		return $id;		
-	}
-
-  /**
-	 * Get alias based on view name
-   * 
-   * @param  string  $view  view name
-	 *
-	 * @return string
-	 */
-	public function getAliasFieldNameByView($view)
-	{
-		switch ($view)
-		{
-			case 'image':
-			case 'imageform':
-				return 'alias';
-			break;
-			case 'category':
-			case 'categoryform':
-				return 'alias';
-			break;
-		}
 	}
 }

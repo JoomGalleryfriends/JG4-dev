@@ -14,13 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\MVC\Model\ItemModel;
-use \Joomla\CMS\Helper\TagsHelper;
-use \Joomla\CMS\Object\CMSObject;
-use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
+use \Joomla\Registry\Registry;
 
 /**
  * Joomgallery model.
@@ -30,7 +27,39 @@ use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
  */
 class ImageModel extends ItemModel
 {
-	public $_item;
+
+  /**
+   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   *
+   * @access  protected
+   * @var     object
+   */
+  protected $component;
+
+  /**
+   * Item object
+   *
+   * @access  protected
+   * @var     object
+   */
+	protected $item = null;
+
+	/**
+	 * Constructor
+	 *
+	 * @param   array                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).
+	 * @param   MVCFactoryInterface  $factory  The factory.
+	 *
+	 * @since   3.0
+	 * @throws  \Exception
+	 */
+	public function __construct($config = [], $factory = null)
+	{
+		parent::__construct($config, $factory);
+
+		// JoomGallery extension class
+		$this->component = Factory::getApplication()->bootComponent(_JOOM_OPTION);
+	}
 
 	/**
 	 * Method to auto-populate the model state.
@@ -77,7 +106,14 @@ class ImageModel extends ItemModel
 			$this->setState('image.id', $params_array['item_id']);
 		}
 
-		$this->setState('params', $params);
+		$this->setState('parameters.component', $params);
+
+    // Load the configs from config service
+		$this->component->createConfig('com_joomgallery.image', $id, true);
+		$configArray = $this->component->getConfig()->getProperties();
+		$configs     = new Registry($configArray);
+
+		$this->setState('parameters.configs', $configs);
 	}
 
 	/**
@@ -100,25 +136,9 @@ class ImageModel extends ItemModel
 				$id = $this->getState('image.id');
 			}
 
-			// Get a level row instance.
-			$table = $this->getTable();
-
-			// Attempt to load the row.
-			if($table && $table->load($id))
-			{
-				// Check published state.
-				if($published = $this->getState('filter.published'))
-				{
-					if(isset($table->state) && $table->state != $published)
-					{
-						throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 403);
-					}
-				}
-
-				// Convert the Table to a clean CMSObject.
-				$properties  = $table->getProperties(1);
-				$this->_item = ArrayHelper::toObject($properties, CMSObject::class);
-			}
+			// Attempt to load the item
+			$adminModel = $this->component->getMVCFactory()->createModel('image', 'administrator');
+			$this->_item = $adminModel->getItem($id);
 
 			if(empty($this->_item))
 			{
@@ -128,34 +148,7 @@ class ImageModel extends ItemModel
 
 		if(isset($this->_item->catid) && $this->_item->catid != '')
 		{
-			if(is_object($this->_item->catid))
-			{
-				$this->_item->catid = ArrayHelper::fromObject($this->_item->catid);
-			}
-
-			$values    = (is_array($this->_item->catid)) ? $this->_item->catid : explode(',',$this->_item->catid);
-			$textValue = array();
-
-			foreach($values as $value)
-			{
-				$db    = Factory::getDbo();
-				$query = $db->getQuery(true);
-
-				$query
-					->select('`#__joomgallery_categories_3681153`.`title`')
-					->from($db->quoteName('#__joomgallery_categories', '#__joomgallery_categories_3681153'))
-					->where($db->quoteName('id') . ' = ' . $db->quote($value));
-
-				$db->setQuery($query);
-				$results = $db->loadObject();
-
-				if($results)
-				{
-					$textValue[] = $results->title;
-				}
-			}
-
-			$this->_item->cat_title = implode(', ', $textValue);
+			$this->_item->cattitle = $this->getCategoryName($this->_item->catid);
 		}
 
 		if(isset($this->_item->created_by))
@@ -171,6 +164,35 @@ class ImageModel extends ItemModel
 		return $this->_item;
 	}
 
+  /**
+	 * Method to get parameters from model state.
+	 *
+	 * @return  array   List of parameters
+	 */
+	public function getParams()
+	{
+		$params = array('component' => $this->getState('parameters.component'),
+										'menu'      => $this->getState('parameters.menu'),
+									  'configs'   => $this->getState('parameters.configs')
+									);
+
+		return $params;
+	}
+
+	/**
+	 * Method to get the params object.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 *
+	 * @throws Exception
+	 */
+	public function getAcl()
+	{
+		$this->component->createAccess();
+
+		return $this->component->getAccess();
+	}
+
 	/**
 	 * Get an instance of Table class
 	 *
@@ -183,39 +205,6 @@ class ImageModel extends ItemModel
 	public function getTable($type = 'Image', $prefix = 'Administrator', $config = array())
 	{
 		return parent::getTable($type, $prefix, $config);
-	}
-
-	/**
-	 * Get the id of an item by alias
-	 *
-	 * @param   string $alias Item alias
-	 *
-	 * @return  mixed
-	 */
-	public function getItemIdByAlias($alias)
-	{
-		$table      = $this->getTable();
-		$properties = $table->getProperties();
-		$result     = null;
-		$aliasKey   = null;
-
-		if(method_exists($this, 'getAliasFieldNameByView'))
-		{
-			$aliasKey   = $this->getAliasFieldNameByView('image');
-		}
-
-		if(key_exists('alias', $properties))
-		{
-			$table->load(array('alias' => $alias));
-			$result = $table->id;
-		}
-		elseif(isset($aliasKey) && key_exists($aliasKey, $properties))
-		{
-			$table->load(array($aliasKey => $alias));
-			$result = $table->id;
-		}
-
-		return $result;
 	}
 
 	/**
@@ -318,24 +307,26 @@ class ImageModel extends ItemModel
 	}
 
   /**
-	 * Get alias based on view name
-   * 
-   * @param  string  $view  view name
+	 * Method to load the title of a category
 	 *
-	 * @return string
+	 * @param   int  $catid  Category id
+	 *
+	 * @return  string|bool  The category title on success, false otherwise
 	 */
-	public function getAliasFieldNameByView($view)
-	{
-		switch ($view)
-		{
-			case 'image':
-			case 'imageform':
-				return 'alias';
-			break;
-			case 'category':
-			case 'categoryform':
-				return 'alias';
-			break;
-		}
-	}
+  protected function getCategoryName(int $catid)
+  {
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    // Select the required field from the table.
+		$query->select($db->quoteName('title'));
+    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES))
+          ->where($db->quoteName('id') . " = " . $db->quote($catid));
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+    
+    return $db->loadResult();
+  }
 }
