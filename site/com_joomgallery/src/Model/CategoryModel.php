@@ -18,7 +18,7 @@ use \Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\Multilanguage;
 
 /**
- * Joomgallery model.
+ * Model to get a category record.
  * 
  * @package JoomGallery
  * @since   4.0.0

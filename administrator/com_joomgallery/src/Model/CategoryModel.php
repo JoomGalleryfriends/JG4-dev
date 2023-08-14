@@ -49,9 +49,6 @@ class CategoryModel extends JoomAdminModel
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
 		// Get the form.
 		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));
 
@@ -119,23 +116,33 @@ class CategoryModel extends JoomAdminModel
 	 *
 	 * @param   integer  $pk  The id of the primary key.
 	 *
-	 * @return  mixed    Object on success, false on failure.
+	 * @return  Object|boolean Object on success, false on failure.
 	 *
 	 * @since   4.0.0
 	 */
 	public function getItem($pk = null)
 	{		
-    if($item = parent::getItem($pk))
-    {
-      if(isset($item->params))
+    if($this->item === null)
+		{
+			$this->item = false;
+
+      if(empty($pk))
+			{
+				$pk = $this->getState('category.id');
+			}
+
+      if($this->item = parent::getItem($pk))
       {
-        $item->params = json_encode($item->params);
+        if(isset($this->item->params))
+        {
+          $this->item->params = json_encode($this->item->params);
+        }
+        
+        // Do any procesing on fields here if needed
       }
-      
-      // Do any procesing on fields here if needed
     }
 
-    return $item;
+    return $this->item;
 	}
 
   /**

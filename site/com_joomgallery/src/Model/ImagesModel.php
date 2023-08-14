@@ -19,7 +19,7 @@ use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\ImagesModel as AdminImagesModel;
 
 /**
- * Methods supporting a list of image records.
+ * Model to get a list of image records.
  * 
  * @package JoomGallery
  * @since   4.0.0

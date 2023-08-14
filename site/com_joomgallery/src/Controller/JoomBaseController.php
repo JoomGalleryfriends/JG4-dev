@@ -12,11 +12,8 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\Input\Input;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomla\CMS\MVC\Controller\BaseController;

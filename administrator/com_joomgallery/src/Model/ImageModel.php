@@ -114,9 +114,6 @@ class ImageModel extends JoomAdminModel
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
 		// Get the form.
 		$form = $this->loadForm($this->typeAlias, 'image',	array('control' => 'jform',	'load_data' => $loadData));
 
@@ -210,7 +207,9 @@ class ImageModel extends JoomAdminModel
 			}
     }
 
-		return $table->getFieldsValues();
+    $this->item = $table->getFieldsValues();
+
+		return $this->item;
 	}
 
 	/**

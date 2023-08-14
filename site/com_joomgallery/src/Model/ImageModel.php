@@ -17,7 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 
 /**
- * Joomgallery model.
+ * Model to get an image record.
  * 
  * @package JoomGallery
  * @since   4.0.0

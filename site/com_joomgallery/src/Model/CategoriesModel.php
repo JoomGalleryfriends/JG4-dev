@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\CategoriesModel as AdminCategoriesModel;
 
 /**
- * Methods supporting a list of category records.
+ * Model to get a list of category records.
  * 
  * @package JoomGallery
  * @since   4.0.0

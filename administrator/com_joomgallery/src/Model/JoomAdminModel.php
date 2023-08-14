@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Table;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\CMS\Form\FormFactoryInterface;
@@ -151,6 +152,37 @@ abstract class JoomAdminModel extends AdminModel
 
 		return $this->component->getAccess();
 	}
+
+  /**
+	 * Method to load component specific parameters into model state.
+   * 
+   * @param   int   $id   ID of the content if needed (default: 0)
+	 *
+	 * @return  void
+   * @since   4.0.0
+	 */
+  protected function loadComponentParams(int $id=0)
+  {
+    // Load the parameters.
+		$params       = Factory::getApplication('com_joomgallery')->getParams();
+		$params_array = $params->toArray();
+
+		if(isset($params_array['item_id']))
+		{
+			$this->setState($this->type.'.id', $params_array['item_id']);
+		}
+
+		$this->setState('parameters.component', $params);
+
+    // Load the configs from config service
+    $id = ($id === 0) ? null : $id;
+
+		$this->component->createConfig(_JOOM_OPTION.'.'.$this->type, $id, true);
+		$configArray = $this->component->getConfig()->getProperties();
+		$configs     = new Registry($configArray);
+
+		$this->setState('parameters.configs', $configs);
+  }
 
    /**
 	 * Prepare and sanitise the table prior to saving.
