@@ -115,14 +115,11 @@ class CategoryModel extends JoomItemModel
 		}
 
 		// Delete unnessecary properties
-		$toDelete = array('asset_id', 'password', 'params');
+		$toDelete = array('asset_id', 'password', 'params', 'checked_out');
 		foreach($toDelete as $property)
 		{
 			unset($this->item->{$property});
 		}
-
-		// Get child items
-		$this->item->children = $adminModel->getChildren($this->item->id);
 
 		return $this->item;
 	}

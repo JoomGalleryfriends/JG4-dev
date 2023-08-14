@@ -115,6 +115,13 @@ class ImageModel extends JoomItemModel
 			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
 		}
 
+    // Delete unnessecary properties
+		$toDelete = array('asset_id', 'params', 'checked_out');
+		foreach($toDelete as $property)
+		{
+			unset($this->item->{$property});
+		}
+
 		return $this->item;
 	}
 
