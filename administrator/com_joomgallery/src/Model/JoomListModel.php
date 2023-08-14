@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\MVC\Model\ListModel;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 

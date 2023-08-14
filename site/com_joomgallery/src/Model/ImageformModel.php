@@ -110,6 +110,6 @@ class ImageformModel extends AdminImageModel
 	 */
 	protected function loadFormData()
 	{
-		return partent::loadFormData();
+		return parent::loadFormData();
 	}
 }

@@ -123,7 +123,7 @@ if ($saveOrder)
 
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
-				<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
+        <input type="hidden" name="form_submited" value="1"/>
 				<?php echo HTMLHelper::_('form.token'); ?>
 			</div>
 		</div>

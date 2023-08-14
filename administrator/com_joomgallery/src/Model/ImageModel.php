@@ -182,7 +182,7 @@ class ImageModel extends JoomAdminModel
       return $this->item;
     }
 
-    $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+    $pk = (!empty($pk)) ? $pk : (int) $this->getState('image.id');
 		$table = $this->getTable();
 
 		if($pk > 0 || \is_array($pk))

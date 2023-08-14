@@ -10,12 +10,10 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
+use \Joomla\CMS\HTML\HTMLHelper;
 
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
@@ -28,13 +26,12 @@ $lang->load('com_joomgallery', JPATH_SITE);
 $lang->load('com_joomgallery', JPATH_ADMINISTRATOR);
 $lang->load('joomla', JPATH_ADMINISTRATOR);
 
-$user    = Factory::getUser();
-$canEdit = JoomHelper::canUserEdit($this->item, $user);
+$canEdit  = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 ?>
 
 <div class="category-edit front-end-edit">
 	<?php if (!$canEdit) : ?>
-		<h2><?php throw new \Exception(Text::_('COM_JOOMGALLERY_COMMON_MSG_NOT_ALLOWED_TO_EDIT_CATEGORY'), 403); ?></h2>
+		<?php Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error'); ?>
 	<?php else : ?>
 		<?php if (!empty($this->item->id)): ?>
 			<h2><?php echo Text::_('COM_JOOMGALLERY_CATEGORY_EDIT').': '.$this->item->id; ?></h1>
@@ -139,12 +136,10 @@ $canEdit = JoomHelper::canUserEdit($this->item, $user);
       ?>
 			<div class="control-group">
 				<div class="controls">
-					<?php if ($this->canSave): ?>
-						<button type="submit" class="validate btn btn-primary">
-							<span class="fas fa-check" aria-hidden="true"></span>
-							<?php echo Text::_('JSUBMIT'); ?>
-						</button>
-					<?php endif; ?>
+          <button type="submit" class="validate btn btn-primary">
+            <span class="fas fa-check" aria-hidden="true"></span>
+            <?php echo Text::_('JSUBMIT'); ?>
+          </button>
 
 					<a class="btn btn-danger" href="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.cancel'); ?>" title="<?php echo Text::_('JCANCEL'); ?>">
 					  <span class="fas fa-times" aria-hidden="true"></span> <?php echo Text::_('JCANCEL'); ?>

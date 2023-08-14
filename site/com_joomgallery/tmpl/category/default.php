@@ -11,9 +11,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\HTML\HTMLHelper;
+
+$wa = $this->document->getWebAssetManager();
+$wa->useStyle('com_joomgallery.site');
 
 $canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);

@@ -119,6 +119,6 @@ class CategoryformModel extends AdminCategoryModel
 	 */
 	protected function loadFormData()
 	{
-		return partent::loadFormData();
+		return parent::loadFormData();
 	}
 }

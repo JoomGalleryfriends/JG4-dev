@@ -10,11 +10,10 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\HTML\HTMLHelper;
 
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
@@ -33,7 +32,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
 
 <div class="image-edit front-end-edit">
 	<?php if(!$canEdit) : ?>
-		<h2><?php throw new \Exception(Text::_('COM_JOOMGALLERY_COMMON_MSG_NOT_ALLOWED_TO_EDIT_IMAGE'), 403); ?></h2>
+    <?php Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_COMMON_MSG_NOT_ALLOWED_TO_EDIT_IMAGE'), 'error'); ?>
 	<?php else : ?>
 		<?php if (!empty($this->item->id)): ?>
 			<h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE').': '.$this->item->id; ?></h2>
