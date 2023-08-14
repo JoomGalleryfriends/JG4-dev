@@ -13,16 +13,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
-use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomla\CMS\Form\FormFactoryInterface;
+use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
@@ -34,6 +33,14 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
  */
 class ImageModel extends JoomAdminModel
 {
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'image';
+
   /**
    * The event to trigger after recreation of imagetypes.
    *
@@ -52,27 +59,6 @@ class ImageModel extends JoomAdminModel
    */
   protected $event_before_recreate = null;
 
-	/**
-	 * @var    string  The prefix to use with controller messages.
-	 *
-	 * @since  4.0.0
-	 */
-	protected $text_prefix = _JOOM_OPTION_UC;
-
-	/**
-	 * @var    string  Alias to manage history control
-	 *
-	 * @since  4.0.0
-	 */
-	public $typeAlias = _JOOM_OPTION.'.image';
-
-	/**
-	 * @var    null  Item data
-	 *
-	 * @since  4.0.0
-	 */
-	protected $item = null;
-
   /**
    * Constructor.
    *
@@ -80,7 +66,7 @@ class ImageModel extends JoomAdminModel
    * @param   MVCFactoryInterface   $factory      The factory.
    * @param   FormFactoryInterface  $formFactory  The form factory.
    *
-   * @since   1.6
+   * @since   4.0.0
    * @throws  \Exception
    */
   public function __construct($config = [], MVCFactoryInterface $factory = null, FormFactoryInterface $formFactory = null)
@@ -115,22 +101,6 @@ class ImageModel extends JoomAdminModel
       $this->events_map
     );
   }
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  Table    A database object
-	 *
-	 * @since   4.0.0
-	 */
-	public function getTable($type = 'Image', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
 
 	/**
 	 * Method to get the record form.
@@ -1215,53 +1185,4 @@ class ImageModel extends JoomAdminModel
   {
     return Factory::getUser()->authorise('core.edit', $this->typeAlias);
   }
-
-	/**
-	 * Prepare and sanitise the table prior to saving.
-	 *
-	 * @param   Table  $table  Table Object
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function prepareTable($table)
-	{
-		jimport('joomla.filter.output');
-
-		if(empty($table->id))
-		{
-			// Set ordering to the last item if not set
-			if(@$table->ordering === '')
-			{
-				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_IMAGES);
-        
-				$max             = $db->loadResult();
-				$table->ordering = $max + 1;
-			}
-		}
-	}
-
-  /**
-	 * Allows preprocessing of the JForm object.
-	 *
-	 * @param   Form    $form   The form object
-	 * @param   array   $data   The data to be merged into the form object
-	 * @param   string  $group  The plugin group to be executed
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function preprocessForm(Form $form, $data, $group = 'joomgallery')
-	{
-		if (!Multilanguage::isEnabled())
-		{
-			$form->setFieldAttribute('language', 'type', 'hidden');
-			$form->setFieldAttribute('language', 'default', '*');
-		}
-
-		parent::preprocessForm($form, $data, $group);
-	}
 }

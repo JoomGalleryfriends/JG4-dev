@@ -16,7 +16,6 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
-use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
@@ -27,15 +26,23 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
  */
 class TagsModel extends JoomListModel
 {
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'tag';
+
 	/**
-	* Constructor.
-	*
-	* @param   array  $config  An optional associative array of configuration settings.
-	*
-	* @see        JController
-	* @since      1.6
-	*/
-	public function __construct($config = array())
+   * Constructor
+   * 
+   * @param   array  $config  An optional associative array of configuration settings.
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  function __construct($config = array())
 	{
 		if(empty($config['filter_fields']))
 		{
@@ -102,18 +109,6 @@ class TagsModel extends JoomListModel
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
-
-		// $context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
-		// $this->setState('filter.search', $context);
-
-		// // Split context into component and optional section
-		// $parts = FieldsHelper::extract($context);
-
-		// if($parts)
-		// {
-		// 	$this->setState('filter.component', $parts[0]);
-		// 	$this->setState('filter.section', $parts[1]);
-		// }
 	}
 
 	/**
@@ -133,10 +128,9 @@ class TagsModel extends JoomListModel
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . serialize($this->getState('filter.access'));
 		$id .= ':' . $this->getState('filter.published');
-		$id .= ':' . serialize($this->getState('filter.created_by'));
 		$id .= ':' . $this->getState('filter.language');
+    $id .= ':' . serialize($this->getState('filter.access'));
 
 		return parent::getStoreId($id);
 	}
@@ -246,15 +240,7 @@ class TagsModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'a.id'); 
 		$orderDirn = $this->state->get('list.direction', 'ASC');
-
-		// if($orderCol && $orderDirn)
-		// {
-    //   $query->order($db->escape($orderCol . ' ' . $orderDirn));
-		// }
-    // else
-    // {
-      $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
-    // }
+    $query->order($db->escape($this->state->get('list.fullordering', $orderCol.' '.$orderDirn)));
 
 		return $query;
 	}

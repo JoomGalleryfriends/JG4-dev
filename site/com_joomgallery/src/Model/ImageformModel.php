@@ -14,11 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\MVC\Model\FormModel;
-use \Joomla\CMS\Object\CMSObject;
 use \Joomla\Registry\Registry;
 
 /**

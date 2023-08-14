@@ -15,9 +15,6 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\MVC\Model\ItemModel;
-use \Joomla\Registry\Registry;
 
 /**
  * Joomgallery model.
@@ -25,41 +22,15 @@ use \Joomla\Registry\Registry;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImageModel extends ItemModel
+class ImageModel extends JoomItemModel
 {
-
   /**
-   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   * Item type
    *
    * @access  protected
-   * @var     object
+   * @var     string
    */
-  protected $component;
-
-  /**
-   * Item object
-   *
-   * @access  protected
-   * @var     object
-   */
-	protected $item = null;
-
-	/**
-	 * Constructor
-	 *
-	 * @param   array                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).
-	 * @param   MVCFactoryInterface  $factory  The factory.
-	 *
-	 * @since   3.0
-	 * @throws  \Exception
-	 */
-	public function __construct($config = [], $factory = null)
-	{
-		parent::__construct($config, $factory);
-
-		// JoomGallery extension class
-		$this->component = Factory::getApplication()->bootComponent(_JOOM_OPTION);
-	}
+  protected $type = 'image';
 
 	/**
 	 * Method to auto-populate the model state.
@@ -74,7 +45,6 @@ class ImageModel extends ItemModel
 	 */
 	protected function populateState()
 	{
-		$app  = Factory::getApplication('com_joomgallery');
 		$user = Factory::getUser();
 
 		// Check published state
@@ -97,23 +67,7 @@ class ImageModel extends ItemModel
 
 		$this->setState('image.id', $id);
 
-		// Load the parameters.
-		$params       = $app->getParams();
-		$params_array = $params->toArray();
-
-		if(isset($params_array['item_id']))
-		{
-			$this->setState('image.id', $params_array['item_id']);
-		}
-
-		$this->setState('parameters.component', $params);
-
-    // Load the configs from config service
-		$this->component->createConfig('com_joomgallery.image', $id, true);
-		$configArray = $this->component->getConfig()->getProperties();
-		$configs     = new Registry($configArray);
-
-		$this->setState('parameters.configs', $configs);
+		$this->loadComponentParams($id);
 	}
 
 	/**
@@ -127,9 +81,9 @@ class ImageModel extends ItemModel
 	 */
 	public function getItem($id = null)
 	{
-		if($this->_item === null)
+		if($this->item === null)
 		{
-			$this->_item = false;
+			$this->item = false;
 
 			if(empty($id))
 			{
@@ -138,172 +92,30 @@ class ImageModel extends ItemModel
 
 			// Attempt to load the item
 			$adminModel = $this->component->getMVCFactory()->createModel('image', 'administrator');
-			$this->_item = $adminModel->getItem($id);
+			$this->item = $adminModel->getItem($id);
 
-			if(empty($this->_item))
+			if(empty($this->item))
 			{
 				throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 404);
 			}
 		}
 
-		if(isset($this->_item->catid) && $this->_item->catid != '')
+		if(isset($this->item->catid) && $this->item->catid != '')
 		{
-			$this->_item->cattitle = $this->getCategoryName($this->_item->catid);
+			$this->item->cattitle = $this->getCategoryName($this->item->catid);
 		}
 
-		if(isset($this->_item->created_by))
+		if(isset($this->item->created_by))
 		{
-			$this->_item->created_by_name = Factory::getUser($this->_item->created_by)->name;
+			$this->item->created_by_name = Factory::getUser($this->item->created_by)->name;
 		}
 
-		if(isset($this->_item->modified_by))
+		if(isset($this->item->modified_by))
 		{
-			$this->_item->modified_by_name = Factory::getUser($this->_item->modified_by)->name;
+			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
 		}
 
-		return $this->_item;
-	}
-
-  /**
-	 * Method to get parameters from model state.
-	 *
-	 * @return  array   List of parameters
-	 */
-	public function getParams()
-	{
-		$params = array('component' => $this->getState('parameters.component'),
-										'menu'      => $this->getState('parameters.menu'),
-									  'configs'   => $this->getState('parameters.configs')
-									);
-
-		return $params;
-	}
-
-	/**
-	 * Method to get the params object.
-	 *
-	 * @return  mixed    Object on success, false on failure.
-	 *
-	 * @throws Exception
-	 */
-	public function getAcl()
-	{
-		$this->component->createAccess();
-
-		return $this->component->getAccess();
-	}
-
-	/**
-	 * Get an instance of Table class
-	 *
-	 * @param   string $type   Name of the Table class to get an instance of.
-	 * @param   string $prefix Prefix for the table class name. Optional.
-	 * @param   array  $config Array of configuration values for the Table object. Optional.
-	 *
-	 * @return  Table|bool Table if success, false on failure.
-	 */
-	public function getTable($type = 'Image', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
-
-	/**
-	 * Method to check in an item.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkin($id = null)
-	{
-		// Get the id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('image.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Attempt to check the row in.
-			if(method_exists($table, 'checkin'))
-			{
-				if(!$table->checkin($id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Method to check out an item for editing.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkout($id = null)
-	{
-		// Get the user id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('image.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Get the current user object.
-			$user = Factory::getUser();
-
-			// Attempt to check the row out.
-			if(method_exists($table, 'checkout'))
-			{
-				if(!$table->checkout($user->get('id'), $id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Publish the element
-	 *
-	 * @param   int $id    Item id
-	 * @param   int $state Publish state
-	 *
-	 * @return  boolean
-	 */
-	public function publish($id, $state)
-	{
-		$table = $this->getTable();
-
-		$table->load($id);
-		$table->state = $state;
-
-		return $table->store();
-	}
-
-	/**
-	 * Method to delete an item
-	 *
-	 * @param   int $id Element id
-	 *
-	 * @return  bool
-	 */
-	public function delete($id)
-	{
-		$table = $this->getTable();
-
-		return $table->delete($id);
+		return $this->item;
 	}
 
   /**

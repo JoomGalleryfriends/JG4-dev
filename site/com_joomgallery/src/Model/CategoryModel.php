@@ -15,9 +15,6 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\MVC\Model\ItemModel;
-use \Joomla\Registry\Registry;
 use Joomla\CMS\Language\Multilanguage;
 
 /**
@@ -26,40 +23,15 @@ use Joomla\CMS\Language\Multilanguage;
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoryModel extends ItemModel
+class CategoryModel extends JoomItemModel
 {
-	/**
-   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
-   *
-   * @access  protected
-   * @var     object
-   */
-  protected $component;
-
   /**
-   * Item object
+   * Item type
    *
    * @access  protected
-   * @var     object
+   * @var     string
    */
-	protected $item = null;
-
-	/**
-	 * Constructor
-	 *
-	 * @param   array                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).
-	 * @param   MVCFactoryInterface  $factory  The factory.
-	 *
-	 * @since   3.0
-	 * @throws  \Exception
-	 */
-	public function __construct($config = [], $factory = null)
-	{
-		parent::__construct($config, $factory);
-
-		// JoomGallery extension class
-		$this->component = Factory::getApplication()->bootComponent(_JOOM_OPTION);
-	}
+  protected $type = 'category';
 
 	/**
 	 * Method to auto-populate the model state.
@@ -97,23 +69,7 @@ class CategoryModel extends ItemModel
 
 		$this->setState('category.id', $id);
 
-		// Load the componen parameters.
-		$params       = $app->getParams();
-		$params_array = $params->toArray();
-
-		if(isset($params_array['item_id']))
-		{
-			$this->setState('category.id', $params_array['item_id']);
-		}
-
-		$this->setState('parameters.component', $params);
-
-		// Load the configs from config service
-		$this->component->createConfig('com_joomgallery.category', $id, true);
-		$configArray = $this->component->getConfig()->getProperties();
-		$configs     = new Registry($configArray);
-
-		$this->setState('parameters.configs', $configs);
+    $this->loadComponentParams($id);
 	}
 
 	/**
@@ -127,9 +83,9 @@ class CategoryModel extends ItemModel
 	 */
 	public function getItem($id = null)
 	{
-		if($this->_item === null)
+		if($this->item === null)
 		{
-			$this->_item = false;
+			$this->item = false;
 
 			if(empty($id))
 			{
@@ -138,37 +94,37 @@ class CategoryModel extends ItemModel
 
 			// Attempt to load the item
 			$adminModel = $this->component->getMVCFactory()->createModel('category', 'administrator');
-			$this->_item = $adminModel->getItem($id);
+			$this->item = $adminModel->getItem($id);
 
-			if(empty($this->_item))
+			if(empty($this->item))
 			{
 				throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 404);
 			}
 		}
 
 		// Add created by name
-		if(isset($this->_item->created_by))
+		if(isset($this->item->created_by))
 		{
-			$this->_item->created_by_name = Factory::getUser($this->_item->created_by)->name;
+			$this->item->created_by_name = Factory::getUser($this->item->created_by)->name;
 		}
 
 		// Add modified by name
-		if(isset($this->_item->modified_by))
+		if(isset($this->item->modified_by))
 		{
-			$this->_item->modified_by_name = Factory::getUser($this->_item->modified_by)->name;
+			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
 		}
 
 		// Delete unnessecary properties
 		$toDelete = array('asset_id', 'password', 'params');
 		foreach($toDelete as $property)
 		{
-			unset($this->_item->{$property});
+			unset($this->item->{$property});
 		}
 
 		// Get child items
-		$this->_item->children = $adminModel->getChildren($this->_item->id);
+		$this->item->children = $adminModel->getChildren($this->item->id);
 
-		return $this->_item;
+		return $this->item;
 	}
 
   /**
@@ -180,7 +136,7 @@ class CategoryModel extends ItemModel
 	 */
   public function getChildren()
   {
-    if($this->_item === null)
+    if($this->item === null)
 		{
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
@@ -198,7 +154,7 @@ class CategoryModel extends ItemModel
     $user = Factory::getUser();
 
     // Apply filters
-    $listModel->setState('filter.category', $this->_item->id);
+    $listModel->setState('filter.category', $this->item->id);
     $listModel->setState('filter.level', 2);
     $listModel->setState('filter.showself', 0);
     $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
@@ -208,7 +164,7 @@ class CategoryModel extends ItemModel
 
     if(Multilanguage::isEnabled())
     {
-      $listModel->setState('filter.language', $this->_item->language);
+      $listModel->setState('filter.language', $this->item->language);
     }
 
     // Apply ordering
@@ -234,7 +190,7 @@ class CategoryModel extends ItemModel
 	 */
   public function getImages()
   {
-    if($this->_item === null)
+    if($this->item === null)
 		{
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
@@ -252,7 +208,7 @@ class CategoryModel extends ItemModel
     $user = Factory::getUser();
 
     // Apply filters
-    $listModel->setState('filter.category', $this->_item->id);
+    $listModel->setState('filter.category', $this->item->id);
     $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
     $listModel->setState('filter.published', 1);
     $listModel->setState('filter.showunapproved', 0);
@@ -260,7 +216,7 @@ class CategoryModel extends ItemModel
 
     if(Multilanguage::isEnabled())
     {
-      $listModel->setState('filter.language', $this->_item->language);
+      $listModel->setState('filter.language', $this->item->language);
     }
 
     // Apply ordering
@@ -276,63 +232,6 @@ class CategoryModel extends ItemModel
 
     return $items;
   }
-
-	/**
-	 * Method to get parameters from model state.
-	 *
-	 * @return  array   List of parameters
-	 */
-	public function getParams()
-	{
-		$params = array('component' => $this->getState('parameters.component'),
-										'menu'      => $this->getState('parameters.menu'),
-									  'configs'   => $this->getState('parameters.configs')
-									);
-
-		return $params;
-	}
-
-	/**
-	 * Method to get the params object.
-	 *
-	 * @return  mixed    Object on success, false on failure.
-	 *
-	 * @throws Exception
-	 */
-	public function getAcl()
-	{
-		$this->component->createAccess();
-
-		return $this->component->getAccess();
-	}
-
-	/**
-	 * Get an instance of Table class
-	 *
-	 * @param   string $type   Name of the Table class to get an instance of.
-	 * @param   string $prefix Prefix for the table class name. Optional.
-	 * @param   array  $config Array of configuration values for the Table object. Optional.
-	 *
-	 * @return  Table|bool Table if success, false on failure.
-	 */
-	public function getTable($type = 'Category', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
-
-	/**
-	 * Method to delete an item
-	 *
-	 * @param   int $id Element id
-	 *
-	 * @return  bool
-	 */
-	public function delete($id)
-	{
-		$table = $this->getTable();
-
-		return $table->delete($id);
-	}
 
   /**
 	 * Method to add a prefix to a list of field names

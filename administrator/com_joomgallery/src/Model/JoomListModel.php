@@ -13,47 +13,57 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\Model\ListModel;
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\MVC\Model\ListModel;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
- * Parent Model Class for JoomGallery
+ * Base model class for JoomGallery list of items
  *
  * @package JoomGallery
- * @since   1.5.5
+ * @since   4.0.0
  */
 abstract class JoomListModel extends ListModel
 {
   /**
-   * Joomla\CMS\Application\AdministratorApplication
+   * Joomla application class
    *
    * @access  protected
-   * @var     object
+   * @var     Joomla\CMS\Application\AdministratorApplication
    */
-  var $app;
+  protected $app;
 
   /**
-   * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
+   * Joomla user object
    *
    * @access  protected
-   * @var     object
+   * @var     Joomla\CMS\User\User
    */
-  var $component;
+  protected $user;
 
   /**
-   * JUser object, holds the current user data
+   * JoomGallery extension calss
    *
    * @access  protected
-   * @var     object
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
    */
-  var $user;
+  protected $component;
+
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'image';
 
   /**
    * Constructor
+   * 
+   * @param   array  $config  An optional associative array of configuration settings.
    *
-   * @access  protected
    * @return  void
-   * @since   1.5.5
+   * @since   4.0.0
    */
   function __construct($config = array())
   {
@@ -62,5 +72,61 @@ abstract class JoomListModel extends ListModel
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
     $this->user      = Factory::getUser();
+  }
+
+  /**
+	 * Method to get parameters from model state.
+	 *
+	 * @return  Registry[]   List of parameters
+   * @since   4.0.0
+	 */
+	public function getParams(): array
+	{
+		$params = array('component' => $this->getState('parameters.component'),
+										'menu'      => $this->getState('parameters.menu'),
+									  'configs'   => $this->getState('parameters.configs')
+									);
+
+		return $params;
+	}
+
+	/**
+	 * Method to get the access service class.
+	 *
+	 * @return  AccessInterface   Object on success, false on failure.
+   * @since   4.0.0
+	 */
+	public function getAcl(): AccessInterface
+	{
+		$this->component->createAccess();
+
+		return $this->component->getAccess();
+	}
+
+  /**
+	 * Method to load component specific parameters into model state.
+	 *
+	 * @return  void
+   * @since   4.0.0
+	 */
+  protected function loadComponentParams()
+  {
+    // Load the componen parameters.
+		$params       = Factory::getApplication('com_joomgallery')->getParams();
+		$params_array = $params->toArray();
+
+		if(isset($params_array['item_id']))
+		{
+			$this->setState($this->type.'.id', $params_array['item_id']);
+		}
+
+		$this->setState('parameters.component', $params);
+
+		// Load the configs from config service
+		$this->component->createConfig('com_joomgallery');
+		$configArray = $this->component->getConfig()->getProperties();
+		$configs     = new Registry($configArray);
+
+		$this->setState('parameters.configs', $configs);
   }
 }

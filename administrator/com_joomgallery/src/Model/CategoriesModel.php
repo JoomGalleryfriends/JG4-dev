@@ -26,15 +26,23 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
  */
 class CategoriesModel extends JoomListModel
 {
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'category';
+
 	/**
-	* Constructor.
-	*
-	* @param   array  $config  An optional associative array of configuration settings.
-	*
-	* @see        JController
-	* @since      1.6
-	*/
-	public function __construct($config = array())
+   * Constructor
+   * 
+   * @param   array  $config  An optional associative array of configuration settings.
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  function __construct($config = array())
 	{
 		if(empty($config['filter_fields']))
 		{

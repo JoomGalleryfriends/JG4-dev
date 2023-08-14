@@ -13,9 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\CategoriesModel as AdminCategoriesModel;
 
 /**
@@ -27,14 +24,14 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\CategoriesModel as Ad
 class CategoriesModel extends AdminCategoriesModel
 {
 	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see    JController
-	 * @since  4.0.0
-	 */
-	public function __construct($config = array())
+   * Constructor
+   * 
+   * @param   array  $config  An optional associative array of configuration settings.
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  function __construct($config = array())
 	{
 		if(empty($config['filter_fields']))
 		{
@@ -64,9 +61,6 @@ class CategoriesModel extends AdminCategoriesModel
 		}
 
 		parent::__construct($config);
-
-		// JoomGallery extension class
-		$this->component = Factory::getApplication()->bootComponent(_JOOM_OPTION);
 	}
 
 	/**
@@ -91,23 +85,7 @@ class CategoriesModel extends AdminCategoriesModel
     // Set filters based on how the view is used.
     // e.g. user list of categories: $this->setState('filter.created_by', Factory::getUser());
 
-		// Load the componen parameters.
-		$params       = Factory::getApplication('com_joomgallery')->getParams();
-		$params_array = $params->toArray();
-
-		if(isset($params_array['item_id']))
-		{
-			$this->setState('category.id', $params_array['item_id']);
-		}
-
-		$this->setState('parameters.component', $params);
-
-		// Load the configs from config service
-		$this->component->createConfig('com_joomgallery');
-		$configArray = $this->component->getConfig()->getProperties();
-		$configs     = new Registry($configArray);
-
-		$this->setState('parameters.configs', $configs);
+    $this->loadComponentParams();
 	}
 
 	/**
@@ -134,45 +112,5 @@ class CategoriesModel extends AdminCategoriesModel
 		$items = parent::getItems();
 
 		return $items;
-	}
-
-	/**
-	 * Method to get parameters from model state.
-	 *
-	 * @return  array   List of parameters
-	 */
-	public function getParams()
-	{
-		$params = array('component' => $this->getState('parameters.component'),
-										'menu'      => $this->getState('parameters.menu'),
-									  'configs'   => $this->getState('parameters.configs')
-									);
-
-		return $params;
-	}
-
-  /**
-	 * Method to get the params object.
-	 *
-	 * @return  mixed    Object on success, false on failure.
-	 *
-	 * @throws Exception
-	 */
-	public function getAcl()
-	{
-		$this->component->createAccess();
-
-		return $this->component->getAccess();
-	}
-
-	/**
-	 * Overrides the default function to check Date fields format, identified by
-	 * "_dateformat" suffix, and erases the field if it's not correct.
-	 *
-	 * @return void
-	 */
-	protected function loadFormData()
-	{
-		return parent::loadFormData();
 	}
 }
