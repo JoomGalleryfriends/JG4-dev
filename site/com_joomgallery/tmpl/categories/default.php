@@ -17,6 +17,7 @@ use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Session\Session;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
@@ -104,6 +105,7 @@ if($saveOrder && !empty($this->items))
                   $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery') || $item->checked_out == Factory::getUser()->id;
                   $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $item->id);
                   $canChange  = $this->acl->checkACL('editstate', 'com_joomgallery.category', $item->id);
+                  $returnURL  = base64_encode(JoomHelper::getListRoute('category', $item->language, $this->getLayout()));
                 
 									// Get the parents of item for sorting
 									if ($item->level > 1)
@@ -184,10 +186,10 @@ if($saveOrder && !empty($this->items))
 									<?php if($canEdit || $canDelete): ?>
 										<td class="d-none d-lg-table-cell text-center">
 											<?php if($canEdit && $item->checked_out == 0): ?>
-												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id=' . $item->id, false, 2); ?>" class="btn btn-mini" type="button"><i class="icon-edit" ></i></a>
+												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$item->id.'&return='.$returnURL, false, 2); ?>" class="btn btn-mini" type="button"><i class="icon-edit" ></i></a>
 											<?php endif; ?>
 											<?php if ($canDelete): ?>
-												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.remove&id=' . $item->id, false, 2); ?>" class="btn btn-mini delete-button" type="button"><i class="icon-trash" ></i></a>
+												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.remove&id='.$item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini delete-button" type="button"><i class="icon-trash" ></i></a>
 											<?php endif; ?>
 										</td>
 									<?php endif; ?>
@@ -203,18 +205,20 @@ if($saveOrder && !empty($this->items))
 				</div>
 			<?php endif; ?>
 
-			<?php if($canAdd) : ?>
-				<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.add', false, 0); ?>" class="btn btn-success btn-small">
-					<i class="icon-plus"></i> <?php echo Text::_('JGLOBAL_ADD_CUSTOM_CATEGORY'); ?>
-				</a>
-			<?php endif; ?>
-
 			<input type="hidden" name="task" value=""/>
 			<input type="hidden" name="boxchecked" value="0"/>
       <input type="hidden" name="form_submited" value="1"/>
 			<input type="hidden" name="filter_order" value=""/>
 			<input type="hidden" name="filter_order_Dir" value=""/>
 			<?php echo HTMLHelper::_('form.token'); ?>
+
+      <?php if($canAdd) : ?>
+        <div class="mb-2">
+          <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.add', false, 0); ?>" class="btn btn-success btn-small">
+            <i class="icon-plus"></i> <?php echo Text::_('JGLOBAL_ADD_CUSTOM_CATEGORY'); ?>
+          </a>
+        </div>				
+			<?php endif; ?>
 		</div>
 	</div>
 </form>

@@ -531,7 +531,7 @@ class JoomHelper
   }
 
   /**
-   * Get the route to a site view.
+   * Get the route to a site item view.
    *
    * @param   string   $type      Name of the content type.
    * @param   integer  $id        The id of the content item.
@@ -552,6 +552,35 @@ class JoomHelper
     {
       $link .= '&catid=' . $catid;
     }
+
+    if(!empty($language) && $language !== '*' && Multilanguage::isEnabled())
+    {
+      $link .= '&lang=' . $language;
+    }
+
+    if($layout)
+    {
+      $link .= '&layout=' . $layout;
+    }
+
+    return $link;
+  }
+
+  /**
+   * Get the route to a site list view.
+   *
+   * @param   string   $type      Name of the content type.
+   * @param   string   $language  The language code.
+   * @param   string   $layout    The layout value.
+   *
+   * @return  string  The route.
+   *
+   * @since   4.0.0
+   */
+  public static function getListRoute($view, $language = null, $layout = null)
+  {
+    // Create the link
+    $link = 'index.php?option=com_joomgallery&view='.$view;
 
     if(!empty($language) && $language !== '*' && Multilanguage::isEnabled())
     {
