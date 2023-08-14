@@ -24,6 +24,7 @@ $wa->useStyle('com_joomgallery.site');
 $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
 $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.image', $this->item->id);
 $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery');
+$returnURL  = base64_encode($this->route);
 ?>
 
 <h2><?php echo $this->item->imgtitle; ?></h2>
@@ -31,11 +32,11 @@ $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery');
 <?php if($canEdit || $canCheckin || $canDelete): ?>
   <div class="btn-group mb-3" role="group">
     <?php if ($canEdit && $this->item->checked_out == 0): ?>
-      <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.edit&id='.$this->item->id); ?>">
+      <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.edit&id='.$this->item->id.'&return='.$returnURL); ?>">
         <?php echo Text::_("JGLOBAL_EDIT"); ?>
       </a>
     <?php elseif ($canCheckin && $this->item->checked_out > 0) : ?>
-      <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.checkin&id=' . $this->item->id .'&'. Session::getFormToken() .'=1'); ?>">
+      <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.checkin&id='.$this->item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1'); ?>">
         <?php echo Text::_("JLIB_HTML_CHECKIN"); ?>
       </a>
     <?php endif; ?>
@@ -56,7 +57,7 @@ $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery');
 
                                     'modalWidth'  => '50',
                                     'bodyHeight'  => '100',
-                                    'footer' => '<button class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button><a href="' . Route::_('index.php?option=com_joomgallery&task=image.remove&id=' . $this->item->id, false, 2) .'" class="btn btn-danger">' . Text::_('COM_JOOMGALLERY_COMMON_DELETE_IMAGE_TIPCAPTION') .'</a>'
+                                    'footer' => '<button class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button><a href="' . Route::_('index.php?option=com_joomgallery&task=image.remove&id='.$this->item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2) .'" class="btn btn-danger">' . Text::_('COM_JOOMGALLERY_COMMON_DELETE_IMAGE_TIPCAPTION') .'</a>'
                                 ),
                                 Text::_('COM_JOOMGALLERY_COMMON_ALERT_SURE_DELETE_SELECTED_ITEM')
                               );

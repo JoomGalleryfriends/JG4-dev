@@ -64,7 +64,14 @@ class HtmlView extends BaseHtmlView
 	 */
 	protected $params = array();
 
-	protected $canSave;
+	/**
+   * The page to return to after the article is submitted
+   *
+   * @var  string
+   * 
+   * @since  4.0.0
+   */
+  protected $return_page = '';
 
 	/**
 	 * Display the view
@@ -82,6 +89,9 @@ class HtmlView extends BaseHtmlView
 		$this->acl    = $this->get('Acl');
 		$this->item   = $this->get('Item');
 		$this->form		= $this->get('Form');
+
+    // Get return page
+    $this->return_page = $this->get('ReturnPage');
 
 		// Check for errors.
 		if(count($errors = $this->get('Errors')))

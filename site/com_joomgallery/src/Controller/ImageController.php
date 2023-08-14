@@ -12,16 +12,11 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\Input\Input;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Application\CMSApplication;
-use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 /**
- * Image class.
+ * Image controller class.
  *
  * @package JoomGallery
  * @since   4.0.0
@@ -29,13 +24,12 @@ use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 class ImageController extends JoomBaseController
 {
 	/**
-	 * Method to check out an item for editing and redirect to the edit form.
+	 * Edit an existing image.
+   * Redirect to form view.
 	 *
 	 * @return  void
 	 *
 	 * @since   4.0.0
-	 *
-	 * @throws  Exception
 	 */
 	public function edit()
 	{
@@ -48,7 +42,7 @@ class ImageController extends JoomBaseController
 		if(!$editId)
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
-			$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image&'.$this->getItemAppend($editId),false));
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
 
 			return false;
 		}
@@ -57,7 +51,7 @@ class ImageController extends JoomBaseController
 		if(!$this->acl->checkACL('edit', 'image', $editId))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
-			$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image&'.$this->getItemAppend($editId),false));
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
 
 			return false;
 		}
@@ -73,7 +67,7 @@ class ImageController extends JoomBaseController
 		{
 			// Check-out failed, display a notice but allow the user to see the record.
 			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKOUT_FAILED', $model->getError()), 'error');
-			$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image&'.$this->getItemAppend($editId),false));
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
 			
 			return false;
 		}
@@ -85,70 +79,58 @@ class ImageController extends JoomBaseController
 		}
 
 		// Redirect to the form screen.
-		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=imageform&'.$this->getItemAppend($editId), false));
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=imageform&'.$this->getItemAppend($editId), false));
 	}
 
-	/**
-	 * Remove data
+  /**
+	 * Add a new image: Not available
 	 *
-	 * @return void
+	 * @return  void
 	 *
-	 * @throws Exception
+	 * @since   4.0.0
+	 *
+	 * @throws  Exception
+	 */
+	public function add()
+	{
+    throw new Exception('Adding a single image in the frontend is not available.', 503);
+  }
+
+  /**
+	 * Remove an existing image.
+   * Redirect to task=imageform.remove
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
 	 */
 	public function remove()
 	{
     // Check for request forgeries
 		$this->checkToken();
+    
+    // Get ID
+    $editId = $this->input->getInt('id', 0);
 
-    // Get record id
-		$cid      = (array) $this->input->post->get('cid', [], 'int');
-		$removeId = (int) (\count($cid) ? $cid[0] : $this->input->getInt('id', 0));
-		$parentId = (int) $this->input->getInt('parentId', 0);
-
-		// ID check
-		if(!$removeId)
+    // ID check
+		if(!$editId)
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
-			$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image&'.$this->getItemAppend($removeId),false));
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
 
 			return false;
 		}
 
-		// Access check
-		if(!$this->acl->checkACL('delete', 'image', $removeId))
+    // Access check
+		if(!$this->acl->checkACL('delete', 'image', $editId))
 		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
-			$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image&'.$this->getItemAppend($removeId),false));
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
 
 			return false;
 		}
 
-    // Get the model.
-		$model = $this->getModel('Image', 'Site');
-
-		// Attempt to save the data.
-		$return = $model->delete($removeId);
-
-		// Check for errors.
-		if($return === false)
-		{
-			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_DELETE_FAILED', $model->getError()), 'error');
-			$this->app->redirect(Route::_('index.php?option=com_joomgallery&view=image'.$this->getItemAppend($removeId), false));
-		}
-		else
-		{
-			// Check in the profile.
-			if($return)
-			{
-				$model->checkin($return);
-			}
-
-			$this->app->setUserState('com_joomgallery.edit.image.id', null);
-			$this->app->setUserState('com_joomgallery.edit.image.data', null);
-
-			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFULLY'), 'success');
-			$this->app->redirect(Route::_('index.php?option=com_joomgallery&view=image'.$this->getItemAppend($parentId), false));
-		}
-
-	}
+    // Redirect to imageform.remove
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=imageform.remove&'.$this->getItemAppend($editId), false));
+  }
 }

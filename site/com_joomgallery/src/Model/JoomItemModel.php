@@ -185,19 +185,7 @@ abstract class JoomItemModel extends ItemModel
 		return true;
 	}
 
-	/**
-	 * Method to delete an item
-	 *
-	 * @param   int $id Element id
-	 *
-	 * @return  bool
-	 */
-	public function delete($id)
-	{
-		$table = $this->getTable();
-
-		return $table->delete($id);
-	}
+	
 
   /**
 	 * Method to load component specific parameters into model state.

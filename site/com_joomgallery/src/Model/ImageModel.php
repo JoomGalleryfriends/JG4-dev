@@ -116,7 +116,7 @@ class ImageModel extends JoomItemModel
 		}
 
     // Delete unnessecary properties
-		$toDelete = array('asset_id', 'params', 'checked_out');
+		$toDelete = array('asset_id', 'params');
 		foreach($toDelete as $property)
 		{
 			unset($this->item->{$property});

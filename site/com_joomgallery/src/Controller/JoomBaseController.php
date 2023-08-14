@@ -12,7 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\Input\Input;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
@@ -26,6 +25,8 @@ use \Joomla\CMS\MVC\Controller\BaseController;
  */
 class JoomBaseController extends BaseController
 {
+  use RoutingTrait;
+
 	/**
    * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
    *
@@ -64,79 +65,5 @@ class JoomBaseController extends BaseController
 		// Access service class
 		$this->component->createAccess();
 		$this->acl = $this->component->getAccess();
-	}
-
-	/**
-	 * Get the return URL.
-	 *
-	 * If a "return" variable has been passed in the request
-	 *
-	 * @return  string  The return URL.
-	 *
-	 * @since   4.0.0
-	 */
-	protected function getReturnPage()
-	{
-		$return = $this->input->get('return', null, 'base64');
-
-		if(empty($return) || !Uri::isInternal(base64_decode($return)))
-		{
-			return Uri::base();
-		}
-		else
-		{
-			return base64_decode($return);
-		}
-	}
-
-	/**
-	 * Gets the URL arguments to append to an item redirect.
-	 *
-	 * @param   integer  $recordId  The primary key id for the item.
-	 * @param   integer  $parentId  The primary key id of the parent item.
-	 * @param   string   $urlVar    The name of the URL variable for the id.
-	 *
-	 * @return  string  The arguments to append to the redirect URL.
-	 *
-	 * @since   4.0.0
-	 */
-	protected function getItemAppend($recordId = null, $parentId = null, $urlVar = 'id')
-	{
-		$append = '';
-
-		// Setup redirect info.
-		if($tmpl = $this->input->get('tmpl', '', 'string'))
-		{
-			$append .= '&tmpl=' . $tmpl;
-		}
-
-		if($layout = $this->input->get('layout', 'edit', 'string'))
-		{
-			$append .= '&layout=' . $layout;
-		}
-
-		if($forcedLanguage = $this->input->get('forcedLanguage', '', 'cmd'))
-		{
-			$append .= '&forcedLanguage=' . $forcedLanguage;
-		}
-
-		if($recordId)
-		{
-			$append .= '&' . $urlVar . '=' . $recordId;
-		}
-
-		if($parentId)
-		{
-			$append .= '&parentId=' . $parentId;
-		}
-
-		$return = $this->input->get('return', null, 'base64');
-
-		if($return)
-		{
-			$append .= '&return=' . $return;
-		}
-
-		return $append;
 	}
 }

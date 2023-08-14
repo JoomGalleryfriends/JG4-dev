@@ -68,6 +68,14 @@
       }
     },
     {
+      "name": "com_joomgallery.form-edit",
+      "type": "script",
+      "uri": "com_joomgallery/form-edit.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
       "name": "com_joomgallery.uppy-uploader",
       "type": "script",
       "uri": "com_joomgallery/uppy/dist/uppy-uploader.js",

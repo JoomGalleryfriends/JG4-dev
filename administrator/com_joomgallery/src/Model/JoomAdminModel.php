@@ -195,13 +195,13 @@ abstract class JoomAdminModel extends AdminModel
 	 */
 	protected function prepareTable($table)
 	{
-    $tablename = JoomHelper::$content_types[$this->type];
-
 		if(empty($table->id))
 		{
 			// Set ordering to the last item if not set
 			if(@$table->ordering === '')
 			{
+        $tablename = JoomHelper::getTableName($this->type);
+
 				$db = Factory::getDbo();
 				$db->setQuery('SELECT MAX(ordering) FROM '.$tablename);
         

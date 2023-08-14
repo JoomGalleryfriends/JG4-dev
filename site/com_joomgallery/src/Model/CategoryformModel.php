@@ -56,6 +56,9 @@ class CategoryformModel extends AdminCategoryModel
 			Factory::getApplication()->setUserState('com_joomgallery.edit.category.id', $id);
 		}
 
+    $return = Factory::getApplication()->input->get('return', '', 'base64');
+    $this->setState('return_page', base64_decode($return));
+
 		$this->setState('category.id', $id);
 
 		$this->loadComponentParams($id);
@@ -115,10 +118,23 @@ class CategoryformModel extends AdminCategoryModel
 	 * Method to get the data that should be injected in the form.
 	 *
 	 * @return  array  The default data is an empty array.
+   * 
 	 * @since   4.0.0
 	 */
 	protected function loadFormData()
 	{
 		return parent::loadFormData();
 	}
+
+  /**
+   * Get the return URL.
+   *
+   * @return  string  The return URL.
+   *
+   * @since   4.0.0
+   */
+  public function getReturnPage()
+  {
+    return base64_encode($this->getState('return_page', ''));
+  }
 }

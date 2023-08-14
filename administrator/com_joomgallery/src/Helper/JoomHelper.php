@@ -14,11 +14,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Object\CMSObject;
+use Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
 
 /**
@@ -514,6 +514,56 @@ class JoomHelper
     }
 
     return self::getImg($cat->thumbnail, $type, $url, $root);
+  }
+
+  /**
+   * Returns the table name of a content type
+   *
+   * @param   string   $type    Name of the content type
+   *
+   * @return  string   Table name
+   *
+   * @since   4.0.0
+   */
+  public static function getTableName(string $type)
+  {
+    return self::$content_types[$type];
+  }
+
+  /**
+   * Get the route to a site view.
+   *
+   * @param   string   $type      Name of the content type.
+   * @param   integer  $id        The id of the content item.
+   * @param   integer  $catid     The category ID.
+   * @param   string   $language  The language code.
+   * @param   string   $layout    The layout value.
+   *
+   * @return  string  The route.
+   *
+   * @since   4.0.0
+   */
+  public static function getViewRoute($view, $id, $catid = null, $language = null, $layout = null)
+  {
+    // Create the link
+    $link = 'index.php?option=com_joomgallery&view='.$view.'&id=' . $id;
+
+    if((int) $catid > 1)
+    {
+      $link .= '&catid=' . $catid;
+    }
+
+    if(!empty($language) && $language !== '*' && Multilanguage::isEnabled())
+    {
+      $link .= '&lang=' . $language;
+    }
+
+    if($layout)
+    {
+      $link .= '&layout=' . $layout;
+    }
+
+    return $link;
   }
 
   /**

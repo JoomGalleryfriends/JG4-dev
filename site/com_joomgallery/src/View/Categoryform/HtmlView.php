@@ -81,6 +81,9 @@ class HtmlView extends BaseHtmlView
 		$this->item   = $this->get('Item');
 		$this->form		= $this->get('Form');
 
+    // Get return page
+    $this->return_page = $this->get('ReturnPage');
+
     // Check acces view level
 		if(!in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {

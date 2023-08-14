@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Session\Session;
 use \Joomla\CMS\HTML\HTMLHelper;
 
 $wa = $this->document->getWebAssetManager();
@@ -21,6 +22,7 @@ $wa->useStyle('com_joomgallery.site');
 $canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
 $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
+$returnURL = base64_encode($this->route);
 ?>
 
 <?php if($this->item->parent_id > 0) : ?>
@@ -43,23 +45,21 @@ $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->i
 <?php if($canEdit || $canAdd || $canDelete): ?>
   <div class="btn-group mb-3" role="group">
     <?php if($canEdit): ?>
-      <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$this->item->id); ?>">
+      <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$this->item->id.'&return='.$returnURL); ?>">
         <?php echo Text::_("JACTION_EDIT"); ?>
       </a>
     <?php endif; ?>
 
     <?php if($canAdd): ?>
-      <a class="btn btn-outline-success" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id=0'); ?>">
+      <a class="btn btn-outline-success" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.add&id=0&catid='.$this->item->id.'&return='.$returnURL); ?>">
         <?php echo Text::_("JGLOBAL_FIELD_ADD"); ?>
       </a>
     <?php endif; ?>
 
     <?php if($canDelete) : ?>
-
       <a class="btn btn-danger" rel="noopener noreferrer" href="#deleteModal" role="button" data-bs-toggle="modal">
         <?php echo Text::_("JACTION_DELETE"); ?>
       </a>
-
       <?php echo HTMLHelper::_( 'bootstrap.renderModal',
                                 'deleteModal',
                                 array(
@@ -69,7 +69,7 @@ $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->i
 
                                     'modalWidth'  => '50',
                                     'bodyHeight'  => '100',
-                                    'footer' => '<button class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button><a href="' . Route::_('index.php?option=com_joomgallery&task=category.remove&id=' . $this->item->id, false, 2) .'" class="btn btn-danger">' . Text::_('COM_JOOMGALLERY_COMMON_DELETE_CATEGORY_TIPCAPTION') .'</a>'
+                                    'footer' => '<button class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button><a href="' . Route::_('index.php?option=com_joomgallery&task=category.remove&id='. $this->item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2) .'" class="btn btn-danger">' . Text::_('COM_JOOMGALLERY_COMMON_DELETE_CATEGORY_TIPCAPTION') .'</a>'
                                 ),
                                 Text::_('COM_JOOMGALLERY_COMMON_ALERT_SURE_DELETE_SELECTED_ITEM')
                               );
