@@ -63,7 +63,7 @@ class CategoryModel extends JoomItemModel
 		}
 		else
 		{
-			$id = Factory::getApplication()->input->get('id');
+			$id = Factory::getApplication()->input->get('id', 1);
 			Factory::getApplication()->setUserState('com_joomgallery.edit.category.id', $id);
 		}
 

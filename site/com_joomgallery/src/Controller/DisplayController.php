@@ -12,10 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use Joomla\Input\Input;
-use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use Joomla\CMS\Application\CMSApplication;
 use Joomgallery\Component\Joomgallery\Administrator\Controller\DisplayController as AdminDisplayController;
 
 /**

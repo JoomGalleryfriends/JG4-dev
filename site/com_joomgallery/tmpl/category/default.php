@@ -23,12 +23,17 @@ $canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item
 $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
 ?>
 
-<h2><?php echo $this->item->title; ?></h2>
+<?php if($this->item->parent_id > 0) : ?>
+  <h2><?php echo Text::_('JCATEGORY').': '.$this->escape($this->item->title); ?></h2>
+<?php else : ?>
+  <h2><?php echo Text::_('COM_JOOMGALLERY') ?></h2>
+<?php endif; ?>
+
 <p><?php echo nl2br($this->item->description); ?></p>
 
 <?php if($this->item->parent_id > 0) : ?>
   <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->parent_id); ?>">
-    <?php echo Text::_('Parent Category'); ?>
+    <?php echo Text::_('Back to: Parent Category'); ?>
   </a>
   </br />
 <?php endif; ?>
@@ -73,26 +78,38 @@ $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->i
   </div>
 <?php endif; ?>
 
+<?php if(count($this->item->children) == 0 && count($this->item->images) == 0) : ?>
+  <p><?php echo Text::_('No elements in this category...') ?></p>
+<?php endif; ?>
+
 <?php // Subcategories ?>
-<h3>Subcategories</h3>
-<ul>
-  <?php foreach($this->item->children as $key => $subcat) : ?>
-    <li>
-      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
-				<?php echo $this->escape($subcat->title); ?>
-			</a>
-    </li>
-  <?php endforeach; ?>
-</ul>
+<?php if(count($this->item->children) > 0) : ?>
+  <?php if($this->item->parent_id > 0) : ?>
+    <h3><?php echo Text::_('COM_JOOMGALLERY_SUBCATEGORIES') ?></h3>
+  <?php else : ?>
+    <h3><?php echo Text::_('COM_JOOMGALLERY_CATEGORIES') ?></h3>
+  <?php endif; ?>
+  <ul>
+    <?php foreach($this->item->children as $key => $subcat) : ?>
+      <li>
+        <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
+          <?php echo $this->escape($subcat->title); ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+<?php endif; ?>
 
 <?php // Images ?>
-<h3>Images</h3>
-<ul>
-  <?php foreach($this->item->images as $key => $image) : ?>
-    <li>
-      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-        <?php echo $this->escape($image->imgtitle); ?>
-      </a>
-    </li>
-  <?php endforeach; ?>
-</ul>
+<?php if(count($this->item->images) > 0) : ?>
+  <h3>Images</h3>
+  <ul>
+    <?php foreach($this->item->images as $key => $image) : ?>
+      <li>
+        <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+          <?php echo $this->escape($image->imgtitle); ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+<?php endif; ?>
