@@ -902,7 +902,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         $modules = $parent->get('manifest')->modules;
       }
 
-      if(count($modules->children()))
+      if(!empty($modules->children()) && count($modules->children()))
       {
         $modules = $modules->children();
       }
