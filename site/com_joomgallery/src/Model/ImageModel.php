@@ -55,14 +55,19 @@ class ImageModel extends JoomItemModel
 		}
 
 		// Load state from the request userState on edit or from the passed variable on default
-		if(Factory::getApplication()->input->get('layout') == 'edit')
+		$id = $this->app->input->getInt('id', null);
+		if($id)
 		{
-			$id = Factory::getApplication()->getUserState('com_joomgallery.edit.image.id');
+			$this->app->setUserState('com_joomgallery.edit.image.id', $id);
 		}
 		else
 		{
-			$id = Factory::getApplication()->input->get('id');
-			Factory::getApplication()->setUserState('com_joomgallery.edit.image.id', $id);
+			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
+		}
+
+		if(is_null($id))
+		{
+			throw new Exception('No ID provided to the model!', 500);
 		}
 
 		$this->setState('image.id', $id);

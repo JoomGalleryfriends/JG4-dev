@@ -81,7 +81,14 @@ class ImageformController extends FormController
 		$this->checkToken();
 
 		// Get the user data.
-		$data = Factory::getApplication()->input->get('jform', array(), 'array');
+		$data = $this->input->post->get('jform', [], 'array');
+
+		// To avoid data collisions the urlVar may be different from the primary key.
+		if(empty($urlVar))
+		{
+			$urlVar = 'id';
+		}
+		$recordId = $this->input->getInt($urlVar);
 
     // Data check
 		if(!$data)
@@ -93,10 +100,10 @@ class ImageformController extends FormController
 		}
 
     // Access check
-		if(!$this->acl->checkACL('edit', 'image', (int) $data['id']))
+		if(!$this->acl->checkACL('edit', 'image', $recordId))
 		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
-			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($data->id),false));
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($recordId),false));
 
 			return false;
 		}
@@ -105,12 +112,12 @@ class ImageformController extends FormController
     $app   = Factory::getApplication();
     $model = $this->getModel('Imageform', 'Site');
 
-		// Validate the posted data.
+		// Test whether the data is valid.
 		$form = $model->getForm();
 
 		if(!$form)
 		{
-			throw new \Exception($model->getError(), 500);
+			$app->enqueueMessage($model->getError(), 'error');
 		}
 
 		// Validate the posted data.
@@ -139,42 +146,46 @@ class ImageformController extends FormController
 			$app->setUserState('com_joomgallery.edit.image.data', $data);
 
 			// Redirect back to the edit screen.
-			$id = (int) $app->getUserState('com_joomgallery.edit.image.id');
-			$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=imageform&layout=edit&id=' . $id, false));
+			$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=imageform&'.$this->getItemAppend($recordId), false));
 
 			$this->redirect();
 		}
 
 		// Attempt to save the data.
-		$return = $model->save($data);
-
-		// Check for errors.
-		if($return === false)
+		if(!$model->save($validData))
 		{
 			// Save the data in the session.
-			$app->setUserState('com_joomgallery.edit.image.data', $data);
+			$app->setUserState('com_joomgallery.edit.image.data', $validData);
 
 			// Redirect back to the edit screen.
-			$id = (int) $app->getUserState('com_joomgallery.edit.image.id');
-			$this->setMessage(Text::sprintf('Save failed', $model->getError()), 'warning');
-			$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=imageform&layout=edit&id=' . $id, false));
+			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()), 'warning');
+			$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=imageform&'.$this->getItemAppend($recordId), false));
+
+			return false;
 		}
 
 		// Check in the profile.
-		if($return)
+		if($model->checkin($validData[$key]) === false)
 		{
-			$model->checkin($return);
+			// Save the data in the session.
+			$app->setUserState('com_joomgallery.edit.image.data', $validData);
+
+			// Redirect to list screen.
+			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'warning');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($recordId), false));
+
+			return false;
 		}
 
 		// Clear the profile id from the session.
 		$app->setUserState('com_joomgallery.edit.image.id', null);
+		$app->setUserState('com_joomgallery.edit.image.data', null);
 
 		// Redirect to the list screen.
 		$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVED_SUCCESSFULLY'));
-		$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($data->id),false));
-
-		// Flush the data from the session.
-		$app->setUserState('com_joomgallery.edit.image.data', null);
+		$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($recordId),false));
+		
+		return true;
 	}
 
 	/**
@@ -186,20 +197,31 @@ class ImageformController extends FormController
 	 */
 	public function cancel($key = NULL)
 	{
+		// Check for request forgeries.
+		$this->checkToken();
+
 		// Get the current edit id.
-		$editId = (int) Factory::getApplication()->getUserState('com_joomgallery.edit.image.id');
+		$recordId = $this->input->getInt('id');
 
 		// Get the model.
 		$model = $this->getModel('Imageform', 'Site');
 
-		// Check in the item
-		if($editId)
+		// Attempt to check-in the current record.
+		if($recordId && $model->checkin($recordId) === false)
 		{
-			$model->checkin($editId);
+			// Check-in failed, go back to the record and display a notice.
+			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($recordId), false));
+
+			return false;
 		}
 
+		// Clear the profile id from the session.
+		$this->app->setUserState('com_joomgallery.edit.image.id', null);
+		$this->app->setUserState('com_joomgallery.edit.image.data', null);
+
 		// Redirect to the list screen.
-		$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+		$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($recordId),false));
 	}
 
 	/**
@@ -214,9 +236,8 @@ class ImageformController extends FormController
     // Check for request forgeries
 		$this->checkToken();
 
-    // Get record id
-		$cid      = (array) $this->input->post->get('cid', [], 'int');
-		$removeId = (int) (\count($cid) ? $cid[0] : $this->input->getInt('id', 0));
+    // Get the current edit id.
+		$removeId = $this->input->getInt('id');
 
 		// ID check
 		if(!$removeId)
@@ -230,7 +251,7 @@ class ImageformController extends FormController
 		// Access check
 		if(!$this->acl->checkACL('delete', 'image', $removeId))
 		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId),false));
 
 			return false;
@@ -239,29 +260,32 @@ class ImageformController extends FormController
     // Get the model.
 		$model = $this->getModel('Imageform', 'Site');
 
-		// Attempt to save the data.
-		$return = $model->delete($removeId);
-
-		// Check for errors.
-		if($return === false)
+		// Attempt to delete the record.
+		if($model->delete($removeId) === false)
 		{
 			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_DELETE_FAILED', $model->getError()), 'error');
 			$this->app->redirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId), false));
+
+			return false;
 		}
-		else
+
+		// Attempt to check-in the current record.
+		if($model->checkin($removeId) === false)
 		{
-			// Check in the profile.
-			if($return)
-			{
-				$model->checkin($return);
-			}
+			// Check-in failed, go back to the record and display a notice.
+			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId), false));
 
-			$this->app->setUserState('com_joomgallery.edit.image.id', null);
-			$this->app->setUserState('com_joomgallery.edit.image.data', null);
-
-			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFULLY'), 'success');
-			$this->app->redirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId), false));
+			return false;
 		}
+
+		// Clear the profile id from the session.
+		$this->app->setUserState('com_joomgallery.edit.image.id', null);
+		$this->app->setUserState('com_joomgallery.edit.image.data', null);
+
+		// Redirect to the list screen.
+		$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFUL'), 'success');
+		$this->app->redirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId), false));
   }
 
   /**
@@ -273,7 +297,6 @@ class ImageformController extends FormController
    */
   public function edit()
   {
-    $cid    = (array) $this->input->post->get('cid', [], 'int');
 		$editId = $this->input->getInt('id', 0);
 
     // ID check

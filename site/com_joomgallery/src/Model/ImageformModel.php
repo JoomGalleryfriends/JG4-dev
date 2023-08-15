@@ -41,24 +41,27 @@ class ImageformModel extends AdminImageModel
 	 *
 	 * @since   4.0.0
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 */
 	protected function populateState()
 	{
-		$app = Factory::getApplication('com_joomgallery');
-
 		// Load state from the request userState on edit or from the passed variable on default
-		if(Factory::getApplication()->input->get('layout') == 'edit')
+		$id = $this->app->input->getInt('id', null);
+		if($id)
 		{
-			$id = Factory::getApplication()->getUserState('com_joomgallery.edit.image.id');
+			$this->app->setUserState('com_joomgallery.edit.image.id', $id);
 		}
 		else
 		{
-			$id = Factory::getApplication()->input->get('id');
-			Factory::getApplication()->setUserState('com_joomgallery.edit.image.id', $id);
+			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
 		}
 
-    $return = Factory::getApplication()->input->get('return', '', 'base64');
+		if(is_null($id))
+		{
+			throw new Exception('No ID provided to the model!', 500);
+		}
+
+    $return = $this->app->input->get('return', '', 'base64');
     $this->setState('return_page', base64_decode($return));
 
 		$this->setState('image.id', $id);
