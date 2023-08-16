@@ -30,21 +30,29 @@ trait RoutingTrait
   protected $useReturnPage = false;
 
   /**
-	 * Get the return URL.
-	 *
+	 * Get the return URL.	 *
 	 * If a "return" variable has been passed in the request
+	 * 
+	 * @param   string  Optional: A default view to return
 	 *
 	 * @return  string  The return URL.
 	 *
 	 * @since   4.0.0
 	 */
-	protected function getReturnPage()
+	protected function getReturnPage(string $default='')
 	{
 		$return = $this->input->get('return', null, 'base64');
 
 		if(empty($return) || !Uri::isInternal(base64_decode($return)))
 		{
-			return 'index.php?option='._JOOM_OPTION.'&view='.$this->default_view;
+			if(!empty($default))
+			{
+				return 'index.php?option='._JOOM_OPTION.'&view='.$default;
+			}
+			else
+			{
+				return 'index.php?option='._JOOM_OPTION.'&view='.$this->default_view;
+			}
 		}
 		else
 		{
@@ -75,12 +83,14 @@ trait RoutingTrait
 			$append .= '&tmpl=' . $tmpl;
 		}
 
-		if($layout = $this->input->get('layout', 'edit', 'string'))
+		$layout = $this->input->get('layout', '', 'string');
+		if($layout && $layout != 'default')
 		{
 			$append .= '&layout=' . $layout;
 		}
 
-		if($forcedLanguage = $this->input->get('forcedLanguage', '', 'cmd'))
+		$forcedLanguage = $this->input->get('forcedLanguage', '', 'cmd');
+		if($forcedLanguage && $forcedLanguage != '*')
 		{
 			$append .= '&forcedLanguage=' . $forcedLanguage;
 		}
@@ -96,7 +106,6 @@ trait RoutingTrait
 		}
 
 		$return = $this->input->get('return', null, 'base64');
-
 		if($return && !$this->useReturnPage)
 		{
 			$append .= '&return=' . $return;

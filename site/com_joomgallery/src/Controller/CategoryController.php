@@ -138,6 +138,7 @@ class CategoryController extends JoomBaseController
 
 	/**
 	 * Remove a category
+	 * Redirect to task=categoryform.remove
 	 *
 	 * @return void
 	 *
@@ -160,16 +161,36 @@ class CategoryController extends JoomBaseController
 			return false;
 		}
 
-    // Access check
-		if(!$this->acl->checkACL('delete', 'category', $removeId))
+    // Redirect to categoryform.remove
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=categoryform.remove&'.$this->getItemAppend($removeId), false));
+	}
+
+	/**
+	 * Checkin a checke out category.
+	 * Redirect to task=categoryform.checkin
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	public function checkin()
+	{
+		// Check for request forgeries
+		$this->checkToken();
+    
+    // Get ID
+    $id = $this->input->getInt('id', 0);
+
+		// ID check
+		if(!$id)
 		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
-			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId),false));
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($id),false));
 
 			return false;
 		}
 
-    // Redirect to imageform.remove
-    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=categoryform.remove&'.$this->getItemAppend($removeId), false));
+    // Redirect to categoryform.checkin
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=categoryform.checkin&'.$this->getItemAppend($id), false));
 	}
 }

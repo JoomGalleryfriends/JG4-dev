@@ -34,7 +34,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
 	<?php if(!$canEdit) : ?>
     <?php Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error'); ?>
 	<?php else : ?>
-		<form id="adminForm" action="<?php echo Route::_('index.php?option=com_joomgallery&controller=imageform'); ?>"
+		<form id="adminForm" action="<?php echo Route::_('index.php?option=com_joomgallery&controller=imageform&id='.$this->item->id); ?>"
 			    method="post" name="adminForm" class="form-validate form-horizontal" enctype="multipart/form-data">
       <fieldset>
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'Details')); ?>

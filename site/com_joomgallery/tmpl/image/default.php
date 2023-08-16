@@ -24,7 +24,7 @@ $wa->useStyle('com_joomgallery.site');
 $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
 $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.image', $this->item->id);
 $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery');
-$returnURL  = base64_encode($this->route);
+$returnURL  = base64_encode(JoomHelper::getViewRoute('image', $this->item->id, $this->item->catid, $this->item->language, $this->getLayout()));
 ?>
 
 <h2><?php echo $this->item->imgtitle; ?></h2>

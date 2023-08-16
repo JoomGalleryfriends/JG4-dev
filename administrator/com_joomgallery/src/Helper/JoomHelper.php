@@ -587,7 +587,7 @@ class JoomHelper
       $link .= '&lang=' . $language;
     }
 
-    if($layout)
+    if($layout && $layout != 'default')
     {
       $link .= '&layout=' . $layout;
     }

@@ -105,7 +105,7 @@ if($saveOrder && !empty($this->items))
                   $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery') || $item->checked_out == Factory::getUser()->id;
                   $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $item->id);
                   $canChange  = $this->acl->checkACL('editstate', 'com_joomgallery.category', $item->id);
-                  $returnURL  = base64_encode(JoomHelper::getListRoute('category', $item->language, $this->getLayout()));
+                  $returnURL  = base64_encode(JoomHelper::getListRoute('categories', $item->language, $this->getLayout()));
                 
 									// Get the parents of item for sorting
 									if ($item->level > 1)

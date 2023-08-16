@@ -282,8 +282,63 @@ class CategoryformController extends FormController
 		$this->app->setUserState('com_joomgallery.edit.category.id', null);
 		$this->app->setUserState('com_joomgallery.edit.category.data', null);
 
-		$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFUL'), 'success');
+		$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETE_SUCCESSFUL'), 'success');
 		$this->app->redirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId), false));
+	}
+
+	/**
+	 * Checkin a checked-out category.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	public function checkin()
+	{
+		// Check for request forgeries
+		$this->checkToken();
+    
+    // Get ID
+    $id = $this->input->getInt('id', 0);
+
+		// ID check
+		if(!$id)
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage('categories').'&'.$this->getItemAppend($id),false));
+
+			return false;
+		}
+
+    // Access check
+		if(!$this->acl->checkACL('editstate', 'category', $id))
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage('categories').'&'.$this->getItemAppend($id),false));
+
+			return false;
+		}
+
+		// Get the model.
+		$model  = $this->getModel('Categoryform', 'Site');
+
+		// Attempt to check-in the current record.
+		if($model->checkin($id) === false)
+		{
+			// Check-in failed, go back to the record and display a notice.
+			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage('categories').'&'.$this->getItemAppend($id), false));
+
+			return false;
+		}
+
+		// Clear the profile id from the session.
+		$this->app->setUserState('com_joomgallery.edit.category.id', null);
+		$this->app->setUserState('com_joomgallery.edit.category.data', null);
+
+		// Redirect to the list screen.
+		$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_CHECKIN_SUCCESSFUL'), 'success');
+		$this->app->redirect(Route::_($this->getReturnPage('categories').'&'.$this->getItemAppend($id), false));
 	}
 
   /**
@@ -295,7 +350,7 @@ class CategoryformController extends FormController
    */
   public function batch($model)
   {
-    throw new Exception('Batch operations are not available in the frontend.', 503);
+    throw new \Exception('Batch operations are not available in the frontend.', 503);
   }
 
   /**
@@ -308,6 +363,6 @@ class CategoryformController extends FormController
    */
   public function reload($key = null, $urlVar = null)
   {
-    throw new Exception('Reload operation not available.', 503);
+    throw new \Exception('Reload operation not available.', 503);
   }
 }

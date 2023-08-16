@@ -88,12 +88,15 @@ class ImageController extends JoomBaseController
 	 * @return  void
 	 *
 	 * @since   4.0.0
-	 *
-	 * @throws  Exception
 	 */
 	public function add()
 	{
-    throw new Exception('Adding a single image in the frontend is not available.', 503);
+		$this->app->enqueueMessage('Upload new images in frontend is not yet available.', 'warning');
+
+		// Redirect to imageform.remove
+    $this->setRedirect(Route::_($this->getReturnPage('images').'&'.$this->getItemAppend(),false));
+
+		return true;
   }
 
   /**
@@ -121,16 +124,36 @@ class ImageController extends JoomBaseController
 			return false;
 		}
 
-    // Access check
-		if(!$this->acl->checkACL('delete', 'image', $editId))
+    // Redirect to imageform.remove
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=imageform.remove&'.$this->getItemAppend($editId), false));
+  }
+
+	/**
+	 * Checkin a checke out image.
+	 * Redirect to task=imageform.checkin
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	public function checkin()
+	{
+		// Check for request forgeries
+		$this->checkToken();
+    
+    // Get ID
+    $id = $this->input->getInt('id', 0);
+
+		// ID check
+		if(!$id)
 		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
-			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($id),false));
 
 			return false;
 		}
 
-    // Redirect to imageform.remove
-    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=imageform.remove&'.$this->getItemAppend($editId), false));
-  }
+    // Redirect to imageform.checkin
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=imageform.checkin&'.$this->getItemAppend($id), false));
+	}
 }

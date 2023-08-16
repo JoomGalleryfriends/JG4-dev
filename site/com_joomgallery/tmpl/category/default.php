@@ -15,6 +15,7 @@ use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Session\Session;
 use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
@@ -22,7 +23,7 @@ $wa->useStyle('com_joomgallery.site');
 $canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
 $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
-$returnURL = base64_encode($this->route);
+$returnURL = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));
 ?>
 
 <?php if($this->item->parent_id > 0) : ?>

@@ -109,10 +109,10 @@ if($saveOrder && !empty($this->items))
               <?php foreach ($this->items as $i => $item) :
                   $ordering   = ($listOrder == 'a.ordering');
                   $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.image', $item->id);
-                  $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery') || $item->checked_out == Factory::getUser()->id;
                   $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.image', $item->id);
                   $canChange  = $this->acl->checkACL('editstate', 'com_joomgallery.image', $item->id);
-                  $returnURL  = base64_encode(JoomHelper::getListRoute('image', $item->language, $this->getLayout()));
+                  $canCheckin = $canChange || $item->checked_out == Factory::getUser()->id;
+                  $returnURL  = base64_encode(JoomHelper::getListRoute('images', $item->language, $this->getLayout()));
                 ?>
 
                 <tr class="row<?php echo $i % 2; ?>">
@@ -171,7 +171,7 @@ if($saveOrder && !empty($this->items))
 
                   <?php if($canEdit || $canDelete): ?>
                     <td class="d-none d-lg-table-cell text-center">
-                      <?php if($canEdit && $item->checked_out == 0): ?>
+                      <?php if($canEdit): ?>
                         <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.edit&id=' . $item->id.'&return='.$returnURL, false, 2); ?>" class="btn btn-mini" type="button"><i class="icon-edit" ></i></a>
                       <?php endif; ?>
                       <?php if ($canDelete): ?>
@@ -181,7 +181,12 @@ if($saveOrder && !empty($this->items))
                   <?php endif; ?>
                   
                   <td class="d-none d-lg-table-cell text-center">
-                    <i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>"></i>
+                    <?php if($canChange): ?>
+                      <?php $statetask = ((int) $item->published) ? 'unpublish': 'publish'; ?>
+                      <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.' . $statetask . '&id=' . $item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini" type="button"><i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>" ></i></a>
+                    <?php else : ?>
+                      <i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>"></i>
+                    <?php endif; ?>
                   </td>
 
                 </tr>
