@@ -23,27 +23,28 @@ $wa->useStyle('com_joomgallery.site');
 
 $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
 $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.image', $this->item->id);
-$canCheckin = $this->acl->checkACL('manage', 'com_joomgallery');
+$canCheckin = $this->acl->checkACL('editstate', 'com_joomgallery.image', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL  = base64_encode(JoomHelper::getViewRoute('image', $this->item->id, $this->item->catid, $this->item->language, $this->getLayout()));
 ?>
 
 <h2><?php echo $this->item->imgtitle; ?></h2>
 
 <?php if($canEdit || $canCheckin || $canDelete): ?>
-  <div class="btn-group mb-3" role="group">
-    <?php if ($canEdit && $this->item->checked_out == 0): ?>
-      <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.edit&id='.$this->item->id.'&return='.$returnURL); ?>">
-        <?php echo Text::_("JGLOBAL_EDIT"); ?>
-      </a>
-    <?php elseif ($canCheckin && $this->item->checked_out > 0) : ?>
+  <div class="mb-3">
+    <?php if ($canCheckin && $this->item->checked_out > 0): ?>
       <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.checkin&id='.$this->item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1'); ?>">
         <?php echo Text::_("JLIB_HTML_CHECKIN"); ?>
       </a>
     <?php endif; ?>
 
-    <?php if ($canDelete) : ?>
+    <?php if ($canEdit): ?>
+      <a class="btn btn-outline-primary<?php echo ($this->item->checked_out > 0) ? ' disabled' : ''; ?>" href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.edit&id='.$this->item->id.'&return='.$returnURL); ?>" <?php echo ($this->item->checked_out > 0) ? 'disabled' : ''; ?>>
+        <?php echo Text::_("JGLOBAL_EDIT"); ?>
+      </a>
+    <?php endif; ?>
 
-      <a class="btn btn-danger" rel="noopener noreferrer" href="#deleteModal" role="button" data-bs-toggle="modal">
+    <?php if ($canDelete) : ?>
+      <a class="btn btn-danger<?php echo ($this->item->checked_out > 0) ? ' disabled' : ''; ?>" rel="noopener noreferrer" href="#deleteModal" role="button" data-bs-toggle="modal" <?php echo ($this->item->checked_out > 0) ? 'disabled' : ''; ?>>
         <?php echo Text::_("JACTION_DELETE"); ?>
       </a>
 

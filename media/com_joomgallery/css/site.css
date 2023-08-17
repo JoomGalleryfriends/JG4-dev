@@ -32,6 +32,14 @@ table.itemList th [class^="icon-"],
 table.itemList th [class*="icon-"] {
   font-size: 1.4rem;
 }
+table.itemList td .btn-mini,
+table.itemList th .btn-mini {
+  border: 0;
+}
+table.itemList td.title-cell .tbody-icon,
+table.itemList th.title-cell .tbody-icon {
+  margin-right: 0.5rem;
+}
 
 /* Single image view */
 .joom-image {
