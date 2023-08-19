@@ -220,7 +220,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
                          'moduleclass_sfx'=>'',
                          'rssurl'=>'https://www.'.$subdomain.'joomgalleryfriends.net/?format=feed&amp;type=rss',
                          'rssrtl'=>0,
-                         'rsstitle'=>1,
+                         'rssdate'=>0,
                          'rssdesc'=>0,
                          'rssimage'=>1,
                          'rssitems'=>3,
@@ -242,7 +242,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         <h3><?php echo Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL', $parent->getManifest()->version); ?></h3>
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
           <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($install_message != '') : ?>
@@ -292,7 +292,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         </p>
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
           <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($update_message != '') : ?>
@@ -336,8 +336,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     $uninstall_message = $this->getInstallerMSG($act_version, $new_version, 'uninstall');
 
-		$this->uninstallPlugins($parent);
-		$this->uninstallModules($parent);
+    $this->uninstallPlugins($parent);
+    $this->uninstallModules($parent);
 
     // Delete directories
     if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
@@ -933,12 +933,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
       {
         return;
       }
-    }		
+    }
 
-		if(!empty($modules))
-		{
+    if(!empty($modules))
+    {
       $db    = Factory::getDbo();
       $query = $db->getQuery(true);
+
+      // Delete administrator module JoomGallery News
 
       foreach($modules as $module)
       {
@@ -979,8 +981,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
           }
         }
       }
-		}
-	}
+    }
+  }
 
   /**
 	 * Copies watermark files to /images/joomgallery/..
@@ -1289,26 +1291,18 @@ class com_joomgalleryInstallerScript extends InstallerScript
         return false;
       }
 
-      $db    = Factory::getDbo();
-      $query = $db->getQuery(true);
-      $query->insert('#__modules_menu');
-      $query->set('moduleid = '.$row->id);
-      $query->set('menuid = 0');
+      $db      = Factory::getDbo();
+      $query   = $db->getQuery(true);
+      $columns = array('moduleid', 'menuid');
+      $values  = array($row->id, 0);
+
+      $query
+          ->insert($db->quoteName('#__modules_menu'))
+          ->columns($db->quoteName($columns))
+          ->values(implode(',', $values));
+
       $db->setQuery($query);
-
-      // $db->execute();
-
-      try
-      {
-        $db->execute();
-      }
-      catch (\RuntimeException $e)
-      {
-        // geht nicht $app->enqueueMessage(JText::_('Unable to assign "'.$title.'" module!'), 'error');
-
-        // return false;
-      }
-
+      $db->execute();
     }
 
     return true;
