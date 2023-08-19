@@ -17,6 +17,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 HTMLHelper::_('bootstrap.framework');
 
@@ -56,36 +57,64 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
       <?php foreach ($this->modules as $module)
       {
         echo ModuleHelper::renderModule($module, array('style' => 'well'));
-      }
+      } ?>
 
-      // Display extensions
-      $title   = Text::_('COM_JOOMGALLERY_CONTROL_EXTENSIONS');
-      $content = 'Module<br /> <br /><hr>Plugins<br /> <br /><hr>Sonstiges<br /> <br /><hr>Sprachdateien<br /> ';
-      $id      = '123';
+      <div class="card-columns">
+        <div class="card">
+          <?php // Display most viewed images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_MOST_VIEWED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('JGLOBAL_HITS'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-100';
 
-      collapseContent($title, $content, $id);
-      ?>
-      <hr>
+          DisplaySelectedImages($header, $this->mostviewedimages, $id, false); ?>
+        </div>
+        <div class="card">
+          <?php // Display newest images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_NEWEST_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('JDATE UTC'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-200';
 
-      <?php // Display installed extensions ?>
-      <div class="card">
-        <?php DisplayInstalledExtensions($this->galleryinstalledextensionsdata); ?>
+          DisplaySelectedImages($header, $this->newestimages, $id, false); ?>
+        </div>
+        <div class="card">
+          <?php // Display best rated images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_BEST_RATED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('Rating'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-300';
+
+          DisplaySelectedImages($header, $this->bestratedimages, $id, true); ?>
+        </div>
+        <div class="card">
+          <?php // Display most downloaded images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_MOST_DOWNLOADED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('COM_JOOMGALLERY_DOWNLOADS'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-400';
+
+          DisplaySelectedImages($header, $this->mostdownloadedimages, $id, false); ?>
+        </div>
       </div>
       <hr>
 
-      <?php // Display system info
-      $title   = Text::_('System info');
-      $content = 'PHP version<br /> <br />memory_limit<br /> <br />Post Max Size<br /> <br />max_upload_size<br /> <br />max_input_vars<br /> <br /GD Available<br />...? ';
-      $id      = '234';
+      <?php // Display extensions
+      $title   = Text::_('COM_JOOMGALLERY_CONTROL_EXTENSIONS');
+      $content = 'Module<br /> <br /><hr>Plugins<br /> <br /><hr>Sonstiges<br /> <br /><hr>Sprachdateien<br /> ';
+      $id      = '100';
 
-      collapseContent($title, $content, $id);
+      collapseContent($title, $content, $id); ?>
+      <hr>
 
-      // Display Footer 
-      ?>
+      <?php // Display installed extensions 
+      DisplayInstalledExtensions($this->galleryinstalledextensionsdata); ?>
+      </div>
+      <hr>
+
+      <?php // Display system settings
+      $title    = Text::_('PHP system settings');
+      $settings = $this->php_settings;
+      $id      = '200';
+
+      DisplaySystemSettings($title, $settings);
+
+      // Display Footer ?>
       <div class"jg-control-footer">
         <?php
-        // Display copyright 
-        ?>
+        // Display copyright ?>
         <hr>
         <div class="row">
           <div class="col-md-12 jg-copyright">
@@ -102,7 +131,6 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
 </div>
 
 <?php 
-
 
 
 // Shows a small gallery statistic
@@ -266,6 +294,89 @@ function DisplayGalleryInfo($manifest)
 }
 
 /**
+ * Display selected Images as collapsed
+ *
+ * @param   array   $header      Array with column header, $header[0]=columheader, $header[1]=first column...
+ * @param   array   $data        Array with hold the Images data, $data[0]=image, $data[1]=title, $data[2]=value, $data[3]=imgid
+ * @param   int     $id          Unique id
+ * @param   bool    $roundvalue  false=do not round, true=round value
+   *
+ * @since 4.0.0
+ */
+function DisplaySelectedImages($header, $data, $id, $roundvalue = false)
+{
+
+  // $id     = 'selectedimages-100';
+  $itemId = $id . '-item'; ?>
+
+
+  <div class="accordion" id="<?php echo $id; ?>">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+          <?php echo $header[0]; ?>
+        </button>
+      </h2>
+      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+        <div class="accordion-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <td class="w-10">
+                  <?php echo $header[1]; ?>
+                </td>
+                <td class="w-10">
+                  <?php echo $header[2]; ?>
+                </td>
+                <td class="w-10">
+                  <?php echo $header[3]; ?>
+                </td>
+                <td class="w-10">
+                  <?php echo $header[4]; ?>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($data as $value) { ?>
+                <tr>
+                <td class="d-md-table-cell small">
+                  <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
+                </td>
+                  <td class="d-md-table-cell">
+                    <?php $ImgUrl   = Route::_('index.php?option=com_joomgallery&task=image.edit&id='.(int) $value[2]);
+                      $EditImgTxt = Text::_('COM_JOOMGALLERY_IMAGE_EDIT');
+                    ?>
+                    <a href="<?php echo $ImgUrl; ?>" title="<?php echo $EditImgTxt; ?>">
+                      <?php echo $value[0]; ?>
+                    </a>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php if($roundvalue) : ?>
+                      <?php echo round(floatval($value[1]), 2); ?>
+                    <?php else : ?>
+                      <?php echo $value[1]; ?>
+                    <?php endif; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value[2]; ?>
+                  </td>
+                </tr>
+                <?php
+                } ?>
+            </tbody>
+          </table>
+        </div>
+      </div><!--/accordion-collapse-->
+    </div><!--/accordion-item-->
+  </div><!--/accordion -->
+
+  <?php return;
+
+}
+
+/**
  * Display installed extensions as collapsed
  *
  * @param   array  $manifest  Array with hold the extensions data, $manifest[0}=extension id, $manifest[1]=state, $manifest[2]=array of data
@@ -276,9 +387,9 @@ function DisplayInstalledExtensions($manifest)
 {
 
   $id     = 'installedextensions-100';
-  $itemId = $id . '-item';
+  $itemId = $id . '-item'; ?>
 
-  ?>
+<div class="card">
   <div class="accordion" id="<?php echo $id; ?>">
     <div class="accordion-item">
       <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
@@ -297,19 +408,19 @@ function DisplayInstalledExtensions($manifest)
                   <?php echo Text::_('Name'); ?>
                 </td>
                 <td class="w-10">
-                   <?php echo Text::_('JVERSION'); ?>
+                  <?php echo Text::_('JVERSION'); ?>
                 </td>
                 <td class="w-10">
                   <?php echo Text::_('JDate'); ?>
                 </td>
                 <td class="w-10">
-                   <?php echo Text::_('JAUTHOR'); ?>
+                  <?php echo Text::_('JAUTHOR'); ?>
                 </td>
                 <td class="w-10">
-                   <?php echo Text::_('JENABLED'); ?>
+                  <?php echo Text::_('JENABLED'); ?>
                 </td>
                 <td class="w-10">
-                   <?php echo Text::_('ID'); ?>
+                  <?php echo Text::_('ID'); ?>
                 </td>
               </tr>
             </thead>
@@ -330,11 +441,11 @@ function DisplayInstalledExtensions($manifest)
                     <?php echo $value['author']; ?>
                   </td>
                   <td class="d-md-table-cell">
-                        <?php if ($enabled === 1) : ?>
-                          <span class="icon-publish text-center" title="<?php echo Text::_('JENABLED'); ?>"></span>
-                        <?php else : ?>
-                          <span class="icon-delete text-center" title="<?php echo Text::_('JDISABLED'); ?>"></span>
-                        <?php endif; ?>
+                      <?php if ($enabled === 1) : ?>
+                        <span class="icon-publish text-center" title="<?php echo Text::_('JENABLED'); ?>"></span>
+                      <?php else : ?>
+                        <span class="icon-delete text-center" title="<?php echo Text::_('JDISABLED'); ?>"></span>
+                      <?php endif; ?>
                   </td>
                   <td class="d-md-table-cell">
                     <?php echo $extension_id; ?>
@@ -348,6 +459,77 @@ function DisplayInstalledExtensions($manifest)
       </div><!--/accordion-collapse-->
     </div><!--/accordion-item-->
   </div><!--/accordion -->
+</div><!--/card -->
+
+  <?php return;
+
+}
+
+/**
+ * Display system settings as collapsed
+ *
+ * @param   string  $title     The displayed title of the content
+ * @param   array   $settings  Array with hold the data
+ *
+ * @since 4.0.0
+ */
+function DisplaySystemSettings($title, $settings)
+{
+
+  $id     = 'systeminfo-100';
+  $itemId = $id . '-item'; ?>
+
+<div class="card">
+  <div class="accordion" id="<?php echo $id; ?>">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+          <?php echo Text::_($title); ?>
+        </button>
+      </h2>
+      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+        <div class="accordion-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach($settings as $key => $value) { ?>
+                <tr>
+                  <td class="d-md-table-cell">
+                    <?php echo $key; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php switch ($value)
+                      {
+                        case '':
+                        case '0':
+                          echo Text::_('JNO');
+                          break;
+
+                        case '1':
+                          echo Text::_('JYES');
+                          break;
+
+                        default:
+                          echo $value;
+                          break;
+                      } ?>
+                  </td>
+                </tr>
+                <?php
+                } ?>
+            </tbody>
+          </table>
+        </div>
+      </div><!--/accordion-collapse-->
+    </div><!--/accordion-item-->
+  </div><!--/accordion -->
+</div><!--/card -->
 
   <?php return;
 
@@ -368,9 +550,8 @@ function collapseContent($title, $content, $id)
 {
 
   $id     = 'accordion-' . $id;
-  $itemId = $id . '-item';
+  $itemId = $id . '-item'; ?>
 
-  ?>
   <div class="accordion" id="<?php echo $id; ?>">
     <div class="accordion-item">
       <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">

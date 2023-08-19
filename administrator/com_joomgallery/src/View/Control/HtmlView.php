@@ -57,15 +57,43 @@ class HtmlView extends JoomGalleryView
     $lang          = Factory::getLanguage();
     $this->canDo   = JoomHelper::getActions();
     $this->modules = ModuleHelper::getModules('joom_cpanel');
+    $imglimit      = 10;
 
     // get statistic data
     $this->statisticdata = $this->getStatisticData();
+
+    // get most viewed images
+    $this->mostviewedimages = $this->getMostViewedImages();
+
+    // get newest images
+    $this->newestimages = $this->getNewestImages();
+
+    // get best rated images
+    $this->bestratedimages = $this->getBestRatedImages();
+
+    // get most downloaded images
+    $this->mostdownloadedimages = $this->getMostDownloadedImages();
 
     // get gallery info data
     $this->galleryinfodata = $this->getGalleryInfoData();
 
     // get installed extensions data
     $this->galleryinstalledextensionsdata = $this->getInstalledExtensionsData();
+
+    // get php system info
+    $this->php_settings = [
+        'memory_limit'        => ini_get('memory_limit'),
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size'       => ini_get('post_max_size'),
+        'file_uploads'        => ini_get('file_uploads') == '1',
+        'max_execution_time'  => ini_get('max_execution_time'),
+        'max_input_vars'      => ini_get('max_input_vars'),
+        // 'zlib'                => \extension_loaded('zlib'),
+        'zip'                 => \function_exists('zip_open') && \function_exists('zip_read'),
+        'gd'                  => \extension_loaded('gd'),
+        'exif'                => \extension_loaded('exif'),
+        'iconv'               => \function_exists('iconv')
+      ];
 
     $this->addToolbar();
 
@@ -103,6 +131,115 @@ class HtmlView extends JoomGalleryView
 
     parent::display($tpl);
   }
+
+/**
+ * Method to get the most viewed images
+ *
+ * @return   array   Array with statistic data
+ *
+ * @since 4.0.0
+ */
+protected function getMostViewedImages()
+{
+  $popularImages = array();
+
+  $db = Factory::getDbo();
+
+  // alt: $model->getImages('a.hits desc', true, 5, 'a.hits > 0');
+
+  $query = $db->getQuery(true)
+              ->select($db->quoteName(array('imgtitle', 'hits', 'id')))
+              ->from($db->quoteName('#__joomgallery'))
+              ->where($db->quoteName('hits') . ' > ' . $db->quote(0))
+              ->order('hits DESC')
+              ->setLimit('$imglimit');
+  $db->setQuery($query);
+  $db->execute();
+
+  $popularImages = $db->loadRowList();
+
+  return $popularImages;
+}
+
+/**
+ * Method to get the newest images
+ *
+ * @return   array   Array with statistic data
+ *
+ * @since 4.0.0
+ */
+protected function getNewestImages()
+{
+  $newestimages = array();
+
+  $db = Factory::getDbo();
+
+  $query = $db->getQuery(true)
+              ->select($db->quoteName(array('imgtitle', 'created_time', 'id')))
+              ->from($db->quoteName('#__joomgallery'))
+              ->order('created_time DESC')
+              ->setLimit('$imglimit');
+  $db->setQuery($query);
+  $db->execute();
+
+  $newestimages = $db->loadRowList();
+
+  return $newestimages;
+}
+
+/**
+ * Method to get the best rated images
+ *
+ * @return   array   Array with statistic data
+ *
+ * @since 4.0.0
+ */
+protected function getBestRatedImages()
+{
+  $bestratedimages = array();
+
+  $db = Factory::getDbo();
+
+  $query = $db->getQuery(true)
+              ->select(array('imgtitle', 'imgvotesum/imgvotes' .' AS ' . 'rating', 'id'))
+              ->from($db->quoteName('#__joomgallery'))
+              ->where($db->quoteName('imgvotes') . ' > ' . $db->quote(0))
+              ->order('imgvotesum/imgvotes DESC')
+              ->setLimit('$imglimit');
+  $db->setQuery($query);
+  $db->execute();
+
+  $bestratedimages = $db->loadRowList();
+
+  return $bestratedimages;
+}
+
+/**
+ * Method to get the MOst downloaded images
+ *
+ * @return   array   Array with statistic data
+ *
+ * @since 4.0.0
+ */
+protected function getMostDownloadedImages()
+{
+  $mostdownloadedimages = array();
+
+  $db = Factory::getDbo();
+
+  $query = $db->getQuery(true)
+              ->select(array('imgtitle', 'downloads', 'id'))
+              ->from($db->quoteName('#__joomgallery'))
+              ->where($db->quoteName('downloads') . ' > ' . $db->quote(0))
+              ->order('downloads DESC')
+              ->setLimit('$imglimit');
+  $db->setQuery($query);
+  $db->execute();
+
+  $mostdownloadedimages = $db->loadRowList();
+
+  return $mostdownloadedimages;
+}
 
 /**
  * Method to get the statistic data
