@@ -1,7 +1,11 @@
-.feed  h2 {
-/* testweise eingefügt. */
-  font-size: 18px;
+.module-actions {
+  -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+          order: 1;
+  -webkit-margin-start: auto;
+          margin-inline-start: auto;
 }
+
 .subhead .btn {
   margin-inline-end: 0.75rem;
 }

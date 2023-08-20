@@ -53,8 +53,8 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
       </div>
       <hr>
 
-      <?php // Render admin modules in position joom_cpanel ?>
-      <?php foreach ($this->modules as $module)
+      <?php // Render admin modules in position joom_cpanel
+      foreach ($this->modules as $module)
       {
         echo ModuleHelper::renderModule($module, array('style' => 'well'));
       } ?>
@@ -101,7 +101,6 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
 
       <?php // Display installed extensions 
       DisplayInstalledExtensions($this->galleryinstalledextensionsdata); ?>
-      </div>
       <hr>
 
       <?php // Display system settings
@@ -109,9 +108,28 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
       $settings = $this->php_settings;
       $id      = '200';
 
-      DisplaySystemSettings($title, $settings);
+      DisplaySystemSettings($title, $settings); ?>
+      <hr>
 
-      // Display Footer ?>
+      <?php // Display Donation ?>
+      <div class="card">
+        <h3 class="card-header">
+          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS'); ?>
+        </h3>
+        <div class="text-center">
+          <p><?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_LONG'); ?></p>
+          <p>
+            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVQBAFEZHPL2J" title="<?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?>" target="_blank">
+              <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?></a>
+          </p>
+        </div>
+        <div class="text-center">
+          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_SPONSORS'); ?>
+          <a href="mailto:team@joomgalleryfriends.net">team@joomgalleryfriends.net</a>
+        </div>
+      </div>
+
+      <?php // Display Footer ?>
       <div class"jg-control-footer">
         <?php
         // Display copyright ?>
