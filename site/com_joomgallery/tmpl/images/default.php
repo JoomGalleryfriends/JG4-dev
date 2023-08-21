@@ -25,7 +25,6 @@ HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.list')
    ->useStyle('com_joomgallery.site')
-   ->useScript('table.columns')
    ->useScript('multiselect');
 
 $listOrder = $this->state->get('list.ordering');

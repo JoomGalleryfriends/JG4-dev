@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Layout\LayoutHelper;
@@ -21,13 +20,14 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-// Import CSS
+// Import JS & CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.list')
    ->useStyle('com_joomgallery.site')
-   ->useScript('table.columns')
+   ->useScript('com_joomgallery.list-view')
    ->useScript('multiselect');
 
+// Access check
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
 $canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category');
@@ -43,7 +43,13 @@ if($saveOrder && !empty($this->items))
 }
 ?>
 
-<form class="jg-images" action="<?php echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
+<?php if ($this->params['menu']->get('show_page_heading')) : ?>
+    <div class="page-header page-title">
+        <h1> <?php echo $this->escape($this->params['menu']->get('page_heading')); ?> </h1>
+    </div>
+<?php endif; ?>
+
+<form class="jg-images" action="<?php echo Route::_('index.php?option=com_joomgallery&view=categories'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->filterForm)) { echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); } ?>
 	<div class="row">
 		<div class="col-md-12">
@@ -98,8 +104,9 @@ if($saveOrder && !empty($this->items))
 								</td>
 							</tr>
 						</tfoot>
-						<tbody>
+						<tbody <?php if($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php endif; ?>>
 							<?php foreach ($this->items as $i => $item) :
+                  // Access check
                   $ordering   = ($listOrder == 'a.ordering');
                   $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $item->id);
                   $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $item->id);
@@ -140,7 +147,7 @@ if($saveOrder && !empty($this->items))
                 	data-level="<?php echo $item->level ?>">
 
 									<?php if (isset($this->items[0]->lft)) : ?>
-                    <td class="text-center d-none d-md-table-cell">
+                    <td class="text-center d-none d-md-table-cell sort-cell">
 											<?php
 											$iconClass = '';
 											if (!$canChange)
@@ -159,17 +166,16 @@ if($saveOrder && !empty($this->items))
 												<input type="text" name="order[]" size="5" value="<?php echo $item->lft; ?>" class="hidden">
 											<?php endif; ?>
 
-											<input type="hidden" class="hidden" name="cid[]" value="<?php echo $item->id; ?>">
-										</td>
+                      <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->title); ?>
+                    </td>
                   <?php endif; ?>
-
 
 									<th scope="row" class="has-context title-cell">
 										<?php echo LayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
 										<?php if($canCheckin && $item->checked_out > 0) : ?>
-											<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.checkin&id=' . $item->id .'&'. Session::getFormToken() .'=1'); ?>">
-												<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'category.', false); ?>
-											</a>
+                      <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="category.checkin" <?php echo $disabled; ?>>
+                        <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'category.', false); ?>
+                      </button>
 										<?php endif; ?>
 										<a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $item->id); ?>">
 											<?php echo $this->escape($item->title); ?>
@@ -189,18 +195,26 @@ if($saveOrder && !empty($this->items))
 									<?php if($canEdit || $canDelete): ?>
 										<td class="d-none d-lg-table-cell text-center">
 											<?php if($canEdit): ?>
-												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$item->id.'&return='.$returnURL, false, 2); ?>" class="btn btn-mini <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-edit" ></i></a>
+                        <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="category.edit" <?php echo $disabled; ?>>
+                          <span class="icon-edit" aria-hidden="true"></span>
+                        </button>
 											<?php endif; ?>
 											<?php if ($canDelete): ?>
-												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.remove&id='.$item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini delete-button <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-trash" ></i></a>
+                        <button class="js-grid-item-delete tbody-icon <?php echo $disabled; ?>" data-item-confirm="<?php echo Text::_('JGLOBAL_CONFIRM_DELETE'); ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="categoryform.remove" <?php echo $disabled; ?>>
+                          <span class="icon-trash" aria-hidden="true"></span>
+                        </button>
 											<?php endif; ?>
 										</td>
 									<?php endif; ?>
 
 									<td class="d-none d-lg-table-cell text-center">
                     <?php if($canChange): ?>
-                      <?php $statetask = ((int) $item->published) ? 'unpublish': 'publish'; ?>
-                      <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.' . $statetask . '&id=' . $item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>" ></i></a>
+                      <?php 
+                        $stateaction = ((int) $item->published) ? 'unpublish': 'publish';
+                      ?>
+                      <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="categoryform.<?php echo $stateaction; ?>" <?php echo $disabled; ?>>
+                        <span class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>" aria-hidden="true"></span>
+                      </button>
                     <?php else : ?>
                       <i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>"></i>
                     <?php endif; ?>
@@ -214,10 +228,10 @@ if($saveOrder && !empty($this->items))
 			<?php endif; ?>
 
 			<input type="hidden" name="task" value=""/>
+      <input type="hidden" name="return" value="<?php echo $returnURL; ?>"/>
 			<input type="hidden" name="boxchecked" value="0"/>
       <input type="hidden" name="form_submited" value="1"/>
-			<input type="hidden" name="filter_order" value=""/>
-			<input type="hidden" name="filter_order_Dir" value=""/>
+			<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
 			<?php echo HTMLHelper::_('form.token'); ?>
 
       <?php if($canAdd) : ?>
@@ -230,20 +244,3 @@ if($saveOrder && !empty($this->items))
 		</div>
 	</div>
 </form>
-
-<?php
-	if($canDelete) {
-		$wa->addInlineScript("
-			jQuery(document).ready(function () {
-				jQuery('.delete-button').click(deleteItem);
-			});
-
-			function deleteItem() {
-
-				if (!confirm(\"" . Text::_('COM_JOOMGALLERY_DELETE_MESSAGE') . "\")) {
-					return false;
-				}
-			}
-		", [], [], ["jquery"]);
-	}
-?>

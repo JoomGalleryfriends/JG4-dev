@@ -38,7 +38,15 @@ class CategoryController extends JoomBaseController
 		// Get the previous edit id (if any) and the current edit id.
 		$previousId = (int) $this->app->getUserState(_JOOM_OPTION.'.edit.category.id');
 		$cid        = (array) $this->input->post->get('cid', [], 'int');
-		$editId     = (int) (\count($cid) ? $cid[0] : $this->input->getInt('id', 0));
+    $boxchecked = (bool) $this->input->getInt('boxchecked', 0);
+    if($boxchecked)
+    {
+      $editId = (int) $cid[0];
+    }
+    else
+    {
+      $editId = $this->input->getInt('id', 0);
+    }
 
 		// ID check
 		if(!$editId)
@@ -86,13 +94,11 @@ class CategoryController extends JoomBaseController
 
 	/**
 	 * Add a new category
-	 * Redirect to form view
+   * Checkout and redirect to from view
 	 *
 	 * @return  void
 	 *
 	 * @since   4.0.0
-	 *
-	 * @throws  Exception
 	 */
 	public function add()
 	{
@@ -129,59 +135,45 @@ class CategoryController extends JoomBaseController
 
 	/**
 	 * Remove a category
-	 * Redirect to task=categoryform.remove
 	 *
-	 * @return void
-	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function remove()
 	{
-		// Check for request forgeries
-		$this->checkToken();
-
-		// Get ID
-    $removeId = $this->input->getInt('id', 0);
-
-    // ID check
-		if(!$removeId)
-		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
-			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId),false));
-
-			return false;
-		}
-
-    // Redirect to categoryform.remove
-    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=categoryform.remove&'.$this->getItemAppend($removeId), false));
+		throw new \Exception('Removing category not possible. Use categoryform controller instead.', 503);
 	}
 
 	/**
-	 * Checkin a checke out category.
-	 * Redirect to task=categoryform.checkin
+	 * Checkin a checked out category.
 	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
+	 * @throws \Exception
 	 */
 	public function checkin()
 	{
-		// Check for request forgeries
-		$this->checkToken();
-    
-    // Get ID
-    $id = $this->input->getInt('id', 0);
-
-		// ID check
-		if(!$id)
-		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
-			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($id),false));
-
-			return false;
-		}
-
-    // Redirect to categoryform.checkin
-    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=categoryform.checkin&'.$this->getItemAppend($id), false));
+		throw new \Exception('Check-in category not possible. Use categoryform controller instead.', 503);
 	}
+
+  /**
+	 * Method to publish a list of items
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0
+	 */
+	public function publish()
+	{
+    throw new \Exception('Publish category not possible. Use categoryform controller instead.', 503);
+  }
+
+  /**
+	 * Method to unpublish a list of items
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0
+	 */
+	public function unpublish()
+	{
+    throw new \Exception('Unpublish category not possible. Use categoryform controller instead.', 503);
+  }
 }

@@ -39,6 +39,14 @@
       }
     },
     {
+      "name": "com_joomgallery.list-view",
+      "type": "script",
+      "uri": "com_joomgallery/list-view.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
       "name": "com_joomgallery.sensitiveField",
       "type": "script",
       "uri": "com_joomgallery/sensitiveField.js",

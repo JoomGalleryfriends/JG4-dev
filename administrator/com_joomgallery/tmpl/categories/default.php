@@ -22,7 +22,7 @@ use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Button\PublishedButton;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
+//HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
 
 // Import CSS
 $wa = $this->document->getWebAssetManager();
