@@ -18,8 +18,6 @@ use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Session\Session;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-
 // Import JS & CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.list')
@@ -70,9 +68,13 @@ if($saveOrder && !empty($this->items))
             </caption>
 						<thead>
 							<tr>
-									<th scope="col" class="w-1 text-center d-none d-md-table-cell">
-										<?php echo HTMLHelper::_('grid.sort', '', 'a.lft', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
-									</th>
+                  <?php if($canOrder && $saveOrder) : ?>
+                    <th scope="col" class="w-1 text-center d-none d-md-table-cell">
+                      <?php echo HTMLHelper::_('grid.sort', '', 'a.lft', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
+                    </th>
+                  <?php else : ?>
+                    <th scope="col" class="w-1 d-md-table-cell"></th>
+                  <?php endif; ?>
 
 									<th scope="col" style="min-width:180px">
 										<?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
@@ -146,7 +148,7 @@ if($saveOrder && !empty($this->items))
                 	data-item-id="<?php echo $item->id ?>" data-parents="<?php echo $parentsStr ?>"
                 	data-level="<?php echo $item->level ?>">
 
-									<?php if (isset($this->items[0]->lft)) : ?>
+									<?php if(isset($this->items[0]->lft)) : ?>
                     <td class="text-center d-none d-md-table-cell sort-cell">
 											<?php
 											$iconClass = '';
@@ -159,10 +161,10 @@ if($saveOrder && !empty($this->items))
 												$iconClass = ' inactive" title="' . Text::_('JORDERINGDISABLED');
 											}
 											?>
-											<span class="sortable-handler<?php echo $iconClass ?>">
-												<span class="icon-ellipsis-v"></span>
-											</span>
-											<?php if ($canChange && $saveOrder) : ?>
+                      <?php if($canChange && $saveOrder) : ?>
+                        <span class="sortable-handler<?php echo $iconClass ?>">
+                          <span class="icon-ellipsis-v"></span>
+                        </span>											
 												<input type="text" name="order[]" size="5" value="<?php echo $item->lft; ?>" class="hidden">
 											<?php endif; ?>
 
@@ -209,10 +211,8 @@ if($saveOrder && !empty($this->items))
 
 									<td class="d-none d-lg-table-cell text-center">
                     <?php if($canChange): ?>
-                      <?php 
-                        $stateaction = ((int) $item->published) ? 'unpublish': 'publish';
-                      ?>
-                      <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="categoryform.<?php echo $stateaction; ?>" <?php echo $disabled; ?>>
+                      <?php $statetask = ((int) $item->published) ? 'unpublish': 'publish'; ?>
+                      <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="categoryform.<?php echo $statetask; ?>" <?php echo $disabled; ?>>
                         <span class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>" aria-hidden="true"></span>
                       </button>
                     <?php else : ?>

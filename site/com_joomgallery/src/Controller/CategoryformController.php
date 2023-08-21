@@ -297,6 +297,16 @@ class CategoryformController extends FormController
 		$this->app->redirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId), false));
 	}
 
+  /**
+   * Method to edit an existing record.
+   *
+   * @throws \Exception
+   */
+  public function edit()
+  {
+    throw new \Exception('Edit category not possible. Use category controller instead.', 503);
+  }
+
 	/**
 	 * Checkin a checked-out category.
 	 *
@@ -364,7 +374,7 @@ class CategoryformController extends FormController
 	}
 
   /**
-	 * Method to publish a list of items
+	 * Method to publish a category
 	 *
 	 * @return  void
 	 *
@@ -433,7 +443,7 @@ class CategoryformController extends FormController
   }
 
   /**
-	 * Method to unpublish a list of items
+	 * Method to unpublish a category
 	 *
 	 * @return  void
 	 *

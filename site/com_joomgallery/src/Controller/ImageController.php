@@ -36,7 +36,15 @@ class ImageController extends JoomBaseController
 		// Get the previous edit id (if any) and the current edit id.
 		$previousId = (int) $this->app->getUserState(_JOOM_OPTION.'.edit.image.id');
     $cid        = (array) $this->input->post->get('cid', [], 'int');
-		$editId     = $this->input->getInt('id', 0);
+    $boxchecked = (bool) $this->input->getInt('boxchecked', 0);
+    if($boxchecked)
+    {
+      $editId = (int) $cid[0];
+    }
+    else
+    {
+      $editId = $this->input->getInt('id', 0);
+    }
 
     // ID check
 		if(!$editId)
@@ -91,69 +99,74 @@ class ImageController extends JoomBaseController
 	 */
 	public function add()
 	{
-		$this->app->enqueueMessage('Upload new images in frontend is not yet available.', 'warning');
+		// Get the previous edit id (if any) and the current edit id.
+		$previousId = (int) $this->app->getUserState(_JOOM_OPTION.'.add.image.id');
+    $cid        = (array) $this->input->post->get('cid', [], 'int');
+		$editId     = (int) (\count($cid) ? $cid[0] : $this->input->getInt('id', 0));
+		$addCatId   = (int) $this->input->getInt('catid', 0);
 
-		// Redirect to imageform.remove
-    $this->setRedirect(Route::_($this->getReturnPage('images').'&'.$this->getItemAppend(),false));
-
-		return true;
-  }
-
-  /**
-	 * Remove an existing image.
-   * Redirect to task=imageform.remove
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	public function remove()
-	{
-    // Check for request forgeries
-		$this->checkToken();
-    
-    // Get ID
-    $editId = $this->input->getInt('id', 0);
-
-    // ID check
-		if(!$editId)
+		// Access check
+		if(!$this->acl->checkACL('add', 'image', $addCatId, true))
 		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
 
 			return false;
 		}
 
-    // Redirect to imageform.remove
-    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=imageform.remove&'.$this->getItemAppend($editId), false));
+		// Set the current edit id in the session.
+		$this->app->setUserState(_JOOM_OPTION.'.add.image.id', $addCatId);
+
+		// Check in the previous user.
+		if($previousId && $previousId !== $addCatId)
+		{
+      // Get the model.
+		  $model = $this->getModel('Image', 'Site');
+
+			$model->checkin($previousId);
+		}
+
+		// Redirect to the form screen.
+		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=imageform&'.$this->getItemAppend(0, $addCatId), false));
   }
 
+  /**
+	 * Remove an image
+	 *
+	 * @throws \Exception
+	 */
+	public function remove()
+	{
+		throw new \Exception('Removing image not possible. Use imageform controller instead.', 503);
+	}
+
 	/**
-	 * Checkin a checke out image.
-	 * Redirect to task=imageform.checkin
+	 * Checkin a checked out image.
 	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
+	 * @throws \Exception
 	 */
 	public function checkin()
 	{
-		// Check for request forgeries
-		$this->checkToken();
-    
-    // Get ID
-    $id = $this->input->getInt('id', 0);
-
-		// ID check
-		if(!$id)
-		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
-			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($id),false));
-
-			return false;
-		}
-
-    // Redirect to imageform.checkin
-    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&task=imageform.checkin&'.$this->getItemAppend($id), false));
+		throw new \Exception('Check-in image not possible. Use imageform controller instead.', 503);
 	}
+
+  /**
+	 * Method to publish an image
+	 *
+	 * @throws \Exception
+	 */
+	public function publish()
+	{
+    throw new \Exception('Publish image not possible. Use imageform controller instead.', 503);
+  }
+
+  /**
+	 * Method to unpublish an image
+	 *
+	 * @throws \Exception
+	 */
+	public function unpublish()
+	{
+    throw new \Exception('Unpublish image not possible. Use imageform controller instead.', 503);
+  }
 }

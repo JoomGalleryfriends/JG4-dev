@@ -12,19 +12,17 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Session\Session;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.list')
    ->useStyle('com_joomgallery.site')
+   ->useScript('com_joomgallery.list-view')
    ->useScript('multiselect');
 
 $listOrder = $this->state->get('list.ordering');
@@ -42,10 +40,11 @@ if($saveOrder && !empty($this->items))
 }
 ?>
 
-<form class="jg-images" action="<?php echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
+<form class="jg-images" action="<?php echo Route::_('index.php?option=com_joomgallery&view=images'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->filterForm)) { echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); } ?>
   <div class="row">
 		<div class="col-md-12">
+
       <?php if (empty($this->items)) : ?>
         <div class="alert alert-info">
           <span class="icon-info-circle" aria-hidden="true"></span><span class="visually-hidden"><?php echo Text::_('INFO'); ?></span>
@@ -62,10 +61,12 @@ if($saveOrder && !empty($this->items))
             </caption>
             <thead>
               <tr>
-                  <?php if (isset($this->items[0]->ordering)): ?>
+                  <?php if($canOrder && $saveOrder && isset($this->items[0]->ordering)): ?>
                     <th scope="col" class="w-1 text-center d-none d-md-table-cell">
                       <?php echo HTMLHelper::_('grid.sort', '', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-sort'); ?>
                     </th>
+                  <?php else : ?>
+                    <th scope="col" class="w-1 d-md-table-cell"></th>
                   <?php endif; ?>
 
                   <th></th>
@@ -118,7 +119,7 @@ if($saveOrder && !empty($this->items))
                 <tr class="row<?php echo $i % 2; ?>">
 
                   <?php if (isset($this->items[0]->ordering)) : ?>
-                    <td class="text-center d-none d-md-table-cell">
+                    <td class="text-center d-none d-md-table-cell sort-cell">
                       <?php
                         $iconClass = '';
                         if(!$canChange)
@@ -130,14 +131,14 @@ if($saveOrder && !empty($this->items))
                           $iconClass = ' inactive" title="' . Text::_('JORDERINGDISABLED');
                         }
                       ?>
-                      <span class="sortable-handler<?php echo $iconClass ?>">
-                        <span class="icon-ellipsis-v" aria-hidden="true"></span>
-                      </span>
                       <?php if($canChange && $saveOrder) : ?>
+                        <span class="sortable-handler<?php echo $iconClass ?>">
+                          <span class="icon-ellipsis-v" aria-hidden="true"></span>
+                        </span>
                         <input type="text" name="order[]" size="5" value="<?php echo $item->ordering; ?>" class="width-20 text-area-order hidden">
                       <?php endif; ?>
 
-                      <input type="hidden" class="hidden" name="cid[]" value="<?php echo $item->id; ?>">
+                      <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->imgtitle); ?>
                     </td>
                   <?php endif; ?>
 
@@ -175,10 +176,14 @@ if($saveOrder && !empty($this->items))
                   <?php if($canEdit || $canDelete): ?>
                     <td class="d-none d-lg-table-cell text-center">
                       <?php if($canEdit): ?>
-                        <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.edit&id=' . $item->id.'&return='.$returnURL, false, 2); ?>" class="btn btn-mini <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-edit" ></i></a>
+                        <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="image.edit" <?php echo $disabled; ?>>
+                          <span class="icon-edit" aria-hidden="true"></span>
+                        </button>
                       <?php endif; ?>
                       <?php if ($canDelete): ?>
-                        <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=imageform.remove&id=' . $item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini delete-button <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-trash" ></i></a>
+                        <button class="js-grid-item-delete tbody-icon <?php echo $disabled; ?>" data-item-confirm="<?php echo Text::_('JGLOBAL_CONFIRM_DELETE'); ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="imageform.remove" <?php echo $disabled; ?>>
+                          <span class="icon-trash" aria-hidden="true"></span>
+                        </button>
                       <?php endif; ?>
                     </td>
                   <?php endif; ?>
@@ -186,7 +191,9 @@ if($saveOrder && !empty($this->items))
                   <td class="d-none d-lg-table-cell text-center">
                     <?php if($canChange): ?>
                       <?php $statetask = ((int) $item->published) ? 'unpublish': 'publish'; ?>
-                      <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.' . $statetask . '&id=' . $item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>" ></i></a>
+                      <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="imageform.<?php echo $statetask; ?>" <?php echo $disabled; ?>>
+                        <span class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>" aria-hidden="true"></span>
+                      </button>
                     <?php else : ?>
                       <i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>"></i>
                     <?php endif; ?>
@@ -200,10 +207,10 @@ if($saveOrder && !empty($this->items))
       <?php endif; ?>
 
       <input type="hidden" name="task" value=""/>
+      <input type="hidden" name="return" value="<?php echo $returnURL; ?>"/>
       <input type="hidden" name="boxchecked" value="0"/>
       <input type="hidden" name="form_submited" value="1"/>
-      <input type="hidden" name="filter_order" value=""/>
-      <input type="hidden" name="filter_order_Dir" value=""/>
+      <input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
       <?php echo HTMLHelper::_('form.token'); ?>
 
       <?php if($canAdd) : ?>

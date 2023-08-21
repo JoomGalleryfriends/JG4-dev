@@ -238,7 +238,18 @@ class ImageformController extends FormController
 		$this->checkToken();
 
     // Get the current edit id.
-		$removeId = $this->input->getInt('id');
+    $cid        = (array) $this->input->post->get('cid', [], 'int');
+    $boxchecked = (bool) $this->input->getInt('boxchecked', 0);
+    if($boxchecked)
+    {
+      // List view action
+      $removeId = (int) $cid[0];
+    }
+    else
+    {
+      // Single view action
+      $removeId = $this->input->getInt('id', 0);
+    }
 
 		// ID check
 		if(!$removeId)
@@ -292,34 +303,11 @@ class ImageformController extends FormController
   /**
    * Method to edit an existing record.
    *
-   * @return  boolean  True if access level check and checkout passes, false otherwise.
-   *
-   * @since   4.0.0
+   * @throws \Exception
    */
   public function edit()
   {
-		$editId = $this->input->getInt('id', 0);
-
-    // ID check
-		if(!$editId)
-		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
-			$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image&'.$this->getItemAppend($editId),false));
-
-			return false;
-		}
-
-    // Access check
-		if(!$this->acl->checkACL('edit', 'image', $editId))
-		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
-			$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image&'.$this->getItemAppend($editId),false));
-
-			return false;
-		}
-
-    // Redirect to the form screen.
-    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=image.edit&'.$this->getItemAppend($editId), false));
+    throw new \Exception('Edit image not possible. Use image controller instead.', 503);
   }
 
 	/**
@@ -335,7 +323,18 @@ class ImageformController extends FormController
 		$this->checkToken();
     
     // Get ID
-    $id = $this->input->getInt('id', 0);
+    $cid        = (array) $this->input->post->get('cid', [], 'int');
+    $boxchecked = (bool) $this->input->getInt('boxchecked', 0);
+    if($boxchecked)
+    {
+      // List view action
+      $id = (int) $cid[0];
+    }
+    else
+    {
+      // Single view action
+      $id = $this->input->getInt('id', 0);
+    }
 
 		// ID check
 		if(!$id)
@@ -376,6 +375,87 @@ class ImageformController extends FormController
 		$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_CHECKIN_SUCCESSFUL'), 'success');
 		$this->app->redirect(Route::_($this->getReturnPage('images').'&'.$this->getItemAppend($id), false));
 	}
+
+  /**
+	 * Method to publish an image
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0
+	 */
+	public function publish()
+	{
+    // Check for request forgeries
+    $this->checkToken();
+
+    // Get ID
+    $cid        = (array) $this->input->post->get('cid', [], 'int');
+    $boxchecked = (bool) $this->input->getInt('boxchecked', 0);
+    if($boxchecked)
+    {
+      // List view action
+      $id = (int) $cid[0];
+    }
+    else
+    {
+      // Single view action
+      $id = $this->input->getInt('id', 0);
+    }
+
+    // ID check
+		if(!$id)
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage('images').'&'.$this->getItemAppend($id),false));
+
+			return false;
+		}
+
+    // Access check
+		if(!$this->acl->checkACL('editstate', 'image', $id))
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage('images').'&'.$this->getItemAppend($id),false));
+
+			return false;
+		}
+
+    // Available states
+    $data  = ['publish' => 1, 'unpublish' => 0];
+
+    // Get new state.
+    $task  = $this->getTask();
+    $value = $data[$task];
+
+    // Get the model
+    $model  = $this->getModel('Imageform', 'Site');
+
+    // Attempt to change state the current record.
+		if($model->publish($id, $value) === false)
+		{
+			// Check-in failed, go back to the record and display a notice.
+			$this->setMessage(Text::sprintf('COM_JOOMGALLERY_ITEM_STATE_ERROR', $model->getError()), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage('categories').'&'.$this->getItemAppend($id), false));
+
+			return false;
+		}
+
+    // Redirect to the list screen.
+		$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_'.\strtoupper($task).'_SUCCESSFUL'), 'success');
+		$this->app->redirect(Route::_($this->getReturnPage('categories').'&'.$this->getItemAppend($id), false));
+  }
+
+  /**
+	 * Method to unpublish an image
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0
+	 */
+	public function unpublish()
+	{
+    $this->publish();
+  }
 
   /**
    * Method to run batch operations.

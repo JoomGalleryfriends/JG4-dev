@@ -154,11 +154,9 @@ class CategoryController extends JoomBaseController
 	}
 
   /**
-	 * Method to publish a list of items
+	 * Method to publish a category
 	 *
-	 * @return  void
-	 *
-	 * @since   4.0
+	 * @throws \Exception
 	 */
 	public function publish()
 	{
@@ -166,11 +164,9 @@ class CategoryController extends JoomBaseController
   }
 
   /**
-	 * Method to unpublish a list of items
+	 * Method to unpublish a category
 	 *
-	 * @return  void
-	 *
-	 * @since   4.0
+	 * @throws \Exception
 	 */
 	public function unpublish()
 	{
