@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Session\Session;
@@ -23,6 +24,7 @@ $wa->useStyle('com_joomgallery.site');
 $canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
 $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
+$canCheckin = $this->acl->checkACL('editstate', 'com_joomgallery.category', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));
 ?>
 

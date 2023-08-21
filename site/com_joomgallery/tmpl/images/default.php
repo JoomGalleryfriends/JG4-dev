@@ -40,6 +40,12 @@ if($saveOrder && !empty($this->items))
 }
 ?>
 
+<?php if ($this->params['menu']->get('show_page_heading')) : ?>
+    <div class="page-header page-title">
+        <h1> <?php echo $this->escape($this->params['menu']->get('page_heading')); ?> </h1>
+    </div>
+<?php endif; ?>
+
 <form class="jg-images" action="<?php echo Route::_('index.php?option=com_joomgallery&view=images'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->filterForm)) { echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); } ?>
   <div class="row">
