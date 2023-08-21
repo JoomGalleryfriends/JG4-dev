@@ -902,61 +902,55 @@ class com_joomgalleryInstallerScript extends InstallerScript
         $modules = $parent->get('manifest')->modules;
       }
 
-      if(count($modules->children()))
-      {
-        $modules = $modules->children();
-      }
-      else
+      $modules = $modules->children();
+      if(empty($modules) || count($modules->children()) <= 0)
       {
         return;
       }
     }		
 
-		if(!empty($modules))
-		{
-      $db    = Factory::getDbo();
-      $query = $db->getQuery(true);
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true);
 
-      foreach($modules as $module)
+    foreach($modules as $module)
+    {
+      if(is_array($parent))
       {
-        if(is_array($parent))
+        $moduleName = (string) $module;
+      }
+      else
+      {
+        $moduleName = (string) $module['module'];
+      }
+      
+      $query
+        ->clear()
+        ->select('extension_id')
+        ->from('#__extensions')
+        ->where(
+          array(
+            'type LIKE ' . $db->quote('module'),
+            'element LIKE ' . $db->quote($moduleName)
+          )
+        );
+      $db->setQuery($query);
+      $extension = $db->loadResult();
+
+      if (!empty($extension))
+      {
+        $installer = new Installer;
+        $result    = $installer->uninstall('module', $extension);
+
+        if ($result)
         {
-          $moduleName = (string) $module;
+          $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Module', $moduleName));
         }
         else
         {
-          $moduleName = (string) $module['module'];
-        }
-        
-        $query
-          ->clear()
-          ->select('extension_id')
-          ->from('#__extensions')
-          ->where(
-            array(
-              'type LIKE ' . $db->quote('module'),
-              'element LIKE ' . $db->quote($moduleName)
-            )
-          );
-        $db->setQuery($query);
-        $extension = $db->loadResult();
-
-        if (!empty($extension))
-        {
-          $installer = new Installer;
-          $result    = $installer->uninstall('module', $extension);
-
-          if ($result)
-          {
-            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Module', $moduleName));
-          }
-          else
-          {
-            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Module', $moduleName), 'error');
-          }
+          $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Module', $moduleName), 'error');
         }
       }
-		}
+    }
 	}
 
   /**
