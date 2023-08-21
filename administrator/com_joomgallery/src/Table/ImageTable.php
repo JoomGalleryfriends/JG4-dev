@@ -155,8 +155,9 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function bind($array, $ignore = '')
 	{
-		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task', '', 'cmd');
+		$date      = Factory::getDate();
+		$task      = Factory::getApplication()->input->get('task', '', 'cmd');
+		$component = Factory::getApplication()->bootComponent('com_joomgallery');
 
     // Support for id field
     if(!\key_exists('id', $array))
@@ -220,6 +221,11 @@ class ImageTable extends Table implements VersionableTableInterface
 		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
 		{
 			$array['created_by'] = Factory::getUser()->id;
+		}
+
+		if($array['id'] == 0 && !$component->getConfig()->get('jg_approve'))
+		{
+			$array['approved'] = 1;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
