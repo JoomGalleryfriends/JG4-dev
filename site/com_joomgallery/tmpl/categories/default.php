@@ -102,10 +102,11 @@ if($saveOrder && !empty($this->items))
 							<?php foreach ($this->items as $i => $item) :
                   $ordering   = ($listOrder == 'a.ordering');
                   $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $item->id);
-                  $canCheckin = $this->acl->checkACL('manage', 'com_joomgallery') || $item->checked_out == Factory::getUser()->id;
                   $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $item->id);
                   $canChange  = $this->acl->checkACL('editstate', 'com_joomgallery.category', $item->id);
+									$canCheckin = $canChange || $item->checked_out == Factory::getUser()->id;
                   $returnURL  = base64_encode(JoomHelper::getListRoute('categories', $item->language, $this->getLayout()));
+									$disabled   = ($item->checked_out > 0) ? 'disabled' : '';
                 
 									// Get the parents of item for sorting
 									if ($item->level > 1)
@@ -157,11 +158,13 @@ if($saveOrder && !empty($this->items))
 											<?php if ($canChange && $saveOrder) : ?>
 												<input type="text" name="order[]" size="5" value="<?php echo $item->lft; ?>" class="hidden">
 											<?php endif; ?>
+
+											<input type="hidden" class="hidden" name="cid[]" value="<?php echo $item->id; ?>">
 										</td>
                   <?php endif; ?>
 
 
-									<th scope="row" class="has-context">
+									<th scope="row" class="has-context title-cell">
 										<?php echo LayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
 										<?php if($canCheckin && $item->checked_out > 0) : ?>
 											<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.checkin&id=' . $item->id .'&'. Session::getFormToken() .'=1'); ?>">
@@ -185,17 +188,22 @@ if($saveOrder && !empty($this->items))
 
 									<?php if($canEdit || $canDelete): ?>
 										<td class="d-none d-lg-table-cell text-center">
-											<?php if($canEdit && $item->checked_out == 0): ?>
-												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$item->id.'&return='.$returnURL, false, 2); ?>" class="btn btn-mini" type="button"><i class="icon-edit" ></i></a>
+											<?php if($canEdit): ?>
+												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$item->id.'&return='.$returnURL, false, 2); ?>" class="btn btn-mini <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-edit" ></i></a>
 											<?php endif; ?>
 											<?php if ($canDelete): ?>
-												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.remove&id='.$item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini delete-button" type="button"><i class="icon-trash" ></i></a>
+												<a href="<?php echo Route::_('index.php?option=com_joomgallery&task=categoryform.remove&id='.$item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini delete-button <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-trash" ></i></a>
 											<?php endif; ?>
 										</td>
 									<?php endif; ?>
 
 									<td class="d-none d-lg-table-cell text-center">
-                    <i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>"></i>
+                    <?php if($canChange): ?>
+                      <?php $statetask = ((int) $item->published) ? 'unpublish': 'publish'; ?>
+                      <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.' . $statetask . '&id=' . $item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2); ?>" class="btn btn-mini <?php echo $disabled; ?>" type="button" <?php echo $disabled; ?>><i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>" ></i></a>
+                    <?php else : ?>
+                      <i class="icon-<?php echo (int) $item->published ? 'check': 'cancel'; ?>"></i>
+                    <?php endif; ?>
                   </td>
 
 								</tr>
@@ -214,7 +222,7 @@ if($saveOrder && !empty($this->items))
 
       <?php if($canAdd) : ?>
         <div class="mb-2">
-          <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.add', false, 0); ?>" class="btn btn-success btn-small">
+          <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.add&return='.$returnURL, false, 0); ?>" class="btn btn-success btn-small">
             <i class="icon-plus"></i> <?php echo Text::_('JGLOBAL_ADD_CUSTOM_CATEGORY'); ?>
           </a>
         </div>				

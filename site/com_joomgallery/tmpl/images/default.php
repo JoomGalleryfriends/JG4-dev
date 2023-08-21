@@ -117,6 +117,7 @@ if($saveOrder && !empty($this->items))
                 ?>
 
                 <tr class="row<?php echo $i % 2; ?>">
+
                   <?php if (isset($this->items[0]->ordering)) : ?>
                     <td class="text-center d-none d-md-table-cell">
                       <?php
@@ -136,6 +137,8 @@ if($saveOrder && !empty($this->items))
                       <?php if($canChange && $saveOrder) : ?>
                         <input type="text" name="order[]" size="5" value="<?php echo $item->ordering; ?>" class="width-20 text-area-order hidden">
                       <?php endif; ?>
+
+                      <input type="hidden" class="hidden" name="cid[]" value="<?php echo $item->id; ?>">
                     </td>
                   <?php endif; ?>
 

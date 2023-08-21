@@ -49,11 +49,11 @@ class CategoryformModel extends AdminCategoryModel
 		$id = $this->app->input->getInt('id', null);
 		if($id)
 		{
-			$this->app->setUserState('com_joomgallery.edit.image.id', $id);
+			$this->app->setUserState('com_joomgallery.edit.category.id', $id);
 		}
 		else
 		{
-			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
+			$id = (int) $this->app->getUserState('com_joomgallery.edit.category.id', null);
 		}
 
 		if(is_null($id))

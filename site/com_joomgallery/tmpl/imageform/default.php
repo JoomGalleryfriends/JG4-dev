@@ -26,7 +26,16 @@ $lang->load('com_joomgallery', JPATH_SITE);
 $lang->load('com_joomgallery', JPATH_ADMINISTRATOR);
 $lang->load('joomla', JPATH_ADMINISTRATOR);
 
-$canEdit  = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
+if($this->item->id)
+{
+  // ID given -> edit
+  $canEdit  = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
+}
+else
+{
+  // ID = null -> add
+  $canEdit  = $this->acl->checkACL('add', 'com_joomgallery.image', 1, true);
+}
 $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
 ?>
 

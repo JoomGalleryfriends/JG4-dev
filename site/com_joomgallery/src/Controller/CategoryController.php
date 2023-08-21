@@ -102,15 +102,6 @@ class CategoryController extends JoomBaseController
 		$editId     = (int) (\count($cid) ? $cid[0] : $this->input->getInt('id', 0));
 		$addCatId   = (int) $this->input->getInt('catid', 0);
 
-		// ID check
-		if(!$addCatId)
-		{
-			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
-			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
-
-			return false;
-		}
-
 		// Access check
 		if(!$this->acl->checkACL('add', 'category', $addCatId, true))
 		{
