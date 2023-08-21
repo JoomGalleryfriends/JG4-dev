@@ -21,11 +21,12 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
 
-$canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
-$canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
-$canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
+$canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
+$canAdd     = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
+$canAddImg  = $this->acl->checkACL('add', 'com_joomgallery.image', $this->item->id, true);
+$canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
 $canCheckin = $this->acl->checkACL('editstate', 'com_joomgallery.category', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
-$returnURL = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));
+$returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));
 ?>
 
 <?php if($this->item->parent_id > 0) : ?>
@@ -33,8 +34,6 @@ $returnURL = base64_encode(JoomHelper::getViewRoute('category', $this->item->id,
 <?php else : ?>
   <h2><?php echo Text::_('COM_JOOMGALLERY') ?></h2>
 <?php endif; ?>
-
-<p><?php echo nl2br($this->item->description); ?></p>
 
 <?php if($this->item->parent_id > 0) : ?>
   <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->parent_id); ?>">
@@ -46,7 +45,7 @@ $returnURL = base64_encode(JoomHelper::getViewRoute('category', $this->item->id,
 </br />
 
 <?php if($canEdit || $canAdd || $canDelete): ?>
-  <div class="btn-group mb-3" role="group">
+  <div class="mb-3">
     <?php if($canEdit): ?>
       <a class="btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.edit&id='.$this->item->id.'&return='.$returnURL); ?>">
         <?php echo Text::_("JACTION_EDIT"); ?>
@@ -80,6 +79,8 @@ $returnURL = base64_encode(JoomHelper::getViewRoute('category', $this->item->id,
     <?php endif; ?>
   </div>
 <?php endif; ?>
+
+<p><?php echo nl2br($this->item->description); ?></p>
 
 <?php if(count($this->item->children) == 0 && count($this->item->images) == 0) : ?>
   <p><?php echo Text::_('No elements in this category...') ?></p>
@@ -115,4 +116,13 @@ $returnURL = base64_encode(JoomHelper::getViewRoute('category', $this->item->id,
       </li>
     <?php endforeach; ?>
   </ul>
+<?php endif; ?>
+
+<?php if($canAddImg) : ?>
+  <div class="mb-2">
+    <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.add&id=0&catid='.$this->item->id.'&return='.$returnURL, false, 0); ?>" class="btn btn-success btn-small">
+      <i class="icon-plus"></i>
+      <?php echo Text::_('COM_JOOMGALLERY_IMG_UPLOAD_IMAGE'); ?>
+    </a>
+  </div>
 <?php endif; ?>
