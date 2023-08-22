@@ -148,7 +148,7 @@ class DisplayController extends BaseController
     $appName = Factory::getApplication()->getName();
 
     // Get folder path of Joomgallery\Component\Joomgallery\<App>\View
-    if($appName = 'site')
+    if($appName == 'site')
     {
       $path = Path::clean(JPATH_ROOT . '/components/com_joomgallery/src/View');
     }
