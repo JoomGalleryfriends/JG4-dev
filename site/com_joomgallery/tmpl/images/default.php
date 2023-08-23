@@ -154,9 +154,9 @@ if($saveOrder && !empty($this->items))
 
                   <th scope="row" class="has-context title-cell">
                     <?php if($canCheckin && $item->checked_out > 0) : ?>
-                      <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.checkin&id=' . $item->id .'&'. Session::getFormToken() .'=1'); ?>">
-                        <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'image.', false); ?>
-                      </a>
+                      <button class="js-grid-item-action tbody-icon" data-item-id="cb<?php echo $i; ?>" data-item-task="imageform.checkin">
+                        <span class="icon-checkedout" aria-hidden="true"></span>
+                      </button>
                     <?php endif; ?>
                     <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $item->id); ?>">
                       <?php echo $this->escape($item->imgtitle); ?>

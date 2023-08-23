@@ -125,7 +125,7 @@ class JgcategoryField extends FormField
 			}
 
 			// Interprete root category
-			if($this->value === 1)
+			if($this->value == 1)
 			{
 				$cat->title = Text::_('JGLOBAL_ROOT_PARENT');
 			}

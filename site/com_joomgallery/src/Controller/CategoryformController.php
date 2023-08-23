@@ -121,10 +121,10 @@ class CategoryformController extends FormController
 		}
 
 		// Validate the posted data.
-		$data = $model->validate($form, $data);
+		$validData = $model->validate($form, $data);
 
 		// Check for errors.
-		if($data === false)
+		if($validData === false)
 		{
 			// Get the validation messages.
 			$errors = $model->getErrors();

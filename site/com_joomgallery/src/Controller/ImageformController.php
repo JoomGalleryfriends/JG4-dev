@@ -121,10 +121,10 @@ class ImageformController extends FormController
 		}
 
 		// Validate the posted data.
-		$data = $model->validate($form, $data);
+		$validData = $model->validate($form, $data);
 
 		// Check for errors.
-		if($data === false)
+		if($validData === false)
 		{
 			// Get the validation messages.
 			$errors = $model->getErrors();
@@ -182,7 +182,7 @@ class ImageformController extends FormController
 		$app->setUserState('com_joomgallery.edit.image.data', null);
 
 		// Redirect to the list screen.
-		$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVED_SUCCESSFULLY'));
+		$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVE_SUCCESSFUL'));
 		$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($recordId),false));
 		
 		return true;
