@@ -305,7 +305,7 @@ class ImageformController extends FormController
    *
    * @throws \Exception
    */
-  public function edit()
+  public function edit($key = null, $urlVar = null)
   {
     throw new \Exception('Edit image not possible. Use image controller instead.', 503);
   }

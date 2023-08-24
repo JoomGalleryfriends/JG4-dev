@@ -302,7 +302,7 @@ class CategoryformController extends FormController
    *
    * @throws \Exception
    */
-  public function edit()
+  public function edit($key = null, $urlVar = null)
   {
     throw new \Exception('Edit category not possible. Use category controller instead.', 503);
   }
