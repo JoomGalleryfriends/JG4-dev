@@ -182,7 +182,7 @@ class CategoryformController extends FormController
 		$app->setUserState('com_joomgallery.edit.category.data', null);
 
 		// Redirect to the list screen.
-		$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVED_SUCCESSFULLY'));
+		$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVE_SUCCESSFUL'));
 		$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($data->id),false));
 	}
 
