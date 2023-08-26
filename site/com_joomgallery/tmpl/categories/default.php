@@ -33,6 +33,7 @@ $canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', 1, true);
 $canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category');
 $canOrder  = $this->acl->checkACL('editstate', 'com_joomgallery.category');
 $saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
+$returnURL = base64_encode(JoomHelper::getListRoute('categories', null, $this->getLayout()));
 
 if($saveOrder && !empty($this->items))
 {
@@ -114,7 +115,6 @@ if($saveOrder && !empty($this->items))
                   $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $item->id);
                   $canChange  = $this->acl->checkACL('editstate', 'com_joomgallery.category', $item->id);
 									$canCheckin = $canChange || $item->checked_out == Factory::getUser()->id;
-                  $returnURL  = base64_encode(JoomHelper::getListRoute('categories', $item->language, $this->getLayout()));
 									$disabled   = ($item->checked_out > 0) ? 'disabled' : '';
                 
 									// Get the parents of item for sorting
