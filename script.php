@@ -686,8 +686,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-    $plugins = $plugins->children();
-    if(empty($plugins) || count($plugins->children()) <= 0)
+    if(empty($plugins->children()) || count($plugins->children()) <= 0)
     {
       return;
     }
@@ -695,7 +694,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db    = Factory::getDbo();
     $query = $db->getQuery(true);
 
-    foreach ($plugins->children() as $plugin)
+    foreach($plugins->children() as $plugin)
     {
       $pluginName  = (string) $plugin['plugin'];
       $pluginGroup = (string) $plugin['group'];
@@ -783,13 +782,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$modules = $parent->get('manifest')->modules;
 		}
 
-    $modules = $modules->children();
-    if(empty($modules) || count($modules->children()) <= 0)
+    if(empty($modules->children()) || count($modules->children()) <= 0)
     {
       return;
     }
 
-    foreach ($modules->children() as $module)
+    foreach($modules->children() as $module)
     {
       $moduleName = (string) $module['module'];
       $path       = $installation_folder . '/modules/' . $moduleName;
@@ -835,8 +833,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-    $plugins = $plugins->children();
-    if(empty($plugins) || count($plugins->children()) <= 0)
+    if(empty($plugins->children()) || count($plugins->children()) <= 0)
     {
       return;
     }
@@ -844,7 +841,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db    = Factory::getDbo();
     $query = $db->getQuery(true);
 
-    foreach ($plugins->children() as $plugin)
+    foreach($plugins->children() as $plugin)
     {
       $pluginName  = (string) $plugin['plugin'];
       $pluginGroup = (string) $plugin['group'];
@@ -908,8 +905,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
     }
 
-    $modules = $modules->children();
-    if(empty($modules) || count($modules->children()) <= 0)
+    if(empty($modules->children()) || count($modules->children()) <= 0)
     {
       return;
     }
@@ -917,7 +913,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db    = Factory::getDbo();
     $query = $db->getQuery(true);
 
-    foreach($modules as $module)
+    foreach($modules->children() as $module)
     {
       if(is_array($parent))
       {
