@@ -100,7 +100,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
         <input type="hidden" name="jform[path]" value="<?php echo isset($this->item->path) ? $this->item->path : ''; ?>" />
         <input type="hidden" name="jform[in_hidden]" value="<?php echo isset($this->item->in_hidden) ? $this->item->in_hidden : ''; ?>" />
 
-        <input type="hidden" name="type" id ="itemType" value="image"/>
+        <input type="hidden" name="type" id ="itemType" value="categoryform"/>
         <input type="hidden" name="return" value="<?php echo $this->return_page; ?>"/>
         <input type="hidden" name="task" value=""/>
         <?php echo HTMLHelper::_('form.token'); ?>
