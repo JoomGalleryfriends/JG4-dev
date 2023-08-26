@@ -117,8 +117,12 @@ class CategoryController extends JoomBaseController
 			return false;
 		}
 
+		// Clear form data from session
+		$this->app->setUserState(_JOOM_OPTION.'.edit.category.data', array());
+
 		// Set the current edit id in the session.
 		$this->app->setUserState(_JOOM_OPTION.'.add.category.id', $addCatId);
+		$this->app->setUserState(_JOOM_OPTION.'.edit.category.id', 0);
 
 		// Check in the previous user.
 		if($previousId && $previousId !== $addCatId)

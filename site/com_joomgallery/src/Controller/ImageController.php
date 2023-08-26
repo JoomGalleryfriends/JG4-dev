@@ -114,8 +114,12 @@ class ImageController extends JoomBaseController
 			return false;
 		}
 
+		// Clear form data from session
+		$this->app->setUserState(_JOOM_OPTION.'.edit.image.data', array());
+
 		// Set the current edit id in the session.
-		$this->app->setUserState(_JOOM_OPTION.'.add.image.id', $addCatId);
+		$this->app->setUserState(_JOOM_OPTION.'.add.image.catid', $addCatId);
+		$this->app->setUserState(_JOOM_OPTION.'.edit.image.id', 0);
 
 		// Check in the previous user.
 		if($previousId && $previousId !== $addCatId)
