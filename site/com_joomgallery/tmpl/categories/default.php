@@ -48,7 +48,7 @@ if($saveOrder && !empty($this->items))
     </div>
 <?php endif; ?>
 
-<form class="jg-images" action="<?php echo Route::_('index.php?option=com_joomgallery&view=categories'); ?>" method="post" name="adminForm" id="adminForm">
+<form class="jg-categories" action="<?php echo Route::_('index.php?option=com_joomgallery&view=categories'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->filterForm)) { echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); } ?>
 	<div class="row">
 		<div class="col-md-12">
@@ -233,7 +233,6 @@ if($saveOrder && !empty($this->items))
       <input type="hidden" name="form_submited" value="1"/>
       <input type="hidden" name="filter_order" value=""/>
       <input type="hidden" name="filter_order_Dir" value=""/>
-			<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
 			<?php echo HTMLHelper::_('form.token'); ?>
 
       <?php if($canAdd) : ?>
