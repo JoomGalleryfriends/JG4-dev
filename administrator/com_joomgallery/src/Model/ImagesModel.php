@@ -401,7 +401,14 @@ class ImagesModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'a.id'); 
 		$orderDirn = $this->state->get('list.direction', 'ASC');
-    $query->order($db->escape($this->state->get('list.fullordering', $orderCol.' '.$orderDirn)));
+    if($orderCol && $orderDirn)
+    {
+      $query->order($db->escape($orderCol . ' ' . $orderDirn));
+    }
+    else
+    {
+      $query->order($db->escape($this->state->get('list.fullordering', 'a.lft ASC')));
+    }
 
 		return $query;
 	}

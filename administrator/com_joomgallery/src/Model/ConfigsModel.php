@@ -179,15 +179,14 @@ class ConfigsModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'id');
 		$orderDirn = $this->state->get('list.direction', 'ASC');
-
-		// if($orderCol && $orderDirn)
-		// {
-    //   $query->order($db->escape($orderCol . ' ' . $orderDirn));
-		// }
-    // else
-    // {
-      $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
-    // }
+    if($orderCol && $orderDirn)
+    {
+      $query->order($db->escape($orderCol . ' ' . $orderDirn));
+    }
+    else
+    {
+      $query->order($db->escape($this->state->get('list.fullordering', 'a.lft ASC')));
+    }
 
 		return $query;
 	}
