@@ -94,14 +94,14 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
           <?php echo HTMLHelper::_('uitab.endTab'); ?>
         <?php endif; ?>
 
-        <input type="hidden" name="jform[ordering]" value="<?php echo isset($this->item->ordering) ? $this->item->ordering : ''; ?>" />
+        <?php /*<input type="hidden" name="jform[ordering]" value="<?php echo isset($this->item->ordering) ? $this->item->ordering : ''; ?>" />
         <input type="hidden" name="jform[checked_out]" value="<?php echo isset($this->item->checked_out) ? $this->item->checked_out : ''; ?>" />
         <input type="hidden" name="jform[hits]" value="<?php echo isset($this->item->hits) ? $this->item->hits : ''; ?>" />
         <input type="hidden" name="jform[downloads]" value="<?php echo isset($this->item->downloads) ? $this->item->downloads : ''; ?>" />
         <input type="hidden" name="jform[imgvotes]" value="<?php echo isset($this->item->imgvotes) ? $this->item->imgvotes : ''; ?>" />
         <input type="hidden" name="jform[imgvotesum]" value="<?php echo isset($this->item->imgvotesum) ? $this->item->imgvotesum : ''; ?>" />
         <input type="hidden" name="jform[approved]" value="<?php echo isset($this->item->approved) ? $this->item->approved : ''; ?>" />
-        <input type="hidden" name="jform[useruploaded]" value="<?php echo isset($this->item->useruploaded) ? $this->item->useruploaded : ''; ?>" />
+        <input type="hidden" name="jform[useruploaded]" value="<?php echo isset($this->item->useruploaded) ? $this->item->useruploaded : ''; ?>" /> */ ?>
         
         <input type="hidden" name="type" id ="itemType" value="imageform"/>
         <input type="hidden" name="return" value="<?php echo $this->return_page; ?>"/>

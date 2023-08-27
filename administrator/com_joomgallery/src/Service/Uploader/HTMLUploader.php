@@ -182,10 +182,10 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
    */
   public function isImgUploaded($data): bool
   {
-    $app  = Factory::getApplication();
+    $app   = Factory::getApplication();
+    $files = $app->input->files->get('jform');
 
-    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
-    && $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
+    if($files && \array_key_exists('image', $files) && !empty($files['image']) && $files['image']['error'] != 4 &&  $files['image']['size'] > 0)
 		{
       return true;
     }
