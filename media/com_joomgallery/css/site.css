@@ -51,6 +51,14 @@ table.itemList th.sort-cell .form-check-input {
   display: none;
 }
 
+/* Form view */
+.jg fieldset {
+  margin-bottom: 0.2em;
+}
+.jg .btn-group {
+  margin-bottom: 0;
+}
+
 /* Single image view */
 .joom-image {
   position: relative;

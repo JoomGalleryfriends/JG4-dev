@@ -18,7 +18,9 @@ use \Joomla\CMS\HTML\HTMLHelper;
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
-   ->useScript('com_joomgallery.form-edit');
+   ->useScript('bootstrap.collapse')
+   ->useScript('com_joomgallery.form-edit')
+   ->useStyle('com_joomgallery.site');
 
 // Load admin language file
 $lang = Factory::getLanguage();
@@ -39,7 +41,7 @@ else
 $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
 ?>
 
-<div class="image-edit front-end-edit item-page">
+<div class="jg image-edit front-end-edit item-page">
 	<?php if(!$canEdit) : ?>
     <?php Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error'); ?>
 	<?php else : ?>
