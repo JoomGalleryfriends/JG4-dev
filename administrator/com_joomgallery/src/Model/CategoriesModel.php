@@ -115,43 +115,29 @@ class CategoriesModel extends JoomListModel
     // List state information.
 		parent::populateState($ordering, $direction);
 
-    // // States with one value
-		// $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '');
-		// $this->setState('filter.search', $search);
-    // $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '*');
-		// $this->setState('filter.published', $published);
-    // $level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level', '*');
-		// $this->setState('filter.level', $level);
-    // $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
-		// $this->setState('filter.language', $language);
-    // $showself = $this->getUserStateFromRequest($this->context . '.filter.showself', 'filter_showself', '1');
-    // $this->setState('filter.showself', $showself);
-    // $showhidden = $this->getUserStateFromRequest($this->context . '.filter.showhidden', 'filter_showhidden', '1');
-    // $this->setState('filter.showhidden', $showhidden);
-    // $showempty = $this->getUserStateFromRequest($this->context . '.filter.showempty', 'filter_showempty', '1');
-    // $this->setState('filter.showempty', $showempty);
-
-    // // States with multiple values
-		// $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
-    // $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by');
-    // $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category');
-    // $this->getUserStateFromRequest($this->context . '.filter.exclude', 'filter_exclude');   
-
-    // $formSubmited = $app->input->post->get('form_submited');
-    // if($formSubmited)
-		// {
-		// 	$access = $app->input->post->get('access');
-		// 	$this->setState('filter.access', $access);
-
-		// 	$author = $app->input->post->get('created_by');
-		// 	$this->setState('filter.created_by', $author);
-
-		// 	$category = $app->input->post->get('filter_category');
-		// 	$this->setState('filter.category', $category);
-
-    //   $exclude = $app->input->post->get('exclude');
-		// 	$this->setState('filter.exclude', $exclude);
-		// }
+    // Load the filter state.
+		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '');
+		$this->setState('filter.search', $search);
+    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '*');
+		$this->setState('filter.published', $published);
+    $level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level', '*');
+		$this->setState('filter.level', $level);
+    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
+		$this->setState('filter.language', $language);
+    $showself = $this->getUserStateFromRequest($this->context . '.filter.showself', 'filter_showself', '1');
+    $this->setState('filter.showself', $showself);
+    $showhidden = $this->getUserStateFromRequest($this->context . '.filter.showhidden', 'filter_showhidden', '1');
+    $this->setState('filter.showhidden', $showhidden);
+    $showempty = $this->getUserStateFromRequest($this->context . '.filter.showempty', 'filter_showempty', '1');
+    $this->setState('filter.showempty', $showempty);
+    $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', array());
+    $this->setState('filter.access', $access);
+    $createdBy = $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by', '');
+    $this->setState('filter.created_by', $createdBy);
+    $category = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', array());
+    $this->setState('filter.category', $category);
+    $exclude = $this->getUserStateFromRequest($this->context . '.filter.exclude', 'filter_exclude', array());
+    $this->setState('filter.category', $exclude);
 
     // Force a language
 		if(!empty($forcedLanguage))
@@ -247,33 +233,39 @@ class CategoriesModel extends JoomListModel
     // Filter by access level.
 		$access = $this->getState('filter.access');
 
-		if(is_numeric($access))
+    if(!empty($access))
 		{
-			$access = (int) $access;
-			$query->where($db->quoteName('a.access') . ' = :access')
-				->bind(':access', $access, ParameterType::INTEGER);
-		}
-		elseif(is_array($access))
-		{
-			$access = ArrayHelper::toInteger($access);
-			$query->whereIn($db->quoteName('a.access'), $access);
-		}
+      if(is_numeric($access))
+      {
+        $access = (int) $access;
+        $query->where($db->quoteName('a.access') . ' = :access')
+          ->bind(':access', $access, ParameterType::INTEGER);
+      }
+      elseif(is_array($access))
+      {
+        $access = ArrayHelper::toInteger($access);
+        $query->whereIn($db->quoteName('a.access'), $access);
+      }
+    }
     
     // Filter by owner
 		$userId = $this->getState('filter.created_by');
 
-		if(is_numeric($userId))
+    if(!empty($userId))
 		{
-			$userId = (int) $userId;
-			$type = $this->getState('filter.created_by.include', true) ? ' = ' : ' <> ';
-			$query->where($db->quoteName('a.created_by') . $type . ':userId')
-				->bind(':userId', $userId, ParameterType::INTEGER);
-		}
-		elseif(is_array($userId))
-		{
-			$userId = ArrayHelper::toInteger($userId);
-			$query->whereIn($db->quoteName('a.created_by'), $userId);
-		}
+      if(is_numeric($userId))
+      {
+        $userId = (int) $userId;
+        $type = $this->getState('filter.created_by.include', true) ? ' = ' : ' <> ';
+        $query->where($db->quoteName('a.created_by') . $type . ':userId')
+          ->bind(':userId', $userId, ParameterType::INTEGER);
+      }
+      elseif(is_array($userId))
+      {
+        $userId = ArrayHelper::toInteger($userId);
+        $query->whereIn($db->quoteName('a.created_by'), $userId);
+      }
+    }
 
 		// Filter by search
 		$search = $this->getState('filter.search');

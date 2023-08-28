@@ -75,20 +75,35 @@ class ConfigsModel extends JoomListModel
 	{
     $app = Factory::getApplication();
 
+    $forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
+
     // Adjust the context to support modal layouts.
 		if ($layout = $app->input->get('layout'))
 		{
 			$this->context .= '.' . $layout;
 		}
 
+    // Adjust the context to support forced languages.
+		if ($forcedLanguage)
+		{
+			$this->context .= '.' . $forcedLanguage;
+		}
+
+    // List state information.
+		parent::populateState($ordering, $direction);
+
+    // Load the filter state.
     $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
-
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
-		// List state information.
-		parent::populateState($ordering, $direction);
+    // Force a language
+		if(!empty($forcedLanguage))
+		{
+			$this->setState('filter.language', $forcedLanguage);
+			$this->setState('filter.forcedLanguage', $forcedLanguage);
+		}
 	}
 
 	/**
