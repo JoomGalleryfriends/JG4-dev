@@ -220,14 +220,14 @@ if($saveOrder && !empty($this->items))
       <input type="hidden" name="filter_order_Dir" value=""/>
       <?php echo HTMLHelper::_('form.token'); ?>
 
-      <?php if($canAdd) : ?>
+      <?php /*if($canAdd) : ?>
         <div class="mb-2">
           <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.add', false, 0); ?>" class="btn btn-success btn-small">
             <i class="icon-plus"></i>
             <?php echo Text::_('COM_JOOMGALLERY_IMG_UPLOAD_IMAGE'); ?>
           </a>
         </div>
-      <?php endif; ?>
+      <?php endif; */?>
     </div>
   </div>
 </form>

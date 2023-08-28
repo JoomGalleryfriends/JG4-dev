@@ -235,13 +235,13 @@ if($saveOrder && !empty($this->items))
       <input type="hidden" name="filter_order_Dir" value=""/>
 			<?php echo HTMLHelper::_('form.token'); ?>
 
-      <?php if($canAdd) : ?>
+      <?php /*if($canAdd) : ?>
         <div class="mb-2">
           <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.add&return='.$returnURL, false, 0); ?>" class="btn btn-success btn-small">
             <i class="icon-plus"></i> <?php echo Text::_('JGLOBAL_ADD_CUSTOM_CATEGORY'); ?>
           </a>
         </div>				
-			<?php endif; ?>
+			<?php endif; */?>
 		</div>
 	</div>
 </form>

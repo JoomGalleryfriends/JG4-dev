@@ -52,11 +52,11 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
       </a>
     <?php endif; ?>
 
-    <?php if($canAdd): ?>
+    <?php /*if($canAdd): ?>
       <a class="btn btn-outline-success" href="<?php echo Route::_('index.php?option=com_joomgallery&task=category.add&id=0&catid='.$this->item->id.'&return='.$returnURL); ?>">
         <?php echo Text::_("JGLOBAL_FIELD_ADD"); ?>
       </a>
-    <?php endif; ?>
+    <?php endif; */?>
 
     <?php if($canDelete) : ?>
       <a class="btn btn-danger" rel="noopener noreferrer" href="#deleteModal" role="button" data-bs-toggle="modal">
@@ -118,11 +118,11 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </ul>
 <?php endif; ?>
 
-<?php if($canAddImg) : ?>
+<?php /*if($canAddImg) : ?>
   <div class="mb-2">
     <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.add&id=0&catid='.$this->item->id.'&return='.$returnURL, false, 0); ?>" class="btn btn-success btn-small">
       <i class="icon-plus"></i>
       <?php echo Text::_('COM_JOOMGALLERY_IMG_UPLOAD_IMAGE'); ?>
     </a>
   </div>
-<?php endif; ?>
+<?php endif; */?>
