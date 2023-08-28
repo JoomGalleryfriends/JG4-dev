@@ -16,8 +16,6 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
@@ -47,5 +45,49 @@ $wa->useStyle('com_joomgallery.admin')
     <?php return; ?>
   <?php endif; ?>
 
-  
+  <div class="alert alert-primary" role="alert">
+    <h3><?php echo $this->script->title; ?></h3>
+    <?php echo $this->script->description; ?>
+  </div>
+
+  <br />
+
+  <?php if(empty($this->error) && !empty($this->migrateables)) : ?>
+    <?php foreach($this->migrateables as $key => $migrateable) : ?>
+      <form action="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&task=migration.migrate'); ?>" method="post" name="adminForm" id="adminForm">
+        <div class="row align-items-start">
+          <div class="col-md-12">
+            <div class="card">
+              <h3 class="card-header"><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($migrateable).'_TITLE'); ?></h3>
+              <div class="card-body">
+                <div class="badge-group mb-3">
+                  <span class="badge bg-secondary">Pendent: <span>?</span></span>
+                  <span class="badge bg-success">Successful: <span>0</span></span>
+                  <span class="badge bg-danger">Failed: <span>0</span></span>
+                </div>
+                <input class="btn btn-primary mb-3" type="submit" value="<?php echo Text::_('Start migration'); ?>">
+                <input type="hidden" name="task" value="migration.migrate"/>
+                <input type="hidden" name="script" value="<?php echo $name; ?>"/>
+                <?php echo HTMLHelper::_('form.token'); ?>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <br />
+    <?php endforeach; ?>
+  <?php endif; ?>
+
+  <form action="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&task=migration.postcheck'); ?>" method="post" enctype="multipart/form-data" 
+        name="adminForm" id="migration-form" class="form-validate">
+
+      <input type="submit" class="btn btn-primary disabled" value="<?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_POSTCHECK'); ?>" disabled/>
+      <input type="hidden" name="task" value="migration.postcheck"/>
+      <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
+      <?php echo HTMLHelper::_('form.token'); ?>
+  </form>
 </div>

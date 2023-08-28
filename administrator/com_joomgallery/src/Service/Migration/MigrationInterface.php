@@ -59,4 +59,13 @@ interface MigrationInterface
    * @since   4.0.0
    */
   public function migrate($type, $source, $dest);
+
+  /**
+   * Returns a list of content types which can be migrated.
+   *
+   * @return  array  List of content types
+   * 
+   * @since   4.0.0
+   */
+  public function getMigrateables(): array;
 }

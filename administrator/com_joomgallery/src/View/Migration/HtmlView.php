@@ -87,8 +87,10 @@ class HtmlView extends JoomGalleryView
           break;
 
         case 'step3':
-          // Load migration results
-          $this->migration = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step3.results', array());
+          // Data for the migration view
+          $this->precheck     = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step2.success', false);
+          $this->migrateables = $this->get('Migrateables');
+          $this->migration    = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step3.results', array());          
           break;
 
         case 'step4':

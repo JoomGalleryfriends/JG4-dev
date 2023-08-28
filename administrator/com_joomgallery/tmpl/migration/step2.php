@@ -16,8 +16,6 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
@@ -102,7 +100,8 @@ $wa->useStyle('com_joomgallery.admin')
         <?php endforeach; ?>
 
         <br />
-        <input type="submit" class="btn btn-primary" value="<?php echo $this->script->startBtnText; ?>"/>
+
+        <input type="submit" class="btn btn-primary <?php echo $this->success ? '' : 'disabled'; ?>" value="<?php echo $this->script->startBtnText; ?>"/>
       <?php endif; ?>
 
       <input type="hidden" name="task" value="migration.migrate"/>

@@ -64,6 +64,15 @@ abstract class Migration implements MigrationInterface
    */
   protected $isCli = false;
 
+  /**
+   * List of content types which can be migrated with this script
+   *
+   * @var    array
+   * 
+   * @since  4.0.0
+   */
+  protected $contentTypes = array();
+
 
   /**
    * Constructor
@@ -92,6 +101,18 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
+   * Returns a list of content types which can be migrated.
+   *
+   * @return  array  List of content types
+   * 
+   * @since   4.0.0
+   */
+  public function getMigrateables(): array
+  {
+    return $this->contentTypes;
+  }
+
+  /**
    * Step 2
    * Perform pre migration checks.
    *
@@ -114,7 +135,7 @@ abstract class Migration implements MigrationInterface
                                                         ),
                                                         (object) array(
                                                           'name' => 'thumbs',
-                                                          'result' => false,
+                                                          'result' => true,
                                                           'title' => 'Thumbnail images',
                                                           'description' => '/joomla3/images/joomgallery/thumbnails/',
                                                           'help' => 'Folder (/joomla3/images/joomgallery/thumbnails/) is not writeable. make sure the permissions are set correctly for this folder.'

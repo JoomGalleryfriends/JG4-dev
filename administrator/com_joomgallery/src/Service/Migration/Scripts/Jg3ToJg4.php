@@ -36,6 +36,16 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 	protected $name = 'Jg3ToJg4';
 
   /**
+   * List of content types which can be migrated with this script
+   * Use the singular form of the content type (e.g image, not images)
+   *
+   * @var    array
+   * 
+   * @since  4.0.0
+   */
+  protected $contentTypes = array('image', 'category');
+
+  /**
    * Constructor
    *
    * @return  void

@@ -119,7 +119,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->checkToken();
 
     $model   = $this->getModel();
-    $script  = $this->input->get('script', '', 'cmd');
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
     $scripts = $model->getScripts();
 
     // Check if requested script exists
@@ -130,12 +130,15 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     }
 
     // Clean the session data and redirect.
+    $this->app->setUserState(_JOOM_OPTION.'.migration.script', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.data', null);    
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.results', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step3.results', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step3.success', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step4.results', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step4.success', null);
 
     // Redirect to the list screen.
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
@@ -145,11 +148,12 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
   /**
    * Step 2
-	 * Method to perform the pre migration checks.
+   * Validate the form input data and perform the pre migration checks.
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
+   * @since   4.0.0
+	 * @throws  \Exception
 	 */
 	public function precheck()
 	{
@@ -157,14 +161,14 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->checkToken();
 
     $model   = $this->getModel();
-    $script  = $this->input->get('script', '', 'cmd');
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
     $scripts = $model->getScripts();
 
     // Check if requested script exists
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new Exception('Requested migration script does not exist.', 1);      
+      throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
     $data    = $this->input->post->get('jform_'.$script, [], 'array');
@@ -219,6 +223,9 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       return false;
     }
 
+    // Save the script name in the session.
+    $this->app->setUserState(_JOOM_OPTION.'.migration.script', $script);
+
     // Save the migration parameters in the session.
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $validData);
 
@@ -240,8 +247,57 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->app->setUserState($context . '.success', $success);
 
     // Redirect to the screen to show the results (View of Step 2)
-    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2&script=' . $script, false));
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
 
     return;
+  }
+
+  /**
+   * Step 3
+   * Enter the migration view.
+	 *
+	 * @return  void
+	 *
+   * @since   4.0.0
+	 * @throws  \Exception
+	 */
+	public function migrate()
+	{
+    // Check for request forgeries
+    $this->checkToken();
+
+    $model   = $this->getModel();
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+    $scripts = $model->getScripts();
+
+    // Check if requested script exists
+    if(!\in_array($script, \array_keys($scripts)))
+    {
+      // Requested script does not exists
+      throw new \Exception('Requested migration script does not exist.', 1);      
+    }
+
+    // Access check.
+    if(false)
+    {
+      $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    $precheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', false);
+
+    // Check if no errors detected in precheck (step 2)
+    if(!$precheck)
+    {
+      // Pre-checks not successful. Show error message.
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_MIGRATION_STEP2_FAILED', 'Previous step not completed.'), 'error');
+      // Redirect to the step 2 screen
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
+    }
+
+    // Redirect to the step 3 screen
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step3', false));
   }
 }

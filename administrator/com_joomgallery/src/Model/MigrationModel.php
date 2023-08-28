@@ -64,11 +64,12 @@ class MigrationModel extends FormModel
 	 * @return  object|boolean   Migration info object.
 	 *
 	 * @since   4.0.0
+   * @throws  \Exception
 	 */
   public function getScript()
   {
     // Retreive script variable
-    $name = $this->app->input->get('script', '', 'cmd');
+    $name = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
 
     if(!$name)
     {
@@ -106,6 +107,26 @@ class MigrationModel extends FormModel
     }
 
     return $scripts;
+  }
+
+  /**
+	 * Method to a list of content types which can be migrated using the selected script.
+	 *
+	 * @return  array|boolean  List of content types on success, false otherwise
+	 *
+	 * @since   4.0.0
+	 */
+	public function getMigrateables()
+	{
+    // Retreive script
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      return false;
+    }
+
+    return $this->component->getMigration()->getMigrateables();
   }
 
   /**
