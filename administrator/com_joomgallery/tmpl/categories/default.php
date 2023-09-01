@@ -22,7 +22,7 @@ use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Button\PublishedButton;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
+//HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
 
 // Import CSS
 $wa = $this->document->getWebAssetManager();
@@ -261,6 +261,7 @@ if($saveOrder && !empty($this->items))
         <?php endif; ?>
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
+        <input type="hidden" name="form_submited" value="1"/>
         <input type="hidden" id="del_force" name="del_force" value="0"/>
 				<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
 				<?php echo HTMLHelper::_('form.token'); ?>

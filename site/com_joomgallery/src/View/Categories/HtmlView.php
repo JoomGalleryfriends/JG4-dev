@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Categories;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
@@ -30,9 +31,27 @@ class HtmlView extends BaseHtmlView
 
 	protected $pagination;
 
+	/**
+	 * The model state
+	 *
+	 * @var   \Joomla\CMS\Object\CMSObject
+	 */
 	protected $state;
 
-	protected $params;
+	/**
+	 * The page parameters
+	 *
+	 * @var    array
+	 *
+	 * @since  4.0.0
+	 */
+	protected $params = array();
+  /**
+	 * The Access service class
+	 *
+	 * @var   \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Access
+	 */
+	protected $acl;
 
 	/**
 	 * Display the view
@@ -45,20 +64,30 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$app = Factory::getApplication();
-
-		$this->state      = $this->get('State');
-		$this->items      = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->params     = $app->getParams('com_joomgallery');
+		$this->state         = $this->get('State');
+    $this->params        = $this->get('Params');
+		$this->items         = $this->get('Items');
+    $this->acl           = $this->get('Acl');
+		$this->pagination    = $this->get('Pagination');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		// Check for errors.
 		if(count($errors = $this->get('Errors')))
 		{
-			throw new \Exception(implode("\n", $errors));
+			throw new GenericDataException(implode("\n", $errors), 500);
+		}
+
+		// Check acces view level
+
+		// Preprocess the list of items to find ordering divisions.
+		foreach ($this->items as &$item)
+		{
+			$this->ordering[$item->parent_id][] = $item->id;
 		}
 
 		$this->_prepareDocument();
+
 		parent::display($tpl);
 	}
 
@@ -81,14 +110,14 @@ class HtmlView extends BaseHtmlView
 
 		if($menu)
 		{
-			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+			$this->params['menu']->def('page_heading', $this->params['menu']->get('page_title', $menu->title));
 		}
 		else
 		{
-			$this->params->def('page_heading', Text::_('JoomGallery'));
+			$this->params['menu']->def('page_heading', Text::_('JoomGallery'));
 		}
 
-		$title = $this->params->get('page_title', '');
+		$title = $this->params['menu']->get('page_title', '');
 
 		if(empty($title))
 		{
@@ -105,19 +134,19 @@ class HtmlView extends BaseHtmlView
 
 		$this->document->setTitle($title);
 
-		if($this->params->get('menu-meta_description'))
+		if($this->params['menu']->get('menu-meta_description'))
 		{
-			$this->document->setDescription($this->params->get('menu-meta_description'));
+			$this->document->setDescription($this->params['menu']->get('menu-meta_description'));
 		}
 
-		if($this->params->get('menu-meta_keywords'))
+		if($this->params['menu']->get('menu-meta_keywords'))
 		{
-			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $this->params['menu']->get('menu-meta_keywords'));
 		}
 
-		if($this->params->get('robots'))
+		if($this->params['menu']->get('robots'))
 		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
+			$this->document->setMetadata('robots', $this->params['menu']->get('robots'));
 		}
 
     // Add Breadcrumbs

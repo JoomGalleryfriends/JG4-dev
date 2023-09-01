@@ -13,17 +13,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Form\FormFactory;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
-use \Joomla\CMS\Filesystem\File;
-use stdClass;
 
 /**
  * Config model.
@@ -33,26 +31,13 @@ use stdClass;
  */
 class ConfigModel extends JoomAdminModel
 {
-	/**
-	 * @var    string  The prefix to use with controller messages.
-	 *
-	 * @since  4.0.0
-	 */
-	protected $text_prefix = _JOOM_OPTION_UC;
-
-	/**
-	 * @var    string  Alias to manage history control
-	 *
-	 * @since  4.0.0
-	 */
-	public $typeAlias = _JOOM_OPTION.'.config';
-
-	/**
-	 * @var    null  Item data
-	 *
-	 * @since  4.0.0
-	 */
-	protected $item = null;
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'config';
 
   /**
 	 * @var    null  Form object
@@ -67,22 +52,6 @@ class ConfigModel extends JoomAdminModel
 	 * @since  4.0.0
 	 */
 	protected $fieldsets = array();
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  Table    A database object
-	 *
-	 * @since   4.0.0
-	 */
-	public function getTable($type = 'Config', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
 
 	/**
 	 * Method to get the record form.
@@ -463,39 +432,12 @@ class ConfigModel extends JoomAdminModel
     parent::publish($pks, $value);
   }
 
-	/**
-	 * Prepare and sanitise the table prior to saving.
-	 *
-	 * @param   Table  $table  Table Object
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function prepareTable($table)
-	{
-		jimport('joomla.filter.output');
-
-		if(empty($table->id))
-		{
-			// Set ordering to the last item if not set
-			if (@$table->ordering === '')
-			{
-				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_CONFIGS);
-        
-				$max             = $db->loadResult();
-				$table->ordering = $max + 1;
-			}
-		}
-	}
-
   /**
 	 * Initialize new stdObject with default config params of jg_staticprocessing.
 	 *
    * @param   string     $type    Imagetype (default:original)
    * 
-	 * @return  stdClass   Default config params of jg_staticprocessing
+	 * @return  \stdClass   Default config params of jg_staticprocessing
 	 *
 	 * @since   4.0.0
 	 */
@@ -566,7 +508,7 @@ class ConfigModel extends JoomAdminModel
       // initialize stdClass object
       if(!isset($new_staticprocessing['jg_staticprocessing'.$key]))
       {
-        $new_staticprocessing['jg_staticprocessing'.$key] = new stdClass();
+        $new_staticprocessing['jg_staticprocessing'.$key] = new \stdClass();
       }
 
       // create staticprocessing array

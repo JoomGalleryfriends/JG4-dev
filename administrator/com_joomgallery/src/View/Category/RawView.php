@@ -8,7 +8,7 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\View\Image;
+namespace Joomgallery\Component\Joomgallery\Administrator\View\Category;
 
 // No direct access
 defined('_JEXEC') or die;
@@ -41,7 +41,7 @@ class RawView extends JoomGalleryView
     $id   = $this->app->input->get('id', 0, 'int');
 
     // Get image path
-    $img_path = JoomHelper::getImg($id, $type, false, false);
+    $img_path = JoomHelper::getCatImg($id, $type, false, false);
 
     // Create filesystem service
     $adapter = '';

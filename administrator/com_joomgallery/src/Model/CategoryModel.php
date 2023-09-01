@@ -13,14 +13,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\Utilities\ArrayHelper;
-use \Joomla\CMS\Object\CMSObject;
-use \Joomla\Registry\Registry;
+use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
@@ -33,42 +29,13 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
  */
 class CategoryModel extends JoomAdminModel
 {
-	/**
-	 * @var    string  The prefix to use with controller messages.
-	 *
-	 * @since  4.0.0
-	 */
-	protected $text_prefix = _JOOM_OPTION_UC;
-
-	/**
-	 * @var    string  Alias to manage history control
-	 *
-	 * @since  4.0.0
-	 */
-	public $typeAlias = _JOOM_OPTION.'.category';
-
-	/**
-	 * @var    null  Item data
-	 *
-	 * @since  4.0.0
-	 */
-	protected $item = null;	
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  Table    A database object
-	 *
-	 * @since   4.0.0
-	 */
-	public function getTable($type = 'Category', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'category';
 
 	/**
 	 * Method to get the record form.
@@ -82,9 +49,6 @@ class CategoryModel extends JoomAdminModel
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
 		// Get the form.
 		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));
 
@@ -105,6 +69,80 @@ class CategoryModel extends JoomAdminModel
 		}
 
 		return $form;
+	}
+
+  /**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  mixed  The data for the form.
+	 *
+	 * @since   4.0.0
+	 */
+	protected function loadFormData()
+	{
+		// Check the session for previously entered form data.
+		$data = Factory::getApplication()->getUserState(_JOOM_OPTION.'.edit.category.data', array());
+
+		if(empty($data))
+		{
+			if($this->item === null)
+			{
+				$this->item = $this->getItem();
+			}
+
+			$data = $this->item;			
+
+			// Support for multiple or not foreign key field: robots
+			$array = array();
+
+			foreach((array) $data->robots as $value)
+			{
+				if(!is_array($value))
+				{
+					$array[] = $value;
+				}
+			}
+			if(!empty($array))
+      {
+			  $data->robots = $array;
+			}
+		}
+
+		return $data;
+	}
+
+  /**
+	 * Method to get a single record.
+	 *
+	 * @param   integer  $pk  The id of the primary key.
+	 *
+	 * @return  Object|boolean Object on success, false on failure.
+	 *
+	 * @since   4.0.0
+	 */
+	public function getItem($pk = null)
+	{		
+    if($this->item === null)
+		{
+			$this->item = false;
+
+      if(empty($pk))
+			{
+				$pk = $this->getState('category.id');
+			}
+
+      if($this->item = parent::getItem($pk))
+      {
+        if(isset($this->item->params))
+        {
+          $this->item->params = json_encode($this->item->params);
+        }
+        
+        // Do any procesing on fields here if needed
+      }
+    }
+
+    return $this->item;
 	}
 
   /**
@@ -580,70 +618,6 @@ class CategoryModel extends JoomAdminModel
 	}
 
 	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed  The data for the form.
-	 *
-	 * @since   4.0.0
-	 */
-	protected function loadFormData()
-	{
-		// Check the session for previously entered form data.
-		$data = Factory::getApplication()->getUserState(_JOOM_OPTION.'.edit.category.data', array());
-
-		if(empty($data))
-		{
-			if($this->item === null)
-			{
-				$this->item = $this->getItem();
-			}
-
-			$data = $this->item;			
-
-			// Support for multiple or not foreign key field: robots
-			$array = array();
-
-			foreach((array) $data->robots as $value)
-			{
-				if(!is_array($value))
-				{
-					$array[] = $value;
-				}
-			}
-			if(!empty($array))
-      {
-			  $data->robots = $array;
-			}
-		}
-
-		return $data;
-	}
-
-	/**
-	 * Method to get a single record.
-	 *
-	 * @param   integer  $pk  The id of the primary key.
-	 *
-	 * @return  mixed    Object on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function getItem($pk = null)
-	{		
-    if($item = parent::getItem($pk))
-    {
-      if(isset($item->params))
-      {
-        $item->params = json_encode($item->params);
-      }
-      
-      // Do any procesing on fields here if needed
-    }
-
-    return $item;
-	}
-
-	/**
 	 * Method to duplicate an Category
 	 *
 	 * @param   array  &$pks  An array of primary key IDs.
@@ -722,55 +696,6 @@ class CategoryModel extends JoomAdminModel
 		$this->cleanCache();
 
 		return true;
-	}
-
-	/**
-	 * Prepare and sanitise the table prior to saving.
-	 *
-	 * @param   Table  $table  Table Object
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function prepareTable($table)
-	{
-		jimport('joomla.filter.output');
-
-		if(empty($table->id))
-		{
-			// Set ordering to the last item if not set
-			if(@$table->ordering === '')
-			{
-				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_CATEGORIES);
-
-				$max             = $db->loadResult();
-				$table->ordering = $max + 1;
-			}
-		}
-	}
-
-  /**
-	 * Allows preprocessing of the JForm object.
-	 *
-	 * @param   Form    $form   The form object
-	 * @param   array   $data   The data to be merged into the form object
-	 * @param   string  $group  The plugin group to be executed
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function preprocessForm(Form $form, $data, $group = 'joomgallery')
-	{
-		if (!Multilanguage::isEnabled())
-		{
-			$form->setFieldAttribute('language', 'type', 'hidden');
-			$form->setFieldAttribute('language', 'default', '*');
-		}
-
-		parent::preprocessForm($form, $data, $group);
 	}
 
   /**
@@ -980,5 +905,4 @@ class CategoryModel extends JoomAdminModel
     
     return $sibling;
   }
-
 }

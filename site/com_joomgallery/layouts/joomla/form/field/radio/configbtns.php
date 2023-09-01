@@ -8,25 +8,8 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Site\Controller;
+// No direct access
+defined('_JEXEC') or die;
 
-\defined('_JEXEC') or die;
-
-use Joomgallery\Component\Joomgallery\Administrator\Controller\DisplayController as AdminDisplayController;
-
-/**
- * Joomgallery frontend display controller.
- * 
- * @package JoomGallery
- * @since   4.0.0
- */
-class DisplayController extends AdminDisplayController
-{
-	/**
-	 * The default view.
-	 *
-	 * @var    string
-	 * @since  4.0.0
-	 */
-	protected $default_view = 'category';
-}
+$path = JPATH_ADMINISTRATOR . '/components/com_joomgallery/layouts/joomla/form/field/radio/configbtns.php';
+require($path);

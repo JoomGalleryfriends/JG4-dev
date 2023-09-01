@@ -1,5 +1,4 @@
 <?php
-
 /**
 ******************************************************************************************
 **   @version    4.0.0                                                                  **
@@ -9,16 +8,8 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Site\Service;
-
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Categories\Categories;
-/**
- * Content Component Category Tree
- * 
- * @package JoomGallery
- * @since   4.0.0
- */
-
+$path = JPATH_ADMINISTRATOR . '/components/com_joomgallery/layouts/joomla/form/renderfield.php';
+require($path);
