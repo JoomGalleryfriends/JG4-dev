@@ -51,28 +51,29 @@ class HtmlView extends JoomGalleryView
   public function display($tpl = null)
   {
     $this->params = ComponentHelper::getParams('com_joomgallery');
+    $this->config = JoomHelper::getService('config');
 
     ToolBarHelper::title(Text::_('COM_JOOMGALLERY_CONTROL_PANEL') , 'home');
 
     $lang          = Factory::getLanguage();
     $this->canDo   = JoomHelper::getActions();
     $this->modules = ModuleHelper::getModules('joom_cpanel');
-    $imglimit      = 10;
+    $imglimit      = $this->config->get('jg_control_count_images');
 
     // get statistic data
     $this->statisticdata = $this->getStatisticData();
 
     // get most viewed images
-    $this->mostviewedimages = $this->getMostViewedImages();
+    $this->mostviewedimages = $this->getMostViewedImages($imglimit);
 
     // get newest images
-    $this->newestimages = $this->getNewestImages();
+    $this->newestimages = $this->getNewestImages($imglimit);
 
     // get best rated images
-    $this->bestratedimages = $this->getBestRatedImages();
+    $this->bestratedimages = $this->getBestRatedImages($imglimit);
 
     // get most downloaded images
-    $this->mostdownloadedimages = $this->getMostDownloadedImages();
+    $this->mostdownloadedimages = $this->getMostDownloadedImages($imglimit);
 
     // get gallery info data
     $this->galleryinfodata = $this->getGalleryInfoData();
@@ -135,11 +136,13 @@ class HtmlView extends JoomGalleryView
 /**
  * Method to get the most viewed images
  *
+ * @param    int     $imglimit  limit for the displayed images
+ *
  * @return   array   Array with statistic data
  *
  * @since 4.0.0
  */
-protected function getMostViewedImages()
+protected function getMostViewedImages($imglimit)
 {
   $popularImages = array();
 
@@ -152,7 +155,7 @@ protected function getMostViewedImages()
               ->from($db->quoteName('#__joomgallery'))
               ->where($db->quoteName('hits') . ' > ' . $db->quote(0))
               ->order('hits DESC')
-              ->setLimit('$imglimit');
+              ->setLimit($imglimit);
   $db->setQuery($query);
   $db->execute();
 
@@ -164,11 +167,13 @@ protected function getMostViewedImages()
 /**
  * Method to get the newest images
  *
+ * @param    int     $imglimit  limit for the displayed images
+ *
  * @return   array   Array with statistic data
  *
  * @since 4.0.0
  */
-protected function getNewestImages()
+protected function getNewestImages($imglimit)
 {
   $newestimages = array();
 
@@ -178,7 +183,7 @@ protected function getNewestImages()
               ->select($db->quoteName(array('imgtitle', 'created_time', 'id')))
               ->from($db->quoteName('#__joomgallery'))
               ->order('created_time DESC')
-              ->setLimit('$imglimit');
+              ->setLimit($imglimit);
   $db->setQuery($query);
   $db->execute();
 
@@ -190,11 +195,13 @@ protected function getNewestImages()
 /**
  * Method to get the best rated images
  *
+ * @param    int     $imglimit  limit for the displayed images
+ *
  * @return   array   Array with statistic data
  *
  * @since 4.0.0
  */
-protected function getBestRatedImages()
+protected function getBestRatedImages($imglimit)
 {
   $bestratedimages = array();
 
@@ -205,7 +212,7 @@ protected function getBestRatedImages()
               ->from($db->quoteName('#__joomgallery'))
               ->where($db->quoteName('imgvotes') . ' > ' . $db->quote(0))
               ->order('imgvotesum/imgvotes DESC')
-              ->setLimit('$imglimit');
+              ->setLimit($imglimit);
   $db->setQuery($query);
   $db->execute();
 
@@ -217,11 +224,13 @@ protected function getBestRatedImages()
 /**
  * Method to get the MOst downloaded images
  *
+ * @param    int     $imglimit  limit for the displayed images
+ *
  * @return   array   Array with statistic data
  *
  * @since 4.0.0
  */
-protected function getMostDownloadedImages()
+protected function getMostDownloadedImages($imglimit)
 {
   $mostdownloadedimages = array();
 
@@ -232,7 +241,7 @@ protected function getMostDownloadedImages()
               ->from($db->quoteName('#__joomgallery'))
               ->where($db->quoteName('downloads') . ' > ' . $db->quote(0))
               ->order('downloads DESC')
-              ->setLimit('$imglimit');
+              ->setLimit($imglimit);
   $db->setQuery($query);
   $db->execute();
 

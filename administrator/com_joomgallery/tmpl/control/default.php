@@ -29,14 +29,70 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
   <div class="flex-fill">
     <div id="j-main-container" class="j-main-container">
       <div class"jg-control-head">
-        <div class="jg-messages-logo">
-          <?php echo HTMLHelper::_('image', 'com_joomgallery/logo.png', Text::_('COM_JOOMGALLERY_LOGO'), ['class' => 'joom-logo-small'], true); ?>
+        <?php // echo 'Kopfbereich für wichtige Meldungen.'; ?>
+      </div>
+      <div class="card-columns">
+        <div class="card">
+          <?php echo HTMLHelper::_('image', 'com_joomgallery/watermark.png', Text::_('COM_JOOMGALLERY_LOGO'), ['class' => 'w-100', 'style' => 'padding: 1.2rem'], true); ?>
+          <div class="text-center content">
+            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_INFO'); ?>
+          </div>
         </div>
-        <div class="jg-messages-inner">
-          <?php // echo 'Kopfbereich für wichtige Meldungen.'; ?>
-          <hr>
+        <?php // Display Donation ?>
+        <div class="card">
+          <h3 class="card-header">
+            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS'); ?>
+          </h3>
+          <div class="text-center content">
+            <p><?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_LONG'); ?></p>
+            <p>
+              <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVQBAFEZHPL2J" title="<?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?>" target="_blank">
+                <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?></a>
+            </p>
+          </div>
+          <div class="text-center content">
+            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_SPONSORS'); ?>
+            <a href="mailto:team@joomgalleryfriends.net">team@joomgalleryfriends.net</a>
+          </div>
+        </div>
+ 
+        <div class="card">
+          <?php // Display most viewed images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_MOST_VIEWED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('JGLOBAL_HITS'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-100';
+
+          DisplayMostViewedImages($header, $this->mostviewedimages, $id); ?>
+        </div>
+        <div class="card">
+          <?php // Display newest images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_NEWEST_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('JGLOBAL_FIELD_CREATED_LABEL'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-200';
+
+          DisplayNewestImages($header, $this->newestimages, $id); ?>
+        </div>
+        <div class="card">
+          <?php // Display best rated images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_BEST_RATED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('Rating'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-300';
+
+          DisplayBestRatedImages($header, $this->bestratedimages, $id); ?>
+        </div>
+        <div class="card">
+          <?php // Display most downloaded images
+          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_MOST_DOWNLOADED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('COM_JOOMGALLERY_DOWNLOADS'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
+          $id     = 'selectedimages-400';
+
+          DisplayMostDownloadedImages($header, $this->mostdownloadedimages, $id); ?>
         </div>
       </div>
+      <hr>
+
+      <?php // Render admin modules in position joom_cpanel
+      foreach ($this->modules as $module)
+      {
+        echo ModuleHelper::renderModule($module, array('style' => 'well'));
+      } ?>
+
       <div class="card-columns">
         <div class="card">
           <?php
@@ -51,45 +107,6 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
           ?>
         </div>
       </div>
-      <hr>
-
-      <?php // Render admin modules in position joom_cpanel
-      foreach ($this->modules as $module)
-      {
-        echo ModuleHelper::renderModule($module, array('style' => 'well'));
-      } ?>
-
-      <div class="card-columns">
-        <div class="card">
-          <?php // Display most viewed images
-          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_MOST_VIEWED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('JGLOBAL_HITS'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
-          $id     = 'selectedimages-100';
-
-          DisplaySelectedImages($header, $this->mostviewedimages, $id, false); ?>
-        </div>
-        <div class="card">
-          <?php // Display newest images
-          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_NEWEST_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('JDATE UTC'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
-          $id     = 'selectedimages-200';
-
-          DisplaySelectedImages($header, $this->newestimages, $id, false); ?>
-        </div>
-        <div class="card">
-          <?php // Display best rated images
-          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_BEST_RATED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('Rating'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
-          $id     = 'selectedimages-300';
-
-          DisplaySelectedImages($header, $this->bestratedimages, $id, true); ?>
-        </div>
-        <div class="card">
-          <?php // Display most downloaded images
-          $header = array(Text::_('COM_JOOMGALLERY_CONTROL_MOST_DOWNLOADED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('COM_JOOMGALLERY_DOWNLOADS'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
-          $id     = 'selectedimages-400';
-
-          DisplaySelectedImages($header, $this->mostdownloadedimages, $id, false); ?>
-        </div>
-      </div>
-      <hr>
 
       <?php // Display extensions
       $title   = Text::_('COM_JOOMGALLERY_CONTROL_EXTENSIONS');
@@ -111,29 +128,10 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
       DisplaySystemSettings($title, $settings); ?>
       <hr>
 
-      <?php // Display Donation ?>
-      <div class="card">
-        <h3 class="card-header">
-          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS'); ?>
-        </h3>
-        <div class="text-center">
-          <p><?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_LONG'); ?></p>
-          <p>
-            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVQBAFEZHPL2J" title="<?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?>" target="_blank">
-              <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?></a>
-          </p>
-        </div>
-        <div class="text-center">
-          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_SPONSORS'); ?>
-          <a href="mailto:team@joomgalleryfriends.net">team@joomgalleryfriends.net</a>
-        </div>
-      </div>
-
       <?php // Display Footer ?>
       <div class"jg-control-footer">
         <?php
         // Display copyright ?>
-        <hr>
         <div class="row">
           <div class="col-md-12 jg-copyright">
             <?php echo HTMLHelper::_('image', 'com_joomgallery/logo.png', Text::_('COM_JOOMGALLERY_LOGO'), ['class' => 'joom-logo-small', 'style' => 'max-width: 40px'], true); ?>
@@ -144,9 +142,9 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+    </div><!-- /j-main-container -->
+  </div><!-- /flex-fill -->
+</div><!-- /d-flex flex-row -->
 
 <?php 
 
@@ -312,21 +310,17 @@ function DisplayGalleryInfo($manifest)
 }
 
 /**
- * Display selected Images as collapsed
+ * Display most viewed images as collapsed
  *
  * @param   array   $header      Array with column header, $header[0]=columheader, $header[1]=first column...
  * @param   array   $data        Array with hold the Images data, $data[0]=image, $data[1]=title, $data[2]=value, $data[3]=imgid
  * @param   int     $id          Unique id
- * @param   bool    $roundvalue  false=do not round, true=round value
    *
  * @since 4.0.0
  */
-function DisplaySelectedImages($header, $data, $id, $roundvalue = false)
+function DisplayMostViewedImages($header, $data, $id)
 {
-
-  // $id     = 'selectedimages-100';
   $itemId = $id . '-item'; ?>
-
 
   <div class="accordion" id="<?php echo $id; ?>">
     <div class="accordion-item">
@@ -342,16 +336,16 @@ function DisplaySelectedImages($header, $data, $id, $roundvalue = false)
           <table class="table table-striped">
             <thead>
               <tr>
-                <td class="w-10">
+                <td class="w-20">
                   <?php echo $header[1]; ?>
                 </td>
-                <td class="w-10">
+                <td class="w-40">
                   <?php echo $header[2]; ?>
                 </td>
-                <td class="w-10">
+                <td class="w-20">
                   <?php echo $header[3]; ?>
                 </td>
-                <td class="w-10">
+                <td class="w-20">
                   <?php echo $header[4]; ?>
                 </td>
               </tr>
@@ -371,11 +365,232 @@ function DisplaySelectedImages($header, $data, $id, $roundvalue = false)
                     </a>
                   </td>
                   <td class="d-md-table-cell">
-                    <?php if($roundvalue) : ?>
-                      <?php echo round(floatval($value[1]), 2); ?>
-                    <?php else : ?>
-                      <?php echo $value[1]; ?>
-                    <?php endif; ?>
+                    <?php echo $value[1]; ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value[2]; ?>
+                  </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+          </table>
+        </div><!--/accordion-body-->
+      </div><!--/accordion-collapse-->
+    </div><!--/accordion-item-->
+  </div><!--/accordion -->
+
+  <?php return;
+
+}
+
+/**
+ * Display newest images as collapsed
+ *
+ * @param   array   $header      Array with column header, $header[0]=columheader, $header[1]=first column...
+ * @param   array   $data        Array with hold the Images data, $data[0]=image, $data[1]=title, $data[2]=value, $data[3]=imgid
+ * @param   int     $id          Unique id
+ *
+ * @since 4.0.0
+ */
+function DisplayNewestImages($header, $data, $id)
+{
+  $itemId = $id . '-item'; ?>
+
+  <div class="accordion" id="<?php echo $id; ?>">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+          <?php echo $header[0]; ?>
+        </button>
+      </h2>
+      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+        <div class="accordion-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <td class="w-20">
+                  <?php echo $header[1]; ?>
+                </td>
+                <td class="w-30">
+                  <?php echo $header[2]; ?>
+                </td>
+                <td class="w-30">
+                  <?php echo $header[3]; ?>
+                </td>
+                <td class="w-20">
+                  <?php echo $header[4]; ?>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($data as $value) { ?>
+                <tr>
+                <td class="d-md-table-cell small">
+                  <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
+                </td>
+                  <td class="d-md-table-cell">
+                    <?php $ImgUrl   = Route::_('index.php?option=com_joomgallery&task=image.edit&id='.(int) $value[2]);
+                      $EditImgTxt = Text::_('COM_JOOMGALLERY_IMAGE_EDIT');
+                    ?>
+                    <a href="<?php echo $ImgUrl; ?>" title="<?php echo $EditImgTxt; ?>">
+                      <?php echo $value[0]; ?>
+                    </a>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php $date = Factory::getDate($value[1], 'UTC'); ?>
+                    <?php $date->setTimezone(new \DateTimeZone(Factory::getApplication()->get('offset'))); ?>
+                    <?php echo $date->format('Y-m-d H:i:s', true, false); ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value[2]; ?>
+                  </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+          </table>
+        </div><!--/accordion-body-->
+      </div><!--/accordion-collapse-->
+    </div><!--/accordion-item-->
+  </div><!--/accordion -->
+
+  <?php return;
+
+}
+
+/**
+ * Display best rated images as collapsed
+ *
+ * @param   array   $header      Array with column header, $header[0]=columheader, $header[1]=first column...
+ * @param   array   $data        Array with hold the Images data, $data[0]=image, $data[1]=title, $data[2]=value, $data[3]=imgid
+ * @param   int     $id          Unique id
+ *
+ * @since 4.0.0
+ */
+function DisplayBestRatedImages($header, $data, $id)
+{
+  $itemId = $id . '-item'; ?>
+
+  <div class="accordion" id="<?php echo $id; ?>">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+          <?php echo $header[0]; ?>
+        </button>
+      </h2>
+      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+        <div class="accordion-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <td class="w-20">
+                  <?php echo $header[1]; ?>
+                </td>
+                <td class="w-40">
+                  <?php echo $header[2]; ?>
+                </td>
+                <td class="w-20">
+                  <?php echo $header[3]; ?>
+                </td>
+                <td class="w-20">
+                  <?php echo $header[4]; ?>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($data as $value) { ?>
+                <tr>
+                <td class="d-md-table-cell small">
+                  <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
+                </td>
+                  <td class="d-md-table-cell">
+                    <?php $ImgUrl   = Route::_('index.php?option=com_joomgallery&task=image.edit&id='.(int) $value[2]);
+                      $EditImgTxt = Text::_('COM_JOOMGALLERY_IMAGE_EDIT');
+                    ?>
+                    <a href="<?php echo $ImgUrl; ?>" title="<?php echo $EditImgTxt; ?>">
+                      <?php echo $value[0]; ?>
+                    </a>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo round(floatval($value[1]), 2); ?>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value[2]; ?>
+                  </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+          </table>
+        </div><!--/accordion-body-->
+      </div><!--/accordion-collapse-->
+    </div><!--/accordion-item-->
+  </div><!--/accordion -->
+
+  <?php return;
+
+}
+
+
+/**
+ * Display most downloaded Images as collapsed
+ *
+ * @param   array   $header      Array with column header, $header[0]=columheader, $header[1]=first column...
+ * @param   array   $data        Array with hold the Images data, $data[0]=image, $data[1]=title, $data[2]=value, $data[3]=imgid
+ * @param   int     $id          Unique id
+ *
+ * @since 4.0.0
+ */
+function DisplayMostDownloadedImages($header, $data, $id)
+{
+  $itemId = $id . '-item'; ?>
+
+  <div class="accordion" id="<?php echo $id; ?>">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+          <?php echo $header[0]; ?>
+        </button>
+      </h2>
+      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+        <div class="accordion-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <td class="w-20">
+                  <?php echo $header[1]; ?>
+                </td>
+                <td class="w-40">
+                  <?php echo $header[2]; ?>
+                </td>
+                <td class="w-20">
+                  <?php echo $header[3]; ?>
+                </td>
+                <td class="w-20">
+                  <?php echo $header[4]; ?>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($data as $value) { ?>
+                <tr>
+                <td class="d-md-table-cell small">
+                  <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
+                </td>
+                  <td class="d-md-table-cell">
+                    <?php $ImgUrl   = Route::_('index.php?option=com_joomgallery&task=image.edit&id='.(int) $value[2]);
+                      $EditImgTxt = Text::_('COM_JOOMGALLERY_IMAGE_EDIT');
+                    ?>
+                    <a href="<?php echo $ImgUrl; ?>" title="<?php echo $EditImgTxt; ?>">
+                      <?php echo $value[0]; ?>
+                    </a>
+                  </td>
+                  <td class="d-md-table-cell">
+                    <?php echo $value[1]; ?>
                   </td>
                   <td class="d-md-table-cell">
                     <?php echo $value[2]; ?>
@@ -385,7 +600,7 @@ function DisplaySelectedImages($header, $data, $id, $roundvalue = false)
                 } ?>
             </tbody>
           </table>
-        </div>
+        </div><!--/accordion-body-->
       </div><!--/accordion-collapse-->
     </div><!--/accordion-item-->
   </div><!--/accordion -->
