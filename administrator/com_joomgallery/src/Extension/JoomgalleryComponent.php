@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
@@ -14,6 +14,7 @@ defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Association\AssociationServiceInterface;
 use Joomla\CMS\Association\AssociationServiceTrait;
@@ -83,6 +84,13 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   public $cache = false;
 
   /**
+   * Storage for the current component version
+   *
+   * @var string
+   */
+  public $version = '';
+
+  /**
 	 * Booting the extension. This is the function to set up the environment of the extension like
 	 * registering new class loaders, etc.
 	 *
@@ -105,6 +113,12 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
     if(!$this->cache)
     {
       $this->cache = new JoomCache();
+    }
+
+    if(!$this->version)
+    {
+      $xml  = \simplexml_load_file(Path::clean(JPATH_COMPONENT_ADMINISTRATOR . '/joomgallery.xml'));
+      $this->version = (string) $xml->version;
     }
   }
 }
