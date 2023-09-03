@@ -12,25 +12,20 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Application\SiteApplication;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Multilanguage;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\MVC\Controller\BaseController;
 use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Language\Text;
 
 /**
- * Category class.
+ * Category controller class.
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoryController extends BaseController
+class CategoryController extends JoomBaseController
 {
 	/**
-	 * Method to check out an item for editing and redirect to the edit form.
+	 * Edit a category
+	 * Checkout and redirect to from view
 	 *
 	 * @return  void
 	 *
@@ -40,22 +35,51 @@ class CategoryController extends BaseController
 	 */
 	public function edit()
 	{
-		$app = Factory::getApplication();
-
 		// Get the previous edit id (if any) and the current edit id.
-		$previousId = (int) $app->getUserState('com_joomgallery.edit.category.id');
-		$editId     = $app->input->getInt('id', 0);
+		$previousId = (int) $this->app->getUserState(_JOOM_OPTION.'.edit.category.id');
+		$cid        = (array) $this->input->post->get('cid', [], 'int');
+    $boxchecked = (bool) $this->input->getInt('boxchecked', 0);
+    if($boxchecked)
+    {
+      $editId = (int) $cid[0];
+    }
+    else
+    {
+      $editId = $this->input->getInt('id', 0);
+    }
 
-		// Set the user id for the user to edit in the session.
-		$app->setUserState('com_joomgallery.edit.category.id', $editId);
+		// ID check
+		if(!$editId)
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+
+			return false;
+		}
+
+		// Access check
+		if(!$this->acl->checkACL('edit', 'category', $editId))
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+
+			return false;
+		}
+
+		// Set the current edit id in the session.
+		$this->app->setUserState(_JOOM_OPTION.'.edit.category.id', $editId);
 
 		// Get the model.
 		$model = $this->getModel('Category', 'Site');
 
 		// Check out the item
-		if($editId)
+		if(!$model->checkout($editId))
 		{
-			$model->checkout($editId);
+			// Check-out failed, display a notice but allow the user to see the record.
+			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKOUT_FAILED', $model->getError()), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+			
+			return false;
 		}
 
 		// Check in the previous user.
@@ -64,166 +88,92 @@ class CategoryController extends BaseController
 			$model->checkin($previousId);
 		}
 
-		// Redirect to the edit screen.
-		$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=categoryform&layout=edit', false));
+		// Redirect to the form screen.
+		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=categoryform&'.$this->getItemAppend($editId), false));
 	}
 
 	/**
-	 * Method to save data
+	 * Add a new category
+   * Checkout and redirect to from view
 	 *
-	 * @return    void
-	 *
-	 * @throws  Exception
-	 * @since   4.0.0
-	 */
-	public function publish()
-	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
-		// Checking if the user can remove object
-		$user = Factory::getUser();
-
-		if($user->authorise('core.edit', 'com_joomgallery') || $user->authorise('core.edit.state', 'com_joomgallery'))
-		{
-			$model = $this->getModel('Category', 'Site');
-
-			// Get the user data.
-			$id    = $app->input->getInt('id');
-			$state = $app->input->getInt('state');
-
-			// Attempt to save the data.
-			$return = $model->publish($id, $state);
-
-			// Check for errors.
-			if($return === false)
-			{
-				$this->setMessage(Text::sprintf('Save failed: %s', $model->getError()), 'warning');
-			}
-
-			// Clear the profile id from the session.
-			$app->setUserState('com_joomgallery.edit.category.id', null);
-
-			// Flush the data from the session.
-			$app->setUserState('com_joomgallery.edit.category.data', null);
-
-			// Redirect to the list screen.
-			$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVED_SUCCESSFULLY'));
-			$menu = Factory::getApplication()->getMenu();
-			$item = $menu->getActive();
-
-			if(!$item)
-			{
-				// If there isn't any menu item active, redirect to list view
-				$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=categories', false));
-			}
-			else
-			{
-				$this->setRedirect(Route::_('index.php?Itemid='. $item->id, false));
-			}
-		}
-		else
-		{
-			throw new \Exception(500);
-		}
-	}
-
-	/**
-	 * Check in record
-	 *
-	 * @return  boolean  True on success
+	 * @return  void
 	 *
 	 * @since   4.0.0
 	 */
-	public function checkin()
+	public function add()
 	{
-		// Check for request forgeries.
-		$this->checkToken('GET');
-		
-		// Checking if the user can remove object
-		$user = Factory::getUser();
+		// Get the previous edit id (if any) and the current edit id.
+		$previousId = (int) $this->app->getUserState(_JOOM_OPTION.'.add.category.id');
+    $cid        = (array) $this->input->post->get('cid', [], 'int');
+		$editId     = (int) (\count($cid) ? $cid[0] : $this->input->getInt('id', 0));
+		$addCatId   = (int) $this->input->getInt('catid', 0);
 
-		if($user->authorise('core.manage', 'com_joomgallery')) { 
-
-			$id = $this->input->post->get('id', int, 0);
-			
-			$model = $this->getModel();
-			$return = $model->checkin($id);
-
-			if($return === false)
-			{
-				// Checkin failed.
-				$message = Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
-				$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=category' . '&id=' . $id, false), $message, 'error');
-				return false;
-			}
-			else
-			{
-				// Checkin succeeded.
-				$message = Text::_('COM_JOOMGALLERY_CHECKEDIN_SUCCESSFULLY');
-				$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=category' . '&id=' . $id, false), $message);
-				return true;
-			}
-		}
-		else
+		// Access check
+		if(!$this->acl->checkACL('add', 'category', $addCatId, true))
 		{
-			throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+
+			return false;
 		}
+
+		// Clear form data from session
+		$this->app->setUserState(_JOOM_OPTION.'.edit.category.data', array());
+
+		// Set the current edit id in the session.
+		$this->app->setUserState(_JOOM_OPTION.'.add.category.id', $addCatId);
+		$this->app->setUserState(_JOOM_OPTION.'.edit.category.id', 0);
+
+		// Check in the previous user.
+		if($previousId && $previousId !== $addCatId)
+		{
+      // Get the model.
+		  $model = $this->getModel('Category', 'Site');
+
+			$model->checkin($previousId);
+		}
+
+		// Redirect to the form screen.
+		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=categoryform&'.$this->getItemAppend(0, $addCatId), false));
 	}
 
 	/**
-	 * Remove data
+	 * Remove a category
 	 *
-	 * @return void
-	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function remove()
 	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
-		// Checking if the user can remove object
-		$user = Factory::getUser();
-
-		if($user->authorise('core.delete', 'com_joomgallery'))
-		{
-			$model = $this->getModel('Category', 'Site');
-
-			// Get the user data.
-			$id = $app->input->getInt('id', 0);
-
-			// Attempt to save the data.
-			$return = $model->delete($id);
-
-			// Check for errors.
-			if($return === false)
-			{
-				$this->setMessage(Text::sprintf('Delete failed', $model->getError()), 'warning');
-			}
-			else
-			{
-				// Check in the profile.
-				if($return)
-				{
-					$model->checkin($return);
-				}
-
-				$app->setUserState('com_joomgallery.edit.category.id', null);
-				$app->setUserState('com_joomgallery.edit.category.data', null);
-
-				$app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFULLY'), 'success');
-				$app->redirect(Route::_('index.php?option=com_joomgallery&view=categories', false));
-			}
-
-			// Redirect to the list screen.
-			$menu = Factory::getApplication()->getMenu();
-			$item = $menu->getActive();
-			$this->setRedirect(Route::_($item->link, false));
-		}
-		else
-		{
-			throw new \Exception(500);
-		}
+		throw new \Exception('Removing category not possible. Use categoryform controller instead.', 503);
 	}
+
+	/**
+	 * Checkin a checked out category.
+	 *
+	 * @throws \Exception
+	 */
+	public function checkin()
+	{
+		throw new \Exception('Check-in category not possible. Use categoryform controller instead.', 503);
+	}
+
+  /**
+	 * Method to publish a category
+	 *
+	 * @throws \Exception
+	 */
+	public function publish()
+	{
+    throw new \Exception('Publish category not possible. Use categoryform controller instead.', 503);
+  }
+
+  /**
+	 * Method to unpublish a category
+	 *
+	 * @throws \Exception
+	 */
+	public function unpublish()
+	{
+    throw new \Exception('Unpublish category not possible. Use categoryform controller instead.', 503);
+  }
 }

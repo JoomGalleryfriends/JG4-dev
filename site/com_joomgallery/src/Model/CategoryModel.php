@@ -14,23 +14,24 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\MVC\Model\ItemModel;
-use \Joomla\CMS\Helper\TagsHelper;
-use \Joomla\CMS\Object\CMSObject;
-use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
+use Joomla\CMS\Language\Multilanguage;
 
 /**
- * Joomgallery model.
+ * Model to get a category record.
  * 
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoryModel extends ItemModel
+class CategoryModel extends JoomItemModel
 {
-	public $_item;
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'category';
 
 	/**
 	 * Method to auto-populate the model state.
@@ -56,254 +57,204 @@ class CategoryModel extends ItemModel
 		}
 
 		// Load state from the request userState on edit or from the passed variable on default
-		if(Factory::getApplication()->input->get('layout') == 'edit')
+		$id = $this->app->input->getInt('id', null);
+		if($id)
 		{
-			$id = Factory::getApplication()->getUserState('com_joomgallery.edit.category.id');
+			$this->app->setUserState('com_joomgallery.edit.image.id', $id);
 		}
 		else
 		{
-			$id = Factory::getApplication()->input->get('id');
-			Factory::getApplication()->setUserState('com_joomgallery.edit.category.id', $id);
+			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
+		}
+
+		if(is_null($id))
+		{
+			throw new Exception('No ID provided to the model!', 500);
 		}
 
 		$this->setState('category.id', $id);
 
-		// Load the parameters.
-		$params       = $app->getParams();
-		$params_array = $params->toArray();
-
-		if(isset($params_array['item_id']))
-		{
-			$this->setState('category.id', $params_array['item_id']);
-		}
-
-		$this->setState('params', $params);
+    $this->loadComponentParams($id);
 	}
 
 	/**
-	 * Method to get an object.
+	 * Method to get the category item object.
 	 *
-	 * @param   integer $id The id of the object to get.
+	 * @param   integer  $id   The id of the object to get.
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function getItem($id = null)
 	{
-		if($this->_item === null)
+		if($this->item === null)
 		{
-			$this->_item = false;
+			$this->item = false;
 
 			if(empty($id))
 			{
 				$id = $this->getState('category.id');
 			}
 
-			// Get a level row instance.
-			$table = $this->getTable();
+			// Attempt to load the item
+			$adminModel = $this->component->getMVCFactory()->createModel('category', 'administrator');
+			$this->item = $adminModel->getItem($id);
 
-			// Attempt to load the row.
-			if($table && $table->load($id))
-			{
-				// Check published state.
-				if($published = $this->getState('filter.published'))
-				{
-					if(isset($table->state) && $table->state != $published)
-					{
-						throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 403);
-					}
-				}
-
-				// Convert the Table to a clean CMSObject.
-				$properties  = $table->getProperties(1);
-				$this->_item = ArrayHelper::toObject($properties, CMSObject::class);
-			}
-
-			if(empty($this->_item))
+			if(empty($this->item))
 			{
 				throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 404);
 			}
 		}
 
-		if(isset($this->_item->created_by))
+		// Add created by name
+		if(isset($this->item->created_by))
 		{
-			$this->_item->created_by_name = Factory::getUser($this->_item->created_by)->name;
+			$this->item->created_by_name = Factory::getUser($this->item->created_by)->name;
 		}
 
-		if(isset($this->_item->modified_by))
+		// Add modified by name
+		if(isset($this->item->modified_by))
 		{
-			$this->_item->modified_by_name = Factory::getUser($this->_item->modified_by)->name;
+			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
 		}
 
-		return $this->_item;
-	}
-
-	/**
-	 * Get an instance of Table class
-	 *
-	 * @param   string $type   Name of the Table class to get an instance of.
-	 * @param   string $prefix Prefix for the table class name. Optional.
-	 * @param   array  $config Array of configuration values for the Table object. Optional.
-	 *
-	 * @return  Table|bool Table if success, false on failure.
-	 */
-	public function getTable($type = 'Category', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
-
-	/**
-	 * Get the id of an item by alias
-	 *
-	 * @param   string $alias Item alias
-	 *
-	 * @return  mixed
-	 */
-	public function getItemIdByAlias($alias)
-	{
-		$table      = $this->getTable();
-		$properties = $table->getProperties();
-		$result     = null;
-		$aliasKey   = null;
-
-		if(method_exists($this, 'getAliasFieldNameByView'))
+		// Delete unnessecary properties
+		$toDelete = array('asset_id', 'password', 'params');
+		foreach($toDelete as $property)
 		{
-			$aliasKey   = $this->getAliasFieldNameByView('category');
+			unset($this->item->{$property});
 		}
 
-		if(key_exists('alias', $properties))
-		{
-			$table->load(array('alias' => $alias));
-			$result = $table->id;
-		}
-		elseif(isset($aliasKey) && key_exists($aliasKey, $properties))
-		{
-			$table->load(array($aliasKey => $alias));
-			$result = $table->id;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Method to check in an item.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkin($id = null)
-	{
-		// Get the id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('category.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Attempt to check the row in.
-			if(method_exists($table, 'checkin'))
-			{
-				if(!$table->checkin($id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Method to check out an item for editing.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkout($id = null)
-	{
-		// Get the user id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('category.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Get the current user object.
-			$user = Factory::getUser();
-
-			// Attempt to check the row out.
-			if(method_exists($table, 'checkout'))
-			{
-				if(!$table->checkout($user->get('id'), $id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Publish the element
-	 *
-	 * @param   int $id    Item id
-	 * @param   int $state Publish state
-	 *
-	 * @return  boolean
-	 */
-	public function publish($id, $state)
-	{
-		$table = $this->getTable();
-
-		$table->load($id);
-		$table->state = $state;
-
-		return $table->store();
-	}
-
-	/**
-	 * Method to delete an item
-	 *
-	 * @param   int $id Element id
-	 *
-	 * @return  bool
-	 */
-	public function delete($id)
-	{
-		$table = $this->getTable();
-
-		return $table->delete($id);
+		return $this->item;
 	}
 
   /**
-	 * Get alias based on view name
-   * 
-   * @param  string  $view  view name
+	 * Method to get the children categories.
 	 *
-	 * @return string
+	 * @return  array|false    Array of children on success, false on failure.
+	 *
+	 * @throws Exception
 	 */
-	public function getAliasFieldNameByView($view)
-	{
-		switch ($view)
+  public function getChildren()
+  {
+    if($this->item === null)
 		{
-			case 'image':
-			case 'imageform':
-				return 'alias';
-			break;
-			case 'category':
-			case 'categoryform':
-				return 'alias';
-			break;
-		}
-	}
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'administrator');
+    $listModel->getState();
+    
+    // Select fields to load
+    $fields = array('id', 'alias', 'title', 'description', 'thumbnail');
+    $fields = $this->addColumnPrefix('a', $fields);
+    $listModel->setState('list.select', $fields);
+
+    // Get current user
+    $user = Factory::getUser();
+
+    // Apply filters
+    $listModel->setState('filter.category', $this->item->id);
+    $listModel->setState('filter.level', 2);
+    $listModel->setState('filter.showself', 0);
+    $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
+    $listModel->setState('filter.published', 1);
+    $listModel->setState('filter.showhidden', 0);
+    $listModel->setState('filter.showempty', 0);
+
+    if(Multilanguage::isEnabled())
+    {
+      $listModel->setState('filter.language', $this->item->language);
+    }
+
+    // Apply ordering
+    $listModel->setState('list.fullordering', 'a.lft ASC');
+
+    // Get children
+    $items = $listModel->getItems();
+
+    if(!empty($listModel->getError()))
+    {
+      $this->setError($listModel->getError());
+    }
+
+    return $items;
+  }
+
+  /**
+	 * Method to get the images in this category.
+	 *
+	 * @return  array|false    Array of images on success, false on failure.
+	 *
+	 * @throws Exception
+	 */
+  public function getImages()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load images list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'administrator');
+    $listModel->getState();
+
+    // Select fields to load
+    $fields = array('id', 'alias', 'imgtitle', 'imgtext', 'imgauthor', 'imgdate', 'hits', 'imgvotes', 'imgvotesum');
+    $fields = $this->addColumnPrefix('a', $fields);
+    $listModel->setState('list.select', $fields);
+
+    // Get current user
+    $user = Factory::getUser();
+
+    // Apply filters
+    $listModel->setState('filter.category', $this->item->id);
+    $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
+    $listModel->setState('filter.published', 1);
+    $listModel->setState('filter.showunapproved', 0);
+    $listModel->setState('filter.showhidden', 0);
+
+    if(Multilanguage::isEnabled())
+    {
+      $listModel->setState('filter.language', $this->item->language);
+    }
+
+    // Apply ordering
+    $listModel->setState('list.fullordering', 'a.id ASC');
+
+    // Get images
+    $items = $listModel->getItems();
+
+    if(!empty($listModel->getError()))
+    {
+      $this->setError($listModel->getError());
+    }
+
+    return $items;
+  }
+
+  /**
+	 * Method to add a prefix to a list of field names
+	 *
+	 * @param   string  $prefix   The prefix to apply
+   * @param   array   $fields   List of fields
+	 *
+	 * @return  array   List of fields with applied prefix
+	 */
+  protected function addColumnPrefix(string $prefix, array $fields): array
+  {
+    foreach($fields as $key => $field)
+    {
+      $field = (string) $field;
+
+      if(\strpos($field, $prefix.'.') === false)
+      {
+        $fields[$key] = $prefix . '.' . $field;
+      }
+    }
+
+    return $fields;
+  }
 }

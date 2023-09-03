@@ -80,7 +80,7 @@ class DefaultConfig extends Config implements ConfigInterface
     }
 
     //---------Level 3---------
-    if(isset($this->ids['category']))
+    if(isset($this->ids['category']) && $this->ids['category'] > 1)
     {
       // Load parent categories
       $cat_model = $this->component->getMVCFactory()->createModel('Category', 'administrator');

@@ -12,7 +12,7 @@
                    query="SELECT `id`, `title` FROM #__joomgallery_categories ORDER BY `id`"
                    key_field="id"
                    value_field="title"
-                   label="COM_JOOMGALLERY_MINI_FILTER_BY_CATEGORY"
+                   label="COM_JOOMGALLERY_FILTER_BY_CATEGORY"
                    require="true" >
             </field>
 
@@ -22,7 +22,7 @@
                    key_field="id"
                    value_field="title"
                    multiple="true"
-                   label="COM_JOOMGALLERY_MINI_FILTER_BY_TAGS"
+                   label="COM_JOOMGALLERY_FILTER_BY_TAGS"
                    require="true" >
             </field>
         </fieldset>

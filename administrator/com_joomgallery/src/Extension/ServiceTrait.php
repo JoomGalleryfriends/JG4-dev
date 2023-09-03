@@ -86,17 +86,13 @@ trait ServiceTrait
 	 */
 	public function getProperties($public = true)
 	{
-		$vars = \get_object_vars($this);
-
 		if($public)
 		{
-			foreach($vars as $key => $value)
-			{
-				if ('_' == \substr($key, 0, 1))
-				{
-					unset($vars[$key]);
-				}
-			}
+			$vars = \Closure::fromCallable("get_object_vars")->__invoke($this);
+		}
+		else
+		{
+			$vars = \get_object_vars($this);
 		}
 
 		return $vars;

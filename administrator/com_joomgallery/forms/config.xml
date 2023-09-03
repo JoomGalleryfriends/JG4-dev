@@ -157,6 +157,17 @@
         <option value="2">COM_JOOMGALLERY_CONFIG_REPLACE_SHOWWARNING_HINT</option>
       </field>
 
+        <field name="jg_approve"
+              type="radio"
+              default="0"
+              class="btn-group"
+              layout="joomla.form.field.radio.switcher"
+              label="COM_JOOMGALLERY_CONFIG_ADMIN_APPROVAL"
+              description="COM_JOOMGALLERY_CONFIG_ADMIN_APPROVAL_LONG" >
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+
       <field name="jg_useorigfilename"
              type="radio"
              default="0"
@@ -407,18 +418,6 @@
               layout="joomla.form.field.radio.switcher"
               label="COM_JOOMGALLERY_CONFIG_USERSPACE"
               description="COM_JOOMGALLERY_CONFIG_USERSPACE_LONG" >
-          <option value="0">JNO</option>
-          <option value="1">JYES</option>
-        </field>
-
-        <field name="jg_approve"
-              type="radio"
-              default="0"
-              class="btn-group unused"
-              layout="joomla.form.field.radio.switcher"
-              showon="jg_userspace:1"
-              label="COM_JOOMGALLERY_CONFIG_ADMIN_APPROVAL"
-              description="COM_JOOMGALLERY_CONFIG_ADMIN_APPROVAL_LONG" >
           <option value="0">JNO</option>
           <option value="1">JYES</option>
         </field>

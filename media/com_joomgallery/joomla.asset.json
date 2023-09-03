@@ -39,6 +39,14 @@
       }
     },
     {
+      "name": "com_joomgallery.list-view",
+      "type": "script",
+      "uri": "com_joomgallery/list-view.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
       "name": "com_joomgallery.sensitiveField",
       "type": "script",
       "uri": "com_joomgallery/sensitiveField.js",
@@ -63,6 +71,14 @@
       "name": "com_joomgallery.field-category",
       "type": "script",
       "uri": "com_joomgallery/field-category.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.form-edit",
+      "type": "script",
+      "uri": "com_joomgallery/form-edit.js",
       "attributes": {
         "type": "module"
       }

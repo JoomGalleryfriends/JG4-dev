@@ -8,40 +8,20 @@
 **   @license    GNU General Public License version 2 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Site\Field;
+namespace Joomgallery\Component\Joomgallery\Site\View\Category;
 
-defined('JPATH_BASE') or die;
+// No direct access
+defined('_JEXEC') or die;
 
-use \Joomla\CMS\Form\FormField;
+use \Joomgallery\Component\Joomgallery\Administrator\View\Category\RawView as AdminRawView;
 
 /**
- * Supports an HTML select list of categories
+ * Raw view class for a single Category-Image.
  * 
  * @package JoomGallery
  * @since   4.0.0
  */
-class FileMultipleField extends FormField
+class RawView extends AdminRawView
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  4.0.0
-	 */
-	protected $type = 'filemultiple';
-
-	/**
-	 * Method to get the field input markup.
-	 *
-	 * @return  string    The field input markup.
-	 *
-	 * @since   4.0.0
-	 */
-	protected function getInput()
-	{
-		// Initialize variables.
-		$html = '<input type="file" name="' . $this->name . '[]" multiple >';
-
-		return $html;
-	}
+  // Use the RawView class from administrator application
 }

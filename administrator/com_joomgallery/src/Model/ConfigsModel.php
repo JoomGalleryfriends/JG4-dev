@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
@@ -25,15 +24,23 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
  */
 class ConfigsModel extends JoomListModel
 {
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'config';
+
 	/**
-	* Constructor.
-	*
-	* @param   array  $config  An optional associative array of configuration settings.
-	*
-	* @see        JController
-	* @since      1.6
-	*/
-	public function __construct($config = array())
+   * Constructor
+   * 
+   * @param   array  $config  An optional associative array of configuration settings.
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  function __construct($config = array())
 	{
 		if(empty($config['filter_fields']))
 		{
@@ -68,20 +75,35 @@ class ConfigsModel extends JoomListModel
 	{
     $app = Factory::getApplication();
 
+    $forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
+
     // Adjust the context to support modal layouts.
 		if ($layout = $app->input->get('layout'))
 		{
 			$this->context .= '.' . $layout;
 		}
 
+    // Adjust the context to support forced languages.
+		if ($forcedLanguage)
+		{
+			$this->context .= '.' . $forcedLanguage;
+		}
+
+    // List state information.
+		parent::populateState($ordering, $direction);
+
+    // Load the filter state.
     $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
-
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
-		// List state information.
-		parent::populateState($ordering, $direction);
+    // Force a language
+		if(!empty($forcedLanguage))
+		{
+			$this->setState('filter.language', $forcedLanguage);
+			$this->setState('filter.forcedLanguage', $forcedLanguage);
+		}
 	}
 
 	/**
@@ -172,15 +194,14 @@ class ConfigsModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'id');
 		$orderDirn = $this->state->get('list.direction', 'ASC');
-
-		// if($orderCol && $orderDirn)
-		// {
-    //   $query->order($db->escape($orderCol . ' ' . $orderDirn));
-		// }
-    // else
-    // {
-      $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
-    // }
+    if($orderCol && $orderDirn)
+    {
+      $query->order($db->escape($orderCol . ' ' . $orderDirn));
+    }
+    else
+    {
+      $query->order($db->escape($this->state->get('list.fullordering', 'a.lft ASC')));
+    }
 
 		return $query;
 	}

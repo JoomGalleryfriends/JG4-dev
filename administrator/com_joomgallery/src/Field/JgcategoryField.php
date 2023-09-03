@@ -12,10 +12,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
 \defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Field to select a JoomGallery category ID from a modal list.
@@ -125,7 +126,7 @@ class JgcategoryField extends FormField
 			}
 
 			// Interprete root category
-			if($this->value === 1)
+			if($this->value == 1)
 			{
 				$cat->title = Text::_('JGLOBAL_ROOT_PARENT');
 			}
@@ -153,6 +154,27 @@ class JgcategoryField extends FormField
 		);
 
 		return array_merge($data, $extraData);
+	}
+
+	/**
+	 * Allow to override renderer include paths in child fields
+	 *
+	 * @return  array
+	 *
+	 * @since   3.5
+	 */
+	protected function getLayoutPaths()
+	{
+		$renderer = new FileLayout('default');
+		$paths    = $renderer->getDefaultIncludePaths();
+
+		if(Factory::getApplication()->isClient('site'))
+		{
+			// Add layouts in the administrator section
+			$paths[] = JPATH_ADMINISTRATOR . '/components/com_joomgallery/layouts';
+		}
+
+		return $paths;
 	}
 
 	/**
