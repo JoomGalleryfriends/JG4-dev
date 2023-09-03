@@ -833,7 +833,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-    if(empty($plugins->children()) || count($plugins->children()) <= 0)
+    if(!$plugins || empty($plugins->children()) || count($plugins->children()) <= 0)
     {
       return;
     }
@@ -905,7 +905,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
     }
 
-    if(empty($modules->children()) || count($modules->children()) <= 0)
+    if(!$modules || empty($modules->children()) || count($modules->children()) <= 0)
     {
       return;
     }
