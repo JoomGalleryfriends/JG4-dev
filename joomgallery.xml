@@ -72,4 +72,16 @@
             </fieldset>
         </fields>
     </config>
+
+    <plugins>
+        <plugin group="finder" plugin="joomgalleryimages"/>
+        <plugin group="privacy" plugin="joomgalleryimages"/>
+        <plugin group="webservices" plugin="joomgallery"/>
+        <plugin group="finder" plugin="joomgallerycategories"/>
+        <plugin group="webservices" plugin="joomgallery"/>
+    </plugins>
+
+    <updateservers>
+        <server type="extension" priority="1" name="JoomGallery Update Service">https://www.joomgalleryfriends.net/components/com_newversion/xml/extensions3.xml</server>
+    </updateservers>
 </extension>

@@ -127,9 +127,9 @@ class com_joomgalleryInstallerScript extends InstallerScript
       {
         Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 'note');
       }
-
-      $this->new_code = $parent->getManifest()->version;
     }
+
+    $this->new_code = $parent->getManifest()->version;
 
     // Prepare for migration JG1-3 to JG4.x
     if($type == 'install' || ($type == 'update' && preg_match('/^([1-3]\.)(\d+\.)(\d+)*(.+)/', $this->act_code)))
