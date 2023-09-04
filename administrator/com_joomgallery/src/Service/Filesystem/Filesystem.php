@@ -825,6 +825,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
         )
       );
 
+/* not used currently
       $audios = array_map(
         'trim',
         array_filter(
@@ -848,10 +849,12 @@ class Filesystem implements AdapterInterface, FilesystemInterface
           fn($value) => !is_null($value) && $value !== ''
         )
       );
+*/
 
       foreach($types as $type)
       {
-        if(in_array($type, ['images', 'audios', 'videos', 'documents']))
+        // not used currently:  if(in_array($type, ['images', 'audios', 'videos', 'documents']))
+        if(in_array($type, ['images']))
         {
           $extensions = array_merge($extensions, ${$type});
         }
