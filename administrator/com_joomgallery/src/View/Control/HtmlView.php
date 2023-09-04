@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\View\Control;
@@ -60,8 +60,15 @@ class HtmlView extends JoomGalleryView
     $this->modules = ModuleHelper::getModules('joom_cpanel');
     $imglimit      = $this->config->get('jg_control_count_images');
 
-    // get statistic data
-    $this->statisticdata = $this->getStatisticData();
+    // Check for allowed number of images
+    if($imglimit < 1)
+    {
+      $imglimit = 1;
+    }
+    elseif($imglimit > 100)
+    {
+      $imglimit = 100;
+    }
 
     // get most viewed images
     $this->mostviewedimages = $this->getMostViewedImages($imglimit);
@@ -74,6 +81,9 @@ class HtmlView extends JoomGalleryView
 
     // get most downloaded images
     $this->mostdownloadedimages = $this->getMostDownloadedImages($imglimit);
+
+    // get statistic data
+    $this->statisticdata = $this->getStatisticData();
 
     // get gallery info data
     $this->galleryinfodata = $this->getGalleryInfoData();

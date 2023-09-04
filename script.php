@@ -194,12 +194,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 *
 	 * @since 0.2b
 	 */
-  public function install($parent)
-  {
+	public function install($parent)
+	{
     $app = Factory::getApplication();
 
-    $this->installPlugins($parent);
-    $this->installModules($parent);
+		$this->installPlugins($parent);
+		$this->installModules($parent);
 
     $this->copyImgFiles();
 
@@ -336,8 +336,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     $uninstall_message = $this->getInstallerMSG($act_version, $new_version, 'uninstall');
 
-    $this->uninstallPlugins($parent);
-    $this->uninstallModules($parent);
+		$this->uninstallPlugins($parent);
+		$this->uninstallModules($parent);
 
     // Delete directories
     if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
@@ -709,51 +709,53 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-		if (count($plugins->children()))
-		{
-			$db    = Factory::getDbo();
-			$query = $db->getQuery(true);
+    if(empty($plugins->children()) || count($plugins->children()) <= 0)
+    {
+      return;
+    }
 
-			foreach ($plugins->children() as $plugin)
-			{
-				$pluginName  = (string) $plugin['plugin'];
-				$pluginGroup = (string) $plugin['group'];
-				$path        = $installation_folder . '/plugins/' . $pluginGroup . '/' . $pluginName;
-				$installer   = new Installer;
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true);
 
-				if (!$this->isAlreadyInstalled('plugin', $pluginName, $pluginGroup))
-				{
-					$result = $installer->install($path);
-				}
-				else
-				{
-					$result = $installer->update($path);
-				}
+    foreach($plugins->children() as $plugin)
+    {
+      $pluginName  = (string) $plugin['plugin'];
+      $pluginGroup = (string) $plugin['group'];
+      $path        = $installation_folder . '/plugins/' . $pluginGroup . '/' . $pluginName;
+      $installer   = new Installer;
 
-				if ($result)
-				{
-					$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL_EXT', 'Plugin', $pluginName));
-				}
-				else
-				{
-					$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Plugin', $pluginName), 'error');
-				}
+      if (!$this->isAlreadyInstalled('plugin', $pluginName, $pluginGroup))
+      {
+        $result = $installer->install($path);
+      }
+      else
+      {
+        $result = $installer->update($path);
+      }
 
-				$query
-					->clear()
-					->update('#__extensions')
-					->set('enabled = 1')
-					->where(
-						array(
-							'type LIKE ' . $db->quote('plugin'),
-							'element LIKE ' . $db->quote($pluginName),
-							'folder LIKE ' . $db->quote($pluginGroup)
-						)
-					);
-				$db->setQuery($query);
-				$db->execute();
-			}
-		}
+      if ($result)
+      {
+        $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL_EXT', 'Plugin', $pluginName));
+      }
+      else
+      {
+        $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Plugin', $pluginName), 'error');
+      }
+
+      $query
+        ->clear()
+        ->update('#__extensions')
+        ->set('enabled = 1')
+        ->where(
+          array(
+            'type LIKE ' . $db->quote('plugin'),
+            'element LIKE ' . $db->quote($pluginName),
+            'folder LIKE ' . $db->quote($pluginGroup)
+          )
+        );
+      $db->setQuery($query);
+      $db->execute();
+    }
 	}
 
 	/**
@@ -803,37 +805,35 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$modules = $parent->get('manifest')->modules;
 		}
 
-		if (!empty($modules))
-		{
+    if(empty($modules->children()) || count($modules->children()) <= 0)
+    {
+      return;
+    }
 
-			if (count($modules->children()))
-			{
-				foreach ($modules->children() as $module)
-				{
-					$moduleName = (string) $module['module'];
-					$path       = $installation_folder . '/modules/' . $moduleName;
-					$installer  = new Installer;
+    foreach($modules->children() as $module)
+    {
+      $moduleName = (string) $module['module'];
+      $path       = $installation_folder . '/modules/' . $moduleName;
+      $installer  = new Installer;
 
-					if (!$this->isAlreadyInstalled('module', $moduleName))
-					{
-						$result = $installer->install($path);
-					}
-					else
-					{
-						$result = $installer->update($path);
-					}
+      if (!$this->isAlreadyInstalled('module', $moduleName))
+      {
+        $result = $installer->install($path);
+      }
+      else
+      {
+        $result = $installer->update($path);
+      }
 
-					if ($result)
-          {
-            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL_EXT', 'Module', $moduleName));
-          }
-          else
-          {
-            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Module', $moduleName), 'error');
-          }
-        }
-			}
-		}
+      if ($result)
+      {
+        $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL_EXT', 'Module', $moduleName));
+      }
+      else
+      {
+        $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Module', $moduleName), 'error');
+      }
+    }
 	}
 
 	/**
@@ -856,45 +856,47 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-		if(count($plugins->children()))
-		{
-			$db    = Factory::getDbo();
-			$query = $db->getQuery(true);
+    if(empty($plugins->children()) || count($plugins->children()) <= 0)
+    {
+      return;
+    }
 
-			foreach ($plugins->children() as $plugin)
-			{
-				$pluginName  = (string) $plugin['plugin'];
-				$pluginGroup = (string) $plugin['group'];
-				$query
-					->clear()
-					->select('extension_id')
-					->from('#__extensions')
-					->where(
-						array(
-							'type LIKE ' . $db->quote('plugin'),
-							'element LIKE ' . $db->quote($pluginName),
-							'folder LIKE ' . $db->quote($pluginGroup)
-						)
-					);
-				$db->setQuery($query);
-				$extension = $db->loadResult();
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true);
 
-				if (!empty($extension))
-				{
-					$installer = new Installer;
-					$result    = $installer->uninstall('plugin', $extension);
+    foreach($plugins->children() as $plugin)
+    {
+      $pluginName  = (string) $plugin['plugin'];
+      $pluginGroup = (string) $plugin['group'];
+      $query
+        ->clear()
+        ->select('extension_id')
+        ->from('#__extensions')
+        ->where(
+          array(
+            'type LIKE ' . $db->quote('plugin'),
+            'element LIKE ' . $db->quote($pluginName),
+            'folder LIKE ' . $db->quote($pluginGroup)
+          )
+        );
+      $db->setQuery($query);
+      $extension = $db->loadResult();
 
-					if ($result)
-					{
-						$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Plugin', $pluginName));
-					}
-					else
-					{
-						$app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Plugin', $pluginName), 'error');
-					}
-				}
-			}
-		}
+      if (!empty($extension))
+      {
+        $installer = new Installer;
+        $result    = $installer->uninstall('plugin', $extension);
+
+        if ($result)
+        {
+          $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Plugin', $pluginName));
+        }
+        else
+        {
+          $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Plugin', $pluginName), 'error');
+        }
+      }
+    }
 	}
 
 	/**
@@ -924,65 +926,56 @@ class com_joomgalleryInstallerScript extends InstallerScript
       {
         $modules = $parent->get('manifest')->modules;
       }
+    }
 
-      if(!empty($modules->children()) && count($modules->children()))
+    if(empty($modules->children()) || count($modules->children()) <= 0)
+    {
+      return;
+    }
+
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    foreach($modules->children() as $module)
+    {
+      if(is_array($parent))
       {
-        $modules = $modules->children();
+        $moduleName = (string) $module;
       }
       else
       {
-        return;
+        $moduleName = (string) $module['module'];
       }
-    }
+      
+      $query
+        ->clear()
+        ->select('extension_id')
+        ->from('#__extensions')
+        ->where(
+          array(
+            'type LIKE ' . $db->quote('module'),
+            'element LIKE ' . $db->quote($moduleName)
+          )
+        );
+      $db->setQuery($query);
+      $extension = $db->loadResult();
 
-    if(!empty($modules))
-    {
-      $db    = Factory::getDbo();
-      $query = $db->getQuery(true);
-
-      // Delete administrator module JoomGallery News
-
-      foreach($modules as $module)
+      if (!empty($extension))
       {
-        if(is_array($parent))
+        $installer = new Installer;
+        $result    = $installer->uninstall('module', $extension);
+
+        if ($result)
         {
-          $moduleName = (string) $module;
+          $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Module', $moduleName));
         }
         else
         {
-          $moduleName = (string) $module['module'];
-        }
-        
-        $query
-          ->clear()
-          ->select('extension_id')
-          ->from('#__extensions')
-          ->where(
-            array(
-              'type LIKE ' . $db->quote('module'),
-              'element LIKE ' . $db->quote($moduleName)
-            )
-          );
-        $db->setQuery($query);
-        $extension = $db->loadResult();
-
-        if (!empty($extension))
-        {
-          $installer = new Installer;
-          $result    = $installer->uninstall('module', $extension);
-
-          if ($result)
-          {
-            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_UNINSTALL_EXT', 'Module', $moduleName));
-          }
-          else
-          {
-            $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Module', $moduleName), 'error');
-          }
+          $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Module', $moduleName), 'error');
         }
       }
     }
-  }
+	}
 
   /**
 	 * Copies watermark files to /images/joomgallery/..

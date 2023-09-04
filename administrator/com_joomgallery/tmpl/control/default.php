@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 // No direct access
@@ -24,7 +24,6 @@ HTMLHelper::_('bootstrap.framework');
 HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'auto', 'relative' => true));
 
 ?>
-
 <div class="d-flex flex-row">
   <div class="flex-fill">
     <div id="j-main-container" class="j-main-container">
@@ -47,7 +46,7 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
             <p><?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_LONG'); ?></p>
             <p>
               <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVQBAFEZHPL2J" title="<?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?>" target="_blank">
-                <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?></a>
+                <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?> <span class="icon-heart"></span></a>
             </p>
           </div>
           <div class="text-center content">
@@ -55,7 +54,9 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
             <a href="mailto:team@joomgalleryfriends.net">team@joomgalleryfriends.net</a>
           </div>
         </div>
- 
+      </div>
+      <hr>
+      <div class="card-columns">
         <div class="card">
           <?php // Display most viewed images
           $header = array(Text::_('COM_JOOMGALLERY_CONTROL_MOST_VIEWED_IMAGES'), Text::_('COM_JOOMGALLERY_IMAGE'), Text::_('JGLOBAL_TITLE'), Text::_('JGLOBAL_HITS'), Text::_('JGLOBAL_FIELD_ID_LABEL'));
@@ -91,7 +92,8 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
       foreach ($this->modules as $module)
       {
         echo ModuleHelper::renderModule($module, array('style' => 'well'));
-      } ?>
+      }
+      ?>
 
       <div class="card-columns">
         <div class="card">
@@ -145,13 +147,10 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
     </div><!-- /j-main-container -->
   </div><!-- /flex-fill -->
 </div><!-- /d-flex flex-row -->
-
 <?php 
 
-
-// Shows a small gallery statistic
-
 /**
+ * Display a small gallery statistic
  *
  * @param   array  $statisticdata  Array with hold the statistic data
  *
@@ -159,97 +158,98 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
  */
 function DisplayGalleryStatistic($statisticdata)
 {
+  ?>
+  <div class="table-responsive">
+    <h3 class="card-header"><?php echo Text::_('COM_JOOMGALLERY_CONTROL_STATISTIC'); ?></h3>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col" class="w-10">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_CONTENT'); ?>
+          </th>
+          <td class="w-1 text-center">
+            <?php echo Text::_('JUNPUBLISHED'); ?><br />
+            <span class="icon-delete text-center" title="<?php echo Text::_('JUNPUBLISHED'); ?>" aria-label="unpublished" data-bs-original-title="unpublished"></span>
+          </td>
+          <td class="w-1 text-center">
+            <?php echo Text::_('JPUBLISHED'); ?><br />
+            <span class="icon-publish text-center" title="<?php echo Text::_('JPUBLISHED'); ?>"></span><br />
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="col" class="w-10 d-md-table-cell">
+            <?php echo Text::_('JCATEGORIES'); ?>
+          </th>
+          <td class="d-md-table-cell text-center">
+          <?php if($statisticdata['unpublishedcategories'] > 0) : ?>
+            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=0'); ?>">
+              <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedcategories']; ?></span>
+            </a>
+          <?php else : ?>
+            <span class="badge bg-info">0</span>
+          <?php endif; ?>
+          </td>
+          <td class="d-md-table-cell text-center">
+          <?php if($statisticdata['publishedcategories'] > 0) : ?>
+            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=1'); ?>">
+              <span class="badge bg-info"><?php echo (int) $statisticdata['publishedcategories']; ?></span>
+            </a>
+          <?php else : ?>
+            <span class="badge bg-info">0</span>
+          <?php endif; ?>
+          </td>
+        </tr>
+        <tr>
+          <th scope="col" class="w-10 d-md-table-cell">
+            <?php echo Text::_('COM_JOOMGALLERY_IMAGES'); ?>
+          </th>
+          <td class="d-md-table-cell text-center">
+          <?php if($statisticdata['unpublishedimages'] > 0) : ?>
+            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=2'); ?>">
+              <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedimages']; ?></span>
+            </a>
+          <?php else : ?>
+            <span class="badge bg-info">0</span>
+          <?php endif; ?>
+          </td>
+          <td class="d-md-table-cell text-center">
+          <?php if($statisticdata['publishedimages'] > 0) : ?>
+            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=1'); ?>">
+              <span class="badge bg-info"><?php echo (int) $statisticdata['publishedimages']; ?></span>
+            </a>
+          <?php else : ?>
+            <span class="badge bg-info">0</span>
+          <?php endif; ?>
+          </td>
+        </tr>
+        <tr>
+          <th scope="col" class="w-10 d-md-table-cell">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_IMAGES_UNAPPROVED'); ?>
+          </th>
+          <td class="d-md-table-cell text-center">
+          <?php if($statisticdata['unapprovedimages'] > 0) : ?>
+            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=4'); ?>">
+              <span class="badge bg-info"><?php echo (int) $statisticdata['unapprovedimages']; ?></span>
+            </a>
+          <?php else : ?>
+            <span class="badge bg-info">0</span>
+          <?php endif; ?>
+          </td>
+          <td class="d-md-table-cell">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-          ?>
-          <div class="table-responsive">
-            <h3 class="card-header"><?php echo Text::_('COM_JOOMGALLERY_CONTROL_STATISTIC'); ?></h3>
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th scope="col" class="w-10">
-                    <?php echo Text::_('COM_JOOMGALLERY_CONTROL_CONTENT'); ?>
-                  </th>
-                  <td class="w-1 text-center">
-                    <?php echo Text::_('JUNPUBLISHED'); ?><br />
-                    <span class="icon-delete text-center" title="<?php echo Text::_('JUNPUBLISHED'); ?>" aria-label="unpublished" data-bs-original-title="unpublished"></span>
-                  </td>
-                  <td class="w-1 text-center">
-                    <?php echo Text::_('JPUBLISHED'); ?><br />
-                    <span class="icon-publish text-center" title="<?php echo Text::_('JPUBLISHED'); ?>"></span><br />
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="col" class="w-10 d-md-table-cell">
-                    <?php echo Text::_('JCATEGORIES'); ?>
-                  </th>
-                  <td class="d-md-table-cell text-center">
-                  <?php if($statisticdata['unpublishedcategories'] > 0) : ?>
-                    <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=0'); ?>">
-                    <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedcategories']; ?></span>
-                    </a>
-                  <?php else : ?>
-                    <span class="badge bg-info">0</span>
-                  <?php endif; ?>
-                  </td>
-                  <td class="d-md-table-cell text-center">
-                  <?php if($statisticdata['publishedcategories'] > 0) : ?>
-                    <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=1'); ?>">
-                    <span class="badge bg-info"><?php echo (int) $statisticdata['publishedcategories']; ?></span>
-                    </a>
-                  <?php else : ?>
-                    <span class="badge bg-info">0</span>
-                  <?php endif; ?>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="col" class="w-10 d-md-table-cell">
-                    <?php echo Text::_('COM_JOOMGALLERY_IMAGES'); ?>
-                  </th>
-                  <td class="d-md-table-cell text-center">
-                  <?php if($statisticdata['unpublishedimages'] > 0) : ?>
-                    <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=2'); ?>">
-                      <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedimages']; ?></span>
-                    </a>
-                  <?php else : ?>
-                    <span class="badge bg-info">0</span>
-                  <?php endif; ?>
-                  </td>
-                  <td class="d-md-table-cell text-center">
-                  <?php if($statisticdata['publishedimages'] > 0) : ?>
-                    <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=1'); ?>">
-                      <span class="badge bg-info"><?php echo (int) $statisticdata['publishedimages']; ?></span>
-                    </a>
-                  <?php else : ?>
-                    <span class="badge bg-info">0</span>
-                  <?php endif; ?>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="col" class="w-10 d-md-table-cell">
-                    <?php echo Text::_('COM_JOOMGALLERY_CONTROL_IMAGES_UNAPPROVED'); ?>
-                  </th>
-                  <td class="d-md-table-cell text-center">
-                  <?php if($statisticdata['unapprovedimages'] > 0) : ?>
-                    <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=4'); ?>">
-                      <span class="badge bg-info"><?php echo (int) $statisticdata['unapprovedimages']; ?></span>
-                    </a>
-                  <?php else : ?>
-                    <span class="badge bg-info">0</span>
-                  <?php endif; ?>
-                  </td>
-                  <td class="d-md-table-cell">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+<?php return;
 
-<?php   return;
 }
 
 /**
+ * Display infos about the gallery
  *
  * @param   array  $manifest  Array with hold the info data
  *
@@ -257,56 +257,57 @@ function DisplayGalleryStatistic($statisticdata)
  */
 function DisplayGalleryInfo($manifest)
 {
-          ?>
-          <h3 class="card-header"><?php echo Text::_('INfo'); ?></h3>
-          <div class="table-responsive">
-            <table class="table w-auto">
-              <tbody>
-                <tr>
-                  <td scope="col" class="w-10">
-                    <?php echo Text::_('COM_JOOMGALLERY_CONTROL_VERSION'); ?>
-                  </td>
-                  <td class="w-10">
-                    <b><?php echo $manifest['version']; ?></b>
-                  </td>
-                </tr>
-                <tr>
-                  <td scope="col" class="w-10">
-                    <?php echo Text::_('COM_JOOMGALLERY_CONTROL_CREATION_DATE'); ?>
-                  </td>
-                  <td class="w-10">
-                    <?php echo $manifest['creationDate']; ?>
-                  </td>
-                </tr>
-                <tr>
-                  <td scope="col" class="w-10">
-                    <?php echo Text::_('COM_JOOMGALLERY_CONTROL_LICENSE'); ?>
-                  </td>
-                  <td class="w-10">
-                    <a href="<?php echo 'https://www.gnu.org/licenses/gpl-3.0.html'; ?>" target="_blank">GNU General Public License v3</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td scope="col" class="w-10">
-                    <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE'); ?>
-                  </td>
-                  <td class="w-10">
-                    <a href="<?php echo 'https://www.en.joomgalleryfriends.net'; ?>" target="_blank">en.joomgalleryfriends.net</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td scope="col" class="w-10">
-                    <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_SUPPORT'); ?>
-                  </td>
-                  <td class="w-10">
-                    <a href="<?php echo 'https://www.forum.en.joomgalleryfriends.net/forum'; ?>" target="_blank">forum.en.joomgalleryfriends.net/forum</a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+  ?>
+  <h3 class="card-header"><?php echo Text::_('INfo'); ?></h3>
+  <div class="table-responsive">
+    <table class="table w-auto">
+      <tbody>
+        <tr>
+          <td scope="col" class="w-10">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_VERSION'); ?>
+          </td>
+          <td class="w-10">
+            <b><?php echo $manifest['version']; ?></b>
+          </td>
+        </tr>
+        <tr>
+          <td scope="col" class="w-10">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_CREATION_DATE'); ?>
+          </td>
+          <td class="w-10">
+            <?php echo $manifest['creationDate']; ?>
+          </td>
+        </tr>
+        <tr>
+          <td scope="col" class="w-10">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_LICENSE'); ?>
+          </td>
+          <td class="w-10">
+            <a href="<?php echo 'https://www.gnu.org/licenses/gpl-3.0.html'; ?>" target="_blank">GNU General Public License v3</a>
+          </td>
+        </tr>
+        <tr>
+          <td scope="col" class="w-10">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE'); ?>
+          </td>
+          <td class="w-10">
+            <a href="<?php echo 'https://www.en.joomgalleryfriends.net'; ?>" target="_blank">en.joomgalleryfriends.net</a>
+          </td>
+        </tr>
+        <tr>
+          <td scope="col" class="w-10">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_SUPPORT'); ?>
+          </td>
+          <td class="w-10">
+            <a href="<?php echo 'https://www.forum.en.joomgalleryfriends.net/forum'; ?>" target="_blank">forum.en.joomgalleryfriends.net/forum</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-<?php   return;
+<?php return;
+
 }
 
 /**
@@ -533,7 +534,6 @@ function DisplayBestRatedImages($header, $data, $id)
 
 }
 
-
 /**
  * Display most downloaded Images as collapsed
  *
@@ -596,8 +596,7 @@ function DisplayMostDownloadedImages($header, $data, $id)
                     <?php echo $value[2]; ?>
                   </td>
                 </tr>
-                <?php
-                } ?>
+                <?php } ?>
             </tbody>
           </table>
         </div><!--/accordion-body-->
@@ -622,77 +621,76 @@ function DisplayInstalledExtensions($manifest)
   $id     = 'installedextensions-100';
   $itemId = $id . '-item'; ?>
 
-<div class="card">
-  <div class="accordion" id="<?php echo $id; ?>">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
-          <?php echo Text::_('COM_JOOMGALLERY_CONTROL_INSTALLED_EXTENSIONS'); ?>
-        </button>
-      </h2>
-      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
-        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
-        <div class="accordion-body">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <td class="w-5">
-                  <?php echo Text::_('Name'); ?>
-                </td>
-                <td class="w-10">
-                  <?php echo Text::_('JVERSION'); ?>
-                </td>
-                <td class="w-10">
-                  <?php echo Text::_('JDate'); ?>
-                </td>
-                <td class="w-10">
-                  <?php echo Text::_('JAUTHOR'); ?>
-                </td>
-                <td class="w-10">
-                  <?php echo Text::_('JENABLED'); ?>
-                </td>
-                <td class="w-10">
-                  <?php echo Text::_('ID'); ?>
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($manifest as list($extension_id, $enabled, $extension_data)) {
-                $value = json_decode($extension_data, true); ?>
+  <div class="card">
+    <div class="accordion" id="<?php echo $id; ?>">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_INSTALLED_EXTENSIONS'); ?>
+          </button>
+        </h2>
+        <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+          aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+          <div class="accordion-body">
+            <table class="table table-striped">
+              <thead>
                 <tr>
-                  <td class="d-md-table-cell">
-                    <?php echo $value['name']; ?>
+                  <td class="w-5">
+                    <?php echo Text::_('Name'); ?>
                   </td>
-                  <td class="d-md-table-cell">
-                    <?php echo $value['version']; ?>
+                  <td class="w-10">
+                    <?php echo Text::_('JVERSION'); ?>
                   </td>
-                  <td class="d-md-table-cell">
-                    <?php echo $value['creationDate']; ?>
+                  <td class="w-10">
+                    <?php echo Text::_('JDate'); ?>
                   </td>
-                  <td class="d-md-table-cell">
-                    <?php echo $value['author']; ?>
+                  <td class="w-10">
+                    <?php echo Text::_('JAUTHOR'); ?>
                   </td>
-                  <td class="d-md-table-cell">
+                  <td class="w-10">
+                    <?php echo Text::_('JENABLED'); ?>
+                  </td>
+                  <td class="w-10">
+                    <?php echo Text::_('ID'); ?>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($manifest as list($extension_id, $enabled, $extension_data)) {
+                  $value = json_decode($extension_data, true); ?>
+                  <tr>
+                    <td class="d-md-table-cell">
+                      <?php echo $value['name']; ?>
+                    </td>
+                    <td class="d-md-table-cell">
+                      <?php echo $value['version']; ?>
+                    </td>
+                    <td class="d-md-table-cell">
+                      <?php echo $value['creationDate']; ?>
+                    </td>
+                    <td class="d-md-table-cell">
+                      <?php echo $value['author']; ?>
+                    </td>
+                    <td class="d-md-table-cell">
                       <?php if ($enabled === 1) : ?>
                         <span class="icon-publish text-center" title="<?php echo Text::_('JENABLED'); ?>"></span>
                       <?php else : ?>
                         <span class="icon-delete text-center" title="<?php echo Text::_('JDISABLED'); ?>"></span>
                       <?php endif; ?>
-                  </td>
-                  <td class="d-md-table-cell">
-                    <?php echo $extension_id; ?>
-                  </td>
-                </tr>
-                <?php
-                } ?>
-            </tbody>
-          </table>
-        </div>
-      </div><!--/accordion-collapse-->
-    </div><!--/accordion-item-->
-  </div><!--/accordion -->
-</div><!--/card -->
+                    </td>
+                    <td class="d-md-table-cell">
+                      <?php echo $extension_id; ?>
+                    </td>
+                  </tr>
+                  <?php } ?>
+              </tbody>
+            </table>
+          </div>
+        </div><!--/accordion-collapse-->
+      </div><!--/accordion-item-->
+    </div><!--/accordion -->
+  </div><!--/card -->
 
   <?php return;
 
@@ -708,66 +706,62 @@ function DisplayInstalledExtensions($manifest)
  */
 function DisplaySystemSettings($title, $settings)
 {
-
   $id     = 'systeminfo-100';
   $itemId = $id . '-item'; ?>
 
-<div class="card">
-  <div class="accordion" id="<?php echo $id; ?>">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-          data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
-          <?php echo Text::_($title); ?>
-        </button>
-      </h2>
-      <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
-        aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
-        <div class="accordion-body">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach($settings as $key => $value) { ?>
+  <div class="card">
+    <div class="accordion" id="<?php echo $id; ?>">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+            <?php echo Text::_($title); ?>
+          </button>
+        </h2>
+        <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+          aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+          <div class="accordion-body">
+            <table class="table table-striped">
+              <thead>
                 <tr>
-                  <td class="d-md-table-cell">
-                    <?php echo $key; ?>
-                  </td>
-                  <td class="d-md-table-cell">
-                    <?php switch ($value)
-                      {
-                        case '':
-                        case '0':
-                          echo Text::_('JNO');
-                          break;
-
-                        case '1':
-                          echo Text::_('JYES');
-                          break;
-
-                        default:
-                          echo $value;
-                          break;
-                      } ?>
-                  </td>
                 </tr>
-                <?php
-                } ?>
-            </tbody>
-          </table>
-        </div>
-      </div><!--/accordion-collapse-->
-    </div><!--/accordion-item-->
-  </div><!--/accordion -->
-</div><!--/card -->
+              </thead>
+              <tbody>
+                <?php foreach($settings as $key => $value) { ?>
+                  <tr>
+                    <td class="d-md-table-cell">
+                      <?php echo $key; ?>
+                    </td>
+                    <td class="d-md-table-cell">
+                      <?php switch ($value)
+                        {
+                          case '':
+                          case '0':
+                            echo Text::_('JNO');
+                            break;
+
+                          case '1':
+                            echo Text::_('JYES');
+                            break;
+
+                          default:
+                            echo $value;
+                            break;
+                        } ?>
+                    </td>
+                  </tr>
+                  <?php } ?>
+              </tbody>
+            </table>
+          </div>
+        </div><!--/accordion-collapse-->
+      </div><!--/accordion-item-->
+    </div><!--/accordion -->
+  </div><!--/card -->
 
   <?php return;
 
 }
-
 
   /**
    * Display collapsed content
@@ -781,7 +775,6 @@ function DisplaySystemSettings($title, $settings)
 
 function collapseContent($title, $content, $id)
 {
-
   $id     = 'accordion-' . $id;
   $itemId = $id . '-item'; ?>
 
