@@ -117,7 +117,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
 
     if(!$this->version)
     {
-      $xml  = \simplexml_load_file(Path::clean(JPATH_COMPONENT_ADMINISTRATOR . '/joomgallery.xml'));
+      $xml  = \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery.xml'));
       $this->version = (string) $xml->version;
     }
   }
