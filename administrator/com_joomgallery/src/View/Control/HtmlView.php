@@ -407,7 +407,7 @@ protected function getInstalledExtensionsData()
 
     // Maintenance button
     $html = '<a href="index.php?option=com_joomgallery&amp;view=faulties" class="btn btn-primary"><span class="icon-wrench" title="'.Text::_('COM_JOOMGALLERY_MAINTENANCE').'"></span> '.Text::_('COM_JOOMGALLERY_MAINTENANCE').'</a>';
-    $toolbar->appendButton('Custom', $html);
+    // $toolbar->appendButton('Custom', $html);
 
     if($this->canDo->get('core.admin'))
     {

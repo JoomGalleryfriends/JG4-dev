@@ -339,6 +339,23 @@ class com_joomgalleryInstallerScript extends InstallerScript
 		$this->uninstallPlugins($parent);
 		$this->uninstallModules($parent);
 
+    // Delete administrator module JoomGallery News
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query
+      ->clear()
+      ->delete('#__modules')
+      ->where(
+        array(
+          'position = ' . $db->quote('joom_cpanel'),
+          'module = ' . $db->quote('mod_feed')
+        )
+      );
+
+    $db->setQuery($query);
+    $db->execute();
+
     // Delete directories
     if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
     {
@@ -709,7 +726,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-    if(empty($plugins->children()) || count($plugins->children()) <= 0)
+    if(!$plugins || empty($plugins->children()) || count($plugins->children()) <= 0)
     {
       return;
     }
@@ -805,7 +822,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$modules = $parent->get('manifest')->modules;
 		}
 
-    if(empty($modules->children()) || count($modules->children()) <= 0)
+    if(!$modules || empty($modules->children()) || count($modules->children()) <= 0)
     {
       return;
     }
@@ -856,7 +873,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-    if(empty($plugins->children()) || count($plugins->children()) <= 0)
+    if(!$plugins || empty($plugins->children()) || count($plugins->children()) <= 0)
     {
       return;
     }
@@ -928,7 +945,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
     }
 
-    if(empty($modules->children()) || count($modules->children()) <= 0)
+    if(!$modules || empty($modules->children()) || count($modules->children()) <= 0)
     {
       return;
     }
