@@ -281,7 +281,7 @@
            format="%Y-%m-%d"
            timeformat="24"
            filter="server_utc"
-           translateformat="false"
+           translateformat="true"
            showtime="false"
            singleheader="false"
            todaybutton="true"
