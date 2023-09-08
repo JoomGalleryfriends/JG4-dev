@@ -1,61 +1,83 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Application\SiteApplication;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Multilanguage;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\MVC\Controller\BaseController;
 use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Language\Text;
 
 /**
- * Image class.
+ * Image controller class.
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImageController extends BaseController
+class ImageController extends JoomBaseController
 {
 	/**
-	 * Method to check out an item for editing and redirect to the edit form.
+	 * Edit an existing image.
+   * Redirect to form view.
 	 *
 	 * @return  void
 	 *
 	 * @since   4.0.0
-	 *
-	 * @throws  Exception
 	 */
 	public function edit()
 	{
-		$app = Factory::getApplication();
-
 		// Get the previous edit id (if any) and the current edit id.
-		$previousId = (int) $app->getUserState('com_joomgallery.edit.image.id');
-		$editId     = $app->input->getInt('id', 0);
+		$previousId = (int) $this->app->getUserState(_JOOM_OPTION.'.edit.image.id');
+    $cid        = (array) $this->input->post->get('cid', [], 'int');
+    $boxchecked = (bool) $this->input->getInt('boxchecked', 0);
+    if($boxchecked)
+    {
+      $editId = (int) $cid[0];
+    }
+    else
+    {
+      $editId = $this->input->getInt('id', 0);
+    }
 
-		// Set the user id for the user to edit in the session.
-		$app->setUserState('com_joomgallery.edit.image.id', $editId);
+    // ID check
+		if(!$editId)
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_ITEMID_MISSING'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+
+			return false;
+		}
+
+    // Access check
+		if(!$this->acl->checkACL('edit', 'image', $editId))
+		{
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+
+			return false;
+		}
+
+		// Set the current edit id in the session.
+		$this->app->setUserState(_JOOM_OPTION.'.edit.image.id', $editId);
 
 		// Get the model.
 		$model = $this->getModel('Image', 'Site');
 
 		// Check out the item
-		if($editId)
+		if(!$model->checkout($editId))
 		{
-			$model->checkout($editId);
+			// Check-out failed, display a notice but allow the user to see the record.
+			$this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKOUT_FAILED', $model->getError()), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
+			
+			return false;
 		}
 
 		// Check in the previous user.
@@ -64,166 +86,91 @@ class ImageController extends BaseController
 			$model->checkin($previousId);
 		}
 
-		// Redirect to the edit screen.
-		$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=imageform&layout=edit', false));
+		// Redirect to the form screen.
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=imageform&'.$this->getItemAppend($editId), false));
 	}
 
-	/**
-	 * Method to save data
+  /**
+	 * Add a new image: Not available
 	 *
-	 * @return    void
-	 *
-	 * @throws  Exception
-	 * @since   4.0.0
-	 */
-	public function publish()
-	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
-		// Checking if the user can remove object
-		$user = Factory::getUser();
-
-		if($user->authorise('core.edit', 'com_joomgallery') || $user->authorise('core.edit.state', 'com_joomgallery'))
-		{
-			$model = $this->getModel('Image', 'Site');
-
-			// Get the user data.
-			$id    = $app->input->getInt('id');
-			$state = $app->input->getInt('state');
-
-			// Attempt to save the data.
-			$return = $model->publish($id, $state);
-
-			// Check for errors.
-			if($return === false)
-			{
-				$this->setMessage(Text::sprintf('Save failed: %s', $model->getError()), 'warning');
-			}
-
-			// Clear the profile id from the session.
-			$app->setUserState('com_joomgallery.edit.image.id', null);
-
-			// Flush the data from the session.
-			$app->setUserState('com_joomgallery.edit.image.data', null);
-
-			// Redirect to the list screen.
-			$this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SAVED_SUCCESSFULLY'));
-			$menu = Factory::getApplication()->getMenu();
-			$item = $menu->getActive();
-
-			if(!$item)
-			{
-				// If there isn't any menu item active, redirect to list view
-				$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=images', false));
-			}
-			else
-			{
-				$this->setRedirect(Route::_('index.php?Itemid='. $item->id, false));
-			}
-		}
-		else
-		{
-			throw new \Exception(500);
-		}
-	}
-
-	/**
-	 * Check in record
-	 *
-	 * @return  boolean  True on success
+	 * @return  void
 	 *
 	 * @since   4.0.0
 	 */
-	public function checkin()
+	public function add()
 	{
-		// Check for request forgeries.
-		$this->checkToken('GET');
-		
-		// Checking if the user can remove object
-		$user = Factory::getUser();
+		// Get the previous edit id (if any) and the current edit id.
+		$previousId = (int) $this->app->getUserState(_JOOM_OPTION.'.add.image.id');
+    $cid        = (array) $this->input->post->get('cid', [], 'int');
+		$editId     = (int) (\count($cid) ? $cid[0] : $this->input->getInt('id', 0));
+		$addCatId   = (int) $this->input->getInt('catid', 0);
 
-		if($user->authorise('core.manage', 'com_joomgallery')) { 
-
-			$id = $this->input->post->get('id', int, 0);
-			
-			$model = $this->getModel();
-			$return = $model->checkin($id);
-
-			if($return === false)
-			{
-				// Checkin failed.
-				$message = Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
-				$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=image' . '&id=' . $id, false), $message, 'error');
-				return false;
-			}
-			else
-			{
-				// Checkin succeeded.
-				$message = Text::_('COM_JOOMGALLERY_CHECKEDIN_SUCCESSFULLY');
-				$this->setRedirect(Route::_('index.php?option=com_joomgallery&view=image' . '&id=' . $id, false), $message);
-				return true;
-			}
-		}
-		else
+		// Access check
+		if(!$this->acl->checkACL('add', 'image', $addCatId, true))
 		{
-			throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
-	}
+			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
+			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
 
-	/**
-	 * Remove data
+			return false;
+		}
+
+		// Clear form data from session
+		$this->app->setUserState(_JOOM_OPTION.'.edit.image.data', array());
+
+		// Set the current edit id in the session.
+		$this->app->setUserState(_JOOM_OPTION.'.add.image.catid', $addCatId);
+		$this->app->setUserState(_JOOM_OPTION.'.edit.image.id', 0);
+
+		// Check in the previous user.
+		if($previousId && $previousId !== $addCatId)
+		{
+      // Get the model.
+		  $model = $this->getModel('Image', 'Site');
+
+			$model->checkin($previousId);
+		}
+
+		// Redirect to the form screen.
+		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=imageform&'.$this->getItemAppend(0, $addCatId), false));
+  }
+
+  /**
+	 * Remove an image
 	 *
-	 * @return void
-	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function remove()
 	{
-		// Initialise variables.
-		$app = Factory::getApplication();
-
-		// Checking if the user can remove object
-		$user = Factory::getUser();
-
-		if($user->authorise('core.delete', 'com_joomgallery'))
-		{
-			$model = $this->getModel('Image', 'Site');
-
-			// Get the user data.
-			$id = $app->input->getInt('id', 0);
-
-			// Attempt to save the data.
-			$return = $model->delete($id);
-
-			// Check for errors.
-			if($return === false)
-			{
-				$this->setMessage(Text::sprintf('Delete failed', $model->getError()), 'warning');
-			}
-			else
-			{
-				// Check in the profile.
-				if($return)
-				{
-					$model->checkin($return);
-				}
-
-				$app->setUserState('com_joomgallery.edit.image.id', null);
-				$app->setUserState('com_joomgallery.edit.image.data', null);
-
-				$app->enqueueMessage(Text::_('COM_JOOMGALLERY_ITEM_DELETED_SUCCESSFULLY'), 'success');
-				$app->redirect(Route::_('index.php?option=com_joomgallery&view=images', false));
-			}
-
-			// Redirect to the list screen.
-			$menu = Factory::getApplication()->getMenu();
-			$item = $menu->getActive();
-			$this->setRedirect(Route::_($item->link, false));
-		}
-		else
-		{
-			throw new \Exception(500);
-		}
+		throw new \Exception('Removing image not possible. Use imageform controller instead.', 503);
 	}
+
+	/**
+	 * Checkin a checked out image.
+	 *
+	 * @throws \Exception
+	 */
+	public function checkin()
+	{
+		throw new \Exception('Check-in image not possible. Use imageform controller instead.', 503);
+	}
+
+  /**
+	 * Method to publish an image
+	 *
+	 * @throws \Exception
+	 */
+	public function publish()
+	{
+    throw new \Exception('Publish image not possible. Use imageform controller instead.', 503);
+  }
+
+  /**
+	 * Method to unpublish an image
+	 *
+	 * @throws \Exception
+	 */
+	public function unpublish()
+	{
+    throw new \Exception('Unpublish image not possible. Use imageform controller instead.', 503);
+  }
 }

@@ -1,25 +1,18 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\SiteApplication;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Multilanguage;
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\FormController;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Utilities\ArrayHelper;
 
 /**
  * Images class.
@@ -44,4 +37,45 @@ class ImagesController extends FormController
 	{
 		return parent::getModel($name, $prefix, array('ignore_request' => true));
 	}
+
+  /**
+   * Method to save the submitted ordering values for records via AJAX.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function saveOrderAjax()
+  {
+    // Check for request forgeries.
+    $this->checkToken();
+
+    // Get the input
+    $pks   = (array) $this->input->post->get('cid', [], 'int');
+    $order = (array) $this->input->post->get('order', [], 'int');
+
+    // Remove zero PKs and corresponding order values resulting from input filter for PK
+    foreach($pks as $i => $pk)
+    {
+      if($pk === 0)
+      {
+        unset($pks[$i]);
+        unset($order[$i]);
+      }
+    }
+
+    // Get the model
+    $model = $this->getModel('Imageform', 'Site');
+
+    // Save the ordering
+    $return = $model->saveorder($pks, $order);
+
+    if($return)
+    {
+      echo '1';
+    }
+
+    // Close the application
+    $this->app->close();
+  }
 }

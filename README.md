@@ -101,8 +101,3 @@ What did really happen?
 - (ImageMagick version)
 #### Additional comments
 Anything else that you think is important for the developer to fix the issue
-
-## Sample data
-During testing sometimes it requires to do a fresh istall of the component in order to apply database changes introduces by a new PR. We therefore created some sample data (Categories, Images, Tags) that can be installed using Joomlas installer after the new installation of JoomGallery. That way you dont have to create new data each time...
-
-[Download Sample Data](https://www.joomgalleryfriends.net/files/Unkategorisiert/joomgallery_sampledata.zip)

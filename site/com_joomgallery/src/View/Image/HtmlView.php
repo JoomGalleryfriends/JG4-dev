@@ -2,11 +2,11 @@
 
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Site\View\Image;
@@ -14,25 +14,48 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Image;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 
 /**
- * View class for a list of Joomgallery.
+ * View class for a image view of Joomgallery.
  * 
  * @package JoomGallery
  * @since   4.0.0
  */
 class HtmlView extends BaseHtmlView
 {
-	protected $state;
-
+	/**
+	 * The image object
+	 *
+	 * @var  \stdClass
+	 */
 	protected $item;
 
-	protected $form;
+	/**
+	 * The page parameters
+	 *
+	 * @var    array
+	 *
+	 * @since  4.0.0
+	 */
+	protected $params = array();
 
-	protected $params;
+	/**
+	 * The model state
+	 *
+	 * @var   \Joomla\CMS\Object\CMSObject
+	 */
+	protected $state;
+
+	/**
+	 * The Access service class
+	 *
+	 * @var   \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Access
+	 */
+	protected $acl;
 
 	/**
 	 * Display the view
@@ -45,40 +68,25 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$app  = Factory::getApplication();
-		$user = Factory::getUser();
-
 		$this->state  = $this->get('State');
+		$this->params = $this->get('Params');
+		$this->acl    = $this->get('Acl');
 		$this->item   = $this->get('Item');
-		$this->params = $app->getParams('com_joomgallery');
 
-		if(!empty($this->item))
-		{
-			$this->form = $this->get('Form');
-		}
+    // Check acces view level
+		if(!in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+    }
 
 		// Check for errors.
 		if(count($errors = $this->get('Errors')))
 		{
-			throw new \Exception(implode("\n", $errors));
-		}
-
-		if(!in_array($this->item->access, $user->getAuthorisedViewLevels()))
-    {
-      throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-    }
-
-		if($this->_layout == 'edit')
-		{
-			$authorised = $user->authorise('core.create', 'com_joomgallery');
-
-			if($authorised !== true)
-			{
-				throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'));
-			}
+			throw new GenericDataException(implode("\n", $errors), 500);
 		}
 
 		$this->_prepareDocument();
+
 		parent::display($tpl);
 	}
 
@@ -101,14 +109,14 @@ class HtmlView extends BaseHtmlView
 
 		if($menu)
 		{
-			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+			$this->params['menu']->def('page_heading', $this->params['menu']->get('page_title', $menu->title));
 		}
 		else
 		{
-			$this->params->def('page_heading', Text::_('JoomGallery'));
+			$this->params['menu']->def('page_heading', Text::_('JoomGallery'));
 		}
 
-		$title = $this->params->get('page_title', '');
+		$title = $this->params['menu']->get('page_title', '');
 
 		if(empty($title))
 		{
@@ -125,19 +133,19 @@ class HtmlView extends BaseHtmlView
 
 		$this->document->setTitle($title);
 
-		if($this->params->get('menu-meta_description'))
+		if($this->params['menu']->get('menu-meta_description'))
 		{
-			$this->document->setDescription($this->params->get('menu-meta_description'));
+			$this->document->setDescription($this->params['menu']->get('menu-meta_description'));
 		}
 
-		if($this->params->get('menu-meta_keywords'))
+		if($this->params['menu']->get('menu-meta_keywords'))
 		{
-			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $this->params['menu']->get('menu-meta_keywords'));
 		}
 
-		if($this->params->get('robots'))
+		if($this->params['menu']->get('robots'))
 		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
+			$this->document->setMetadata('robots', $this->params['menu']->get('robots'));
 		}
 
     // Add Breadcrumbs

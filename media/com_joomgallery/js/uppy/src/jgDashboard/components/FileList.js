@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useMemo } from 'preact/hooks';
 import FileItem from "./FileItem/index.js";
-import VirtualList from '@uppy/dashboard/lib/components/VirtualList.js';
+import VirtualList from '@uppy/utils/lib/VirtualList';
 
 function chunks(list, size) {
   const chunked = [];

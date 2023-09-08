@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
@@ -16,7 +16,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
-use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
@@ -27,15 +26,23 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
  */
 class CategoriesModel extends JoomListModel
 {
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'category';
+
 	/**
-	* Constructor.
-	*
-	* @param   array  $config  An optional associative array of configuration settings.
-	*
-	* @see        JController
-	* @since      1.6
-	*/
-	public function __construct($config = array())
+   * Constructor
+   * 
+   * @param   array  $config  An optional associative array of configuration settings.
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  function __construct($config = array())
 	{
 		if(empty($config['filter_fields']))
 		{
@@ -48,6 +55,7 @@ class CategoriesModel extends JoomListModel
 				'title', 'a.title',
 				'alias', 'a.alias',
 				'parent_id', 'a.parent_id',
+				'parent_title', 'a.parent_title',
 				'published', 'a.published',
 				'access', 'a.access',
 				'password', 'a.password',
@@ -62,6 +70,8 @@ class CategoriesModel extends JoomListModel
 				'modified_by', 'a.modified_by',
 				'modified_time', 'a.modified_time',
 				'id', 'a.id',
+				'img_count', 'a.img_count',
+				'child_count', 'a.child_count',
 				'metadesc', 'a.metadesc',
 				'metakey', 'a.metakey',
 				'robots', 'a.robots',
@@ -102,46 +112,35 @@ class CategoriesModel extends JoomListModel
 			$this->context .= '.' . $forcedLanguage;
 		}
 
-		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
-
-    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
-
-    $level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level');
-		$this->setState('filter.level', $level);
-
-    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
-		$this->setState('filter.language', $language);
-
-    $formSubmited = Factory::getApplication()->input->post->get('form_submited');
-
-    // Gets the value of a user state variable and sets it in the session
-		$this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
-    $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by');
-    $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category');
-    $this->getUserStateFromRequest($this->context . '.filter.exclude', 'filter_exclude');
-
     // List state information.
 		parent::populateState($ordering, $direction);
 
-    if ($formSubmited)
-		{
-			$access = $app->input->post->get('access');
-			$this->setState('filter.access', $access);
-
-			$author = $app->input->post->get('created_by');
-			$this->setState('filter.created_by', $author);
-
-			$category = $app->input->post->get('category');
-			$this->setState('filter.category', $category);
-
-      $exclude = $app->input->post->get('exclude');
-			$this->setState('filter.exclude', $exclude);
-		}
+    // Load the filter state.
+		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '');
+		$this->setState('filter.search', $search);
+    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '*');
+		$this->setState('filter.published', $published);
+    $level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level', '*');
+		$this->setState('filter.level', $level);
+    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
+		$this->setState('filter.language', $language);
+    $showself = $this->getUserStateFromRequest($this->context . '.filter.showself', 'filter_showself', '1');
+    $this->setState('filter.showself', $showself);
+    $showhidden = $this->getUserStateFromRequest($this->context . '.filter.showhidden', 'filter_showhidden', '1');
+    $this->setState('filter.showhidden', $showhidden);
+    $showempty = $this->getUserStateFromRequest($this->context . '.filter.showempty', 'filter_showempty', '1');
+    $this->setState('filter.showempty', $showempty);
+    $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', array());
+    $this->setState('filter.access', $access);
+    $createdBy = $this->getUserStateFromRequest($this->context . '.filter.created_by', 'filter_created_by', '');
+    $this->setState('filter.created_by', $createdBy);
+    $category = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', array());
+    $this->setState('filter.category', $category);
+    $exclude = $this->getUserStateFromRequest($this->context . '.filter.exclude', 'filter_exclude', array());
+    $this->setState('filter.category', $exclude);
 
     // Force a language
-		if (!empty($forcedLanguage))
+		if(!empty($forcedLanguage))
 		{
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
@@ -165,12 +164,16 @@ class CategoriesModel extends JoomListModel
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
+    $id .= ':' . $this->getState('filter.published');
+    $id .= ':' . $this->getState('filter.level');
+    $id .= ':' . $this->getState('filter.language');
+    $id .= ':' . $this->getState('filter.showself');
+    $id .= ':' . $this->getState('filter.showhidden');
+    $id .= ':' . $this->getState('filter.showempty');
 		$id .= ':' . serialize($this->getState('filter.access'));
-		$id .= ':' . $this->getState('filter.published');
+    $id .= ':' . serialize($this->getState('filter.created_by'));
 		$id .= ':' . serialize($this->getState('filter.category'));
     $id .= ':' . serialize($this->getState('filter.exclude'));
-		$id .= ':' . serialize($this->getState('filter.created_by'));
-		$id .= ':' . $this->getState('filter.language');
 
 		return parent::getStoreId($id);
 	}
@@ -230,33 +233,39 @@ class CategoriesModel extends JoomListModel
     // Filter by access level.
 		$access = $this->getState('filter.access');
 
-		if(is_numeric($access))
+    if(!empty($access))
 		{
-			$access = (int) $access;
-			$query->where($db->quoteName('a.access') . ' = :access')
-				->bind(':access', $access, ParameterType::INTEGER);
-		}
-		elseif(is_array($access))
-		{
-			$access = ArrayHelper::toInteger($access);
-			$query->whereIn($db->quoteName('a.access'), $access);
-		}
+      if(is_numeric($access))
+      {
+        $access = (int) $access;
+        $query->where($db->quoteName('a.access') . ' = :access')
+          ->bind(':access', $access, ParameterType::INTEGER);
+      }
+      elseif(is_array($access))
+      {
+        $access = ArrayHelper::toInteger($access);
+        $query->whereIn($db->quoteName('a.access'), $access);
+      }
+    }
     
     // Filter by owner
 		$userId = $this->getState('filter.created_by');
 
-		if(is_numeric($userId))
+    if(!empty($userId))
 		{
-			$userId = (int) $userId;
-			$type = $this->getState('filter.created_by.include', true) ? ' = ' : ' <> ';
-			$query->where($db->quoteName('a.created_by') . $type . ':userId')
-				->bind(':userId', $userId, ParameterType::INTEGER);
-		}
-		elseif(is_array($userId))
-		{
-			$userId = ArrayHelper::toInteger($userId);
-			$query->whereIn($db->quoteName('a.created_by'), $userId);
-		}
+      if(is_numeric($userId))
+      {
+        $userId = (int) $userId;
+        $type = $this->getState('filter.created_by.include', true) ? ' = ' : ' <> ';
+        $query->where($db->quoteName('a.created_by') . $type . ':userId')
+          ->bind(':userId', $userId, ParameterType::INTEGER);
+      }
+      elseif(is_array($userId))
+      {
+        $userId = ArrayHelper::toInteger($userId);
+        $query->whereIn($db->quoteName('a.created_by'), $userId);
+      }
+    }
 
 		// Filter by search
 		$search = $this->getState('filter.search');
@@ -293,6 +302,22 @@ class CategoriesModel extends JoomListModel
 			}
 		}
 
+    // Filter by hidden categories
+    $showhidden = (bool) $this->getState('filter.showhidden');
+
+    if(!$showhidden)
+		{
+      $query->where($db->quoteName('a.hidden') . ' = 0');
+		}
+
+    // Filter by empty categories
+    $showempty = (bool) $this->getState('filter.showempty');
+
+    if(!$showempty)
+		{
+      $query->having('COUNT(`img`.id) > 0');
+		}
+
     // Filter by categories and by level
 		$categoryId = $this->getState('filter.category', array());
 		$level      = (int) $this->getState('filter.level');
@@ -307,7 +332,6 @@ class CategoriesModel extends JoomListModel
 		{
       $this->categoriesFilterQuery($query, $categoryId, $level);
 		}
-
     // Case: Using only the by level filter
 		elseif($level = (int) $level)
 		{
@@ -328,6 +352,18 @@ class CategoriesModel extends JoomListModel
       $this->categoriesFilterQuery($query, $excludeId, false, true);
     }
 
+    // Filter self (remove the filtered category)
+    $showself = (bool) $this->getState('filter.showself');
+
+    if(count($categoryId) && !$showself)
+    {
+      foreach($categoryId as $catId)
+      {
+        $query->where($db->quoteName('a.id'). ' != :catid')
+          ->bind(':catid', $catId, ParameterType::INTEGER);
+      }
+    }
+
     // Filter on the language.
 		if($language = $this->getState('filter.language'))
 		{
@@ -338,11 +374,14 @@ class CategoriesModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', "a.lft");
 		$orderDirn = $this->state->get('list.direction', "ASC");
-
-		if($orderCol && $orderDirn)
-		{
-			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		}
+    if($orderCol && $orderDirn)
+    {
+      $query->order($db->escape($orderCol . ' ' . $orderDirn));
+    }
+    else
+    {
+      $query->order($db->escape($this->state->get('list.fullordering', 'a.lft ASC')));
+    }
 
 		return $query;
 	}
@@ -359,6 +398,11 @@ class CategoriesModel extends JoomListModel
 		return $items;
 	}
 
+  /**
+	 * Get an array of data items
+	 *
+	 * @return void
+	 */
   protected function categoriesFilterQuery(&$query, $categoryId, $level=false, $exclude=false)
   {
     $db = $this->getDbo();

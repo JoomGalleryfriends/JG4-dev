@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
@@ -80,7 +80,7 @@ class DefaultConfig extends Config implements ConfigInterface
     }
 
     //---------Level 3---------
-    if(isset($this->ids['category']))
+    if(isset($this->ids['category']) && $this->ids['category'] > 1)
     {
       // Load parent categories
       $cat_model = $this->component->getMVCFactory()->createModel('Category', 'administrator');

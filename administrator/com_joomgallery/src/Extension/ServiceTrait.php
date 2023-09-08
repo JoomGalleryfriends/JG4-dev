@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
@@ -86,17 +86,13 @@ trait ServiceTrait
 	 */
 	public function getProperties($public = true)
 	{
-		$vars = \get_object_vars($this);
-
 		if($public)
 		{
-			foreach($vars as $key => $value)
-			{
-				if ('_' == \substr($key, 0, 1))
-				{
-					unset($vars[$key]);
-				}
-			}
+			$vars = \Closure::fromCallable("get_object_vars")->__invoke($this);
+		}
+		else
+		{
+			$vars = \get_object_vars($this);
 		}
 
 		return $vars;

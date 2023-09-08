@@ -1,11 +1,11 @@
 <?php
 /** 
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
@@ -14,11 +14,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Object\CMSObject;
+use Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
 
 /**
@@ -365,7 +365,7 @@ class JoomHelper
    *
    * @return  mixed             URL or path to the image on success, false otherwise
    *
-   * @since   1.5.5
+   * @since   4.0.0
    */
   public static function getImg($img, $type, $url=true, $root=true)
   {
@@ -470,6 +470,129 @@ class JoomHelper
         return $manager->getImgPath($img, $type, false, false, false);
       }
     }
+  }
+
+  /**
+   * Returns the URL or the path to a category-image
+   *
+   * @param   string/object/int $cat     Alias, database object or ID of the category
+   * @param   string            $type    The image type
+   * @param   bool              $url     True to return an image URL, false for a system path (default: true)
+   * @param   bool              $root    True to add the system root to path. Only if $url=false. (default: true)
+   *
+   * @return  mixed             URL or path to the image on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public static function getCatImg($cat, $type, $url=true, $root=true)
+  {
+    if(!\is_object($cat))
+    {
+      if(\is_numeric($cat))
+      {
+        if($cat == 0)
+        {
+          // ID = 0 given
+          return self::getImgZero($type, $url, $root);          
+        }
+        else
+        {
+          // get category based on ID
+          $cat = self::getRecord('category', $cat);
+        }
+      }
+      elseif(\is_string($cat))
+      {
+        // get category id based on alias
+        $cat = self::getRecord('category', $cat);
+      }
+      else
+      {
+        // no category given
+        return self::getImgZero($type, $url, $root); 
+      }
+    }
+
+    return self::getImg($cat->thumbnail, $type, $url, $root);
+  }
+
+  /**
+   * Returns the table name of a content type
+   *
+   * @param   string   $type    Name of the content type
+   *
+   * @return  string   Table name
+   *
+   * @since   4.0.0
+   */
+  public static function getTableName(string $type)
+  {
+    return self::$content_types[$type];
+  }
+
+  /**
+   * Get the route to a site item view.
+   *
+   * @param   string   $type      Name of the content type.
+   * @param   integer  $id        The id of the content item.
+   * @param   integer  $catid     The category ID.
+   * @param   string   $language  The language code.
+   * @param   string   $layout    The layout value.
+   *
+   * @return  string  The route.
+   *
+   * @since   4.0.0
+   */
+  public static function getViewRoute($view, $id, $catid = null, $language = null, $layout = null)
+  {
+    // Create the link
+    $link = 'index.php?option=com_joomgallery&view='.$view.'&id=' . $id;
+
+    if((int) $catid > 1)
+    {
+      $link .= '&catid=' . $catid;
+    }
+
+    if(!empty($language) && $language !== '*' && Multilanguage::isEnabled())
+    {
+      $link .= '&lang=' . $language;
+    }
+
+    if($layout)
+    {
+      $link .= '&layout=' . $layout;
+    }
+
+    return $link;
+  }
+
+  /**
+   * Get the route to a site list view.
+   *
+   * @param   string   $type      Name of the content type.
+   * @param   string   $language  The language code.
+   * @param   string   $layout    The layout value.
+   *
+   * @return  string  The route.
+   *
+   * @since   4.0.0
+   */
+  public static function getListRoute($view, $language = null, $layout = null)
+  {
+    // Create the link
+    $link = 'index.php?option=com_joomgallery&view='.$view;
+
+    if(!empty($language) && $language !== '*' && Multilanguage::isEnabled())
+    {
+      $link .= '&lang=' . $language;
+    }
+
+    if($layout && $layout != 'default')
+    {
+      $link .= '&layout=' . $layout;
+    }
+
+    return $link;
   }
 
   /**
