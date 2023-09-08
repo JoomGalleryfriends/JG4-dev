@@ -1,3 +1,7 @@
+:root {
+  --gray-300: #dfe3e7;
+}
+
 .wrapper .container-main {
   overflow: hidden;
 }
@@ -57,6 +61,71 @@ table.itemList th.sort-cell .form-check-input {
 }
 .jg .btn-group {
   margin-bottom: 0;
+}
+
+/* Category view */
+.com-joomgallery-category.gallery {
+  margin: 2em 0;
+}
+
+.com-joomgallery-category.images {
+  display: grid;
+  gap: 2em;
+}
+
+.com-joomgallery-category.images.columns-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.com-joomgallery-category.images.columns-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.com-joomgallery-category.images.columns-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 992px) {
+  .com-joomgallery-category.images[class*=" columns-"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .com-joomgallery-category.images[class*=" columns-"] {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.com-joomgallery-category.image {
+  
+}
+
+.com-joomgallery-category.image > .image-thumbnail {
+  padding: 1em;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.25rem;
+}
+
+.com-joomgallery-category.images[class*=" columns-"] > .com-joomgallery-category.image > .image-thumbnail > a {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 100%;
+}
+
+.com-joomgallery-category.images[class*=" columns-"] > .com-joomgallery-category.image > .image-thumbnail > a > img {
+  position: absolute;
+  max-width: 100%;
+  max-height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  object-fit: contain;
+}
+
+.com-joomgallery-category.image > .image-caption {
+  padding: 0.5em 0;
 }
 
 /* Single image view */

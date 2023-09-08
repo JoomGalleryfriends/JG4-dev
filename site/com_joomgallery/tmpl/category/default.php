@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -107,15 +107,24 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php // Images ?>
 <?php if(count($this->item->images) > 0) : ?>
   <h3>Images</h3>
-  <ul>
-    <?php foreach($this->item->images as $key => $image) : ?>
-      <li>
-        <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-          <?php echo $this->escape($image->imgtitle); ?>
-        </a>
-      </li>
-    <?php endforeach; ?>
-  </ul>
+  <div class="com-joomgallery-category gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
+    <div class="com-joomgallery-category images columns-3">
+      <?php foreach($this->item->images as $key => $image) : ?>
+        <div class="com-joomgallery-category image">
+          <div class="image-thumbnail">
+            <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="dev" alt="<?php echo $image->imgtitle; ?>" itemprop="image"  itemscope="" itemtype="https://schema.org/image" loading="lazy">
+            </a>
+          </div>
+          <div class="image-caption">
+            <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+              <?php echo $this->escape($image->imgtitle); ?>
+            </a>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
 <?php endif; ?>
 
 <?php /*if($canAddImg) : ?>
