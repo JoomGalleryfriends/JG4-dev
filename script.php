@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 defined('_JEXEC') or die();
@@ -75,7 +75,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	public function preflight($type, $parent)
 	{
     // Only proceed if Joomla version is correct
-    if(version_compare(JVERSION, '5.0.0', '>=') || version_compare(JVERSION, '4.0.0', '<'))
+    if(version_compare(JVERSION, '4.0.0', '<'))
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', '4.x'), 'error');
 
@@ -127,9 +127,9 @@ class com_joomgalleryInstallerScript extends InstallerScript
       {
         Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 'note');
       }
-
-      $this->new_code = $parent->getManifest()->version;
     }
+
+    $this->new_code = $parent->getManifest()->version;
 
     // Prepare for migration JG1-3 to JG4.x
     if($type == 'install' || ($type == 'update' && preg_match('/^([1-3]\.)(\d+\.)(\d+)*(.+)/', $this->act_code)))
@@ -686,7 +686,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-    if(empty($plugins->children()) || count($plugins->children()) <= 0)
+    if(!$plugins || empty($plugins->children()) || count($plugins->children()) <= 0)
     {
       return;
     }
@@ -782,7 +782,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$modules = $parent->get('manifest')->modules;
 		}
 
-    if(empty($modules->children()) || count($modules->children()) <= 0)
+    if(!$modules || empty($modules->children()) || count($modules->children()) <= 0)
     {
       return;
     }
@@ -833,7 +833,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 			$plugins = $parent->get('manifest')->plugins;
 		}
 
-    if(empty($plugins->children()) || count($plugins->children()) <= 0)
+    if(!$plugins || empty($plugins->children()) || count($plugins->children()) <= 0)
     {
       return;
     }
@@ -905,7 +905,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       }
     }
 
-    if(empty($modules->children()) || count($modules->children()) <= 0)
+    if(!$modules || empty($modules->children()) || count($modules->children()) <= 0)
     {
       return;
     }
@@ -1000,6 +1000,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
   private function getInstallerMSG($act_version, $new_version, $methode)
   {
     $msg = '';
+
+    if(strpos(end($new_version), 'dev'))
+    {
+      // We are dealing with a development version (alpha or beta)
+      $msg .= Text::_('COM_JOOMGALLERY_NOTE_DEVELOPMENT_VERSION');
+    }
 
     return $msg;
   }
