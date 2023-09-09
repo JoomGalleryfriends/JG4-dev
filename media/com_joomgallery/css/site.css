@@ -1,5 +1,7 @@
 :root {
-  --gray-300: #dfe3e7;
+  --jg-color-link: #000000;
+  --jg-color-hover: #000000;
+  --jg-gray-300: #dfe3e7;
 }
 
 .wrapper .container-main {
@@ -64,57 +66,57 @@ table.itemList th.sort-cell .form-check-input {
 }
 
 /* Category view */
-.com-joomgallery-category.gallery {
+.jg-gallery {
   margin: 2em 0;
 }
 
-.com-joomgallery-category.images {
+.jg-images {
   display: grid;
   gap: 2em;
 }
 
-.com-joomgallery-category.images.columns-2 {
+.jg-images.columns-2 {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.com-joomgallery-category.images.columns-3 {
+.jg-images.columns-3 {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.com-joomgallery-category.images.columns-4 {
+.jg-images.columns-4 {
   grid-template-columns: repeat(4, 1fr);
 }
 
 @media (max-width: 992px) {
-  .com-joomgallery-category.images[class*=" columns-"] {
+  .jg-images[class*=" columns-"] {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .com-joomgallery-category.images[class*=" columns-"] {
+  .jg-images[class*=" columns-"] {
     grid-template-columns: repeat(1, 1fr);
   }
 }
 
-.com-joomgallery-category.image {
-  
+.jg-image {
+  padding: 0;
 }
 
-.com-joomgallery-category.image > .image-thumbnail {
+.jg-image > .jg-image-thumbnail {
   padding: 1em;
-  border: 1px solid var(--gray-300);
+  border: 1px solid var(--jg-gray-300);
   border-radius: 0.25rem;
 }
 
-.com-joomgallery-category.images[class*=" columns-"] > .com-joomgallery-category.image > .image-thumbnail > a {
+.jg-images[class*=" columns-"] > .jg-image > .jg-image-thumbnail > a {
   display: block;
   position: relative;
   overflow: hidden;
   padding-bottom: 100%;
 }
 
-.com-joomgallery-category.images[class*=" columns-"] > .com-joomgallery-category.image > .image-thumbnail > a > img {
+.jg-images[class*=" columns-"] > .jg-image > .jg-image-thumbnail > a > img {
   position: absolute;
   max-width: 100%;
   max-height: 100%;
@@ -124,8 +126,19 @@ table.itemList th.sort-cell .form-check-input {
   object-fit: contain;
 }
 
-.com-joomgallery-category.image > .image-caption {
+.jg-image > .jg-image-caption {
   padding: 0.5em 0;
+  text-align: right;
+}
+
+a.jg-link:not(.btn) {
+  color: var(--jg-color-link);
+  text-decoration: none;
+}
+
+a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
+  color: var(--jg-color-hover);
+  text-decoration: underline 2px;
 }
 
 /* Single image view */
