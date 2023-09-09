@@ -68,4 +68,46 @@ interface MigrationInterface
    * @since   4.0.0
    */
   public function getMigrateables(): array;
+
+  /**
+   * Returns a associative array containing the record data written from source.
+   *
+   * @param   string   $type   Name of the content type
+   * @param   int      $pk     The primary key of the content type
+   * 
+   * @return  array  Record data
+   * 
+   * @since   4.0.0
+   */
+  public function getData(string $type, int $pk): array;
+
+  /**
+   * Translates the record data from source structure to destination structure
+   * based on migration parameters
+   *
+   * @param   array   $data   Record data received from getData()
+   * 
+   * @return  array  Restructured record data to save into JG4
+   * 
+   * @since   4.0.0
+   */
+  public function applyDataMapping(array $data): array;
+
+  /**
+   * Fetches an array of source images for the current migrated image
+   * based on migration parameters.
+   * 
+   * There are two possibilities how the new imagetypes are created:
+   * 1. Imagetypes get recreated using one source image from the migration source
+   * 2. Imagetypes get copied from existing images available from the migration source
+   *
+   * @param   array   $data   Record data received from getData()
+   * 
+   * @return  array   List of image sources to be used to create the new imagetypes
+   *                  If imagetypes get recreated: array('image/source/path')
+   *                  If imagetypes get copied:    array('original' => 'image/source/path1', 'detail' => 'image/source/path2', ...)
+   * 
+   * @since   4.0.0
+   */
+  public function getImageSource(array $data): array;
 }

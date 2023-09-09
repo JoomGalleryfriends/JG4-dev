@@ -33,6 +33,7 @@ use \Joomla\CMS\Versioning\VersionableTableInterface;
 class ImageTable extends Table implements VersionableTableInterface
 {
   use JoomTableTrait;
+	use MigrationTableTrait;
 
 	/**
 	 * Constructor

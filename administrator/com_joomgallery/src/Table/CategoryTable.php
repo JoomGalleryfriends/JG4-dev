@@ -34,6 +34,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class CategoryTable extends Table implements VersionableTableInterface
 { 
   use JoomTableTrait;
+  use MigrationTableTrait;
   
   /**
    * Object property to hold the path of the new location reference node.

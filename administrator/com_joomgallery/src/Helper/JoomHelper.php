@@ -681,7 +681,7 @@ class JoomHelper
 	 *
 	 * @since   4.0.0
 	 */
-  protected static function isAvailable($name)
+  public static function isAvailable($name)
   {
     if(!\in_array($name, \array_keys(self::$content_types)))
     {
@@ -700,7 +700,7 @@ class JoomHelper
 	 *
 	 * @since   4.0.0
 	 */
-  protected static function getImgZero($type, $url=true, $root=true)
+  public static function getImgZero($type, $url=true, $root=true)
   {
     if($url)
     {
