@@ -107,17 +107,17 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php // Images ?>
 <?php if(count($this->item->images) > 0) : ?>
   <h3>Images</h3>
-  <div class="com-joomgallery-category gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
-    <div class="com-joomgallery-category images columns-3">
+  <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
+    <div class="jg-images columns-3">
       <?php foreach($this->item->images as $key => $image) : ?>
-        <div class="com-joomgallery-category image">
-          <div class="image-thumbnail">
+        <div class="jg-image">
+          <div class="jg-image-thumbnail">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="dev" alt="<?php echo $image->imgtitle; ?>" itemprop="image"  itemscope="" itemtype="https://schema.org/image" loading="lazy">
+              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="dev" alt="<?php echo $image->imgtitle; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image" loading="lazy">
             </a>
           </div>
-          <div class="image-caption">
-            <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+          <div class="jg-image-caption">
+            <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <?php echo $this->escape($image->imgtitle); ?>
             </a>
           </div>
