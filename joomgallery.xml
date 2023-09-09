@@ -46,6 +46,7 @@
     <administration>
         <menu>COM_JOOMGALLERY</menu>
         <submenu>
+            <menu link="option=com_joomgallery&amp;view=control" view="control" img="class:home">COM_JOOMGALLERY_CONTROL_PANEL</menu>
             <menu link="option=com_joomgallery&amp;view=images" view="images" alt="Joomgallery/Images">COM_JOOMGALLERY_IMAGES</menu>
             <menu link="option=com_joomgallery&amp;view=categories" view="categories" alt="Joomgallery/Categories">JCATEGORIES</menu>
             <menu link="option=com_joomgallery&amp;view=tags" view="tags" alt="Joomgallery/Tags">COM_JOOMGALLERY_TAGS</menu>
