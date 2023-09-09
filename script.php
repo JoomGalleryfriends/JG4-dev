@@ -196,6 +196,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function install($parent)
 	{
+    $app = Factory::getApplication();
+
 		$this->installPlugins($parent);
 		$this->installModules($parent);
 
@@ -205,6 +207,27 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       return;
     }
+
+    // Create news feed module
+    $subdomain = '';
+    $language = Factory::getLanguage();
+    if(strpos($language->getTag(), 'de-') === false)
+    {
+      $subdomain = 'en.';
+    }
+    $feed_params = array('cache'=>1,
+                         'cache_time'=>15,
+                         'moduleclass_sfx'=>'',
+                         'rssurl'=>'https://www.'.$subdomain.'joomgalleryfriends.net/?format=feed&amp;type=rss',
+                         'rssrtl'=>0,
+                         'rssdate'=>0,
+                         'rssdesc'=>0,
+                         'rssimage'=>1,
+                         'rssitems'=>3,
+                         'rssitemdesc'=>1,
+                         'word_count'=>200);
+    $feed_params = json_encode($feed_params);
+    $this->createModule('JoomGallery News', 'joom_cpanel', 'mod_feed', 1, $app->getCfg('access'), 1, $feed_params, 1, '*');
 
     $act_version = explode('.',$this->act_code);
     $new_version = explode('.',$this->new_code);
@@ -219,7 +242,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         <h3><?php echo Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL', $parent->getManifest()->version); ?></h3>
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
           <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($install_message != '') : ?>
@@ -269,7 +292,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         </p>
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
           <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($update_message != '') : ?>
@@ -315,6 +338,23 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
 		$this->uninstallPlugins($parent);
 		$this->uninstallModules($parent);
+
+    // Delete administrator module JoomGallery News
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query
+      ->clear()
+      ->delete('#__modules')
+      ->where(
+        array(
+          'position = ' . $db->quote('joom_cpanel'),
+          'module = ' . $db->quote('mod_feed')
+        )
+      );
+
+    $db->setQuery($query);
+    $db->execute();
 
     // Delete directories
     if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
@@ -1217,5 +1257,70 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db->setQuery($query);
 
     return $db->execute();
+  }
+
+  /**
+   * Creates and publishes a module (extension need to be installed)
+   *
+   * @param   string   $title      title of the module
+   * @param   string   $position   position fo the module to be placed
+   * @param   string   $module     installation name of the module extension
+   * @param   integer  $ordering   number of the sort order
+   * @param   integer  $access     id of the access level
+   * @param   integer  $showTitle  show or hide module title (0: hide, 1: show)
+   * @param   string   $params     module params (json)
+   * @param   integer  $client_id  module of which client (0: client, 1: admin)
+   * @param   string   $lang       langage tag (language filter / *: all languages)
+   *
+   * @return  boolean True on success, false otherwise
+   */
+  private function createModule($title, $position, $module, $ordering, $access, $showTitle, $params, $client_id, $lang)
+  {
+    // check if the module already exists
+    $db    = Factory::getDbo();
+    $query = $db->getQuery(true)
+                ->select('id')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('position').' = '.$db->quote($position))
+                ->where($db->quoteName('module').' = '.$db->quote($module));
+    $db->setQuery($query);
+    $module_id = $db->loadResult();
+
+    // create module if it is not yet created
+    if (empty($module_id))
+    {
+      $row = JTable::getInstance('module');
+      $row->title     = $title;
+      $row->ordering  = $ordering;
+      $row->position  = $position;
+      $row->published = 1;
+      $row->module    = $module;
+      $row->access    = $access;
+      $row->showtitle = $showTitle;
+      $row->params    = $params;
+      $row->client_id = $client_id;
+      $row->language  = $lang;
+      if(!$row->store())
+      {
+        $app->enqueueMessage(JText::_('Unable to create "'.$title.'" module!'), 'error');
+
+        return false;
+      }
+
+      $db      = Factory::getDbo();
+      $query   = $db->getQuery(true);
+      $columns = array('moduleid', 'menuid');
+      $values  = array($row->id, 0);
+
+      $query
+          ->insert($db->quoteName('#__modules_menu'))
+          ->columns($db->quoteName($columns))
+          ->values(implode(',', $values));
+
+      $db->setQuery($query);
+      $db->execute();
+    }
+
+    return true;
   }
 }

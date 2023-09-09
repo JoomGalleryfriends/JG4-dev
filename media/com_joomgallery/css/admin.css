@@ -1,3 +1,33 @@
+.module-actions {
+  -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+          order: 1;
+  -webkit-margin-start: auto;
+          margin-inline-start: auto;
+}
+.dropdown-item.unpublish-module {
+  display:none;
+}
+
+.subhead .btn {
+  margin-inline-end: 0.75rem;
+}
+.btn > span {
+  margin-inline-end: 0.5rem;
+}
+.jg-messages-logo {
+  display: table;
+  margin: 0 auto 0 auto;
+}
+.jg-messages-inner {
+  display: table;
+}
+.jg-copyright {
+  text-align: center;
+  font-size: 0.85em;
+  color: #666;
+}
+
 .wrapper .container-main {
   overflow: hidden;
 }
@@ -108,6 +138,10 @@ img.jg_minithumb {
 }
 .joom-imgtypes.btn-group {
   margin-top: 1rem;
+}
+.joom-logo-small {
+  max-width: 60px;
+  height: auto;
 }
 .joom-image {
   position: relative;
