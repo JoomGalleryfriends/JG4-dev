@@ -128,7 +128,7 @@ table.itemList th.sort-cell .form-check-input {
 
 .jg-image > .jg-image-caption {
   padding: 0.5em 0;
-  text-align: right;
+  text-align: center;
 }
 
 a.jg-link:not(.btn) {
