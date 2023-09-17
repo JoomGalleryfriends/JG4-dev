@@ -70,7 +70,7 @@ interface MigrationInterface
   public function getMigrateables(): array;
 
   /**
-   * Returns a associative array containing the record data written from source.
+   * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type
    * @param   int      $pk     The primary key of the content type
@@ -82,30 +82,25 @@ interface MigrationInterface
   public function getData(string $type, int $pk): array;
 
   /**
-   * Translates the record data from source structure to destination structure
-   * based on migration parameters
+   * Converts data from source into the structure needed for JoomGallery.
    *
-   * @param   array   $data   Record data received from getData()
+   * @param   array   $data   Data received from getData() method.
    * 
-   * @return  array  Restructured record data to save into JG4
+   * @return  array   Converted data to save into JoomGallery
    * 
    * @since   4.0.0
    */
-  public function applyDataMapping(array $data): array;
+  public function convertData(array $data): array;
 
   /**
-   * Fetches an array of source images for the current migrated image
-   * based on migration parameters.
-   * 
-   * There are two possibilities how the new imagetypes are created:
-   * 1. Imagetypes get recreated using one source image from the migration source
-   * 2. Imagetypes get copied from existing images available from the migration source
+   * Fetches an array of images from source to be used for creating the imagetypes
+   * for the current image.
    *
    * @param   array   $data   Record data received from getData()
    * 
-   * @return  array   List of image sources to be used to create the new imagetypes
-   *                  If imagetypes get recreated: array('image/source/path')
-   *                  If imagetypes get copied:    array('original' => 'image/source/path1', 'detail' => 'image/source/path2', ...)
+   * @return  array   List of images from sources used to create the new imagetypes
+   *                  1. If imagetypes get recreated: array('image/source/path')
+   *                  2. If imagetypes get copied:    array('original' => 'image/source/path1', 'detail' => 'image/source/path2', ...)
    * 
    * @since   4.0.0
    */

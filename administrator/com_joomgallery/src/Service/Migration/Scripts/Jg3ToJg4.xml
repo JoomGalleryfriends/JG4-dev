@@ -23,24 +23,24 @@
            filter="string"
            required="true"
            default="images/joomgallery/originals/"
-           label="COM_JOOMGALLERY_FIELDS_ORIGPATH_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_ORIGPATH_DESC"
+           label="COM_JOOMGALLERY_ORIGINAL"
+           description="FILES_JOOMGALLERY_MIGRATION_JG3TOJG4_ORIGPATH_DESC"
     />
     <field name="detail_path"
            type="text"
            filter="string"
            required="true"
            default="images/joomgallery/details/"
-           label="COM_JOOMGALLERY_FIELDS_DETAILPATH_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_DETAILPATH_DESC"
+           label="COM_JOOMGALLERY_DETAIL"
+           description="FILES_JOOMGALLERY_MIGRATION_JG3TOJG4_DETAILPATH_DESC"
     />
     <field name="thumb_path"
            type="text"
            filter="string"
            required="true"
            default="images/joomgallery/thumbnails/"
-           label="COM_JOOMGALLERY_FIELDS_THUMBPATH_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_THUMBPATH_DESC"
+           label="COM_JOOMGALLERY_THUMBNAIL"
+           description="FILES_JOOMGALLERY_MIGRATION_JG3TOJG4_THUMBPATH_DESC"
     />
     <field name="same_db"
            type="radio"
@@ -59,42 +59,36 @@
            filter="string"
            showon="same_db:0"
            label="COM_JOOMGALLERY_FIELDS_DATABASE_TYPE_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_DATABASE_TYPE_DESC"
       />
       <field name="db_host"
              type="text"
              default="localhost"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_HOST_LABEL"
-             description="COM_JOOMGALLERY_FIELDS_DATABASE_HOST_DESC"
       />
       <field name="db_user"
              type="text"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_USER_LABEL"
-             description="COM_JOOMGALLERY_FIELDS_DATABASE_USER_DESC"
       />
       <field name="db_pass"
              type="password"
              filter="raw"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_PASS_LABEL"
-             description="COM_JOOMGALLERY_FIELDS_DATABASE_PASS_DESC"
       />
       <field name="db_name"
              type="text"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_NAME_LABEL"
-             description="COM_JOOMGALLERY_FIELDS_DATABASE_NAME_DESC"
       />
       <field name="db_prefix"
            type="text"
            filter="string"
            size="10"
            default="jos_"
-           showon="same_joomla:0"           
+           showon="same_db:0"
            label="COM_JOOMGALLERY_FIELDS_DATABASE_PREFIX_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_DATABASE_PREFIX_DESC"
     />
   </fieldset>
 
@@ -109,33 +103,38 @@
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
-    <field name="copy_images"
-           type="radio"
-           class="btn-group"
-           layout="joomla.form.field.radio.switcher"
+    <field name="image_usage"
+           type="list"
            default="0"
-           label="COM_JOOMGALLERY_FIELDS_COPYIMAGES_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_COPYIMAGES_DESC">
-        <option value="0">JNO</option>
-        <option value="1">JYES</option>
+           label="COM_JOOMGALLERY_FIELDS_IMAGEUSAGE_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_IMAGEUSAGE_DESC">
+        <option value="0">Direct usage</option>
+        <option value="1">Recreate</option>
+        <option value="2">Copy</option>
     </field>
-    <field name="map_orig"
-           type="jgimagetype"
-           required="true"
-           label="COM_JOOMGALLERY_FIELDS_MAPORIG_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_MAPORIG_DESC"
-    />
-    <field name="map_detail"
-           type="jgimagetype"
-           required="true"
-           label="COM_JOOMGALLERY_FIELDS_MAPDETAIL_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_MAPDETAIL_DESC"
-    />
-    <field name="map_thumb"
-           type="jgimagetype"
-           required="true"
-           label="COM_JOOMGALLERY_FIELDS_MAPTHUMB_LABEL"
-           description="COM_JOOMGALLERY_FIELDS_MAPTHUMB_DESC"
-    />
+    <field name="image_mapping"
+	    type="subform"
+           multiple="true"
+           buttons="add,remove"
+           layout="joomla.form.field.subform.repeatable"
+	    label="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL"
+	    description="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_DESC"
+           showon="image_usage:1[OR]image_usage:2"
+	    min="1" >
+        <form>
+              <field name="source"
+                     type="jgimagetype"
+                     label="COM_JOOMGALLERY_FIELDS_SOURCE_IMAGE_LABEL"
+              />
+              <field name="destination"
+                     type="list"
+                     default="0"
+                     label="COM_JOOMGALLERY_FIELDS_DEST_IMAGE_LABEL" >
+                 <option value="original">COM_JOOMGALLERY_ORIGINAL</option>
+                 <option value="detail">COM_JOOMGALLERY_DETAIL</option>
+                 <option value="thumbnail">COM_JOOMGALLERY_THUMBNAIL</option>
+              </field>
+        </form>
+    </field>
   </fieldset>
 </form>

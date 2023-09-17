@@ -90,7 +90,7 @@ abstract class Migration implements MigrationInterface
     $this->getComponent();
 
     // Try to load language file of the migration script
-    $this->app->getLanguage()->load('com_joomgallery.migration'.$this->name, JPATH_ADMINISTRATOR);
+    $this->app->getLanguage()->load('com_joomgallery.migration.'.$this->name, _JOOM_PATH_ADMIN);
 
     // Fill info object
     $this->info               = new \stdClass;

@@ -23,7 +23,7 @@ $wa->useStyle('com_joomgallery.admin')
 ?>
 
 <div class="jg jg-migration">
-  <h2>Available migration scripts:</h2>
+  <h2><?php echo Text::_('COM_JOOMGALLERY_AVAILABLE_SCRIPT'); ?>:</h2>
   <br />
 
   <?php foreach ($this->scripts as $name => $script) : ?>
