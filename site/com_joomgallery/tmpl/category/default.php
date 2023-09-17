@@ -6,7 +6,7 @@
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
-*****************************************************************************************/
+******************************************************************************************/
 
 // No direct access
 defined('_JEXEC') or die;
@@ -18,8 +18,18 @@ use \Joomla\CMS\Session\Session;
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
+$app   = Factory::getApplication();
+$input = $app->getInput();
 $wa = $this->document->getWebAssetManager();
+
+$category_class = $input->get('category_class');
+$num_columns    = $input->get('num_columns');
+$caption_align  = $input->get('caption_align');
+
 $wa->useStyle('com_joomgallery.site');
+if ( $category_class == 'masonry') {
+  $wa->useScript('com_joomgallery.masonry');
+}
 
 $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd     = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
@@ -108,15 +118,15 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php if(count($this->item->images) > 0) : ?>
   <h3>Images</h3>
   <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
-    <div class="jg-images columns-3">
+    <div class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?>" data-masonry="{ pollDuration: 175 }">
       <?php foreach($this->item->images as $key => $image) : ?>
         <div class="jg-image">
           <div class="jg-image-thumbnail">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="dev" alt="<?php echo $image->imgtitle; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image" loading="lazy">
+              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-lazy" alt="<?php echo $image->imgtitle; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image" loading="lazy">
             </a>
           </div>
-          <div class="jg-image-caption">
+          <div class="jg-image-caption <?php echo $caption_align; ?>">
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <?php echo $this->escape($image->imgtitle); ?>
             </a>
@@ -135,3 +145,15 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
     </a>
   </div>
 <?php endif; */?>
+
+<script>
+const images = document.getElementsByTagName('img');
+for (let image of images) {
+  image.addEventListener('load', fadeImg);
+  image.style.opacity = '0';
+}
+function fadeImg () {
+  this.style.transition = 'opacity 1s';
+  this.style.opacity = '1';
+}
+</script>

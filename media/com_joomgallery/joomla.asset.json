@@ -84,6 +84,14 @@
       }
     },
     {
+      "name": "com_joomgallery.masonry",
+      "type": "script",
+      "uri": "com_joomgallery/masonry.min.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
       "name": "com_joomgallery.uppy-uploader",
       "type": "script",
       "uri": "com_joomgallery/uppy/dist/uppy-uploader.js",
