@@ -113,27 +113,27 @@
         <option value="2">Copy</option>
     </field>
     <field name="image_mapping"
-	    type="subform"
+	         type="subform"
            multiple="true"
            buttons="add,remove"
-           layout="joomla.form.field.subform.repeatable"
-	    label="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL"
-	    description="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_DESC"
+           layout="joomla.form.field.subform.repeatable-config"
+	         label="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL"
+	         description="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_DESC"
            showon="image_usage:1[OR]image_usage:2"
-	    min="1" >
+	         min="1" >
         <form>
               <field name="source"
-                     type="jgimagetype"
-                     label="COM_JOOMGALLERY_FIELDS_SOURCE_IMAGE_LABEL"
-              />
-              <field name="destination"
                      type="list"
                      default="0"
-                     label="COM_JOOMGALLERY_FIELDS_DEST_IMAGE_LABEL" >
+                     label="COM_JOOMGALLERY_FIELDS_SOURCE_IMAGE_LABEL" >
                  <option value="original">COM_JOOMGALLERY_ORIGINAL</option>
                  <option value="detail">COM_JOOMGALLERY_DETAIL</option>
                  <option value="thumbnail">COM_JOOMGALLERY_THUMBNAIL</option>
               </field>
+              <field name="destination"
+                     type="jgimagetype"
+                     label="COM_JOOMGALLERY_FIELDS_DEST_IMAGE_LABEL"
+              />
         </form>
     </field>
   </fieldset>

@@ -109,7 +109,7 @@ class MigrationModel extends FormModel
     {
       $img = Uri::base().'components/'._JOOM_OPTION.'/src/Service/Migration/Scripts/'.basename($path, '.php').'.jpg';
 
-      $scripts[basename($path, '.php')] = array('path' => $path, 'img' => $img);
+      $scripts[basename($path, '.php')] = array('name' => basename($path, '.php'), 'path' => $path, 'img' => $img);
     }
 
     return $scripts;

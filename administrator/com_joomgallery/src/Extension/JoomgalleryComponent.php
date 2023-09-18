@@ -87,6 +87,13 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   public $cache = false;
 
   /**
+   * Storage for the xml of the current component
+   *
+   * @var \SimpleXMLElement
+   */
+  public $xml = null;
+
+  /**
    * Storage for the current component version
    *
    * @var string
@@ -118,10 +125,14 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
       $this->cache = new JoomCache();
     }
 
+    if(!$this->xml)
+    {
+      $this->xml  = \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery.xml'));
+    }
+
     if(!$this->version)
     {
-      $xml  = \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery.xml'));
-      $this->version = (string) $xml->version;
+      $this->version = (string) $this->xml->version;
     }
   }
 }

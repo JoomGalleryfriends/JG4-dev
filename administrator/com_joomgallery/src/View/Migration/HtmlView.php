@@ -103,6 +103,14 @@ class HtmlView extends JoomGalleryView
           break;
       }
     }
+    else
+    {
+      // default view
+      foreach($this->scripts as $script)
+      {
+        $this->app->getLanguage()->load('com_joomgallery.migration.'.$script['name'], _JOOM_PATH_ADMIN);
+      }
+    }
 
 		// Check for errors.
 		if(count($errors = $this->get('Errors')))
