@@ -74,6 +74,7 @@ table.itemList th.sort-cell .form-check-input {
   display: grid;
   gap: 2em;
   align-items: flex-start;
+  overflow-anchor: none;
 }
 
 .jg-images.columns-2, .jg-images.masonry-2 {
@@ -171,6 +172,7 @@ table.itemList th.sort-cell .form-check-input {
 a.jg-link:not(.btn) {
   color: var(--jg-color-link);
   text-decoration: none;
+  word-break: break-all;
 }
 
 a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
