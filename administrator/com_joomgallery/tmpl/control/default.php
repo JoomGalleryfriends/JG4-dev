@@ -30,29 +30,25 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
       <div class"jg-control-head">
         <?php // echo 'Kopfbereich für wichtige Meldungen.'; ?>
       </div>
-      <div class="card-columns">
-        <div class="card">
-          <?php echo HTMLHelper::_('image', 'com_joomgallery/watermark.png', Text::_('COM_JOOMGALLERY_LOGO'), ['class' => 'w-100', 'style' => 'padding: 1.2rem'], true); ?>
-          <div class="text-center content">
-            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_INFO'); ?>
-          </div>
+      <div class="card jg-controlpanel-content">
+        <div>
+          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO'); ?>
         </div>
-        <?php // Display Donation ?>
-        <div class="card">
-          <h3 class="card-header">
-            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS'); ?>
-          </h3>
-          <div class="text-center content">
-            <p><?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_LONG'); ?></p>
-            <p>
-              <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVQBAFEZHPL2J" title="<?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?>" target="_blank">
-                <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?> <span class="icon-heart"></span></a>
-            </p>
-          </div>
-          <div class="text-center content">
-            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_SPONSORS'); ?>
-            <a href="mailto:team@joomgalleryfriends.net">team@joomgalleryfriends.net</a>
-          </div>
+        <div>
+          <?php echo HTMLHelper::_('image', 'com_joomgallery/watermark.png', Text::_('COM_JOOMGALLERY_LOGO'), ['class' => 'jg-controlpanel-logo', 'style' => 'padding: 1.2rem'], true); ?>
+        </div>
+        <div>
+          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_LONG'); ?>
+        </div>
+        <div>
+          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVQBAFEZHPL2J" title="<?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?>" target="_blank">
+            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?> <span class="icon-heart"></span></a>
+        </div>
+        <div>
+          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_SPONSORS'); ?><a href="mailto:team@joomgalleryfriends.net">team@joomgalleryfriends.net</a>
+        </div>
+        <div>
+          <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_JED'); ?>
         </div>
       </div>
       <hr>
@@ -110,12 +106,8 @@ HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'aut
         </div>
       </div>
 
-      <?php // Display extensions
-      $title   = Text::_('COM_JOOMGALLERY_CONTROL_EXTENSIONS');
-      $content = 'Module<br /> <br /><hr>Plugins<br /> <br /><hr>Sonstiges<br /> <br /><hr>Sprachdateien<br /> ';
-      $id      = '100';
-
-      collapseContent($title, $content, $id); ?>
+      <?php // Display available extensions 
+      DisplayAvailableExtensions($this->galleryavailableextensionsdata); ?>
       <hr>
 
       <?php // Display installed extensions 
@@ -184,7 +176,7 @@ function DisplayGalleryStatistic($statisticdata)
           </th>
           <td class="d-md-table-cell text-center">
           <?php if($statisticdata['unpublishedcategories'] > 0) : ?>
-            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=0'); ?>">
+            <a href="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=0'); ?>">
               <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedcategories']; ?></span>
             </a>
           <?php else : ?>
@@ -193,7 +185,7 @@ function DisplayGalleryStatistic($statisticdata)
           </td>
           <td class="d-md-table-cell text-center">
           <?php if($statisticdata['publishedcategories'] > 0) : ?>
-            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=1'); ?>">
+            <a href="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&view=categories&filter[published]=1'); ?>">
               <span class="badge bg-info"><?php echo (int) $statisticdata['publishedcategories']; ?></span>
             </a>
           <?php else : ?>
@@ -207,7 +199,7 @@ function DisplayGalleryStatistic($statisticdata)
           </th>
           <td class="d-md-table-cell text-center">
           <?php if($statisticdata['unpublishedimages'] > 0) : ?>
-            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=2'); ?>">
+            <a href="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=2'); ?>">
               <span class="badge bg-info"><?php echo (int) $statisticdata['unpublishedimages']; ?></span>
             </a>
           <?php else : ?>
@@ -216,7 +208,7 @@ function DisplayGalleryStatistic($statisticdata)
           </td>
           <td class="d-md-table-cell text-center">
           <?php if($statisticdata['publishedimages'] > 0) : ?>
-            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=1'); ?>">
+            <a href="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=1'); ?>">
               <span class="badge bg-info"><?php echo (int) $statisticdata['publishedimages']; ?></span>
             </a>
           <?php else : ?>
@@ -230,7 +222,7 @@ function DisplayGalleryStatistic($statisticdata)
           </th>
           <td class="d-md-table-cell text-center">
           <?php if($statisticdata['unapprovedimages'] > 0) : ?>
-            <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=4'); ?>">
+            <a href="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&amp;view=images&amp;filter[published]=4'); ?>">
               <span class="badge bg-info"><?php echo (int) $statisticdata['unapprovedimages']; ?></span>
             </a>
           <?php else : ?>
@@ -606,6 +598,78 @@ function DisplayMostDownloadedImages($header, $data, $id)
 
   <?php return;
 
+}
+
+/**
+ * Display available extensions as collapsed
+ *
+ * @param   array  $manifest  Array with hold the extensions data, $manifest[0}=extension id, $manifest[1]=state, $manifest[2]=array of data
+ *
+ * @since 4.0.0
+ */
+function DisplayAvailableExtensions($manifest)
+{
+
+  $id     = 'availableextensions-100';
+  $itemId = $id . '-item'; ?>
+
+  <div class="card">
+    <div class="accordion" id="<?php echo $id; ?>">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_EXTENSIONS') . ' (old JG3 for testing)'; ?>
+          </button>
+        </h2>
+        <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
+          aria-labelledby="<?php echo $itemId; ?>Header" data-bs-parent="#<?php echo $id; ?>">
+          <div class="accordion-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <td class="w-25">
+                    <?php echo Text::_('JGLOBAL_TITLE'); ?>
+                  </td>
+                  <td class="w-5">
+                    <?php echo Text::_('JVERSION'); ?>
+                  </td>
+                  <td class="w-40">
+                    <?php echo Text::_('COM_JOOMGALLERY_FILE_DESCRIPTION_HINT'); ?>
+                  </td>
+                  <td class="w-10">
+                    <?php echo Text::_('COM_JOOMGALLERY_DOWNLOAD'); ?>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($manifest as $name => $extension) {
+                  // $value = json_decode($extension, true); ?>
+                  <tr>
+                    <td class="d-md-table-cell">
+                      <?php echo $name; ?>
+                    </td>
+                    <td class="d-md-table-cell">
+                      <?php echo $extension['version']; ?>
+                    </td>
+                    <td class="d-md-table-cell">
+                      <?php echo $extension['description']; ?>
+                    </td>
+                    <td class="d-md-table-cell small">
+                        <a href="<?php echo $extension['downloadlink'];?>" title="<?php echo Text::_($extension['downloadlink']); ?>" target="_blank">
+                          <?php echo Text::_('COM_JOOMGALLERY_DOWNLOAD'); ?></a>
+                    </td>
+                  </tr>
+                  <?php } ?>
+              </tbody>
+            </table>
+          </div>
+        </div><!--/accordion-collapse-->
+      </div><!--/accordion-item-->
+    </div><!--/accordion -->
+  </div><!--/card -->
+
+  <?php return;
 }
 
 /**

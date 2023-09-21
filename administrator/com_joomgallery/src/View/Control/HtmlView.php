@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Control;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Feed\FeedFactory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Toolbar\Toolbar;
@@ -88,6 +89,9 @@ class HtmlView extends JoomGalleryView
     // get gallery info data
     $this->galleryinfodata = $this->getGalleryInfoData();
 
+    // get available extensions data
+    $this->galleryavailableextensionsdata = $this->getAvailableExtensions();
+
     // get installed extensions data
     $this->galleryinstalledextensionsdata = $this->getInstalledExtensionsData();
 
@@ -156,7 +160,7 @@ protected function getMostViewedImages($imglimit)
 {
   $popularImages = array();
 
-  $db = Factory::getDbo();
+  $db = Factory::getContainer()->get('DatabaseDriver');
 
   // alt: $model->getImages('a.hits desc', true, 5, 'a.hits > 0');
 
@@ -187,7 +191,7 @@ protected function getNewestImages($imglimit)
 {
   $newestimages = array();
 
-  $db = Factory::getDbo();
+  $db = Factory::getContainer()->get('DatabaseDriver');
 
   $query = $db->getQuery(true)
               ->select($db->quoteName(array('imgtitle', 'created_time', 'id')))
@@ -215,7 +219,7 @@ protected function getBestRatedImages($imglimit)
 {
   $bestratedimages = array();
 
-  $db = Factory::getDbo();
+  $db = Factory::getContainer()->get('DatabaseDriver');
 
   $query = $db->getQuery(true)
               ->select(array('imgtitle', 'imgvotesum/imgvotes' .' AS ' . 'rating', 'id'))
@@ -244,7 +248,7 @@ protected function getMostDownloadedImages($imglimit)
 {
   $mostdownloadedimages = array();
 
-  $db = Factory::getDbo();
+  $db = Factory::getContainer()->get('DatabaseDriver');
 
   $query = $db->getQuery(true)
               ->select(array('imgtitle', 'downloads', 'id'))
@@ -271,7 +275,7 @@ protected function getStatisticData()
 {
   $statisticdata = array();
 
-  $db = Factory::getDbo();
+  $db = Factory::getContainer()->get('DatabaseDriver');
 
   $query = $db->getQuery(true)
     ->select($db->quoteName('id'))
@@ -332,7 +336,7 @@ protected function getGalleryInfoData()
 {
   $galleryinfodata = array();
 
-  $db = Factory::getDbo();
+  $db = Factory::getContainer()->get('DatabaseDriver');
 
   $query = $db->getQuery(true)
               ->select($db->quoteName('manifest_cache'))
@@ -345,6 +349,109 @@ protected function getGalleryInfoData()
   return $galleryinfodata;
 }
 
+  /**
+   * Returns all downloadable extensions developed by JoomGallery::ProjectTeam
+   * with some additional information like the current version number or a
+   * short description of the extension
+   *
+   * @return  array Two-dimensional array with extension information
+   * @since   1.5.0
+   */
+  protected function getAvailableExtensions()
+  {
+    static $extensions;
+
+    if(isset($extensions))
+    {
+      return $extensions;
+    }
+
+    // Check whether the german or the english RSS file should be loaded
+    $subdomain = '';
+    $language = Factory::getLanguage();
+    if(strpos($language->getTag(), 'de-') === false)
+    {
+      $subdomain = 'en.';
+    }
+
+    $site   = 'https://www.'.$subdomain.'joomgalleryfriends.net';
+    $site2  = 'https://'.$subdomain.'joomgalleryfriends.net';
+    $rssurl = $site.'/components/com_newversion/rss/extensions3.rss';
+
+    // Get RSS parsed object
+    $rssDoc = false;
+    try
+    {
+      $feed = new FeedFactory;
+      $rssDoc = $feed->getFeed($rssurl);
+    }
+    catch (InvalidArgumentException $e)
+    {
+    }
+    catch (RunTimeException $e)
+    {
+    }
+
+    $extensions = array();
+    if($rssDoc != false)
+    {
+      for($i = 0; isset($rssDoc[$i]); $i++)
+      {
+        $item = $rssDoc[$i];
+        $name = $item->title;
+
+        // The data type is delivered as the name of the first category
+        $categories = $item->categories;
+        $type = key($categories);
+        switch($type)
+        {
+          case 'general':
+            $description  = $item->content;
+            $link         = $item->uri;
+            if(!is_null($description) && $description != '')
+            {
+              $extensions[$name]['description']   = $description;
+            }
+            if(!is_null($link) && $link != $site && $link != $site2)
+            {
+              $extensions[$name]['downloadlink']  = $link;
+            }
+            break;
+          case 'version':
+            $version  = $item->content;
+            $link     = $item->uri;
+            if(!is_null($version) && $version != '')
+            {
+              $extensions[$name]['version']       = $version;
+            }
+            if(!is_null($link) && $link != $site && $link != $site2)
+            {
+              $extensions[$name]['releaselink']   = $link;
+            }
+            break;
+          case 'autoupdate':
+            $xml  = $item->content;
+            $link = $item->uri;
+            if(!is_null($xml) && $xml != '')
+            {
+              $extensions[$name]['xml']           = $xml;
+            }
+            if(!is_null($link) && $link != $site && $link != $site2)
+            {
+              $extensions[$name]['updatelink']    = $link;
+            }
+            break;
+          default:
+            break;
+        }
+      }
+
+      // Sort the extensions in alphabetical order
+      ksort($extensions);
+    }
+    return $extensions;
+  }
+
 /**
  * Method to get the installed JoomgGallery extensions
  *
@@ -356,7 +463,7 @@ protected function getInstalledExtensionsData()
 {
   $InstalledExtensionsData = array();
 
-  $db = Factory::getDbo();
+  $db = Factory::getContainer()->get('DatabaseDriver');
 
   $query = $db->getQuery(true)
               ->select($db->quoteName(array('extension_id', 'enabled', 'manifest_cache')))
@@ -385,16 +492,16 @@ protected function getInstalledExtensionsData()
     $canDo   = JoomHelper::getActions('category');
     $toolbar = Toolbar::getInstance('toolbar');
 
-    // Categories button
-    $html = '<a href="index.php?option=com_joomgallery&amp;view=categories" class="button-folder-open btn btn-primary"><span class="icon-folder-open" title="'.Text::_('JCATEGORIES').'"></span> '.Text::_('JCATEGORIES').'</a>';
-    $toolbar->appendButton('Custom', $html);
-
     // Images button
     $html = '<a href="index.php?option=com_joomgallery&amp;view=images" class="btn btn-primary"><span class="icon-images" title="'.Text::_('COM_JOOMGALLERY_IMAGES').'"></span> '.Text::_('COM_JOOMGALLERY_IMAGES').'</a>';
     $toolbar->appendButton('Custom', $html);
 
     // Multiple add button
     $html = '<a href="index.php?option=com_joomgallery&amp;view=image&amp;layout=upload" class="btn btn-primary"><span class="icon-upload" title="'.Text::_('Upload').'"></span> '.Text::_('Upload').'</a>';
+    $toolbar->appendButton('Custom', $html);
+
+    // Categories button
+    $html = '<a href="index.php?option=com_joomgallery&amp;view=categories" class="button-folder-open btn btn-primary"><span class="icon-folder-open" title="'.Text::_('JCATEGORIES').'"></span> '.Text::_('JCATEGORIES').'</a>';
     $toolbar->appendButton('Custom', $html);
 
     // Tags button

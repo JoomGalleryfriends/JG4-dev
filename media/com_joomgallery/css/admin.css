@@ -1,3 +1,12 @@
+.jg-controlpanel-content  {
+  padding: 1.2rem;
+  text-align: center;
+}
+
+img.jg-controlpanel-logo {
+  max-width: 600px;
+}
+
 .module-actions {
   -webkit-box-ordinal-group: 2;
       -ms-flex-order: 1;
