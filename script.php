@@ -11,6 +11,7 @@
 defined('_JEXEC') or die();
 
 use \Joomla\CMS\Factory;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Installer\Installer;
@@ -139,7 +140,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $jgtables = $this->detectJGtables();
       if($jgtables)
       {
-        $db = Factory::getContainer()->get('DatabaseDriver');
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         foreach($jgtables as $oldTable)
         {
@@ -342,7 +343,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 		$this->uninstallModules($parent);
 
     // Delete administrator module JoomGallery News
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query
@@ -429,12 +430,10 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
       // Create default mail templates
       $suc_templates = true;
-/* auskommentiert wegen fehler in J5
       if(!$this->addMailTemplate('newimage', array('user_id', 'user_username', 'user_name', 'img_id', 'img_title', 'cat_id', 'cat_title')))
       {
         $suc_templates = false;
       }
-*/
       if(!$suc_templates)
       {
         $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
@@ -453,7 +452,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addMailTemplate($context_id, $tags, $language='')
   {
-    $db = Factory::getContainer()->get('DatabaseDriver');
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Create the model
     $com_mails  = Factory::getApplication()->bootComponent('com_mails');
@@ -512,7 +511,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultCategory()
 	{
-    $db = Factory::getContainer()->get('DatabaseDriver');
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Load JoomTableTrait
     $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
@@ -579,7 +578,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultConfig()
 	{
-    $db = Factory::getContainer()->get('DatabaseDriver');
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Load JoomTableTrait
     $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
@@ -654,7 +653,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultIMGtype($type, $alias, $path)
 	{
-    $db = Factory::getContainer()->get('DatabaseDriver');
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     switch($type)
     {
@@ -696,7 +695,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	private function deactivateExtension($id)
 	{
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->update($db->quoteName('#__extensions'))
@@ -735,7 +734,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       return;
     }
 
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     foreach($plugins->children() as $plugin)
@@ -882,7 +881,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       return;
     }
 
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     foreach($plugins->children() as $plugin)
@@ -954,7 +953,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       return;
     }
 
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     foreach($modules->children() as $module)
@@ -1061,7 +1060,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	private function detectJGExtensions()
 	{
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     // List of all extensions that could negatively impact the JoomGallery (> v4.0.0) from running.
@@ -1097,7 +1096,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     try
     {
-      $db     = Factory::getContainer()->get('DatabaseDriver');
+      $db     = Factory::getContainer()->get(DatabaseInterface::class);
       $tables = $db->getTableList();
       $prefix = Factory::getApplication()->get('dbprefix');
 
@@ -1189,7 +1188,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function getDBextension()
   {
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->select('*')
@@ -1215,7 +1214,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function removeSchemas($id)
   {
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__schemas'));
@@ -1233,7 +1232,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function removeAssets()
   {
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__assets'));
@@ -1252,7 +1251,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function removeContentTypes()
   {
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__content_types'));
@@ -1281,7 +1280,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
   private function createModule($title, $position, $module, $ordering, $access, $showTitle, $params, $client_id, $lang)
   {
     // check if the module already exists
-    $db    = Factory::getContainer()->get('DatabaseDriver');
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true)
                 ->select('id')
                 ->from($db->quoteName('#__modules'))
@@ -1311,7 +1310,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         return false;
       }
 
-      $db      = Factory::getContainer()->get('DatabaseDriver');
+      $db      = Factory::getContainer()->get(DatabaseInterface::class);
       $query   = $db->getQuery(true);
       $columns = array('moduleid', 'menuid');
       $values  = array($row->id, 0);
