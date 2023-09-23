@@ -8,7 +8,7 @@
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 
 // No direct access
 \defined('_JEXEC') or die;

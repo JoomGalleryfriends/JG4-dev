@@ -70,6 +70,17 @@ interface MigrationInterface
   public function getMigrateables(): array;
 
   /**
+   * Returns an object with compatibility info for this migration script.
+   * 
+   * @param   string       $type    Select if you get source or destination info
+   *
+   * @return  Targetinfo   Compatibility info object
+   * 
+   * @since   4.0.0
+   */
+  public function getTargetinfo(string $type = 'source'): Targetinfo;
+
+  /**
    * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type
