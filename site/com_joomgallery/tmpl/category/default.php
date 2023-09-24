@@ -103,15 +103,24 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <?php else : ?>
     <h3><?php echo Text::_('COM_JOOMGALLERY_CATEGORIES') ?></h3>
   <?php endif; ?>
-  <ul>
-    <?php foreach($this->item->children as $key => $subcat) : ?>
-      <li>
-        <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
-          <?php echo $this->escape($subcat->title); ?>
-        </a>
-      </li>
-    <?php endforeach; ?>
-  </ul>
+  <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
+    <div class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?>" data-masonry="{ pollDuration: 175 }">
+      <?php foreach($this->item->children as $key => $subcat) : ?>
+        <div class="jg-image">
+          <div class="jg-image-thumbnail">
+            <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
+              <img src="<?php echo JoomHelper::getImg($subcat->thumbnail, 'thumbnail'); ?>" class="jg-image-lazy" alt="<?php echo $this->escape($subcat->title); ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image" loading="lazy"
+            </a>
+          </div>
+          <div class="jg-image-caption <?php echo $caption_align; ?>">
+            <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
+              <?php echo $this->escape($subcat->title); ?>
+            </a>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
 <?php endif; ?>
 
 <?php // Images ?>
