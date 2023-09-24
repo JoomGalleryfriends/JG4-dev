@@ -22,9 +22,9 @@ $app   = Factory::getApplication();
 $input = $app->getInput();
 $wa = $this->document->getWebAssetManager();
 
-$category_class = $input->get('category_class');
-$num_columns    = $input->get('num_columns');
-$caption_align  = $input->get('caption_align');
+$category_class = $input->get('category_class', 'columns', 'STRING');
+$num_columns    = $input->get('num_columns', 3, 'INT');
+$caption_align  = $input->get('caption_align', 'left', 'STRING');
 
 $wa->useStyle('com_joomgallery.site');
 if ( $category_class == 'masonry') {
