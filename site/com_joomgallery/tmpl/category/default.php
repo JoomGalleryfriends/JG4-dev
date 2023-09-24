@@ -147,7 +147,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php endif; */?>
 
 <script>
-const images = document.getElementsByTagName('img');
+let images = document.getElementsByTagName('img');
 for (let image of images) {
   image.addEventListener('load', fadeImg);
   image.style.opacity = '0';
