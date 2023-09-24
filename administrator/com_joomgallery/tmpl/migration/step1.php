@@ -68,7 +68,7 @@ $wa->useStyle('com_joomgallery.admin')
           </div>
         <?php endforeach; ?>
 
-        <input type="submit" class="btn btn-primary" value="<?php echo $this->script->startBtnText; ?>"/>
+        <input type="submit" class="btn btn-primary" value="<?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STEP1_BTN_TXT'); ?>"/>
       <?php endif; ?>
 
       <input type="hidden" name="task" value="migration.precheck"/>

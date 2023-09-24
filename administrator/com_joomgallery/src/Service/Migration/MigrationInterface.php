@@ -81,6 +81,24 @@ interface MigrationInterface
   public function getTargetinfo(string $type = 'source'): Targetinfo;
 
   /**
+   * Returns the XML object of the source extension
+   *
+   * @return  \SimpleXMLElement   Extension XML object
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceXML(): \SimpleXMLElement;
+
+  /**
+   * Returns a list of involved source directories.
+   *
+   * @return  array    List of paths
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceDirs(): array;
+
+  /**
    * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type

@@ -13,6 +13,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Language\Text;
+
 /**
  * Migration Checks Class
  * Providing a structure for the results of migration checks
@@ -63,7 +65,7 @@ class Checks
    * @since  4.0.0
    * @throws \Exception
    */
-  public function addCategory(string $name, string $title = '', string $desc = '')
+  public function addCategory(string $name, string $title = '', string $desc = '', string $colTitle = '')
   {
     // Make category name lowercase
     $name = \strtolower(\trim($name));
@@ -72,10 +74,11 @@ class Checks
     {
       // Category not yet existing, create a new one
       $cat = new \stdClass();
-      $cat->name   = $name;
-      $cat->title  = $title;
-      $cat->desc   = $desc;
-      $cat->checks = [];
+      $cat->name     = $name;
+      $cat->title    = $title;
+      $cat->desc     = $desc;
+      $cat->colTitle = (empty($colTitle)) ? Text::_('COM_JOOMGALLERY_CHECK') : $colTitle;
+      $cat->checks   = [];
 
       // Add category to check-objects array
       $key = $this->array_push($this->objects, $cat);
@@ -161,7 +164,7 @@ class Checks
     if(!\in_array($asset, \array_keys($this->assets)))
     {
       // Get category key
-      $catKey = $this->assets[$asset];
+      $catKey = $this->assets[$category];
 
       // Asset not yet existing, create a new one
       $check = new \stdClass();
@@ -175,9 +178,9 @@ class Checks
       $key = $this->array_push($this->objects[$catKey]->checks, $check);
 
       // Add check to assets array
-      $this->assets[$name] = $catKey.'.'.$key;
+      $this->assets[$asset] = $catKey.'.'.$key;
 
-      // Modify the oversall success if needed
+      // Modify the overall success if needed
       if($result === false)
       {
         $this->success = false;

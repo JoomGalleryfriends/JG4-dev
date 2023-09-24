@@ -17,8 +17,10 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
-use Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks\Checks;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationInterface;
 
 /**
@@ -138,30 +140,30 @@ abstract class Migration implements MigrationInterface
     // Instantiate a new checks class
     $checks = new Checks();
 
-    // Check log file
-    $checks->addCategory('general', Text::_('COM_JOOMGALLERY_GENERAL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_LOGFILE_CHECK_DESC'));
+    // Check general requirements
+    $checks->addCategory('general', Text::_('COM_JOOMGALLERY_GENERAL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_GENERAL_CHECK_DESC'));
     $this->checkLogFile($checks, 'general');
     $this->checkSiteState($checks, 'general');
 
     // Check source extension (version, compatibility)
-    $checks->addCategory('source', Text::_('COM_JOOMGALLERY_SOURCE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_CHECK_DESC'));
+    $checks->addCategory('source', Text::_('COM_JOOMGALLERY_SOURCE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_CHECK_DESC'));
     $this->checkSourceExtension($checks, 'source');
 
     // Check existance and writeability of source directories
-    $this->checkSourceDir($checks, 'source_directories');
+    $this->checkSourceDir($checks, 'source');
 
     // Check existence and integrity of source databasetables
-    $this->checkSourceTable($checks, 'source_tables');
+    //$this->checkSourceTable($checks, 'source');
 
     // Check destination extension (version, compatibility)
-    $checks->addCategory('destination', Text::_('COM_JOOMGALLERY_DESTINATION'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_CHECK_DESC'));
+    $checks->addCategory('destination', Text::_('COM_JOOMGALLERY_DESTINATION'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DESTINATION_CHECK_DESC'));
     $this->checkDestExtension($checks, 'destination');
 
     // Check existance and writeability of destination directories
-    $this->checkDestDir($checks, 'dest_directories');
+    $this->checkDestDir($checks, 'destination');
 
     // Check existence and integrity of destination databasetables
-    $this->checkDestTable($checks, 'dest_tables');
+    //$this->checkDestTable($checks, 'destination');
 
     return $checks->getAll();
   }
@@ -228,13 +230,13 @@ abstract class Migration implements MigrationInterface
    * Precheck: Check logfile and add check to checks array.
    * 
    * @param  Checks   $checks     The checks object
-   * @param  int      $category   The checks-category into which to add the new check
+   * @param  string   $category   The checks-category into which to add the new check
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  protected function checkLogFile(Checks &$checks, int $category)
+  protected function checkLogFile(Checks &$checks, string $category)
   {
     $log_dir  = Path::clean($this->app->get('log_path'));
 
@@ -276,35 +278,36 @@ abstract class Migration implements MigrationInterface
    * Precheck: Check the source extension to be the correct one for this migration script
    * 
    * @param  Checks   $checks     The checks object
-   * @param  int      $category   The checks-category into which to add the new check
+   * @param  string   $category   The checks-category into which to add the new check
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  protected function checkSourceExtension(Checks &$checks, int $category)
+  protected function checkSourceExtension(Checks &$checks, string $category)
   {
     $src_info = $this->getTargetinfo('source');
+    $src_xml  = $this->getSourceXML();
 
-    if(\version_compare(PHP_VERSION, $src_info->php_min, '<'))
+    if(\version_compare(PHP_VERSION, $src_info->get('php_min'), '<'))
     {
       // PHP version not supported
-      $checks->addCheck($category, 'src_extension', false, Text::sprintf('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $src_info->php_min));
+      $checks->addCheck($category, 'src_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $src_info->get('php_min')));
     }
-    elseif($this->component->xml->name !== $src_info->extension)
+    elseif(\strval($src_xml->name) !== $src_info->get('extension'))
     {
-      // Wrong destination extension
-      $checks->addCheck($category, 'src_extension', false, Text::sprintf('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', $this->component->xml->name));
+      // Wrong source extension
+      $checks->addCheck($category, 'src_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', \strval($src_xml->name)));
     }
-    elseif(\version_compare($this->component->version, $src_info->min, '<') || \version_compare($this->component->version, $src_info->max, '>'))
+    elseif(\version_compare($src_xml->version, $src_info->get('min'), '<') || \version_compare($src_xml->version, $src_info->get('max'), '>'))
     {
       // Version not correct
-      $checks->addCheck($category, 'src_extension', false, Text::sprintf('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $this->component->version, $src_info->min . ' - ' . $src_info->max));
-    }
+      $checks->addCheck($category, 'src_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $src_xml->version, $src_info->get('min') . ' - ' . $src_info->get('max')));
+    } 
     else
     {
       // Check successful
-      $checks->addCheck($category, 'src_extension', true, Text::sprintf('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_SUCCESS', $this->component->xml->name, $this->component->version));
+      $checks->addCheck($category, 'src_extension', true, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_SUCCESS', \strval($src_xml->name), $src_xml->version));
     }
   }
 
@@ -312,35 +315,35 @@ abstract class Migration implements MigrationInterface
    * Precheck: Check the destination extension to be the correct one for this migration script
    * 
    * @param  Checks   $checks     The checks object
-   * @param  int      $category   The checks-category into which to add the new check
+   * @param  string   $category   The checks-category into which to add the new check
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  protected function checkDestExtension(Checks &$checks, int $category)
+  protected function checkDestExtension(Checks &$checks, string $category)
   {
-    $dest_info = $this->getTargetinfo('destination');
+      $dest_info = $this->getTargetinfo('destination');
 
-    if(\version_compare(PHP_VERSION, $dest_info->php_min, '<'))
+    if(\version_compare(PHP_VERSION, $dest_info->get('php_min'), '<'))
     {
       // PHP version not supported
-      $checks->addCheck($category, 'dest_extension', false, Text::sprintf('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $dest_info->php_min));
+      $checks->addCheck($category, 'dest_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $dest_info->get('php_min')));
     }
-    elseif($this->component->xml->name !== $dest_info->extension)
+    elseif(\strval($this->component->xml->name) !== $dest_info->get('extension'))
     {
       // Wrong destination extension
-      $checks->addCheck($category, 'dest_extension', false, Text::sprintf('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', $this->component->xml->name));
+      $checks->addCheck($category, 'dest_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', \strval($this->component->xml->name)));
     }
-    elseif(\version_compare($this->component->version, $dest_info->min, '<') || \version_compare($this->component->version, $dest_info->max, '>'))
+    elseif(\version_compare($this->component->version, $dest_info->get('min'), '<') || \version_compare($this->component->version, $dest_info->get('max'), '>'))
     {
       // Version not correct
-      $checks->addCheck($category, 'dest_extension', false, Text::sprintf('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $this->component->version, $dest_info->min . ' - ' . $dest_info->max));
+      $checks->addCheck($category, 'dest_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $this->component->version, $dest_info->get('min') . ' - ' . $dest_info->get('max')));
     }
     else
     {
       // Check successful
-      $checks->addCheck($category, 'dest_extension', true, Text::sprintf('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_SUCCESS', $this->component->xml->name, $this->component->version));
+      $checks->addCheck($category, 'dest_extension', true, Text::_('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_SUCCESS', \strval($this->component->xml->name), $this->component->version));
     }
   }
 
@@ -348,13 +351,13 @@ abstract class Migration implements MigrationInterface
    * Precheck: Check site state and add check to checks array.
    * 
    * @param  Checks   $checks     The checks object
-   * @param  int      $category   The checks-category into which to add the new check
+   * @param  string   $category   The checks-category into which to add the new check
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  protected function checkSiteState(Checks &$checks, int $category)
+  protected function checkSiteState(Checks &$checks, string $category)
   {
     if($this->app->get('offline'))
     {
@@ -363,6 +366,92 @@ abstract class Migration implements MigrationInterface
     else
     {
       $checks->addCheck($category, 'offline', false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+    }
+  }
+
+  /**
+   * Precheck: Check directories of the source to be existent
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function checkSourceDir(Checks &$checks, string $category)
+  {
+    // Retrieve a list of source directories involved in migration
+    $directories = $this->getSourceDirs();
+
+    foreach($directories as $dir)
+    {
+      $check_name = 'src_dir_' . \basename($dir);
+
+      if(!\is_dir($dir))
+      {
+        // Path is not a directory
+        $checks->addCheck($category, $check_name, false, $dir, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
+      }
+      else
+      {
+        $checks->addCheck($category, $check_name, true, $dir, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRECTORY_SUCCESS'));
+      }
+    }
+  }
+
+  /**
+   * Precheck: Check directories of the destination to be existent and writeable
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function checkDestDir(Checks &$checks, string $category)
+  {
+    // Instantiate filesystem service
+    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
+
+    // Get all imagetypes
+    $imagetypes = JoomHelper::getRecords('imagetypes', $this->component);
+
+    foreach($imagetypes as $imagetype)
+    {
+      $check_name = 'dest_dir_' . $imagetype->typename;
+      $error      = false;
+
+      try
+      {
+        $dir_info = $this->component->getFilesystem()->getFile($imagetype->path);
+      }
+      catch(FileNotFoundException $msg)
+      { 
+        // Path doesn't exist
+        $checks->addCheck($category, $check_name, false, $imagetype->path, Text::_('COM_JOOMGALLERY_ERROR_PATH_NOT_EXISTING'));
+        $error = true;
+      }
+      catch(\Exception $msg)
+      {
+        // Error in filesystem
+        $checks->addCheck($category, $check_name, false, $imagetype->path, Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $msg));
+        $error = true;
+      }
+
+      if(!$error)
+      {
+        if($dir_info->type !== 'dir')
+        {
+          // Path is not a directory
+          $checks->addCheck($category, $check_name, false, $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
+        }
+        else
+        {
+          $checks->addCheck($category, $check_name, true, $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRECTORY_SUCCESS'));
+        }
+      }      
     }
   }
 }

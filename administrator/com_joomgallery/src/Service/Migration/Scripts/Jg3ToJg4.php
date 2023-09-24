@@ -14,7 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filesystem\Path;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Migration;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Targetinfo;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationInterface;
 
 /**
@@ -55,6 +57,68 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   public function __construct()
   {
     parent::__construct();
+  }
+
+  /**
+   * Returns an object with compatibility info for this migration script.
+   * 
+   * @param   string       $type    Select if you get source or destination info
+   *
+   * @return  Targetinfo   Compatibility info object
+   * 
+   * @since   4.0.0
+   */
+  public function getTargetinfo(string $type = 'source'): Targetinfo
+  {
+    $info = new Targetinfo();
+
+    $info->set('target', $type);
+    $info->set('type','component');
+
+    if($type === 'source')
+    {
+      $info->set('extension','JoomGallery');
+      $info->set('min', '3.6.0');
+      $info->set('max', '3.6.99');
+      $info->set('php_min', '5.6.0');
+    }
+    elseif($type === 'destination')
+    {
+      $info->set('extension','com_joomgallery');
+      $info->set('min', '4.0.0');
+      $info->set('max', '5.99.99');
+      $info->set('php_min', '7.4.0');
+    }
+    else
+    {
+      throw new \Exception('Type must be eighter "source" or "destination", but "'.$type.'" given.', 1);
+    }
+
+    return $info;
+  }
+
+  /**
+   * Returns the XML object of the source extension
+   *
+   * @return  \SimpleXMLElement   Extension XML object
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceXML(): \SimpleXMLElement
+  {
+    return \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery_old.xml'));
+  }
+
+  /**
+   * Returns a list of involved source directories.
+   *
+   * @return  array    List of paths
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceDirs(): array
+  {
+    return array();
   }
 
   /**

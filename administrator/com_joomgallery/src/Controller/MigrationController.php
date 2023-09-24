@@ -234,7 +234,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$success)
     {
       // Pre-checks not successful. Show error message.
-      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_MIGRATION_STEP2_FAILED', $model->getError()), 'error');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $model->getError()), 'error');
     }
     else
     {
@@ -292,7 +292,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$precheck)
     {
       // Pre-checks not successful. Show error message.
-      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_MIGRATION_STEP2_FAILED', 'Previous step not completed.'), 'error');
+      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $msg), 'error');
       // Redirect to the step 2 screen
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
     }

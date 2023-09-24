@@ -56,52 +56,53 @@ $wa->useStyle('com_joomgallery.admin')
         name="adminForm" id="migration-form" class="form-validate" aria-label="COM_JOOMGALLERY_MIGRATION_STEP2_TITLE">
 
       <?php if(empty($this->error)) : ?>
-        <h3>Results of the migration check</h3>
+        <h3><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_PRECHECK_TITLE'); ?></h3>
 
         <?php // Loop through all available check-categories ?>
         <?php foreach ($this->precheck as $cat) : ?>
           <div class="card">
-            <?php if($cat->title): ?>
-              <div class="card-body">
-                <h4><?php echo $cat->title; ?></h4>
-                <?php if($cat->desc): ?>
-                  <span><?php echo $cat->desc; ?></span>
-                <?php endif; ?>
-              </div>
-            <?php endif; ?>
-            <div class="card-body">
-              <table class="table">
-                <caption class="visually-hidden"><?php echo $cat->title; ?></caption>
-                <thead>
-                  <tr>
-                    <th class="w-70" scope="col"><?php echo $cat->colTitle; ?></th>
-                    <th scope="col"><?php echo Text::_('JSTATUS'); ?></th>
-                    <th class="w-10" scope="col"><?php echo Text::_('JTOOLBAR_HELP'); ?></th>
-                  </tr>
-                </thead>
-                <tbody>
+            <div class="card-body"> 
+              <?php if($cat->title): ?>
+                <div class="card-title">
+                  <h4><?php echo $cat->title; ?></h4>
+                  <?php if($cat->desc): ?>
+                    <span><?php echo $cat->desc; ?></span>
+                  <?php endif; ?>
+                </div>
+              <?php endif; ?>
+              <div class="card-text">
+                <table class="table">
+                  <caption class="visually-hidden"><?php echo $cat->title; ?></caption>
+                  <thead>
+                    <tr>
+                      <th class="w-70" scope="col"><?php echo $cat->colTitle; ?></th>
+                      <th scope="w-20"><?php echo Text::_('JSTATUS'); ?></th>
+                      <th class="w-10" scope="col"><?php echo Text::_('JTOOLBAR_HELP'); ?></th>
+                    </tr>
+                  </thead>
+                  <tbody>
 
-                    <?php // Loop through all available check-categories ?>
-                    <?php foreach ($cat->checks as $check) : ?>
-                      <tr>
-                        <td>
-                          <strong><?php echo $check->title; ?></strong><br />
-                          <small><?php echo $check->description; ?></small>
-                        </td>
-                        <td><span class="badge bg-<?php echo $check->result ? 'success' : 'danger'; ?>"><?php echo $check->result ? 'success' : 'failed'; ?></span></td>
-                        <td><a href="#" class="btn btn-outline-secondary" data-text="<?php echo $check->help; ?>"><span class="icon-question" aria-hidden="true"></span></a></td>
-                      </tr>
-                    <?php endforeach; ?>
-                  
-                </tbody>
-              </table>
+                      <?php // Loop through all available check-categories ?>
+                      <?php foreach ($cat->checks as $check) : ?>
+                        <tr>
+                          <td>
+                            <strong><?php echo $check->title; ?></strong><br />
+                            <small><?php echo $check->desc; ?></small>
+                          </td>
+                          <td><span class="badge bg-<?php echo $check->result ? 'success' : 'danger'; ?>"><?php echo $check->result ? 'success' : 'failed'; ?></span></td>
+                          <td><a href="#" class="btn btn-outline-secondary" data-text="<?php echo $check->help; ?>"><span class="icon-question" aria-hidden="true"></span></a></td>
+                        </tr>
+                      <?php endforeach; ?>
+                    
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
+          <br />
         <?php endforeach; ?>
 
-        <br />
-
-        <input type="submit" class="btn btn-primary <?php echo $this->success ? '' : 'disabled'; ?>" value="<?php echo $this->script->startBtnText; ?>"/>
+        <input type="submit" class="btn btn-primary <?php echo $this->success ? '' : 'disabled'; ?>" value="<?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STEP2_BTN_TXT'); ?>"/>
       <?php endif; ?>
 
       <input type="hidden" name="task" value="migration.migrate"/>
