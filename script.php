@@ -246,7 +246,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
           <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
-          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
+          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control#availableextensions-100'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($install_message != '') : ?>
           <div><?php echo $install_message;?></div>
@@ -296,7 +296,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
           <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
-          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
+          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control#availableextensions-100'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
         </p>
         <?php if ($update_message != '') : ?>
           <div><?php echo $update_message;?></div>
