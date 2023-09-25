@@ -455,14 +455,10 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Create the model
-    $com_mails  = Factory::getApplication()->bootComponent('com_mails');
-    $tableClass = $com_mails->getMVCFactory()->createTable('template', 'administrator');
+    $com_mails = Factory::getApplication()->bootComponent('com_mails');
+    $table     = $com_mails->getMVCFactory()->createTable('template', 'administrator');
 
-    if(class_exists($tableClass))
-    {
-      $table = new $tableClass($db);
-    }
-    else
+    if(!$table)
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error load mail template table'), 'error');
 
