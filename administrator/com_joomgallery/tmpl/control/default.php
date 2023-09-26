@@ -619,7 +619,7 @@ function DisplayAvailableExtensions($manifest)
         <h2 class="accordion-header" id="<?php echo $itemId; ?>Header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
             data-bs-target="#<?php echo $itemId; ?>" aria-expanded="false" aria-controls="<?php echo $itemId; ?>">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_EXTENSIONS') . ' (old JG3 for testing)'; ?>
+            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_EXTENSIONS'); ?>
           </button>
         </h2>
         <div id="<?php echo $itemId; ?>" class="accordion-collapse collapse"
@@ -631,13 +631,13 @@ function DisplayAvailableExtensions($manifest)
                   <td class="w-25">
                     <?php echo Text::_('JGLOBAL_TITLE'); ?>
                   </td>
-                  <td class="w-5">
+                  <td class="w-10">
                     <?php echo Text::_('JVERSION'); ?>
                   </td>
-                  <td class="w-40">
+                  <td class="w-50">
                     <?php echo Text::_('COM_JOOMGALLERY_FILE_DESCRIPTION_HINT'); ?>
                   </td>
-                  <td class="w-10">
+                  <td class="w-15">
                     <?php echo Text::_('COM_JOOMGALLERY_DOWNLOAD'); ?>
                   </td>
                 </tr>

@@ -376,7 +376,7 @@ protected function getGalleryInfoData()
 
     $site   = 'https://www.'.$subdomain.'joomgalleryfriends.net';
     $site2  = 'https://'.$subdomain.'joomgalleryfriends.net';
-    $rssurl = $site.'/components/com_newversion/rss/extensions3.rss';
+    $rssurl = $site.'/components/com_newversion/rss/extensions4.rss';
 
     // Get RSS parsed object
     $rssDoc = false;
