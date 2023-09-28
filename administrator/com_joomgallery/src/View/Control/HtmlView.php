@@ -52,24 +52,12 @@ class HtmlView extends JoomGalleryView
   public function display($tpl = null)
   {
     $this->params = ComponentHelper::getParams('com_joomgallery');
-    $this->config = JoomHelper::getService('config');
 
     ToolBarHelper::title(Text::_('COM_JOOMGALLERY_CONTROL_PANEL') , 'home');
 
     $lang          = Factory::getLanguage();
     $this->canDo   = JoomHelper::getActions();
     $this->modules = ModuleHelper::getModules('joom_cpanel');
-    $imglimit      = $this->config->get('jg_control_count_images');
-
-    // Check for allowed number of images
-    if($imglimit < 1)
-    {
-      $imglimit = 1;
-    }
-    elseif($imglimit > 100)
-    {
-      $imglimit = 100;
-    }
 
     // get statistic data
     $this->statisticdata = $this->getStatisticData();
