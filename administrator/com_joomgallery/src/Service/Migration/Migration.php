@@ -454,4 +454,54 @@ abstract class Migration implements MigrationInterface
       }      
     }
   }
+
+  /**
+   * Precheck: Check db and tables of the source
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function checkSourceTable(Checks &$checks, string $category)
+  {
+    // Create and check db connection
+
+    // Check if required tables exists
+
+    // Check number of records in tables
+
+    // Check whether ROOT category exists
+
+    // Check whether ROOT asset exists
+
+  }
+
+  /**
+   * Precheck: Check db and tables of the destination
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function checkDestTable(Checks &$checks, string $category)
+  {
+    // Check if required tables exists
+    $db     = $this->app->getDB;
+    $tables = JoomHelper::$content_types;
+
+    $db->getTableList();
+
+    // Check number of records in tables
+
+    // Check whether ROOT category exists
+
+    // Check whether ROOT asset exists
+
+  }
 }

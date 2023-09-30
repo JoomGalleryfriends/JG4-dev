@@ -35,7 +35,7 @@ class JoomHelper
    *
    * @var array
    */
-  protected static $content_types = array('category'  => _JOOM_TABLE_CATEGORIES,
+  public static $content_types = array(   'category'  => _JOOM_TABLE_CATEGORIES,
                                           'comment'   => _JOOM_TABLE_COMMENTS,
                                           'config'    => _JOOM_TABLE_CONFIGS,
                                           'faulty'    => _JOOM_TABLE_FAULTIES,
