@@ -208,6 +208,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if($this->installSkipMsg)
     {
+      // Skip install method here if we upgrade from an old version
+      // and we don't want to show the install text.
       return;
     }
 
