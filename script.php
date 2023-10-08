@@ -156,7 +156,6 @@ class com_joomgalleryInstallerScript extends InstallerScript
       if($jgtables)
       {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-
         foreach($jgtables as $oldTable)
         {
           $db->renameTable($oldTable, $oldTable.'_old');
@@ -230,7 +229,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     // Create news feed module
     $subdomain = '';
-    $language = Factory::getLanguage();
+    $language = Factory::getContainer()->get(LanguageFactoryInterface::class);
     if(strpos($language->getTag(), 'de-') === false)
     {
       $subdomain = 'en.';
