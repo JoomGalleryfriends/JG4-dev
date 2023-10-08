@@ -59,11 +59,26 @@ class com_joomgalleryInstallerScript extends InstallerScript
   protected $new_code = '';
 
   /**
+   * Counter variable
+   *
+   * @var  int
+   */
+  protected $count = 0;
+
+  /**
    * True to skip output during install() method
    *
    * @var  bool
    */
   protected $installSkipMsg = false;
+
+  /**
+   * True to show that the current script is exectuted during an upgrade
+   * from an old JoomGallery version (JG 1-3)
+   *
+   * @var  bool
+   */
+  protected $fromOldJG = false;
 
 
 	/**
@@ -271,6 +286,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       // We update from an old version (JG 1-3)
       $this->installSkipMsg = true;
+      $this->fromOldJG      = true;
       $this->install($parent);
     }
     else
@@ -390,7 +406,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
    */
   function postflight($type, $parent)
   {
-    if($type == 'install')
+    if($type == 'install' || ($type == 'update' && $this->fromOldJG))
     {
       $app = Factory::getApplication();
 
