@@ -301,7 +301,7 @@ class MigrationModel extends FormModel
     // Create table
     if(!$table = $this->getMVCFactory()->createTable($type, 'administrator'))
     {
-      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_TABLE_NOT_EXISTING', $type));
+      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type));
 
       return false;
     }

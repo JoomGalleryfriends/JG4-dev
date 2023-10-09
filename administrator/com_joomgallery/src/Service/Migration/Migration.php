@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
@@ -152,7 +153,7 @@ abstract class Migration implements MigrationInterface
     // Check existance and writeability of source directories
     $this->checkSourceDir($checks, 'source');
 
-    // Check existence and integrity of source databasetables
+    // Check existence and integrity of source database tables
     //$this->checkSourceTable($checks, 'source');
 
     // Check destination extension (version, compatibility)
@@ -162,8 +163,8 @@ abstract class Migration implements MigrationInterface
     // Check existance and writeability of destination directories
     $this->checkDestDir($checks, 'destination');
 
-    // Check existence and integrity of destination databasetables
-    //$this->checkDestTable($checks, 'destination');
+    // Check existence and integrity of destination database tables
+    $this->checkDestTable($checks, 'destination');
 
     return $checks->getAll();
   }
@@ -323,7 +324,8 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkDestExtension(Checks &$checks, string $category)
   {
-      $dest_info = $this->getTargetinfo('destination');
+    $dest_info = $this->getTargetinfo('destination');
+    $version   = \str_replace('-dev', '', $this->component->version);
 
     if(\version_compare(PHP_VERSION, $dest_info->get('php_min'), '<'))
     {
@@ -335,7 +337,7 @@ abstract class Migration implements MigrationInterface
       // Wrong destination extension
       $checks->addCheck($category, 'dest_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', \strval($this->component->xml->name)));
     }
-    elseif(\version_compare($this->component->version, $dest_info->get('min'), '<') || \version_compare($this->component->version, $dest_info->get('max'), '>'))
+    elseif(\version_compare($version, $dest_info->get('min'), '<') || \version_compare($version, $dest_info->get('max'), '>'))
     {
       // Version not correct
       $checks->addCheck($category, 'dest_extension', false, Text::_('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $this->component->version, $dest_info->get('min') . ' - ' . $dest_info->get('max')));
@@ -391,11 +393,11 @@ abstract class Migration implements MigrationInterface
       if(!\is_dir($dir))
       {
         // Path is not a directory
-        $checks->addCheck($category, $check_name, false, $dir, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
+        $checks->addCheck($category, $check_name, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $dir, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
       }
       else
       {
-        $checks->addCheck($category, $check_name, true, $dir, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRECTORY_SUCCESS'));
+        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $dir, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRECTORY_SUCCESS'));
       }
     }
   }
@@ -430,13 +432,13 @@ abstract class Migration implements MigrationInterface
       catch(FileNotFoundException $msg)
       { 
         // Path doesn't exist
-        $checks->addCheck($category, $check_name, false, $imagetype->path, Text::_('COM_JOOMGALLERY_ERROR_PATH_NOT_EXISTING'));
+        $checks->addCheck($category, $check_name, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::_('COM_JOOMGALLERY_ERROR_PATH_NOT_EXISTING'));
         $error = true;
       }
       catch(\Exception $msg)
       {
         // Error in filesystem
-        $checks->addCheck($category, $check_name, false, $imagetype->path, Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $msg));
+        $checks->addCheck($category, $check_name, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $msg));
         $error = true;
       }
 
@@ -445,11 +447,11 @@ abstract class Migration implements MigrationInterface
         if($dir_info->type !== 'dir')
         {
           // Path is not a directory
-          $checks->addCheck($category, $check_name, false, $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
+          $checks->addCheck($category, $check_name, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
         }
         else
         {
-          $checks->addCheck($category, $check_name, true, $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRECTORY_SUCCESS'));
+          $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRECTORY_SUCCESS'));
         }
       }      
     }
@@ -491,17 +493,104 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkDestTable(Checks &$checks, string $category)
   {
-    // Check if required tables exists
-    $db     = $this->app->getDB;
-    $tables = JoomHelper::$content_types;
+    // Get table info
+    $db        = Factory::getContainer()->get(DatabaseInterface::class);
+    $tables    = JoomHelper::$content_types;
+    $tableList = $db->getTableList();
+    $dbPrefix  = $this->app->get('dbprefix');
 
-    $db->getTableList();
+    // Check whether root category exists
+    $rootCat = false;    
+    $query   = $db->getQuery(true)
+          ->select('COUNT(*)')
+          ->from($db->quoteName(_JOOM_TABLE_CATEGORIES))
+          ->where($db->quoteName('id') . ' = 1')
+          ->where($db->quoteName('title') . ' = ' . $db->quote('Root'))
+          ->where($db->quoteName('parent_id') . ' = 0');
+    $db->setQuery($query);
 
-    // Check number of records in tables
+    if($db->loadResult())
+    {
+      $checks->addCheck($category, 'dest_root_cat', true, Text::_('COM_JOOMGALLERY_ROOT_CATEGORY'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_SUCCESS'));
+      $rootCat = true;
+    }
+    else
+    {
+      $checks->addCheck($category, 'dest_root_cat', false, Text::_('COM_JOOMGALLERY_ROOT_CATEGORY'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ERROR'));
+    }
 
-    // Check whether ROOT category exists
+    // Check whether root asset exists
+    $query = $db->getQuery(true)
+          ->select('id')
+          ->from($db->quoteName('#__assets'))
+          ->where($db->quoteName('name') . ' = ' . $db->quote(_JOOM_OPTION))
+          ->where($db->quoteName('parent_id') . ' = 1');
+    $db->setQuery($query);
 
-    // Check whether ROOT asset exists
+    if($rootAssetID = $db->loadResult())
+    {
+      $checks->addCheck($category, 'dest_root_asset', true, Text::_('COM_JOOMGALLERY_ROOT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_ASSET_SUCCESS'));
+    }
+    else
+    {
+      $checks->addCheck($category, 'dest_root_asset', false, Text::_('COM_JOOMGALLERY_ROOT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_ASSET_ERROR'));
+    }
 
+    // Check whether root category asset exists
+    $query = $db->getQuery(true)
+          ->select('id')
+          ->from($db->quoteName('#__assets'))
+          ->where($db->quoteName('name') . ' = ' . $db->quote('com_joomgallery.category.1'))
+          ->where($db->quoteName('parent_id') . ' = ' . $db->quote($rootAssetID));
+    $db->setQuery($query);
+
+    if($db->loadResult())
+    {
+      $checks->addCheck($category, 'dest_root_cat_asset', true, Text::_('COM_JOOMGALLERY_ROOT_CAT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ASSET_SUCCESS'));
+    }
+    else
+    {
+      $checks->addCheck($category, 'dest_root_cat_asset', false, Text::_('COM_JOOMGALLERY_ROOT_CAT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ASSET_ERROR'));
+    }
+
+    // Check required tables
+    foreach($tables as $tablename)
+    {
+      $check_name = 'dest_table_' . $tablename;
+      
+      // Check if required tables exists
+      if(!\in_array( \str_replace('#__', $dbPrefix, $tablename), $tableList))
+      {
+        $checks->addCheck($category, $check_name, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_ERROR_TABLE_NOT_EXISTING'));
+        continue;
+      }
+
+      // Check number of records in tables
+      $query = $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from($tablename);
+      $db->setQuery($query);
+
+      $count = $db->loadResult();
+
+      if($tablename == _JOOM_TABLE_CATEGORIES && $rootCat)
+      {
+        $count = $count - 1;
+      }
+
+      $check_name = 'dest_table_' . $tablename . '_count';
+      if($count == 0)
+      {
+        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'));
+      }
+      elseif($this->params->source_ids && $count > 0)
+      {
+        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count) . '<br/>' . Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_USE_IDS_HINT'));
+      }
+      else
+      {
+        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
+      }
+    }    
   }
 }
