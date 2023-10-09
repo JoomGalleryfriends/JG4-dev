@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\MVC\Model\FormModel;
 use \Joomla\CMS\Language\Multilanguage;
@@ -191,7 +192,7 @@ class MigrationModel extends FormModel
 		$data = $this->app->getUserState($name.'.step2.data', array());
 
     // Check the session for validated migration parameters
-    $params = $this->app->getUserState($name.'.params', array());
+    $params = $this->app->getUserState($name.'.params', null);
 
 		return (empty($params)) ? $data : $params;
 	}
@@ -210,7 +211,8 @@ class MigrationModel extends FormModel
     $info = $this->getScript();
 
     // Set the migration parameters
-    $this->component->getMigration()->set('params', (object) $params);
+    $params = new Registry($params);
+    $this->component->getMigration()->set('params', $params);
 
     // Perform the prechecks
     return $this->component->getMigration()->precheck();
@@ -230,7 +232,8 @@ class MigrationModel extends FormModel
     $info = $this->getScript();
 
     // Set the migration parameters
-    $this->component->getMigration()->set('params', (object) $params);
+    $params = new Registry($params);
+    $this->component->getMigration()->set('params', $params);
 
     // Perform the prechecks
     return $this->component->getMigration()->postcheck();
@@ -252,7 +255,8 @@ class MigrationModel extends FormModel
     $info = $this->getScript();
 
     // Set the migration parameters
-    $this->component->getMigration()->set('params', (object) $params);
+    $params = new Registry($params);
+    $this->component->getMigration()->set('params', $params);
 
     // Get record data from source
     $data = $this->component->getMigration()->getData($type, $pk);
@@ -261,7 +265,7 @@ class MigrationModel extends FormModel
     $data = $this->component->getMigration()->applyDataMapping($data);
 
     // Create new record based on data
-    $record = $this->insertRecord($type, $data, $params['same_ids']);
+    $record = $this->insertRecord($type, $data, $params->get('same_ids'));
 
     // Create imagetypes
     if($type === 'image')

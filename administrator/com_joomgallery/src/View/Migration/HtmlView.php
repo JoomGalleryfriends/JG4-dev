@@ -69,7 +69,7 @@ class HtmlView extends JoomGalleryView
         if(\is_null($this->params) && $this->layout != 'step1')
         {
           // Requested script does not exists
-          \array_push($this->error, 'COM_JOOMGALLERY_MIGRATION_PARAMS_NOT_EXIST');
+          \array_push($this->error, 'COM_JOOMGALLERY_SERVICE_MIGRATION_STEP_NOT_AVAILABLE');
         }
       }
 

@@ -118,7 +118,72 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    */
   public function getSourceDirs(): array
   {
-    return array();
+    $dirs = array( $this->params->get('orig_path'),
+                   $this->params->get('detail_path'),
+                   $this->params->get('thumb_path')
+                  );
+
+    return $dirs;
+  }
+
+  /**
+   * Returns the Joomla root path of the source.
+   *
+   * @return  string    Source Joomla root path
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceRootPath(): string
+  {
+    if($this->params->get('same_joomla', 1))
+    {
+      $root = Path::clean(JPATH_ROOT . '/');
+    }
+    else
+    {
+      $root = Path::clean($this->params->get('joomla_path'));
+
+      if(\substr($root, -1) != '/')
+      {
+        $root = Path::clean($root . '/');
+      }
+    }
+
+    return $root;
+  }
+
+  /**
+   * Returns a list of involved source tables.
+   *
+   * @return  array    List of table names (Joomla style, e.g #__joomgallery)
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceTables(): array
+  {
+    $tables = array( '#__joomgallery',
+                     '#__joomgallery_image_details',
+                     '#__joomgallery_catg',
+                     '#__joomgallery_category_details',
+                     '#__joomgallery_comments',
+                     '#__joomgallery_config',
+                     '#__joomgallery_countstop',
+                     '#__joomgallery_maintenance',
+                     '#__joomgallery_nameshields',
+                     '#__joomgallery_orphans',
+                     '#__joomgallery_users',
+                     '#__joomgallery_votes'
+                    );
+
+    if($this->params->get('same_db'))
+    {
+      foreach($tables as $key => $table)
+      {
+        $tables[$key] = $table . '_old';
+      }
+    }
+
+    return $tables;
   }
 
   /**

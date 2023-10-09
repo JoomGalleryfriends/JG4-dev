@@ -99,6 +99,24 @@ interface MigrationInterface
   public function getSourceDirs(): array;
 
   /**
+   * Returns the Joomla root path of the source.
+   *
+   * @return  string    Source Joomla root path
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceRootPath(): string;
+
+  /**
+   * Returns a list of involved source tables.
+   *
+   * @return  array    List of table names (Joomla style, e.g #__joomgallery)
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceTables(): array;
+
+  /**
    * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type

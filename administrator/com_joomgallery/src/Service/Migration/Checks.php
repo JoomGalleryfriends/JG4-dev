@@ -54,6 +54,16 @@ class Checks
   private $success = true;
 
   /**
+   * The overall error message
+   * This message is displayed on top of the results display
+   *
+   * @var  string
+   *
+   * @since  4.0.0
+   */
+  private $message = '';
+
+  /**
    * Register a new category or modify an existing one
    *
    * @param   string   $name    The name of the category
@@ -184,6 +194,11 @@ class Checks
       if($result === false)
       {
         $this->success = false;
+
+        if($this->message === '')
+        {
+          $this->message = $title . ' (' . $desc . ')';
+        }
       }
     }
     else
@@ -297,7 +312,7 @@ class Checks
    */
   public function getAll(): array
   {
-    return array($this->success, $this->objects);
+    return array($this->success, $this->objects, $this->message);
   }
 
   /**

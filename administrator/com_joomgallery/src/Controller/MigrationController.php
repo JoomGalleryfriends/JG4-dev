@@ -17,6 +17,7 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\Input\Input;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\MVC\Controller\BaseController;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\Form\FormFactoryAwareInterface;
@@ -230,16 +231,16 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $validData);
 
     // Perform the pre migration checks
-    list($success, $res) = $model->precheck($validData);
+    list($success, $res, $msg) = $model->precheck($validData);
     if(!$success)
     {
       // Pre-checks not successful. Show error message.
-      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $model->getError()), 'error');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $msg), 'error');
     }
     else
     {
       // Pre-checks successful. Show success message.
-      $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_STEP2_SUCCESSFUL'));
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SUCCESS_MIGRATION_STEP2'));
     }
 
     // Save the results of the pre migration checks in the session.

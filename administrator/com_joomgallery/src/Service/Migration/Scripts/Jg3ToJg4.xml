@@ -52,7 +52,7 @@
         <option value="0">JNO</option>
         <option value="1">JYES</option>
     </field>
-    <field name="db_type"
+    <field name="dbtype"
            type="databaseconnection"
            supported="mysql,mysqli"
            default="mysqli"
@@ -60,29 +60,29 @@
            showon="same_db:0"
            label="COM_JOOMGALLERY_FIELDS_DATABASE_TYPE_LABEL"
       />
-      <field name="db_host"
+      <field name="dbhost"
              type="text"
              default="localhost"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_HOST_LABEL"
       />
-      <field name="db_user"
+      <field name="dbuser"
              type="text"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_USER_LABEL"
       />
-      <field name="db_pass"
+      <field name="dbpass"
              type="password"
              filter="raw"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_PASS_LABEL"
       />
-      <field name="db_name"
+      <field name="dbname"
              type="text"
              showon="same_db:0"
              label="COM_JOOMGALLERY_FIELDS_DATABASE_NAME_LABEL"
       />
-      <field name="db_prefix"
+      <field name="dbprefix"
            type="text"
            filter="string"
            size="10"

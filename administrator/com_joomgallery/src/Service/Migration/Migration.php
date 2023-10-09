@@ -13,11 +13,14 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 // No direct access
 \defined('_JEXEC') or die;
 
+use Exception;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\Database\DatabaseInterface;
+use \Joomla\Database\DatabaseFactory;
 use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
@@ -37,7 +40,7 @@ abstract class Migration implements MigrationInterface
   /**
 	 * Storage for the migration form object.
 	 *
-	 * @var   \stdClass
+	 * @var   Registry
 	 *
 	 * @since  4.0.0
 	 */
@@ -154,7 +157,7 @@ abstract class Migration implements MigrationInterface
     $this->checkSourceDir($checks, 'source');
 
     // Check existence and integrity of source database tables
-    //$this->checkSourceTable($checks, 'source');
+    $this->checkSourceTable($checks, 'source');
 
     // Check destination extension (version, compatibility)
     $checks->addCategory('destination', Text::_('COM_JOOMGALLERY_DESTINATION'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DESTINATION_CHECK_DESC'));
@@ -385,12 +388,13 @@ abstract class Migration implements MigrationInterface
   {
     // Retrieve a list of source directories involved in migration
     $directories = $this->getSourceDirs();
+    $root        = $this->getSourceRootPath();
 
     foreach($directories as $dir)
     {
       $check_name = 'src_dir_' . \basename($dir);
 
-      if(!\is_dir($dir))
+      if(!\is_dir($root . $dir))
       {
         // Path is not a directory
         $checks->addCheck($category, $check_name, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $dir, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
@@ -469,16 +473,61 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkSourceTable(Checks &$checks, string $category)
   {
-    // Create and check db connection
+    // Get table info
+    if($this->params->get('same_db'))
+    {
+      $db        = Factory::getContainer()->get(DatabaseInterface::class);
+      $dbPrefix  = $this->app->get('dbprefix');
+    }
+    else
+    {
+      $options   = array ('driver' => $this->params->get('dbtype'), 'host' => $this->params->get('dbhost'), 'user' => $this->params->get('dbuser'), 'password' => $this->params->get('dbpass'), 'database' => $this->params->get('dbname'), 'prefix' => $this->params->get('dbprefix'));
+      $dbFactory = new DatabaseFactory();
+      $db        = $dbFactory->getDriver($this->params->get('dbtype'), $options);
+      $dbPrefix  = $this->params->get('dbprefix');
+    }
 
-    // Check if required tables exists
+    // Check connection to database
+    try
+    {
+      $tableList = $db->getTableList();
+    }
+    catch (\Exception $msg)
+    {
+      $checks->addCheck($category, 'src_table_' . $tablename . '_connect', true, Text::_('JLIB_FORM_VALUE_SESSION_DATABASE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_TABLE_CONN_ERROR'));
+    }
 
-    // Check number of records in tables
+    // Check required tables
+    $tables = $this->getSourceTables();
+    foreach($tables as $tablename)
+    {
+      $check_name = 'src_table_' . $tablename;
 
-    // Check whether ROOT category exists
+      // Check if required tables exists
+      if(!\in_array(\str_replace('#__', $dbPrefix, $tablename), $tableList))
+      {
+        $checks->addCheck($category, $check_name, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_ERROR_TABLE_NOT_EXISTING'));
+        continue;
+      }
 
-    // Check whether ROOT asset exists
+      $query = $db->getQuery(true)
+              ->select('COUNT(*)')
+              ->from($tablename);
+      $db->setQuery($query);
 
+      $count = $db->loadResult();
+
+      // Check number of records in tables
+      $check_name = 'dest_table_' . $tablename . '_count';
+      if($count == 0)
+      {
+        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'));
+      }
+      else
+      {
+        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
+      }
+    }
   }
 
   /**
@@ -557,7 +606,7 @@ abstract class Migration implements MigrationInterface
     foreach($tables as $tablename)
     {
       $check_name = 'dest_table_' . $tablename;
-      
+
       // Check if required tables exists
       if(!\in_array( \str_replace('#__', $dbPrefix, $tablename), $tableList))
       {
@@ -583,7 +632,7 @@ abstract class Migration implements MigrationInterface
       {
         $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'));
       }
-      elseif($this->params->source_ids && $count > 0)
+      elseif($this->params->get('source_ids') && $count > 0)
       {
         $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count) . '<br/>' . Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_USE_IDS_HINT'));
       }
