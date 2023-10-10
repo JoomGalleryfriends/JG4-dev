@@ -58,12 +58,12 @@ $wa->useStyle('com_joomgallery.admin')
         <div class="row align-items-start">
           <div class="col-md-12">
             <div class="card">
-              <h3 class="card-header"><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($migrateable).'_TITLE'); ?></h3>
+              <h3 class="card-header"><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($migrateable->get('type')).'_TITLE'); ?></h3>
               <div class="card-body">
                 <div class="badge-group mb-3">
-                  <span class="badge bg-secondary">Pendent: <span>?</span></span>
-                  <span class="badge bg-success">Successful: <span>0</span></span>
-                  <span class="badge bg-danger">Failed: <span>0</span></span>
+                  <span class="badge bg-secondary">Pendent: <span><?php echo count($migrateable->get('queue')); ?></span></span>
+                  <span class="badge bg-success">Successful: <span><?php echo count($migrateable->get('success')); ?></span></span>
+                  <span class="badge bg-danger">Failed: <span><?php echo count($migrateable->get('error')); ?></span></span>
                 </div>
                 <input class="btn btn-primary mb-3" type="submit" value="<?php echo Text::_('Start migration'); ?>">
                 <input type="hidden" name="task" value="migration.migrate"/>

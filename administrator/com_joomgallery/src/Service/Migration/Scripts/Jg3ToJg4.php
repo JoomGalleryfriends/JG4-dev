@@ -173,6 +173,14 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       throw new \Exception('There is no table associated with the given content type. Given: ' . $type, 1);
     }
 
+    if($this->params->get('same_db'))
+    {
+      foreach($tables as $key => $value)
+      {
+        $tables[$key][0] = $value[0] . '_old';
+      }
+    }
+
     return $tables[$type];
   }
 

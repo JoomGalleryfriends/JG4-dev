@@ -66,6 +66,36 @@ class MigrationModel extends FormModel
   }
 
   /**
+	 * Method to set the migration parameters in the migration script.
+   * 
+   * @param   array  $params  The migration parameters entered in the migration form
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+   * @throws  \Exception      Missing migration params
+	 */
+  protected function setParams($params = null)
+  {
+    $info = $this->getScript();
+
+    if(\is_null($params))
+    {
+      // Check the session for validated migration parameters
+      $params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$info->name.'.params', null);
+    }
+
+    if(\is_null($params))
+    {
+      throw new \Exception('No migration params found. Please provide some migration params.', 1);
+    }
+
+    // Set the migration parameters
+    $params = new Registry($params);
+    $this->component->getMigration()->set('params', $params);
+  }
+
+  /**
 	 * Method to get info array of current migration script.
 	 *
 	 * @return  object|boolean   Migration info object.
@@ -132,6 +162,8 @@ class MigrationModel extends FormModel
     {
       return false;
     }
+
+    $this->setParams();
 
     return $this->component->getMigration()->getMigrateables();
   }
@@ -211,8 +243,7 @@ class MigrationModel extends FormModel
     $info = $this->getScript();
 
     // Set the migration parameters
-    $params = new Registry($params);
-    $this->component->getMigration()->set('params', $params);
+    $this->setParams($params);
 
     // Perform the prechecks
     return $this->component->getMigration()->precheck();
@@ -232,8 +263,7 @@ class MigrationModel extends FormModel
     $info = $this->getScript();
 
     // Set the migration parameters
-    $params = new Registry($params);
-    $this->component->getMigration()->set('params', $params);
+    $this->setParams($params);
 
     // Perform the prechecks
     return $this->component->getMigration()->postcheck();
@@ -255,8 +285,7 @@ class MigrationModel extends FormModel
     $info = $this->getScript();
 
     // Set the migration parameters
-    $params = new Registry($params);
-    $this->component->getMigration()->set('params', $params);
+    $this->setParams($params);
 
     // Get record data from source
     $data = $this->component->getMigration()->getData($type, $pk);

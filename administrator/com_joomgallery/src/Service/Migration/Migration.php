@@ -143,10 +143,11 @@ abstract class Migration implements MigrationInterface
       // fetch a list of migrateables from source
       foreach($this->types as $key => $type)
       {
-        list($name, $pk) = $this->getSourceTableInfo($type);
-        $migraeable      = new Migrateables($type, $pk, $name);
+        list($name, $pk)     = $this->getSourceTableInfo($type);
+        list($db, $dbPrefix) = $this->getDB('source');
 
-        $migraeable->loadQueue($this->getDB('source'));
+        $migraeable = new Migrateables($type, $pk, $name);        
+        $migraeable->loadQueue($db);
 
         \array_push($this->migrateables, $migraeable);
       }
