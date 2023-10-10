@@ -108,6 +108,18 @@ interface MigrationInterface
   public function getSourceRootPath(): string;
 
   /**
+   * Returns the most important info of the corresponding source table
+   *
+   * @param   string   $type    The content type name
+   * 
+   * @return  array   The corresponding source table info
+   *                  list(tablename, primarykey)
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceTableInfo(string $type): array;
+  
+  /**
    * Returns a list of involved source tables.
    *
    * @return  array    List of table names (Joomla style, e.g #__joomgallery)

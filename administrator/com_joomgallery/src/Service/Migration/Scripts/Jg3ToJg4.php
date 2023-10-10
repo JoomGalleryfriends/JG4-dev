@@ -45,7 +45,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * 
    * @since  4.0.0
    */
-  protected $contentTypes = array('image', 'category');
+  protected $types = array('category', 'image');
 
   /**
    * Constructor
@@ -153,7 +153,31 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns a list of involved source tables.
+   * Returns the most important info of the corresponding source table
+   *
+   * @param   string   $type    The content type name
+   * 
+   * @return  array   The corresponding source table info
+   *                  list(tablename, primarykey)
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceTableInfo(string $type): array
+  {
+    $tables = array( 'image' =>    array('#__joomgallery', 'id'),
+                     'category' => array('#__joomgallery_catg', 'cid')
+                    );
+
+    if(!\in_array($type, \array_keys($tables)))
+    {
+      throw new \Exception('There is no table associated with the given content type. Given: ' . $type, 1);
+    }
+
+    return $tables[$type];
+  }
+
+  /**
+   * Returns a list of all available source tables.
    *
    * @return  array    List of table names (Joomla style, e.g #__joomgallery)
    * 

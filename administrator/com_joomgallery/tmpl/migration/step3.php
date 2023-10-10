@@ -85,7 +85,7 @@ $wa->useStyle('com_joomgallery.admin')
   <form action="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&task=migration.postcheck'); ?>" method="post" enctype="multipart/form-data" 
         name="adminForm" id="migration-form" class="form-validate">
 
-      <input type="submit" class="btn btn-primary disabled" value="<?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_POSTCHECK'); ?>" disabled/>
+      <input type="submit" class="btn btn-primary disabled" value="<?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STEP3_BTN_TXT'); ?>" disabled/>
       <input type="hidden" name="task" value="migration.postcheck"/>
       <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
       <?php echo HTMLHelper::_('form.token'); ?>

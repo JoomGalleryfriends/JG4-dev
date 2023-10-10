@@ -75,12 +75,22 @@ abstract class Migration implements MigrationInterface
 
   /**
    * List of content types which can be migrated with this script
+   * Use the singular form of the content type (e.g image, not images)
    *
    * @var    array
    * 
    * @since  4.0.0
    */
-  protected $contentTypes = array();
+  protected $types = array();
+
+  /**
+   * List of migrateables processed/migrated with this script
+   *
+   * @var    Migrateables[]
+   * 
+   * @since  4.0.0
+   */
+  protected $migrateables = array();
 
   /**
    * State if logger is created
@@ -128,7 +138,21 @@ abstract class Migration implements MigrationInterface
    */
   public function getMigrateables(): array
   {
-    return $this->contentTypes;
+    if(empty($this->migrateables))
+    {
+      // fetch a list of migrateables from source
+      foreach($this->types as $key => $type)
+      {
+        list($name, $pk) = $this->getSourceTableInfo($type);
+        $migraeable      = new Migrateables($type, $pk, $name);
+
+        $migraeable->loadQueue($this->getDB('source'));
+
+        \array_push($this->migrateables, $migraeable);
+      }
+    }
+
+    return $this->migrateables;
   }
 
   /**
@@ -228,6 +252,39 @@ abstract class Migration implements MigrationInterface
   protected function addLog($txt, $priority)
   {
     Log::add($txt, $priority, 'com_joomgallery.migration');
+  }
+
+  /**
+   * Get a database object
+   * 
+   * @param   string   $target   The target (source or destination)
+   *
+   * @return  array    list($db, $dbPrefix)
+   *
+   * @since   4.0.0
+   * @throws  \Exception
+  */
+  protected function getDB(string $target): array
+  {
+    if(!in_array($target, array('source', 'destination')))
+    {
+      throw new \Exception('Taget has to be eighter "source" or "destination". Given: ' . $target, 1);
+    }
+
+    if($target === 'destination' || $this->params->get('same_db'))
+    {
+      $db        = Factory::getContainer()->get(DatabaseInterface::class);
+      $dbPrefix  = $this->app->get('dbprefix');
+    }
+    else
+    {
+      $options   = array ('driver' => $this->params->get('dbtype'), 'host' => $this->params->get('dbhost'), 'user' => $this->params->get('dbuser'), 'password' => $this->params->get('dbpass'), 'database' => $this->params->get('dbname'), 'prefix' => $this->params->get('dbprefix'));
+      $dbFactory = new DatabaseFactory();
+      $db        = $dbFactory->getDriver($this->params->get('dbtype'), $options);
+      $dbPrefix  = $this->params->get('dbprefix');
+    }
+
+    return array($db, $dbPrefix);
   }
 
   /**
@@ -473,19 +530,7 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkSourceTable(Checks &$checks, string $category)
   {
-    // Get table info
-    if($this->params->get('same_db'))
-    {
-      $db        = Factory::getContainer()->get(DatabaseInterface::class);
-      $dbPrefix  = $this->app->get('dbprefix');
-    }
-    else
-    {
-      $options   = array ('driver' => $this->params->get('dbtype'), 'host' => $this->params->get('dbhost'), 'user' => $this->params->get('dbuser'), 'password' => $this->params->get('dbpass'), 'database' => $this->params->get('dbname'), 'prefix' => $this->params->get('dbprefix'));
-      $dbFactory = new DatabaseFactory();
-      $db        = $dbFactory->getDriver($this->params->get('dbtype'), $options);
-      $dbPrefix  = $this->params->get('dbprefix');
-    }
+    list($db, $dbPrefix) = $this->getDB('source');
 
     // Check connection to database
     try
@@ -494,7 +539,7 @@ abstract class Migration implements MigrationInterface
     }
     catch (\Exception $msg)
     {
-      $checks->addCheck($category, 'src_table_' . $tablename . '_connect', true, Text::_('JLIB_FORM_VALUE_SESSION_DATABASE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_TABLE_CONN_ERROR'));
+      $checks->addCheck($category, 'src_table_connect', true, Text::_('JLIB_FORM_VALUE_SESSION_DATABASE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_TABLE_CONN_ERROR'));
     }
 
     // Check required tables
@@ -543,10 +588,9 @@ abstract class Migration implements MigrationInterface
   protected function checkDestTable(Checks &$checks, string $category)
   {
     // Get table info
-    $db        = Factory::getContainer()->get(DatabaseInterface::class);
-    $tables    = JoomHelper::$content_types;
-    $tableList = $db->getTableList();
-    $dbPrefix  = $this->app->get('dbprefix');
+    list($db, $dbPrefix) = $this->getDB('destination');
+    $tables              = JoomHelper::$content_types;
+    $tableList           = $db->getTableList();
 
     // Check whether root category exists
     $rootCat = false;    
