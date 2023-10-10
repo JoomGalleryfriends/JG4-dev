@@ -11,15 +11,16 @@
 defined('_JEXEC') or die();
 
 use \Joomla\CMS\Factory;
-use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Installer\Installer;
-use \Joomla\CMS\Installer\InstallerScript;
-use \Joomla\CMS\Filesystem\File;
-use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Filesystem\File;
+use \Joomla\CMS\Filesystem\Folder;
+use \Joomla\CMS\Installer\Installer;
+use \Joomla\CMS\Installer\InstallerScript;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Language\LanguageFactoryInterface;
 
 /**
  * Install method
