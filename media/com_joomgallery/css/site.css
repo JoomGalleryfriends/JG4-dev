@@ -73,37 +73,59 @@ table.itemList th.sort-cell .form-check-input {
 .jg-images {
   display: grid;
   gap: 2em;
+  align-items: flex-start;
+  overflow-anchor: none;
 }
 
-.jg-images.columns-2 {
+.jg-images.columns-2, .jg-images.masonry-2 {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.jg-images.columns-3 {
+.jg-images.columns-3, .jg-images.masonry-3 {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.jg-images.columns-4 {
+.jg-images.columns-4, .jg-images.masonry-4 {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.jg-images.columns-5, .jg-images.masonry-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.jg-images.columns-6, .jg-images.masonry-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
 @media (max-width: 992px) {
-  .jg-images[class*=" columns-"] {
+  .jg-images[class*=" columns-"], .jg-images[class*=" masonry-"] {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .jg-images[class*=" columns-"] {
+  .jg-images[class*=" columns-"], .jg-images[class*=" masonry-"] {
     grid-template-columns: repeat(1, 1fr);
   }
 }
 
 .jg-image {
   padding: 0;
+  animation: fadein 1.5s;
 }
 
-.jg-image > .jg-image-thumbnail {
+@keyframes fadein { 
+	from {
+		opacity:0;
+		transform: translateY(15px);
+	}
+	to {
+		opacity:1;
+		transform: translateY(0);
+	}
+}
+
+.jg-images[class*=" columns-"] > .jg-image > .jg-image-thumbnail {
   padding: 1em;
   border: 1px solid var(--jg-gray-300);
   border-radius: 0.25rem;
@@ -126,14 +148,31 @@ table.itemList th.sort-cell .form-check-input {
   object-fit: contain;
 }
 
+.jg-images[class*=" masonry-"] > .jg-image > .jg-image-thumbnail > a > img {
+  width: 100%;
+  max-width: none;
+}
+
 .jg-image > .jg-image-caption {
   padding: 0.5em 0;
+}
+
+.jg-image > .jg-image-caption.left {
+  text-align: left;
+}
+
+.jg-image > .jg-image-caption.center {
   text-align: center;
+}
+
+.jg-image > .jg-image-caption.right {
+  text-align: right;
 }
 
 a.jg-link:not(.btn) {
   color: var(--jg-color-link);
   text-decoration: none;
+  word-break: break-all;
 }
 
 a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {

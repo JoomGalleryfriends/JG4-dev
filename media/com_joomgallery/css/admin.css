@@ -186,3 +186,6 @@ joomla-field-image .jg_minithumb {
 .uppy-Dashboard-Item-state {
   margin-bottom: 5px;
 }
+.uppy-Dashboard-Item-name {
+  white-space: nowrap;
+}

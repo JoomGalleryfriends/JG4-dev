@@ -65,7 +65,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
     novalidate aria-label="<?php echo Text::_('COM_JOOMGALLERY_IMAGES_UPLOAD', true); ?>" >
 
     <div class="row align-items-start">
-      <div class="col-xxl-auto col-md-6 mb"> 
+      <div class="col-md-6 mb"> 
         <div class="card">
           <div class="card-header">
             <h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE_SELECTION'); ?></h2>
