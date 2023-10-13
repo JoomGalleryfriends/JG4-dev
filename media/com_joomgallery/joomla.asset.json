@@ -137,6 +137,11 @@
       "name": "com_joomgallery.uppy",
       "type": "style",
       "uri": "com_joomgallery/uppy.css"
+    },
+    {
+      "name": "com_joomgallery.migrator",
+      "type": "script",
+      "uri": "com_joomgallery/migrator.js"
     }
   ]
 }

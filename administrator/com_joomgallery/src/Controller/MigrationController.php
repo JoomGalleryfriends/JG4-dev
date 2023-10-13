@@ -17,7 +17,9 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\Input\Input;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Log\Log;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Response\JsonResponse;
 use \Joomla\CMS\MVC\Controller\BaseController;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\Form\FormFactoryAwareInterface;
@@ -267,6 +269,15 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     // Check for request forgeries
     $this->checkToken();
 
+    // Access check.
+    if(false)
+    {
+      $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
     $model   = $this->getModel();
     $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
     $scripts = $model->getScripts();
@@ -276,15 +287,6 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Requested script does not exists
       throw new \Exception('Requested migration script does not exist.', 1);      
-    }
-
-    // Access check.
-    if(false)
-    {
-      $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED'), 'error');
-      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
-
-      return false;
     }
 
     $precheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', false);
@@ -301,5 +303,114 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     // Redirect to the step 3 screen
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step3', false));
+  }
+
+  /**
+   * Perform a migration
+	 *
+	 * @return  void
+	 *
+   * @since   4.0.0
+	 */
+	public function start()
+	{
+    // Check for request forgeries
+    $this->checkToken();
+
+    // Access check.
+    if(false)
+    {
+      $msg = Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED');
+      $this->ajaxRespond($msg);
+
+      return false;
+    }
+
+    $model   = $this->getModel();
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+    $scripts = $model->getScripts();
+
+    // Check if requested script exists
+    if(!\in_array($script, \array_keys($scripts)))
+    {
+      // Requested script does not exists
+      $msg = new \Exception('Requested migration script does not exist.', 1);
+
+      $this->ajaxRespond($msg);
+
+      return false;
+    }
+
+    // Check if no errors detected in precheck (step 2)
+    $precheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', false);
+    if(!$precheck)
+    {
+      // Pre-checks not successful. Show error message.
+      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED');
+      $this->ajaxRespond($msg);
+
+      return false;
+    }
+
+    $msg = 'Test..';
+    $msg = json_encode($msg);
+    $this->ajaxRespond($msg);
+  }
+
+  /**
+   * Returns an ajax response
+	 *
+	 * @return  void
+	 *
+   * @since   4.0.0
+	 */
+  protected function ajaxRespond($results)
+  {
+    $this->app->allowCache(false);
+    $this->app->setHeader('X-Robots-Tag', 'noindex, nofollow');
+
+    // Requested format passed via URL
+    $format = strtolower($this->app->getInput()->getWord('format', ''));
+
+    // Return the results in the desired format
+    switch ($format)
+    {
+      // JSONinzed
+      case 'json':
+        echo new JsonResponse($results, null, false, $this->app->getInput()->get('ignoreMessages', true, 'bool'));
+
+        break;
+
+      // Raw format
+      default:
+        // Output exception
+        if($results instanceof \Exception)
+        {
+          // Log an error
+          Log::add($results->getMessage(), Log::ERROR);
+
+          // Set status header code
+          $this->app->setHeader('status', $results->getCode(), true);
+
+          // Echo exception type and message
+          $out = \get_class($results) . ': ' . $results->getMessage();
+        }
+        elseif(\is_scalar($results))
+        {
+          // Output string/ null
+          $out = (string) $results;
+        }
+        else
+        {
+          // Output array/ object
+          $out = \implode((array) $results);
+        }
+
+        echo $out;
+
+        break;
+    }
+
+    //$this->app->close();
   }
 }

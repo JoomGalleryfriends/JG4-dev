@@ -19,7 +19,8 @@ use \Joomla\CMS\Language\Text;
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
-   ->useScript('com_joomgallery.admin');
+   ->useScript('com_joomgallery.admin')
+   ->useScript('com_joomgallery.migrator');
 ?>
 
 <div class="jg jg-migration step3">
@@ -54,7 +55,10 @@ $wa->useStyle('com_joomgallery.admin')
 
   <?php if(empty($this->error) && !empty($this->migrateables)) : ?>
     <?php foreach($this->migrateables as $key => $migrateable) : ?>
-      <form action="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&task=migration.migrate'); ?>" method="post" name="adminForm" id="adminForm">
+      <?php
+        $type = $migrateable->get('type');
+      ?>
+      <form  name="migrationForm-<?php echo $type; ?>" id="migrationForm-<?php echo $type; ?>" action="<?php echo Route::_('index.php?option='._JOOM_OPTION); ?>" method="post">
         <div class="row align-items-start">
           <div class="col-md-12">
             <div class="card">
@@ -65,9 +69,10 @@ $wa->useStyle('com_joomgallery.admin')
                   <span class="badge bg-success">Successful: <span><?php echo count($migrateable->get('success')); ?></span></span>
                   <span class="badge bg-danger">Failed: <span><?php echo count($migrateable->get('error')); ?></span></span>
                 </div>
-                <input class="btn btn-primary mb-3" type="submit" value="<?php echo Text::_('Start migration'); ?>">
-                <input type="hidden" name="task" value="migration.migrate"/>
-                <input type="hidden" name="script" value="<?php echo $name; ?>"/>
+                <button class="btn btn-primary mb-3 btn-migration" onclick="submitTask(event, this)" data-type="<?php echo $type; ?>"><?php echo Text::_('Start migration'); ?></button>
+                <input type="hidden" name="type" value="<?php echo $type; ?>"/>
+                <input type="hidden" name="task" value="migration.start"/>
+                <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
                 <?php echo HTMLHelper::_('form.token'); ?>
                 <div class="progress">
                   <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>

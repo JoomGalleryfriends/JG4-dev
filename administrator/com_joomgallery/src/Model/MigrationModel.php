@@ -108,7 +108,9 @@ class MigrationModel extends FormModel
     // Retreive script variable
     $name = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
 
-    if(!$name)
+    $tmp = \strlen($name);
+
+    if(!$name || \strlen($name) < 2 || \strlen($name) > 30)
     {
       $tmp = new \stdClass;
       $tmp->name = '';
