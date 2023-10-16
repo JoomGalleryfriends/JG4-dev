@@ -830,6 +830,60 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkImageMapping(Checks &$checks, string $category)
   {
-    
+    $mapping         = $this->params->get('image_mapping');
+    $dest_imagetypes = JoomHelper::getRecords('imagetypes', $this->component);
+    $src_imagetypes  = array();
+
+    // Check if mapping contains enough elements
+    if(\count((array)$mapping) != \count($dest_imagetypes))
+    {
+      $checks->addCheck($category, 'mapping_count', false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MAPPING_ERROR'));
+      return;
+    }
+
+    // Load source imagetypes from xml file
+    $xml     = \simplexml_load_file(JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/src/Service/Migration/Scripts/'. $this->name . '.xml');
+    $element = $xml->xpath('/form/fieldset/field[@name="image_mapping"]/form/field[@name="source"]');
+
+    foreach($element[0]->option as $option)
+    {
+      \array_push($src_imagetypes, (string) $option['value']);
+    }
+
+    // Prepare destination imagetypes
+    $tmp_dest_imagetypes = array();
+    foreach($dest_imagetypes as $key => $type)
+    {
+      \array_push($tmp_dest_imagetypes, (string) $type->typename);
+    }
+
+    // Check if all imagetypes are correctly set in the mapping
+    foreach($mapping as $key => $mapVal)
+    {
+      if(\in_array($mapVal->destination, $tmp_dest_imagetypes))
+      {
+        // Remove imagetype from tmp_dest_imagetypes array
+        $tmp_dest_imagetypes = \array_diff($tmp_dest_imagetypes, array($mapVal->destination));
+      }
+      else
+      {
+        // Destination imagetype in mapping does not exist
+        $checks->addCheck($category, 'mapping_dest_types_'.$mapVal->destination, false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_DEST_IMAGETYPE_NOT_EXIST', Text::_('COM_JOOMGALLERY_' . \strtoupper($mapVal->destination))));
+        return;
+      }
+
+      if(!\in_array($mapVal->source, $src_imagetypes))
+      {
+        // Source imagetype in mapping does not exist
+        $checks->addCheck($category, 'mapping_src_types_'.$mapVal->source, false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_IMAGETYPE_NOT_EXIST', Text::_('COM_JOOMGALLERY_' . \strtoupper($mapVal->source))));
+        return;
+      }
+    }
+
+    if(!empty($tmp_dest_imagetypes))
+    {
+      // Destination imagetype not used in the mapping
+      $checks->addCheck($category, 'mapping_dest_types', false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_IMAGETYPE_NOT_USED', \implode(', ', $tmp_dest_imagetypes)));
+    }
   }
 }
