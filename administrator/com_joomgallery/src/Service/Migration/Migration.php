@@ -194,6 +194,12 @@ abstract class Migration implements MigrationInterface
     // Check existence and integrity of destination database tables
     $this->checkDestTable($checks, 'destination');
 
+    // Check image mapping
+    if($this->params->get('image_usage', 0) > 0)
+    {
+      $this->checkImageMapping($checks, 'destination');
+    }
+
     return $checks->getAll();
   }
 
@@ -677,14 +683,153 @@ abstract class Migration implements MigrationInterface
       {
         $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'));
       }
-      elseif($this->params->get('source_ids') && $count > 0)
+      elseif($this->params->get('source_ids', 0) > 0 && $count > 0)
       {
-        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count) . '<br/>' . Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_USE_IDS_HINT'));
+        $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
+        $this->checkDestTableIdAvailability($checks, $category, $tablename);
       }
       else
       {
         $checks->addCheck($category, $check_name, true, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
       }
     }    
+  }
+
+  /**
+   * Precheck: Check destination tables for already existing ids
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   * @param  string   $tablename  The table to be checked
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function checkDestTableIdAvailability(Checks &$checks, string $category, string $tablename)
+  {
+    // Get content type to check
+    $type = '';
+    foreach(JoomHelper::$content_types as $type => $table)
+    {
+      if($table === $tablename)
+      {
+        break;
+      }
+
+      $type = '';
+    }
+
+    // Get migrateable to check
+    $this->getMigrateables();
+    $migrateable = null;
+    foreach($this->migrateables as $key => $migrateable)
+    {
+      if($migrateable->get('type', false) === $type)
+      {
+        break;
+      }
+
+      $migrateable = null;
+    }
+
+    if(!$migrateable)
+    {
+      // Table does not correspont to a migrateable. Exit method.
+      return;
+    }
+
+    // Get destination database
+    list($db, $dbPrefix) = $this->getDB('destination');
+
+    // Get a list of used ids from destination database
+    $destQuery = $db->getQuery(true);
+    $destQuery->select($db->quoteName('id'))
+        ->from($db->quoteName($tablename));
+    $destQuery_string = \trim($destQuery->__toString());
+
+    if($this->params->get('same_db', 1))
+    {
+      // Get list of used ids from source databse
+      $srcQuery = $db->getQuery(true);
+      $srcQuery->select($db->quoteName($migrateable->get('pk'), 'id'))
+          ->from($db->quoteName($migrateable->get('table')));
+      $srcQuery_string = \trim($srcQuery->__toString());
+
+      // Get a list of ids used in both source and destination
+      $query = $db->getQuery(true);
+      $query->select($db->quoteName('ids.id'))
+          ->from('(' . $srcQuery_string . ') ids')
+          ->where($db->quoteName('ids.id') . ' IN (' . $destQuery_string . ')');
+      $db->setQuery($query);
+    }
+    else
+    {
+      // Get source database
+      list($src_db, $src_dbPrefix) = $this->getDB('source');
+
+      // Get list of used ids from the source database
+      $query = $src_db->getQuery(true);
+      $query->select($db->quoteName($migrateable->get('pk'), 'id'))
+          ->from($db->quoteName($migrateable->get('table')));
+      $src_db->setQuery($query);
+
+      // Load list from source database
+      $src_list = $src_db->loadColumn();
+
+      if(\count($src_list) < 1)
+      {
+        // There are no records in the source tabele. Exit method.
+        return;
+      }
+
+      // Create UNION query string
+      foreach($src_list as $i => $id)
+      {
+        ${'query' . $i} = $db->getQuery(true);
+        ${'query' . $i}->select($db->quote($id) . ' AS ' . $db->quoteName('id'));
+        if($i > 0)
+        {
+          $query0->unionAll(${'query' . $i});
+        }
+      }
+      $srcQuery_string = \trim($query0->__toString());
+
+      // Get a list of ids used in both source and destination
+      $query = $db->getQuery(true);
+      $query->select($db->quoteName('ids.id'))
+          ->from('(' . $srcQuery_string . ') ids')
+          ->where($db->quoteName('ids.id') . ' IN (' . $destQuery_string . ')');
+      $db->setQuery($query);
+    }
+
+    // Load list of Id's used in both tables (source and destination)
+    $list = $db->loadColumn();
+
+    // Exception for root category
+    if($tablename == _JOOM_TABLE_CATEGORIES)
+    {
+      $list = \array_diff($list, array(1, '1'));
+    }
+
+    if(!empty($list))
+    {
+      $checks->addCheck($category, 'dest_table_' . $tablename . '_ids', false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_USE_IDS_HINT', \implode(',', $list)));
+    }
+  }
+
+  /**
+   * Precheck: Check the configured image mapping
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function checkImageMapping(Checks &$checks, string $category)
+  {
+    
   }
 }

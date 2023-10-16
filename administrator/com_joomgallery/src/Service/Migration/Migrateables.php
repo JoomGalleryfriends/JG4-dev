@@ -36,7 +36,7 @@ class Migrateables
   protected $type = '';
 
   /**
-   * Table name
+   * Table name (source table)
    *
    * @var  string
    *
@@ -45,7 +45,7 @@ class Migrateables
   protected $table = '';
 
   /**
-   * Primary key
+   * Primary key (source table)
    *
    * @var  string
    *
