@@ -230,7 +230,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     // Create news feed module
     $subdomain = '';
-    $language = Factory::getContainer()->get(LanguageFactoryInterface::class);
+    $language = $app->getLanguage();
     if(strpos($language->getTag(), 'de-') === false)
     {
       $subdomain = 'en.';
