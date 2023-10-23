@@ -23,6 +23,7 @@ use \Joomla\Database\DatabaseInterface;
 use \Joomla\Database\DatabaseFactory;
 use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationInterface;
@@ -86,7 +87,7 @@ abstract class Migration implements MigrationInterface
   /**
    * List of migrateables processed/migrated with this script
    *
-   * @var    Migrateables[]
+   * @var    MigrationTable[]
    * 
    * @since  4.0.0
    */
@@ -140,17 +141,11 @@ abstract class Migration implements MigrationInterface
   {
     if(empty($this->migrateables))
     {
-      // fetch a list of migrateables from source
-      foreach($this->types as $key => $type)
-      {
-        list($name, $pk)     = $this->getSourceTableInfo($type);
-        list($db, $dbPrefix) = $this->getDB('source');
+      // Get MigrationModel
+      $model = $this->component->getMVCFactory()->createModel('migration', 'administrator');
 
-        $migraeable = new Migrateables($type, $pk, $name);        
-        $migraeable->loadQueue($db);
-
-        \array_push($this->migrateables, $migraeable);
-      }
+      // Load migrateables
+      $this->migrateables = $model->getItems();
     }
 
     return $this->migrateables;

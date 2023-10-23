@@ -373,6 +373,29 @@ KEY `idx_createdby` (`created_by`)
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `#__joomgallery_migration`
+--
+
+CREATE TABLE IF NOT EXISTS `#__joomgallery_migration` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`script` VARCHAR(50) NOT NULL DEFAULT "",
+`type` VARCHAR(50) NOT NULL DEFAULT "",
+`src_table` VARCHAR(255) NOT NULL DEFAULT "",
+`src_pk` VARCHAR(25) NOT NULL DEFAULT "id",
+`dst_table` VARCHAR(255) NOT NULL DEFAULT "",
+`dst_pk` VARCHAR(25) NOT NULL DEFAULT "id",
+`queue` TEXT NOT NULL,
+`successful` TEXT NOT NULL,
+`failed` TEXT NOT NULL,
+`created_time` DATETIME NOT NULL,
+`checked_out` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`checked_out_time` DATETIME DEFAULT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Dumping data for table `#__content_types`
 --
 

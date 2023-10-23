@@ -31,19 +31,37 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  */
 class MigrationModel extends FormModel
 {
-	/**
-	 * @var    string  The prefix to use with controller messages.
-	 *
-	 * @since  4.0.0
-	 */
-	protected $text_prefix = _JOOM_OPTION_UC;
-
-	/**
+  /**
 	 * @var    string  Alias to manage history control
 	 *
 	 * @since  4.0.0
 	 */
 	public $typeAlias = _JOOM_OPTION.'.migration';
+
+	/**
+	 * @var    string  The prefix to use with controller messages
+	 *
+	 * @since  4.0.0
+	 */
+	protected $text_prefix = _JOOM_OPTION_UC;
+
+  /**
+	 * Storage for the migration form object.
+	 *
+	 * @var   Registry
+	 *
+	 * @since  4.0.0
+	 */
+	protected $params = null;
+
+  /**
+	 * Name of the migration script.
+	 *
+	 * @var   string
+	 *
+	 * @since  4.0.0
+	 */
+	protected $name = '';
 
   /**
    * Constructor
@@ -75,7 +93,7 @@ class MigrationModel extends FormModel
 	 * @since   4.0.0
    * @throws  \Exception      Missing migration params
 	 */
-  protected function setParams($params = null)
+  public function setParams($params = null)
   {
     $info = $this->getScript();
 
@@ -91,8 +109,21 @@ class MigrationModel extends FormModel
     }
 
     // Set the migration parameters
-    $params = new Registry($params);
-    $this->component->getMigration()->set('params', $params);
+    $this->params = new Registry($params);
+    $this->component->getMigration()->set('params', $this->params);
+  }
+
+  /**
+	 * Method to get info array of current migration script.
+	 *
+	 * @return  object|boolean   Migration info object.
+	 *
+	 * @since   4.0.0
+   * @throws  \Exception
+	 */
+  public function getName()
+  {
+    return $this->getScript();
   }
 
   /**
@@ -108,15 +139,16 @@ class MigrationModel extends FormModel
     // Retreive script variable
     $name = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
 
-    $tmp = \strlen($name);
-
     if(!$name || \strlen($name) < 2 || \strlen($name) > 30)
     {
-      $tmp = new \stdClass;
-      $tmp->name = '';
+      $tmp        = new \stdClass;
+      $tmp->name  = '';
+      $this->name = '';
       
       return $tmp;
     }
+
+    $this->name = $name;
     
     if(!$this->component->getMigration())
     {
@@ -168,6 +200,132 @@ class MigrationModel extends FormModel
     $this->setParams();
 
     return $this->component->getMigration()->getMigrateables();
+  }
+
+  /**
+   * Load the current queue of ids from table
+   * 
+   * @param   string  $type  Content type
+   *
+   * @return  array
+   *
+   * @since   4.0.0
+   */
+  public function getQueue($type)
+  {
+    // Retreive script
+    $script = $this->getScript();
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    if(!$script)
+    {
+      return $query;
+    }
+
+    // Select the required fields from the table.
+		$query->select('a.*');
+    $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
+
+    // Filter for the current script
+    $query->where($db->quoteName('a.script') . ' = ' . $db->quote($script));
+    $query->order($db->quoteName('a.type') . ' DESC');
+  }
+
+  /**
+    * Method to get an array of data items based on current script.
+    *
+    * @return  mixed  An array of data items on success, false on failure.
+    *
+    * @since   4.0.0
+    */
+  public function getItems()
+  {
+    try
+    {
+      $items = $this->_getList($this->getListQuery());
+    }
+    catch (\RuntimeException $e)
+    {
+      $this->component->setError($e->getMessage());
+
+      return false;
+    }
+
+    // 
+  }
+
+  /**
+	 * Method to get a single record.
+	 *
+	 * @param   integer|array  $pk  The id of the primary key or array(fieldname => value)
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 *
+	 * @since   4.0.0
+	 */
+	public function getItem($pk = null)
+  {
+    $pk = (!empty($pk)) ? $pk : 0;
+		$table = $this->getTable();
+
+		if($pk > 0 || \is_array($pk))
+		{
+			// Attempt to load the row.
+			$return = $table->load($pk);
+
+			// Check for a table object error.
+			if($return === false)
+			{
+				// If there was no underlying error, then the false means there simply was not a row in the db for this $pk.
+				if(!$table->getError())
+				{
+					$this->component->setError(Text::_('JLIB_APPLICATION_ERROR_NOT_EXIST'));
+				}
+				else
+				{
+					$this->component->setError($table->getError());
+				}
+
+				return false;
+			}
+    }
+
+    return $table->getFieldsValues();
+  }
+
+  /**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @return  DatabaseQuery
+	 *
+	 * @since   4.0.0
+	 */
+	protected function getListQuery()
+	{
+    // Retreive script
+    $script = $this->getScript();
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    if(!$script)
+    {
+      return $query;
+    }
+
+    // Select the required fields from the table.
+		$query->select('a.*');
+    $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
+
+    // Filter for the current script
+    $query->where($db->quoteName('a.script') . ' = ' . $db->quote($script));
+    $query->order($db->quoteName('a.type') . ' DESC');
+
+    return $query;
   }
 
   /**
