@@ -50,6 +50,8 @@ class HtmlView extends JoomGalleryView
 		$this->form       = $this->get('Form');
     $this->config     = JoomHelper::getService('config');
     $this->imagetypes = JoomHelper::getRecords('imagetypes');
+    $rating           = JoomHelper::getRating($this->item->id);
+    $this->form->setvalue('rating', '', $rating);
 
     if($this->item->id == 0)
     {

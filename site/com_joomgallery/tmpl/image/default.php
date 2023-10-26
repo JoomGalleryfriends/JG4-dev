@@ -108,9 +108,14 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('image', $this->item->id, $
 			<td><?php echo (int) $this->item->downloads; ?></td>
 		</tr>
 
-    <tr>
-			<th><?php echo Text::_('COM_JOOMGALLERY_IMAGE_RATING'); ?></th>
-			<td><?php echo $this->item->imgvotesum; ?> (<?php echo $this->item->imgvotes.' '.Text::_('COM_JOOMGALLERY_VOTES'); ?>)</td>
+		<tr>
+			<th><?php echo Text::_('COM_JOOMGALLERY_VOTES'); ?></th>
+			<td><?php echo $this->item->imgvotes; ?></td>
+		</tr>
+
+		<tr>
+			<th><?php echo Text::_('COM_JOOMGALLERY_RATING'); ?></th>
+			<td><?php echo $this->item->rating; ?></td>
 		</tr>
 
 		<tr>
