@@ -61,6 +61,18 @@ interface MigrationInterface
   public function migrate($type, $source, $dest);
 
   /**
+   * Get a database object
+   * 
+   * @param   string   $target   The target (source or destination)
+   *
+   * @return  array    list($db, $dbPrefix)
+   *
+   * @since   4.0.0
+   * @throws  \Exception
+  */
+  public function getDB(string $target): array;
+
+  /**
    * Returns a list of content types which can be migrated.
    *
    * @return  array  List of content types
@@ -123,6 +135,7 @@ interface MigrationInterface
    * Returns a list of involved source tables.
    *
    * @return  array    List of table names (Joomla style, e.g #__joomgallery)
+   *                   array('image' => '#__joomgallery', ...)
    * 
    * @since   4.0.0
    */

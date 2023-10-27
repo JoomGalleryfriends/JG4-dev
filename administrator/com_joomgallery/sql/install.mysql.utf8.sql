@@ -387,6 +387,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_migration` (
 `queue` TEXT NOT NULL,
 `successful` TEXT NOT NULL,
 `failed` TEXT NOT NULL,
+`params` TEXT NOT NULL,
 `created_time` DATETIME NOT NULL,
 `checked_out` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `checked_out_time` DATETIME DEFAULT NULL,

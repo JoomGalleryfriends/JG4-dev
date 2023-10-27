@@ -31,7 +31,7 @@ class MigrationTable extends Table
    *
    * @since  4.0.0
    */
-  protected $progress = 0;
+  public $progress = 0;
 
 	/**
    * True if migration of this migrateable is completed
@@ -40,7 +40,7 @@ class MigrationTable extends Table
    *
    * @since  4.0.0
    */
-  protected $completed = false;
+  public $completed = false;
 
 
 	/**
@@ -52,7 +52,12 @@ class MigrationTable extends Table
 	{
 		$this->typeAlias = _JOOM_OPTION.'.migration';
 
-		parent::__construct(_JOOM_TABLE_IMG_TYPES, 'id', $db);
+		parent::__construct(_JOOM_TABLE_MIGRATION, 'id', $db);
+
+		// Initialize queue, successful and failed
+		$this->queue = array();
+		$this->successful = array();
+		$this->failed = array();
 	}
 
 	/**

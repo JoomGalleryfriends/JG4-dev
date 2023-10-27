@@ -61,7 +61,7 @@ class MigrationModel extends FormModel
 	 *
 	 * @since  4.0.0
 	 */
-	protected $name = '';
+	protected $scriptName = '';
 
   /**
    * Constructor
@@ -121,7 +121,7 @@ class MigrationModel extends FormModel
 	 * @since   4.0.0
    * @throws  \Exception
 	 */
-  public function getName()
+  public function getScriptName()
   {
     return $this->getScript();
   }
@@ -143,12 +143,12 @@ class MigrationModel extends FormModel
     {
       $tmp        = new \stdClass;
       $tmp->name  = '';
-      $this->name = '';
+      $this->scriptName = '';
       
       return $tmp;
     }
 
-    $this->name = $name;
+    $this->scriptName = $name;
     
     if(!$this->component->getMigration())
     {
@@ -181,7 +181,7 @@ class MigrationModel extends FormModel
   }
 
   /**
-	 * Method to a list of content types which can be migrated using the selected script.
+	 * Method to fetch a list of content types which can be migrated using the selected script.
 	 *
 	 * @return  array|boolean  List of content types on success, false otherwise
 	 *
@@ -203,49 +203,30 @@ class MigrationModel extends FormModel
   }
 
   /**
-   * Load the current queue of ids from table
-   * 
-   * @param   string  $type  Content type
-   *
-   * @return  array
-   *
-   * @since   4.0.0
-   */
-  public function getQueue($type)
-  {
-    // Retreive script
-    $script = $this->getScript();
-
-    // Create a new query object.
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
-
-    if(!$script)
-    {
-      return $query;
-    }
-
-    // Select the required fields from the table.
-		$query->select('a.*');
-    $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
-
-    // Filter for the current script
-    $query->where($db->quoteName('a.script') . ' = ' . $db->quote($script));
-    $query->order($db->quoteName('a.type') . ' DESC');
-  }
-
-  /**
-    * Method to get an array of data items based on current script.
+    * Method to get an array of migrateables based on current script.
     *
-    * @return  mixed  An array of data items on success, false on failure.
+    * @return  MigrationTable[]  An array of data items
     *
     * @since   4.0.0
     */
-  public function getItems()
+  public function getItems(): array
   {
+    // Get types from migration service
+    $types = $this->component->getMigration()->get('types');
+
+    // Get available types from db
     try
     {
-      $items = $this->_getList($this->getListQuery());
+      $db    = $this->getDbo();
+      $query = $this->getListQuery();
+
+      if(\is_string($query))
+      {
+        $query = $db->getQuery(true)->setQuery($query);
+      }
+      
+      $db->setQuery($query);
+      $items = $db->loadObjectList('type');
     }
     catch (\RuntimeException $e)
     {
@@ -254,7 +235,108 @@ class MigrationModel extends FormModel
       return false;
     }
 
-    // 
+    $tables = array();
+    foreach($types as $key => $type)
+    {
+      $table = $this->getTable();
+
+      if(!empty($items) && \key_exists($type, $items))
+      {
+        // Attempt to load the row.
+			  $return = $table->load($items[$type]->id);
+
+        // Check for a table object error.
+        if($return === false)
+        {
+          $this->component->setError($e->getMessage());
+
+          return false;
+        }
+      }
+
+      // Add script if empty
+      if(empty($table->script))
+      {
+        $table->script = $this->scriptName;
+      }
+
+      // Add type if empty
+      if(empty($table->type))
+      {
+        $table->type = $type;
+      }
+
+      // Add source and destination table info if empty
+      if(empty($table->src_table))
+      {
+        // Get table information
+        list($src_table, $src_pk) = $this->component->getMigration()->getSourceTableInfo($type);
+        $table->src_table = $src_table;
+        $table->src_pk    = $src_pk;
+        $table->dst_table = JoomHelper::$content_types[$type];
+        $table->dst_pk    = 'id';
+      }
+
+      // Add queue if empty
+      if(\is_null($table->queue) || empty($table->queue))
+      {
+        // Load queue
+        $table->queue = $this->getQueue($type, $table);
+      }
+
+      // Add params
+      if($this->component->getMigration()->get('params'))
+      {
+        $table->params = $this->component->getMigration()->get('params');
+      }
+
+      array_push($tables, $table);
+    }
+
+    return $tables;
+  }
+
+    /**
+   * Load the current queue of ids from table
+   * 
+   * @param   string          $type   Content type
+   * @param   MigrationTable  $table  Table object
+   *
+   * @return  array
+   *
+   * @since   4.0.0
+   */
+  public function getQueue($type, $table=null): array
+  {
+    // Retreive script
+    $script = $this->getScript();
+
+    // Create a new query object.
+		list($db, $dbPrefix) = $this->component->getMigration()->getDB('source');
+		$query               = $db->getQuery(true);
+
+    if(!$script)
+    {
+      return $query;
+    }
+
+    if(\is_null($table))
+    {
+      $migrateables = $this->component->getMigration()->getMigrateables();
+      $migrateable  = $migrateables[$type];
+    }
+    else
+    {
+      $migrateable = $table;
+    }
+
+    // Select the required fields from the table.
+    $query->select($db->quoteName($migrateable->get('src_pk', 'id')))
+          ->from($db->quoteName($migrateable->get('src_table')))
+          ->order($db->quoteName($migrateable->get('src_pk', 'id')) . ' ASC');
+    $db->setQuery($query);
+
+    return $db->loadColumn();
   }
 
   /**
@@ -318,12 +400,11 @@ class MigrationModel extends FormModel
     }
 
     // Select the required fields from the table.
-		$query->select('a.*');
+		$query->select(array('a.id', 'a.type'));
     $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
 
     // Filter for the current script
-    $query->where($db->quoteName('a.script') . ' = ' . $db->quote($script));
-    $query->order($db->quoteName('a.type') . ' DESC');
+    $query->where($db->quoteName('a.script') . ' = ' . $db->quote($script->name));
 
     return $query;
   }

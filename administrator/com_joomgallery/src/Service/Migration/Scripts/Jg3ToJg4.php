@@ -40,6 +40,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   /**
    * List of content types which can be migrated with this script
    * Use the singular form of the content type (e.g image, not images)
+   * Order in the list corresponds to migration order!
    *
    * @var    array
    * 
@@ -170,7 +171,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     if(!\in_array($type, \array_keys($tables)))
     {
-      throw new \Exception('There is no table associated with the given content type. Given: ' . $type, 1);
+      throw new \Exception('There is no migration source table associated with the given content type. Given: ' . $type, 1);
     }
 
     if($this->params->get('same_db'))
@@ -185,9 +186,10 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns a list of all available source tables.
+   * Returns a list of involved source tables.
    *
    * @return  array    List of table names (Joomla style, e.g #__joomgallery)
+   *                   array('image' => '#__joomgallery', ...)
    * 
    * @since   4.0.0
    */

@@ -266,7 +266,7 @@ abstract class Migration implements MigrationInterface
    * @since   4.0.0
    * @throws  \Exception
   */
-  protected function getDB(string $target): array
+  public function getDB(string $target): array
   {
     if(!in_array($target, array('source', 'destination')))
     {
