@@ -774,7 +774,7 @@ class FileManager implements FileManagerInterface
       }
 
       // Delete folder if existent
-      if($files)
+      if(!$files)
       {
         try
         {
