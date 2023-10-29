@@ -13,7 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
+use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
 
 /**
@@ -140,36 +142,92 @@ class MigrationTable extends Table
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @see     Table:bind
 	 * @since   4.0.0
-	 * @throws  \InvalidArgumentException
 	 */
 	public function bind($array, $ignore = '')
 	{
+    $date = Factory::getDate();
+
     // Support for queue field
     if(isset($array['queue']) && is_array($array['queue']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['queue']);
-			$array['queue'] = (string) $registry;
+			$array['queue'] = \json_encode($array['queue'], JSON_UNESCAPED_UNICODE);
 		}
 
 		// Support for successful field
     if(isset($array['successful']) && is_array($array['successful']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['successful']);
-			$array['successful'] = (string) $registry;
+			$array['successful'] = \json_encode($array['successful'], JSON_UNESCAPED_UNICODE);
 		}
 
 		// Support for failed field
     if(isset($array['failed']) && is_array($array['failed']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['failed']);
-			$array['failed'] = (string) $registry;
+			$array['failed'] = \json_encode($array['failed'], JSON_UNESCAPED_UNICODE);
 		}
 
-    return parent::bind($array, $ignore);
+    // Support for params field
+    if(isset($array['params']) && is_array($array['params']))
+		{
+			$registry = new Registry;
+			$registry->loadArray($array['params']);
+			$array['params'] = (string) $registry;
+		}
+
+    if($array['id'] == 0)
+		{
+			$array['created_time'] = $date->toSql();
+		}
+
+    return parent::bind($array, array('progress', 'completed'));
+  }
+
+  /**
+   * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
+   *
+   * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
+   *                           If not set the instance property value is used.
+   * @param   boolean  $reset  True to reset the default values before loading the new row.
+   *
+   * @return  boolean  True if successful. False if row not found.
+   *
+   * @see     Table:bind
+   * @since   4.0.0
+   */
+  public function load($keys = null, $reset = true)
+  {
+    $success = parent::load($keys, $reset);
+
+    if($success)
+    {
+      // Support for queue field
+      if(isset($this->queue) && !is_array($this->queue))
+      {
+        $this->queue = \json_decode($this->queue);
+      }
+
+      // Support for successful field
+      if(isset($this->successful) && !is_array($this->successful))
+      {
+        $this->successful = \json_decode($this->successful, true);
+      }
+
+      // Support for failed field
+      if(isset($this->failed) && !is_array($this->failed))
+      {
+        $this->failed = \json_decode($this->failed);
+      }
+
+      // Calculate progress property
+      $this->progress = (int) \round((100 / \count($this->queue)) * (\count($this->successful) + \count($this->failed)));
+
+      // Update completed property
+      if(\count($this->queue) === \count($this->successful))
+      {
+        $this->completed = true;
+      } 
+    }   
+
+    return $success;
   }
 }

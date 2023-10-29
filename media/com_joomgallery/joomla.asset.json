@@ -141,7 +141,7 @@
     {
       "name": "com_joomgallery.migrator",
       "type": "script",
-      "uri": "com_joomgallery/migrator.js"
+      "uri": "com_joomgallery/migrator/dist/migrator.js"
     }
   ]
 }

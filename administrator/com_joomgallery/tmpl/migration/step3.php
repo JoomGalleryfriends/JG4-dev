@@ -73,10 +73,10 @@ $wa->useStyle('com_joomgallery.admin')
                   <span class="badge bg-success">Successful: <span><?php echo count($migrateable->successful); ?></span></span>
                   <span class="badge bg-danger">Failed: <span><?php echo count($migrateable->failed); ?></span></span>
                 </div>
-                <button class="btn btn-primary mb-3 btn-migration<?php echo $previousCompleted ? '': ' disabled'; ?>" onclick="submitTask(event, this)" <?php echo $previousCompleted ? '': 'disabled'; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('Start migration'); ?></button>
+                <button class="btn btn-primary mb-3 btn-migration<?php echo $previousCompleted ? '': ' disabled'; ?>" onclick="Migrator.submitTask(event, this)" <?php echo $previousCompleted ? '': 'disabled'; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('Start migration'); ?></button>
                 <input type="hidden" name="type" value="<?php echo $type; ?>"/>
                 <input type="hidden" name="task" value="migration.start"/>
-                <input type="hidden" name="migrateable" value="<?php echo json_encode($migrateable, JSON_UNESCAPED_UNICODE); ?>"/>
+                <input type="hidden" name="migrateable" value="<?php echo base64_encode(json_encode($migrateable, JSON_UNESCAPED_UNICODE)); ?>"/>
                 <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
                 <?php echo HTMLHelper::_('form.token'); ?>
                 <div class="progress">

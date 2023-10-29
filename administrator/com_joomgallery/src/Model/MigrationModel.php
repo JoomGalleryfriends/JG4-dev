@@ -18,8 +18,9 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Folder;
-use \Joomla\CMS\MVC\Model\FormModel;
+use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -29,7 +30,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  * @package JoomGallery
  * @since   4.0.0
  */
-class MigrationModel extends FormModel
+class MigrationModel extends AdminModel
 {
   /**
 	 * @var    string  Alias to manage history control
@@ -203,6 +204,37 @@ class MigrationModel extends FormModel
   }
 
   /**
+   * Method to get a migrateable record.
+   *
+   * @param   integer  $pk  The id of the primary key.
+   *
+   * @return  CMSObject|boolean  Object on success, false on failure.
+   *
+   * @since   4.0.0
+   */
+  public function getItem($pk = null)
+  {
+    $item = parent::getItem($pk);
+
+    if(\property_exists($item, 'queue'))
+    {
+      $item->queue = \json_decode($item->queue);
+    }
+
+    if(\property_exists($item, 'failed'))
+    {
+      $item->failed = \json_decode($item->failed);
+    }
+
+    if(\property_exists($item, 'successful'))
+    {
+      $item->successful = \json_decode($item->successful, true);
+    }
+
+    return $item;
+  }
+
+  /**
     * Method to get an array of migrateables based on current script.
     *
     * @return  MigrationTable[]  An array of data items
@@ -232,7 +264,7 @@ class MigrationModel extends FormModel
     {
       $this->component->setError($e->getMessage());
 
-      return false;
+      return array();
     }
 
     $tables = array();
@@ -250,7 +282,7 @@ class MigrationModel extends FormModel
         {
           $this->component->setError($e->getMessage());
 
-          return false;
+          return array();
         }
       }
 
@@ -337,45 +369,6 @@ class MigrationModel extends FormModel
     $db->setQuery($query);
 
     return $db->loadColumn();
-  }
-
-  /**
-	 * Method to get a single record.
-	 *
-	 * @param   integer|array  $pk  The id of the primary key or array(fieldname => value)
-	 *
-	 * @return  mixed    Object on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function getItem($pk = null)
-  {
-    $pk = (!empty($pk)) ? $pk : 0;
-		$table = $this->getTable();
-
-		if($pk > 0 || \is_array($pk))
-		{
-			// Attempt to load the row.
-			$return = $table->load($pk);
-
-			// Check for a table object error.
-			if($return === false)
-			{
-				// If there was no underlying error, then the false means there simply was not a row in the db for this $pk.
-				if(!$table->getError())
-				{
-					$this->component->setError(Text::_('JLIB_APPLICATION_ERROR_NOT_EXIST'));
-				}
-				else
-				{
-					$this->component->setError($table->getError());
-				}
-
-				return false;
-			}
-    }
-
-    return $table->getFieldsValues();
   }
 
   /**
@@ -513,31 +506,32 @@ class MigrationModel extends FormModel
   /**
 	 * Method to perform one migration of one record.
    * 
-   * @param   string   $type    Name of the content type to migrate.
-   * @param   integer  $pk      The primary key of the source record.
-   * @param   array    $params  The migration parameters entered in the migration form
+   * @param   string           $type   Name of the content type to migrate.
+   * @param   integer          $pk     The primary key of the source record.
+   * @param   MigrationTable   $mig    The MigrationTable object.
 	 *
 	 * @return  object   The object containing the migration results.
 	 *
 	 * @since   4.0.0
 	 */
-  public function migrate($type, $pk, $params)
+  public function migrate(string $type, int $pk, MigrationTable $mig): MigrationTable
   {
     $info = $this->getScript();
 
     // Set the migration parameters
-    $this->setParams($params);
+    $this->setParams($mig->params);
 
     // Get record data from source
     $data = $this->component->getMigration()->getData($type, $pk);
 
-    // Apply data mapping based on migration parameters
-    $data = $this->component->getMigration()->applyDataMapping($data);
+    // Convert record data into structure needed for JoomGallery v4+
+    $data = $this->component->getMigration()->convertData($data);
 
-    // Create new record based on data
-    $record = $this->insertRecord($type, $data, $params->get('same_ids'));
+    // Create new record based on data array
+    $sameIDs = \boolval($mig->params->get('source_ids', '0'));
+    $record  = $this->insertRecord($type, $data, $sameIDs);
 
-    // Create imagetypes
+    // 
     if($type === 'image')
     {
       $img_source = $this->component->getMigration()->getImageSource($data);

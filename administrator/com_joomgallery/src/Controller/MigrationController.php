@@ -89,6 +89,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     $this->setFormFactory($formFactory);
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
+    $this->component->createAccess();
 
     // As copy should be standard on forms.
     $this->registerTask('check', 'precheck');
@@ -179,7 +180,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $task    = $this->getTask();
 
     // Access check.
-    if(false)
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED'), 'error');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
@@ -270,7 +272,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->checkToken();
 
     // Access check.
-    if(false)
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED'), 'error');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
@@ -317,11 +320,15 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     // Check for request forgeries
     $this->checkToken();
 
+    // Get request format
+    $format  = strtolower($this->app->getInput()->getWord('format', 'json'));
+
     // Access check.
-    if(false)
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
-      $msg = Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED');
-      $this->ajaxRespond($msg);
+      $msg = Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start');
+      $this->ajaxRespond($msg, $format);
 
       return false;
     }
@@ -336,7 +343,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       // Requested script does not exists
       $msg = new \Exception('Requested migration script does not exist.', 1);
 
-      $this->ajaxRespond($msg);
+      $this->ajaxRespond($msg, $format);
 
       return false;
     }
@@ -347,33 +354,79 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Pre-checks not successful. Show error message.
       $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED');
-      $this->ajaxRespond($msg);
+      $this->ajaxRespond($msg, $format);
 
       return false;
     }
 
-    $msg = 'Test..';
+    // Get input params for migration
+    $type  = $this->app->getInput()->get('type', '', 'string');
+    $id    = $this->app->getInput()->get('id', '', 'int');
+    $json  = \json_decode(\base64_decode($this->app->getInput()->get('migrateable', '', 'string')), true);
+
+    // Check if a record id to be migrated is given
+    if(empty($id) || $id == 0)
+    {
+      // No record id given. Show error message.
+      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_RECORD_ID_MISSING');
+      $this->ajaxRespond($msg, $format);
+
+      return false;
+    }
+    
+    // Attempt ot load migrateable from database
+    $item = $model->getItem($json->id);
+
+    // Insert migrateable in database if not existing
+    if(\is_null($item->id))
+    {
+      // Save migration record to database
+      $model->save($json);
+
+      // Attempt ot load migrateable from database
+      $item = $model->getItem($model->getState('migration.id'));
+    }
+
+    // Check out migration record if not already checked out
+    if(\is_null($item->checked_out) || \intval($item->checked_out) < 1)
+    {
+      // Check out record
+      $model->checkout($item->id);
+
+      // Attempt ot load migrateable from database
+      $item = $model->getItem($model->getState('migration.id'));
+    }    
+
+    // Perform the migration
+    $msg = $model->migrate($type, $id, $item);
+
+    // Send migration results
     $msg = json_encode($msg);
-    $this->ajaxRespond($msg);
+    $this->ajaxRespond($msg, $format);
   }
 
   /**
    * Returns an ajax response
+   * 
+   * @param   mixed   $results  The result to be returned
+   * @param   string  $format   The format in which the result should be returned
 	 *
 	 * @return  void
 	 *
    * @since   4.0.0
 	 */
-  protected function ajaxRespond($results)
+  protected function ajaxRespond($results, $format=null)
   {
     $this->app->allowCache(false);
     $this->app->setHeader('X-Robots-Tag', 'noindex, nofollow');
 
-    // Requested format passed via URL
-    $format = strtolower($this->app->getInput()->getWord('format', ''));
+    if(\is_null($format))
+    {
+      $format = strtolower($this->app->getInput()->getWord('format', 'raw'));
+    }
 
     // Return the results in the desired format
-    switch ($format)
+    switch($format)
     {
       // JSONinzed
       case 'json':
@@ -410,7 +463,5 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
         break;
     }
-
-    //$this->app->close();
   }
 }

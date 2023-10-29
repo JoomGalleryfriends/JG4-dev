@@ -128,33 +128,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns the Joomla root path of the source.
-   *
-   * @return  string    Source Joomla root path
-   * 
-   * @since   4.0.0
-   */
-  public function getSourceRootPath(): string
-  {
-    if($this->params->get('same_joomla', 1))
-    {
-      $root = Path::clean(JPATH_ROOT . '/');
-    }
-    else
-    {
-      $root = Path::clean($this->params->get('joomla_path'));
-
-      if(\substr($root, -1) != '/')
-      {
-        $root = Path::clean($root . '/');
-      }
-    }
-
-    return $root;
-  }
-
-  /**
-   * Returns the most important info of the corresponding source table
+   * Returns tablename and primarykey name of the source table
    *
    * @param   string   $type    The content type name
    * 

@@ -290,6 +290,32 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
+   * Returns the Joomla root path of the source.
+   *
+   * @return  string    Source Joomla root path
+   * 
+   * @since   4.0.0
+   */
+  protected function getSourceRootPath(): string
+  {
+    if($this->params->get('same_joomla', 1))
+    {
+      $root = Path::clean(JPATH_ROOT . '/');
+    }
+    else
+    {
+      $root = Path::clean($this->params->get('joomla_path'));
+
+      if(\substr($root, -1) != '/')
+      {
+        $root = Path::clean($root . '/');
+      }
+    }
+
+    return $root;
+  }
+
+  /**
    * Precheck: Check logfile and add check to checks array.
    * 
    * @param  Checks   $checks     The checks object

@@ -1,32 +1,44 @@
 // Selectors used by this script
-let buttonDataSelector = 'btn-migration';
-let typeSelector       = 'data-type';
-let formIdTmpl         = 'migrationForm';
+let typeSelector = 'data-type';
+let formIdTmpl   = 'migrationForm';
+
+/**
+ * Storage for migrateables
+ * @var {Object}  migrateablesList
+ */
+let migrateablesList = {};
 
 /**
  * Submit a migration task
- * @param task
+ * @param {Object}  event     Event object
+ * @param {Object}  element   DOM element object
  */
-let submitTask = function(event, element) {
+export let submitTask = function(event, element) {
   event.preventDefault();
 
   let type   = element.getAttribute(typeSelector);
-  let formId = formIdTmpl + '-' + type;  
-  let res    = performTask(formId);
+  let formId = formIdTmpl + '-' + type;
+  let task   = element.parentNode.querySelector('[name="task"]').value;
+  let res    = performTask(formId, task);
 };
 
 /**
  * Perform a migration task
- * @param  task
+ * @param   {String}   formId   Id of the form element
+ * @param   {String}   task     Name of the task
  * 
- * @return  json string
+ * @returns {Object}   Result object
  *          {success: true, status: 200, message: '', messages: {}, data: {}}
  */
-let performTask = async function(formId) {
+let performTask = async function(formId, task) {
 
   // Catch form and data
   let formData = new FormData(document.getElementById(formId));
   formData.append('format', 'json');
+
+  if(task == 'migration.start') {
+    formData.append('id', getNextMigrationID(formId));
+  }
 
   // Set request parameters
   let parameters = {
@@ -71,4 +83,31 @@ let performTask = async function(formId) {
   }
 
   return res;
+}
+
+/**
+ * Perform a migration task
+ * @param   {String}   formId   Id of the form element
+ * 
+ * @returns {String}   Id of the database record to be migrated
+ */
+let getNextMigrationID = function(formId) {
+  let type  = formId.replace(formIdTmpl + '-', '');
+  let form  = document.getElementById(formId);
+
+  let migrateable = atob(form.querySelector('[name="migrateable"]').value);
+  migrateable = JSON.parse(migrateable);
+
+  // Overwrite migrateable in list
+  migrateablesList[type] = migrateable;
+
+  // Loop through queue
+  migrateable.queue.forEach(function(id, i) {
+    if(id in migrateable.successful || id in migrateable.failed) {
+      migrateablesList[type]['currentID'] = id;
+      return;
+    }
+  });
+
+  return migrateablesList[type]['currentID'];
 }
