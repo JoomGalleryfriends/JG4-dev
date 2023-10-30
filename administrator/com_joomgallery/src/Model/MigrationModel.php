@@ -65,6 +65,15 @@ class MigrationModel extends AdminModel
 	protected $scriptName = '';
 
   /**
+	 * Temporary storage of type name.
+	 *
+	 * @var   string
+	 *
+	 * @since  4.0.0
+	 */
+  protected $tmp_type = null;
+
+  /**
    * Constructor
    *
    * @param   array                 $config       An array of configuration options (name, state, dbo, table_path, ignore_request).
@@ -218,18 +227,72 @@ class MigrationModel extends AdminModel
 
     if(\property_exists($item, 'queue'))
     {
-      $item->queue = \json_decode($item->queue);
-    }
-
-    if(\property_exists($item, 'failed'))
-    {
-      $item->failed = \json_decode($item->failed);
+      $registry    = new Registry($item->queue);
+      $item->queue = $registry->toArray();
     }
 
     if(\property_exists($item, 'successful'))
     {
-      $item->successful = \json_decode($item->successful, true);
+      $registry         = new Registry($item->successful);
+      $item->successful = $registry;
+      //$item->successful = $registry->toArray();
     }
+
+    if(\property_exists($item, 'failed'))
+    {
+      $registry     = new Registry($item->failed);
+      $item->failed = $registry;
+      //$item->failed = $registry->toArray();
+    }
+
+    // Add script if empty
+    if(empty($item->script))
+    {
+      $item->script = $this->scriptName;
+    }
+
+    // We can not go further without knowledge about the type
+    if(\is_null($this->tmp_type))
+    {
+      return $item;
+    }
+    else
+    {
+      $type = $this->tmp_type;
+    }
+
+    // Add type if empty
+    if(empty($item->type))
+    {      
+      $item->type = $type;
+    }
+
+    // Add source and destination table info if empty
+    if(empty($item->src_table))
+    {
+      // Get table information
+      list($src_table, $src_pk) = $this->component->getMigration()->getSourceTableInfo($type);
+      $item->src_table = $src_table;
+      $item->src_pk    = $src_pk;
+      $item->dst_table = JoomHelper::$content_types[$type];
+      $item->dst_pk    = 'id';
+    }
+
+    // Add queue if empty
+    if(\is_null($item->queue) || empty($item->queue))
+    {
+      // Load queue
+      $item->queue = $this->getQueue($type, $item);
+    }
+
+    // Add params
+    if($this->component->getMigration()->get('params'))
+    {
+      $item->params = $this->component->getMigration()->get('params');
+    }
+
+    // Empty type storage
+    $this->tmp_type = null;
 
     return $item;
   }
@@ -258,7 +321,7 @@ class MigrationModel extends AdminModel
       }
       
       $db->setQuery($query);
-      $items = $db->loadObjectList('type');
+      $tables = $db->loadObjectList('type');
     }
     catch (\RuntimeException $e)
     {
@@ -267,72 +330,45 @@ class MigrationModel extends AdminModel
       return array();
     }
 
-    $tables = array();
+    $items = array();
     foreach($types as $key => $type)
     {
-      $table = $this->getTable();
+      // Fill type storage
+      $this->tmp_type = $type;
 
-      if(!empty($items) && \key_exists($type, $items))
+      if(!empty($tables) && \key_exists($type, $tables))
       {
-        // Attempt to load the row.
-			  $return = $table->load($items[$type]->id);
-
-        // Check for a table object error.
-        if($return === false)
-        {
-          $this->component->setError($e->getMessage());
-
-          return array();
-        }
+        // Load item based on id.
+        $item = $this->getItem($tables[$type]->id);
+      }
+      else
+      {
+        // Load empty item.
+        $item = $this->getItem(0);
       }
 
-      // Add script if empty
-      if(empty($table->script))
+      // Empty type storage
+      $this->tmp_type = null;
+
+      // Check for a table object error.
+      if($item === false)
       {
-        $table->script = $this->scriptName;
+        $this->component->setError($e->getMessage());
+
+        return array();
       }
 
-      // Add type if empty
-      if(empty($table->type))
-      {
-        $table->type = $type;
-      }
-
-      // Add source and destination table info if empty
-      if(empty($table->src_table))
-      {
-        // Get table information
-        list($src_table, $src_pk) = $this->component->getMigration()->getSourceTableInfo($type);
-        $table->src_table = $src_table;
-        $table->src_pk    = $src_pk;
-        $table->dst_table = JoomHelper::$content_types[$type];
-        $table->dst_pk    = 'id';
-      }
-
-      // Add queue if empty
-      if(\is_null($table->queue) || empty($table->queue))
-      {
-        // Load queue
-        $table->queue = $this->getQueue($type, $table);
-      }
-
-      // Add params
-      if($this->component->getMigration()->get('params'))
-      {
-        $table->params = $this->component->getMigration()->get('params');
-      }
-
-      array_push($tables, $table);
+      array_push($items, $item);
     }
 
-    return $tables;
+    return $items;
   }
 
-    /**
+  /**
    * Load the current queue of ids from table
    * 
-   * @param   string          $type   Content type
-   * @param   MigrationTable  $table  Table object
+   * @param   string     $type   Content type
+   * @param   object     $table  Object containing migration item properties
    *
    * @return  array
    *
@@ -531,7 +567,7 @@ class MigrationModel extends AdminModel
     $sameIDs = \boolval($mig->params->get('source_ids', '0'));
     $record  = $this->insertRecord($type, $data, $sameIDs);
 
-    // 
+    // Recreate images
     if($type === 'image')
     {
       $img_source = $this->component->getMigration()->getImageSource($data);

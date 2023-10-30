@@ -27,6 +27,7 @@ use \Joomla\CMS\Form\FormFactoryAwareTrait;
 use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
+use stdClass;
 
 /**
  * Migration controller class.
@@ -114,7 +115,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
   /**
    * Method to cancel a migration.
    *
-   * @return  boolean  True if access level checks pass, false otherwise.
+   * @return  boolean  True on success, false otherwise
    *
    * @since   4.0.0
    */
@@ -133,6 +134,16 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       throw new Exception('Requested migration script does not exist.', 1);      
     }
 
+    // Access check.
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
+    {
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
     // Clean the session data and redirect.
     $this->app->setUserState(_JOOM_OPTION.'.migration.script', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', null);
@@ -143,6 +154,127 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step3.success', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step4.results', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step4.success', null);
+
+    // Redirect to the list screen.
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+    return true;
+  }
+
+  /**
+   * Method to resume a previously paused or canceled migration.
+   *
+   * @return  boolean  True on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function resume()
+  {
+    $this->checkToken();
+
+    $model   = $this->getModel();
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+    $scripts = $model->getScripts();
+
+    // Check if requested script exists
+    if(!\in_array($script, \array_keys($scripts)))
+    {
+      // Requested script does not exists
+      throw new Exception('Requested migration script does not exist.', 1);      
+    }
+
+    // Access check.
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
+    {
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    // Get item to resume.
+    $id = $this->input->get('resume_id', 0, 'int');
+    if($id < 1)
+    {
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    // Attempt to load the migration items
+    $item = $model->getItem($id);
+    if(!$item || $item->script != $script)
+    {
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    // Set params data to user state
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $item->params);
+
+    // Redirect to the from screen (step 1).
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step1', false));
+
+    return true;
+  }
+
+  /**
+   * Method to remove one or more item from database.
+   *
+   * @return  boolean True on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function delete()
+  {
+    $this->checkToken();
+
+    $model   = $this->getModel();
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+    $scripts = $model->getScripts();
+
+    // Check if requested script exists
+    if(!\in_array($script, \array_keys($scripts)))
+    {
+      // Requested script does not exists
+      throw new Exception('Requested migration script does not exist.', 1);      
+    }
+
+    // Access check.
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
+    {
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    // Get items to remove from the request.
+    $cid = (array) $this->input->get('cid', [], 'int');
+
+    // Remove zero values resulting from input filter
+    $cid = array_filter($cid);
+
+    if(!empty($cid))
+    {
+      // Get the model.
+      $model = $this->getModel();
+
+      // Remove the items.
+      if($model->delete($cid))
+      {
+        $this->app->enqueueMessage(Text::plural($this->text_prefix . '_N_ITEMS_DELETED', \count($cid)));
+      }
+      else
+      {
+        $this->app->enqueueMessage($model->getError(), 'error');
+      }
+    }
 
     // Redirect to the list screen.
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
@@ -183,7 +315,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $acl = $this->component->getAccess();
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
-      $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED'), 'error');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -275,7 +407,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $acl = $this->component->getAccess();
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
-      $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_MIGRATION_NOT_PERMITTED'), 'error');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -310,6 +442,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
   /**
    * Perform a migration
+   * Called by Ajax requests
 	 *
 	 * @return  void
 	 *
@@ -327,8 +460,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $acl = $this->component->getAccess();
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
-      $msg = Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start');
-      $this->ajaxRespond($msg, $format);
+      $response = $this->createRespond(null, false, Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'));
+      $this->ajaxRespond($response, $format);
 
       return false;
     }
@@ -341,9 +474,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      $msg = new \Exception('Requested migration script does not exist.', 1);
-
-      $this->ajaxRespond($msg, $format);
+      $response = $this->createRespond(null, false, 'Requested migration script does not exist.');
+      $this->ajaxRespond($response, $format);
 
       return false;
     }
@@ -353,8 +485,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$precheck)
     {
       // Pre-checks not successful. Show error message.
-      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED');
-      $this->ajaxRespond($msg, $format);
+      $response = $this->createRespond(null, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED'));
+      $this->ajaxRespond($response, $format);
 
       return false;
     }
@@ -368,22 +500,22 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(empty($id) || $id == 0)
     {
       // No record id given. Show error message.
-      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_RECORD_ID_MISSING');
-      $this->ajaxRespond($msg, $format);
+      $response = $this->createRespond(null, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_RECORD_ID_MISSING'));
+      $this->ajaxRespond($response, $format);
 
       return false;
     }
     
-    // Attempt ot load migrateable from database
+    // Attempt to load migration record from database
     $item = $model->getItem($json->id);
 
-    // Insert migrateable in database if not existing
     if(\is_null($item->id))
     {
+      // It seems that the migration record does not yet exists in the database
       // Save migration record to database
       $model->save($json);
 
-      // Attempt ot load migrateable from database
+      // Attempt to load migration record from database
       $item = $model->getItem($model->getState('migration.id'));
     }
 
@@ -394,15 +526,38 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       $model->checkout($item->id);
 
       // Attempt ot load migrateable from database
-      $item = $model->getItem($model->getState('migration.id'));
-    }    
+      $item = $model->getItem($item->id);
+    }
 
     // Perform the migration
-    $msg = $model->migrate($type, $id, $item);
+    $data = $model->migrate($type, $id, $item);
 
     // Send migration results
-    $msg = json_encode($msg);
-    $this->ajaxRespond($msg, $format);
+    $response = $this->createRespond($data, true);
+    $this->ajaxRespond($response, $format);
+  }
+
+  /**
+   * Create a response object
+   * {success: bool, message: string, data: mixed}
+   * 
+   * @param   mixed   $data      The data returned to the frontend
+   * @param   bool    $success   True if everything was good, false otherwise
+   * @param   string  $message   A message to be printed in the frontend
+	 *
+	 * @return  string  Response json string
+	 *
+   * @since   4.0.0
+	 */
+  protected function createRespond($data, bool $success = true, string $message = ''): string
+  {
+    $obj = new stdClass;
+
+    $obj->success = $success;
+    $obj->data    = $data;
+    $obj->message = $message;
+
+    return \json_encode($obj, JSON_UNESCAPED_UNICODE);
   }
 
   /**

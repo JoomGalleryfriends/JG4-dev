@@ -91,34 +91,6 @@ class MigrationTable extends Table
 		return parent::store($updateNulls);
 	}
 
-	/**
-	 * Overloaded check function
-	 *
-	 * @return bool
-	 */
-	public function check()
-	{
-    // Support for subform field queue
-		if(is_array($this->queue))
-		{
-			$this->queue = json_encode($this->queue, JSON_UNESCAPED_UNICODE);
-		}
-
-		// Support for subform field successful
-		if(is_array($this->successful))
-		{
-			$this->successful = json_encode($this->successful, JSON_UNESCAPED_UNICODE);
-		}
-
-		// Support for subform field failed
-		if(is_array($this->failed))
-		{
-			$this->failed = json_encode($this->failed, JSON_UNESCAPED_UNICODE);
-		}
-
-		return parent::check();
-	}
-
   /**
    * Delete a record by id
    *
@@ -157,13 +129,17 @@ class MigrationTable extends Table
 		// Support for successful field
     if(isset($array['successful']) && is_array($array['successful']))
 		{
-			$array['successful'] = \json_encode($array['successful'], JSON_UNESCAPED_UNICODE);
+      $registry = new Registry;
+			$registry->loadArray($array['successful']);
+			$array['successful'] = (string) $registry;
 		}
 
 		// Support for failed field
     if(isset($array['failed']) && is_array($array['failed']))
 		{
-			$array['failed'] = \json_encode($array['failed'], JSON_UNESCAPED_UNICODE);
+			$registry = new Registry;
+			$registry->loadArray($array['failed']);
+			$array['failed'] = (string) $registry;
 		}
 
     // Support for params field
@@ -209,7 +185,7 @@ class MigrationTable extends Table
       // Support for successful field
       if(isset($this->successful) && !is_array($this->successful))
       {
-        $this->successful = \json_decode($this->successful, true);
+        $this->successful = \json_decode($this->successful);
       }
 
       // Support for failed field
@@ -225,8 +201,8 @@ class MigrationTable extends Table
       if(\count($this->queue) === \count($this->successful))
       {
         $this->completed = true;
-      } 
-    }   
+      }
+    }
 
     return $success;
   }

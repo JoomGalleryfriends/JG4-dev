@@ -43,12 +43,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   submitTask: () => (/* binding */ submitTask)
 /* harmony export */ });
 // Selectors used by this script
-let buttonDataSelector = 'btn-migration';
-let typeSelector       = 'data-type';
-let formIdTmpl         = 'migrationForm';
+let typeSelector = 'data-type';
+let formIdTmpl   = 'migrationForm';
+
+/**
+ * Storage for migrateables
+ * @var {Object}  migrateablesList
+ */
+let migrateablesList = {};
 
 /**
  * Submit a migration task
+ * 
  * @param {Object}  event     Event object
  * @param {Object}  element   DOM element object
  */
@@ -58,18 +64,28 @@ let submitTask = function(event, element) {
   let type   = element.getAttribute(typeSelector);
   let formId = formIdTmpl + '-' + type;
   let task   = element.parentNode.querySelector('[name="task"]').value;
-  let res    = performTask(formId, task);
+
+  ajax(formId, task)
+    .then(res => {
+      // Handle the successful result here
+      responseHandler(res);
+    })
+    .catch(error => {
+      // Handle any errors here
+      console.error(error);
+    });
 };
 
 /**
- * Perform a migration task
+ * Perform an ajax request in json format
+ * 
  * @param   {String}   formId   Id of the form element
  * @param   {String}   task     Name of the task
  * 
  * @returns {Object}   Result object
- *          {success: true, status: 200, message: '', messages: {}, data: {}}
+ *          {success: true, status: 200, message: '', messages: {}, data: { {success: bool, message: string, data: mixed} }}
  */
-let performTask = async function(formId, task) {
+let ajax = async function(formId, task) {
 
   // Catch form and data
   let formData = new FormData(document.getElementById(formId));
@@ -92,8 +108,6 @@ let performTask = async function(formId, task) {
   // Set the url
   let url = document.getElementById(formId).getAttribute('action');
 
-  return
-
   // Perform the fetch request
   let response = await fetch(url, parameters);
 
@@ -104,7 +118,7 @@ let performTask = async function(formId, task) {
   if (!response.ok) {
     // Catch network error
     console.log(txt);
-    return {success: false, status: response.status, message: response.message, messages: {}, data: {error: txt}};
+    return {success: false, status: response.status, message: response.message, messages: {}, data: {message: txt}};
   }
 
   if(txt.startsWith('{"success"')) {
@@ -114,7 +128,7 @@ let performTask = async function(formId, task) {
     res.data   = JSON.parse(res.data);
   } else if (txt.includes('Fatal error')) {
     // PHP fatal error occurred
-    res = {success: false, status: response.status, message: response.statusText, messages: {}, data: {error: txt}};
+    res = {success: false, status: response.status, message: response.statusText, messages: {}, data: {message: txt}};
   } else {
     // Response is not of type json --> probably some php warnings/notices
     let split = txt.split('\n{"');
@@ -133,13 +147,36 @@ let performTask = async function(formId, task) {
  * @returns {String}   Id of the database record to be migrated
  */
 let getNextMigrationID = function(formId) {
-  let type = formId.replace(formIdTmpl + '-', '');
-  let form = document.getElementById(formId);
+  let type  = formId.replace(formIdTmpl + '-', '');
+  let form  = document.getElementById(formId);
 
   let migrateable = atob(form.querySelector('[name="migrateable"]').value);
   migrateable = JSON.parse(migrateable);
 
-  console.log(migrateable);
+  // Overwrite migrateable in list
+  migrateablesList[type] = migrateable;
+
+  // Loop through queue
+  for (let id of migrateable.queue) {
+    if (!(id in migrateable.successful) && !(id in migrateable.failed)) {
+      migrateablesList[type]['currentID'] = id;
+      break;
+    }
+  }
+
+  return migrateablesList[type]['currentID'];
+}
+
+/**
+ * Handle migration response
+ * 
+ * @param   {Object}   response   The response object in the form of
+ *          {success: true, status: 200, message: '', messages: {}, data: { {success: bool, message: string, data: mixed} }}
+ * 
+ * @returns void
+ */
+let responseHandler = function(response) {
+  console.log(response);
 }
 Migrator = __webpack_exports__;
 /******/ })()
