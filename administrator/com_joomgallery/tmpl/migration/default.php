@@ -19,11 +19,12 @@ use \Joomla\CMS\Language\Text;
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
-   ->useScript('com_joomgallery.admin');
+   ->useScript('com_joomgallery.admin')
+   ->useScript('com_joomgallery.tasklessForm');
 ?>
 
 <div class="jg jg-migration">
-  <h2><?php echo Text::_('COM_JOOMGALLERY_AVAILABLE_SCRIPT'); ?>:</h2>
+  <h2><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_AVAILABLE_SCRIPTS'); ?>:</h2>
   <br />
 
   <?php foreach ($this->scripts as $name => $script) : ?>
@@ -36,10 +37,20 @@ $wa->useStyle('com_joomgallery.admin')
               <div class="col-2">
                 <img src="<?php echo $script['img']; ?>" alt="<?php echo $name; ?> logo">
               </div>
-              <div class="col-10">
+              <div id="formInputContainer" class="col-10">
                 <p><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($name).'_DESC'); ?></p>
-                <input class="btn btn-primary" type="submit" value="<?php echo Text::_('COM_JOOMGALLERY_USE_SCRIPT'); ?>">
-                <input type="hidden" name="task" value="display"/>
+                <joomla-button id="migration-start" task="display">
+                  <button class="btn btn-primary" data-submit-task="display" type="button"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_START_SCRIPT'); ?></button>
+                </joomla-button>
+                <?php if(!empty($openMigrations[$name])) : ?>
+                  <joomla-button id="migration-resume" task="migration.resume">
+                    <button class="btn btn-primary" data-submit-task="migration.resume" type="button"><?php echo Text::_('COM_JOOMGALLERY_RESUME'); ?></button>
+                  </joomla-button>
+                  <joomla-button id="migration-abort" task="migration.delete">
+                    <button class="btn btn-primary" data-submit-task="migration.delete" type="button"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_ABORT_MIGRATION'); ?></button>
+                  </joomla-button>
+                  <input type="hidden" name="cid" value="(<?php echo explode(', ', $openMigrations[$name][0]); ?>)"/>
+                <?php endif; ?>
                 <input type="hidden" name="layout" value="step1"/>
                 <input type="hidden" name="script" value="<?php echo $name; ?>"/>
                 <?php echo HTMLHelper::_('form.token'); ?>

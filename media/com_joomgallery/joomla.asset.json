@@ -112,7 +112,12 @@
     {
       "name": "com_joomgallery.masonry",
       "type": "script",
-      "uri": "com_joomgallery/masonry.min.js",
+      "uri": "com_joomgallery/masonry.min.js"
+    },
+    {
+      "name": "com_joomgallery.tasklessForm",
+      "type": "script",
+      "uri": "com_joomgallery/tasklessForm.js",
       "attributes": {
         "type": "module"
       }

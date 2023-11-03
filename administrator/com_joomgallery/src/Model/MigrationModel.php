@@ -298,9 +298,9 @@ class MigrationModel extends AdminModel
   }
 
   /**
-    * Method to get an array of migrateables based on current script.
+    * Method to get an array of migration records based on current script.
     *
-    * @return  MigrationTable[]  An array of data items
+    * @return  Migrationtable[]  An array of migration tables
     *
     * @since   4.0.0
     */
@@ -321,6 +321,7 @@ class MigrationModel extends AdminModel
       }
       
       $db->setQuery($query);
+
       $tables = $db->loadObjectList('type');
     }
     catch (\RuntimeException $e)
@@ -362,6 +363,37 @@ class MigrationModel extends AdminModel
     }
 
     return $items;
+  }
+
+  /**
+    * Method to get an array of IDs based on current script.
+    *
+    * @return  array  List of IDs
+    *
+    * @since   4.0.0
+    */
+  public function getIdList(): array
+  {
+    // Create a new query object.
+    try
+    {
+      $db    = $this->getDbo();
+      $query = $db->getQuery(true);
+
+      // Select the required fields from the table.
+      $query->select(array('a.id', 'a.script', 'a.type'));
+      $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
+
+      $db->setQuery($query);
+
+      return $db->loadObjectList('script');
+    }
+    catch (\RuntimeException $e)
+    {
+      $this->component->setError($e->getMessage());
+
+      return array();
+    }
   }
 
   /**

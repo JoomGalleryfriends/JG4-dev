@@ -193,8 +193,11 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       return false;
     }
 
-    // Get item to resume.
-    $id = $this->input->get('resume_id', 0, 'int');
+    // Get item to resume from the request.
+    $cid = (array) $this->input->get('cid', [], 'int');
+    $cid = \array_filter($cid);
+    $id  = $cid[0];
+
     if($id < 1)
     {
       $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error');
@@ -258,7 +261,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $cid = (array) $this->input->get('cid', [], 'int');
 
     // Remove zero values resulting from input filter
-    $cid = array_filter($cid);
+    $cid = \array_filter($cid);
 
     if(!empty($cid))
     {

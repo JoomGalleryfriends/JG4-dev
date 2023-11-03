@@ -99,7 +99,8 @@ class HtmlView extends JoomGalleryView
           break;
         
         default:
-          # code...
+          // ID list of open migrations
+          $this->openMigrations = $this->get('IdList');
           break;
       }
     }
