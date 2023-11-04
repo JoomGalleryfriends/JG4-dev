@@ -19,7 +19,7 @@
 
     // add task input element
     let input = document.createElement('input');
-    input.type = 'text';
+    input.type = 'hidden';
     input.name = 'task';
     input.value = task;
     container.appendChild(input);

@@ -124,16 +124,25 @@ trait MessageTrait
 
   /**
    * Add a JoomGallery logger to the JLog class
+   * 
+   * @param   string   Name of the specific logger
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  protected function addLogger()
+  protected function addLogger(string $name = null)
   {
     if(!$this->log)
     {
-      Log::addLogger(['text_file' =>  'com_joomgallery.log.php'], Log::ALL, ['com_joomgallery']);
+      if(\is_null($name))
+      {
+        Log::addLogger(['text_file' =>  'com_joomgallery.log.php'], Log::ALL, ['com_joomgallery']);
+      }
+      else
+      {
+        Log::addLogger(['text_file' =>  'com_joomgallery.'.$name.'.log.php'], Log::ALL, ['com_joomgallery.'.$name]);
+      }
     }
     
     $this->log = true;
@@ -149,9 +158,16 @@ trait MessageTrait
    *
    * @since   4.0.0
   */
-  protected function addLog($txt, $priority)
+  protected function addLog(string $txt, int $priority = 8, string $name = null)
   {
-    Log::add($txt, $priority, 'com_joomgallery');
+    if(\is_null($name))
+    {
+      Log::add($txt, $priority, 'com_joomgallery');
+    }
+    else
+    {
+      Log::add($txt, $priority, 'com_joomgallery'.$name);
+    }
   }
 
   /**

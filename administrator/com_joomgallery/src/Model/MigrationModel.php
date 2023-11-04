@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\MVC\Model\AdminModel;
@@ -576,46 +577,101 @@ class MigrationModel extends AdminModel
    * 
    * @param   string           $type   Name of the content type to migrate.
    * @param   integer          $pk     The primary key of the source record.
-   * @param   MigrationTable   $mig    The MigrationTable object.
+   * @param   object           $mig    The MigrationTable object.
 	 *
 	 * @return  object   The object containing the migration results.
 	 *
 	 * @since   4.0.0
 	 */
-  public function migrate(string $type, int $pk, MigrationTable $mig): MigrationTable
+  public function migrate(string $type, int $pk, object $mig): object
   {
-    $info = $this->getScript();
+    // Initialise variables
+    $info      = $this->getScript();
+    $new_pk    = 0;
+    $success   = true;
+    $error_msg = '';
 
     // Set the migration parameters
     $this->setParams($mig->params);
 
     // Get record data from source
-    $data = $this->component->getMigration()->getData($type, $pk);
-
-    // Convert record data into structure needed for JoomGallery v4+
-    $data = $this->component->getMigration()->convertData($data);
-
-    // Create new record based on data array
-    $sameIDs = \boolval($mig->params->get('source_ids', '0'));
-    $record  = $this->insertRecord($type, $data, $sameIDs);
-
-    // Recreate images
-    if($type === 'image')
+    if($data = $this->component->getMigration()->getData($type, $pk))
     {
-      $img_source = $this->component->getMigration()->getImageSource($data);
-      if(\array_key_first($img_source) === 0)
+      // Convert record data into structure needed for JoomGallery v4+
+      $data = $this->component->getMigration()->convertData($data);
+
+      if(!$data)
       {
-        // Create imagetypes based on one given image
-        $this->createImages($record, $img_source[0]);
+        $success = false;
+        $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CONVERT_DATA');
       }
       else
       {
-        // Reuse images from source as imagetypes
-        $this->reuseImages($record, $img_source);
+        // Create new record based on data array
+        $sameIDs = \boolval($mig->params->get('source_ids', '0'));
+        $record  = $this->insertRecord($type, $data, $sameIDs);
+
+        // Set primary key value of new created record
+        $new_pk = $record->id;
+
+        if(!$record)
+        {
+          $success = false;
+          $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_INSERT_RECORD');
+        }
+        else
+        {
+          // Recreate images
+          if($type === 'image')
+          {
+            $img_source = $this->component->getMigration()->getImageSource($data);
+            if(\array_key_first($img_source) === 0)
+            {
+              // Create imagetypes based on given image and mapping
+              $res = $this->createImages($record, $img_source[0]);
+            }
+            else
+            {
+              // Reuse images from source as imagetypes (no image creation)
+              $res = $this->reuseImages($record, $img_source);
+            }
+
+            if(!$res)
+            {
+              $record  = $this->deleteRecord($type, $new_pk);
+              $success = false;
+              $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CREATE_IMGTYPE');
+            }
+          }
+        }
       }
     }
 
-    return $this->component->getMigration()->migrate();
+    // Load migration data table
+    $table = $this->getTable();
+    $table->load($mig->id);
+
+    // Remove migrated primary key from queue
+    if(($key = \array_search($pk, $table->queue)) !== false)
+    {
+      unset($table->queue[$key]);
+    }
+
+    if($success)
+    {
+      // Add migrated primary key to successful object
+      $table->successful->set($pk, $new_pk);
+    }
+    else
+    {
+      // Add migrated primary key to failed object
+      $table->failed->set($pk, $error_msg);
+    }
+
+    // Calculate progress and completed state
+    $table->clcProgress();
+
+    return $table;
   }
 
   /**
@@ -637,7 +693,7 @@ class MigrationModel extends AdminModel
     // Create table
     if(!$table = $this->getMVCFactory()->createTable($type, 'administrator'))
     {
-      $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type));
+      $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type));
 
       return false;
     }
@@ -660,7 +716,7 @@ class MigrationModel extends AdminModel
     // Bind migrated data to table object
     if(!$table->bind($data))
     {
-      $this->setError($table->getError());
+      $this->component->setError($table->getError());
 
       return false;
     }
@@ -685,6 +741,54 @@ class MigrationModel extends AdminModel
     }
 
     return $table;
+  }
+
+  /**
+	 * Method to delete a content type record in destination table.
+	 *
+   * @param   string  $type   Name of the content type to insert.
+	 * @param   array   $data   The record data gathered from the migration source.
+   * @param   bool    $newID  True to auto-increment the id in the database
+	 *
+	 * @return  object  Inserted record object on success, False on error.
+	 *
+	 * @since   4.0.0
+	 */
+  protected function deleteRecord(string $type, int $pk): bool
+  {
+    // Check content type
+    JoomHelper::isAvailable($type);
+
+    // Create table
+    if(!$table = $this->getMVCFactory()->createTable($type, 'administrator'))
+    {
+      $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type));
+
+      return false;
+    }
+
+    // Load the table.
+    $table->load($pk);
+
+    if($type === 'image')
+    {
+      // Delete corresponding imagetypes
+      $manager = JoomHelper::getService('FileManager');
+
+      if(!$manager->deleteImages($table))
+      {
+        $this->component->setError($this->component->getDebug(true));
+
+        return false;
+      }
+    }
+
+    if(!$table->delete($pk))
+    {
+      $this->component->setError($table->getError());
+
+      return false;
+    }
   }
 
   /**

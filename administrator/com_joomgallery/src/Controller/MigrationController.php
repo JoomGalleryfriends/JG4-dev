@@ -508,6 +508,9 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
       return false;
     }
+
+    // Start migration
+    //------------------
     
     // Attempt to load migration record from database
     $item = $model->getItem($json->id);
@@ -533,10 +536,23 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     }
 
     // Perform the migration
-    $data = $model->migrate($type, $id, $item);
+    $table = $model->migrate($type, $id, $item);
+
+    // Check for errors
+    $errors = $this->component->getError();
+
+    if(!empty($errors))
+    {
+      // Error during migration
+      $response = $this->createRespond($table, false, $this->component->getError(true));
+    }
+    else
+    {
+      // Migration successful
+      $response = $this->createRespond($table, true);
+    }
 
     // Send migration results
-    $response = $this->createRespond($data, true);
     $this->ajaxRespond($response, $format);
   }
 

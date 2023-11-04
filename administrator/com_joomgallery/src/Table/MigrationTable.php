@@ -58,8 +58,8 @@ class MigrationTable extends Table
 
 		// Initialize queue, successful and failed
 		$this->queue = array();
-		$this->successful = array();
-		$this->failed = array();
+		$this->successful = new Registry();
+		$this->failed = new Registry();
 	}
 
 	/**
@@ -185,25 +185,44 @@ class MigrationTable extends Table
       // Support for successful field
       if(isset($this->successful) && !is_array($this->successful))
       {
-        $this->successful = \json_decode($this->successful);
+        $this->successful = new Registry(\json_decode($this->successful));
       }
 
       // Support for failed field
       if(isset($this->failed) && !is_array($this->failed))
       {
-        $this->failed = \json_decode($this->failed);
+        $this->failed = new Registry(\json_decode($this->failed));
       }
 
-      // Calculate progress property
-      $this->progress = (int) \round((100 / \count($this->queue)) * (\count($this->successful) + \count($this->failed)));
-
-      // Update completed property
-      if(\count($this->queue) === \count($this->successful))
+      // Support for params field
+      if(isset($this->params) && !is_array($this->params))
       {
-        $this->completed = true;
+        $this->params = new Registry(\json_decode($this->params));
       }
+
+      // Calculate progress and completed state
+      $this->clcProgress();
     }
 
     return $success;
+  }
+
+  /**
+   * Method to calculate progress and completed state.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function clcProgress()
+  {
+    // Calculate progress property
+    $this->progress = (int) \round((100 / \count($this->queue)) * ($this->successful->count() + $this->failed->count()));
+
+    // Update completed property
+    if(\count($this->queue) === $this->successful->count())
+    {
+      $this->completed = true;
+    }
   }
 }

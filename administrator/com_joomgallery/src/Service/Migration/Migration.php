@@ -233,10 +233,7 @@ abstract class Migration implements MigrationInterface
   */
   protected function addLogger()
   {
-    if(!$this->log)
-    {
-      Log::addLogger(['text_file' =>  'com_joomgallery.migration.log.php'], Log::ALL, ['com_joomgallery.migration']);
-    }
+    $this->component->addLogger('migration');
     
     $this->log = true;
   }
@@ -253,7 +250,7 @@ abstract class Migration implements MigrationInterface
   */
   protected function addLog($txt, $priority)
   {
-    Log::add($txt, $priority, 'com_joomgallery.migration');
+    $this->component->addLog($txt, $priority, 'migration');
   }
 
   /**
