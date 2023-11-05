@@ -38,6 +38,7 @@
 
     <media destination="com_joomgallery" folder="media/com_joomgallery">
         <folder>css</folder>
+        <folder>fonts</folder>
         <folder>js</folder>
         <folder>images</folder>
         <filename>joomla.asset.json</filename>
