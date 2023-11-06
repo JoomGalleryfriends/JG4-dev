@@ -147,13 +147,14 @@ interface MigrationInterface
   /**
    * Converts data from source into the structure needed for JoomGallery.
    *
+   * @param   string  $type   Name of the content type
    * @param   array   $data   Data received from getData() method.
    * 
    * @return  array   Converted data to save into JoomGallery
    * 
    * @since   4.0.0
    */
-  public function convertData(array $data): array;
+  public function convertData(string $type, array $data): array;
 
   /**
    * Fetches an array of images from source to be used for creating the imagetypes

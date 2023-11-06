@@ -15,6 +15,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Migration;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Targetinfo;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationInterface;
@@ -128,38 +130,6 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns tablename and primarykey name of the source table
-   *
-   * @param   string   $type    The content type name
-   * 
-   * @return  array   The corresponding source table info
-   *                  list(tablename, primarykey)
-   * 
-   * @since   4.0.0
-   */
-  public function getSourceTableInfo(string $type): array
-  {
-    $tables = array( 'image' =>    array('#__joomgallery', 'id'),
-                     'category' => array('#__joomgallery_catg', 'cid')
-                    );
-
-    if(!\in_array($type, \array_keys($tables)))
-    {
-      throw new \Exception('There is no migration source table associated with the given content type. Given: ' . $type, 1);
-    }
-
-    if($this->params->get('same_db'))
-    {
-      foreach($tables as $key => $value)
-      {
-        $tables[$key][0] = $value[0] . '_old';
-      }
-    }
-
-    return $tables[$type];
-  }
-
-  /**
    * Returns a list of involved source tables.
    *
    * @return  array    List of table names (Joomla style, e.g #__joomgallery)
@@ -195,41 +165,156 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
+   * Returns tablename and primarykey name of the source table
+   *
+   * @param   string   $type    The content type name
+   * 
+   * @return  array   The corresponding source table info
+   *                  list(tablename, primarykey)
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceTableInfo(string $type): array
+  {
+    $tables = array( 'image' =>    array('#__joomgallery', 'id'),
+                     'category' => array('#__joomgallery_catg', 'cid')
+                    );
+
+    if(!\in_array($type, \array_keys($tables)))
+    {
+      throw new \Exception('There is no migration source table associated with the given content type. Given: ' . $type, 1);
+    }
+
+    if($this->params->get('same_db'))
+    {
+      foreach($tables as $key => $value)
+      {
+        $tables[$key][0] = $value[0] . '_old';
+      }
+    }
+
+    return $tables[$type];
+  }
+
+  /**
    * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type
    * @param   int      $pk     The primary key of the content type
    * 
-   * @return  array  Record data
+   * @return  array    Associated array of a record data
    * 
    * @since   4.0.0
    */
   public function getData(string $type, int $pk): array
   {
-    switch ($type)
+    // Get source table info
+    list($tablename, $primarykey) = $this->getSourceTableInfo($type);
+
+    // Get db object
+    list($db, $prefix) = $this->getDB('source');
+    $query             = $db->getQuery(true);
+
+    // Create the query
+    $query->select('*')
+          ->from($db->quoteName($tablename))
+          ->where($db->quoteName($primarykey) . ' = ' . $db->quote($pk));
+
+    // Attempt to load the array
+    try
     {
-      case 'category':
-        return $this->getCategoryData($pk);
-        break;
-      
-      default:
-        return array();
-        break;
+      return $db->loadAssoc();
+    }
+    catch(\Exception $e)
+    {
+      $this->component->setError($e->getMessage());
+
+      return array();
     }
   }
 
   /**
    * Converts data from source into the structure needed for JoomGallery.
    *
+   * @param   string  $type   Name of the content type
    * @param   array   $data   Data received from getData() method.
    * 
    * @return  array   Converted data to save into JoomGallery
    * 
    * @since   4.0.0
    */
-  public function convertData(array $data): array
+  public function convertData(string $type, array $data): array
   {
-    return array();
+    /* How mappings work:
+       - Key not in the mapping array:  Nothing changes. Field value can be magrated as it is.
+       - 'old key' => 'new key':        Field name has changed. Old values will be inserted in field with the provided new key.
+       - 'old key' => false:            Field does not exist anymore or value has to be emptied to create new record in the new table.
+       - 'old key' => array():          Field was merget into another field of type json. array('dest. field', 'child-field name within dest. field').
+                                        If the second element of the array is 'false' means that it will be merged directly into dest. field without creating a child field in it.
+    */
+
+    // The fieldname of owner (created_by)
+    $ownerFieldName = 'owner';
+
+    // Parameter dependet mapping fields
+    $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
+    $owner = \boolval($this->params->get('check_owner', 0)) ? 'created_by' : false;
+
+    // Configure mapping for each content type
+    switch($type)
+    {
+      case 'category':
+        // Apply mapping for category table
+        $mapping  = array( 'cid' => $id, 'asset_id' => false, 'name' => 'title', 'alias' => false, 'lft' => false, 'rgt' => false, 'level' => false,
+                           'owner' => $owner, 'img_position' => false, 'catpath' => 'path', 'params' => array('params', false), 
+                           'allow_download' => array('params', 'jg_download'), 'allow_comment' => array('params', 'jg_showcomment'), 'allow_rating' => array('params', 'jg_showrating'),
+                           'allow_watermark' => array('params', 'jg_dynamic_watermark'), 'allow_watermark_download' => array('params', 'jg_downloadwithwatermark')
+                          );
+
+        break;
+
+      case 'image':
+        // Apply mapping for image table
+        $mapping  = array( 'id' => $id, 'asset_id' => false, 'alias' => false, 'imgfilename' => 'filename', 'imgthumbname' => false,
+                           'owner' => $owner, 'params' => array('params', false)
+                          );
+
+        // Check difference between imgfilename and imgthumbname
+        if($data['imgfilename'] !== $data['imgthumbname'])
+        {
+          $this->component->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_FILENAME_DIFF', $data['id'], $data['alias']));
+
+          return false;
+        }
+
+        // Adjust catid with new created categories
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          $data['catid'] = $this->migrateables['category']->successful->get($data['catid']);
+        }
+
+        break;
+      
+      default:
+        // The table structure is the same
+        $mapping = array('id' => $id, 'owner' => $owner);
+
+        break;
+    }
+
+    // Check owner
+    if(\boolval($this->params->get('check_owner', 0)))
+    {
+      // Check if user with the provided userid exists
+      $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($data[$ownerFieldName]);
+      if(!$user || !$user->id)
+      {
+        $data[$ownerFieldName] = 0;
+      }
+    }
+
+    // Apply mapping
+    return $this->applyConvertData($data, $mapping);
   }
 
   /**
@@ -250,16 +335,36 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns an associative array containing the category data from source.
+   * Precheck: Perform script specific checks
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
    *
-   * @param   int      $pk     The primary key of the category
-   * 
-   * @return  array  Category data array
-   * 
+   * @return  void
+   *
    * @since   4.0.0
-   */
-  public function getCategoryData(int $pk): array
+  */
+  protected function scriptSpecificChecks(Checks &$checks, string $category)
   {
-    return array();
+    // Check if imgfilename and imgthumbname are the same
+    list($db, $dbPrefix)      = $this->getDB('source');
+    list($tablename, $pkname) = $this->getSourceTableInfo('image');
+
+    // Create the query
+    $query = $db->getQuery(true)
+            ->select($db->quoteName(array('id')))
+            ->from($tablename)
+            ->where($db->quoteName('imgfilename') . ' != ' . $db->quoteName('imgthumbname'));
+    $db->setQuery($query);
+
+    // Load a list of ids that have different values for imgfilename and imgthumbname
+    $res = $db->loadColumn();
+
+    if(!empty(\count($res)))
+    {
+      $checks->addCheck($category, 'src_table_image_filename', false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_TITLE'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_DESC', \count($res)), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_HELP', \implode(', ', $res)));
+    }
+
+    return;
   }
 }

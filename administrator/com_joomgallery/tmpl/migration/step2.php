@@ -90,7 +90,12 @@ $wa->useStyle('com_joomgallery.admin')
                             <small><?php echo $check->desc; ?></small>
                           </td>
                           <td><span class="badge bg-<?php echo $check->result ? 'success' : 'danger'; ?>"><?php echo $check->result ? 'success' : 'failed'; ?></span></td>
-                          <td><a href="#" class="btn btn-outline-secondary" data-text="<?php echo $check->help; ?>"><span class="icon-question" aria-hidden="true"></span></a></td>
+                          <td>
+                            <button class="btn btn-outline-secondary<?php if(empty($check->help)) { echo ' disabled';};?>" <?php if(empty($check->help)) { echo 'disabled';};?>
+                                    data-title="<?php echo $check->title; ?>" data-text="<?php echo $check->help; ?>" onclick="openModal(event, this)">
+                              <span class="icon-question" aria-hidden="true"></span>
+                            </button>
+                          </td>
                         </tr>
                       <?php endforeach; ?>
                     
@@ -111,5 +116,29 @@ $wa->useStyle('com_joomgallery.admin')
       <?php echo HTMLHelper::_('form.token'); ?>
   </form>
 
-  
+  <?php
+  // Help modal box
+  $options = array('modal-dialog-scrollable' => true,
+                    'title'  => 'Test Title',
+                    'footer' => '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
+                  );
+
+  echo HTMLHelper::_('bootstrap.renderModal', 'help-modal-box', $options, '<div id="modal-body">Content set by ajax.</div>');
+  ?>
 </div>
+
+<script>
+  function openModal(event, element)
+  {
+    event.preventDefault();
+    let modal      = document.getElementById('help-modal-box');
+    let modalTitle = modal.querySelector('.modal-title');
+    let modalBody  = modal.querySelector('.modal-body');
+
+    modalTitle.innerHTML = element.getAttribute('data-title');
+    modalBody.innerHTML  = element.getAttribute('data-text');
+
+    let bsmodal = new bootstrap.Modal(modal, {keyboard: false});
+    bsmodal.show();
+  };
+</script>

@@ -577,22 +577,20 @@ class MigrationModel extends AdminModel
    * 
    * @param   string           $type   Name of the content type to migrate.
    * @param   integer          $pk     The primary key of the source record.
-   * @param   object           $mig    The MigrationTable object.
 	 *
 	 * @return  object   The object containing the migration results.
 	 *
 	 * @since   4.0.0
 	 */
-  public function migrate(string $type, int $pk, object $mig): object
+  public function migrate(string $type, int $pk): object
   {
     // Initialise variables
-    $info      = $this->getScript();
     $new_pk    = 0;
     $success   = true;
     $error_msg = '';
 
-    // Set the migration parameters
-    $this->setParams($mig->params);
+    // Prepare migration service and return migrateable object
+    $mig = $this->component->getMigration()->prepareMigration($type);
 
     // Get record data from source
     if($data = $this->component->getMigration()->getData($type, $pk))
@@ -608,7 +606,7 @@ class MigrationModel extends AdminModel
       else
       {
         // Create new record based on data array
-        $sameIDs = \boolval($mig->params->get('source_ids', '0'));
+        $sameIDs = \boolval($mig->params->get('source_ids', 0));
         $record  = $this->insertRecord($type, $data, $sameIDs);
 
         // Set primary key value of new created record
@@ -738,7 +736,7 @@ class MigrationModel extends AdminModel
     // Check the data.
     if(!$table->check())
     {
-      $this->setError($table->getError());
+      $this->component->setError($table->getError());
 
       return false;
     }
@@ -746,7 +744,7 @@ class MigrationModel extends AdminModel
     // Store the data.
     if(!$table->store())
     {
-      $this->setError($table->getError());
+      $this->component->setError($table->getError());
 
       return false;
     }

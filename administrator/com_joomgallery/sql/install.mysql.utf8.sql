@@ -167,6 +167,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `jg_votingonlyonce` TINYINT(1) NOT NULL DEFAULT 1,
 `jg_report_images` TINYINT(1) NOT NULL DEFAULT 1,
 `jg_report_hint` TINYINT(1) NOT NULL DEFAULT 1,
+`jg_showcomments` TINYINT(1) NOT NULL DEFAULT 1,
 PRIMARY KEY (`id`),
 KEY `idx_checkout` (`checked_out`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;

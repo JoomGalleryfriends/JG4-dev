@@ -27,6 +27,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationInterface;
+use stdClass;
 
 /**
  * Migration Base Class
@@ -130,8 +131,8 @@ abstract class Migration implements MigrationInterface
 	 */
 	public function __destruct()
 	{
-    // Set logger
-    $this->component->setLogger(null);
+    // Reset logger to default
+    $this->component->setLogger();
 	}
 
   /**
@@ -153,6 +154,24 @@ abstract class Migration implements MigrationInterface
     }
 
     return $this->migrateables;
+  }
+
+  /**
+   * Prepare the migration.
+   *
+   * @return  MigrationTable  The currently processed migrateable
+   * 
+   * @since   4.0.0
+   */
+  public function prepareMigration(string $type)
+  {
+    // Load migrateables to migration service
+    $this->getMigrateables();
+
+    // Set the migration parameters
+    $this->params = $this->migrateables[$type]->params;
+
+    return $this->migrateables[$type];
   }
 
   /**
@@ -198,6 +217,9 @@ abstract class Migration implements MigrationInterface
     {
       $this->checkImageMapping($checks, 'destination');
     }
+
+    // Perform some script specific checks
+    $this->scriptSpecificChecks($checks, 'general');
 
     return $checks->getAll();
   }
@@ -878,5 +900,114 @@ abstract class Migration implements MigrationInterface
       // Destination imagetype not used in the mapping
       $checks->addCheck($category, 'mapping_dest_types', false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_IMAGETYPE_NOT_USED', \implode(', ', $tmp_dest_imagetypes)));
     }
+  }
+
+  /**
+   * Precheck: Perform script specific checks
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function scriptSpecificChecks(Checks &$checks, string $category)
+  {
+    return;
+  }
+
+  /**
+   * Converts a data array based on a mapping.
+   *
+   * @param   array   $data     Data received from getData() method.
+   * @param   array   $mapping  Mapping array telling how to convert data.
+   * 
+   * @return  array   Converted data array
+   * 
+   * @since   4.0.0
+   */
+  protected function applyConvertData(array $data, array $mapping): array
+  {
+    // Loop through the data provided
+    foreach($data as $key => $value)
+    {
+      // Key not in the mapping array --> Nothing to do.
+      if(!\key_exists($key, $mapping))
+      {
+        continue;
+      }
+
+      // Mapping from an old to a new key ('old key' => 'new key')
+      if(\is_string($mapping[$key]) && !empty($mapping[$key]))
+      {
+        $data[$mapping[$key]] = $value;
+        unset($data[$key]);
+
+        continue;
+      }
+
+      // Remove content from data array element ('old key' => false)
+      if($mapping[$key] === false)
+      {
+        $data[$mapping[$key]] = null;
+
+        continue;
+      }
+
+
+      // Content gets merged into anothter data array element ('old key' => array())
+      if(\is_array($mapping[$key]))
+      {
+        $destFieldName = $mapping[$key][0];
+
+        // Prepare destField
+        if(!\key_exists($destFieldName, $data) || empty($data[$destFieldName]))
+        {
+          // Field does not exist or is empty
+          $data[$destFieldName] = new Registry();
+        }
+        elseif(!($data[$destFieldName] instanceof Registry))
+        {
+          // Field exists and is already of type Registry
+          $data[$destFieldName] = new Registry($data[$destFieldName]);
+        }
+
+        // Prepare srcField
+        if(!($value instanceof Registry))
+        {
+          $value = new Registry($value);
+        }
+
+        // Apply merge
+        if(\count($mapping[$key]) < 2 || empty($mapping[$key][1]))
+        {
+          // Merge the two Registry objects (merge into root node)
+          $data[$destFieldName]->merge($value);
+        }
+        else
+        {
+          if(!$data[$destFieldName]->exists($key))
+          {
+            // Attach value as a child element to destField (add as a child node)
+            $data[$destFieldName]->set($key, $value);
+          }
+          else
+          {
+            // Merge value into a child element of destField (merge into child node)
+            $data[$destFieldName]->append($key, $value);
+          }
+        }
+        
+        if($key != $destFieldName)
+        {
+          unset($data[$key]);
+        }
+
+        continue;
+      }
+    }
+
+    return $data;
   }
 }

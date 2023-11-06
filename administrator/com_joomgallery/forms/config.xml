@@ -638,6 +638,19 @@
       </field>
     </fieldset>
 
+    <fieldset type="tab" name="user-comments" label="COM_JOOMGALLERY_COMMENTS">
+      <field name="jg_showcomments"
+             type="radio"
+             default="1"
+             class="btn-group unused"
+             layout="joomla.form.field.radio.switcher"
+             label="COM_JOOMGALLERY_CONFIG_COMMENT"
+             description="COM_JOOMGALLERY_CONFIG_COMMENT_LONG" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
+    </fieldset>
+
     <fieldset type="tab" name="user-reports" label="COM_JOOMGALLERY_REPORTS">
       <field name="jg_report_images"
              type="radio"

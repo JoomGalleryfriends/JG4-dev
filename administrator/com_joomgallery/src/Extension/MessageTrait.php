@@ -187,13 +187,13 @@ trait MessageTrait
   /**
    * Set a default logger to be used from now on
    * 
-   * @param   string   $name   Name of the logger. Set null to use the default JoomGallery logger
+   * @param   string   $name   Name of the logger. Empty to use the default JoomGallery logger
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function setLogger(string $name)
+  public function setLogger(string $name = null)
   {
     $this->addLogger($name);
     $this->logName = $name;

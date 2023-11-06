@@ -513,7 +513,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     //------------------
     
     // Attempt to load migration record from database
-    $item = $model->getItem($json->id);
+    $item = $model->getItem($json['id']);
 
     if(\is_null($item->id))
     {
@@ -535,13 +535,10 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Check out record
       $model->checkout($item->id);
-
-      // Attempt ot load migrateable from database
-      $item = $model->getItem($item->id);
     }
 
     // Perform the migration
-    $table = $model->migrate($type, $id, $item);
+    $table = $model->migrate($type, $id);
 
     // Check for errors
     if(!empty($this->component->getError()))
