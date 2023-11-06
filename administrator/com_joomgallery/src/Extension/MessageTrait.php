@@ -91,6 +91,15 @@ trait MessageTrait
   protected $log = false;
 
   /**
+   * Name of the logger to be used
+   *
+   * @var string
+   * 
+   * @since  4.0.0
+  */
+  protected $logName = null;
+
+  /**
    * Adds the storages to the session
    * 
    * @return  void
@@ -160,14 +169,34 @@ trait MessageTrait
   */
   protected function addLog(string $txt, int $priority = 8, string $name = null)
   {
-    if(\is_null($name))
+    if(\is_null($name) && \is_null($this->logName))
     {
       Log::add($txt, $priority, 'com_joomgallery');
     }
     else
     {
+      if(\is_null($name))
+      {
+        $name = $this->logName;
+      }
+
       Log::add($txt, $priority, 'com_joomgallery'.$name);
     }
+  }
+
+  /**
+   * Set a default logger to be used from now on
+   * 
+   * @param   string   $name   Name of the logger. Set null to use the default JoomGallery logger
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function setLogger(string $name)
+  {
+    $this->addLogger($name);
+    $this->logName = $name;
   }
 
   /**
@@ -177,19 +206,20 @@ trait MessageTrait
    * @param   bool     $new_line    True to add text to a new line (default: true)
    * @param   bool     $margin_top  True to add an empty line in front (default: false)
    * @param   bool     $log         True to add error message to logfile (default: false)
+   * @param   string   $name        Name of the logger to be used (default: null)
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function addDebug($txt, $new_line=true, $margin_top=false, $log=false)
+  public function addDebug($txt, $new_line=true, $margin_top=false, $log=false, $name=null)
   {
     $this->setMsg($txt, 'debug', $new_line, $margin_top);
 
     if($log)
     {
-      $this->addLogger();
-      $this->addLog($txt, Log::DEBUG);
+      $this->addLogger($name);
+      $this->addLog($txt, Log::DEBUG, $name);
     }
   }
 
@@ -200,19 +230,20 @@ trait MessageTrait
    * @param   bool     $new_line    True to add text to a new line (default: true)
    * @param   bool     $margin_top  True to add an empty line in front (default: false)
    * @param   bool     $log         True to add error message to logfile (default: false)
+   * @param   string   $name        Name of the logger to be used (default: null)
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function addWarning($txt, $new_line=true, $margin_top=false, $log=false)
+  public function addWarning($txt, $new_line=true, $margin_top=false, $log=false, $name=null)
   {
     $this->setMsg($txt, 'warning', $new_line, $margin_top);
 
     if($log)
     {
-      $this->addLogger();
-      $this->addLog($txt, Log::WARNING);
+      $this->addLogger($name);
+      $this->addLog($txt, Log::WARNING, $name);
     }
   }
 
@@ -223,20 +254,21 @@ trait MessageTrait
    * @param   bool     $new_line    True to add text to a new line (default: true)
    * @param   bool     $margin_top  True to add an empty line in front (default: false)
    * @param   bool     $log         True to add error message to logfile (default: true)
+   * @param   string   $name        Name of the logger to be used (default: null)
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function setError($txt, $new_line=true, $margin_top=false, $log=true)
+  public function setError($txt, $new_line=true, $margin_top=false, $log=true, $name=null)
   {
     $this->setMsg($txt, 'error', $new_line, $margin_top);
     $this->error = true;
 
     if($log)
     {
-      $this->addLogger();
-      $this->addLog($txt, Log::ERROR);
+      $this->addLogger($name);
+      $this->addLog($txt, Log::ERROR, $name);
     }
   }
 

@@ -94,15 +94,6 @@ abstract class Migration implements MigrationInterface
   protected $migrateables = array();
 
   /**
-   * State if logger is created
-   *
-   * @var bool
-   * 
-   * @since  4.0.0
-  */
-  protected $log = false;
-
-  /**
    * Constructor
    *
    * @return  void
@@ -120,8 +111,8 @@ abstract class Migration implements MigrationInterface
     // Try to load language file of the migration script
     $this->app->getLanguage()->load('com_joomgallery.migration.'.$this->name, _JOOM_PATH_ADMIN);
 
-    // Create logger
-    $this->addLogger();
+    // Set logger
+    $this->component->setLogger('migration');
 
     // Fill info object
     $this->info               = new \stdClass;
@@ -129,6 +120,19 @@ abstract class Migration implements MigrationInterface
     $this->info->title        = Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($this->name).'_TITLE');
     $this->info->description  = Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($this->name).'_DESC');
   }
+
+  /**
+	 * Destructor
+	 *
+	 * @return  void
+   *
+	 * @since  4.0.0
+	 */
+	public function __destruct()
+	{
+    // Set logger
+    $this->component->setLogger(null);
+	}
 
   /**
    * Returns a list of content types which can be migrated.
@@ -222,35 +226,6 @@ abstract class Migration implements MigrationInterface
   public function migrate($type, $source, $dest)
   {
     return;
-  }
-
-  /**
-   * Add a JoomGallery migration logger to the JLog class
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-  */
-  protected function addLogger()
-  {
-    $this->component->addLogger('migration');
-    
-    $this->log = true;
-  }
-
-  /**
-   * Log a message
-   * 
-   * @param   string   $txt       The message for a new log entry.
-   * @param   integer  $priority  Message priority.
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-  */
-  protected function addLog($txt, $priority)
-  {
-    $this->component->addLog($txt, $priority, 'migration');
   }
 
   /**

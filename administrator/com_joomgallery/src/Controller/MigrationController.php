@@ -519,7 +519,12 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // It seems that the migration record does not yet exists in the database
       // Save migration record to database
-      $model->save($json);
+      if(!$model->save($json))
+      {
+        $this->component->setError($model->getError());
+
+        return false;
+      }
 
       // Attempt to load migration record from database
       $item = $model->getItem($model->getState('migration.id'));
@@ -539,12 +544,10 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $table = $model->migrate($type, $id, $item);
 
     // Check for errors
-    $errors = $this->component->getError();
-
-    if(!empty($errors))
+    if(!empty($this->component->getError()))
     {
       // Error during migration
-      $response = $this->createRespond($table, false, $this->component->getError(true));
+      $response = $this->createRespond($table, false, $this->component->getError());
     }
     else
     {
@@ -558,23 +561,43 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
   /**
    * Create a response object
-   * {success: bool, message: string, data: mixed}
+   * {success: bool, message: string|array, data: mixed}
    * 
    * @param   mixed   $data      The data returned to the frontend
    * @param   bool    $success   True if everything was good, false otherwise
-   * @param   string  $message   A message to be printed in the frontend
+   * @param   array   $error     An array of error messages to be printed in the frontend
 	 *
 	 * @return  string  Response json string
 	 *
    * @since   4.0.0
 	 */
-  protected function createRespond($data, bool $success = true, string $message = ''): string
+  protected function createRespond($data, bool $success = true, array $error = null): string
   {
     $obj = new stdClass;
 
     $obj->success = $success;
     $obj->data    = $data;
-    $obj->message = $message;
+    $obj->error   = array();
+    $obj->debug   = array();
+    $obj->warning = array();
+
+    // Get debug output
+    if(!empty($debug = $this->component->getDebug()))
+    {
+      $obj->debug = $debug;
+    }
+
+    // Get warning output
+    if(!empty($warning = $this->component->getWarning()))
+    {
+      $obj->warning = $warning;
+    }
+
+    // Get error output
+    if(!empty($error))
+    {
+      $obj->error = $error;
+    }
 
     return \json_encode($obj, JSON_UNESCAPED_UNICODE);
   }

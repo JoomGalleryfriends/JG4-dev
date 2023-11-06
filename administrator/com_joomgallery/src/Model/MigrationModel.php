@@ -649,7 +649,12 @@ class MigrationModel extends AdminModel
 
     // Load migration data table
     $table = $this->getTable();
-    $table->load($mig->id);
+    if(!$table->load($mig->id))
+    {
+      $this->component->setError($table->getError());
+
+      return $mig;
+    }
 
     // Remove migrated primary key from queue
     if(($key = \array_search($pk, $table->queue)) !== false)
@@ -666,6 +671,12 @@ class MigrationModel extends AdminModel
     {
       // Add migrated primary key to failed object
       $table->failed->set($pk, $error_msg);
+    }
+
+    // Add errors
+    if($error_msg !== '')
+    {
+      $this->component->setError($error_msg);
     }
 
     // Calculate progress and completed state
