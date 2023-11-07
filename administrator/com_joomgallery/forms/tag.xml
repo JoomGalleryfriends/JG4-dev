@@ -60,7 +60,7 @@
     <field name="description"
            type="editor"
            buttons="true"
-           filter="JComponentHelper::filterText"
+           filter="\Joomla\CMS\Component\ComponentHelper::filterText"
            label="JGLOBAL_DESCRIPTION" />
 
     <field name="created_time"
