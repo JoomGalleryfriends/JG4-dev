@@ -70,6 +70,16 @@ img.jg-controlpanel-logo {
 .modal .modal-body {
   margin: 1rem 2rem;
 }
+.card.border {
+  border: 2px solid var(--dark) !important;
+}
+.card.border.active,
+.card.border.success {
+  border-color: var(--success) !important;
+}
+.card.border.error {
+  border-color: var(--danger) !important;
+}
 .controls .choices__inner.is-valid {
   border-color: #457d54;
   padding-right: calc(1.5em + 1rem);
