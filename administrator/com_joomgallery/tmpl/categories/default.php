@@ -225,7 +225,7 @@ if($saveOrder && !empty($this->items))
 
                 <td class="d-none d-md-table-cell">
                 <?php if($item->img_count > 0) : ?>
-                  <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=images&filter[category]='.$item->id); ?>">
+                  <a href="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&view=images&filter[category]='.$item->id); ?>">
                     <span class="badge bg-info"><?php echo (int) $item->img_count; ?></span>
                   </a>
                 <?php else : ?>
