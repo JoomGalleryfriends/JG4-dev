@@ -99,8 +99,6 @@ class HtmlView extends JoomGalleryView
           break;
         
         default:
-          // ID list of open migrations
-          $this->openMigrations = $this->get('IdList');
           break;
       }
     }
@@ -111,6 +109,9 @@ class HtmlView extends JoomGalleryView
       {
         $this->app->getLanguage()->load('com_joomgallery.migration.'.$script['name'], _JOOM_PATH_ADMIN);
       }
+
+      // ID list of open migrations
+      $this->openMigrations = $this->get('IdList');
     }
 
 		// Check for errors.

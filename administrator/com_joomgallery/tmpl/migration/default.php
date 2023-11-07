@@ -28,6 +28,9 @@ $wa->useStyle('com_joomgallery.admin')
   <br />
 
   <?php foreach ($this->scripts as $name => $script) : ?>
+    <?php
+      $openMigrations = $this->openMigrations[$name] ? true : false;
+    ?>
     <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=migration'); ?>" method="post" name="adminForm" id="adminForm">
       <div class="row align-items-start">
         <div class="col-md-12">
@@ -40,16 +43,16 @@ $wa->useStyle('com_joomgallery.admin')
               <div id="formInputContainer" class="col-10">
                 <p><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($name).'_DESC'); ?></p>
                 <joomla-button id="migration-start" task="display">
-                  <button class="btn btn-primary" data-submit-task="display" type="button"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_START_SCRIPT'); ?></button>
+                  <button class="btn btn-primary <?php echo $openMigrations ? ' disabled' : ''; ?>" <?php echo $openMigrations ? 'disabled' : ''; ?> data-submit-task="display" type="button"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_START_SCRIPT'); ?></button>
                 </joomla-button>
-                <?php if(!empty($openMigrations[$name])) : ?>
+                <?php if($openMigrations) : ?>
                   <joomla-button id="migration-resume" task="migration.resume">
                     <button class="btn btn-primary" data-submit-task="migration.resume" type="button"><?php echo Text::_('COM_JOOMGALLERY_RESUME'); ?></button>
                   </joomla-button>
                   <joomla-button id="migration-abort" task="migration.delete">
                     <button class="btn btn-primary" data-submit-task="migration.delete" type="button"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_ABORT_MIGRATION'); ?></button>
                   </joomla-button>
-                  <input type="hidden" name="cid" value="(<?php echo explode(', ', $openMigrations[$name][0]); ?>)"/>
+                  <input type="hidden" name="cid[]" value="<?php echo $this->openMigrations[$name]->id; ?>"/>
                 <?php endif; ?>
                 <input type="hidden" name="layout" value="step1"/>
                 <input type="hidden" name="script" value="<?php echo $name; ?>"/>

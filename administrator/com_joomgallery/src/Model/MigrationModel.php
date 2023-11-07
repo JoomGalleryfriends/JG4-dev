@@ -382,7 +382,7 @@ class MigrationModel extends AdminModel
       $query = $db->getQuery(true);
 
       // Select the required fields from the table.
-      $query->select(array('a.id', 'a.script', 'a.type'));
+      $query->select(array('a.id', 'a.script', 'a.type', 'a.checked_out'));
       $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
 
       $db->setQuery($query);
