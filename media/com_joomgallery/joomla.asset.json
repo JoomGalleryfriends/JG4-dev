@@ -15,6 +15,11 @@
       "uri": "com_joomgallery/site.css"
     },
     {
+      "name": "com_joomgallery.jg-icon-font",
+      "type": "style",
+      "uri": "com_joomgallery/jg-icon-font.css"
+    },
+    {
       "name": "com_joomgallery.refresher",
       "type": "style",
       "uri": "com_joomgallery/refresher.css"
@@ -89,6 +94,14 @@
       "uri": "com_joomgallery/masonry.min.js",
       "attributes": {
         "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.justified",
+      "type": "script",
+      "uri": "com_joomgallery/imgjust.min.js",
+      "attributes": {
+        "defer": true
       }
     },
     {
