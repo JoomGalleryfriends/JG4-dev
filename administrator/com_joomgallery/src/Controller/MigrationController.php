@@ -219,8 +219,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     // Set params data to user state
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $item->params);
 
-    // Redirect to the from screen (step 1).
-    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step1', false));
+    // Redirect to the from screen (step 2).
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&task=migration.precheck&isNew=0', false));
 
     return true;
   }
@@ -324,44 +324,51 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       return false;
     }
 
-    // Validate the posted data.
-    $form = $model->getForm($data, false);
-
-    // Send an object which can be modified through the plugin event
-    $objData = (object) $data;
-    $this->app->triggerEvent('onContentNormaliseRequestData', [$context, $objData, $form]);
-    $data = (array) $objData;
-
-    // Test whether the data is valid.
-    $validData = $model->validate($form, $data);
-
-    // Check for validation errors.
-    if($validData === false)
+    if($isNew = $this->input->post->get('isNew', false,'bool'))
     {
-      // Get the validation messages.
-      $errors = $model->getErrors();
+      // Validate the posted data.
+      $form = $model->getForm($data, false);
 
-      // Push up to three validation messages out to the user.
-      for($i = 0, $n = \count($errors); $i < $n && $i < 3; $i++)
+      // Send an object which can be modified through the plugin event
+      $objData = (object) $data;
+      $this->app->triggerEvent('onContentNormaliseRequestData', [$context, $objData, $form]);
+      $data = (array) $objData;
+
+      // Test whether the data is valid.
+      $validData = $model->validate($form, $data);
+
+      // Check for validation errors.
+      if($validData === false)
       {
-          if($errors[$i] instanceof \Exception)
-          {
-            $this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-          }
-          else
-          {
-            $this->app->enqueueMessage($errors[$i], 'warning');
-          }
+        // Get the validation messages.
+        $errors = $model->getErrors();
+
+        // Push up to three validation messages out to the user.
+        for($i = 0, $n = \count($errors); $i < $n && $i < 3; $i++)
+        {
+            if($errors[$i] instanceof \Exception)
+            {
+              $this->component->setWarning($errors[$i]->getMessage());
+            }
+            else
+            {
+              $this->component->setWarning($errors[$i]);
+            }
+        }
+
+        // Save the form data in the session.
+        $this->app->setUserState($context . '.data', $data);
+
+        // Redirect back to the edit screen.
+        $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+        return false;
       }
-
-      // Save the form data in the session.
-      $this->app->setUserState($context . '.data', $data);
-
-      // Redirect back to the edit screen.
-      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
-
-      return false;
     }
+    else
+    {
+      $validData = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.params', array());
+    }    
 
     // Save the script name in the session.
     $this->app->setUserState(_JOOM_OPTION.'.migration.script', $script);
