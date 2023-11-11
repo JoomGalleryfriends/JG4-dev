@@ -133,6 +133,19 @@ interface MigrationInterface
   public function getSourceTables(): array;
 
   /**
+   * True if the given record has to be migrated
+   * False to skip the migration for this record
+   *
+   * @param   string   $type   Name of the content type
+   * @param   int      $pk     The primary key of the content type
+   * 
+   * @return  bool     True to continue migration, false to skip it
+   * 
+   * @since   4.0.0
+   */
+  public function needsMigration(string $type, int $pk): bool;
+
+  /**
    * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type

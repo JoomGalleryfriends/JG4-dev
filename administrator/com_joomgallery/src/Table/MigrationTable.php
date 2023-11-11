@@ -217,10 +217,13 @@ class MigrationTable extends Table
   public function clcProgress()
   {
     // Calculate progress property
-    $this->progress = (int) \round((100 / \count($this->queue)) * ($this->successful->count() + $this->failed->count()));
+    $total    = \count($this->queue) + $this->successful->count() + $this->failed->count();
+    $finished = $this->successful->count() + $this->failed->count();
+
+    $this->progress = (int) \round((100 / $total) * ($finished));
 
     // Update completed property
-    if(\count($this->queue) === $this->successful->count())
+    if($total === $finished)
     {
       $this->completed = true;
     }

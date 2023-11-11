@@ -56,15 +56,13 @@ $wa->useStyle('com_joomgallery.admin')
         name="adminForm" id="migration-form" class="form-validate" aria-label="COM_JOOMGALLERY_MIGRATION_STEP2_TITLE">
 
       <?php if(empty($this->error)) : ?>
-        <h3><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_PRECHECK_TITLE'); ?></h3>
-
         <?php // Loop through all available check-categories ?>
         <?php foreach ($this->precheck as $cat) : ?>
           <div class="card">
             <div class="card-body"> 
               <?php if($cat->title): ?>
                 <div class="card-title">
-                  <h4><?php echo $cat->title; ?></h4>
+                  <h3><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_PRECHECK_TITLE') . ': ' . $cat->title; ?></h3>
                   <?php if($cat->desc): ?>
                     <span><?php echo $cat->desc; ?></span>
                   <?php endif; ?>
@@ -84,12 +82,35 @@ $wa->useStyle('com_joomgallery.admin')
 
                       <?php // Loop through all available check-categories ?>
                       <?php foreach ($cat->checks as $check) : ?>
+                        <?php
+                          if($check->result)
+                          {
+                            if($check->warning)
+                            {
+                              // Check successful, but marked as warning
+                              $badgeClass = 'warning';
+                              $badgeText  = Text::_('COM_JOOMGALLERY_WARNING');
+                            }
+                            else
+                            {
+                              // Check successful
+                              $badgeClass = 'success';
+                              $badgeText  = Text::_('COM_JOOMGALLERY_SUCCESSFUL');
+                            }
+                          }
+                          else
+                          {
+                            // Check failed
+                            $badgeClass = 'danger';
+                            $badgeText  = Text::_('COM_JOOMGALLERY_FAILED');
+                          }                          
+                        ?>
                         <tr>
                           <td>
                             <strong><?php echo $check->title; ?></strong><br />
                             <small><?php echo $check->desc; ?></small>
                           </td>
-                          <td><span class="badge bg-<?php echo $check->result ? 'success' : 'danger'; ?>"><?php echo $check->result ? 'success' : 'failed'; ?></span></td>
+                          <td><span class="badge bg-<?php echo $badgeClass; ?>"><?php echo $badgeText; ?></span></td>
                           <td>
                             <button class="btn btn-outline-secondary<?php if(empty($check->help)) { echo ' disabled';};?>" <?php if(empty($check->help)) { echo 'disabled';};?>
                                     data-title="<?php echo $check->title; ?>" data-text="<?php echo $check->help; ?>" onclick="openModal(event, this)">

@@ -268,29 +268,37 @@ class MigrationModel extends AdminModel
       $item->type = $type;
     }
 
-    // Add source and destination table info if empty
+    // Add destination table info if empty
+    if(empty($item->dst_table))
+    {
+      $item->dst_table = JoomHelper::$content_types[$type];
+      $item->dst_pk    = 'id';
+    }
+
+    // We can not go further without a properly loaded migration service
+    if(\is_null($this->component->getMigration()) || \is_null($this->component->getMigration()->get('params')))
+    {
+      return $item;
+    }
+
+    // Add source table info if empty
     if(empty($item->src_table))
     {
       // Get table information
       list($src_table, $src_pk) = $this->component->getMigration()->getSourceTableInfo($type);
       $item->src_table = $src_table;
       $item->src_pk    = $src_pk;
-      $item->dst_table = JoomHelper::$content_types[$type];
-      $item->dst_pk    = 'id';
     }
 
     // Add queue if empty
-    if(\is_null($item->queue) || empty($item->queue))
+    if((\is_null($item->queue) || empty($item->queue)))
     {
       // Load queue
       $item->queue = $this->getQueue($type, $item);
     }
 
     // Add params
-    if($this->component->getMigration()->get('params'))
-    {
-      $item->params = $this->component->getMigration()->get('params');
-    }
+    $item->params = $this->component->getMigration()->get('params');
 
     // Empty type storage
     $this->tmp_type = null;
@@ -332,6 +340,15 @@ class MigrationModel extends AdminModel
       return array();
     }
 
+    $table  = $this->getTable();
+    $tmp_pk = null;
+    if($this->app->input->exists($table->getKeyName()))
+    {
+      // Remove id from the input data
+      $tmp_pk = $this->app->input->get($table->getKeyName(), 'int');
+      $this->app->input->set($table->getKeyName(), null);
+    }
+
     $items = array();
     foreach($types as $key => $type)
     {
@@ -362,6 +379,12 @@ class MigrationModel extends AdminModel
 
       array_push($items, $item);
     }
+
+    // Reset id to input data
+    if(!\is_null($tmp_pk))
+    {
+      $this->app->input->set($table->getKeyName(), $tmp_pk);
+    }    
 
     return $items;
   }
@@ -590,55 +613,59 @@ class MigrationModel extends AdminModel
     $error_msg = '';
 
     // Prepare migration service and return migrateable object
+    $this->component->createMigration($this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd'));
     $mig = $this->component->getMigration()->prepareMigration($type);
 
-    // Get record data from source
-    if($data = $this->component->getMigration()->getData($type, $pk))
+    if($this->component->getMigration()->needsMigration($type, $pk))
     {
-      // Convert record data into structure needed for JoomGallery v4+
-      $data = $this->component->getMigration()->convertData($data);
-
-      if(!$data)
+      // Get record data from source  
+      if($data = $this->component->getMigration()->getData($type, $pk))
       {
-        $success = false;
-        $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CONVERT_DATA');
-      }
-      else
-      {
-        // Create new record based on data array
-        $sameIDs = \boolval($mig->params->get('source_ids', 0));
-        $record  = $this->insertRecord($type, $data, $sameIDs);
+        // Convert record data into structure needed for JoomGallery v4+
+        $data = $this->component->getMigration()->convertData($type, $data);
 
-        // Set primary key value of new created record
-        $new_pk = $record->id;
-
-        if(!$record)
+        if(!$data)
         {
           $success = false;
-          $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_INSERT_RECORD');
+          $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CONVERT_DATA');
         }
         else
         {
-          // Recreate images
-          if($type === 'image')
-          {
-            $img_source = $this->component->getMigration()->getImageSource($data);
-            if(\array_key_first($img_source) === 0)
-            {
-              // Create imagetypes based on given image and mapping
-              $res = $this->createImages($record, $img_source[0]);
-            }
-            else
-            {
-              // Reuse images from source as imagetypes (no image creation)
-              $res = $this->reuseImages($record, $img_source);
-            }
+          // Create new record based on data array
+          $sameIDs = \boolval($mig->params->get('source_ids', 0));
+          $record  = $this->insertRecord($type, $data, $sameIDs);
 
-            if(!$res)
+          // Set primary key value of new created record
+          $new_pk = $record->id;
+
+          if(!$record)
+          {
+            $success = false;
+            $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_INSERT_RECORD');
+          }
+          else
+          {
+            // Recreate images
+            if($type === 'image')
             {
-              $record  = $this->deleteRecord($type, $new_pk);
-              $success = false;
-              $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CREATE_IMGTYPE');
+              $img_source = $this->component->getMigration()->getImageSource($data);
+              if(\array_key_first($img_source) === 0)
+              {
+                // Create imagetypes based on given image and mapping
+                $res = $this->createImages($record, $img_source[0]);
+              }
+              else
+              {
+                // Reuse images from source as imagetypes (no image creation)
+                $res = $this->reuseImages($record, $img_source);
+              }
+
+              if(!$res)
+              {
+                $record  = $this->deleteRecord($type, $new_pk);
+                $success = false;
+                $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CREATE_IMGTYPE');
+              }
             }
           }
         }

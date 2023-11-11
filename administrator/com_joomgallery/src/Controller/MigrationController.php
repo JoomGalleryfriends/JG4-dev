@@ -15,16 +15,17 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\Input\Input;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Log\Log;
 use \Joomla\Registry\Registry;
+use Joomla\CMS\Session\Session;
 use \Joomla\CMS\Response\JsonResponse;
-use \Joomla\CMS\MVC\Controller\BaseController;
 use \Joomla\CMS\Application\CMSApplication;
-use \Joomla\CMS\Form\FormFactoryAwareInterface;
+use \Joomla\CMS\MVC\Controller\BaseController;
 use \Joomla\CMS\Form\FormFactoryAwareTrait;
 use \Joomla\CMS\Form\FormFactoryInterface;
+use \Joomla\CMS\Form\FormFactoryAwareInterface;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
 use stdClass;
@@ -147,6 +148,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     // Clean the session data and redirect.
     $this->app->setUserState(_JOOM_OPTION.'.migration.script', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.noToken', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.data', null);    
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.results', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', null);
@@ -187,7 +189,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $acl = $this->component->getAccess();
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
-      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start', 'error'));
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -200,17 +202,28 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     if($id < 1)
     {
-      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error');
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME', 'error'));
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
     }
 
-    // Attempt to load the migration items
+    // Attempt to load the migration item
     $item = $model->getItem($id);
     if(!$item || $item->script != $script)
     {
-      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error');
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME', 'error'));
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    // Check if migration item is checked out
+    $user  = Factory::getUser();
+    if(isset($item->checked_out) && !($item->checked_out == 0 || $item->checked_out == $user->get('id')))
+    {
+      // You are not allowed to resume the migration, since it is checked out by another user
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CHECKED_OUT_BY_ANOTHER_USER', $user->get('name')), 'error');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -218,6 +231,9 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     // Set params data to user state
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $item->params);
+
+    // Set no token check to user state
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.noToken', true);
 
     // Redirect to the from screen (step 2).
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&task=migration.precheck&isNew=0', false));
@@ -268,6 +284,27 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       // Get the model.
       $model = $this->getModel();
 
+      // Attempt to load the migration item
+      $item = $model->getItem($cid[0]);
+      if(!$item || $item->script != $script)
+      {
+        $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME', 'error'));
+        $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+        return false;
+      }
+
+      // Check if migration item is checked out
+      $user  = Factory::getUser();
+      if(isset($item->checked_out) && !($item->checked_out == 0 || $item->checked_out == $user->get('id')))
+      {
+        // You are not allowed to resume the migration, since it is checked out by another user
+        $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CHECKED_OUT_BY_ANOTHER_USER', $user->get('name')), 'error');
+        $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+        return false;
+      }
+
       // Remove the items.
       if($model->delete($cid))
       {
@@ -296,11 +333,19 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 	 */
 	public function precheck()
 	{
+    // Get script
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+
+    // No token (When precheck is called on reume, no token check is needed)
+    $noToken = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.noToken', false);
+
     // Check for request forgeries
-    $this->checkToken();
+    if(\is_null($noToken) && !$noToken)
+    {
+      $this->checkToken();
+    }
 
     $model   = $this->getModel();
-    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
     $scripts = $model->getScripts();
 
     // Check if requested script exists
@@ -324,7 +369,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       return false;
     }
 
-    if($isNew = $this->input->post->get('isNew', false,'bool'))
+    if($isNew = $this->input->get('isNew', true,'bool'))
     {
       // Validate the posted data.
       $form = $model->getForm($data, false);
@@ -387,6 +432,12 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Pre-checks successful. Show success message.
       $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SUCCESS_MIGRATION_STEP2'));
+
+      if(!empty($msg))
+      {
+        // Warnings appeared. Show warning message.
+        $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_WARNING_MIGRATION_STEP2', $msg), 'warning');
+      }
     }
 
     // Save the results of the pre migration checks in the session.
@@ -569,13 +620,13 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
    * 
    * @param   mixed   $data      The data returned to the frontend
    * @param   bool    $success   True if everything was good, false otherwise
-   * @param   array   $error     An array of error messages to be printed in the frontend
+   * @param   mixed   $error     One or multiple error messages to be printed in the frontend
 	 *
 	 * @return  string  Response json string
 	 *
    * @since   4.0.0
 	 */
-  protected function createRespond($data, bool $success = true, array $error = null): string
+  protected function createRespond($data, bool $success = true, $error = null): string
   {
     $obj = new stdClass;
 
@@ -600,7 +651,14 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     // Get error output
     if(!empty($error))
     {
-      $obj->error = $error;
+      if(\is_array($error))
+      {
+        $obj->error = $error;
+      }
+      else
+      {
+        \array_push($obj->error, $error);
+      }      
     }
 
     return \json_encode($obj, JSON_UNESCAPED_UNICODE);

@@ -148,6 +148,7 @@ class Checks
    * @param   string   $category   The category of the check
    * @param   string   $name       The name of the check
    * @param   bool     $result     True if the check was successful, false otherwise
+   * @param   bool     $warning    True if the check should be displayed as a warning
    * @param   string   $title      Optional: Title of the check
    * @param   string   $desc       Optional: Description of the check
    * @param   string   $help       Optional: URL to a help-site or help-text
@@ -157,7 +158,7 @@ class Checks
    * @since  4.0.0
    * @throws \Exception
    */
-  public function addCheck(string $category, string $name, bool $result, string $title = '', string $desc = '', string $help = '')
+  public function addCheck(string $category, string $name, bool $result, bool $warning = false, string $title = '', string $desc = '', string $help = '')
   {
     // Make category and check name lowercase
     $category = \strtolower(\trim($category));
@@ -178,11 +179,12 @@ class Checks
 
       // Asset not yet existing, create a new one
       $check = new \stdClass();
-      $check->name   = $name;
-      $check->result = $result;
-      $check->title  = $title;
-      $check->desc   = $desc;
-      $check->help   = $help;
+      $check->name    = $name;
+      $check->result  = $result;
+      $check->warning = $warning;
+      $check->title   = $title;
+      $check->desc    = $desc;
+      $check->help    = $help;
 
       // Add check to check-objects array
       $key = $this->array_push($this->objects[$catKey]->checks, $check);
@@ -200,6 +202,14 @@ class Checks
           $this->message = $title . ' (' . $desc . ')';
         }
       }
+      else
+      {
+        if($warning && $this->message === '')
+        {
+          // Add message if there is a warning
+          $this->message = $title . ' (' . $desc . ')';
+        }
+      }
     }
     else
     {
@@ -214,6 +224,7 @@ class Checks
    * @param   string   $category   The category of the check
    * @param   string   $name       The name of the check
    * @param   bool     $result     True if the check was successful, false otherwise
+   * @param   bool     $warning    True if the check should be displayed as a warning
    * @param   string   $title      Optional: Title of the check
    * @param   string   $desc       Optional: Description of the check
    * @param   string   $help       Optional: URL to a help-site or help-text
@@ -223,7 +234,7 @@ class Checks
    * @since  4.0.0
    * @throws \Exception
    */
-  public function modCheck(string $category, string $name, $result = null, $title = null, $desc = null, $help = null)
+  public function modCheck(string $category, string $name, $result = null, $warning = null, $title = null, $desc = null, $help = null)
   {
     // Make category and check name lowercase
     $category = \strtolower(\trim($category));
@@ -252,11 +263,17 @@ class Checks
       {
         $this->objects[$catKey]->checks[$checkKey]->result = \boolval($result);
 
-        // Modify the oversall success if needed
+        // Modify the overall success if needed
         if(\boolval($result) === false)
         {
           $this->success = false;
         }
+      }
+
+      // Modify the warning status
+      if(!\is_null($warning))
+      {
+        $this->objects[$catKey]->checks[$checkKey]->warning  = \boolval($warning);
       }
 
       // Modify the title
@@ -306,7 +323,7 @@ class Checks
   /**
    * Returns the registered checks and the overall success
    *
-   * @return  array  array($this->success, $this->objects)
+   * @return  array  array($this->success, $this->objects, $this->message)
    *
    * @since  4.0.0
    */

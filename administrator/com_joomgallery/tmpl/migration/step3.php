@@ -69,9 +69,9 @@ $wa->useStyle('com_joomgallery.admin')
               <h3 class="card-header"><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($type).'_TITLE'); ?></h3>
               <div class="card-body">
                 <div class="badge-group mb-3">
-                  <span class="badge bg-secondary">Pendent: <span><?php echo count($migrateable->queue); ?></span></span>
-                  <span class="badge bg-success">Successful: <span><?php echo count($migrateable->successful); ?></span></span>
-                  <span class="badge bg-danger">Failed: <span><?php echo count($migrateable->failed); ?></span></span>
+                  <span class="badge bg-secondary"><?php echo Text::_('COM_JOOMGALLERY_PENDING'); ?>: <span><?php echo count($migrateable->queue); ?></span></span>
+                  <span class="badge bg-success"><?php echo Text::_('COM_JOOMGALLERY_SUCCESSFUL'); ?>: <span><?php echo count($migrateable->successful); ?></span></span>
+                  <span class="badge bg-danger"><?php echo Text::_('COM_JOOMGALLERY_FAILED'); ?>: <span><?php echo count($migrateable->failed); ?></span></span>
                 </div>
                 <button class="btn btn-primary mb-3 btn-migration<?php echo $previousCompleted ? '': ' disabled'; ?>" onclick="Migrator.submitTask(event, this)" <?php echo $previousCompleted ? '': 'disabled'; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('Start migration'); ?></button>
                 <input type="hidden" name="type" value="<?php echo $type; ?>"/>

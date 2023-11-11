@@ -220,6 +220,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           ->from($db->quoteName($tablename))
           ->where($db->quoteName($primarykey) . ' = ' . $db->quote($pk));
 
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+
     // Attempt to load the array
     try
     {
@@ -230,6 +233,31 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       $this->component->setError($e->getMessage());
 
       return array();
+    }
+  }
+
+  /**
+   * True if the given record has to be migrated
+   * False to skip the migration for this record
+   *
+   * @param   string   $type   Name of the content type
+   * @param   int      $pk     The primary key of the content type
+   * 
+   * @return  bool     True to continue migration, false to skip it
+   * 
+   * @since   4.0.0
+   */
+  public function needsMigration(string $type, int $pk): bool
+  {
+    $skip_records = array('category' => array(0, 1), 'image' => array(0));
+
+    if(\in_array($pk, $skip_records[$type]))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
     }
   }
 
@@ -362,7 +390,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     if(!empty(\count($res)))
     {
-      $checks->addCheck($category, 'src_table_image_filename', false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_TITLE'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_DESC', \count($res)), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_HELP', \implode(', ', $res)));
+      $checks->addCheck($category, 'src_table_image_filename', true, true, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_TITLE'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_DESC', \count($res)), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_HELP', \implode(', ', $res)));
     }
 
     return;
