@@ -70,9 +70,6 @@ img.jg-controlpanel-logo {
 .modal .modal-body {
   margin: 1rem 2rem;
 }
-.card.border {
-  border: 2px solid var(--dark) !important;
-}
 .card.border.active,
 .card.border.success {
   border-color: var(--success) !important;
@@ -95,6 +92,11 @@ img.jg-controlpanel-logo {
   background-repeat: no-repeat;
   background-position: right calc(0.375em + 0.25rem) center;
   background-size: calc(0.75em + 0.5rem) calc(0.75em + 0.5rem);
+}
+.log-area {
+  font-size: 0.85rem;
+  max-height: 250px;
+  overflow-y: scroll;
 }
 .jcc-color-box {
   float: left;
@@ -221,4 +223,16 @@ joomla-field-image .jg_minithumb {
 }
 .jg-migration .navigation {
   margin: 0 0 2rem;
+}
+.log-area p {
+  margin-bottom: 0.5rem;
+}
+.log-area .color-success {
+  color: var(--success)
+}
+.log-area .color-error {
+  color: var(--danger)
+}
+.log-area .color-warning {
+  color: var(--warning)
 }

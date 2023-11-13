@@ -41,7 +41,7 @@ $wa->useStyle('com_joomgallery.admin')
     <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=migration'); ?>" method="post" name="adminForm" id="adminForm">
       <div class="row align-items-start">
         <div class="col-md-12">
-          <div class="card<?php echo $openMigrations ? ' border active' : ''; ?>">
+          <div class="card<?php echo $openMigrations ? ' border border-2 active' : ''; ?>">
             <h3 class="card-header"><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($name).'_TITLE'); ?></h3>
             <div class="card-body row">
               <div class="col-2">

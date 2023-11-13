@@ -21,6 +21,13 @@ $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
    ->useScript('com_joomgallery.migrator');
+
+// Add language strings to JavaScript
+Text::script('COM_JOOMGALLERY_ERROR_NETWORK_PROBLEM');
+Text::script('ERROR');
+Text::script('WARNING');
+Text::script('INFO');
+Text::script('SUCCESS');
 ?>
 
 <div class="jg jg-migration step3">
@@ -69,20 +76,26 @@ $wa->useStyle('com_joomgallery.admin')
               <h3 class="card-header"><?php echo Text::_('FILES_JOOMGALLERY_MIGRATION_'.strtoupper($type).'_TITLE'); ?></h3>
               <div class="card-body">
                 <div class="badge-group mb-3">
-                  <span class="badge bg-secondary"><?php echo Text::_('COM_JOOMGALLERY_PENDING'); ?>: <span><?php echo count($migrateable->queue); ?></span></span>
-                  <span class="badge bg-success"><?php echo Text::_('COM_JOOMGALLERY_SUCCESSFUL'); ?>: <span><?php echo count($migrateable->successful); ?></span></span>
-                  <span class="badge bg-danger"><?php echo Text::_('COM_JOOMGALLERY_FAILED'); ?>: <span><?php echo count($migrateable->failed); ?></span></span>
+                  <span class="badge bg-secondary"><?php echo Text::_('COM_JOOMGALLERY_PENDING'); ?>: <span id="badgeQueue-<?php echo $type; ?>"><?php echo count($migrateable->queue); ?></span></span>
+                  <span class="badge bg-success"><?php echo Text::_('COM_JOOMGALLERY_SUCCESSFUL'); ?>: <span id="badgeSuccessful-<?php echo $type; ?>"><?php echo count($migrateable->successful); ?></span></span>
+                  <span class="badge bg-danger"><?php echo Text::_('COM_JOOMGALLERY_FAILED'); ?>: <span id="badgeFailed-<?php echo $type; ?>"><?php echo count($migrateable->failed); ?></span></span>
                 </div>
-                <button class="btn btn-primary mb-3 btn-migration<?php echo $previousCompleted ? '': ' disabled'; ?>" onclick="Migrator.submitTask(event, this)" <?php echo $previousCompleted ? '': 'disabled'; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('Start migration'); ?></button>
+                <button id="migrationBtn-<?php echo $type; ?>" class="btn btn-primary mb-3 btn-migration<?php echo $previousCompleted ? '': ' disabled'; ?>" onclick="Migrator.submitTask(event, this)" <?php echo $previousCompleted ? '': 'disabled'; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('Start migration'); ?></button>
                 <input type="hidden" name="type" value="<?php echo $type; ?>"/>
                 <input type="hidden" name="task" value="migration.start"/>
                 <input type="hidden" name="migrateable" value="<?php echo base64_encode(json_encode($migrateable, JSON_UNESCAPED_UNICODE)); ?>"/>
                 <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
                 <?php echo HTMLHelper::_('form.token'); ?>
-                <div class="progress">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress mb-2">
+                  <div id="progress-<?php echo $type; ?>" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
-
+                <a class="collapse-arrow mb-2" data-bs-toggle="collapse" href="#collapseLog-<?php echo $type; ?>" role="button" aria-expanded="false" aria-controls="collapseLog">
+                  <i class="icon-angle-down"></i><span> <?php echo Text::_('COM_JOOMGALLERY_SHOWLOG'); ?></span>
+                </a>
+                <div class="collapse mt-2" id="collapseLog-<?php echo $type; ?>">
+                  <div id="logOutput-<?php echo $type; ?>" class="card card-body border bg-light log-area">
+                  </div>
+                </div>
               </div>
             </div>
           </div>

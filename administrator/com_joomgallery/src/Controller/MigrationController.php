@@ -616,7 +616,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
   /**
    * Create a response object
-   * {success: bool, message: string|array, data: mixed}
+   * {success: bool, data: mixed, continue: bool, error: string|array, debug: string|array, warning: string|array}
    * 
    * @param   mixed   $data      The data returned to the frontend
    * @param   bool    $success   True if everything was good, false otherwise
@@ -630,11 +630,18 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
   {
     $obj = new stdClass;
 
-    $obj->success = $success;
-    $obj->data    = $data;
-    $obj->error   = array();
-    $obj->debug   = array();
-    $obj->warning = array();
+    $obj->success  = $success;
+    $obj->data     = $data;
+    $obj->continue = true;
+    $obj->error    = array();
+    $obj->debug    = array();
+    $obj->warning  = array();
+
+    // Get value for continue
+    if(!\is_null($this->component->getMigration()))
+    {
+      $obj->continue = $this->component->getMigration()->get('continue', true);
+    }
 
     // Get debug output
     if(!empty($debug = $this->component->getDebug()))

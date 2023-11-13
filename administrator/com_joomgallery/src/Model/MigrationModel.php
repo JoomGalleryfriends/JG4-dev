@@ -616,6 +616,7 @@ class MigrationModel extends AdminModel
     $this->component->createMigration($this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd'));
     $mig = $this->component->getMigration()->prepareMigration($type);
 
+    // Perform the migration of the element
     if($this->component->getMigration()->needsMigration($type, $pk))
     {
       // Get record data from source  

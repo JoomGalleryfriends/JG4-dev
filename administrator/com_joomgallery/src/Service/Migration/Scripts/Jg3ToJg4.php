@@ -249,16 +249,30 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    */
   public function needsMigration(string $type, int $pk): bool
   {
-    $skip_records = array('category' => array(0, 1), 'image' => array(0));
+    // Content types that require another type beeing migrated completely
+    $prerequirements = array('category' => array(), 'image' => array('category'));
+    if(!empty($prerequirements[$type]))
+    {
+      foreach($prerequirements[$type] as $key => $req)
+      {
+        if(!$this->migrateables[$req] || !$this->migrateables[$req]->completed || $this->migrateables[$req]->failed->count() > 0)
+        {
+          $this->continue = false;
+          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $prerequirements[$type])));
 
+          return false;
+        }
+      }
+    }
+
+    // Specific record ids which can be skiped
+    $skip_records = array('category' => array(0, 1), 'image' => array(0));    
     if(\in_array($pk, $skip_records[$type]))
     {
       return false;
-    }
-    else
-    {
-      return true;
-    }
+    }    
+
+    return true;
   }
 
   /**

@@ -95,6 +95,16 @@ abstract class Migration implements MigrationInterface
   protected $migrateables = array();
 
   /**
+   * True, if the migration process of the current content type should be continued
+   * False to stop the automatic migration process.
+   *
+   * @var    boolean
+   * 
+   * @since  4.0.0
+   */
+  protected $continue = true;
+
+  /**
    * Constructor
    *
    * @return  void
