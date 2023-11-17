@@ -168,7 +168,7 @@ table.itemList th.sort-cell .form-check-input {
   color: #fff;
   background: linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
 }
-.jg-images[class*=" justified-"] a .jg-image-caption-hover:hover {
+.jg-images[class*=" justified-"] a:hover .jg-image-caption-hover {
   display: block;
 }
 .jg-images[class*=" justified-"] .jg-image-caption-hover {
