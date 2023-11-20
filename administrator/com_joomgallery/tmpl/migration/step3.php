@@ -87,7 +87,7 @@ Text::script('SUCCESS');
                 <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
                 <?php echo HTMLHelper::_('form.token'); ?>
                 <div class="progress mb-2">
-                  <div id="progress-<?php echo $type; ?>" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                  <div id="progress-<?php echo $type; ?>" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <a class="collapse-arrow mb-2" data-bs-toggle="collapse" href="#collapseLog-<?php echo $type; ?>" role="button" aria-expanded="false" aria-controls="collapseLog">
                   <i class="icon-angle-down"></i><span> <?php echo Text::_('COM_JOOMGALLERY_SHOWLOG'); ?></span>

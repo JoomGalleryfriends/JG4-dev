@@ -18,10 +18,16 @@ var tryCounter = 0;
 
 /**
  * State. As long as this state is set to true, the migration will be
- * continued automatically regarding the pernding queue in the migrateablesList.
- * @var {Boolean}  contiue
+ * continued automatically regarding the pending queue in the migrateablesList.
+ * @var {Boolean}  continueState
  */
 var continueState = true;
+
+/**
+ * State. Set this state to true to stop automatic execution as soon as the next ajax respond comes back.
+ * @var {Boolean}  forceStop
+ */
+var forceStop = false;
 
 /**
  * Submit the migration task by pressing the button
@@ -36,6 +42,8 @@ export let submitTask = function(event, element) {
   let formId = formIdTmpl + '-' + type;
   let task   = element.parentNode.querySelector('[name="task"]').value;
 
+  startTask(type, element);
+
   tryCounter++;
 
   ajax(formId, task)
@@ -46,9 +54,16 @@ export let submitTask = function(event, element) {
       if(tryCounter >= tryLimit) {
         // We reached the limit of tries --> looks like we have a network problem
         updateMigrateables(type, {'success': false, 'message': Joomla.JText._('COM_JOOMGALLERY_ERROR_NETWORK_PROBLEM'), 'data': false});
-      } else if(continueState) {
+        // Stop automatic execution and update GUI
+        forceStop = true;
+      }
+      
+      if(continueState && !forceStop) {
         // Kick off the next task
         submitTask(event, element);
+      } else {
+        // Stop automatic task execution and update GUI
+        finishTask(type, element);
       }
     })
     .catch(error => {
@@ -374,4 +389,42 @@ let updateMigrateables = function(type, res) {
   bar.setAttribute('aria-valuenow', res.data.progress);
   bar.style.width = res.data.progress + '%';
   bar.innerText = res.data.progress + '%';
+}
+
+/**
+ * Update GUI to end migration
+ *
+ * @param  {String}      type    The type defining the content type to be updated
+ * @param  {DOM Element} button  The button beeing pressed to start the task
+ * 
+ * @returns void
+ */
+let startTask = function(type, button) {
+  // Update progress bar
+  let bar = document.getElementById('progress-'+type);
+  bar.classList.add('progress-bar-striped');
+  bar.classList.add('progress-bar-animated');
+  
+  // Disable button
+  button.classList.add('disabled');
+  button.setAttribute('disabled', 'true');
+}
+
+/**
+ * Update GUI to end migration
+ *
+ * @param  {String}      type   The type defining the content type to be updated
+ * @param  {DOM Element} button  The button beeing pressed to start the task
+ * 
+ * @returns void
+ */
+let finishTask = function(type, button) {
+  // Update progress bar
+  let bar = document.getElementById('progress-'+type);
+  bar.classList.remove('progress-bar-striped');
+  bar.classList.remove('progress-bar-animated');
+  
+  // Enable button
+  button.classList.remove('disabled');
+  button.removeAttribute('disabled');
 }

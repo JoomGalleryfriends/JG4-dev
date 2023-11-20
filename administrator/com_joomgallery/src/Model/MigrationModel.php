@@ -24,6 +24,7 @@ use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -616,7 +617,7 @@ class MigrationModel extends AdminModel
   }
 
   /**
-	 * Method to perform one migration of one record.
+	 * Method to perform the migration of one record.
    * 
    * @param   string           $type   Name of the content type to migrate.
    * @param   integer          $pk     The primary key of the source record.
@@ -666,27 +667,40 @@ class MigrationModel extends AdminModel
             // Set primary key value of new created record
             $new_pk = $record->id;
 
-            // Recreate images
-            if($type === 'image')
+            // Post processing steps
+            switch($type)
             {
-              $img_source = $this->component->getMigration()->getImageSource($data);
-              if(\array_key_first($img_source) === 0)
-              {
-                // Create imagetypes based on given image and mapping
-                $res = $this->createImages($record, $img_source[0]);
-              }
-              else
-              {
-                // Reuse images from source as imagetypes (no image creation)
-                $res = $this->reuseImages($record, $img_source);
-              }
+              case 'image':
+                $img_source = $this->component->getMigration()->getImageSource($data);
+                if(\array_key_first($img_source) === 0)
+                {
+                  // Create imagetypes based on given image and mapping
+                  $res = $this->createImages($record, $img_source[0]);
+                }
+                else
+                {
+                  // Reuse images from source as imagetypes (no image creation)
+                  $res = $this->reuseImages($record, $img_source);
+                }
 
-              if(!$res)
-              {
-                $record  = $this->deleteRecord($type, $new_pk);
-                $success = false;
-                $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CREATE_IMGTYPE');
-              }
+                $error_msg_end = 'CREATE_IMGTYPE';
+                break;
+
+              case 'category':
+                $res = $this->createFolder($record);
+
+                $error_msg_end = 'CREATE_FOLDER';
+              
+              default:
+                $res = true;
+                break;
+            }
+
+            if(!$res)
+            {
+              $record  = $this->deleteRecord($type, $new_pk);
+              $success = false;
+              $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_'.$error_msg_end);
             }
           }
         }
@@ -898,6 +912,7 @@ class MigrationModel extends AdminModel
     // Create file manager service
     $this->component->createFileManager();
 
+    // Create imagetypes
     return $this->component->getFileManager()->createImages($source, $img->filename, $img->catid);
   }
 
@@ -983,5 +998,23 @@ class MigrationModel extends AdminModel
     {
       return true;
     }
+  }
+
+  /**
+   * Creation of category folders based on one source file.
+   *
+   * @param   CategoryTable    $cat    CategoryTable object, already stored
+   * 
+   * @return  bool             True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  protected function createFolder(CategoryTable $cat): bool
+  {
+     // Create file manager service
+     $this->component->createFileManager();
+
+     // Create folders
+     return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
   }
 }

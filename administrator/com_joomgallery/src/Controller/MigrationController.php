@@ -598,6 +598,15 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     // Perform the migration
     $table = $model->migrate($type, $id);
 
+    // Stop automatic execution if migrateable is complete
+    if($table->completed)
+    {
+      $this->component->getMigration()->set('continue', false);
+
+      // Check in record
+      $model->checkin($table->id);
+    }
+
     // Check for errors
     if(!empty($this->component->getError()))
     {
