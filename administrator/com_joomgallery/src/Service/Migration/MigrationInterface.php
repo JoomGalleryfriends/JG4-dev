@@ -61,6 +61,20 @@ interface MigrationInterface
   public function migrate($type, $source, $dest);
 
   /**
+   * A list of content type definitions depending on migration source
+   * 
+   * @param   bool    $names_only  True to load type names only. No migration parameters required.
+   * 
+   * @return  array   The source types info
+   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip)
+   *                  Needed: tablename, primarykey, isNested, isCategorized
+   *                  Optional: prerequirements, pkstoskip
+   * 
+   * @since   4.0.0
+   */
+  public function defineTypes($names_only = false): array;
+
+  /**
    * Get a database object
    * 
    * @param   string   $target   The target (source or destination)
@@ -131,6 +145,16 @@ interface MigrationInterface
    * @since   4.0.0
    */
   public function getSourceTables(): array;
+
+  /**
+   * Returns a list of involved content types.
+   *
+   * @return  array    List of type names
+   *                   array('image', 'category', ...)
+   * 
+   * @since   4.0.0
+   */
+  public function getTypes(): array;
 
   /**
    * True if the given record has to be migrated

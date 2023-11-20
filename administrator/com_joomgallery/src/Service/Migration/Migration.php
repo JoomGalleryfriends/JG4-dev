@@ -79,7 +79,7 @@ abstract class Migration implements MigrationInterface
    * List of content types which can be migrated with this script
    * Use the singular form of the content type (e.g image, not images)
    *
-   * @var    array
+   * @var    Types[]
    * 
    * @since  4.0.0
    */
@@ -144,6 +144,33 @@ abstract class Migration implements MigrationInterface
     // Reset logger to default
     $this->component->setLogger();
 	}
+
+  /**
+   * A list of content type definitions depending on migration source
+   * 
+   * @param   bool    $names_only  True to load type names only. No migration parameters required.
+   * 
+   * @return  array   The source types info
+   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip)
+   *                  Needed: tablename, primarykey, isNested, isCategorized
+   *                  Optional: prerequirements, pkstoskip
+   * 
+   * @since   4.0.0
+   */
+  public function defineTypes($names_only = false): array
+  {
+    // Content type definition array
+    // Order of the content types must correspond to the migration order
+    // Pay attention to the prerequirements when ordering here !!!
+
+    /* Example:
+    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
+                    'image' =>    array('#__joomgallery', 'id', false, true, array('category'))
+                  );
+    */
+    
+    return array();
+  }
 
   /**
    * Returns a list of content types which can be migrated.
@@ -339,6 +366,129 @@ abstract class Migration implements MigrationInterface
     }
 
     return $root;
+  }
+
+  /**
+   * Loads all available content types to Migration object.
+   * Gets available with the function defineTypes() from migration script.
+   *
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  protected function loadTypes()
+  {
+    if(empty($this->types))
+    {
+      if(\is_null($this->params))
+      {
+        throw new Exception('Migration parameters need to be set in order to load types.', 1);
+      }
+
+      $types = $this->defineTypes();
+
+      foreach($types as $key => $list)
+      {
+        $type = new Type($key, $list);
+
+        $this->types[$key] = $type;
+      }
+    }
+  }
+
+  /**
+   * Returns a list of involved source tables.
+   *
+   * @return  array    List of table names (Joomla style, e.g #__joomgallery)
+   *                   array('image' => '#__joomgallery', ...)
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceTables(): array
+  {
+    $this->loadTypes();
+
+    $tables = array();
+    foreach($this->types as $key => $type)
+    {
+      $tables[$key] = $this->types[$key]->get('tablename');
+    }
+
+    return $tables;
+  }
+
+  /**
+   * Returns tablename and primarykey name of the source table
+   *
+   * @param   string   $type    The content type name
+   * 
+   * @return  array   The corresponding source table info
+   *                  list(tablename, primarykey)
+   * 
+   * @since   4.0.0
+   */
+  public function getSourceTableInfo(string $type): array
+  {
+    $this->loadTypes();
+
+    return array($this->types[$type]->get('tablename'), $this->types[$type]->get('pk'));
+  }
+
+  /**
+   * Returns a list of involved content types.
+   *
+   * @return  array    List of type names
+   *                   array('image', 'category', ...)
+   * 
+   * @since   4.0.0
+   */
+  public function getTypes(): array
+  {
+    $types = $this->defineTypes(true);
+
+    return $types;
+  }
+
+  /**
+   * True if the given record has to be migrated
+   * False to skip the migration for this record
+   *
+   * @param   string   $type   Name of the content type
+   * @param   int      $pk     The primary key of the content type
+   * 
+   * @return  bool     True to continue migration, false to skip it
+   * 
+   * @since   4.0.0
+   */
+  public function needsMigration(string $type, int $pk): bool
+  {
+    $this->loadTypes();
+
+    // Content types that require another type beeing migrated completely
+    if(!empty($this->types[$type]))
+    {
+      foreach($this->types[$type]->get('needsMigrated') as $key => $req)
+      {
+        if(!$this->migrateables[$req] || !$this->migrateables[$req]->completed || $this->migrateables[$req]->failed->count() > 0)
+        {
+          $this->continue = false;
+          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('needsMigrated'))));
+
+          return false;
+        }
+      }
+    }
+
+    // Specific record primary keys which can be skiped
+    foreach($this->types[$type]->get('skip') as $skip)
+    {   
+      if($pk == $skip)
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -987,8 +1137,8 @@ abstract class Migration implements MigrationInterface
         continue;
       }
 
-
-      // Content gets merged into anothter data array element ('old key' => array())
+      // Content gets merged into anothter data array element ('old key' => array(string, string, bool))
+      // array('destination field name', 'new field name', 'create child')
       if(\is_array($mapping[$key]))
       {
         $destFieldName = $mapping[$key][0];
@@ -1005,31 +1155,78 @@ abstract class Migration implements MigrationInterface
           $data[$destFieldName] = new Registry($data[$destFieldName]);
         }
 
-        // Prepare srcField
-        if(!($value instanceof Registry))
+        // Create new field name
+        $newKey = $key;
+        if(\count($mapping[$key]) > 1 && !empty($mapping[$key][1]))
         {
-          $value = new Registry($value);
+          $newKey = $mapping[$key][1];        
         }
 
-        // Apply merge
-        if(\count($mapping[$key]) < 2 || empty($mapping[$key][1]))
+        // Prepare srcField
+        if(\count($mapping[$key]) > 2 && !empty($mapping[$key][2]))
         {
-          // Merge the two Registry objects (merge into root node)
-          $data[$destFieldName]->merge($value);
+          // Add as a child node
+          $child = new Registry($value);
+          $value = new Registry(array($newKey=> $child));
         }
         else
         {
-          if(!$data[$destFieldName]->exists($key))
+          // Add directly
+          $srcLenght = 1;
+          $isJson    = false;
+
+          // Detect we have a json string
+          if(\is_string($value))
           {
-            // Attach value as a child element to destField (add as a child node)
-            $data[$destFieldName]->set($key, $value);
+            \json_decode($value);
+            if(json_last_error() === JSON_ERROR_NONE)
+            {
+              $isJson = true;
+            }
+          }
+
+          // Get source lenght
+          elseif(\is_array($value))
+          {
+            $srcLenght = \count($value);
+          }
+          elseif(\is_object($value))
+          {
+            if($value instanceof \Countable)
+            {
+              $srcLenght = $value->count();
+            }
+            else
+            {
+              $srcLenght = \count(\get_object_vars($value));
+            }
+          }
+
+          if($srcLenght > 1 || $isJson)
+          {
+            // We are trying to add a json or an object directly without adding a child
+            // Here 'new field name' has no effect
+            $value = new Registry($value);
           }
           else
           {
-            // Merge value into a child element of destField (merge into child node)
-            $data[$destFieldName]->append($key, $value);
+            if(\is_array($value))
+            {
+              $value = $value[0];
+            }
+            elseif(\is_object($value))
+            {
+              $keys = \array_keys(\get_object_vars($value));
+              $value = $value[$keys[0]];
+            }
+
+            // Create registry with only one key value pair
+            $value = new Registry(array($newKey=> $value));
           }
         }
+
+        // Apply merge
+        $data[$destFieldName]->merge($value);
         
         if($key != $destFieldName)
         {

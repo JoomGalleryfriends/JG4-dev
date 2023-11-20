@@ -296,6 +296,13 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function store($updateNulls = true)
 	{
+    // Support for params field
+    if(isset($this->params) && !is_string($this->params))
+		{
+			$registry = new Registry($this->params);
+			$this->params = (string) $registry;
+		}
+    
     $success = parent::store($updateNulls);
 
     if($success)
@@ -366,10 +373,10 @@ class ImageTable extends Table implements VersionableTableInterface
     {
       $this->params = $this->loadDefaultField('params');
     }
-		elseif(\is_array($this->params))
-		{
-			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
-		}
+    if(isset($this->params))
+    {
+      $this->params = new Registry($this->params);
+    }
 
     // Support for field metadesc
     if(empty($this->metadesc))

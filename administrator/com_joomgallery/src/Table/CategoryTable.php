@@ -285,6 +285,13 @@ class CategoryTable extends Table implements VersionableTableInterface
 	{
     $this->setPathWithLocation();
 
+    // Support for params field
+    if(isset($this->params) && !is_string($this->params))
+		{
+			$registry = new Registry($this->params);
+			$this->params = (string) $registry;
+		}
+
 		return parent::store($updateNulls);
 	}
 
@@ -351,11 +358,11 @@ class CategoryTable extends Table implements VersionableTableInterface
     $manager    = JoomHelper::getService('FileManager');
     $this->path = $manager->getCatPath(0, false, $this->parent_id, $this->alias);
 
-		// Support for subform field params
-		if(is_array($this->params))
-		{
-			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
-		}
+    // Support for params field
+    if(isset($this->params))
+    {
+      $this->params = new Registry($this->params);
+    }
 
 		return parent::check();
 	}

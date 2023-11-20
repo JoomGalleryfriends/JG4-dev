@@ -328,7 +328,7 @@ class MigrationModel extends AdminModel
   public function getItems(): array
   {
     // Get types from migration service
-    $types = $this->component->getMigration()->get('types');
+    $types = $this->component->getMigration()->getTypes();
 
     // Get available types from db
     try
@@ -470,6 +470,13 @@ class MigrationModel extends AdminModel
     $query->select($db->quoteName($migrateable->get('src_pk', 'id')))
           ->from($db->quoteName($migrateable->get('src_table')))
           ->order($db->quoteName($migrateable->get('src_pk', 'id')) . ' ASC');
+
+    // Apply ordering based on level if it is a nested type
+    if($this->component->getMigration()->get('types')[$type]->get('nested'))
+    {
+      $query->order($db->quoteName('level') . ' ASC');
+    }
+
     $db->setQuery($query);
 
     return $db->loadColumn();
@@ -646,10 +653,7 @@ class MigrationModel extends AdminModel
         {
           // Create new record based on data array
           $sameIDs = \boolval($mig->params->get('source_ids', 0));
-          $record  = $this->insertRecord($type, $data, $sameIDs);
-
-          // Set primary key value of new created record
-          $new_pk = $record->id;
+          $record  = $this->insertRecord($type, (array) $data, $sameIDs);
 
           if(!$record)
           {
@@ -658,6 +662,9 @@ class MigrationModel extends AdminModel
           }
           else
           {
+            // Set primary key value of new created record
+            $new_pk = $record->id;
+
             // Recreate images
             if($type === 'image')
             {
@@ -755,7 +762,7 @@ class MigrationModel extends AdminModel
 	 *
 	 * @since   4.0.0
 	 */
-  protected function insertRecord(string $type, array $data, bool $newID=true): bool
+  protected function insertRecord(string $type, array $data, bool $newID=true)
   {
     // Check content type
     JoomHelper::isAvailable($type);
@@ -783,6 +790,10 @@ class MigrationModel extends AdminModel
 			$data['language'] = '*';
 		}
 
+    // Reset task
+    $tmp_task = $this->app->input->get('task', '', 'cmd');
+    $this->app->input->set('task', 'save');
+
     // Bind migrated data to table object
     if(!$table->bind($data))
     {
@@ -809,6 +820,9 @@ class MigrationModel extends AdminModel
 
       return false;
     }
+
+    // Restore task
+    $this->app->input->set('task', $tmp_task);
 
     return $table;
   }

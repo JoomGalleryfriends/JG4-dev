@@ -40,17 +40,6 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 	protected $name = 'Jg3ToJg4';
 
   /**
-   * List of content types which can be migrated with this script
-   * Use the singular form of the content type (e.g image, not images)
-   * Order in the list corresponds to migration order!
-   *
-   * @var    array
-   * 
-   * @since  4.0.0
-   */
-  protected $types = array('category', 'image');
-
-  /**
    * Constructor
    *
    * @return  void
@@ -130,70 +119,40 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns a list of involved source tables.
-   *
-   * @return  array    List of table names (Joomla style, e.g #__joomgallery)
-   *                   array('image' => '#__joomgallery', ...)
+   * A list of content type definitions depending on migration source
+   * 
+   * @param   bool    $names_only  True to load type names only. No migration parameters required.
+   * 
+   * @return  array   The source types info
+   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip)
+   *                  Needed: tablename, primarykey, isNested, isCategorized
+   *                  Optional: prerequirements, pkstoskip
    * 
    * @since   4.0.0
    */
-  public function getSourceTables(): array
+  public function defineTypes($names_only = false): array
   {
-    $tables = array( '#__joomgallery',
-                     '#__joomgallery_image_details',
-                     '#__joomgallery_catg',
-                     '#__joomgallery_category_details',
-                     '#__joomgallery_comments',
-                     '#__joomgallery_config',
-                     '#__joomgallery_countstop',
-                     '#__joomgallery_maintenance',
-                     '#__joomgallery_nameshields',
-                     '#__joomgallery_orphans',
-                     '#__joomgallery_users',
-                     '#__joomgallery_votes'
-                    );
+    // Content type definition array
+    // Order of the content types must correspond to the migration order
+    // Pay attention to the prerequirements when ordering here !!!
+    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
+                    'image' =>    array('#__joomgallery', 'id', false, true, array('category'))
+                  );
 
-    if($this->params->get('same_db'))
+    if($names_only)
     {
-      foreach($tables as $key => $table)
-      {
-        $tables[$key] = $table . '_old';
-      }
-    }
-
-    return $tables;
-  }
-
-  /**
-   * Returns tablename and primarykey name of the source table
-   *
-   * @param   string   $type    The content type name
-   * 
-   * @return  array   The corresponding source table info
-   *                  list(tablename, primarykey)
-   * 
-   * @since   4.0.0
-   */
-  public function getSourceTableInfo(string $type): array
-  {
-    $tables = array( 'image' =>    array('#__joomgallery', 'id'),
-                     'category' => array('#__joomgallery_catg', 'cid')
-                    );
-
-    if(!\in_array($type, \array_keys($tables)))
-    {
-      throw new \Exception('There is no migration source table associated with the given content type. Given: ' . $type, 1);
+      return \array_keys($types);
     }
 
     if($this->params->get('same_db'))
     {
-      foreach($tables as $key => $value)
+      foreach($types as $key => $value)
       {
-        $tables[$key][0] = $value[0] . '_old';
+        $types[$key][0] = $value[0] . '_old';
       }
     }
 
-    return $tables[$type];
+    return $types;
   }
 
   /**
@@ -237,45 +196,6 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * True if the given record has to be migrated
-   * False to skip the migration for this record
-   *
-   * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
-   * 
-   * @return  bool     True to continue migration, false to skip it
-   * 
-   * @since   4.0.0
-   */
-  public function needsMigration(string $type, int $pk): bool
-  {
-    // Content types that require another type beeing migrated completely
-    $prerequirements = array('category' => array(), 'image' => array('category'));
-    if(!empty($prerequirements[$type]))
-    {
-      foreach($prerequirements[$type] as $key => $req)
-      {
-        if(!$this->migrateables[$req] || !$this->migrateables[$req]->completed || $this->migrateables[$req]->failed->count() > 0)
-        {
-          $this->continue = false;
-          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $prerequirements[$type])));
-
-          return false;
-        }
-      }
-    }
-
-    // Specific record ids which can be skiped
-    $skip_records = array('category' => array(0, 1), 'image' => array(0));    
-    if(\in_array($pk, $skip_records[$type]))
-    {
-      return false;
-    }    
-
-    return true;
-  }
-
-  /**
    * Converts data from source into the structure needed for JoomGallery.
    *
    * @param   string  $type   Name of the content type
@@ -288,11 +208,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   public function convertData(string $type, array $data): array
   {
     /* How mappings work:
-       - Key not in the mapping array:  Nothing changes. Field value can be magrated as it is.
-       - 'old key' => 'new key':        Field name has changed. Old values will be inserted in field with the provided new key.
-       - 'old key' => false:            Field does not exist anymore or value has to be emptied to create new record in the new table.
-       - 'old key' => array():          Field was merget into another field of type json. array('dest. field', 'child-field name within dest. field').
-                                        If the second element of the array is 'false' means that it will be merged directly into dest. field without creating a child field in it.
+       - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
+       - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
+       - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
+       - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
+                                                    1. ('destination field name'): Name of the field to be merged into.
+                                                    2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
+                                                    3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
     */
 
     // The fieldname of owner (created_by)
@@ -308,17 +230,24 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       case 'category':
         // Apply mapping for category table
         $mapping  = array( 'cid' => $id, 'asset_id' => false, 'name' => 'title', 'alias' => false, 'lft' => false, 'rgt' => false, 'level' => false,
-                           'owner' => $owner, 'img_position' => false, 'catpath' => 'path', 'params' => array('params', false), 
-                           'allow_download' => array('params', 'jg_download'), 'allow_comment' => array('params', 'jg_showcomment'), 'allow_rating' => array('params', 'jg_showrating'),
-                           'allow_watermark' => array('params', 'jg_dynamic_watermark'), 'allow_watermark_download' => array('params', 'jg_downloadwithwatermark')
+                           'owner' => $owner, 'img_position' => false, 'catpath' => 'path', 'params' => array('params', false, false), 
+                           'allow_download' => array('params', 'jg_download', false), 'allow_comment' => array('params', 'jg_showcomment', false),
+                           'allow_rating' => array('params', 'jg_showrating', false), 'allow_watermark' => array('params', 'jg_dynamic_watermark', false),
+                           'allow_watermark_download' => array('params', 'jg_downloadwithwatermark', false)
                           );
 
+        // Adjust parent_id based on already created categories
+        if(!\boolval($this->params->get('source_ids', 0)) && $data['parent_id'] > 0)
+        {
+          $data['parent_id'] = $this->migrateables['category']->successful->get($data['parent_id']);
+        }
+        
         break;
 
       case 'image':
         // Apply mapping for image table
         $mapping  = array( 'id' => $id, 'asset_id' => false, 'alias' => false, 'imgfilename' => 'filename', 'imgthumbname' => false,
-                           'owner' => $owner, 'params' => array('params', false)
+                           'owner' => $owner, 'params' => array('params', false, false)
                           );
 
         // Check difference between imgfilename and imgthumbname
