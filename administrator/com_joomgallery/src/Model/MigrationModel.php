@@ -389,7 +389,8 @@ class MigrationModel extends AdminModel
         return array();
       }
 
-      array_push($items, $item);
+      //array_push($items, $item);
+      $items[$type] = $item;
     }
 
     // Reset id to input data
@@ -627,7 +628,7 @@ class MigrationModel extends AdminModel
   public function migrate(string $type, int $pk): object
   {
     // Initialise variables
-    $new_pk    = 0;
+    $new_pk    = $pk;
     $success   = true;
     $error_msg = '';
 
@@ -762,7 +763,7 @@ class MigrationModel extends AdminModel
 	 *
 	 * @since   4.0.0
 	 */
-  protected function insertRecord(string $type, array $data, bool $newID=true)
+  protected function insertRecord(string $type, array $data, bool $newID = true)
   {
     // Check content type
     JoomHelper::isAvailable($type);
@@ -793,6 +794,12 @@ class MigrationModel extends AdminModel
     // Reset task
     $tmp_task = $this->app->input->get('task', '', 'cmd');
     $this->app->input->set('task', 'save');
+
+    if($this->component->getMigration()->get('types')[$type]->get('nested'))
+    {
+      // Assumption: parent primary key name for all nested types at destination is 'parent_id'
+      $table->setLocation($data['parent_id'], 'last-child');
+    }
 
     // Bind migrated data to table object
     if(!$table->bind($data))

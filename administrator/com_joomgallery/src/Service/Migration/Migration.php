@@ -168,8 +168,33 @@ abstract class Migration implements MigrationInterface
                     'image' =>    array('#__joomgallery', 'id', false, true, array('category'))
                   );
     */
-    
+
     return array();
+  }
+
+  /**
+   * Converts data from source into the structure needed for JoomGallery.
+   *
+   * @param   string  $type   Name of the content type
+   * @param   array   $data   Data received from getData() method.
+   * 
+   * @return  array   Converted data to save into JoomGallery
+   * 
+   * @since   4.0.0
+   */
+  public function convertData(string $type, array $data): array
+  {
+    /* How mappings work:
+       - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
+       - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
+       - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
+       - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
+                                                    1. ('destination field name'): Name of the field to be merged into.
+                                                    2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
+                                                    3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
+    */
+
+    return $data;
   }
 
   /**
@@ -1104,12 +1129,13 @@ abstract class Migration implements MigrationInterface
    *
    * @param   array   $data     Data received from getData() method.
    * @param   array   $mapping  Mapping array telling how to convert data.
+   * @param   string  $pk_name  Name of the destination primary key. (default: 'id')
    * 
    * @return  array   Converted data array
    * 
    * @since   4.0.0
    */
-  protected function applyConvertData(array $data, array $mapping): array
+  protected function applyConvertData(array $data, array $mapping, string $pk_name = 'id'): array
   {
     // Loop through the data provided
     foreach($data as $key => $value)
@@ -1235,6 +1261,12 @@ abstract class Migration implements MigrationInterface
 
         continue;
       }
+    }
+
+    // Make sure the primary key field is available in the data array
+    if(!\array_key_exists($pk_name, $data))
+    {
+      $data[$pk_name] = null;
     }
 
     return $data;

@@ -209,7 +209,7 @@ class MigrationTable extends Table
       {
         if($this->successful instanceof Registry)
         {
-          $this->successful = (string) $this->successful;
+          $this->successful = $this->successful->toArray();
         }
         else
         {

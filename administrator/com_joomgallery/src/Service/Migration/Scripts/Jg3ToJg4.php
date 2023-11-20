@@ -156,46 +156,6 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns an associative array containing the record data from source.
-   *
-   * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
-   * 
-   * @return  array    Associated array of a record data
-   * 
-   * @since   4.0.0
-   */
-  public function getData(string $type, int $pk): array
-  {
-    // Get source table info
-    list($tablename, $primarykey) = $this->getSourceTableInfo($type);
-
-    // Get db object
-    list($db, $prefix) = $this->getDB('source');
-    $query             = $db->getQuery(true);
-
-    // Create the query
-    $query->select('*')
-          ->from($db->quoteName($tablename))
-          ->where($db->quoteName($primarykey) . ' = ' . $db->quote($pk));
-
-    // Reset the query using our newly populated query object.
-    $db->setQuery($query);
-
-    // Attempt to load the array
-    try
-    {
-      return $db->loadAssoc();
-    }
-    catch(\Exception $e)
-    {
-      $this->component->setError($e->getMessage());
-
-      return array();
-    }
-  }
-
-  /**
    * Converts data from source into the structure needed for JoomGallery.
    *
    * @param   string  $type   Name of the content type
@@ -286,6 +246,46 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     // Apply mapping
     return $this->applyConvertData($data, $mapping);
+  }
+
+  /**
+   * Returns an associative array containing the record data from source.
+   *
+   * @param   string   $type   Name of the content type
+   * @param   int      $pk     The primary key of the content type
+   * 
+   * @return  array    Associated array of a record data
+   * 
+   * @since   4.0.0
+   */
+  public function getData(string $type, int $pk): array
+  {
+    // Get source table info
+    list($tablename, $primarykey) = $this->getSourceTableInfo($type);
+
+    // Get db object
+    list($db, $prefix) = $this->getDB('source');
+    $query             = $db->getQuery(true);
+
+    // Create the query
+    $query->select('*')
+          ->from($db->quoteName($tablename))
+          ->where($db->quoteName($primarykey) . ' = ' . $db->quote($pk));
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+
+    // Attempt to load the array
+    try
+    {
+      return $db->loadAssoc();
+    }
+    catch(\Exception $e)
+    {
+      $this->component->setError($e->getMessage());
+
+      return array();
+    }
   }
 
   /**
