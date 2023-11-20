@@ -18,6 +18,7 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
+use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
@@ -226,24 +227,35 @@ class MigrationModel extends AdminModel
   {
     $item = parent::getItem($pk);
 
-    if(\property_exists($item, 'queue'))
+    if(!$item)
+    {
+      $item = parent::getItem(null);
+    }
+
+    // Support for queue field
+    if(isset($item->queue))
     {
       $registry    = new Registry($item->queue);
       $item->queue = $registry->toArray();
+      $item->queue = ArrayHelper::toInteger($item->queue);
     }
 
-    if(\property_exists($item, 'successful'))
+    // Support for successful field
+    if(isset($item->successful))
     {
-      $registry         = new Registry($item->successful);
-      $item->successful = $registry;
-      //$item->successful = $registry->toArray();
+      $item->successful = new Registry($item->successful);
     }
 
-    if(\property_exists($item, 'failed'))
+    // Support for failed field
+    if(isset($item->failed))
     {
-      $registry     = new Registry($item->failed);
-      $item->failed = $registry;
-      //$item->failed = $registry->toArray();
+      $item->failed = new Registry($item->failed);
+    }
+
+    // Support for params field
+    if(isset($item->params))
+    {
+      $item->params = new Registry($item->params);
     }
 
     // Add script if empty
@@ -708,7 +720,28 @@ class MigrationModel extends AdminModel
     // Calculate progress and completed state
     $table->clcProgress();
 
-    return $table;
+    // Prepare the row for saving
+		$this->prepareTable($table);
+
+    // Check the data.
+    if(!$table->check())
+    {
+      $this->component->setError($table->getError());
+
+      return false;
+    }
+
+    $ret_table = clone $table;
+
+    // Save table
+    if(!$table->store())
+    {
+      $this->component->setError($table->getError());
+
+      return $mig;
+    }
+
+    return $ret_table;
   }
 
   /**

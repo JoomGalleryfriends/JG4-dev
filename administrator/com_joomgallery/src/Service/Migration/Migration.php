@@ -982,7 +982,7 @@ abstract class Migration implements MigrationInterface
       // Remove content from data array element ('old key' => false)
       if($mapping[$key] === false)
       {
-        $data[$mapping[$key]] = null;
+        $data[$key] = null;
 
         continue;
       }

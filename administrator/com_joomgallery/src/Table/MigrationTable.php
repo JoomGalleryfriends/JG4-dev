@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Registry\Registry;
+use \Joomla\Utilities\ArrayHelper;
 use \Joomla\Database\DatabaseDriver;
 
 /**
@@ -88,23 +89,35 @@ class MigrationTable extends Table
 	 */
 	public function store($updateNulls = true)
 	{
+    // Support for queue field
+    if(isset($this->queue) && !\is_string($this->queue))
+		{
+			$this->queue = \json_encode(array_values($this->queue), JSON_UNESCAPED_UNICODE);
+		}
+
+		// Support for successful field
+    if(isset($this->successful) && !\is_string($this->successful))
+		{
+      $registry = new Registry($this->successful);
+			$this->successful = (string) $registry;
+		}
+
+		// Support for failed field
+    if(isset($this->failed) && !is_string($this->failed))
+		{
+			$registry = new Registry($this->failed);
+			$this->failed = (string) $registry;
+		}
+
+    // Support for params field
+    if(isset($this->params) && !is_string($this->params))
+		{
+			$registry = new Registry($this->params);
+			$this->params = (string) $registry;
+		}
+
 		return parent::store($updateNulls);
 	}
-
-  /**
-   * Delete a record by id
-   *
-   * @param   mixed  $pk  Primary key value to delete. Optional
-   *
-   * @return bool
-   */
-  public function delete($pk = null)
-  {
-      $this->load($pk);
-      $result = parent::delete($pk);
-
-      return $result;
-  }
 
   /**
 	 * Overloaded bind function to pre-process the params.
@@ -159,6 +172,72 @@ class MigrationTable extends Table
   }
 
   /**
+   * Method to perform sanity checks on the Table instance properties to ensure they are safe to store in the database.
+   *
+   * Child classes should override this method to make sure the data they are storing in the database is safe and as expected before storage.
+   *
+   * @return  boolean  True if the instance is sane and able to be stored in the database.
+   *
+   * @since   4.0.0
+   */
+  public function check()
+  {
+    // Support for queue field
+    if(isset($this->queue))
+    {
+      if(\is_string($this->queue))
+      {
+        $this->queue = \json_decode($this->queue);
+      }
+      elseif(\is_object($this->queue))
+      {
+        $this->queue = ArrayHelper::fromObject($this->queue);
+      }
+
+      $this->queue = ArrayHelper::toInteger($this->queue);
+    }
+
+    // Support for successful field
+    if(isset($this->successful))
+    {
+      if(\is_string($this->successful))
+      {
+        $this->successful = \json_decode($this->successful);
+      }
+
+      if(\is_object($this->successful))
+      {
+        if($this->successful instanceof Registry)
+        {
+          $this->successful = (string) $this->successful;
+        }
+        else
+        {
+          $this->successful = ArrayHelper::fromObject($this->successful);
+        }        
+      }
+
+      // Convert values to integer
+      $this->successful = ArrayHelper::toInteger($this->successful);
+      $this->successful = new Registry($this->successful);
+    }
+
+    // Support for failed field
+    if(isset($this->failed))
+    {
+      $this->failed = new Registry($this->failed);
+    }
+
+    // Support for params field
+    if(isset($this->params))
+    {
+      $this->params = new Registry($this->params);
+    }
+
+    return parent::check();
+  }
+
+  /**
    * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
    *
    * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
@@ -176,29 +255,8 @@ class MigrationTable extends Table
 
     if($success)
     {
-      // Support for queue field
-      if(isset($this->queue) && !is_array($this->queue))
-      {
-        $this->queue = \json_decode($this->queue);
-      }
-
-      // Support for successful field
-      if(isset($this->successful) && !is_array($this->successful))
-      {
-        $this->successful = new Registry(\json_decode($this->successful));
-      }
-
-      // Support for failed field
-      if(isset($this->failed) && !is_array($this->failed))
-      {
-        $this->failed = new Registry(\json_decode($this->failed));
-      }
-
-      // Support for params field
-      if(isset($this->params) && !is_array($this->params))
-      {
-        $this->params = new Registry(\json_decode($this->params));
-      }
+      // Bring table to the correct form
+      $this->check();
 
       // Calculate progress and completed state
       $this->clcProgress();

@@ -95,6 +95,7 @@ img.jg-controlpanel-logo {
 }
 .log-area {
   font-size: 0.85rem;
+  min-height: 100px;
   max-height: 250px;
   overflow-y: scroll;
 }
