@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <field name="note"
+         type="note"
+         description="COM_JOOMGALLERY_MIGRATION_MANUAL_DESC"
+  />
+
+  <field name="src_pk"
+         type="number"
+         default="0"
+         label="COM_JOOMGALLERY_MIGRATION_REPAIR_SRCPK_LABEL"
+         description="COM_JOOMGALLERY_MIGRATION_REPAIR_SRCPK_DESC"
+         min="0" step="1"
+  />
+
+  <field name="dest_pk"
+         type="number"
+         default="0"
+         label="COM_JOOMGALLERY_MIGRATION_REPAIR_DESTPK_LABEL"
+         description="COM_JOOMGALLERY_MIGRATION_REPAIR_DESTPK_DESC"
+         min="0" step="1"
+  />
+
+  <field name="confirmation"
+         type="radio"
+         layout="joomla.form.field.radio.switcher"
+         default="0"
+         label="COM_JOOMGALLERY_CONFIRM"
+         description="COM_JOOMGALLERY_MIGRATION_REPAIR_CONFIRM"
+         class="btn-group">
+    <option value="0">JNO</option>
+    <option value="1">JYES</option>    
+  </field>
+</form>

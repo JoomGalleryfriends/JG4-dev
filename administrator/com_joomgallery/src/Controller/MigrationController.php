@@ -624,6 +624,101 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
   }
 
   /**
+   * Apply a migration state for a specific record manually
+	 *
+	 * @return  void
+	 *
+   * @since   4.0.0
+	 */
+	public function applyState()
+  {
+    // Check for request forgeries
+    $this->checkToken();
+
+    // Access check.
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
+    {
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.applyState'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    $model   = $this->getModel();
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+    $scripts = $model->getScripts();
+
+    // Check if requested script exists
+    if(!\in_array($script, \array_keys($scripts)))
+    {
+      // Requested script does not exists
+      throw new Exception('Requested migration script does not exist.', 1);      
+    }
+
+    // Check if no errors detected in precheck (step 2)
+    $precheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', false);
+    if(!$precheck)
+    {
+      // Pre-checks not successful. Show error message.
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
+
+      return false;
+    }
+
+    // Get input params
+    $type      = $this->app->getInput()->get('type', '', 'string');
+    $new_state = $this->app->getInput()->get('state', '0', 'int');
+    $src_pk    = $this->app->getInput()->get('src_pk', '', 'int');
+    $dest_pk   = $this->app->getInput()->get('dest_pk', '', 'int');
+    $cofirm    = $this->app->getInput()->get('confirmation', false, 'bool');
+    $json      = \json_decode(\base64_decode($this->app->getInput()->get('migrateable', '', 'string')), true);
+
+    if(!$cofirm || empty($src_pk) || empty($dest_pk))
+    {
+      $this->app->enqueueMessage('Record migration state couldn\'t be modiied. Please fill out form correctly.', 'warning');
+    }
+    else
+    {
+      // Attempt to load migration record from database
+      $item = $model->getItem($json['id']);
+
+      if(\is_null($item->id))
+      {
+        // It seems that the migration record does not yet exists in the database
+        // Save migration record to database
+        if(!$model->save($json))
+        {
+          $this->component->setError($model->getError());
+
+          return false;
+        }
+
+        // Attempt to load migration record from database
+        $item = $model->getItem($model->getState('migration.id'));
+      }
+
+      // Check out migration record if not already checked out
+      if(\is_null($item->checked_out) || \intval($item->checked_out) < 1)
+      {
+        // Check out record
+        $model->checkout($item->id);
+      }
+
+      // Mark the state of the specified record
+      $model->applyState($type, $new_state, $src_pk, $dest_pk);
+
+      $this->app->enqueueMessage('Record of type %s with id=%s successfully marked as successful', 'message');
+    }
+
+    // Redirect to the list screen.
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step3', false));
+
+    return true;
+  }
+
+  /**
    * Create a response object
    * {success: bool, data: mixed, continue: bool, error: string|array, debug: string|array, warning: string|array}
    * 

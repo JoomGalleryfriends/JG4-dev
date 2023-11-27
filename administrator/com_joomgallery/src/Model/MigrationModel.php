@@ -304,7 +304,7 @@ class MigrationModel extends AdminModel
     }
 
     // Add queue if empty
-    if((\is_null($item->queue) || empty($item->queue)))
+    if(!$item->completed && (\is_null($item->queue) || empty($item->queue)))
     {
       // Load queue
       $item->queue = $this->getQueue($type, $item);
@@ -424,7 +424,7 @@ class MigrationModel extends AdminModel
 
       $db->setQuery($query);
 
-      return $db->loadObjectList('script');
+      $list = $db->loadObjectList();
     }
     catch (\RuntimeException $e)
     {
@@ -432,6 +432,21 @@ class MigrationModel extends AdminModel
 
       return array();
     }
+
+    $ids = array();
+    foreach($list as $key => $value)
+    {
+      if(!array_key_exists($value->script, $ids))
+      {
+        $ids[$value->script] = array($value);
+      }
+      else
+      {
+        array_push($ids[$value->script], $value);
+      }
+    }
+
+    return $ids;
   }
 
   /**
@@ -737,6 +752,113 @@ class MigrationModel extends AdminModel
     if($error_msg !== '')
     {
       $this->component->setError($error_msg);
+    }
+
+    // Calculate progress and completed state
+    $table->clcProgress();
+
+    // Prepare the row for saving
+		$this->prepareTable($table);
+
+    // Check the data.
+    if(!$table->check())
+    {
+      $this->component->setError($table->getError());
+
+      return false;
+    }
+
+    $ret_table = clone $table;
+
+    // Save table
+    if(!$table->store())
+    {
+      $this->component->setError($table->getError());
+
+      return $mig;
+    }
+
+    return $ret_table;
+  }
+
+  /**
+	 * Method to manually apply a state for one record of one migrateable.
+   * 
+   * @param   string    $type     Name of the content type.
+   * @param   integer   $state    The new state to be applied. (0: failed, 1:success, 2:pending)
+   * @param   integer   $src_pk   The primary key of the source record.
+   * @param   integer   $dest_pk  The primary key of the migrated record at destination.
+   * @param   string    $error    The error message in case of failed state.
+	 *
+	 * @return  object   The object containing the migration results.
+	 *
+	 * @since   4.0.0
+	 */
+  public function applyState(string $type, int $state, int $src_pk, int $dest_pk = 0, string $error = ''): object
+  {
+    // Prepare migration service and return migrateable object
+    $this->component->createMigration($this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd'));
+    $mig = $this->component->getMigration()->prepareMigration($type);
+
+    // Load migration data table
+    $table = $this->getTable();
+    if(!$table->load($mig->id))
+    {
+      $this->component->setError($table->getError());
+
+      return $mig;
+    }
+
+    switch($state)
+    {
+      // apply successful state
+      case 1:
+        // Remove primary key from queue
+        if(($key = \array_search($src_pk, $table->queue)) !== false)
+        {
+          unset($table->queue[$key]);
+        }
+
+        // Add migrated primary key to successful object
+        $table->successful->set($src_pk, $dest_pk);
+        break;
+
+      // apply pending state
+      case 2:
+        //Remove primary key from successful
+        if($table->successful->exists($src_pk))
+        {
+          $table->successful->remove($src_pk);
+        }
+
+        //Remove primary key from failed
+        if($table->failed->exists($src_pk))
+        {
+          $table->failed->remove($src_pk);
+        }
+
+        // Add primary key to queue
+        \array_push($table->queue, $src_pk);
+
+        break;
+
+      // apply failed state
+      default:
+        // Remove primary key from queue
+        if(($key = \array_search($src_pk, $table->queue)) !== false)
+        {
+          unset($table->queue[$key]);
+        }
+
+        // Add migrated primary key to failed object
+        $table->failed->set($src_pk, $error);
+        break;
+    }
+
+    // Add errors
+    if($error !== '')
+    {
+      $this->component->setError($error);
     }
 
     // Calculate progress and completed state

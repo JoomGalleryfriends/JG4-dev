@@ -278,7 +278,10 @@ class MigrationTable extends Table
     $total    = \count($this->queue) + $this->successful->count() + $this->failed->count();
     $finished = $this->successful->count() + $this->failed->count();
 
-    $this->progress = (int) \round((100 / $total) * ($finished));
+    if($total > 0)
+    {
+      $this->progress = (int) \round((100 / $total) * ($finished));
+    }   
 
     // Update completed property
     if($total === $finished)

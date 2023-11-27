@@ -11,10 +11,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Form\FormFactoryInterface;
 
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
@@ -80,14 +82,16 @@ Text::script('SUCCESS');
                   <span class="badge bg-success"><?php echo Text::_('COM_JOOMGALLERY_SUCCESSFUL'); ?>: <span id="badgeSuccessful-<?php echo $type; ?>"><?php echo count($migrateable->successful); ?></span></span>
                   <span class="badge bg-danger"><?php echo Text::_('COM_JOOMGALLERY_FAILED'); ?>: <span id="badgeFailed-<?php echo $type; ?>"><?php echo count($migrateable->failed); ?></span></span>
                 </div>
-                <button id="migrationBtn-<?php echo $type; ?>" class="btn btn-primary mb-3 btn-migration<?php echo $previousCompleted ? '': ' disabled'; ?>" onclick="Migrator.submitTask(event, this)" <?php echo $previousCompleted ? '': 'disabled'; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('Start migration'); ?></button>
+                <button id="migrationBtn-<?php echo $type; ?>" class="btn btn-primary mb-3 btn-migration<?php if($previousCompleted && !$migrateable->completed){echo '';}else{echo ' disabled';}; ?>" onclick="Migrator.submitTask(event, this)" <?php if($previousCompleted && !$migrateable->completed){echo '';}else{echo ' disabled';}; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_START'); ?></button>
+                <button id="stopBtn-<?php echo $type; ?>" class="btn mb-3 btn-stop disabled" onclick="Migrator.stopTask(event, this)" disabled="true" data-type="<?php echo $type; ?>"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STOP'); ?></button>
+                <button id="repairBtn-<?php echo $type; ?>" class="btn mb-3 btn-outline-secondary" onclick="Migrator.repairTask(event, this)" data-type="<?php echo $type; ?>"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_MANUAL'); ?></button>
                 <input type="hidden" name="type" value="<?php echo $type; ?>"/>
                 <input type="hidden" name="task" value="migration.start"/>
                 <input type="hidden" name="migrateable" value="<?php echo base64_encode(json_encode($migrateable, JSON_UNESCAPED_UNICODE)); ?>"/>
                 <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
                 <?php echo HTMLHelper::_('form.token'); ?>
                 <div class="progress mb-2">
-                  <div id="progress-<?php echo $type; ?>" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                  <div id="progress-<?php echo $type; ?>" class="progress-bar" style="width: <?php echo $migrateable->progress; ?>%" role="progressbar" aria-valuenow="<?php echo $migrateable->progress; ?>" aria-valuemin="0" aria-valuemax="100"><?php if($migrateable->progress > 0){echo $migrateable->progress.'%';}; ?></div>
                 </div>
                 <a class="collapse-arrow mb-2" data-bs-toggle="collapse" href="#collapseLog-<?php echo $type; ?>" role="button" aria-expanded="false" aria-controls="collapseLog">
                   <i class="icon-angle-down"></i><span> <?php echo Text::_('COM_JOOMGALLERY_SHOWLOG'); ?></span>
@@ -117,4 +121,27 @@ Text::script('SUCCESS');
       <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
       <?php echo HTMLHelper::_('form.token'); ?>
   </form>
+
+  <?php
+  // Load migrepair form
+  $formFactory   = Factory::getContainer()->get(FormFactoryInterface::class);
+  $migrepairForm = $formFactory->createForm('migrepairForm', array());
+  $source        = _JOOM_PATH_ADMIN . '/forms/migrationrepair.xml';
+
+  if ($migrepairForm->loadFile($source) == false)
+  {
+    throw new \RuntimeException('Form::loadForm could not load file');
+  }
+
+  // Migration repair modal box
+  $options = array('modal-dialog-scrollable' => true,
+                    'title'  => Text::_('COM_JOOMGALLERY_MIGRATION_MANUAL'),
+                    'footer' => '<button type="button" class="btn btn-primary">'.Text::_('COM_JOOMGALLERY_MIGRATION_MANUAL_BTN').'</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
+                  );
+  $data    = array('script' => $this->script->name, 'form' => $migrepairForm);
+  $layout  = new FileLayout('joomgallery.migrepair', null, array('component' => 'com_joomgallery', 'client' => 1));
+  $body  = $layout->render($data);
+
+  echo HTMLHelper::_('bootstrap.renderModal', 'repair-modal-box', $options, $body);
+  ?>
 </div>

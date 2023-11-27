@@ -30,12 +30,12 @@ $wa->useStyle('com_joomgallery.admin')
   <?php foreach ($this->scripts as $name => $script) : ?>
     <?php
       $openMigrations    = false;
-      $openMigrationsIDs = '';
+      $openMigrationsIDs = array();
 
-      if(key_exists($name, $this->openMigrations))
+      if(!empty($this->openMigrations) && \key_exists($name, $this->openMigrations))
       {
         $openMigrations    = true;
-        $openMigrationsIDs = $this->openMigrations[$name]->id;
+        $openMigrationsIDs = $this->openMigrations[$name];
       }
     ?>
     <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=migration'); ?>" method="post" name="adminForm" id="adminForm">
@@ -61,7 +61,9 @@ $wa->useStyle('com_joomgallery.admin')
                   <joomla-button id="migration-abort" task="migration.delete">
                     <button class="btn btn-primary" data-submit-task="migration.delete" type="button"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_ABORT_MIGRATION'); ?></button>
                   </joomla-button>
-                  <input type="hidden" name="cid[]" value="<?php echo $openMigrationsIDs; ?>"/>
+                  <?php foreach ($openMigrationsIDs as $openMigrationID) : ?>
+                    <input type="hidden" name="cid[]" value="<?php echo $openMigrationID->id; ?>"/>
+                  <?php endforeach; ?>
                 <?php else: ?>
                   <joomla-button id="migration-start" task="display">
                     <button class="btn btn-primary <?php echo $openMigrations ? ' disabled' : ''; ?>" <?php echo $openMigrations ? 'disabled' : ''; ?> data-submit-task="display" type="button"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_START_SCRIPT'); ?></button>

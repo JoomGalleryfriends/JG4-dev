@@ -51,18 +51,24 @@ export let submitTask = function(event, element) {
       // Handle the successful result here
       responseHandler(type, res);
 
+      console.log('forceStop: ' + forceStop);
+      console.log('continueState: ' + continueState);
+
       if(tryCounter >= tryLimit) {
         // We reached the limit of tries --> looks like we have a network problem
         updateMigrateables(type, {'success': false, 'message': Joomla.JText._('COM_JOOMGALLERY_ERROR_NETWORK_PROBLEM'), 'data': false});
         // Stop automatic execution and update GUI
+        console.log('forceStop; We reached the limit of tries');
         forceStop = true;
       }
       
       if(continueState && !forceStop) {
         // Kick off the next task
+        console.log('Kick off the next task');
         submitTask(event, element);
       } else {
         // Stop automatic task execution and update GUI
+        console.log('Stop automatic task execution and update GUI');
         finishTask(type, element);
       }
     })
@@ -72,6 +78,57 @@ export let submitTask = function(event, element) {
       addLog(error, type, 'error');
     });
 };
+
+/**
+ * Stop the migration task by pressing the button
+ * 
+ * @param {Object}  event     Event object
+ * @param {Object}  element   DOM element object
+ */
+export let stopTask = function(event, element) {
+  event.preventDefault();
+
+  let type     = element.getAttribute(typeSelector);
+  let bar      = document.getElementById('progress-'+type);
+  let startBtn = document.getElementById('migrationBtn-'+type);
+  let stopBtn  = element;
+
+  // Update progress bar
+  bar.classList.remove('progress-bar-striped');
+  bar.classList.remove('progress-bar-animated');
+  
+  // Enable start button
+  startBtn.classList.remove('disabled');
+  startBtn.removeAttribute('disabled');
+
+  // Disable stop button
+  stopBtn.classList.add('disabled');
+  stopBtn.setAttribute('disabled', 'true');
+}
+
+/**
+ * Manually set one record migration to true
+ * 
+ * @param {Object}  event     Event object
+ * @param {Object}  element   DOM element object
+ */
+export let repairTask = function(event, element) {
+  event.preventDefault();
+
+  // Get relevant elements
+  let type      = element.getAttribute(typeSelector);
+  let mig       = document.getElementById('migrationForm-'+type).querySelector('[name="migrateable"]');
+  let inputType = document.getElementById('migrepairForm').querySelector('[name="type"]');
+  let inputMig  = document.getElementById('migrepairForm').querySelector('[name="migrateable"]');
+
+  // Fill input values
+  inputType.value = type;
+  inputMig.value  = mig.value;
+
+  // Show modal
+  let bsmodal = new bootstrap.Modal(document.getElementById('repair-modal-box'), {keyboard: false});
+  bsmodal.show();
+}
 
 /**
  * Perform an ajax request in json format
@@ -196,6 +253,7 @@ let responseHandler = function(type, response) {
 
       // Stop autimatic continuation if requested from backend
       if(!response.data.continue || response.data.continue == null || response.data.continue == false) {
+        console.log('continueState; autimatic continuation requested from backend');
         continueState = false;
       }
 
@@ -210,6 +268,7 @@ let responseHandler = function(type, response) {
 
       // Stop autimatic continuation if requested from backend
       if(!response.data.continue || response.data.continue == null || response.data.continue == false) {
+        console.log('continueState; autimatic continuation requested from backend');
         continueState = false;
       }
 
@@ -400,14 +459,21 @@ let updateMigrateables = function(type, res) {
  * @returns void
  */
 let startTask = function(type, button) {
+  let bar      = document.getElementById('progress-'+type);
+  let startBtn = element;
+  let stopBtn  = document.getElementById('stopBtn-'+type);
+
   // Update progress bar
-  let bar = document.getElementById('progress-'+type);
-  bar.classList.add('progress-bar-striped');
-  bar.classList.add('progress-bar-animated');
+  bar.classList.remove('progress-bar-striped');
+  bar.classList.remove('progress-bar-animated');
   
-  // Disable button
-  button.classList.add('disabled');
-  button.setAttribute('disabled', 'true');
+  // Disable start button
+  startBtn.classList.add('disabled');
+  startBtn.setAttribute('disabled', 'true');
+
+  // Enable stop button
+  stopBtn.classList.remove('disabled');
+  stopBtn.removeAttribute('disabled');
 }
 
 /**
@@ -419,12 +485,19 @@ let startTask = function(type, button) {
  * @returns void
  */
 let finishTask = function(type, button) {
+  let bar      = document.getElementById('progress-'+type);
+  let startBtn = element;
+  let stopBtn  = document.getElementById('stopBtn-'+type);
+
   // Update progress bar
-  let bar = document.getElementById('progress-'+type);
   bar.classList.remove('progress-bar-striped');
   bar.classList.remove('progress-bar-animated');
   
-  // Enable button
-  button.classList.remove('disabled');
-  button.removeAttribute('disabled');
+  // Enable start button
+  startBtn.classList.remove('disabled');
+  startBtn.removeAttribute('disabled');
+
+  // Disable stop button
+  stopBtn.classList.add('disabled');
+  stopBtn.setAttribute('disabled', 'true');
 }
