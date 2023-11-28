@@ -809,6 +809,7 @@ class MigrationModel extends AdminModel
       return $mig;
     }
 
+    $removed = false;
     switch($state)
     {
       // apply successful state
@@ -817,10 +818,21 @@ class MigrationModel extends AdminModel
         if(($key = \array_search($src_pk, $table->queue)) !== false)
         {
           unset($table->queue[$key]);
+          $removed = true;
+        }
+
+        //Remove primary key from failed
+        if($table->failed->exists($src_pk))
+        {
+          $table->failed->remove($src_pk);
+          $removed = true;
         }
 
         // Add migrated primary key to successful object
-        $table->successful->set($src_pk, $dest_pk);
+        if($removed)
+        {
+          $table->successful->set($src_pk, $dest_pk);
+        }        
         break;
 
       // apply pending state
@@ -829,16 +841,21 @@ class MigrationModel extends AdminModel
         if($table->successful->exists($src_pk))
         {
           $table->successful->remove($src_pk);
+          $removed = true;
         }
 
         //Remove primary key from failed
         if($table->failed->exists($src_pk))
         {
           $table->failed->remove($src_pk);
+          $removed = true;
         }
 
         // Add primary key to queue
-        \array_push($table->queue, $src_pk);
+        if($removed)
+        {
+          \array_push($table->queue, $src_pk);
+        }
 
         break;
 
@@ -848,10 +865,21 @@ class MigrationModel extends AdminModel
         if(($key = \array_search($src_pk, $table->queue)) !== false)
         {
           unset($table->queue[$key]);
+          $removed = true;
         }
 
+        //Remove primary key from successful
+        if($table->successful->exists($src_pk))
+        {
+          $table->successful->remove($src_pk);
+          $removed = true;
+        }
+        
         // Add migrated primary key to failed object
-        $table->failed->set($src_pk, $error);
+        if($removed)
+        {
+          $table->failed->set($src_pk, $error);
+        }
         break;
     }
 
@@ -859,6 +887,11 @@ class MigrationModel extends AdminModel
     if($error !== '')
     {
       $this->component->setError($error);
+    }
+
+    if(!$removed)
+    {
+      $this->component->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_NOT_AVAILABLE', $src_pk));
     }
 
     // Calculate progress and completed state

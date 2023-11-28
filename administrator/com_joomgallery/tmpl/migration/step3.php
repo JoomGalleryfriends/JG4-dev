@@ -136,7 +136,7 @@ Text::script('SUCCESS');
   // Migration repair modal box
   $options = array('modal-dialog-scrollable' => true,
                     'title'  => Text::_('COM_JOOMGALLERY_MIGRATION_MANUAL'),
-                    'footer' => '<button type="button" class="btn btn-primary">'.Text::_('COM_JOOMGALLERY_MIGRATION_MANUAL_BTN').'</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
+                    'footer' => '<input type="submit" form="migrepairForm" class="btn btn-primary" value="'.Text::_('COM_JOOMGALLERY_MIGRATION_MANUAL_BTN').'"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
                   );
   $data    = array('script' => $this->script->name, 'form' => $migrepairForm);
   $layout  = new FileLayout('joomgallery.migrepair', null, array('component' => 'com_joomgallery', 'client' => 1));

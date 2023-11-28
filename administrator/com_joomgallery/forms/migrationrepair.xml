@@ -7,11 +7,23 @@
 
   <field name="src_pk"
          type="number"
+         required="true"
          default="0"
          label="COM_JOOMGALLERY_MIGRATION_REPAIR_SRCPK_LABEL"
          description="COM_JOOMGALLERY_MIGRATION_REPAIR_SRCPK_DESC"
          min="0" step="1"
   />
+
+  <field name="state"
+         type="list"
+         default="0"
+         required="true"
+         label="COM_JOOMGALLERY_MIGRATION_REPAIR_STATE_LABEL"
+         description="COM_JOOMGALLERY_MIGRATION_REPAIR_STATE_DESC">
+    <option value="0">COM_JOOMGALLERY_FAILED</option>
+    <option value="1">COM_JOOMGALLERY_SUCCESSFUL</option>
+    <option value="2">COM_JOOMGALLERY_PENDING</option>
+  </field>
 
   <field name="dest_pk"
          type="number"
@@ -19,10 +31,19 @@
          label="COM_JOOMGALLERY_MIGRATION_REPAIR_DESTPK_LABEL"
          description="COM_JOOMGALLERY_MIGRATION_REPAIR_DESTPK_DESC"
          min="0" step="1"
+         showon="state:1"
+  />
+
+  <field name="error"
+         type="text"
+         label="COM_JOOMGALLERY_CONFIRM_ERROR_MESSAGE"
+         description="COM_JOOMGALLERY_MIGRATION_REPAIR_ERROR_DESC"
+         showon="state:0"
   />
 
   <field name="confirmation"
          type="radio"
+         required="true"
          layout="joomla.form.field.radio.switcher"
          default="0"
          label="COM_JOOMGALLERY_CONFIRM"

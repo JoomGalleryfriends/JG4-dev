@@ -12,6 +12,7 @@
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\HTML\HTMLHelper;
 ?>
 
 <div class="container">
@@ -21,14 +22,16 @@ use \Joomla\CMS\Router\Route;
           <?php echo $displayData['form']->renderField('note'); ?>
           <br />
           <?php echo $displayData['form']->renderField('src_pk'); ?>
+          <?php echo $displayData['form']->renderField('state'); ?>
           <?php echo $displayData['form']->renderField('dest_pk'); ?>
+          <?php echo $displayData['form']->renderField('error'); ?>
           <?php echo $displayData['form']->renderField('confirmation'); ?>
       </div>
     </div>
     <input type="hidden" name="type" value=""/>
     <input type="hidden" name="task" value="migration.applyState"/>
-    <input type="hidden" name="state" value="1"/>
     <input type="hidden" name="migrateable" value=""/>
     <input type="hidden" name="script" value="<?php echo $displayData['script']; ?>"/>
+    <?php echo HTMLHelper::_('form.token'); ?>
   </form>
 </div>

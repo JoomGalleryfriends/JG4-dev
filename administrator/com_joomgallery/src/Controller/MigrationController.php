@@ -669,15 +669,16 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     // Get input params
     $type      = $this->app->getInput()->get('type', '', 'string');
-    $new_state = $this->app->getInput()->get('state', '0', 'int');
-    $src_pk    = $this->app->getInput()->get('src_pk', '', 'int');
-    $dest_pk   = $this->app->getInput()->get('dest_pk', '', 'int');
-    $cofirm    = $this->app->getInput()->get('confirmation', false, 'bool');
+    $new_state = $this->app->getInput()->get('state', 0, 'int');
+    $src_pk    = $this->app->getInput()->get('src_pk', 0, 'int');
+    $dest_pk   = $this->app->getInput()->get('dest_pk', 0, 'int');
+    $dest_pk   = $this->app->getInput()->get('error', '', 'string');
+    $error_msg = $this->app->getInput()->get('confirmation', false, 'bool');
     $json      = \json_decode(\base64_decode($this->app->getInput()->get('migrateable', '', 'string')), true);
 
     if(!$cofirm || empty($src_pk) || empty($dest_pk))
     {
-      $this->app->enqueueMessage('Record migration state couldn\'t be modiied. Please fill out form correctly.', 'warning');
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_FORMCHECK'), 'warning');
     }
     else
     {
@@ -707,9 +708,9 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       }
 
       // Mark the state of the specified record
-      $model->applyState($type, $new_state, $src_pk, $dest_pk);
+      $model->applyState($type, $new_state, $src_pk, $dest_pk, $error_msg);
 
-      $this->app->enqueueMessage('Record of type %s with id=%s successfully marked as successful', 'message');
+      $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_SUCCESSFUL_'.$new_state, $type, $src_pk), 'message');
     }
 
     // Redirect to the list screen.
