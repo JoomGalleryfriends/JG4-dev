@@ -93,6 +93,9 @@ export let stopTask = function(event, element) {
   let startBtn = document.getElementById('migrationBtn-'+type);
   let stopBtn  = element;
 
+  // Force automatic execution to stop
+  forceStop = true;
+
   // Update progress bar
   bar.classList.remove('progress-bar-striped');
   bar.classList.remove('progress-bar-animated');
@@ -460,7 +463,7 @@ let updateMigrateables = function(type, res) {
  */
 let startTask = function(type, button) {
   let bar      = document.getElementById('progress-'+type);
-  let startBtn = element;
+  let startBtn = button;
   let stopBtn  = document.getElementById('stopBtn-'+type);
 
   // Update progress bar
@@ -474,6 +477,11 @@ let startTask = function(type, button) {
   // Enable stop button
   stopBtn.classList.remove('disabled');
   stopBtn.removeAttribute('disabled');
+
+  // Reinitialize variables
+  tryCounter = 0;
+  continueState = true;
+  forceStop = false;
 }
 
 /**
@@ -486,7 +494,7 @@ let startTask = function(type, button) {
  */
 let finishTask = function(type, button) {
   let bar      = document.getElementById('progress-'+type);
-  let startBtn = element;
+  let startBtn = button;
   let stopBtn  = document.getElementById('stopBtn-'+type);
 
   // Update progress bar

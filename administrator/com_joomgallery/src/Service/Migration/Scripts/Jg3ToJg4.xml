@@ -118,19 +118,20 @@
            default="0"
            label="COM_JOOMGALLERY_FIELDS_IMAGEUSAGE_LABEL"
            description="COM_JOOMGALLERY_FIELDS_IMAGEUSAGE_DESC">
-        <option value="0">Direct usage</option>
-        <option value="1">Recreate</option>
-        <option value="2">Copy</option>
+        <option value="0">COM_JOOMGALLERY_DIRECT_USAGE</option>
+        <option value="1">COM_JOOMGALLERY_RECREATE</option>
+        <option value="2">JLIB_HTML_BATCH_COPY</option>
+        <option value="3">JGLOBAL_FIELD_MOVE</option>
     </field>
     <field name="image_mapping"
-	         type="subform"
+	    type="subform"
            multiple="true"
            buttons="add,remove"
            layout="joomla.form.field.subform.repeatable-config"
-	         label="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL"
-	         description="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_DESC"
-           showon="image_usage:1[OR]image_usage:2"
-	         min="1" >
+	    label="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_DESC"
+           showon="image_usage:2[OR]image_usage:3"
+	    min="1" >
         <form>
               <field name="source"
                      type="list"

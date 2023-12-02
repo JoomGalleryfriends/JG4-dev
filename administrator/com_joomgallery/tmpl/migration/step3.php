@@ -84,7 +84,7 @@ Text::script('SUCCESS');
                   <span class="badge bg-danger"><?php echo Text::_('COM_JOOMGALLERY_FAILED'); ?>: <span id="badgeFailed-<?php echo $type; ?>"><?php echo count($migrateable->failed); ?></span></span>
                 </div>
                 <button id="migrationBtn-<?php echo $type; ?>" class="btn btn-primary mb-3 btn-migration<?php if($previousCompleted && !$migrateable->completed){echo '';}else{echo ' disabled';}; ?>" onclick="Migrator.submitTask(event, this)" <?php if($previousCompleted && !$migrateable->completed){echo '';}else{echo ' disabled';}; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_START'); ?></button>
-                <button id="stopBtn-<?php echo $type; ?>" class="btn mb-3 btn-stop disabled" onclick="Migrator.stopTask(event, this)" disabled="true" data-type="<?php echo $type; ?>"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STOP'); ?></button>
+                <button id="stopBtn-<?php echo $type; ?>" class="btn mb-3 btn-outline-secondary btn-stop disabled" onclick="Migrator.stopTask(event, this)" disabled="true" data-type="<?php echo $type; ?>"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STOP'); ?></button>
                 <button id="repairBtn-<?php echo $type; ?>" class="btn mb-3 btn-outline-secondary<?php echo ($total > 0) ? '' : ' disabled'; ?>" onclick="Migrator.repairTask(event, this)" <?php echo ($total > 0) ? '' : 'disabled'; ?> data-type="<?php echo $type; ?>"><?php echo Text::_('COM_JOOMGALLERY_MIGRATION_MANUAL'); ?></button>
                 <input type="hidden" name="type" value="<?php echo $type; ?>"/>
                 <input type="hidden" name="task" value="migration.start"/>

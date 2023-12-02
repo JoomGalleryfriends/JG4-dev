@@ -16,6 +16,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Migration;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Targetinfo;
@@ -292,17 +293,70 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * Fetches an array of images from source to be used for creating the imagetypes
    * for the current image.
    *
-   * @param   array   $data   Record data received from getData()
+   * @param   array   $data   Source record data received from getData() - before convertData()
    * 
    * @return  array   List of images from sources used to create the new imagetypes
-   *                  1. If imagetypes get recreated: array('image/source/path')
-   *                  2. If imagetypes get copied:    array('original' => 'image/source/path1', 'detail' => 'image/source/path2', ...)
+   *                  1. If imagetypes get recreated:    array('image/source/path')
+   *                  2. If imagetypes get copied/moved: array('original' => 'image/source/path1', 'detail' => 'image/source/path2', ...)
    * 
    * @since   4.0.0
    */
   public function getImageSource(array $data): array
   {
-    return array();
+    $directories = $this->getSourceDirs();
+    $cat         = $this->getData('category', $data['catid']);
+
+    switch($this->params->get('image_usage'))
+    {
+      // Recreate images
+      case 1:
+        if(!empty($directories[0]))
+        {
+          // use original image if not empty
+          $dir = $directories[0];
+        }
+        else
+        {
+          // use detail image
+          $dir = $directories[1];
+        }
+
+        // Assemble path to source image with complete system root
+        return array(Path::clean($this->getSourceRootPath() . '/' . $dir . '/' . $cat['catpath'] . '/' . $data['imgfilename']));
+        break;
+
+      // Copy/Move images
+      case 2:
+      case 3:
+        $imagetypes = JoomHelper::getRecords('imagetypes', $this->component);
+        $dirs_map   = array('original' => 0, 'detail' => 1, 'thumbnail' => 2);
+
+        $paths = array();
+        foreach($imagetypes as $key => $type)
+        {
+          // Choose source type based on params
+          $source_type = 'detail';
+          foreach($this->params->get('image_mapping') as $key => $map)
+          {
+            if($map['destination'] == $type->typename)
+            {
+              $source_type = $map['source'];
+              break;
+            }
+          }
+
+          // Assemble path to source image
+          $paths[$type->typename] = Path::clean($this->getSourceRootPath() . '/' . $directories[$dirs_map[$source_type]]. '/' . $cat['catpath'] . '/' . $data['imgfilename']);
+        }
+
+        return $paths;
+        break;
+      
+      // Direct usage
+      default:
+        return array();
+        break;
+    }
   }
 
   /**
