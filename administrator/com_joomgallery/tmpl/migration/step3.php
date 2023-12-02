@@ -66,6 +66,7 @@ Text::script('SUCCESS');
     <?php 
       $i = 0;
       $previousCompleted = true;
+      $completed = array();
     ?>
     <?php foreach($this->migrateables as $key => $migrateable) : ?>
       <?php
@@ -109,15 +110,28 @@ Text::script('SUCCESS');
       <br />
       <?php 
         $previousCompleted = $migrateable->completed;
+
+        if($migrateable->completed)
+        {
+          array_push($completed, $type);
+        }
+
         $i++;
       ?>
     <?php endforeach; ?>
   <?php endif; ?>
 
+  <?php
+    $total_complete = false;
+    if(empty(array_diff_key($completed, array_keys($this->migrateables))))
+    {
+      $total_complete = true;
+    }
+  ?>
   <form action="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&task=migration.postcheck'); ?>" method="post" enctype="multipart/form-data" 
         name="adminForm" id="migration-form" class="form-validate">
 
-      <input type="submit" class="btn btn-primary disabled" value="<?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STEP3_BTN_TXT'); ?>" disabled/>
+      <input id="step4Btn" type="submit" class="btn btn-primary<?php echo $total_complete ? '' : ' disabled'; ?>" value="<?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STEP3_BTN_TXT'); ?>" <?php echo $total_complete ? '' : 'disabled'; ?>/>
       <input type="hidden" name="task" value="migration.postcheck"/>
       <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
       <?php echo HTMLHelper::_('form.token'); ?>

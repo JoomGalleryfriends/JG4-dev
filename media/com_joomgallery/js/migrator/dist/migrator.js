@@ -48,6 +48,7 @@ __webpack_require__.r(__webpack_exports__);
 let typeSelector = 'data-type';
 let formIdTmpl   = 'migrationForm';
 let button       = 'migrationBtn';
+let step4Btn     = 'step4Btn';
 let tryLimit     = 3;
 
 /**
@@ -500,7 +501,7 @@ let updateMigrateables = function(type, res) {
 }
 
 /**
- * Update GUI to end migration
+ * Update GUI to start migration
  *
  * @param  {String}      type    The type defining the content type to be updated
  * @param  {DOM Element} button  The button beeing pressed to start the task
@@ -548,12 +549,60 @@ let finishTask = function(type, button) {
   bar.classList.remove('progress-bar-animated');
   
   // Enable start button
-  startBtn.classList.remove('disabled');
-  startBtn.removeAttribute('disabled');
+  if(!migrateablesList[type]['complete']) {
+    // Only enable start button if migration is not finished
+    startBtn.classList.remove('disabled');
+    startBtn.removeAttribute('disabled');
+  }
 
   // Disable stop button
   stopBtn.classList.add('disabled');
   stopBtn.setAttribute('disabled', 'true');
+
+  // Enable step 4 button
+  if(migrateablesList[type]['complete']) {
+    updateStep4Btn();
+  }
+}
+
+/**
+ * Update button to go to step 4
+ * 
+ * @returns void
+ */
+let updateStep4Btn = function() {
+  let types_inputs = document.getElementsByName('type');
+  let types = {};
+
+  // Add all available migrateables to types object
+  types_inputs.forEach((type) => {
+    if(Boolean(type.value)) {
+      types[type.value] = false;
+    }
+  });
+
+  // Check if all migrateables are available and completed
+  let tot_complete = true;
+  Object.keys(types).forEach(type => {    
+    if(Boolean(migrateablesList[type])) {
+      if(!migrateablesList[type]['completed'])
+      {
+        // Migrateable not yet completed
+        tot_complete = false;
+      }
+    }
+    else
+    {
+      // Migrateable does not yet exist. Thus not completed
+      tot_complete = false;
+    }
+  });
+
+  if(tot_complete) {
+    // Enable step 4 button
+    document.getElementById(step4Btn).classList.remove('disabled');
+    document.getElementById(step4Btn).removeAttribute('disabled');
+  }
 }
 Migrator = __webpack_exports__;
 /******/ })()
