@@ -693,6 +693,10 @@ class MigrationModel extends AdminModel
               case 'image':
                 $img_source = $this->component->getMigration()->getImageSource($src_data);
 
+                // Set old catid for image creation
+                $new_catid     = $record->catid;
+                $record->catid = $src_data['catid'];
+
                 if($mig->params->get('image_usage') == 1)
                 {
                   // Recreate imagetypes based on given image
@@ -714,8 +718,10 @@ class MigrationModel extends AdminModel
                   // Direct usage of images
                   // Nothing to do
                   $res = true;
-                  break;
                 }
+
+                // Reset new catid
+                $record->catid = $new_catid;
 
                 $error_msg_end = 'CREATE_IMGTYPE';
                 break;
