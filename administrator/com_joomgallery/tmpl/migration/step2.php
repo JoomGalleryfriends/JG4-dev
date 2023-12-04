@@ -26,14 +26,14 @@ $wa->useStyle('com_joomgallery.admin')
   
   <div class="flex-center">
     <div class="btn-group navigation" aria-label="Migration navigation">
-      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=migration&layout=step1'); ?>" class="btn btn-outline-primary">Step 1</a>
-      <a href="#" class="btn btn-outline-primary active" aria-current="page">Step 2</a>
-      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=migration&layout=step3'); ?>" class="btn btn-outline-primary">Step 3</a>
-      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=migration&layout=step4'); ?>" class="btn btn-outline-primary">Step 4</a>
+      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=migration&layout=step1'); ?>" class="btn btn-outline-primary"><?php echo Text::sprintf('COM_JOOMGALLERY_STEP_X', 1); ?></a>
+      <a href="#" class="btn btn-outline-primary active" aria-current="page"><?php echo Text::sprintf('COM_JOOMGALLERY_STEP_X', 2); ?></a>
+      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=migration&layout=step3'); ?>" disabled class="btn btn-outline-primary disabled"><?php echo Text::sprintf('COM_JOOMGALLERY_STEP_X', 3); ?></a>
+      <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=migration&layout=step4'); ?>" disabled class="btn btn-outline-primary disabled"><?php echo Text::sprintf('COM_JOOMGALLERY_STEP_X', 4); ?></a>
     </div>
   </div>
 
-  <h2>Step 2: Migration pre-check</h2>
+  <h2><?php echo Text::sprintf('COM_JOOMGALLERY_STEP_X', 2); ?>: <?php echo Text::_('COM_JOOMGALLERY_MIGRATION_STEP2_TITLE'); ?></h2>
   <br />
 
   <?php if(!empty($this->error)): ?>
