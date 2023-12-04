@@ -87,7 +87,17 @@ class Type
    *
    * @since  4.0.0
    */
-  protected $needsMigrated = array();
+  protected $prerequirement = array();
+
+  /**
+   * Is this migration type really a migration?
+   * True to perform a migration, false to perform a modification at destination
+   *
+   * @var  boolean
+   *
+   * @since  4.0.0
+   */
+  protected $isMigration = true;
 
   /**
    * Constructor
@@ -115,7 +125,7 @@ class Type
 
     if(\count($list) > 4)
     {
-      $this->needsMigrated = $list[4];
+      $this->prerequirement = $list[4];
     }
 
     if(\count($list) > 5)
@@ -128,6 +138,11 @@ class Type
       {
         \array_push($this->skip, $list[5]);
       }
+    }
+
+    if(\count($list) > 6)
+    {
+      $this->isMigration = $list[6];
     }
   }
 }

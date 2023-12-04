@@ -146,7 +146,7 @@ abstract class Migration implements MigrationInterface
 	}
 
   /**
-   * A list of content type definitions depending on migration source
+   * A list of migrations/types which can be performed with this migration script
    * 
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
@@ -492,12 +492,12 @@ abstract class Migration implements MigrationInterface
     // Content types that require another type beeing migrated completely
     if(!empty($this->types[$type]))
     {
-      foreach($this->types[$type]->get('needsMigrated') as $key => $req)
+      foreach($this->types[$type]->get('prerequirement') as $key => $req)
       {
         if(!$this->migrateables[$req] || !$this->migrateables[$req]->completed || $this->migrateables[$req]->failed->count() > 0)
         {
           $this->continue = false;
-          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('needsMigrated'))));
+          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('prerequirement'))));
 
           return false;
         }
@@ -1137,6 +1137,12 @@ abstract class Migration implements MigrationInterface
    */
   protected function applyConvertData(array $data, array $mapping, string $pk_name = 'id'): array
   {
+    // Convert data only if a mapping is available
+    if(empty($mapping))
+    {
+      return $data;
+    }
+
     // Loop through the data provided
     foreach($data as $key => $value)
     {

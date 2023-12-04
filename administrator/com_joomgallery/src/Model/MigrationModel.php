@@ -286,7 +286,10 @@ class MigrationModel extends AdminModel
     // Add destination table info if empty
     if(empty($item->dst_table))
     {
-      $item->dst_table = JoomHelper::$content_types[$type];
+      if(\key_exists($type, JoomHelper::$content_types))
+      {
+        $item->dst_table = JoomHelper::$content_types[$type];
+      }      
       $item->dst_pk    = 'id';
     }
 
@@ -322,7 +325,8 @@ class MigrationModel extends AdminModel
   }
 
   /**
-    * Method to get an array of migration records based on current script.
+    * Method to get a list of migration records based on current script.
+    * Select based on types from migration script.
     *
     * @return  Migrationtable[]  An array of migration tables
     *
@@ -406,7 +410,8 @@ class MigrationModel extends AdminModel
   }
 
   /**
-    * Method to get an array of IDs based on current script.
+    * Method to get a list of available migration IDs based on current script.
+    * Select from #__joomgallery_migration only.
     *
     * @return  array  List of IDs
     *
@@ -657,7 +662,7 @@ class MigrationModel extends AdminModel
     // Perform the migration of the element
     if($this->component->getMigration()->needsMigration($type, $pk))
     {
-      // Get record data from source  
+      // Get record data from source
       if($data = $this->component->getMigration()->getData($type, $pk))
       {
         // Copy source record data
@@ -970,17 +975,30 @@ class MigrationModel extends AdminModel
       return false;
     }
 
+    // We assume that the record gets newly created during migration step
+    $isNew = true;
+
     // Get table primary key name
     $key = $table->getKeyName();
 
+    // Special case: Only modification not creation of record
+    if(!$this->component->getMigration()->get('types')[$type]->get('isMigration') && $data[$key] > 0)
+    {
+      if($table->load($key))
+      {
+        // Table successfully loaded
+        $isNew = false;
+      }
+    }
+
     // Disable auto-incrementing record ID
-    if($newID && \in_array($key, \array_keys($data)) && \method_exists($table, 'insertID'))
+    if($isNew && $newID && \in_array($key, \array_keys($data)) && \method_exists($table, 'insertID'))
     {
       $table->insertID();
     }
 
-    // Change language to 'All' if multilangugae is not enabled
-    if(!Multilanguage::isEnabled())
+    // Change language to 'All' if multilanguage is not enabled
+    if($isNew && !Multilanguage::isEnabled())
 		{
 			$data['language'] = '*';
 		}
@@ -989,7 +1007,7 @@ class MigrationModel extends AdminModel
     $tmp_task = $this->app->input->get('task', '', 'cmd');
     $this->app->input->set('task', 'save');
 
-    if($this->component->getMigration()->get('types')[$type]->get('nested'))
+    if($isNew && $this->component->getMigration()->get('types')[$type]->get('nested'))
     {
       // Assumption: parent primary key name for all nested types at destination is 'parent_id'
       $table->setLocation($data['parent_id'], 'last-child');

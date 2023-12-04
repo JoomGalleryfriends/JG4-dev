@@ -125,9 +125,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip)
+   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: prerequirements, pkstoskip
+   *                  Optional: prerequirements, pkstoskip, ismigration
    * 
    * @since   4.0.0
    */
@@ -137,7 +137,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Order of the content types must correspond to the migration order
     // Pay attention to the prerequirements when ordering here !!!
     $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
-                    'image' =>    array('#__joomgallery', 'id', false, true, array('category'))
+                    'image' =>    array('#__joomgallery', 'id', false, true, array('category')),
+                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'id', false, false, array('category', 'image'), array(1), false)
                   );
 
     if($names_only)
@@ -149,7 +150,10 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     {
       foreach($types as $key => $value)
       {
-        $types[$key][0] = $value[0] . '_old';
+        if(\count($value) < 7 || (\count($value) > 6 && $value[6] !== false))
+        {
+          $types[$key][0] = $value[0] . '_old';
+        }
       }
     }
 
@@ -226,6 +230,25 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         }
 
         break;
+      
+      case 'catimage':
+        // Dont change the record data
+        $mapping = array();
+
+        // Adjust category thumbnail
+        if(!empty($data['thumbnail']))
+        {
+          if($this->migrateables['image']->successful->get($data['thumbnail'], false))
+          {
+            // Change category thumbnail id based on migrated image id
+            $data['thumbnail'] = $this->migrateables['image']->successful->get($data['thumbnail']);
+          }
+          else
+          {
+            // Migrated image id not available, set id to 0
+            $data['thumbnail'] = 0;
+          }          
+        }
       
       default:
         // The table structure is the same
