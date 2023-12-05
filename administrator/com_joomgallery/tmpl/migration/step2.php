@@ -62,7 +62,7 @@ $wa->useStyle('com_joomgallery.admin')
             <div class="card-body"> 
               <?php if($cat->title): ?>
                 <div class="card-title">
-                  <h3><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_PRECHECK_TITLE') . ': ' . $cat->title; ?></h3>
+                  <h3><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_CHECK_TITLE') . ': ' . $cat->title; ?></h3>
                   <?php if($cat->desc): ?>
                     <span><?php echo $cat->desc; ?></span>
                   <?php endif; ?>

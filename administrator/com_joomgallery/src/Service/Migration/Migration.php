@@ -67,6 +67,15 @@ abstract class Migration implements MigrationInterface
 	protected $name = '';
 
   /**
+   * True to offer the task migration.removesource for this script
+   *
+   * @var    boolean
+   * 
+   * @since  4.0.0
+   */
+  protected $sourceDeletion = false;
+
+  /**
    * Is the migration performed from the command line
    *
    * @var    boolean
@@ -146,14 +155,14 @@ abstract class Migration implements MigrationInterface
 	}
 
   /**
-   * A list of migrations/types which can be performed with this migration script
+   * A list of content type definitions depending on migration source
    * 
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip)
+   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: prerequirements, pkstoskip
+   *                  Optional: prerequirements, pkstoskip, ismigration, recordname
    * 
    * @since   4.0.0
    */
@@ -260,12 +269,12 @@ abstract class Migration implements MigrationInterface
     $checks = new Checks();
 
     // Check general requirements
-    $checks->addCategory('general', Text::_('COM_JOOMGALLERY_GENERAL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_GENERAL_CHECK_DESC'));
+    $checks->addCategory('general', Text::_('COM_JOOMGALLERY_GENERAL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_GENERAL_PRECHECK_DESC'));
     $this->checkLogFile($checks, 'general');
     $this->checkSiteState($checks, 'general');
 
     // Check source extension (version, compatibility)
-    $checks->addCategory('source', Text::_('COM_JOOMGALLERY_SOURCE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_CHECK_DESC'));
+    $checks->addCategory('source', Text::_('COM_JOOMGALLERY_SOURCE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_PRECHECK_DESC'));
     $this->checkSourceExtension($checks, 'source');
 
     // Check existance and writeability of source directories
@@ -275,7 +284,7 @@ abstract class Migration implements MigrationInterface
     $this->checkSourceTable($checks, 'source');
 
     // Check destination extension (version, compatibility)
-    $checks->addCategory('destination', Text::_('COM_JOOMGALLERY_DESTINATION'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DESTINATION_CHECK_DESC'));
+    $checks->addCategory('destination', Text::_('COM_JOOMGALLERY_DESTINATION'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DESTINATION_PRECHECK_DESC'));
     $this->checkDestExtension($checks, 'destination');
 
     // Check existance and writeability of destination directories
@@ -291,7 +300,7 @@ abstract class Migration implements MigrationInterface
     }
 
     // Perform some script specific checks
-    $this->scriptSpecificChecks($checks, 'general');
+    $this->scriptSpecificChecks('pre', $checks, 'general');
 
     return $checks->getAll();
   }
@@ -306,7 +315,30 @@ abstract class Migration implements MigrationInterface
    */
   public function postcheck()
   {
-    return;
+    // Instantiate a new checks class
+    $checks = new Checks();
+
+    // Check general migration
+    $checks->addCategory('general', Text::_('COM_JOOMGALLERY_GENERAL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_GENERAL_POSTCHECK_DESC'));
+
+    // Check if all queues have been addressed and migrated
+    $this->checkMigrationQueues($checks, 'general');
+    // Check if there are still errors in the migration
+    $this->checkMigrationErrors($checks, 'general');
+
+    // Check database
+    // $checks->addCategory('database', Text::_('JLIB_FORM_VALUE_SESSION_DATABASE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DB_POSTCHECK_DESC'));
+    // $this->checkCategories($checks, 'database');
+    // $this->checkImages($checks, 'database');
+
+    // Check filesystem
+    // $checks->addCategory('directories', Text::_('COM_JOOMGALLERY_DIRECTORIES'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRS_POSTCHECK_DESC'));
+    // $this->checkFolder($checks, 'directories');
+
+    // Perform some script specific checks
+    $this->scriptSpecificChecks('post', $checks, 'general');
+
+    return $checks->getAll();
   }
 
   /**
@@ -320,6 +352,19 @@ abstract class Migration implements MigrationInterface
   public function migrate($type, $source, $dest)
   {
     return;
+  }
+
+  /**
+   * Step 4
+   * Delete migration source data.
+   *
+   * @return  boolean  True if successful, false if an error occurs.
+   * 
+   * @since   4.0.0
+   */
+  public function deleteSource()
+  {
+    return true;
   }
 
   /**
@@ -1110,7 +1155,7 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
-   * Precheck: Perform script specific checks
+   * Postcheck: Check if all queues are completed
    * 
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
@@ -1119,7 +1164,81 @@ abstract class Migration implements MigrationInterface
    *
    * @since   4.0.0
   */
-  protected function scriptSpecificChecks(Checks &$checks, string $category)
+  protected function checkMigrationQueues(Checks &$checks, string $category)
+  {
+    $types        = $this->getTypes();
+    $migrateables = $this->getMigrateables();
+
+    // Check if all types are existent in migrateables
+    if(\count(\array_diff($types, \array_keys($migrateables))) > 0)
+    {
+      $checks->addCheck($category, 'types_migrated', false, false, Text::_('COM_JOOMGALLERY_MIGRATIONS'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MIGRATIONS_ERROR'));
+      return;
+    }
+
+    // Check if all queues in migrateables are empty
+    $empty = true;
+    foreach($migrateables as $key => $mig)
+    {
+      if(\count($mig->queue) > 0)
+      {
+        $checks->addCheck($category, 'queue_' . $mig->type, false, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_QUEUE'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MIGRATIONS_ERROR', $mig->type));
+        $empty = false;
+      }
+    }
+
+    if($empty)
+    {
+      $checks->addCheck($category, 'queues', true, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_QUEUE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MIGRATIONS_SUCCESS'));
+    }
+  }
+
+  /**
+   * Postcheck: Check if all migrateables are error free
+   * 
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function checkMigrationErrors(Checks &$checks, string $category)
+  {
+    $migrateables = $this->getMigrateables();
+
+    // Check if all migrateables are error free
+    $errors = false;
+    foreach($migrateables as $key => $mig)
+    {
+      if($mig->failed->count() > 0)
+      {
+        foreach($mig->failed->toArray()as $id => $error)
+        {
+          $checks->addCheck($category, 'error_' . $mig->type . '_' . $id, false, false, Text::_('ERROR') . ': ' . $mig->type, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERRORS_ERROR', $mig->type, $id, $error));
+          $errors = true;
+        }
+      }
+    }
+
+    if(!$errors)
+    {
+      $checks->addCheck($category, 'errors', true, false, Text::_('SUCCESS'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERRORS_SUCCESS'));
+    }
+  }
+
+  /**
+   * Perform script specific checks
+   * 
+   * @param  string   $type       Type of checks (pre or post)
+   * @param  Checks   $checks     The checks object
+   * @param  string   $category   The checks-category into which to add the new check
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function scriptSpecificChecks(string $type, Checks &$checks, string $category)
   {
     return;
   }

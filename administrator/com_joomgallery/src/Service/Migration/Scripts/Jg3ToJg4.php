@@ -41,6 +41,15 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 	protected $name = 'Jg3ToJg4';
 
   /**
+   * True to offer the task migration.removesource for this script
+   *
+   * @var    boolean
+   * 
+   * @since  4.0.0
+   */
+  protected $sourceDeletion = true;
+
+  /**
    * Constructor
    *
    * @return  void
@@ -125,9 +134,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration)
+   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: prerequirements, pkstoskip, ismigration
+   *                  Optional: prerequirements, pkstoskip, ismigration, recordname
    * 
    * @since   4.0.0
    */
@@ -138,7 +147,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Pay attention to the prerequirements when ordering here !!!
     $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
                     'image' =>    array('#__joomgallery', 'id', false, true, array('category')),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'id', false, false, array('category', 'image'), array(1), false)
+                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'id', false, false, array('category', 'image'), array(1), false, 'category')
                   );
 
     if($names_only)
@@ -249,6 +258,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
             $data['thumbnail'] = 0;
           }          
         }
+
+        break;
       
       default:
         // The table structure is the same
@@ -383,8 +394,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Precheck: Perform script specific checks
+   * Perform script specific checks
    * 
+   * @param  string   $type       Type of checks (pre or post)
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -392,26 +404,34 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    *
    * @since   4.0.0
   */
-  protected function scriptSpecificChecks(Checks &$checks, string $category)
+  protected function scriptSpecificChecks(string $type, Checks &$checks, string $category)
   {
-    // Check if imgfilename and imgthumbname are the same
-    list($db, $dbPrefix)      = $this->getDB('source');
-    list($tablename, $pkname) = $this->getSourceTableInfo('image');
-
-    // Create the query
-    $query = $db->getQuery(true)
-            ->select($db->quoteName(array('id')))
-            ->from($tablename)
-            ->where($db->quoteName('imgfilename') . ' != ' . $db->quoteName('imgthumbname'));
-    $db->setQuery($query);
-
-    // Load a list of ids that have different values for imgfilename and imgthumbname
-    $res = $db->loadColumn();
-
-    if(!empty(\count($res)))
+    if($type == 'pre')
     {
-      $checks->addCheck($category, 'src_table_image_filename', true, true, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_TITLE'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_DESC', \count($res)), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_HELP', \implode(', ', $res)));
+      // Check if imgfilename and imgthumbname are the same
+      list($db, $dbPrefix)      = $this->getDB('source');
+      list($tablename, $pkname) = $this->getSourceTableInfo('image');
+
+      // Create the query
+      $query = $db->getQuery(true)
+              ->select($db->quoteName(array('id')))
+              ->from($tablename)
+              ->where($db->quoteName('imgfilename') . ' != ' . $db->quoteName('imgthumbname'));
+      $db->setQuery($query);
+
+      // Load a list of ids that have different values for imgfilename and imgthumbname
+      $res = $db->loadColumn();
+
+      if(!empty(\count($res)))
+      {
+        $checks->addCheck($category, 'src_table_image_filename', true, true, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_TITLE'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_DESC', \count($res)), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_HELP', \implode(', ', $res)));
+      }
     }
+
+    if($type == 'post')
+    {
+
+    }    
 
     return;
   }

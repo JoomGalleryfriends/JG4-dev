@@ -52,7 +52,7 @@ class HtmlView extends JoomGalleryView
     if($this->layout != 'default')
     {
       $this->app->input->set('hidemainmenu', true);
-      ToolbarHelper::cancel('migration.cancel', 'JTOOLBAR_CLOSE');
+      ToolbarHelper::cancel('migration.cancel', 'COM_JOOMGALLERY_MIGRATION_INERRUPT_MIGRATION');
 
       // Check if requested script exists
       if(!\in_array($this->script->name, \array_keys($this->scripts)))
@@ -95,7 +95,19 @@ class HtmlView extends JoomGalleryView
 
         case 'step4':
           // Load postcheck results
-          $this->postcheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step4.results', array());
+          $this->postcheck      = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step4.results', array());
+          $this->success        = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step4.success', false);
+          $this->sourceDeletion = $this->get('sourceDeletion');
+
+          $this->openMigrations = $this->get('IdList');
+          if(!empty($this->openMigrations) && \key_exists($this->script->name, $this->openMigrations))
+          {
+            $this->openMigrations = $this->openMigrations[$this->script->name];
+          }
+          else
+          {
+            $this->openMigrations = array();
+          }
           break;
         
         default:

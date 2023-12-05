@@ -323,6 +323,84 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
   }
 
   /**
+   * Method to remove migration source data (filesystem & database).
+   *
+   * @return  boolean True on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public function removesource()
+  {
+    $this->checkToken();
+
+    $model   = $this->getModel();
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+    $scripts = $model->getScripts();
+
+    // Check if requested script exists
+    if(!\in_array($script, \array_keys($scripts)))
+    {
+      // Requested script does not exists
+      throw new Exception('Requested migration script does not exist.', 1);      
+    }
+
+    // Access check.
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
+    {
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    // Check if script allows source data removal
+    if(!$model->sourceDeletion())
+    {
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.removesource'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step4', false));
+
+      return false;
+    }
+
+    $postcheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.step4.success', false);
+
+    // Check if no errors detected in postcheck (step 4)
+    if(!$postcheck)
+    {
+      // Post-checks not successful. Show error message.
+      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED');
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP4', $msg), 'error');
+      // Redirect to the step 4 screen
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step4', false));
+    }
+
+    // Get items to remove from the request.
+    $cid = (array) $this->input->get('cid', [], 'int');
+
+    // Remove zero values resulting from input filter
+    $cid = \array_filter($cid);
+
+    if(!empty($cid))
+    {
+      // Remove the source data.
+      if($model->deleteSource($cid))
+      {
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_DATA_DELETE_SUCCESSFUL'));
+      }
+      else
+      {
+        $this->app->enqueueMessage($model->getError(), 'error');
+      }
+    }
+
+    // Redirect to the step 4 screen.
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step4', false));
+
+    return true;
+  }
+
+  /**
    * Step 2
    * Validate the form input data and perform the pre migration checks.
 	 *
@@ -491,7 +569,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$precheck)
     {
       // Pre-checks not successful. Show error message.
-      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED');
+      $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED');
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $msg), 'error');
       // Redirect to the step 2 screen
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
@@ -499,6 +577,73 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     // Redirect to the step 3 screen
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step3', false));
+  }
+
+  /**
+   * Step 4
+   * Perform the post migration checks.
+	 *
+	 * @return  void
+	 *
+   * @since   4.0.0
+	 * @throws  \Exception
+	 */
+	public function postcheck()
+	{
+    // Check for request forgeries
+    $this->checkToken();
+
+    // Access check.
+    $acl = $this->component->getAccess();
+    if(!$acl->checkACL('admin', 'com_joomgallery'))
+    {
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+
+      return false;
+    }
+
+    $model   = $this->getModel();
+    $script  = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
+    $scripts = $model->getScripts();
+
+    // Check if requested script exists
+    if(!\in_array($script, \array_keys($scripts)))
+    {
+      // Requested script does not exists
+      throw new \Exception('Requested migration script does not exist.', 1);      
+    }
+
+    $context = _JOOM_OPTION.'.migration.'.$script.'.step4';
+    $task    = $this->getTask();
+
+    // Perform the post migration checks
+    list($success, $res, $msg) = $model->postcheck();
+    if(!$success)
+    {
+      // Post-checks not successful. Show error message.
+      $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP4', $msg), 'error');
+    }
+    else
+    {
+      // Pre-checks successful. Show success message.
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SUCCESS_MIGRATION_STEP4'));
+
+      if(!empty($msg))
+      {
+        // Warnings appeared. Show warning message.
+        $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_WARNING_MIGRATION_STEP4', $msg), 'warning');
+      }
+    }
+
+    // Save the results of the post migration checks in the session.
+    $this->app->setUserState($context . '.results', $res);
+    $this->app->setUserState($context . '.success', $success);
+
+    // Redirect to the screen to show the results (View of Step 4)
+    $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step4', false));
+
+    return;
   }
 
   /**
@@ -546,7 +691,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$precheck)
     {
       // Pre-checks not successful. Show error message.
-      $response = $this->createRespond(null, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED'));
+      $response = $this->createRespond(null, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED'));
       $this->ajaxRespond($response, $format);
 
       return false;
@@ -661,7 +806,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$precheck)
     {
       // Pre-checks not successful. Show error message.
-      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2_CHECKS_FAILED'), 'error');
+      $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED'), 'error');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
 
       return false;

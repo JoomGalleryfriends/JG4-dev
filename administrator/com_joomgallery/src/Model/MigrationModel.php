@@ -457,6 +457,26 @@ class MigrationModel extends AdminModel
   }
 
   /**
+    * Method to get the sourceDeletion flag from migration script
+    *
+    * @return  bool  True to offer the task migration.removesource
+    *
+    * @since   4.0.0
+    */
+  public function getSourceDeletion(): bool
+  {
+    // Retreive script
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      return false;
+    }
+
+    return $this->component->getMigration()->get('sourceDeletion', false);
+  }
+
+  /**
    * Load the current queue of ids from table
    * 
    * @param   string     $type   Content type
@@ -620,21 +640,19 @@ class MigrationModel extends AdminModel
 
   /**
 	 * Method to perform the post migration checks.
-   * 
-   * @param   array  $params  The migration parameters entered in the migration form
 	 *
 	 * @return  array|boolean  An array containing the postcheck results on success.
 	 *
 	 * @since   4.0.0
 	 */
-  public function postcheck($params)
-  {
-    $info = $this->getScript();
+  public function postcheck()
+  {   
+    // Prepare the migration object
+    $migs = $this->getMigrateables();
+    $keys = \array_keys($migs);
+    $this->setParams($migs[$keys[0]]->params);
 
-    // Set the migration parameters
-    $this->setParams($params);
-
-    // Perform the prechecks
+    // Perform the postchecks
     return $this->component->getMigration()->postcheck();
   }
 
@@ -707,7 +725,7 @@ class MigrationModel extends AdminModel
                   // Recreate imagetypes based on given image
                   $res = $this->createImages($record, $img_source[0]);
                 }
-                elseif($mig->params->get('image_usage') == 2 || $this->params->get('image_usage') == 3)
+                elseif($mig->params->get('image_usage') == 2 || $mig->params->get('image_usage') == 3)
                 {
                   $copy = false;
                   if($mig->params->get('image_usage') == 2)
@@ -952,6 +970,24 @@ class MigrationModel extends AdminModel
   }
 
   /**
+   * Method to delete migration source data.
+   *
+   * @return  boolean  True if successful, false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function deleteSource()
+  {
+    // Prepare the migration object
+    $migs = $this->getMigrateables();
+    $keys = \array_keys($migs);
+    $this->setParams($migs[$keys[0]]->params);
+
+    // Perform the postchecks
+    return $this->component->getMigration()->deleteSource();
+  }
+
+  /**
 	 * Method to insert a content type record from migration data.
 	 *
    * @param   string  $type   Name of the content type to insert.
@@ -964,11 +1000,13 @@ class MigrationModel extends AdminModel
 	 */
   protected function insertRecord(string $type, array $data, bool $newID = true)
   {
+    $recordType = $this->component->getMigration()->get('types')[$type]->get('recordName');
+
     // Check content type
-    JoomHelper::isAvailable($type);
+    JoomHelper::isAvailable($recordType);
 
     // Create table
-    if(!$table = $this->getMVCFactory()->createTable($type, 'administrator'))
+    if(!$table = $this->getMVCFactory()->createTable($recordType, 'administrator'))
     {
       $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type));
 
@@ -984,7 +1022,7 @@ class MigrationModel extends AdminModel
     // Special case: Only modification not creation of record
     if(!$this->component->getMigration()->get('types')[$type]->get('isMigration') && $data[$key] > 0)
     {
-      if($table->load($key))
+      if($table->load($data[$key]))
       {
         // Table successfully loaded
         $isNew = false;

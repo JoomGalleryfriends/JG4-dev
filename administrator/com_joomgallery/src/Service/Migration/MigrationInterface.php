@@ -66,9 +66,9 @@ interface MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration)
+   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: prerequirements, pkstoskip, ismigration
+   *                  Optional: prerequirements, pkstoskip, ismigration, recordname
    * 
    * @since   4.0.0
    */

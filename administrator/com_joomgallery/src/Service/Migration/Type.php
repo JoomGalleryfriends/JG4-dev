@@ -36,6 +36,15 @@ class Type
   public $name = 'image';
 
   /**
+   * Name of the corresponding record
+   *
+   * @var  string
+   *
+   * @since  4.0.0
+   */
+  public $recordName = 'image';
+
+  /**
    * Source table name of this content type
    *
    * @var  string
@@ -111,7 +120,8 @@ class Type
    */
   public function __construct($name, $list)
   {
-    $this->name = $name;
+    $this->name       = $name;
+    $this->recordName = $name;
 
     if(\count($list) < 4)
     {
@@ -143,6 +153,11 @@ class Type
     if(\count($list) > 6)
     {
       $this->isMigration = $list[6];
+    }
+
+    if(\count($list) > 7)
+    {
+      $this->recordName = $list[7];
     }
   }
 }
