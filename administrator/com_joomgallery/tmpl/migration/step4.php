@@ -21,7 +21,9 @@ HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
 // Import CSS
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
-   ->useScript('com_joomgallery.admin');
+   ->useScript('com_joomgallery.admin')
+   ->useScript('form.validate')
+   ->useScript('com_joomgallery.form-edit');
 ?>
 
 <div class="jg jg-migration step4">  
@@ -131,7 +133,7 @@ $wa->useStyle('com_joomgallery.admin')
   <br />
 
   <?php if($this->success) : ?>
-    <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=migration'); ?>" method="post" name="adminForm" id="adminForm">
+    <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=migration'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
       <?php // Option: Delete source data ?>
       <?php if($this->sourceDeletion) : ?>
       <div class="card">
@@ -157,6 +159,8 @@ $wa->useStyle('com_joomgallery.admin')
       </joomla-button>
     
       <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
+      <input type="hidden" name="task" value=""/>
+      <input id="itemType" type="hidden" name="type" value="migration"/>
       <?php foreach ($this->openMigrations as $openMigration) : ?>
         <input type="hidden" name="cid[]" value="<?php echo $openMigration->id; ?>"/>
       <?php endforeach; ?>

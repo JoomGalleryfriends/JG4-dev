@@ -355,7 +355,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     }
 
     // Check if script allows source data removal
-    if(!$model->sourceDeletion())
+    if(!$model->getSourceDeletion())
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.removesource'), 'error');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step4', false));
@@ -386,7 +386,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       // Remove the source data.
       if($model->deleteSource($cid))
       {
-        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_DATA_DELETE_SUCCESSFUL'));
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_DATA_DELETE_SUCCESSFUL'), 'message');
       }
       else
       {
