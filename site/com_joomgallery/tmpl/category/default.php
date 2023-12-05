@@ -18,17 +18,14 @@ use \Joomla\CMS\Session\Session;
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-$app   = Factory::getApplication();
-$input = $app->getInput();
+$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');;
+$num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
+$caption_align    = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
+$image_class      = $this->params['menu']->get('jg_category_view_image_class', '', 'STRING');
+$justified_height = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
+$justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
+
 $wa = $this->document->getWebAssetManager();
-
-$category_class   = $input->get('category_class', 'columns', 'STRING');
-$num_columns      = $input->get('num_columns', 3, 'INT');
-$caption_align    = $input->get('caption_align', 'left', 'STRING');
-$image_class      = $input->get('image_class', '', 'STRING');
-$justified_height = $input->get('justified_height', 320, 'INT');
-$justified_gap    = $input->get('justified_gap', 5, 'INT');
-
 $wa->useStyle('com_joomgallery.site');
 $wa->useStyle('com_joomgallery.jg-icon-font');
 
@@ -124,14 +121,14 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
               <img src="<?php echo JoomHelper::getImg($subcat->thumbnail, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $this->escape($subcat->title); ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
-              <?php if ( $category_class == 'justified') : ?>
+              <?php if ( $caption_align != 'none' && $category_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
               <?php echo $this->escape($subcat->title); ?>
               </div>
               <?php endif; ?>
             </a>
           </div>
-          <?php if ( $category_class != 'justified') : ?>
+          <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
               <?php echo $this->escape($subcat->title); ?>
@@ -155,14 +152,14 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->imgtitle; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
-              <?php if ( $category_class == 'justified') : ?>
+              <?php if ( $caption_align != 'none' && $category_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
                 <?php echo $this->escape($image->imgtitle); ?>
               </div>
               <?php endif; ?>
             </a>
           </div>
-          <?php if ( $category_class != 'justified') : ?>
+          <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <?php echo $this->escape($image->imgtitle); ?>
