@@ -145,6 +145,22 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       return false;
     }
 
+    // Get migrateables if available
+    $migrateables = $model->getMigrateables();
+
+    // Checkin migration records of this script
+    if($migrateables)
+    {
+      foreach($migrateables as $mig)
+      {
+        if($mig->checked_out || \intval($mig->checked_out) > 0)
+        {
+          // Check in record
+          $model->checkin($mig->id);
+        }
+      }
+    }
+
     // Clean the session data and redirect.
     $this->app->setUserState(_JOOM_OPTION.'.migration.script', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', null);
