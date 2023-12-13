@@ -26,9 +26,11 @@
                    require="true" >
             </field>
         </fieldset>
+    </fields>
+    <fields name="params">
         <fieldset name="advanced" label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_OPTIONS">
             <field
-                name="category_class"
+                name="jg_category_view_class"
                 type="list"
                 label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_CLASS"
                 description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_CLASS_NOTE_DESC"
@@ -39,9 +41,10 @@
                 >
                 <option value="columns">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_GRID</option>
                 <option value="masonry">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_MASONRY</option>
+                <option value="justified">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_JUSTIFIED</option>
             </field>
             <field
-                name="num_columns"
+                name="jg_category_view_num_columns"
                 type="list"
                 label="COM_JOOMGALLERY_MENU_NUM_COLUMNS_LABEL"
                 description="COM_JOOMGALLERY_MENU_NUM_COLUMNS_DESC"
@@ -49,6 +52,7 @@
                 parentclass="stack span-2-inline"
                 useglobal="true"
                 validate="options"
+                showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
                 >
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -58,19 +62,55 @@
                 <option value="6">6</option>
             </field>
             <field
-                name="caption_align"
+                name="jg_category_view_caption_align"
                 type="list"
                 label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_ALIGNMENT"
                 description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_ALIGNMENT_NOTE_DESC"
-                default="left"
+                default="center"
                 parentclass="stack span-2-inline"
                 useglobal="true"
                 validate="options"
+                showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry[OR]jg_category_view_class:justified"
                 >
+                <option value="none">JNONE</option>
                 <option value="left">JGLOBAL_LEFT</option>
                 <option value="center">JGLOBAL_CENTER</option>
                 <option value="right">JGLOBAL_RIGHT</option>
             </field>
+            <field
+                name="jg_category_view_image_class"
+                type="list"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_IMAGE_CLASS"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_IMAGE_CLASS_NOTE_DESC"
+                default=""
+                parentclass="stack span-2-inline"
+                useglobal="true"
+                validate="options"
+                showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+                >
+                <option value="">JNONE</option>
+                <option value="boxed">COM_JOOMGALLERY_MENU_CATEGORY_IMAGE_CLASS_BOXED</option>
+            </field>
+            <field
+                name="jg_category_view_justified_height"
+                type="text"
+                default="320"
+                parentclass="stack span-2-inline"
+                label="COM_JOOMGALLERY_MENU_JUSTIFIED_HEIGHT"
+                description="COM_JOOMGALLERY_MENU_JUSTIFIED_HEIGHT_NOTE_DESC"
+                filter="integer"
+                showon="jg_category_view_class:justified"
+            />
+            <field
+                name="jg_category_view_justified_gap"
+                type="text"
+                default="5"
+                parentclass="stack span-2-inline"
+                label="COM_JOOMGALLERY_MENU_JUSTIFIED_GAP"
+                description="COM_JOOMGALLERY_MENU_JUSTIFIED_GAP_NOTE_DESC"
+                filter="integer"
+                showon="jg_category_view_class:justified"
+            />
         </fieldset>
     </fields>
 </metadata>
