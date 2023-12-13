@@ -56,7 +56,6 @@ table.itemList td.sort-cell .form-check-input,
 table.itemList th.sort-cell .form-check-input {
   display: none;
 }
-
 /* Form view */
 .jg fieldset {
   margin-bottom: 0.2em;
@@ -64,56 +63,49 @@ table.itemList th.sort-cell .form-check-input {
 .jg .btn-group {
   margin-bottom: 0;
 }
-
 /* Category view */
+.com_joomgallery.view-category main {
+  overflow-anchor: none;
+}
 .jg-gallery {
   margin: 2em 0;
+  position: relative;
 }
-
-.jg-images {
+.jg-images[class*=" columns-"], .jg-images[class*=" masonry-"] {
   display: grid;
   gap: 2em;
   align-items: flex-start;
   overflow-anchor: none;
 }
-
 .jg-images.columns-2, .jg-images.masonry-2 {
   grid-template-columns: repeat(2, 1fr);
 }
-
 .jg-images.columns-3, .jg-images.masonry-3 {
   grid-template-columns: repeat(3, 1fr);
 }
-
 .jg-images.columns-4, .jg-images.masonry-4 {
   grid-template-columns: repeat(4, 1fr);
 }
-
 .jg-images.columns-5, .jg-images.masonry-5 {
   grid-template-columns: repeat(5, 1fr);
 }
-
 .jg-images.columns-6, .jg-images.masonry-6 {
   grid-template-columns: repeat(6, 1fr);
 }
-
 @media (max-width: 992px) {
   .jg-images[class*=" columns-"], .jg-images[class*=" masonry-"] {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
 @media (max-width: 768px) {
   .jg-images[class*=" columns-"], .jg-images[class*=" masonry-"] {
     grid-template-columns: repeat(1, 1fr);
   }
 }
-
 .jg-image {
   padding: 0;
   animation: fadein 1.5s;
 }
-
 @keyframes fadein { 
 	from {
 		opacity:0;
@@ -124,20 +116,17 @@ table.itemList th.sort-cell .form-check-input {
 		transform: translateY(0);
 	}
 }
-
-.jg-images[class*=" columns-"] > .jg-image > .jg-image-thumbnail {
+.jg-image > .jg-image-thumbnail.boxed {
   padding: 1em;
   border: 1px solid var(--jg-gray-300);
   border-radius: 0.25rem;
 }
-
 .jg-images[class*=" columns-"] > .jg-image > .jg-image-thumbnail > a {
   display: block;
   position: relative;
   overflow: hidden;
   padding-bottom: 100%;
 }
-
 .jg-images[class*=" columns-"] > .jg-image > .jg-image-thumbnail > a > img {
   position: absolute;
   max-width: 100%;
@@ -147,49 +136,98 @@ table.itemList th.sort-cell .form-check-input {
   transform: translateX(-50%) translateY(-50%);
   object-fit: contain;
 }
-
 .jg-images[class*=" masonry-"] > .jg-image > .jg-image-thumbnail > a > img {
   width: 100%;
   max-width: none;
 }
-
+.jg-images.jg-subcategories[class*=" justified-"] > .jg-image > .jg-image-thumbnail > a > img,
+.jg-images.jg-category[class*=" justified-"] > .jg-image > .jg-image-thumbnail > a > img {
+  display: none;
+}
+.jg-images.jg-subcategories[class*=" justified-"] > .jg-image > .jg-image-thumbnail > a > img[style],
+.jg-images.jg-category[class*=" justified-"] > .jg-image > .jg-image-thumbnail > a > img[style] {
+  animation: fadeIn 0.75s;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  } to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.jg-images[class*=" justified-"] .jg-image-thumbnail {
+  position: relative;
+}
+.jg-images[class*=" justified-"] .jg-image-caption-hover {
+  padding: 1em 0.75em 0.75em 0.75em;
+  display: none;
+  position: absolute;
+  word-break: break-all;
+  color: #fff;
+  background: linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
+}
+.jg-images[class*=" justified-"] a:hover .jg-image-caption-hover {
+  display: block;
+}
+.jg-images[class*=" justified-"] .jg-image-caption-hover {
+  left: 0;
+  bottom: 0;
+}
+.jg-images[class*=" justified-"] .jg-image-thumb.end + .jg-image-caption-hover {
+  right: 0;
+}
+.jg-images[class*=" justified-"] .jg-image-caption-hover, .jg-image > .jg-image-caption {
+  font-size: 0.875rem;
+}
 .jg-image > .jg-image-caption {
   padding: 0.5em 0;
 }
-
-.jg-image > .jg-image-caption.left {
+.jg-image > .jg-image-caption.left, .jg-image-caption-hover.left {
   text-align: left;
 }
-
-.jg-image > .jg-image-caption.center {
+.jg-image > .jg-image-caption.center, .jg-image-caption-hover.center {
   text-align: center;
 }
-
-.jg-image > .jg-image-caption.right {
+.jg-image > .jg-image-caption.right, .jg-image-caption-hover.right {
   text-align: right;
 }
-
 a.jg-link:not(.btn) {
   color: var(--jg-color-link);
   text-decoration: none;
   word-break: break-all;
 }
-
 a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
   color: var(--jg-color-hover);
   text-decoration: underline 2px;
 }
-
 /* Single image view */
+#jg-loader {
+  position: absolute;
+  left: calc(50% - 24px);
+  top: calc(50% - 24px);
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%,-50%);
+  border: 5px solid #000;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .joom-image {
   position: relative;
   min-height: 100px;
-  width: 100%;
-}
-.joom-image > .joom-loader {
-  position: absolute;
-  text-align: center;
-  margin: 1rem auto;  
   width: 100%;
 }
 .joom-image > img {
