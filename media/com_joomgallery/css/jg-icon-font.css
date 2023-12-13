@@ -1,0 +1,53 @@
+@font-face {
+  font-family: 'jg-icon-font';
+  src: url('../fonts/jg-icon-font.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="jg-icon-"], [class*=" jg-icon-"] {
+  display: inline-block;
+  line-height: 0.05rem;
+  vertical-align: -0.125rem;
+}
+
+[class^="jg-icon-"]:before, [class*=" jg-icon-"]:before {
+  font-family: "jg-icon-font";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 0.05rem;
+  margin: 0 0.25rem 0 0.25rem;
+  speak: never;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.jg-icon-add:before {
+  content: "\e900";
+}
+.jg-icon-arrow-left-alt:before {
+  content: "\e901";
+}
+.jg-icon-arrow-right-alt:before {
+  content: "\e902";
+}
+.jg-icon-brand:before {
+  content: "\e903";
+}
+.jg-icon-check:before {
+  content: "\e904";
+}
+.jg-icon-close:before {
+  content: "\e905";
+}
+.jg-icon-delete:before {
+  content: "\e906";
+}
+.jg-icon-download:before {
+  content: "\e907";
+}
+.jg-icon-edit:before {
+  content: "\e908";
+}

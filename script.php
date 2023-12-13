@@ -11,6 +11,7 @@
 defined('_JEXEC') or die();
 
 use \Joomla\CMS\Factory;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Installer\Installer;
@@ -18,6 +19,7 @@ use \Joomla\CMS\Installer\InstallerScript;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\Uri\Uri;
+use \Joomla\CMS\Table\Table;
 
 /**
  * Install method
@@ -138,7 +140,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $jgtables = $this->detectJGtables();
       if($jgtables)
       {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+
         foreach($jgtables as $oldTable)
         {
           $db->renameTable($oldTable, $oldTable.'_old');
@@ -225,7 +228,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
                          'rssimage'=>1,
                          'rssitems'=>3,
                          'rssitemdesc'=>1,
-                         'word_count'=>200);
+                         'word_count'=>300);
     $feed_params = json_encode($feed_params);
     $this->createModule('JoomGallery News', 'joom_cpanel', 'mod_feed', 1, $app->getCfg('access'), 1, $feed_params, 1, '*');
 
@@ -242,8 +245,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         <h3><?php echo Text::sprintf('COM_JOOMGALLERY_SUCCESS_INSTALL', $parent->getManifest()->version); ?></h3>
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
-          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-success btn-lg" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
         </p>
         <?php if ($install_message != '') : ?>
           <div><?php echo $install_message;?></div>
@@ -292,8 +294,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         </p>
         <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_INSTALL_TXT'); ?></p>
         <p>
-          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-primary" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
-          <a title="<?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?>" class="btn btn-outline-primary" onclick="location.href='index.php?option=com_joomgallery&controller=help'; return false;" href="#"><?php echo Text::_('COM_JOOMGALLERY_LANGUAGES'); ?></a>
+          <a title="<?php echo Text::_('JLIB_HTML_START'); ?>" class="btn btn-success btn-lg" onclick="location.href='index.php?option=com_joomgallery&amp;view=control'; return false;" href="#"><?php echo Text::_('JLIB_HTML_START'); ?></a>
         </p>
         <?php if ($update_message != '') : ?>
           <div><?php echo $update_message;?></div>
@@ -340,7 +341,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 		$this->uninstallModules($parent);
 
     // Delete administrator module JoomGallery News
-    $db    = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query
@@ -449,17 +450,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addMailTemplate($context_id, $tags, $language='')
   {
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Create the model
-    $com_mails  = Factory::getApplication()->bootComponent('com_mails');
-    $tableClass = $com_mails->getMVCFactory()->createTable('template', 'administrator');
+    $com_mails = Factory::getApplication()->bootComponent('com_mails');
+    $table     = $com_mails->getMVCFactory()->createTable('template', 'administrator');
 
-    if(class_exists($tableClass))
-    {
-      $table = new $tableClass($db);
-    }
-    else
+    if(!$table)
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error load mail template table'), 'error');
 
@@ -508,7 +505,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultCategory()
 	{
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Load JoomTableTrait
     $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
@@ -575,7 +572,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultConfig()
 	{
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Load JoomTableTrait
     $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
@@ -650,7 +647,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultIMGtype($type, $alias, $path)
 	{
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     switch($type)
     {
@@ -692,7 +689,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	private function deactivateExtension($id)
 	{
-    $db = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->update($db->quoteName('#__extensions'))
@@ -731,7 +728,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       return;
     }
 
-    $db    = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     foreach($plugins->children() as $plugin)
@@ -878,7 +875,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       return;
     }
 
-    $db    = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     foreach($plugins->children() as $plugin)
@@ -950,7 +947,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       return;
     }
 
-    $db    = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     foreach($modules->children() as $module)
@@ -1057,7 +1054,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	private function detectJGExtensions()
 	{
-    $db = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     // List of all extensions that could negatively impact the JoomGallery (> v4.0.0) from running.
@@ -1093,7 +1090,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	{
     try
     {
-      $db     = Factory::getDbo();
+      $db     = Factory::getContainer()->get(DatabaseInterface::class);
       $tables = $db->getTableList();
       $prefix = Factory::getApplication()->get('dbprefix');
 
@@ -1185,7 +1182,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function getDBextension()
   {
-    $db = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->select('*')
@@ -1211,7 +1208,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function removeSchemas($id)
   {
-    $db = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__schemas'));
@@ -1229,7 +1226,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function removeAssets()
   {
-    $db = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__assets'));
@@ -1248,7 +1245,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
   private function removeContentTypes()
   {
-    $db = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
     $query->delete($db->quoteName('#__content_types'));
@@ -1277,7 +1274,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
   private function createModule($title, $position, $module, $ordering, $access, $showTitle, $params, $client_id, $lang)
   {
     // check if the module already exists
-    $db    = Factory::getDbo();
+    $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true)
                 ->select('id')
                 ->from($db->quoteName('#__modules'))
@@ -1289,7 +1286,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // create module if it is not yet created
     if (empty($module_id))
     {
-      $row = JTable::getInstance('module');
+      $row            = Table::getInstance('module');
       $row->title     = $title;
       $row->ordering  = $ordering;
       $row->position  = $position;
@@ -1302,12 +1299,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $row->language  = $lang;
       if(!$row->store())
       {
-        $app->enqueueMessage(JText::_('Unable to create "'.$title.'" module!'), 'error');
+        $app->enqueueMessage(Text::_('Unable to create "'.$title.'" module!'), 'error');
 
         return false;
       }
 
-      $db      = Factory::getDbo();
+      $db      = Factory::getContainer()->get(DatabaseInterface::class);
       $query   = $db->getQuery(true);
       $columns = array('moduleid', 'menuid');
       $values  = array($row->id, 0);
