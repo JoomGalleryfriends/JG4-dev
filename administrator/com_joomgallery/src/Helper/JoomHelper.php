@@ -711,4 +711,92 @@ class JoomHelper
       return $manager->getImgPath(0, $type, false, false, $root);
     }
   }
+
+  /**
+   * Returns the rating clause for an SQL - query dependent on the rating calculation method selected.
+   *
+   * @param   string  $tablealias   Table alias
+   * @return  string  Rating clause
+   * @since   1.5.6
+   */
+  public static function getSQLRatingClause($tablealias = '')
+  {
+    $db                   = Factory::getContainer()->get('DatabaseDriver');
+    $config               = JoomHelper::getService('config');
+    static $avgimgvote    = 0.0;
+    static $avgimgrating  = 0.0;
+    static $avgdone       = false;
+
+    $maxvoting            = $config->get('jg_maxvoting');
+    $imgvotesum           = 'imgvotesum';
+    $imgvotes             = 'imgvotes';
+    if($tablealias != '')
+    {
+      $imgvotesum = $tablealias.'.'.$imgvotesum;
+      $imgvotes   = $tablealias.'.'.$imgvotes;
+    }
+
+    // Standard rating clause
+    $clause = 'ROUND(LEAST(IF(imgvotes > 0, '.$imgvotesum.'/'.$imgvotes.', 0.0), '.(float)$maxvoting.'), 2)';
+
+    // Advanced (weigthed) rating clause (Bayes)
+    if($config->get('jg_ratingcalctype') == 1)
+    {
+      // throw new \Exception(Text::_('Calctype ist 1'));
+      if(!$avgdone)
+      {
+        // Needed values for weighted rating calculation
+        $query = $db->getQuery(true)
+              ->select('count(*) As imgcount')
+              ->select('SUM(imgvotes) As sumimgvotes')
+              ->select('SUM(imgvotesum/imgvotes) As sumimgratings')
+              ->from(_JOOM_TABLE_IMAGES)
+              ->where('imgvotes > 0');
+
+        $db->setQuery($query);
+        $row = $db->loadObject();
+        if($row != null)
+        {
+          if($row->imgcount > 0)
+          {
+            $avgimgvote   = round($row->sumimgvotes / $row->imgcount, 2 );
+            $avgimgrating = round($row->sumimgratings / $row->imgcount, 2);
+            $avgdone      = true;
+          }
+        }
+      }
+      if($avgdone)
+      {
+        $clause = 'ROUND(LEAST(IF(imgvotes > 0, (('.$avgimgvote.'*'.$avgimgrating.') + '.$imgvotesum.') / ('.$avgimgvote.' + '.$imgvotes.'), 0.0), '.(float)$maxvoting.'), 2)';
+      }
+    }
+
+    return $clause;
+  }
+
+  /**
+   * Returns the rating of an image
+   *
+   * @param   string  $imgid   Image id to get the rating for
+   * @return  float   Rating
+   * @since   1.5.6
+   */
+  public static function getRating($imgid)
+  {
+    $rating = 0.0;
+    $db     = Factory::getContainer()->get('DatabaseDriver');
+
+    $query = $db->getQuery(true)
+          ->select(JoomHelper::getSQLRatingClause() . ' AS rating')
+          ->from(_JOOM_TABLE_IMAGES)
+          ->where($db->quoteName('id') . ' = ' . (int) $imgid);
+
+    $db->setQuery($query);
+    if(($result = $db->loadResult()) != null)
+    {
+      $rating = $result;
+    }
+
+    return $rating;
+  }
 }

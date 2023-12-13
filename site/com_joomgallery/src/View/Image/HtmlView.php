@@ -18,6 +18,7 @@ use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * View class for a image view of Joomgallery.
@@ -68,10 +69,11 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$this->state  = $this->get('State');
-		$this->params = $this->get('Params');
-		$this->acl    = $this->get('Acl');
-		$this->item   = $this->get('Item');
+		$this->state        = $this->get('State');
+		$this->params       = $this->get('Params');
+		$this->acl          = $this->get('Acl');
+		$this->item         = $this->get('Item');
+		$this->item->rating = JoomHelper::getRating($this->item->id);
 
     // Check acces view level
 		if(!in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
