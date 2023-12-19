@@ -163,6 +163,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
         }
       }
 
+      // copy old XML file (JGv1-3)
+      $xml_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+      if(File::exists($xml_path.'joomgallery.xml'))
+      {
+        File::copy($xml_path.'joomgallery.xml', $xml_path.'joomgallery_old.xml');
+      }
+
       // remove old JoomGallery files and folders
       foreach($this->detectJGfolders() as $folder)
       {
