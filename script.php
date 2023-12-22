@@ -541,6 +541,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["description"] = "";
     $data["access"] = 1;
     $data["published"] = 1;
+    $data["thumbnail"] = "0";
     $data["params"] = '{"allow_download":"-1","allow_comment":"-1","allow_rating":"-1","allow_watermark":"-1","allow_watermark_download":"-1"}';
     $data["language"] = "*";
     $data["metadesc"] = "";
