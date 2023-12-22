@@ -545,7 +545,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     require_once $class_path;
 
     if(class_exists($tableClass))
-    {      
+    {
+      $tableClass::resetRootId();
       $table = new $tableClass($db);
     }
     else
