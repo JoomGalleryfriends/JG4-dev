@@ -1340,7 +1340,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $row->language  = $lang;
       if(!$row->store())
       {
-        $app->enqueueMessage(Text::_('Unable to create "'.$title.'" module!'), 'error');
+        Factory::getApplication()->enqueueMessage(Text::_('Unable to create "'.$title.'" module!'), 'error');
 
         return false;
       }
