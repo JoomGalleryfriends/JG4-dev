@@ -39,6 +39,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	protected $extension = 'JoomGallery';
 
   /**
+	 * List of incompatible Joomla versions
+	 *
+	 * @var array
+	 */
+	protected $incompatible = array('4.4.0', '4.4.1', '5.0.0', '5.0.1');
+
+  /**
 	 * Minimum PHP version required to install the extension
 	 *
 	 * @var  string
@@ -95,7 +102,16 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if Joomla version is correct
     if(version_compare(JVERSION, '4.0.0', '<'))
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', '4.x'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 'error');
+
+      return false;
+    }
+
+    // Only proceed if it is not an incompatible Joomla version
+    $jversion = explode('-', JVERSION);
+    if(in_array($jversion[0], $this->incompatible))
+    {
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 'error');
 
       return false;
     }
@@ -103,7 +119,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if PHP version is correct
     if(version_compare(PHP_VERSION, $this->minPhp, '<='))
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.3', $this->minPhp), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.4', $this->minPhp), 'error');
 
       return false;
     }
