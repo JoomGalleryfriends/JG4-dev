@@ -801,6 +801,15 @@ class Filesystem implements AdapterInterface, FilesystemInterface
             case '0':
               $types[] = 'images';
               break;
+            case '1':
+              $types[] = 'audios';
+              break;
+            case '2':
+              $types[] = 'videos';
+              break;
+            case '3':
+              $types[] = 'documents';
+              break;
             default:
               break;
           }
@@ -816,8 +825,35 @@ class Filesystem implements AdapterInterface, FilesystemInterface
         )
       );
 
+/* not used currently
+      $audios = array_map(
+        'trim',
+        array_filter(
+          explode(',',$this->component->getConfig()->get('jg_audiotypes',null)),
+          fn($value) => !is_null($value) && $value !== ''
+        )
+      );
+
+      $videos = array_map(
+        'trim',
+        array_filter(
+          explode(',',$this->component->getConfig()->get('jg_videotypes',null)),
+          fn($value) => !is_null($value) && $value !== ''
+        )
+      );
+
+      $documents = array_map(
+        'trim',
+        array_filter(
+          explode(',',$this->component->getConfig()->get('jg_documenttypes',null)),
+          fn($value) => !is_null($value) && $value !== ''
+        )
+      );
+*/
+
       foreach($types as $type)
       {
+        // not used currently:  if(in_array($type, ['images', 'audios', 'videos', 'documents']))
         if(in_array($type, ['images']))
         {
           $extensions = array_merge($extensions, ${$type});
