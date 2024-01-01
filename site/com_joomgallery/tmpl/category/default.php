@@ -148,18 +148,19 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <?php if(!empty($this->item->images->filterForm)) : ?>
     <?php // Show image filters ?>
     <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.$this->item->id.'&Itemid='.$this->menu->id.'&limitstart=0'); ?>" method="post" name="adminForm" id="adminForm">
-    <?php
-      {
-        echo LayoutHelper::render('joomla.searchtools.default', array(
-          'view' => $this->item->images, 
-          'options' => array('showSelector' => false, 'filterButton' => false, 'showNoResults' => false, 'showSearch' => false, 'barClass' => 'flex-end')
-        ));
-      }
-    ?>
-    <input type="hidden" name="task" value=""/>
-    <input type="hidden" name="filter_order" value=""/>
-    <input type="hidden" name="filter_order_Dir" value=""/>
-    <?php echo HTMLHelper::_('form.token'); ?>
+      <?php
+        {
+          echo LayoutHelper::render('joomla.searchtools.default', array(
+            'view' => $this->item->images, 
+            'options' => array('showSelector' => false, 'filterButton' => false, 'showNoResults' => false, 'showSearch' => false, 'barClass' => 'flex-end')
+          ));
+        }
+      ?>
+      <input type="hidden" name="task" value=""/>
+      <input type="hidden" name="filter_order" value=""/>
+      <input type="hidden" name="filter_order_Dir" value=""/>
+      <?php echo HTMLHelper::_('form.token'); ?>
+    </form>
   <?php endif; ?>
   <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
     <div id="jg-loader"></div>
