@@ -14,10 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Category;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\View\GenericDataException;
-use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\MVC\View\GenericDataException;
+use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 
 /**
  * View class for a category view of Joomgallery.
@@ -30,9 +30,16 @@ class HtmlView extends BaseHtmlView
 	/**
 	 * The category object
 	 *
-	 * @var  \stdClass
+	 * @var  \Joomla\CMS\Object\CMSObject
 	 */
 	protected $item;
+
+  /**
+	 * The active menu item object
+	 *
+	 * @var  \Joomla\CMS\Menu\MenuItem
+	 */
+	protected $menu;
 
 	/**
 	 * The page parameters
@@ -67,10 +74,12 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
+    // Current category item
 		$this->state  = $this->get('State');
 		$this->params = $this->get('Params');
 		$this->acl    = $this->get('Acl');
 		$this->item   = $this->get('Item');
+    $this->menu   = Factory::getApplication()->getMenu()->getActive();
 
 		// Check acces view level
 		if(!in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
@@ -79,10 +88,18 @@ class HtmlView extends BaseHtmlView
     }
 
     // Load subcategories
-    $this->item->children = $this->get('Children');
+    $this->item->children = new \stdClass();
+    $this->item->children->items         = $this->get('Children');
+    //$this->item->children->pagination    = $this->get('ChildrenPagination');
+		//$this->item->children->filterForm    = $this->get('ChildrenFilterForm');
+		//$this->item->children->activeFilters = $this->get('ChildrenActiveFilters');
 
     // Load images
-    $this->item->images = $this->get('Images');
+    $this->item->images = new \stdClass();
+    $this->item->images->items         = $this->get('Images');
+    $this->item->images->pagination    = $this->get('ImagesPagination');
+		$this->item->images->filterForm    = $this->get('ImagesFilterForm');
+		$this->item->images->activeFilters = $this->get('ImagesActiveFilters');
 
     // Check for errors.
 		if(count($errors = $this->get('Errors')))
@@ -105,16 +122,13 @@ class HtmlView extends BaseHtmlView
 	protected function _prepareDocument()
 	{
 		$app   = Factory::getApplication();
-		$menus = $app->getMenu();
 		$title = null;
 
 		// Because the application sets a default page title,
 		// We need to get it from the menu item itself
-		$menu = $menus->getActive();
-
-		if($menu)
+		if($this->menu)
 		{
-			$this->params['menu']->def('page_heading', $this->params['menu']->get('page_title', $menu->title));
+			$this->params['menu']->def('page_heading', $this->params['menu']->get('page_title', $this->menu->title));
 		}
 		else
 		{

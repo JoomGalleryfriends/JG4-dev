@@ -144,7 +144,7 @@ class CategoryModel extends JoomItemModel
     }
 
     // Load categories list model
-    $listModel = $this->component->getMVCFactory()->createModel('categories', 'administrator');
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'site');
     $listModel->getState();
     
     // Select fields to load
@@ -184,6 +184,66 @@ class CategoryModel extends JoomItemModel
   }
 
   /**
+   * Method to get a \JPagination object for the children categories.
+   *
+   * @return  Pagination  A Pagination object for the children categories.
+   */
+  public function getChildrenPagination()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'administrator');
+    $listModel->getState();
+
+    return $listModel->getPagination();
+  }
+
+  /**
+   * Get the filter form for the children categories.
+   *
+   * @param   array    $data      data
+   * @param   boolean  $loadData  load current data
+   *
+   * @return  Form|null  The \JForm object or null if the form can't be found
+   */
+  public function getChildrenFilterForm($data = [], $loadData = true)
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'site');
+    $listModel->getState();
+
+    return $listModel->getFilterForm($data, $loadData);
+  }
+
+  /**
+   * Function to get the active filters for the children categories.
+   *
+   * @return  array  Associative array in the format: array('filter_published' => 0)
+   */
+  public function getChildrenActiveFilters()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'site');
+    $listModel->getState();
+
+    return $listModel->getActiveFilters();
+  }
+
+  /**
 	 * Method to get the images in this category.
 	 *
 	 * @return  array|false    Array of images on success, false on failure.
@@ -198,7 +258,7 @@ class CategoryModel extends JoomItemModel
     }
 
     // Load images list model
-    $listModel = $this->component->getMVCFactory()->createModel('images', 'administrator');
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
     $listModel->getState();
 
     // Select fields to load
@@ -233,6 +293,66 @@ class CategoryModel extends JoomItemModel
     }
 
     return $items;
+  }
+
+  /**
+   * Method to get a \JPagination object for the images in this category.
+   *
+   * @return  Pagination  A Pagination object for the images in this category.
+   */
+  public function getImagesPagination()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
+    $listModel->getState();
+
+    return $listModel->getPagination();
+  }
+
+  /**
+   * Get the filter form for the images in this category.
+   *
+   * @param   array    $data      data
+   * @param   boolean  $loadData  load current data
+   *
+   * @return  Form|null  The \JForm object or null if the form can't be found
+   */
+  public function getImagesFilterForm($data = [], $loadData = true)
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
+    $listModel->getState();
+
+    return $listModel->getFilterForm($data, $loadData);
+  }
+
+  /**
+   * Function to get the active filters for the images in this category.
+   *
+   * @return  array  Associative array in the format: array('filter_published' => 0)
+   */
+  public function getImagesActiveFilters()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
+    $listModel->getState();
+
+    return $listModel->getActiveFilters();
   }
 
   /**
