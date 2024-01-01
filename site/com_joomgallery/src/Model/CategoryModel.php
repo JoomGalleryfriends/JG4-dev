@@ -130,6 +130,29 @@ class CategoryModel extends JoomItemModel
 	}
 
   /**
+	 * Method to get the parent category item object.
+	 *
+	 * @param   integer  $id   The id of the object to get.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 *
+	 * @throws \Exception
+	 */
+  public function getParent($id = null)
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load parent category model
+    $parentModel = $this->component->getMVCFactory()->createModel('category', 'site');
+    $parentModel->getState();
+
+    return $parentModel->getItem($this->item->parent_id);
+  }
+
+  /**
 	 * Method to get the children categories.
 	 *
 	 * @return  array|false    Array of children on success, false on failure.

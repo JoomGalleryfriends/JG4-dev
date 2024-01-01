@@ -87,12 +87,12 @@ class HtmlView extends BaseHtmlView
       Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
     }
 
+    // Load parent category
+    $this->item->parent = $this->get('Parent');
+
     // Load subcategories
     $this->item->children = new \stdClass();
-    $this->item->children->items         = $this->get('Children');
-    //$this->item->children->pagination    = $this->get('ChildrenPagination');
-		//$this->item->children->filterForm    = $this->get('ChildrenFilterForm');
-		//$this->item->children->activeFilters = $this->get('ChildrenActiveFilters');
+    $this->item->children->items = $this->get('Children');
 
     // Load images
     $this->item->images = new \stdClass();
