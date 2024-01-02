@@ -718,17 +718,17 @@ class MigrationModel extends AdminModel
 
                 // Set old catid for image creation
                 $new_catid     = $record->catid;
-                $record->catid = $src_data['catid'];
+                $record->catid = $src_data['catid'];  // Todo: catid only works for Jg3ToJg4 script
 
-                if($mig->params->get('image_usage') == 1)
+                if($mig->params->get('image_usage', 1) == 1)
                 {
                   // Recreate imagetypes based on given image
                   $res = $this->createImages($record, $img_source[0]);
                 }
-                elseif($mig->params->get('image_usage') == 2 || $mig->params->get('image_usage') == 3)
+                elseif($mig->params->get('image_usage', 1) == 2 || $mig->params->get('image_usage', 1) == 3)
                 {
                   $copy = false;
-                  if($mig->params->get('image_usage') == 2)
+                  if($mig->params->get('image_usage', 1) == 2)
                   {
                     $copy = true;
                   }
@@ -750,9 +750,18 @@ class MigrationModel extends AdminModel
                 break;
 
               case 'category':
-                $res = $this->createFolder($record);
-
-                $error_msg_end = 'CREATE_FOLDER';
+                if($mig->name == 'Jg3ToJg4' && $mig->params->get('image_usage', 1) == 0)
+                {
+                  // rename folder
+                  $res = $this->renameFolder($record, $src_data['catpath'], $record->path);
+                  $error_msg_end = 'RENAME_FOLDER';
+                }
+                else
+                {
+                  // create folder
+                  $res = $this->createFolder($record);
+                  $error_msg_end = 'CREATE_FOLDER';
+                }
               
               default:
                 $res = true;
@@ -1071,7 +1080,7 @@ class MigrationModel extends AdminModel
     }
 
     // Store the data.
-    if(!$table->store())
+    if(!$table->store()) 
     {
       $this->component->setError($table->getError());
 
@@ -1294,7 +1303,7 @@ class MigrationModel extends AdminModel
   }
 
   /**
-   * Creation of category folders based on one source file.
+   * Creation of category folders based on category object.
    *
    * @param   CategoryTable    $cat    CategoryTable object, already stored
    * 
@@ -1304,10 +1313,33 @@ class MigrationModel extends AdminModel
    */
   protected function createFolder(CategoryTable $cat): bool
   {
-     // Create file manager service
-     $this->component->createFileManager();
+    // Create file manager service
+    $this->component->createFileManager();
 
-     // Create folders
-     return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
+    // Create folders     
+    return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
+  }
+
+  /**
+   * Renaming of category folders based on one source file.
+   *
+   * @param   CategoryTable    $cat       CategoryTable object, already stored
+   * @param   string           $oldName   Old foldername of the category
+   * @param   string           $newName   New foldername of the category
+   * 
+   * @return  bool             True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  protected function renameFolder(CategoryTable $cat, string $oldName, string $newName): bool
+  {
+    // Create file manager service
+    $this->component->createFileManager();
+
+    // Reset old foldername
+    $cat->path = $oldName;
+
+    // Create folders
+    return $this->component->getFileManager()->renameCategory($cat, $newName);
   }
 }

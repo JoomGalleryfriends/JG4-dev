@@ -211,6 +211,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
     $owner = \boolval($this->params->get('check_owner', 0)) ? 'created_by' : false;
+    $path  = false;
+    
+    if($this->params->get('same_joomla', 1) == 1 && $this->params->get('image_usage', 0) == 0)
+    {
+      // Special case: Direct usage of images in the same joomla installation
+      $path  = 'path';
+    }
 
     // Configure mapping for each content type
     switch($type)
@@ -218,7 +225,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       case 'category':
         // Apply mapping for category table
         $mapping  = array( 'cid' => $id, 'asset_id' => false, 'name' => 'title', 'alias' => false, 'lft' => false, 'rgt' => false, 'level' => false,
-                           'owner' => $owner, 'img_position' => false, 'catpath' => 'path', 'params' => array('params', false, false), 
+                           'owner' => $owner, 'img_position' => false, 'catpath' => $path, 'params' => array('params', false, false), 
                            'allow_download' => array('params', 'jg_download', false), 'allow_comment' => array('params', 'jg_showcomment', false),
                            'allow_rating' => array('params', 'jg_showrating', false), 'allow_watermark' => array('params', 'jg_dynamic_watermark', false),
                            'allow_watermark_download' => array('params', 'jg_downloadwithwatermark', false)
@@ -354,7 +361,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $directories = $this->getSourceDirs();
     $cat         = $this->getData('category', $data['catid']);
 
-    switch($this->params->get('image_usage'))
+    switch($this->params->get('image_usage', 0))
     {
       // Recreate images
       case 1:

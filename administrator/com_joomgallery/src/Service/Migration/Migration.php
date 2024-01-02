@@ -294,7 +294,7 @@ abstract class Migration implements MigrationInterface
     $this->checkDestTable($checks, 'destination');
 
     // Check image mapping
-    if($this->params->get('image_usage', 0) > 0)
+    if($this->params->get('image_usage', 1) > 0)
     {
       $this->checkImageMapping($checks, 'destination');
     }
