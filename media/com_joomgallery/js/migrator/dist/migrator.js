@@ -47,7 +47,7 @@ __webpack_require__.r(__webpack_exports__);
 // Selectors used by this script
 let typeSelector = 'data-type';
 let formIdTmpl   = 'migrationForm';
-let button       = 'migrationBtn';
+let buttonTmpl   = 'migrationBtn';
 let step4Btn     = 'step4Btn';
 let tryLimit     = 3;
 
@@ -534,7 +534,7 @@ let startTask = function(type, button) {
 /**
  * Update GUI to end migration
  *
- * @param  {String}      type   The type defining the content type to be updated
+ * @param  {String}      type    The type defining the content type to be updated
  * @param  {DOM Element} button  The button beeing pressed to start the task
  * 
  * @returns void
@@ -559,10 +559,45 @@ let finishTask = function(type, button) {
   stopBtn.classList.add('disabled');
   stopBtn.setAttribute('disabled', 'true');
 
-  // Enable step 4 button
+  // If migration is completed
   if(migrateablesList[type]['complete']) {
+    // Update next start button
+    enableNextBtn(type, button);
+    // Update step 4 button
     updateStep4Btn();
   }
+}
+
+/**
+ * Enable start button of next migration content type
+ * 
+ * @param  {String}      type    The type defining the content type to be updated
+ * @param  {DOM Element} button  The current start button
+ * 
+ * @returns void
+ */
+let enableNextBtn = function(type, button) {
+  let types_inputs = document.getElementsByName('type');
+  let next_type    = '';
+
+  // Find next migration content type
+  let this_type = false;
+  types_inputs.forEach((type_input) => {
+    if(this_type) {
+      next_type = type_input.value;
+      return;
+    }
+    if(Boolean(type_input.value) && type_input.value == type) {
+      this_type = true;
+    }
+  });
+
+  // Get next button
+  let nextBtn = document.getElementById(buttonTmpl + '-' + next_type);
+
+  // Enable button
+  nextBtn.classList.remove('disabled');
+  nextBtn.removeAttribute('disabled');
 }
 
 /**
