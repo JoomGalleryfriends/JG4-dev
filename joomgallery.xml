@@ -80,7 +80,6 @@
         <plugin group="privacy" plugin="joomgalleryimages"/>
         <plugin group="webservices" plugin="joomgallery"/>
         <plugin group="finder" plugin="joomgallerycategories"/>
-        <plugin group="webservices" plugin="joomgallery"/>
     </plugins>
 
     <updateservers>
