@@ -622,7 +622,13 @@ abstract class Migration implements MigrationInterface
   protected function checkSourceExtension(Checks &$checks, string $category)
   {
     $src_info = $this->getTargetinfo('source');
-    $src_xml  = $this->getSourceXML();
+    
+    if(!($src_xml = $this->getSourceXML()))
+    {
+      // Source XML not found
+      $checks->addCheck($category, 'src_xml', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_XML'));
+      return;
+    }
 
     if(\version_compare(PHP_VERSION, $src_info->get('php_min'), '<'))
     {

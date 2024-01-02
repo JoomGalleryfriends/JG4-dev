@@ -102,13 +102,27 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   /**
    * Returns the XML object of the source extension
    *
-   * @return  \SimpleXMLElement   Extension XML object
+   * @return  \SimpleXMLElement   Extension XML object or False on failure
    * 
    * @since   4.0.0
    */
-  public function getSourceXML(): \SimpleXMLElement
+  public function getSourceXML()
   {
-    return \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery_old.xml'));
+    if($this->params->get('same_joomla'))
+    {
+      return \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery_old.xml'));
+    }
+    else
+    {
+      if(\file_exists(Path::clean($this->params->get('joomla_path') . '/components/com_joomgallery/joomgallery.xml')))
+      {
+        return \simplexml_load_file(Path::clean($this->params->get('joomla_path') . '/components/com_joomgallery/joomgallery.xml'));
+      }
+      else
+      {
+        return \simplexml_load_file(Path::clean($this->params->get('joomla_path') . '/components/com_joomgallery/joomgallery_old.xml'));
+      }
+    }
   }
 
   /**

@@ -109,11 +109,11 @@ interface MigrationInterface
   /**
    * Returns the XML object of the source extension
    *
-   * @return  \SimpleXMLElement   Extension XML object
+   * @return  \SimpleXMLElement   Extension XML object or False on failure
    * 
    * @since   4.0.0
    */
-  public function getSourceXML(): \SimpleXMLElement;
+  public function getSourceXML();
 
   /**
    * Returns a list of involved source directories.
