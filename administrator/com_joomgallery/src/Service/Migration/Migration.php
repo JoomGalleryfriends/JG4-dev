@@ -622,7 +622,7 @@ abstract class Migration implements MigrationInterface
   protected function checkSourceExtension(Checks &$checks, string $category)
   {
     $src_info = $this->getTargetinfo('source');
-    
+
     if(!($src_xml = $this->getSourceXML()))
     {
       // Source XML not found
@@ -965,7 +965,7 @@ abstract class Migration implements MigrationInterface
       {
         $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
       }
-    }    
+    }
   }
 
   /**
@@ -1025,8 +1025,8 @@ abstract class Migration implements MigrationInterface
     {
       // Get list of used ids from source databse
       $srcQuery = $db->getQuery(true);
-      $srcQuery->select($db->quoteName($migrateable->get('pk'), 'id'))
-          ->from($db->quoteName($migrateable->get('table')));
+      $srcQuery->select($db->quoteName($migrateable->get('src_pk'), 'id'))
+          ->from($db->quoteName($migrateable->get('src_table')));
       $srcQuery_string = \trim($srcQuery->__toString());
 
       // Get a list of ids used in both source and destination
@@ -1043,8 +1043,8 @@ abstract class Migration implements MigrationInterface
 
       // Get list of used ids from the source database
       $query = $src_db->getQuery(true);
-      $query->select($db->quoteName($migrateable->get('pk'), 'id'))
-          ->from($db->quoteName($migrateable->get('table')));
+      $query->select($db->quoteName($migrateable->get('src_pk'), 'id'))
+          ->from($db->quoteName($migrateable->get('src_table')));
       $src_db->setQuery($query);
 
       // Load list from source database
