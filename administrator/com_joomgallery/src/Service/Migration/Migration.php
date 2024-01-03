@@ -23,6 +23,8 @@ use \Joomla\Database\DatabaseInterface;
 use \Joomla\Database\DatabaseFactory;
 use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
@@ -156,6 +158,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * A list of content type definitions depending on migration source
+   * (Required in migration scripts. The order of the content types must correspond to its migration order)
    * 
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
@@ -204,6 +207,49 @@ abstract class Migration implements MigrationInterface
     */
 
     return $data;
+  }
+
+  /**
+   * Performs the neccessary steps to migrate an image in the filesystem
+   *
+   * @param   ImageTable   $img    ImageTable object, already stored
+   * @param   array        $data   Source data received from getData()
+   * 
+   * @return  bool         True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function migrateFiles(ImageTable $img, array $data): bool
+  {
+    // Default: Recreate images based on source image
+    $this->component->createFileManager();
+
+    // Get source image
+    $img_source = $this->getImageSource($data);
+
+    // Update catid based on migrated categories
+    $migrated_cats  = $this->get('migrateables')['category']->successful;
+    $migrated_catid = $migrated_cats->get($img->catid);
+
+    // Create imagetypes
+    return $this->component->getFileManager()->createImages($img_source, $img->filename, $migrated_catid);
+  }
+
+  /**
+   * Performs the neccessary steps to migrate a category in the filesystem
+   *
+   * @param   CategoryTable   $cat    CategoryTable object, already stored
+   * @param   array           $data   Source data received from getData()
+   * 
+   * @return  bool            True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function migrateFolder(CategoryTable $cat, array $data): bool
+  {
+    // Default: Create new folders
+    $this->component->createFileManager();
+    return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
   }
 
   /**
@@ -342,21 +388,8 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
-   * Step 3
-   * Perform one specific miration step and mark it as done at the end.
-   *
-   * @return  void
-   * 
-   * @since   4.0.0
-   */
-  public function migrate($type, $source, $dest)
-  {
-    return;
-  }
-
-  /**
-   * Step 4
    * Delete migration source data.
+   * It's recommended to use delete source data by uninstalling source extension if possible.
    *
    * @return  boolean  True if successful, false if an error occurs.
    * 
@@ -1234,7 +1267,7 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
-   * Perform script specific checks
+   * Perform script specific checks at the end of pre and postcheck.
    * 
    * @param  string   $type       Type of checks (pre or post)
    * @param  Checks   $checks     The checks object
@@ -1244,7 +1277,7 @@ abstract class Migration implements MigrationInterface
    *
    * @since   4.0.0
   */
-  protected function scriptSpecificChecks(string $type, Checks &$checks, string $category)
+  public function scriptSpecificChecks(string $type, Checks &$checks, string $category)
   {
     return;
   }

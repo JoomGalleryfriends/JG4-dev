@@ -15,8 +15,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Migration;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Targetinfo;
@@ -144,6 +148,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
   /**
    * A list of content type definitions depending on migration source
+   * (Required in migration scripts. The order of the content types must correspond to its migration order)
    * 
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
@@ -345,6 +350,86 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
+   * Performs the neccessary steps to migrate an image in the filesystem
+   *
+   * @param   ImageTable   $img    ImageTable object, already stored
+   * @param   array        $data   Source data received from getData()
+   * 
+   * @return  bool         True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function migrateFiles(ImageTable $img, array $data): bool
+  {
+    $img_source = $this->getImageSource($data);
+
+    // Set old catid for image creation
+    $img->catid = $data['catid'];
+
+    if($this->params->get('image_usage', 1) == 1)
+    {
+      // Recreate imagetypes based on given image
+      $res = $this->createImages($img, $img_source[0]);
+    }
+    elseif($this->params->get('image_usage', 1) == 2 || $this->params->get('image_usage', 1) == 3)
+    {
+      $copy = false;
+      if($this->params->get('image_usage', 1) == 2)
+      {
+        $copy = true;
+      }
+
+      // Copy/Move images from source based on mapping
+      $res = $this->reuseImages($img, $img_source, $copy);
+    }
+    else
+    {
+      // Direct usage of images
+      // Nothing to do
+      $res = true;
+    }
+
+    return $res;
+  }
+
+  /**
+   * Performs the neccessary steps to migrate a category in the filesystem
+   *
+   * @param   CategoryTable   $cat    CategoryTable object, already stored
+   * @param   array           $data   Source data received from getData()
+   * 
+   * @return  bool            True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function migrateFolder(CategoryTable $cat, array $data): bool
+  {
+    // Create file manager service
+    $this->component->createFileManager();
+
+    if($this->params->get('image_usage', 1) == 0)
+    {
+      // Direct usage
+      // Store new foldername
+      $newName = $cat->path;
+
+      // Reset old foldername
+      $cat->path = $data['catpath'];
+
+      // Rename existing folders
+      $res = $this->component->getFileManager()->renameCategory($cat, $newName);
+    }
+    else
+    {
+      // Recreate, copy or move
+      // Create new folders
+      $res = $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
+    }
+
+    return $res;
+  }
+
+  /**
    * Fetches an array of images from source to be used for creating the imagetypes
    * for the current image.
    *
@@ -415,7 +500,166 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Perform script specific checks
+   * Creation of imagetypes based on one source file.
+   * Source file has to be given with a full system path.
+   *
+   * @param   ImageTable     $img        ImageTable object, already stored
+   * @param   string         $source     Source file with which the imagetypes shall be created
+   * 
+   * @return  bool           True on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  protected function createImages(ImageTable $img, string $source): bool
+  {
+    // Create file manager service
+    $this->component->createFileManager();
+
+    // Update catid based on migrated categories
+    $migrated_cats  = $this->get('migrateables')['category']->successful;
+    $migrated_catid = $migrated_cats->get($img->catid);
+
+    // Create imagetypes
+    return $this->component->getFileManager()->createImages($source, $img->filename, $migrated_catid);
+  }
+
+  /**
+   * Creation of imagetypes based on images already available on the server.
+   * Source files has to be given for each imagetype with a full system path.
+   *
+   * @param   ImageTable   $img        ImageTable object, already stored
+   * @param   array        $sources    List of source images for each imagetype availabe in JG4
+   * @param   bool         $copy       True: copy, False: move
+   *  
+   * @return  bool         True on success, false otherwise
+   * 
+   * @since   4.0.0
+   * @throws  \Exception
+   */
+  protected function reuseImages(ImageTable $img, array $sources, bool $copy = false): bool
+  {
+    // Create services
+    $this->component->createFileManager();
+    $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
+
+    // Fetch available imagetypes
+    $imagetypes = $this->get('imagetypes_dict');
+
+    // Check the source mapping
+    if(\count(\array_diff_key($imagetypes, $sources)) !== 0 || \count(\array_diff_key($sources, $imagetypes)) !== 0)
+    {
+      throw new \Exception('Imagetype mapping from migration script does not match component configuration!', 1);
+    }
+
+    // Update catid based on migrated categories
+    $migrated_cats  = $this->get('migrateables')['category']->successful;
+    $migrated_catid = $migrated_cats->get($img->catid);
+
+    // Loop through all sources
+    $error = false;
+    foreach($imagetypes as $type => $tmp)
+    {
+      // Get image source path (with system root)
+      $img_src = $sources[$type];
+
+      // Get category destination path
+      $cat_dst = $this->component->getFileManager()->getCatPath($migrated_catid, $type);
+
+      // Create image destination path
+      $img_dst = $cat_dst . '/' . $img->filename;
+
+      // Create destination folder if not existent
+      $folder_dst = \dirname($img_dst);
+      try
+      {
+        $this->component->getFilesystem()->createFolder(\basename($folder_dst), \dirname($folder_dst));
+      }
+      catch(FileExistsException $e)
+      {
+        // Do nothing
+      }
+      catch(\Exception $e)
+      {
+        // Debug info
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \ucfirst($folder_dst)));
+        $error = true;
+
+        continue;
+      }
+
+      // Move / Copy image
+      try
+      {
+        if($this->component->getFilesystem()->get('filesystem') == 'local-images')
+        {
+          // Sorce and destination on the local filesystem
+          if($img_src == Path::clean(JPATH_ROOT . '/' . $img_dst))
+          {
+            // Sorce and destination are identical. Do nothing.
+            continue;
+          }
+
+          if($copy)
+          {
+            if(!File::copy($img_src, Path::clean(JPATH_ROOT . '/' . $img_dst)))
+            {
+              $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type));
+              $error = true;
+              continue;
+            }
+          }
+          else
+          {
+            if(!File::move($img_src, Path::clean(JPATH_ROOT . '/' . $img_dst)))
+            {
+              $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type));
+              $error = true;
+              continue;
+            }
+          }
+        }
+        else
+        {
+          // Destination not on the local filesystem. Upload required
+          $this->component->getFilesystem()->createFile($img->filename, $cat_dst, \file_get_contents($img_src));
+
+          if(!$copy)
+          {
+            // When image shall be moved, source have to be deleted
+            File::delete($img_src);
+          }
+        }
+      }
+      catch(\Exception $e)
+      {
+        // Operation failed
+        if($copy)
+        {
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type));
+        }
+        else
+        {
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type));
+        }
+        
+        $error = true;
+
+        continue;
+      }
+    }
+    
+    if($error)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  /**
+   * Perform script specific checks at the end of pre and postcheck.
    * 
    * @param  string   $type       Type of checks (pre or post)
    * @param  Checks   $checks     The checks object
@@ -425,7 +669,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    *
    * @since   4.0.0
   */
-  protected function scriptSpecificChecks(string $type, Checks &$checks, string $category)
+  public function scriptSpecificChecks(string $type, Checks &$checks, string $category)
   {
     if($type == 'pre')
     {
