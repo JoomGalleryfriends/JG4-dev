@@ -693,8 +693,8 @@ class MigrationModel extends AdminModel
         else
         {
           // Create new record at destination based on converted data
-          $sameIDs = \boolval($mig->params->get('source_ids', 0));
-          $record  = $this->insertRecord($type, (array) $data, $sameIDs);
+          $autoIDs = !\boolval($mig->params->get('source_ids', 0));
+          $record  = $this->insertRecord($type, (array) $data, $autoIDs);
 
           if(!$record)
           {
@@ -966,15 +966,15 @@ class MigrationModel extends AdminModel
   /**
 	 * Method to insert a content type record from migration data.
 	 *
-   * @param   string  $type   Name of the content type to insert.
-	 * @param   array   $data   The record data gathered from the migration source.
-   * @param   bool    $newID  True to auto-increment the id in the database
+   * @param   string  $type    Name of the content type to insert.
+	 * @param   array   $data    The record data gathered from the migration source.
+   * @param   bool    $autoID  True to auto-increment the id in the database
 	 *
 	 * @return  object  Inserted record object on success, False on error.
 	 *
 	 * @since   4.0.0
 	 */
-  protected function insertRecord(string $type, array $data, bool $newID = true)
+  protected function insertRecord(string $type, array $data, bool $autoID = true)
   {
     $recordType = $this->component->getMigration()->get('types')[$type]->get('recordName');
 
@@ -1006,7 +1006,7 @@ class MigrationModel extends AdminModel
     }
 
     // Disable auto-incrementing record ID
-    if($isNew && $newID && \in_array($key, \array_keys($data)) && \method_exists($table, 'insertID'))
+    if($isNew && !$autoID && \in_array($key, \array_keys($data)) && \method_exists($table, 'insertID'))
     {
       $table->insertID();
     }
