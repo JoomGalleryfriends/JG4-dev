@@ -673,11 +673,14 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     if($type == 'pre')
     {
-      // Check if imgfilename and imgthumbname are the same
-      list($db, $dbPrefix)      = $this->getDB('source');
-      list($tablename, $pkname) = $this->getSourceTableInfo('image');
+      // Get source db info
+      list($db, $dbPrefix)            = $this->getDB('source');
+      list($tablename, $pkname)       = $this->getSourceTableInfo('image');
+      list($cattablename, $catpkname) = $this->getSourceTableInfo('category');
 
-      // Create the query
+      //------------------------
+
+      // Check if imgfilename and imgthumbname are the same
       $query = $db->getQuery(true)
               ->select($db->quoteName(array('id')))
               ->from($tablename)
@@ -691,6 +694,70 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       {
         $checks->addCheck($category, 'src_table_image_filename', true, true, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_TITLE'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_DESC', \count($res)), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_IMAGE_FILENAMES_HELP', \implode(', ', $res)));
       }
+
+      //------------------------
+
+      // Check catpath of JG3 category table if they are consistent
+      if($this->params->get('same_joomla', 1) == 1)
+      {
+        $query = $db->getQuery(true)
+                ->select($db->quoteName(array('cid', 'alias', 'catpath')))
+                ->from($cattablename)
+                ->where($db->quoteName('level') . ' > 0 ');
+        $db->setQuery($query);
+
+        // Load a list of category objects
+        $cats = $db->loadObjectList();
+
+        // Check them for inconsistency
+        $inconsistent = array();
+        foreach($cats as $key => $cat)
+        {
+          if(!$this->checkCatpath($cat))
+          {
+            \array_push($inconsistent, $cat->cid);
+          }
+        }
+
+        if(\count($inconsistent) > 0)
+        {
+          $checks->addCheck($category, 'src_table_cat_path', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH_DESC', \implode(', ', $inconsistent)));
+        }
+      }
+
+      //------------------------
+
+      // Check use case: Direct usage
+      if($this->params->get('image_usage', 1) == 0)
+      {
+        if($this->params->get('same_joomla', 1) == 0)
+        {
+          // Direct usage is not possible when source is outside this joomla installation
+          $checks->addCheck($category, 'direct_usage_joomla', false, false, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR'));
+        }
+        else
+        {
+          $dest_imagetypes = JoomHelper::getRecords('imagetypes', $this->component);
+
+          if(\count($dest_imagetypes) !== 3)
+          {
+            // Direct usage only possible with the three standard imagetypes
+            $checks->addCheck($category, 'direct_usage_imgtypes', false, false, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_IMGTYPES_ERROR'));
+          }
+          else
+          {
+            // Make sure that original is deactivated is it was the case in JG3
+            $checks->addCheck($category, 'direct_usage_orig', true, true, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ORIGINAL_WARNING'));
+          }
+
+          $this->component->createConfig();
+          if($this->component->getConfig()->get('jg_filesystem') !== 'local-images')
+          {
+            // Direct usage is only possible with local filesystem
+            $checks->addCheck($category, 'direct_usage_local', false, false, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_LOCAL_ERROR'));
+          }
+        }
+      }
     }
 
     if($type == 'post')
@@ -699,5 +766,28 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }    
 
     return;
+  }
+
+  /**
+   * Check if catpath is correct due to scheme 'parent-path/alias_cid'.
+   * 
+   * @param   \stdClass   $cat   Category object
+   *
+   * @return  bool        True if catpath is correct, false otherwise  
+   *
+   * @since   4.0.0
+  */
+  protected function checkCatpath(\stdClass $cat): bool
+  {
+    $cat->catpath = \str_replace(\DIRECTORY_SEPARATOR, '/', $cat->catpath);
+    $catpath_arr  = \explode('/', $cat->catpath);
+    $catpath      = \end($catpath_arr);
+
+    if($catpath !== $cat->alias.'_'.$cat->cid)
+    {
+      return false;
+    }
+
+    return true;
   }
 }
