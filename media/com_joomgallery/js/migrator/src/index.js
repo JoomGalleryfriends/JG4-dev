@@ -66,7 +66,7 @@ export let submitTask = function(event, element) {
         submitTask(event, element);
       } else {
         // Stop automatic task execution and update GUI
-        finishTask(type, element);
+        finishTask(type, element, formId);
       }
     })
     .catch(error => {
@@ -472,8 +472,8 @@ let startTask = function(type, button) {
   let stopBtn  = document.getElementById('stopBtn-'+type);
 
   // Update progress bar
-  bar.classList.remove('progress-bar-striped');
-  bar.classList.remove('progress-bar-animated');
+  bar.classList.add('progress-bar-striped');
+  bar.classList.add('progress-bar-animated');
   
   // Disable start button
   startBtn.classList.add('disabled');
@@ -494,20 +494,24 @@ let startTask = function(type, button) {
  *
  * @param  {String}      type    The type defining the content type to be updated
  * @param  {DOM Element} button  The button beeing pressed to start the task
+ * @param  {String}      formId  Id of the form element
  * 
  * @returns void
  */
-let finishTask = function(type, button) {
+let finishTask = function(type, button, formId) {
   let bar      = document.getElementById('progress-'+type);
   let startBtn = button;
   let stopBtn  = document.getElementById('stopBtn-'+type);
+
+  // Update migrateablesList
+  getNextMigrationID(formId);
 
   // Update progress bar
   bar.classList.remove('progress-bar-striped');
   bar.classList.remove('progress-bar-animated');
   
   // Enable start button
-  if(!migrateablesList[type]['complete']) {
+  if(!migrateablesList[type]['completed']) {
     // Only enable start button if migration is not finished
     startBtn.classList.remove('disabled');
     startBtn.removeAttribute('disabled');
@@ -518,7 +522,7 @@ let finishTask = function(type, button) {
   stopBtn.setAttribute('disabled', 'true');
 
   // If migration is completed
-  if(migrateablesList[type]['complete']) {
+  if(migrateablesList[type]['completed']) {
     // Update next start button
     enableNextBtn(type, button);
     // Update step 4 button
@@ -540,15 +544,15 @@ let enableNextBtn = function(type, button) {
 
   // Find next migration content type
   let this_type = false;
-  types_inputs.forEach((type_input) => {
+  for (const type_input of types_inputs) {
     if(this_type) {
       next_type = type_input.value;
-      return;
+      break;
     }
     if(Boolean(type_input.value) && type_input.value == type) {
       this_type = true;
     }
-  });
+  }
 
   // Get next button
   let nextBtn = document.getElementById(buttonTmpl + '-' + next_type);
