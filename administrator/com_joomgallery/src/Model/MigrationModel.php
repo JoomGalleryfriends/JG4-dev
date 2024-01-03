@@ -717,6 +717,12 @@ class MigrationModel extends AdminModel
               case 'category':
                 $res = $this->component->getMigration()->migrateFolder($record, $src_data);
                 $error_msg_end = 'CREATE_FOLDER';
+
+                if(!$res)
+                {
+                  // Stop automatic migration if something went wrong in the filesystem
+                  $this->component->getMigration()->set('continue', false);
+                }
                 break;
               
               default:

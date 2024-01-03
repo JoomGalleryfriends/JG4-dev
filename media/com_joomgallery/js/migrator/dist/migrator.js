@@ -89,39 +89,34 @@ let submitTask = function(event, element) {
   let formId = formIdTmpl + '-' + type;
   let task   = element.parentNode.querySelector('[name="task"]').value;
 
-  startTask(type, element);
+  if(tryCounter == 0) {
+    startTask(type, element);
+  }  
 
-  tryCounter++;
+  tryCounter = tryCounter + 1;
 
   ajax(formId, task)
     .then(res => {
       // Handle the successful result here
       responseHandler(type, res);
 
-      console.log('forceStop: ' + forceStop);
-      console.log('continueState: ' + continueState);
-
       if(tryCounter >= tryLimit) {
         // We reached the limit of tries --> looks like we have a network problem
         updateMigrateables(type, {'success': false, 'message': Joomla.JText._('COM_JOOMGALLERY_ERROR_NETWORK_PROBLEM'), 'data': false});
         // Stop automatic execution and update GUI
-        console.log('forceStop; We reached the limit of tries');
         forceStop = true;
       }
       
       if(continueState && !forceStop) {
         // Kick off the next task
-        console.log('Kick off the next task');
         submitTask(event, element);
       } else {
         // Stop automatic task execution and update GUI
-        console.log('Stop automatic task execution and update GUI');
         finishTask(type, element);
       }
     })
     .catch(error => {
       // Handle any errors here
-      console.error(error);
       addLog(error, type, 'error');
     });
 };
@@ -287,9 +282,12 @@ let getNextMigrationID = function(formId) {
  */
 let responseHandler = function(type, response) {
   if(response.success == false)  {
-    // Ajax request failed
+    // Ajax request failed or server responded with error code
+    addLog('Error in server response. We will try again. ('+tryCounter+'/'+tryLimit+')', type, 'info');
     addLog(response.message, type, 'error');
     addLog(response.messages, type, 'error');
+    addLog(response.data.error, type, 'error');
+    
 
     // Try again...
   }
@@ -303,7 +301,7 @@ let responseHandler = function(type, response) {
 
       // Stop autimatic continuation if requested from backend
       if(!response.data.continue || response.data.continue == null || response.data.continue == false) {
-        console.log('continueState; autimatic continuation requested from backend');
+        console.log('Stop automatic continuation requested from backend');
         continueState = false;
       }
 
@@ -318,7 +316,7 @@ let responseHandler = function(type, response) {
 
       // Stop autimatic continuation if requested from backend
       if(!response.data.continue || response.data.continue == null || response.data.continue == false) {
-        console.log('continueState; autimatic continuation requested from backend');
+        console.log('Stop automatic continuation requested from backend');
         continueState = false;
       }
 
@@ -359,6 +357,13 @@ let addLog = function(msg, type, msgType, console=false, newLine=true, marginTop
 
     // Convert string to array
     if(tmp_msg !== '') {
+      // remove object properties 'error' and 'code' if existent
+      if('error' in tmp_msg) {
+        delete tmp_msg.error;
+      }
+      if('code' in tmp_msg) {
+        delete tmp_msg.code;
+      }
       msg = Object.values(tmp_msg);
     } else {
       msg = [msg];
@@ -373,7 +378,6 @@ let addLog = function(msg, type, msgType, console=false, newLine=true, marginTop
 
   // Loop through all messages
   msg.forEach((message, i) => {
-
     // Print in console
     if(console) {
       console.log(message);
