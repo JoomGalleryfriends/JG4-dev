@@ -405,7 +405,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   public function migrateFolder(CategoryTable $cat, array $data): bool
   {
     // Create file manager service
-    $this->component->createFileManager()
+    $this->component->createFileManager();
 
     if($this->params->get('image_usage', 1) == 0)
     {
