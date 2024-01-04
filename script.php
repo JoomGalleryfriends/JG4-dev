@@ -179,11 +179,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
         }
       }
 
-      // copy old XML file (JGv1-3)
-      $xml_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+      // copy old XML file (JGv1-3) to temp folder
+      $xml_path   = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+      $tmp_folder = Factory::getApplication()->get('tmp_path');
       if(File::exists($xml_path.'joomgallery.xml'))
       {
-        File::copy($xml_path.'joomgallery.xml', $xml_path.'joomgallery_old.xml');
+        File::copy($xml_path.'joomgallery.xml', $tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml');
       }
 
       // remove old JoomGallery files and folders
@@ -432,6 +433,17 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if($type == 'install' || ($type == 'update' && $this->fromOldJG))
     {
       $app = Factory::getApplication();
+
+      if($this->fromOldJG)
+      {
+        // copy old XML file (JGv1-3) back from temp folder
+        $xml_path   = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+        $tmp_folder = Factory::getApplication()->get('tmp_path');
+        if(File::exists($tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml'))
+        {
+          File::copy($tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml', $xml_path.'joomgallery_old.xml');
+        }
+      }      
 
       // Create default Category
       if(!$this->addDefaultCategory())
