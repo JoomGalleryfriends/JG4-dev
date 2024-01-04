@@ -667,6 +667,272 @@
   </fieldset>
 
   <fieldset type="tab" name="frontend" label="COM_JOOMGALLERY_CONFIG_TAB_FRONTEND" note="frontend">
+    <fieldset type="tab" name="frontend-categoryview" label="COM_JOOMGALLERY_CONFIG_TAB_CATEGORY_VIEW">
+        <field name="jg_category_view_class"
+            type="list"
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_CLASS"
+            description="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_CLASS_NOTE_DESC"
+            default="columns"
+            validate="options"
+            >
+            <option value="columns">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_GRID</option>
+            <option value="masonry">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_MASONRY</option>
+            <option value="justified">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_JUSTIFIED</option>
+        </field>
+        <field
+            name="jg_category_view_num_columns"
+            type="list"
+            label="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_LABEL"
+            description="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_DESC"
+            default="3"
+            validate="options"
+            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+            >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </field>
+        <field
+            name="jg_category_view_image_class"
+            type="list"
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
+            description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS_NOTE_DESC"
+            default=""
+            validate="options"
+            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+            >
+            <option value="">NONE</option>
+            <option value="boxed">COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS_BOXED</option>
+        </field>
+        <field
+            name="jg_category_view_justified_height"
+            type="number"
+            default="200"
+            min="1"
+            max="9999"
+            step="1"
+            label="COM_JOOMGALLERY_CONFIG_JUSTIFIED_HEIGHT"
+            description="COM_JOOMGALLERY_CONFIG_JUSTIFIED_HEIGHT_NOTE_DESC"
+            filter="integer"
+            showon="jg_category_view_class:justified"
+        />
+        <field
+            name="jg_category_view_justified_gap"
+            type="number"
+            default="5"
+            min="0"
+            max="999"
+            step="1"
+            label="COM_JOOMGALLERY_CONFIG_JUSTIFIED_GAP"
+            description="COM_JOOMGALLERY_CONFIG_JUSTIFIED_GAP_NOTE_DESC"
+            filter="integer"
+            showon="jg_category_view_class:justified"
+        />
+        <field
+            label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
+            type="spacer"
+            name="spacer2"
+            hr="false"
+            >
+        </field>
+        <field
+            name="jg_category_view_show_title"
+            type="radio"
+            label="JGLOBAL_TITLE"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_category_view_caption_align"
+            type="list"
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT"
+            description="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT_NOTE_DESC"
+            default="center"
+            validate="options"
+            >
+            <option value="left">JGLOBAL_LEFT</option>
+            <option value="center">JGLOBAL_CENTER</option>
+            <option value="right">JGLOBAL_RIGHT</option>
+        </field>
+        <field
+            name="jg_category_view_show_description"
+            type="radio"
+            label="JGLOBAL_DESCRIPTION"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_category_view_show_imgdate"
+            type="radio"
+            label="COM_JOOMGALLERY_IMGDATE"
+            description="COM_JOOMGALLERY_IMGDATE_DESC"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_category_view_show_imgauthor"
+            type="radio"
+            label="JAUTHOR"
+            description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_category_view_show_tags"
+            type="radio"
+            label="COM_JOOMGALLERY_TAGS"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+    </fieldset>
+
+    <fieldset type="tab" name="frontend-detailview" label="COM_JOOMGALLERY_CONFIG_TAB_DETAIL_VIEW">
+        <field
+            name="jg_detail_view_show_title"
+            type="radio"
+            label="JGLOBAL_TITLE"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_category"
+            type="radio"
+            label="JCATEGORY"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_description"
+            type="radio"
+            label="JGLOBAL_DESCRIPTION"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_imgdate"
+            type="radio"
+            label="COM_JOOMGALLERY_IMGDATE"
+            description="COM_JOOMGALLERY_IMGDATE_DESC"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_imgauthor"
+            type="radio"
+            label="JAUTHOR"
+            description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_created_by"
+            type="radio"
+            label="COM_JOOMGALLERY_OWNER"
+            description="COM_JOOMGALLERY_FIELDS_OWNER_DESC"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_votes"
+            type="radio"
+            label="COM_JOOMGALLERY_VOTES"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_rating"
+            type="radio"
+            label="COM_JOOMGALLERY_IMAGE_RATING"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_hits"
+            type="radio"
+            label="JGLOBAL_HITS"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_downloads"
+            type="radio"
+            label="COM_JOOMGALLERY_DOWNLOADS"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_tags"
+            type="radio"
+            label="COM_JOOMGALLERY_TAGS"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+        <field
+            name="jg_detail_view_show_metadata"
+            type="radio"
+            label="COM_JOOMGALLERY_IMGMETADATA"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            >
+          <option value="0">JHIDE</option>
+          <option value="1">JSHOW</option>
+        </field>
+    </fieldset>
   </fieldset>
 
   <field name="asset_id"

@@ -18,6 +18,9 @@ use \Joomla\CMS\Session\Session;
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
+$app           = Factory::getApplication();
+$this->config  = JoomHelper::getService('config');
+
 $category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');;
 $num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
 $caption_align    = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
@@ -161,9 +164,23 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           </div>
           <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
+            <?php if ($this->config->get('jg_category_view_show_title')) : ?>
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <?php echo $this->escape($image->imgtitle); ?>
             </a>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_description')) : ?>
+              <div><?php echo Text::_('JGLOBAL_DESCRIPTION') . ': ' . nl2br($image->imgtext); ?></div>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_imgdate')) : ?>
+              <div><?php echo Text::_('COM_JOOMGALLERY_IMGDATE') . ': ' . HTMLHelper::_('date', $image->imgdate, Text::_('DATE_FORMAT_LC4')); ?></div>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_imgauthor')) : ?>
+              <div><?php echo Text::_('JAUTHOR') . ': ' . $this->escape($image->imgauthor); ?></div>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_tags')) : ?>
+              <div><?php echo Text::_('COM_JOOMGALLERY_TAGS') . ': '; ?></div>
+            <?php endif; ?>
           </div>
           <?php endif; ?>
         </div>
