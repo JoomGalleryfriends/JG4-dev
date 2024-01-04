@@ -183,10 +183,15 @@ function getExifDataDirect ($exifJsonString='') {
             <td><?php echo (int) $this->item->downloads; ?></td>
         </tr>
 
-    <tr>
-            <th><?php echo Text::_('COM_JOOMGALLERY_IMAGE_RATING'); ?></th>
-            <td><?php echo $this->item->imgvotesum; ?> (<?php echo $this->item->imgvotes.' '.Text::_('COM_JOOMGALLERY_VOTES'); ?>)</td>
-        </tr>
+		<tr>
+			<th><?php echo Text::_('COM_JOOMGALLERY_VOTES'); ?></th>
+			<td><?php echo $this->item->imgvotes; ?></td>
+		</tr>
+
+		<tr>
+			<th><?php echo Text::_('COM_JOOMGALLERY_RATING'); ?></th>
+			<td><?php echo $this->item->rating; ?></td>
+		</tr>
 
         <tr>
             <th><?php echo Text::_('COM_JOOMGALLERY_IMGMETADATA'); ?></th>

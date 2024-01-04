@@ -11,15 +11,16 @@
 defined('_JEXEC') or die();
 
 use \Joomla\CMS\Factory;
-use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Installer\Installer;
-use \Joomla\CMS\Installer\InstallerScript;
-use \Joomla\CMS\Filesystem\File;
-use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Filesystem\File;
+use \Joomla\CMS\Filesystem\Folder;
+use \Joomla\CMS\Installer\Installer;
+use \Joomla\CMS\Installer\InstallerScript;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Language\LanguageFactoryInterface;
 
 /**
  * Install method
@@ -59,11 +60,26 @@ class com_joomgalleryInstallerScript extends InstallerScript
   protected $new_code = '';
 
   /**
+   * Counter variable
+   *
+   * @var  int
+   */
+  protected $count = 0;
+
+  /**
    * True to skip output during install() method
    *
    * @var  bool
    */
   protected $installSkipMsg = false;
+
+  /**
+   * True to show that the current script is exectuted during an upgrade
+   * from an old JoomGallery version (JG 1-3)
+   *
+   * @var  bool
+   */
+  protected $fromOldJG = false;
 
 
 	/**
@@ -141,11 +157,17 @@ class com_joomgalleryInstallerScript extends InstallerScript
       if($jgtables)
       {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-
         foreach($jgtables as $oldTable)
         {
           $db->renameTable($oldTable, $oldTable.'_old');
         }
+      }
+
+      // copy old XML file (JGv1-3)
+      $xml_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+      if(File::exists($xml_path.'joomgallery.xml'))
+      {
+        File::copy($xml_path.'joomgallery.xml', $xml_path.'joomgallery_old.xml');
       }
 
       // remove old JoomGallery files and folders
@@ -208,12 +230,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if($this->installSkipMsg)
     {
+      // Skip install method here if we upgrade from an old version
+      // and we don't want to show the install text.
       return;
     }
 
     // Create news feed module
     $subdomain = '';
-    $language = Factory::getLanguage();
+    $language = $app->getLanguage();
     if(strpos($language->getTag(), 'de-') === false)
     {
       $subdomain = 'en.';
@@ -269,6 +293,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       // We update from an old version (JG 1-3)
       $this->installSkipMsg = true;
+      $this->fromOldJG      = true;
       $this->install($parent);
     }
     else
@@ -388,7 +413,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
    */
   function postflight($type, $parent)
   {
-    if($type == 'install')
+    if($type == 'install' || ($type == 'update' && $this->fromOldJG))
     {
       $app = Factory::getApplication();
 
@@ -520,7 +545,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     require_once $class_path;
 
     if(class_exists($tableClass))
-    {      
+    {
+      $tableClass::resetRootId();
       $table = new $tableClass($db);
     }
     else
@@ -541,6 +567,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["description"] = "";
     $data["access"] = 1;
     $data["published"] = 1;
+    $data["thumbnail"] = "0";
     $data["params"] = '{"allow_download":"-1","allow_comment":"-1","allow_rating":"-1","allow_watermark":"-1","allow_watermark_download":"-1"}';
     $data["language"] = "*";
     $data["metadesc"] = "";
@@ -853,35 +880,47 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	/**
 	 * Uninstalls plugins
 	 *
-	 * @param   mixed  $parent  Object who called the uninstall method
+	 * @param   mixed  $parent  Object who called the uninstall method or array with plugin names
 	 *
-	 * @return void
+	 * @return  void
 	 */
 	private function uninstallPlugins($parent)
 	{
 		$app = Factory::getApplication();
 
-		if(method_exists($parent, 'getManifest'))
-		{
-			$plugins = $parent->getManifest()->plugins;
-		}
-		else
-		{
-			$plugins = $parent->get('manifest')->plugins;
-		}
-
-    if(!$plugins || empty($plugins->children()) || count($plugins->children()) <= 0)
+    if(is_array($parent))
     {
-      return;
+      // We got an array of module names
+      $modules = $parent;
     }
+    else
+    {
+      // We got the parent object
+      if(method_exists($parent, 'getManifest'))
+      {
+        $plugins = $parent->getManifest()->plugins;
+      }
+      else
+      {
+        $plugins = $parent->get('manifest')->plugins;
+      }
+
+      if(!$plugins || empty($plugins->children()) || count($plugins->children()) <= 0)
+      {
+        return;
+      }
+
+      $plugins = $plugins->children();
+    }		
 
     $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
-    foreach($plugins->children() as $plugin)
+    foreach($plugins as $plugin)
     {
       $pluginName  = (string) $plugin['plugin'];
       $pluginGroup = (string) $plugin['group'];
+      
       $query
         ->clear()
         ->select('extension_id')
@@ -940,17 +979,19 @@ class com_joomgalleryInstallerScript extends InstallerScript
       {
         $modules = $parent->get('manifest')->modules;
       }
-    }
 
-    if(!$modules || empty($modules->children()) || count($modules->children()) <= 0)
-    {
-      return;
-    }
+      if(!$modules || empty($modules->children()) || count($modules->children()) <= 0)
+      {
+        return;
+      }
+
+      $modules = $modules->children();
+    }    
 
     $db    = Factory::getContainer()->get(DatabaseInterface::class);
     $query = $db->getQuery(true);
 
-    foreach($modules->children() as $module)
+    foreach($modules as $module)
     {
       if(is_array($parent))
       {
@@ -1299,7 +1340,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $row->language  = $lang;
       if(!$row->store())
       {
-        $app->enqueueMessage(Text::_('Unable to create "'.$title.'" module!'), 'error');
+        Factory::getApplication()->enqueueMessage(Text::_('Unable to create "'.$title.'" module!'), 'error');
 
         return false;
       }

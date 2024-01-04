@@ -619,7 +619,6 @@
              type="list"
              default="0"
              showon="jg_showrating:1"
-             class="unused"
              label="COM_JOOMGALLERY_CONFIG_CALC_TYPE"
              description="COM_JOOMGALLERY_CONFIG_CALC_TYPE_LONG" >
         <option value="0">COM_JOOMGALLERY_CONFIG_CALC_TYPE_STANDARD</option>

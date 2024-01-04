@@ -820,7 +820,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       $images = array_map(
         'trim',
         array_filter(
-          explode(',',$this->component->getConfig()->get('jg_imagetypes',null)),
+          explode(',',$this->component->getConfig()->get('jg_imagetypes', '')),
           fn($value) => !is_null($value) && $value !== ''
         )
       );
@@ -828,7 +828,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       $audios = array_map(
         'trim',
         array_filter(
-          explode(',',$this->component->getConfig()->get('jg_audiotypes',null)),
+          explode(',',$this->component->getConfig()->get('jg_audiotypes', '')),
           fn($value) => !is_null($value) && $value !== ''
         )
       );
@@ -836,7 +836,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       $videos = array_map(
         'trim',
         array_filter(
-          explode(',',$this->component->getConfig()->get('jg_videotypes',null)),
+          explode(',',$this->component->getConfig()->get('jg_videotypes', '')),
           fn($value) => !is_null($value) && $value !== ''
         )
       );
@@ -844,7 +844,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       $documents = array_map(
         'trim',
         array_filter(
-          explode(',',$this->component->getConfig()->get('jg_documenttypes',null)),
+          explode(',',$this->component->getConfig()->get('jg_documenttypes', '')),
           fn($value) => !is_null($value) && $value !== ''
         )
       );

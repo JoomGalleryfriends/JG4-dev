@@ -12,4 +12,5 @@
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/vcs.xml
 /administrator/com_joomgallery/joomgallery.xml
+/administrator/com_joomgallery/joomgallery_old.xml
 node_modules

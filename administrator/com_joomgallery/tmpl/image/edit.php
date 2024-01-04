@@ -103,7 +103,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
           <?php echo $this->form->renderField('imgdate'); ?>
           <?php echo $this->form->renderField('hits'); ?>
           <?php echo $this->form->renderField('downloads'); ?>
-          <?php echo $this->form->renderField('imgvotesum'); ?>
+          <?php echo $this->form->renderField('imgvotes'); ?>
+          <?php echo $this->form->renderField('rating'); ?>
           <?php echo $this->form->renderField('imgmetadata'); ?>
         </div>          
       </fieldset>

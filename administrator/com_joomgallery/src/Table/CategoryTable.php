@@ -109,6 +109,18 @@ class CategoryTable extends Table implements VersionableTableInterface
 	}
 
   /**
+	 * Resets the root_id property to the default value: 0
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+  public static function resetRootId()
+  {
+    self::$root_id = 0;
+  }
+
+  /**
 	 * Define a namespaced asset name for inclusion in the #__assets table
 	 *
 	 * @return string The asset name
