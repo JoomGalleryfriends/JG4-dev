@@ -18,6 +18,7 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Filesystem\Path;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\CMS\MVC\Model\AdminModel;
@@ -577,10 +578,22 @@ class MigrationModel extends AdminModel
     Form::addFormPath(JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/src/Service/Migration/Scripts');
     Form::addFormPath(JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION.'/forms');
 
+    // Get the form file path
+    $file = Path::find(Form::addFormPath(), strtolower($script->name) . '.xml');
+    if(!is_file($file))
+    {
+      $file = Path::find(Form::addFormPath(), $script->name . '.xml');
+    }
+    
+    if(!is_file($file))
+    {
+      $this->component->setError('Migration form XML could not be found. XML filename: ' . $script->name . '.xml');
+      return false;
+    }
+
 		// Get the form.
-    $name   = _JOOM_OPTION.'.migration.'.$this->component->getMigration()->get('name');
-    $source = $this->component->getMigration()->get('name');
-		$form   = $this->loadForm($name, $source,	array('control' => 'jform_'.$source, 'load_data' => true));
+    $name = _JOOM_OPTION.'.migration.'.$this->component->getMigration()->get('name');
+		$form = $this->loadForm($name, $file,	array('control' => 'jform_'.$script->name, 'load_data' => true));
 
 		if(empty($form))
 		{
