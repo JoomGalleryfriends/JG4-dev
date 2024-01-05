@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_categories` (
 `exclude_toplist` INT(1) UNSIGNED NOT NULL DEFAULT 0,
 `exclude_search` INT(1) UNSIGNED NOT NULL DEFAULT 0,
 `thumbnail` VARCHAR(255) NULL DEFAULT "",
+`static_path` VARCHAR(2048) NOT NULL DEFAULT "",
 `params` TEXT NOT NULL,
 `language` CHAR(7) NOT NULL DEFAULT "*" COMMENT "The language code for the image.",
 `created_time` DATETIME NOT NULL,
