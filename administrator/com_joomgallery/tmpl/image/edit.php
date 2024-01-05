@@ -58,8 +58,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
   <div class="row">
 		<div class="col-lg-9">
 			<fieldset class="adminform">
-        <?php echo $this->form->getLabel('imgtext'); ?>
-				<?php echo $this->form->getInput('imgtext'); ?>
+        <?php echo $this->form->getLabel('description'); ?>
+				<?php echo $this->form->getInput('description'); ?>
 			</fieldset>
 		</div>
     <div class="col-lg-3">

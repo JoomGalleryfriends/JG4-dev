@@ -60,7 +60,7 @@ class ImagesModel extends JoomListModel
 				'published', 'a.published',
 				'imgauthor', 'a.imgauthor',
 				'language', 'a.language',
-				'imgtext', 'a.imgtext',
+				'description', 'a.description',
 				'access', 'a.access',
 				'hidden', 'a.hidden',
 				'featured', 'a.featured',
@@ -266,7 +266,7 @@ class ImagesModel extends JoomListModel
         $search = '%' . str_replace(' ', '%', trim($search)) . '%';
 				$query->where(
 					'(' . $db->quoteName('a.title') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
-						. ' OR ' . $db->quoteName('a.imgtext') . ' LIKE :search3)'
+						. ' OR ' . $db->quoteName('a.description') . ' LIKE :search3)'
 				)
 					->bind([':search1', ':search2', ':search3'], $search);
 			}

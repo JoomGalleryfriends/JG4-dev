@@ -107,8 +107,8 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
           <?php echo $this->form->renderField('access'); ?>
           <?php echo $this->form->renderField('language'); ?>
           <fieldset class="adminform">
-            <?php echo $this->form->getLabel('imgtext'); ?>
-            <?php echo $this->form->getInput('imgtext'); ?>
+            <?php echo $this->form->getLabel('description'); ?>
+            <?php echo $this->form->getInput('description'); ?>
           </fieldset>
           <input type="text" id="jform_id" class="hidden form-control readonly" name="jform[id]" value="" readonly/>
         </div>

@@ -159,7 +159,7 @@ class TUSUploader extends BaseUploader implements UploaderInterface
       // Override description with tus metadata
       if($desc = $this->component->getTusServer()->getMetaDataValue('jdescription'))
       {
-        $data['imgtext'] = $desc;
+        $data['description'] = $desc;
       }
 
       // Override author with tus metadata

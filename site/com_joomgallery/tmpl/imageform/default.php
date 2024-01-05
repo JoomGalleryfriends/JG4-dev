@@ -56,7 +56,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
           <?php echo $this->form->renderField('published'); ?>
           <?php echo $this->form->renderField('imgauthor'); ?>
           <?php echo $this->form->renderField('language'); ?>
-          <?php echo $this->form->renderField('imgtext'); ?>
+          <?php echo $this->form->renderField('description'); ?>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
         <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING', true)); ?>

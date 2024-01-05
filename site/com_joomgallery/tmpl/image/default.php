@@ -147,7 +147,7 @@ function getExifDataDirect ($exifJsonString='') {
 <figure class="figure joom-image text-center center">
   <div id="jg-loader"></div>
   <img src="<?php echo JoomHelper::getImg($this->item, 'detail'); ?>" class="figure-img img-fluid rounded" alt="<?php echo $this->item->title; ?>" style="width:auto;" itemprop="image" loading="lazy">
-  <figcaption class="figure-caption"><?php echo nl2br($this->item->imgtext); ?></figcaption>
+  <figcaption class="figure-caption"><?php echo nl2br($this->item->description); ?></figcaption>
 </figure>
 
 <?php // Image info and fields ?>

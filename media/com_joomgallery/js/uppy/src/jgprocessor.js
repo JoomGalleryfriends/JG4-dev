@@ -266,10 +266,10 @@ export default class jgProcessor extends BasePlugin {
       let formData = this.formData;
       formData.append('jform[uuid]', tusID);
       formData.append('jform[filecounter]', this.filecounters[fileID]);
-      if(formData.get('jform[imgtext]').trim().length === 0) {
+      if(formData.get('jform[description]').trim().length === 0) {
         // Receive text content from editor
-        let txt = Joomla.editors.instances['jform_imgtext'].getValue();
-        formData.set('jform[imgtext]', txt);
+        let txt = Joomla.editors.instances['jform_description'].getValue();
+        formData.set('jform[description]', txt);
       }
       let url = document.getElementById(this.formID).getAttribute('action');
 

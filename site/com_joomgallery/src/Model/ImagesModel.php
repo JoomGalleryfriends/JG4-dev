@@ -51,7 +51,7 @@ class ImagesModel extends AdminImagesModel
 				'published', 'a.published',
 				'imgauthor', 'a.imgauthor',
 				'language', 'a.language',
-				'imgtext', 'a.imgtext',
+				'description', 'a.description',
 				'access', 'a.access',
 				'hidden', 'a.hidden',
 				'featured', 'a.featured',
