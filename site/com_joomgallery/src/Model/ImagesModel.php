@@ -49,7 +49,7 @@ class ImagesModel extends AdminImagesModel
 				'alias', 'a.alias',
 				'catid', 'a.catid',
 				'published', 'a.published',
-				'imgauthor', 'a.imgauthor',
+				'author', 'a.author',
 				'language', 'a.language',
 				'description', 'a.description',
 				'access', 'a.access',

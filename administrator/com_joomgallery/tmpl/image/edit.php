@@ -99,7 +99,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
       <fieldset id="fieldset-images-data" class="options-form">
         <legend><?php echo Text::_('INFO'); ?></legend>
         <div>
-          <?php echo $this->form->renderField('imgauthor'); ?>
+          <?php echo $this->form->renderField('author'); ?>
           <?php echo $this->form->renderField('imgdate'); ?>
           <?php echo $this->form->renderField('hits'); ?>
           <?php echo $this->form->renderField('downloads'); ?>

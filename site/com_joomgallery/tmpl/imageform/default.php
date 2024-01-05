@@ -54,7 +54,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
           <?php echo $this->form->renderField('alias'); ?>
           <?php echo $this->form->renderField('catid'); ?>
           <?php echo $this->form->renderField('published'); ?>
-          <?php echo $this->form->renderField('imgauthor'); ?>
+          <?php echo $this->form->renderField('author'); ?>
           <?php echo $this->form->renderField('language'); ?>
           <?php echo $this->form->renderField('description'); ?>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>

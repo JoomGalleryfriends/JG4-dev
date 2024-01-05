@@ -165,7 +165,7 @@ function getExifDataDirect ($exifJsonString='') {
 
         <tr>
             <th><?php echo Text::_('JAUTHOR'); ?></th>
-            <td><?php echo $this->escape($this->item->imgauthor); ?></td>
+            <td><?php echo $this->escape($this->item->author); ?></td>
         </tr>
 
         <tr>

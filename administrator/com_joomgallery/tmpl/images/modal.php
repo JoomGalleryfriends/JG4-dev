@@ -71,7 +71,7 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
                   <?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'JAUTHOR', 'a.imgauthor', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'JAUTHOR', 'a.author', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
                   <?php echo HTMLHelper::_('searchtools.sort',  'JDATE', 'a.imgdate', $listDirn, $listOrder); ?>
@@ -159,8 +159,8 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
                 </td>
 
                 <td class="small d-none d-md-table-cell">
-                  <?php if ($item->imgauthor) : ?>
-                    <?php echo $this->escape($item->imgauthor); ?>
+                  <?php if ($item->author) : ?>
+                    <?php echo $this->escape($item->author); ?>
                   <?php else : ?>
                     <?php echo Text::_('COM_JOOMGALLERY_NO_USER'); ?>
                   <?php endif; ?>

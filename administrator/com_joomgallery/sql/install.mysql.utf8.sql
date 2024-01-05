@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery` (
 `alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
 `title` VARCHAR(255) NOT NULL DEFAULT "",
 `description` TEXT NOT NULL,
-`imgauthor` VARCHAR(50) NULL DEFAULT "",
+`author` VARCHAR(50) NULL DEFAULT "",
 `imgdate` DATETIME NOT NULL,
 `imgmetadata` TEXT NOT NULL,
 `published` TINYINT(1)  NOT NULL DEFAULT 0,

@@ -74,8 +74,8 @@
             <option value="a.access DESC">JGRID_HEADING_ACCESS_DESC</option>
             <option value="a.created_by ASC">COM_JOOMGALLERY_COMMON_CREATEDBY_ASC</option>
             <option value="a.created_by DESC">COM_JOOMGALLERY_COMMON_CREATEDBY_DESC</option>
-            <option value="a.imgauthor ASC">JAUTHOR_ASC</option>
-            <option value="a.imgauthor DESC">JAUTHOR_DESC</option>
+            <option value="a.author ASC">JAUTHOR_ASC</option>
+            <option value="a.author DESC">JAUTHOR_DESC</option>
             <option value="a.imgdate ASC">JDATE_ASC</option>
             <option value="a.imgdate DESC">JDATE_DESC</option>
             <option value="a.hits ASC">JGLOBAL_HITS_ASC</option>

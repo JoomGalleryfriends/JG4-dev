@@ -102,7 +102,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
               <?php echo $this->form->renderField('nmb_start'); ?>
             <?php endif; ?>
           <?php endif; ?>
-          <?php echo $this->form->renderField('imgauthor'); ?>
+          <?php echo $this->form->renderField('author'); ?>
           <?php echo $this->form->renderField('published'); ?>
           <?php echo $this->form->renderField('access'); ?>
           <?php echo $this->form->renderField('language'); ?>

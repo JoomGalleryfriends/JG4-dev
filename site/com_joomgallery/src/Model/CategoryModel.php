@@ -202,7 +202,7 @@ class CategoryModel extends JoomItemModel
     $listModel->getState();
 
     // Select fields to load
-    $fields = array('id', 'alias', 'title', 'description', 'imgauthor', 'imgdate', 'hits', 'imgvotes', 'imgvotesum');
+    $fields = array('id', 'alias', 'title', 'description', 'author', 'imgdate', 'hits', 'imgvotes', 'imgvotesum');
     $fields = $this->addColumnPrefix('a', $fields);
     $listModel->setState('list.select', $fields);
 
