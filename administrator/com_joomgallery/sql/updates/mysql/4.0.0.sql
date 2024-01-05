@@ -179,10 +179,11 @@ KEY `idx_checkout` (`checked_out`)
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery_faulties` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`refid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`ref_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`ref_type` VARCHAR(50) NOT NULL DEFAULT "",
 `type` VARCHAR(50) NOT NULL DEFAULT "",
 `paths` TEXT NOT NULL,
-`create_date` DATETIME NOT NULL,
+`created_time` DATETIME NOT NULL,
 PRIMARY KEY (`id`),
 KEY `idx_type` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
@@ -270,6 +271,50 @@ PRIMARY KEY (`id`)
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `#__joomgallery_galleries`
+--
+
+CREATE TABLE IF NOT EXISTS `#__joomgallery_galleries` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
+`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+`title` VARCHAR(255) NOT NULL DEFAULT "",
+`description` TEXT NOT NULL,
+`access` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`published` TINYINT(1) NOT NULL DEFAULT 1,
+`ordering` INT(11) NOT NULL DEFAULT 0,
+`language` CHAR(7) NOT NULL DEFAULT "*" COMMENT "The language code for the image.",
+`created_time` DATETIME NOT NULL,
+`created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`modified_time` DATETIME NOT NULL,
+`modified_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`checked_out` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`checked_out_time` DATETIME DEFAULT NULL,
+PRIMARY KEY (`id`),
+KEY `galery_idx` (`published`,`access`),
+KEY `idx_access` (`access`),
+KEY `idx_userid` (`userid`),
+KEY `idx_checkout` (`checked_out`),
+KEY `idx_language` (`language`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `#__joomgallery_galleries_ref`
+--
+
+CREATE TABLE IF NOT EXISTS `#__joomgallery_galleries_ref` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`galleryid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `#__joomgallery_users`
 --
 
@@ -278,9 +323,11 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_users` (
 `cmsuser` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `zipname` VARCHAR(70) NOT NULL DEFAULT "",
 `layout` INT(1) NOT NULL DEFAULT 0,
-`session_id` VARCHAR(200) NOT NULL DEFAULT "",
+`params` TEXT NOT NULL,
 `created_time` DATETIME NOT NULL,
+`created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`)
+KEY `idx_user` (`cmsuser`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -291,7 +338,8 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery_users_ref` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`type` VARCHAR(50) NOT NULL DEFAULT "",
+`typeid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
@@ -305,10 +353,37 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__joomgallery_votes` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`ident` VARCHAR(50) NOT NULL DEFAULT "",
 `score` INT(11) NOT NULL DEFAULT 0,
 `created_time` datetime NOT NULL,
 PRIMARY KEY (`id`)
+KEY `idx_imgid` (`imgid`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `#__joomgallery_comments`
+--
+
+CREATE TABLE IF NOT EXISTS `#__joomgallery_comments` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
+`imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`title` VARCHAR(255) NOT NULL DEFAULT "",
+`description` TEXT NOT NULL,
+`published` TINYINT(1) NOT NULL DEFAULT 0,
+`approved` TINYINT(1) NOT NULL DEFAULT 0,
+`created_time` DATETIME NOT NULL,
+`created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`modified_time` DATETIME NOT NULL,
+`modified_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+PRIMARY KEY (`id`)
+KEY `idx_published` (`published`),
+KEY `idx_imgid` (`imgid`),
+KEY `idx_userid` (`userid`),
+KEY `idx_createdby` (`created_by`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
