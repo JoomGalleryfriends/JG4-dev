@@ -138,9 +138,9 @@ class TUSUploader extends BaseUploader implements UploaderInterface
   public function overrideData(&$data): bool
   {
     // Get upload date
-    if(empty($data['imgdate']) || \strpos($data['imgdate'], '1900-01-01') !== false)
+    if(empty($data['date']) || \strpos($data['date'], '1900-01-01') !== false)
     {
-      $data['imgdate'] = date('Y-m-d');
+      $data['date'] = date('Y-m-d');
     }
 
     // Get tus metadata

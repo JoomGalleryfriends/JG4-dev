@@ -169,8 +169,8 @@ function getExifDataDirect ($exifJsonString='') {
         </tr>
 
         <tr>
-            <th><?php echo Text::_('COM_JOOMGALLERY_IMGDATE'); ?></th>
-            <td><?php echo $this->escape($this->item->imgdate); ?></td>
+            <th><?php echo Text::_('COM_JOOMGALLERY_DATE'); ?></th>
+            <td><?php echo $this->escape($this->item->date); ?></td>
         </tr>
 
     <tr>

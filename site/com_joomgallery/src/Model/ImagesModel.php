@@ -60,7 +60,7 @@ class ImagesModel extends AdminImagesModel
 				'modified_time', 'a.modified_time',
 				'modified_by', 'a.modified_by',
 				'id', 'a.id',
-				'imgdate', 'a.imgdate'
+				'date', 'a.date'
 			);
 		}
 

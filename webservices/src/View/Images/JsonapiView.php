@@ -41,7 +41,7 @@ class JsonApiView extends BaseApiView
 		'access', 
 		'created_by', 
 		'id', 
-		'imgdate', 
+		'date', 
 	];
 
 	/**
@@ -63,6 +63,6 @@ class JsonApiView extends BaseApiView
 		'access', 
 		'created_by', 
 		'id', 
-		'imgdate', 
+		'date', 
 	];
 }

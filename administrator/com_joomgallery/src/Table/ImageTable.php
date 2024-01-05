@@ -246,11 +246,11 @@ class ImageTable extends Table implements VersionableTableInterface
 		// Support for multiple field: robots
 		$this->multipleFieldSupport($array, 'robots');
 
-		// Support for empty date field: imgdate
-		if(!\key_exists('imgdate', $array) || $array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
+		// Support for empty date field: date
+		if(!\key_exists('date', $array) || $array['date'] == '0000-00-00' || empty($array['date']))
 		{
-			$array['imgdate'] = $date->toSql();
-			$this->imgdate    = $date->toSql();
+			$array['date'] = $date->toSql();
+			$this->date    = $date->toSql();
 		}
 
 		if(isset($array['params']) && is_array($array['params']))

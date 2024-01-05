@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery` (
 `title` VARCHAR(255) NOT NULL DEFAULT "",
 `description` TEXT NOT NULL,
 `author` VARCHAR(50) NULL DEFAULT "",
-`imgdate` DATETIME NOT NULL,
+`date` DATETIME NOT NULL,
 `imgmetadata` TEXT NOT NULL,
 `published` TINYINT(1)  NOT NULL DEFAULT 0,
 `filename` VARCHAR(255) NOT NULL,

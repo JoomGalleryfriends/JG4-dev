@@ -73,7 +73,7 @@ class ImagesModel extends JoomListModel
 				'metakey', 'a.metakey',
 				'robots', 'a.robots',
 				'filename', 'a.filename',
-				'imgdate', 'a.imgdate',
+				'date', 'a.date',
 				'imgmetadata', 'a.imgmetadata',
 				'params', 'a.params',
 			);

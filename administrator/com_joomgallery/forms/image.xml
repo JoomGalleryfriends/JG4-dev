@@ -286,7 +286,7 @@
         <option value="1">JYES</option>
     </field>
 
-    <field name="imgdate"
+    <field name="date"
            type="calendar"
            format="%Y-%m-%d"
            timeformat="24"
@@ -298,8 +298,8 @@
            weeknumbers="false"
            filltable="false"
            default=""
-           label="COM_JOOMGALLERY_IMGDATE"
-           description="COM_JOOMGALLERY_IMGDATE_DESC" />
+           label="COM_JOOMGALLERY_DATE"
+           description="COM_JOOMGALLERY_DATE_DESC" />
 
     <field name="imgmetadata"
            type="editor"

@@ -75,7 +75,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
 
         <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
           <?php echo $this->form->renderField('filename'); ?>
-          <?php echo $this->form->renderField('imgdate'); ?>
+          <?php echo $this->form->renderField('date'); ?>
           <?php echo $this->form->renderField('imgmetadata'); ?>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
 

@@ -99,7 +99,7 @@ if($saveOrder && !empty($this->items))
                   <?php echo HTMLHelper::_('searchtools.sort',  'JAUTHOR', 'a.author', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'JDATE', 'a.imgdate', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'JDATE', 'a.date', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-3 d-none d-lg-table-cell text-center">
                   <?php echo HTMLHelper::_('searchtools.sort', 'JGLOBAL_HITS', 'a.hits', $listDirn, $listOrder); ?>
@@ -266,7 +266,7 @@ if($saveOrder && !empty($this->items))
 
                 <td class="small d-none d-md-table-cell text-center">
                   <?php
-                    $date = $item->imgdate;
+                    $date = $item->date;
                     echo $date > 0 ? HTMLHelper::_('date', $date, Text::_('DATE_FORMAT_LC4')) : '-';
                   ?>
                 </td>

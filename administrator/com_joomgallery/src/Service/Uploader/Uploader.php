@@ -302,7 +302,7 @@ abstract class Uploader implements UploaderInterface
             {
               if($source_attribute == 'DateTimeOriginal')
               {
-                $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_IMGDATE', Text::_($source_name)));
+                $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_DATE', Text::_($source_name)));
               }
               else
               {
@@ -545,7 +545,7 @@ abstract class Uploader implements UploaderInterface
     $timespan = $this->component->getConfig()->get('jg_maxuserimage_timespan');
     if($timespan > 0)
     {
-      $query->where('imgdate > (UTC_TIMESTAMP() - INTERVAL '. $timespan .' DAY)');
+      $query->where('date > (UTC_TIMESTAMP() - INTERVAL '. $timespan .' DAY)');
     }
 
     $db->setQuery($query);

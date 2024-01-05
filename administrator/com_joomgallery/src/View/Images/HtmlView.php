@@ -222,7 +222,7 @@ class HtmlView extends JoomGalleryView
 			'a.`access`'     => Text::_('JGRID_HEADING_ACCESS'),
 			'a.`created_by`' => Text::_('JGLOBAL_FIELD_CREATED_BY_LABEL'),
 			'a.`id`'         => Text::_('JGRID_HEADING_ID'),
-			'a.`imgdate`'    => Text::_('JDATE'),
+			'a.`date`'    => Text::_('JDATE'),
 		);
 	}
 

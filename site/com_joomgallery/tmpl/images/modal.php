@@ -74,7 +74,7 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
                   <?php echo HTMLHelper::_('grid.sort',  'JAUTHOR', 'a.author', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('grid.sort',  'JDATE', 'a.imgdate', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('grid.sort',  'JDATE', 'a.date', $listDirn, $listOrder); ?>
                 </th>
                 <?php if (Multilanguage::isEnabled()) : ?>
                   <th scope="col" class="w-10 d-none d-md-table-cell">
@@ -165,7 +165,7 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
 
                 <td class="small d-none d-md-table-cell text-center">
                   <?php
-                    $date = $item->imgdate;
+                    $date = $item->date;
                     echo $date > 0 ? HTMLHelper::_('date', $date, Text::_('DATE_FORMAT_LC4')) : '-';
                   ?>
                 </td>

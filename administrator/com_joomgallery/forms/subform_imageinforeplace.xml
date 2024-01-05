@@ -9,7 +9,7 @@
            description="COM_JOOMGALLERY_CONFIG_TARGET_IMAGE_FIELD_LONG" >
         <option value="title">JGLOBAL_TITLE</option>
         <option value="description">JGLOBAL_DESCRIPTION</option>
-        <option value="imgdate">COM_JOOMGALLERY_IMGDATE</option>
+        <option value="date">COM_JOOMGALLERY_DATE</option>
         <option value="author">JAUTHOR</option>
         <option value="tags">COM_JOOMGALLERY_TAGS</option>
         <option value="metadesc">JFIELD_META_DESCRIPTION_LABEL</option>

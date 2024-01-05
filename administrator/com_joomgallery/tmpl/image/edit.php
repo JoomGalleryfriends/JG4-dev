@@ -100,7 +100,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
         <legend><?php echo Text::_('INFO'); ?></legend>
         <div>
           <?php echo $this->form->renderField('author'); ?>
-          <?php echo $this->form->renderField('imgdate'); ?>
+          <?php echo $this->form->renderField('date'); ?>
           <?php echo $this->form->renderField('hits'); ?>
           <?php echo $this->form->renderField('downloads'); ?>
           <?php echo $this->form->renderField('imgvotes'); ?>
