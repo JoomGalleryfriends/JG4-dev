@@ -14,15 +14,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
-use Joomla\CMS\Event\AbstractEvent;
-use \Joomla\CMS\Versioning\VersionableTableInterface;
-use \Joomla\Database\DatabaseDriver;
-use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\CMS\Access\Access;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\Database\DatabaseDriver;
+use \Joomla\CMS\Event\AbstractEvent;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Versioning\VersionableTableInterface;
 
 /**
  * Image table
@@ -46,32 +46,6 @@ class ImageTable extends Table implements VersionableTableInterface
 		parent::__construct(_JOOM_TABLE_IMAGES, 'id', $db);
 
 		$this->setColumnAlias('published', 'published');
-	}
-
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Method to return the title to use for the asset table.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6
-	 */
-	protected function _getAssetTitle()
-	{
-		return $this->title;
 	}
 
 	/**
@@ -255,15 +229,13 @@ class ImageTable extends Table implements VersionableTableInterface
 
 		if(isset($array['params']) && is_array($array['params']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['params']);
+			$registry = new Registry($array['params']);
 			$array['params'] = (string) $registry;
 		}
 
 		if(isset($array['metadata']) && is_array($array['metadata']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['metadata']);
+			$registry = new Registry($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
 
@@ -367,12 +339,12 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
     // Check if title is unique inside this category
-		if(!$this->isUnique('title', $this->catid))
+		if(!$this->isUnique('title', $this->catid, 'catid'))
 		{
 			$count = 2;
 			$currentTitle =  $this->title;
 
-			while(!$this->isUnique('title', $this->catid))
+			while(!$this->isUnique('title', $this->catid, 'catid'))
       {
 				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}
@@ -400,7 +372,7 @@ class ImageTable extends Table implements VersionableTableInterface
       $this->metakey = $this->loadDefaultField('metakey');
     }
 
-    // Support for field metakey
+    // Support for field imgmetadata
     if(empty($this->imgmetadata))
     {
       $this->imgmetadata = $this->loadDefaultField('imgmetadata');
