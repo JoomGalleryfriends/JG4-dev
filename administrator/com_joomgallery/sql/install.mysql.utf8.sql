@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_users` (
 `params` TEXT NOT NULL,
 `created_time` DATETIME NOT NULL,
 `created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`),
 KEY `idx_user` (`cmsuser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
@@ -356,7 +356,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_votes` (
 `ident` VARCHAR(50) NOT NULL DEFAULT "",
 `score` INT(11) NOT NULL DEFAULT 0,
 `created_time` datetime NOT NULL,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`),
 KEY `idx_imgid` (`imgid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
@@ -379,7 +379,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_comments` (
 `created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `modified_time` DATETIME NOT NULL,
 `modified_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`),
 KEY `idx_published` (`published`),
 KEY `idx_imgid` (`imgid`),
 KEY `idx_userid` (`userid`),
