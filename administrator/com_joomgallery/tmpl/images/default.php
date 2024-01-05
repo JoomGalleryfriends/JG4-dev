@@ -87,7 +87,7 @@ if($saveOrder && !empty($this->items))
                   <?php echo Text::_('COM_JOOMGALLERY_IMAGE') ?>
                 </th>
                 <th scope="col" style="min-width:180px">
-                  <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('searchtools.sort',  'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
                   <?php echo HTMLHelper::_('searchtools.sort',  'COM_JOOMGALLERY_APPROVED', 'a.approved', $listDirn, $listOrder); ?>
@@ -140,7 +140,7 @@ if($saveOrder && !empty($this->items))
 
               <tr class="row<?php echo $i % 2; ?>">
                 <td >
-                  <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->imgtitle); ?>
+                  <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->title); ?>
                 </td>
 
                 <?php if (isset($this->items[0]->ordering)) : ?>
@@ -205,10 +205,10 @@ if($saveOrder && !empty($this->items))
                         $EditImgTxt = Text::_('COM_JOOMGALLERY_IMAGE_EDIT');
                       ?>
                       <a href="<?php echo $ImgUrl; ?>" title="<?php echo $EditImgTxt; ?>">
-                        <?php echo $this->escape($item->imgtitle); ?>
+                        <?php echo $this->escape($item->title); ?>
                       </a>
                     <?php else : ?>
-                      <?php echo $this->escape($item->imgtitle); ?>
+                      <?php echo $this->escape($item->title); ?>
                     <?php endif; ?>
 
                     <div class="small break-word">

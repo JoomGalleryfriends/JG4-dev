@@ -71,7 +71,7 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	protected function _getAssetTitle()
 	{
-		return $this->imgtitle;
+		return $this->title;
 	}
 
 	/**
@@ -168,7 +168,7 @@ class ImageTable extends Table implements VersionableTableInterface
 		// Support for alias field: alias
 		if(empty($array['alias']))
 		{
-			if(empty($array['imgtitle']))
+			if(empty($array['title']))
 			{
 				$array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
 			}
@@ -176,11 +176,11 @@ class ImageTable extends Table implements VersionableTableInterface
 			{
 				if(Factory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['imgtitle']));
+					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
 				}
 				else
 				{
-					$array['alias'] = OutputFilter::stringURLSafe(trim($array['imgtitle']));
+					$array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
 				}
 			}
 		}
@@ -367,14 +367,14 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
     // Check if title is unique inside this category
-		if(!$this->isUnique('imgtitle', $this->catid))
+		if(!$this->isUnique('title', $this->catid))
 		{
 			$count = 2;
-			$currentTitle =  $this->imgtitle;
+			$currentTitle =  $this->title;
 
-			while(!$this->isUnique('imgtitle', $this->catid))
+			while(!$this->isUnique('title', $this->catid))
       {
-				$this->imgtitle = $currentTitle . ' (' . $count++ . ')';
+				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
 

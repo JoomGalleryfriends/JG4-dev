@@ -40,7 +40,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
   <div class="row title-alias form-vertical mb-3">
     <div class="col-12 col-md-4">
-      <?php echo $this->form->renderField('imgtitle'); ?>
+      <?php echo $this->form->renderField('title'); ?>
     </div>
     <div class="col-12 col-md-4">
       <?php echo $this->form->renderField('alias'); ?>
@@ -199,24 +199,24 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
 
     <?php
       $imgURL   = '{';
-      $imgTitle = '{';
+      $title = '{';
 
       foreach($this->imagetypes as $key => $imagetype)
       {
         $imgURL   .= $imagetype->typename.':"'.JoomHelper::getImg($this->item, $imagetype->typename).'",';
-        $imgTitle .= $imagetype->typename.':"'.Text::_('COM_JOOMGALLERY_'.strtoupper($imagetype->typename)).'",';
+        $title .= $imagetype->typename.':"'.Text::_('COM_JOOMGALLERY_'.strtoupper($imagetype->typename)).'",';
       }
 
       $imgURL .= '}';
-      $imgTitle .= '}';
+      $title .= '}';
     ?>
     let imgURL   = <?php echo $imgURL; ?>;
-    let imgTitle = <?php echo $imgTitle; ?>;
+    let title = <?php echo $title; ?>;
 
-    modalTitle.innerHTML = imgTitle[typename];
+    modalTitle.innerHTML = title[typename];
     let body  = '<div class="joom-image center">'
     body      = body + '<div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>';
-    body      = body + '<img src="' + imgURL[typename] + '" alt="' + imgTitle[typename] + '">';
+    body      = body + '<img src="' + imgURL[typename] + '" alt="' + title[typename] + '">';
     body      = body + '</div>';
     modalBody.innerHTML  = body;
 

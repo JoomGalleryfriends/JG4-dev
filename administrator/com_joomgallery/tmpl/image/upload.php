@@ -97,7 +97,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
           </p>
           <?php echo $this->form->renderField('catid'); ?>
           <?php if(!$this->config->get('jg_useorigfilename')): ?>
-            <?php echo $this->form->renderField('imgtitle'); ?>
+            <?php echo $this->form->renderField('title'); ?>
             <?php if($this->config->get('jg_filenamenumber')): ?>
               <?php echo $this->form->renderField('nmb_start'); ?>
             <?php endif; ?>
@@ -119,7 +119,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
     <input type="hidden" name="jform[uploader]" value="tus" />
     <input type="hidden" name="jform[multiple]" value="1" />
     <?php if($this->config->get('jg_useorigfilename')): ?>
-      <input type="hidden" name="jform[imgtitle]" value="title" />
+      <input type="hidden" name="jform[title]" value="title" />
     <?php endif; ?>
     <input type="hidden" name="id" value="0" />
     <?php echo HTMLHelper::_('form.token'); ?>

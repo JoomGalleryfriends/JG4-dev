@@ -50,7 +50,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
       <fieldset>
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'Details')); ?>
         <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Details', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
-          <?php echo $this->form->renderField('imgtitle'); ?>
+          <?php echo $this->form->renderField('title'); ?>
           <?php echo $this->form->renderField('alias'); ?>
           <?php echo $this->form->renderField('catid'); ?>
           <?php echo $this->form->renderField('published'); ?>

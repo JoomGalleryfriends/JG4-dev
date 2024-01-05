@@ -263,14 +263,14 @@ class HtmlView extends JoomGalleryView
 	 */
 	protected function modifyFieldsReplace()
 	{
-    $this->form->setFieldAttribute('imgtitle', 'required', false);
+    $this->form->setFieldAttribute('title', 'required', false);
     $this->form->setFieldAttribute('replacetype', 'required', true);
     $this->form->setFieldAttribute('image', 'required', true);
     $this->form->setFieldAttribute('catid', 'required', false);
 
     $this->form->setFieldAttribute('id', 'type', 'hidden');
 
-    $this->form->setFieldAttribute('imgtitle', 'readonly', true);
+    $this->form->setFieldAttribute('title', 'readonly', true);
     $this->form->setFieldAttribute('alias', 'readonly', true);
     $this->form->setFieldAttribute('catid', 'readonly', true);
 

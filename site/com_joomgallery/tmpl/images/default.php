@@ -79,7 +79,7 @@ if($saveOrder && !empty($this->items))
                   <th></th>
 
                   <th scope="col" style="min-width:180px">
-                    <?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
+                    <?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
                   </th>
 
                   <th scope="col" class="w-3 d-none d-lg-table-cell text-center">
@@ -144,7 +144,7 @@ if($saveOrder && !empty($this->items))
                         <input type="text" name="order[]" size="5" value="<?php echo $item->ordering; ?>" class="width-20 text-area-order hidden">
                       <?php endif; ?>
 
-                      <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->imgtitle); ?>
+                      <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->title); ?>
                     </td>
                   <?php endif; ?>
 
@@ -159,7 +159,7 @@ if($saveOrder && !empty($this->items))
                       </button>
                     <?php endif; ?>
                     <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $item->id); ?>">
-                      <?php echo $this->escape($item->imgtitle); ?>
+                      <?php echo $this->escape($item->title); ?>
                     </a>
                   </th>
 

@@ -53,7 +53,7 @@
            label="COM_JOOMGALLERY_FORM_LBL_IMAGE_USERUPLOADED"
            hidden="true" />
 
-    <field name="imgtitle"
+    <field name="title"
            type="text"
            maxlength="255"
            filter="safehtml"
@@ -64,7 +64,7 @@
     <field name="alias"
            type="text"
            class="inputbox"
-           generator="imgtitle"
+           generator="title"
            label="JALIAS"
            description="JFIELD_ALIAS_DESC"
            maxlength="255" />

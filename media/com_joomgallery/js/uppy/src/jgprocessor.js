@@ -423,7 +423,7 @@ export default class jgProcessor extends BasePlugin {
           this.addStateTxt(file, 'Saving successful');
 
           // Exchange title of the upload file
-          this.addTitle(file, response.data.record.imgtitle);
+          this.addTitle(file, response.data.record.title);
 
           // Add Button to upload form
           if(this.formData.get('jform[debug]') == 1) {

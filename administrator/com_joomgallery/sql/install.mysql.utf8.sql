@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery` (
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
 `catid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-`imgtitle` VARCHAR(255) NOT NULL DEFAULT "",
+`title` VARCHAR(255) NOT NULL DEFAULT "",
 `imgtext` TEXT NOT NULL,
 `imgauthor` VARCHAR(50) NULL DEFAULT "",
 `imgdate` DATETIME NOT NULL,

@@ -45,7 +45,7 @@ class ImagesModel extends AdminImagesModel
 				'imgvotes', 'a.imgvotes',
 				'imgvotesum', 'a.imgvotesum',
 				'approved', 'a.approved',
-				'imgtitle', 'a.imgtitle',
+				'title', 'a.title',
 				'alias', 'a.alias',
 				'catid', 'a.catid',
 				'published', 'a.published',

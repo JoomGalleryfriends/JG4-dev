@@ -214,7 +214,7 @@ class HtmlView extends JoomGalleryView
 			'a.`hits`'       => Text::_('COM_JOOMGALLERY_COMMON_HITS'),
 			'a.`downloads`'  => Text::_('COM_JOOMGALLERY_DOWNLOADS'),
 			'a.`approved`'   => Text::_('COM_JOOMGALLERY_APPROVED'),
-			'a.`imgtitle`'   => Text::_('JGLOBAL_TITLE'),
+			'a.`title`'   => Text::_('JGLOBAL_TITLE'),
 			'a.`catid`'      => Text::_('JCATEGORY'),
 			'a.`published`'  => Text::_('JSTATUS'),
 			'a.`imgauthor`'  => Text::_('JAUTHOR'),

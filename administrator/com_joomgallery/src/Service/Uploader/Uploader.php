@@ -66,7 +66,7 @@ abstract class Uploader implements UploaderInterface
    *
    * @var string
    */
-  public $imgtitle = '';
+  public $title = '';
 
   /**
    * Name of the used filesystem
@@ -114,7 +114,7 @@ abstract class Uploader implements UploaderInterface
 
     $this->error       = $this->app->getUserStateFromRequest($this->userStateKey.'.error', 'error', false, 'bool');
     $this->catid       = $this->app->getUserStateFromRequest($this->userStateKey.'.catid', 'catid', 0, 'int');
-    $this->imgtitle    = $this->app->getUserStateFromRequest($this->userStateKey.'.imgtitle', 'imgtitle', '', 'string');
+    $this->title    = $this->app->getUserStateFromRequest($this->userStateKey.'.title', 'title', '', 'string');
     $this->filecounter = $this->app->getUserStateFromRequest($this->userStateKey.'.filecounter', 'filecounter', 1, 'post', 'int');
     $this->component->addDebug($this->app->getUserStateFromRequest($this->userStateKey.'.debugoutput', 'debugoutput', '', 'string'));
     $this->component->addWarning($this->app->getUserStateFromRequest($this->userStateKey.'.warningoutput', 'warningoutput', '', 'string'));
@@ -180,17 +180,17 @@ abstract class Uploader implements UploaderInterface
       // Create filename, title and alias
       if($this->component->getConfig()->get('jg_useorigfilename'))
       {
-        $data['imgtitle'] = $this->src_name;        
+        $data['title'] = $this->src_name;        
         $newfilename      = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
       }
       else
       {
         if(!\is_null($filecounter))
         {
-          $data['imgtitle'] = $data['imgtitle'].'-'.$filecounter;
+          $data['title'] = $data['title'].'-'.$filecounter;
         }
 
-        $newfilename = $this->component->getFilesystem()->cleanFilename($data['imgtitle'], 0);        
+        $newfilename = $this->component->getFilesystem()->cleanFilename($data['title'], 0);        
       }
 
       // Generate image filename
@@ -200,7 +200,7 @@ abstract class Uploader implements UploaderInterface
       // Make an alias proposition if not given
       if(!\key_exists('alias', $data) || empty($data['alias']))
       {
-        $data['alias'] = $data['imgtitle'];
+        $data['alias'] = $data['title'];
       }
     }
 
@@ -446,7 +446,7 @@ abstract class Uploader implements UploaderInterface
                          'user_username' => $user->username,
                          'user_name' => $user->name,
                          'img_id' => $data_row->id,
-                         'img_title' => $data_row->imgtitle,
+                         'img_title' => $data_row->title,
                          'cat_id' => $cat->id,
                          'cat_title' => $cat->title
                         );
