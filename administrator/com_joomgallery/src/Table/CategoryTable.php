@@ -159,6 +159,16 @@ class CategoryTable extends Table implements VersionableTableInterface
 		$date = Factory::getDate();
 		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
+
 		if($array['id'] == 0)
 		{
 			$array['created_time'] = $date->toSql();
@@ -315,7 +325,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 		// Check if alias is unique
 		if(!$this->isUnique('alias'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentAlias =  $this->alias;
 
 			while(!$this->isUnique('alias'))
@@ -327,7 +337,7 @@ class CategoryTable extends Table implements VersionableTableInterface
     // Check if title is unique inside this parent category
 		if(!$this->isUnique('title', $this->parent_id, 'parent_id'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentTitle =  $this->title;
 
 			while(!$this->isUnique('title', $this->parent_id, 'parent_id'))

@@ -139,6 +139,16 @@ class ImageTable extends Table implements VersionableTableInterface
       $array['id'] = 0;
     }
 
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
+
 		// Support for alias field: alias
 		if(empty($array['alias']))
 		{

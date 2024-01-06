@@ -61,6 +61,16 @@ class ConfigTable extends Table
 		$date = Factory::getDate();
 		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
+
 		if($array['id'] == 0 && empty($array['created_by']))
 		{
 			$array['created_by'] = Factory::getUser()->id;

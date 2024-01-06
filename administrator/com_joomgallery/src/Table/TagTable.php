@@ -62,6 +62,16 @@ class TagTable extends Table
 		$date = Factory::getDate();
 		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
+
     // Support for alias field: alias
 		if(empty($array['alias']))
 		{
@@ -154,45 +164,5 @@ class TagTable extends Table
 		}
 
 		return parent::bind($array, $ignore);
-	}
-
-	/**
-	 * Overloaded check function
-	 *
-	 * @return bool
-	 */
-	public function check()
-	{
-		// If there is an ordering column and this is a new row then get the next ordering value
-		if(property_exists($this, 'ordering') && $this->id == 0)
-		{
-			$this->ordering = self::getNextOrder();
-		}
-
-    // Check if alias is unique
-		if(!$this->isUnique('alias'))
-		{
-			$count = 2;
-			$currentAlias =  $this->alias;
-
-			while(!$this->isUnique('alias'))
-      {
-				$this->alias = $currentAlias . '-' . $count++;
-			}
-		}
-
-    // Check if title is unique inside this category
-		if(!$this->isUnique('title'))
-		{
-			$count = 2;
-			$currentTitle =  $this->title;
-
-			while(!$this->isUnique('title'))
-      {
-				$this->title = $currentTitle . ' (' . $count++ . ')';
-			}
-		}
-
-		return parent::check();
 	}
 }

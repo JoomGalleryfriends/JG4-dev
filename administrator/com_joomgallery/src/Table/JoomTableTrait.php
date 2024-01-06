@@ -69,7 +69,7 @@ trait JoomTableTrait
     {
       if(!$this->isUnique('alias'))
       {
-        $count = 0;
+        $count = 2;
         $currentAlias =  $this->alias;
 
         while(!$this->isUnique('alias'))
@@ -122,6 +122,16 @@ trait JoomTableTrait
 	{
 		$date = Factory::getDate();
 		$task = Factory::getApplication()->input->get('task', '', 'cmd');
+
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
 
     // Support for alias field: alias
     if(\array_key_exists('alias', $array))
