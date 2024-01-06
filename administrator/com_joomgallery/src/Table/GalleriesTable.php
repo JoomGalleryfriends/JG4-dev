@@ -96,23 +96,6 @@ class GalleriesTable extends Table
       }
     }
 
-		// Support for multiple or not foreign key field: userid
-    if(!empty($array['userid']))
-    {
-      if(is_array($array['userid']))
-      {
-        $array['userid'] = implode(',',$array['userid']);
-      }
-      else if(strrpos($array['userid'], ',') != false)
-      {
-        $array['userid'] = explode(',',$array['userid']);
-      }
-    }
-    else
-    {
-      $array['userid'] = 0;
-    }
-
 		if($array['id'] == 0)
 		{
 			$array['created_time'] = $date->toSql();

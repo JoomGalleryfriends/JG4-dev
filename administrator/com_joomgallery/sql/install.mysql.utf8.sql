@@ -277,7 +277,6 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__joomgallery_galleries` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
-`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
 `title` VARCHAR(255) NOT NULL DEFAULT "",
 `description` TEXT NOT NULL,
@@ -295,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_galleries` (
 PRIMARY KEY (`id`),
 KEY `galery_idx` (`published`,`access`),
 KEY `idx_access` (`access`),
-KEY `idx_userid` (`userid`),
+KEY `idx_createdby` (`created_by`),
 KEY `idx_checkout` (`checked_out`),
 KEY `idx_language` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
@@ -354,10 +353,11 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__joomgallery_votes` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-`userid` VARCHAR(50) NOT NULL DEFAULT "",
 `score` INT(11) NOT NULL DEFAULT 0,
 `created_time` datetime NOT NULL,
+`created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`),
+KEY `idx_createdby` (`created_by`),
 KEY `idx_imgid` (`imgid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
@@ -371,7 +371,6 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_comments` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
 `imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `title` VARCHAR(255) NOT NULL DEFAULT "",
 `description` TEXT NOT NULL,
 `published` TINYINT(1) NOT NULL DEFAULT 0,
@@ -383,7 +382,6 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_comments` (
 PRIMARY KEY (`id`),
 KEY `idx_published` (`published`),
 KEY `idx_imgid` (`imgid`),
-KEY `idx_userid` (`userid`),
 KEY `idx_createdby` (`created_by`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
