@@ -333,20 +333,6 @@ KEY `idx_user` (`cmsuser`)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__joomgallery_users_ref`
---
-
-CREATE TABLE IF NOT EXISTS `#__joomgallery_users_ref` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`type` VARCHAR(50) NOT NULL DEFAULT "",
-`typeid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `#__joomgallery_votes`
 --
 
