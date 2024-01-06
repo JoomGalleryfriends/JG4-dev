@@ -36,9 +36,9 @@
                 description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_CLASS_NOTE_DESC"
                 default="columns"
                 parentclass="stack span-2-inline"
-                useglobal="true"
                 validate="options"
                 >
+                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="columns">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_GRID</option>
                 <option value="masonry">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_MASONRY</option>
                 <option value="justified">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_JUSTIFIED</option>
@@ -50,7 +50,6 @@
                 description="COM_JOOMGALLERY_MENU_NUM_COLUMNS_DESC"
                 default="3"
                 parentclass="stack span-2-inline"
-                useglobal="true"
                 validate="options"
                 showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
                 >
@@ -68,10 +67,10 @@
                 description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_ALIGNMENT_NOTE_DESC"
                 default="center"
                 parentclass="stack span-2-inline"
-                useglobal="true"
                 validate="options"
                 showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry[OR]jg_category_view_class:justified"
                 >
+                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="none">JNONE</option>
                 <option value="left">JGLOBAL_LEFT</option>
                 <option value="center">JGLOBAL_CENTER</option>
@@ -84,7 +83,6 @@
                 description="COM_JOOMGALLERY_MENU_CATEGORY_IMAGE_CLASS_NOTE_DESC"
                 default=""
                 parentclass="stack span-2-inline"
-                useglobal="true"
                 validate="options"
                 showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
                 >
@@ -111,6 +109,20 @@
                 filter="integer"
                 showon="jg_category_view_class:justified"
             />
+            <field
+                name="jg_category_view_show_title"
+                groupByFieldset="false"
+                default="-1"
+                type="radio"
+                layout="joomla.form.field.radio.configbtns"
+                class="btn-group btn-group-yesno"
+                label="JGLOBAL_TITLE"
+                validate="options"
+                >
+                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
         </fieldset>
     </fields>
 </metadata>
