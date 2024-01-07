@@ -12,9 +12,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\Field\NumberField;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
 
 /**
  * Number field with useglobal option based on config service 
@@ -64,7 +65,7 @@ class JgnumberField extends NumberField
         $jg->createConfig($context[0] , $context[1], false);
 
         // Get inherited global config value
-        $value = $jg->getConfig()->get($fieldname, '-');
+        $value = $jg->getConfig()->get($fieldname, '0');
 
         if(!\is_null($value))
         {

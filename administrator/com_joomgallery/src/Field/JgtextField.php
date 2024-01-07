@@ -12,9 +12,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\Field\TextField;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
 
 /**
  * Text field with useglobal option based on config service 
@@ -31,7 +32,7 @@ class JgtextField extends TextField
    * @var    string
    * @since  4.0.0
    */
-  protected $type = 'Jgtext';
+  protected $type = 'jgtext';
 
   /**
    * Name of the layout being used to render the field

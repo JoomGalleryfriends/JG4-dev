@@ -58,7 +58,7 @@ $blockEnd    = $isBtnGroup ? '' : '</div>';
 // Set global value in first option
 if(strpos($options[0]->text, '%s') !== false)
 {
-  $options[0]->value = $globvalue ? 1 : 0;
+  //$options[0]->value = $globvalue;
   $globvalue         = $globvalue ? Text::_('JYES') : Text::_('JNO');
   $options[0]->text  = str_replace('%s', $globvalue, $options[0]->text);
 }
