@@ -731,16 +731,16 @@ class JoomHelper
     static $avgdone       = false;
 
     $maxvoting            = $config->get('jg_maxvoting');
-    $imgvotesum           = 'imgvotesum';
-    $imgvotes             = 'imgvotes';
+    $votesum           = 'votesum';
+    $votes             = 'votes';
     if($tablealias != '')
     {
-      $imgvotesum = $tablealias.'.'.$imgvotesum;
-      $imgvotes   = $tablealias.'.'.$imgvotes;
+      $votesum = $tablealias.'.'.$votesum;
+      $votes   = $tablealias.'.'.$votes;
     }
 
     // Standard rating clause
-    $clause = 'ROUND(LEAST(IF(imgvotes > 0, '.$imgvotesum.'/'.$imgvotes.', 0.0), '.(float)$maxvoting.'), 2)';
+    $clause = 'ROUND(LEAST(IF(votes > 0, '.$votesum.'/'.$votes.', 0.0), '.(float)$maxvoting.'), 2)';
 
     // Advanced (weigthed) rating clause (Bayes)
     if($config->get('jg_ratingcalctype') == 1)
@@ -751,10 +751,10 @@ class JoomHelper
         // Needed values for weighted rating calculation
         $query = $db->getQuery(true)
               ->select('count(*) As imgcount')
-              ->select('SUM(imgvotes) As sumimgvotes')
-              ->select('SUM(imgvotesum/imgvotes) As sumimgratings')
+              ->select('SUM(votes) As sumvotes')
+              ->select('SUM(votesum/votes) As sumimgratings')
               ->from(_JOOM_TABLE_IMAGES)
-              ->where('imgvotes > 0');
+              ->where('votes > 0');
 
         $db->setQuery($query);
         $row = $db->loadObject();
@@ -762,7 +762,7 @@ class JoomHelper
         {
           if($row->imgcount > 0)
           {
-            $avgimgvote   = round($row->sumimgvotes / $row->imgcount, 2 );
+            $avgimgvote   = round($row->sumvotes / $row->imgcount, 2 );
             $avgimgrating = round($row->sumimgratings / $row->imgcount, 2);
             $avgdone      = true;
           }
@@ -770,7 +770,7 @@ class JoomHelper
       }
       if($avgdone)
       {
-        $clause = 'ROUND(LEAST(IF(imgvotes > 0, (('.$avgimgvote.'*'.$avgimgrating.') + '.$imgvotesum.') / ('.$avgimgvote.' + '.$imgvotes.'), 0.0), '.(float)$maxvoting.'), 2)';
+        $clause = 'ROUND(LEAST(IF(votes > 0, (('.$avgimgvote.'*'.$avgimgrating.') + '.$votesum.') / ('.$avgimgvote.' + '.$votes.'), 0.0), '.(float)$maxvoting.'), 2)';
       }
     }
 

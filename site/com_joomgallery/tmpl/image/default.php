@@ -185,7 +185,7 @@ function getExifDataDirect ($exifJsonString='') {
 
 		<tr>
 			<th><?php echo Text::_('COM_JOOMGALLERY_VOTES'); ?></th>
-			<td><?php echo $this->item->imgvotes; ?></td>
+			<td><?php echo $this->item->votes; ?></td>
 		</tr>
 
 		<tr>

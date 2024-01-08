@@ -103,7 +103,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
           <?php echo $this->form->renderField('date'); ?>
           <?php echo $this->form->renderField('hits'); ?>
           <?php echo $this->form->renderField('downloads'); ?>
-          <?php echo $this->form->renderField('imgvotes'); ?>
+          <?php echo $this->form->renderField('votes'); ?>
           <?php echo $this->form->renderField('rating'); ?>
           <?php echo $this->form->renderField('imgmetadata'); ?>
         </div>          
@@ -172,7 +172,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
   <input type="hidden" name="jform[uploader]" value="html" />
   <?php /* <input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
 	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
+	<input type="hidden" name="jform[votes]" value="<?php echo $this->item->votes; ?>" />
 	<input type="hidden" name="jform[useruploaded]" value="<?php echo $this->item->useruploaded; ?>" /> */ ?>
 	<?php echo HTMLHelper::_('form.token'); ?>
 

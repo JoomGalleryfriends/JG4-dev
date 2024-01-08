@@ -26,12 +26,12 @@
            class="readonly"
            label="COM_JOOMGALLERY_DOWNLOADS" />
 
-    <field name="imgvotes"
+    <field name="votes"
            default="0"
            label="COM_JOOMGALLERY_VOTES"
            hidden="true" />
 
-    <field name="imgvotesum"
+    <field name="votesum"
            type="text"
            readonly="true"
            default="0"
