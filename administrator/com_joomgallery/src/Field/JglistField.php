@@ -57,7 +57,7 @@ class JglistField extends ListField
 
     if($this->element['useglobal'])
     {
-      $this->__set('default', $this->getGlobalValue('*'));
+      $this->__set('default', $this->getGlobalValue(''));
     }
 
     return $res;
@@ -84,7 +84,7 @@ class JglistField extends ListField
 
     if($this->element['useglobal'])
     {
-      $data['globvalue'] = $this->getGlobalValue('*');
+      $data['globvalue'] = $this->getGlobalValue('...');
     }
 
     return $this->getRenderer($this->layout)->render($data);
@@ -180,7 +180,7 @@ class JglistField extends ListField
       {
         $tmp        = new \stdClass();
         $tmp_def    = (string) $this->element['default'];
-        $tmp->value = $tmp_def ? $tmp_def : '*'; 
+        $tmp->value = $tmp_def ? $tmp_def : ''; 
         $tmp->text  = Text::_('JGLOBAL_USE_GLOBAL_VALUE');
 
         array_unshift($options, $tmp);

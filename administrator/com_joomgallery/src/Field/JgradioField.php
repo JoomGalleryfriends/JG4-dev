@@ -46,7 +46,7 @@ class JgradioField extends JglistField
 
     if($this->element['useglobal'])
     {
-      $this->__set('default', $this->getGlobalValue(0));
+      $this->__set('default', $this->getGlobalValue());
     }
 
     return $res;
