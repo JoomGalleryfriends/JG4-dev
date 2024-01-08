@@ -11,5 +11,5 @@
 // No direct access
 defined('_JEXEC') or die;
 
-$path = JPATH_ADMINISTRATOR . '/components/com_joomgallery/layouts/joomla/pagination/links.php';
+$path = JPATH_ADMINISTRATOR . '/components/com_joomgallery/layouts/joomla/pagination/link.php';
 require($path);
