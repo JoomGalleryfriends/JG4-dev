@@ -41,29 +41,6 @@ class JglistField extends ListField
   protected $type = 'jglist';
 
   /**
-   * Method to attach a Form object to the field.
-   *
-   * @param   object  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
-   * @param   mixed              $value    The form field value to validate.
-   * @param   string             $group    The field name group control value.
-   *
-   * @return  boolean  True on success.
-   *
-   * @since   4.0.0
-   */
-  public function setup($element, $value, $group = null)
-  {
-    $res =  parent::setup($element, $value, $group);
-
-    if($this->element['useglobal'])
-    {
-      $this->__set('default', $this->getGlobalValue(''));
-    }
-
-    return $res;
-  }
-
-  /**
    * Method to get the field input markup for a generic list.
    * Use the multiple attribute to enable multiselect.
    *
