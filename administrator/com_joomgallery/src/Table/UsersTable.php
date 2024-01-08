@@ -59,11 +59,6 @@ class UsersTable extends Table
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
-		{
-			$array['created_by'] = Factory::getUser()->id;
-		}
-
     // Support for galleries
     if(!isset($this->galleries))
     {
