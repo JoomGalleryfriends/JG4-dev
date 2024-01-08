@@ -65,7 +65,7 @@ class JgtextField extends TextField
         $jg->createConfig($context[0] , $context[1], false);
 
         // Get inherited global config value
-        $value = $jg->getConfig()->get($fieldname, '-');
+        $value = $jg->getConfig()->get($fieldname, '...');
 
         if(!\is_null($value))
         {
