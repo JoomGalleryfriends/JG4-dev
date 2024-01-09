@@ -15,7 +15,8 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\MVC\Model\ListModel;
+use \Joomla\CMS\Language\Multilanguage;
 
 /**
  * Model to get a category record.
@@ -130,6 +131,29 @@ class CategoryModel extends JoomItemModel
 	}
 
   /**
+	 * Method to get the parent category item object.
+	 *
+	 * @param   integer  $id   The id of the object to get.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 *
+	 * @throws \Exception
+	 */
+  public function getParent($id = null)
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load parent category model
+    $parentModel = $this->component->getMVCFactory()->createModel('category', 'site');
+    $parentModel->getState();
+
+    return $parentModel->getItem($this->item->parent_id);
+  }
+
+  /**
 	 * Method to get the children categories.
 	 *
 	 * @return  array|false    Array of children on success, false on failure.
@@ -144,33 +168,15 @@ class CategoryModel extends JoomItemModel
     }
 
     // Load categories list model
-    $listModel = $this->component->getMVCFactory()->createModel('categories', 'administrator');
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'site');
     $listModel->getState();
     
     // Select fields to load
     $fields = array('id', 'alias', 'title', 'description', 'thumbnail');
     $fields = $this->addColumnPrefix('a', $fields);
-    $listModel->setState('list.select', $fields);
 
-    // Get current user
-    $user = Factory::getUser();
-
-    // Apply filters
-    $listModel->setState('filter.category', $this->item->id);
-    $listModel->setState('filter.level', 2);
-    $listModel->setState('filter.showself', 0);
-    $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
-    $listModel->setState('filter.published', 1);
-    $listModel->setState('filter.showhidden', 0);
-    $listModel->setState('filter.showempty', 1);
-
-    if(Multilanguage::isEnabled())
-    {
-      $listModel->setState('filter.language', $this->item->language);
-    }
-
-    // Apply ordering
-    $listModel->setState('list.fullordering', 'a.lft ASC');
+    // Apply preselected filters and fields selection for children
+    $this->setChildrenModelState($listModel, $fields);
 
     // Get children
     $items = $listModel->getItems();
@@ -181,6 +187,75 @@ class CategoryModel extends JoomItemModel
     }
 
     return $items;
+  }
+
+  /**
+   * Method to get a \JPagination object for the children categories.
+   *
+   * @return  Pagination  A Pagination object for the children categories.
+   */
+  public function getChildrenPagination()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'administrator');
+    $listModel->getState();
+
+    // Apply preselected filters and fields selection for children
+    $this->setChildrenModelState($listModel, $fields);
+
+    return $listModel->getPagination();
+  }
+
+  /**
+   * Get the filter form for the children categories.
+   *
+   * @param   array    $data      data
+   * @param   boolean  $loadData  load current data
+   *
+   * @return  Form|null  The \JForm object or null if the form can't be found
+   */
+  public function getChildrenFilterForm($data = [], $loadData = true)
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'site');
+    $listModel->getState();
+
+    // Apply preselected filters and fields selection for children
+    $this->setChildrenModelState($listModel, $fields);
+
+    return $listModel->getFilterForm($data, $loadData);
+  }
+
+  /**
+   * Function to get the active filters for the children categories.
+   *
+   * @return  array  Associative array in the format: array('filter_published' => 0)
+   */
+  public function getChildrenActiveFilters()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('categories', 'site');
+    $listModel->getState();
+
+    // Apply preselected filters and fields selection for children
+    $this->setChildrenModelState($listModel, $fields);
+
+    return $listModel->getActiveFilters();
   }
 
   /**
@@ -198,16 +273,114 @@ class CategoryModel extends JoomItemModel
     }
 
     // Load images list model
-    $listModel = $this->component->getMVCFactory()->createModel('images', 'administrator');
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
     $listModel->getState();
 
     // Select fields to load
     $fields = array('id', 'alias', 'imgtitle', 'imgtext', 'imgauthor', 'imgdate', 'hits', 'imgvotes', 'imgvotesum');
     $fields = $this->addColumnPrefix('a', $fields);
-    $listModel->setState('list.select', $fields);
 
+    // Apply preselected filters and fields selection for images
+    $this->setImagesModelState($listModel, $fields);
+
+    // Get images
+    $items = $listModel->getItems();
+
+    if(!empty($listModel->getError()))
+    {
+      $this->setError($listModel->getError());
+    }
+
+    return $items;
+  }
+
+  /**
+   * Method to get a \JPagination object for the images in this category.
+   *
+   * @return  Pagination  A Pagination object for the images in this category.
+   */
+  public function getImagesPagination()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
+    $listModel->getState();
+
+    // Apply preselected filters and fields selection for images
+    $this->setImagesModelState($listModel);
+
+    return $listModel->getPagination();
+  }
+
+  /**
+   * Get the filter form for the images in this category.
+   *
+   * @param   array    $data      data
+   * @param   boolean  $loadData  load current data
+   *
+   * @return  Form|null  The \JForm object or null if the form can't be found
+   */
+  public function getImagesFilterForm($data = [], $loadData = true)
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
+    $listModel->getState();
+
+    // Apply preselected filters and fields selection for images
+    $this->setImagesModelState($listModel);
+
+    return $listModel->getFilterForm($data, $loadData);
+  }
+
+  /**
+   * Function to get the active filters for the images in this category.
+   *
+   * @return  array  Associative array in the format: array('filter_published' => 0)
+   */
+  public function getImagesActiveFilters()
+  {
+    if($this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+    // Load categories list model
+    $listModel = $this->component->getMVCFactory()->createModel('images', 'site');
+    $listModel->getState();
+
+    // Apply preselected filters and fields selection for images
+    $this->setImagesModelState($listModel);
+
+    return $listModel->getActiveFilters();
+  }
+
+  /**
+   * Function to set the image list model state for the pre defined filter and fields selection
+   * 
+   * @param   ListModel   $listModel    Images list model
+   * @param   array       $fields       List of field names to be loaded (default: array())
+   *
+   * @return  void
+   */
+  protected function setImagesModelState(ListModel &$listModel, array $fields = array())
+  {
     // Get current user
     $user = Factory::getUser();
+
+    // Apply selection
+    if(\count($fields) > 0)
+    {
+      $listModel->setState('list.select', $fields);
+    }
 
     // Apply filters
     $listModel->setState('filter.category', $this->item->id);
@@ -223,16 +396,43 @@ class CategoryModel extends JoomItemModel
 
     // Apply ordering
     $listModel->setState('list.fullordering', 'a.id ASC');
+  }
 
-    // Get images
-    $items = $listModel->getItems();
+  /**
+   * Function to set the subcategory list model state for the pre defined filter and fields selection
+   * 
+   * @param   ListModel   $listModel    Category list model
+   * @param   array       $fields       List of field names to be loaded (default: array())
+   *
+   * @return  void
+   */
+  protected function setChildrenModelState(ListModel &$listModel, array $fields = array())
+  {
+    // Get current user
+    $user = Factory::getUser();
 
-    if(!empty($listModel->getError()))
+    // Apply selection
+    if(\count($fields) > 0)
     {
-      $this->setError($listModel->getError());
+      $listModel->setState('list.select', $fields);
     }
 
-    return $items;
+    // Apply filters
+    $listModel->setState('filter.category', $this->item->id);
+    $listModel->setState('filter.level', 2);
+    $listModel->setState('filter.showself', 0);
+    $listModel->setState('filter.access', $user->getAuthorisedViewLevels());
+    $listModel->setState('filter.published', 1);
+    $listModel->setState('filter.showhidden', 0);
+    $listModel->setState('filter.showempty', 0);
+
+    if(Multilanguage::isEnabled())
+    {
+      $listModel->setState('filter.language', $this->item->language);
+    }
+
+    // Apply ordering
+    $listModel->setState('list.fullordering', 'a.lft ASC');
   }
 
   /**

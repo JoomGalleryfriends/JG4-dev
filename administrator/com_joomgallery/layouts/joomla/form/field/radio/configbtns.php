@@ -54,7 +54,10 @@ $classToggle = $isBtnGroup ? 'btn-check' : 'form-check-input';
 $btnClass    = $isBtnGroup ? 'btn btn-outline-secondary' : 'form-check-label';
 $blockStart  = $isBtnGroup ? '' : '<div class="form-check">';
 $blockEnd    = $isBtnGroup ? '' : '</div>';
-$configName  = explode('__', $id)[1];
+
+// Catch config name from form field name
+$configName_arr = explode('jg_', $name);
+$configName = preg_split('/[!"`#%&.,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+/', end($configName_arr))[0];
 
 // Add the attributes of the fieldset in an array
 $containerClass = trim($class . ' radio' . ($readonly || $disabled ? ' disabled' : '') . ($readonly ? ' readonly' : ''));
