@@ -130,7 +130,7 @@ class JgimageField extends FormField
       }
       else
       {
-        $name = $img->imgtitle;
+        $name = $img->title;
       }
 		}
 

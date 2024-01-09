@@ -9,24 +9,20 @@
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
- 
+
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\Access\Access;
-use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
-use \Joomla\CMS\Filter\OutputFilter;
 
 /**
- * Tag table
+ * Comments table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class TagTable extends Table
+class CommentsTable extends Table
 {
   use JoomTableTrait;
 
@@ -37,15 +33,12 @@ class TagTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.tag';
+		$this->typeAlias = _JOOM_OPTION.'.comments';
 
-		parent::__construct(_JOOM_TABLE_TAGS, 'id', $db);
-
-		$this->setColumnAlias('published', 'published');
-
+		parent::__construct(_JOOM_TABLE_COMMENTS, 'id', $db);
 	}
 
-	/**
+  /**
 	 * Overloaded bind function to pre-process the params.
 	 *
 	 * @param   array  $array   Named array
@@ -72,37 +65,6 @@ class TagTable extends Table
       }
     }
 
-    // Support for alias field: alias
-		if(empty($array['alias']))
-		{
-			if(empty($array['title']))
-			{
-				$array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
-			}
-			else
-			{
-				if(Factory::getConfig()->get('unicodeslugs') == 1)
-				{
-					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
-				}
-				else
-				{
-					$array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
-				}
-			}
-		}
-    else
-    {
-      if(Factory::getConfig()->get('unicodeslugs') == 1)
-      {
-        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
-      }
-      else
-      {
-        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
-      }
-    }
-
 		if($array['id'] == 0)
 		{
 			$array['created_time'] = $date->toSql();
@@ -126,41 +88,6 @@ class TagTable extends Table
 		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
 			$array['modified_by'] = Factory::getUser()->id;
-		}
-
-		if(isset($array['params']) && is_array($array['params']))
-		{
-			$registry = new Registry($array['params']);
-			$array['params'] = (string) $registry;
-		}
-
-		if(isset($array['metadata']) && is_array($array['metadata']))
-		{
-			$registry = new Registry($array['metadata']);
-			$array['metadata'] = (string) $registry;
-		}
-
-		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.tag.' . $array['id']))
-		{
-			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml',	"/access/section[@name='tag']/");
-			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.tag.'.$array['id'])->getData();
-			$array_jaccess   = array();
-
-			foreach($actions as $action)
-			{
-				if(key_exists($action->name, $default_actions))
-				{
-					$array_jaccess[$action->name] = $default_actions[$action->name];
-				}
-			}
-
-			$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		}
-
-		// Bind the rules for ACL where supported.
-		if(isset($array['rules']) && is_array($array['rules']))
-		{
-			$this->setRules($array['rules']);
 		}
 
 		return parent::bind($array, $ignore);

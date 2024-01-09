@@ -17,12 +17,12 @@ use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
 
 /**
- * Imagetype table
+ * Users table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImagetypeTable extends Table
+class UsersTable extends Table
 {
   use JoomTableTrait;
 
@@ -33,8 +33,50 @@ class ImagetypeTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.imagetype';
+		$this->typeAlias = _JOOM_OPTION.'.users';
 
-		parent::__construct(_JOOM_TABLE_IMG_TYPES, 'id', $db);
+		parent::__construct(_JOOM_TABLE_USERS, 'id', $db);
+	}
+
+  /**
+	 * Overloaded bind function to pre-process the params.
+	 *
+	 * @param   array  $array   Named array
+	 * @param   mixed  $ignore  Optional array or list of parameters to ignore
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @see     Table:bind
+	 * @since   4.0.0
+	 * @throws  \InvalidArgumentException
+	 */
+	public function bind($array, $ignore = '')
+	{
+		$date      = Factory::getDate();
+
+		if($array['id'] == 0)
+		{
+			$array['created_time'] = $date->toSql();
+		}
+
+    // Support for galleries
+    if(!isset($this->galleries))
+    {
+      $this->galleries = array();
+    }
+
+    // Support for votes
+    if(!isset($this->votes))
+    {
+      $this->votes = array();
+    }
+
+    // Support for votes
+    if(!isset($this->comments))
+    {
+      $this->comments = array();
+    }
+
+    return parent::bind($array, $ignore);
 	}
 }

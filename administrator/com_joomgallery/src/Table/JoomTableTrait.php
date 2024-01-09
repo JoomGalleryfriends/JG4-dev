@@ -14,9 +14,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Table\Asset;
+use \Joomla\CMS\Table\Table;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\Utilities\ArrayHelper;
-use \Joomla\Registry\Registry;
+use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\Database\DatabaseInterface;
 
 /**
 * Trait for Table methods
@@ -33,6 +37,152 @@ trait JoomTableTrait
   public $form = false;
 
   /**
+   * Delete a record by id
+   *
+   * @param   mixed  $pk  Primary key value to delete. Optional
+   *
+   * @return bool
+   */
+  public function delete($pk = null)
+  {
+    $this->load($pk);
+    $result = parent::delete($pk);
+
+    return $result;
+  }
+
+  /**
+	 * Overloaded check function
+	 *
+	 * @return bool
+	 */
+	public function check()
+	{
+		// If there is an ordering column and this is a new row then get the next ordering value
+		if(property_exists($this, 'ordering') && $this->id == 0)
+		{
+			$this->ordering = self::getNextOrder();
+		}
+
+		// Check if alias is unique
+    if(property_exists($this, 'alias'))
+    {
+      if(!$this->isUnique('alias'))
+      {
+        $count = 2;
+        $currentAlias =  $this->alias;
+
+        while(!$this->isUnique('alias'))
+        {
+          $this->alias = $currentAlias . '-' . $count++;
+        }
+      }
+    }
+
+    // Check if title is unique inside this category
+    if(property_exists($this, 'title'))
+    {
+      if(!$this->isUnique('title'))
+      {
+        $count = 2;
+        $currentTitle =  $this->title;
+
+        while(!$this->isUnique('title'))
+        {
+          $this->title = $currentTitle . ' (' . $count++ . ')';
+        }
+      }
+    }
+
+		// Support for subform field params
+    if(property_exists($this, 'params'))
+    {
+      if(is_array($this->params))
+      {
+        $this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
+      }
+    }
+
+		return parent::check();
+	}
+
+  /**
+	 * Overloaded bind function to pre-process the params.
+	 *
+	 * @param   array  $array   Named array
+	 * @param   mixed  $ignore  Optional array or list of parameters to ignore
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @see     Table:bind
+	 * @since   4.0.0
+	 * @throws  \InvalidArgumentException
+	 */
+	public function bind($array, $ignore = '')
+	{
+		$date = Factory::getDate();
+		$task = Factory::getApplication()->input->get('task', '', 'cmd');
+
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
+
+    // Support for alias field: alias
+    if(\array_key_exists('alias', $array))
+    {
+      if(empty($array['alias']))
+      {
+        if(empty($array['title']))
+        {
+          $array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
+        }
+        else
+        {
+          if(Factory::getConfig()->get('unicodeslugs') == 1)
+          {
+            $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
+          }
+          else
+          {
+            $array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
+          }
+        }
+      }
+      else
+      {
+        if(Factory::getConfig()->get('unicodeslugs') == 1)
+        {
+          $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
+        }
+        else
+        {
+          $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
+        }
+      }
+    }
+
+		if(\array_key_exists('params', $array) && isset($array['params']) && is_array($array['params']))
+		{
+			$registry = new Registry($array['params']);
+			$array['params'] = (string) $registry;
+		}
+
+		if(\array_key_exists('metadata', $array) && isset($array['metadata']) && is_array($array['metadata']))
+		{
+			$registry = new Registry($array['metadata']);
+			$array['metadata'] = (string) $registry;
+		}
+
+		return parent::bind($array, $ignore);
+	}
+
+  /**
 	 * Get the type alias for the history table
 	 *
 	 * @return  string  The alias as described above
@@ -42,6 +192,64 @@ trait JoomTableTrait
 	public function getTypeAlias()
 	{
 		return $this->typeAlias;
+	}
+
+  /**
+	 * Define a namespaced asset name for inclusion in the #__assets table
+	 *
+	 * @return string The asset name
+	 *
+	 * @see Table::_getAssetName
+	 */
+	protected function _getAssetName()
+	{
+		$k = $this->_tbl_key;
+
+		return $this->typeAlias . '.' . (int) $this->$k;
+	}
+
+  /**
+	 * Method to return the title to use for the asset table.
+	 *
+	 * @return  string
+	 *
+	 * @since   1.6
+	 */
+	protected function _getAssetTitle()
+	{
+		return $this->title;
+	}
+
+  /**
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+	 *
+	 * @param   Table    $table  Table name
+	 * @param   integer  $id     Id
+	 *
+	 * @see Table::_getAssetParentId
+	 *
+	 * @return mixed The id on success, false on failure.
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
+	{
+		// We will retrieve the parent-asset from the Asset-table
+		$assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+
+		// The item has the component as asset-parent
+		$assetTable->loadByName(_JOOM_OPTION);
+
+		// Return the found asset-parent-id
+		if($assetTable->id)
+		{
+			$assetParentId = $assetTable->id;
+		}
+		else
+		{
+			// If no asset-parent can be found we take the global asset
+			$assetParentId = $assetTable->getRootId();
+		}
+
+		return $assetParentId;
 	}
 
   /**
@@ -85,12 +293,13 @@ trait JoomTableTrait
   /**
 	 * Check if a field is unique
 	 *
-	 * @param   string   $field    Name of the field
-   * @param   integer  $catid    Category id (default=null)
+	 * @param   string   $field         Name of the field
+   * @param   integer  $parent        Parent id (default=null)
+   * @param   string   $parentfield   Field name of parent id (default='parent_id')
 	 *
 	 * @return  bool    True if unique
 	 */
-	protected function isUnique ($field, $catid=null)
+	protected function isUnique($field, $parent=null, $parentfield='parent_id')
 	{
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -101,9 +310,9 @@ trait JoomTableTrait
 			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
 			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
 
-    if($catid > 0)
+    if($parent > 0)
     {
-      $query->where($db->quoteName('catid') . ' = ' . $db->quote($catid));
+      $query->where($db->quoteName($parentfield) . ' = ' . $db->quote($parent));
     }
 
 		$db->setQuery($query);

@@ -169,10 +169,10 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
         <div class="jg-image">
           <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->imgtitle; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
+              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
               <?php if ( $caption_align != 'none' && $category_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
-                <?php echo $this->escape($image->imgtitle); ?>
+                <?php echo $this->escape($image->title); ?>
               </div>
               <?php endif; ?>
             </a>
@@ -180,7 +180,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-              <?php echo $this->escape($image->imgtitle); ?>
+              <?php echo $this->escape($image->title); ?>
             </a>
           </div>
           <?php endif; ?>

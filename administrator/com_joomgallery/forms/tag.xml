@@ -12,7 +12,7 @@
     <field name="alias"
            type="text"
            class="inputbox"
-           generator="imgtitle"
+           generator="title"
            label="JALIAS"
            description="JFIELD_ALIAS_DESC"
            maxlength="255" />

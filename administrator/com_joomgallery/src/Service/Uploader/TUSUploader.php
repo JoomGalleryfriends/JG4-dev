@@ -138,9 +138,9 @@ class TUSUploader extends BaseUploader implements UploaderInterface
   public function overrideData(&$data): bool
   {
     // Get upload date
-    if(empty($data['imgdate']) || \strpos($data['imgdate'], '1900-01-01') !== false)
+    if(empty($data['date']) || \strpos($data['date'], '1900-01-01') !== false)
     {
-      $data['imgdate'] = date('Y-m-d');
+      $data['date'] = date('Y-m-d');
     }
 
     // Get tus metadata
@@ -153,19 +153,19 @@ class TUSUploader extends BaseUploader implements UploaderInterface
       // Override title with tus metadata
       if($title = $this->component->getTusServer()->getMetaDataValue('jtitle'))
       {
-        $data['imgtitle'] = $title;
+        $data['title'] = $title;
       }
 
       // Override description with tus metadata
       if($desc = $this->component->getTusServer()->getMetaDataValue('jdescription'))
       {
-        $data['imgtext'] = $desc;
+        $data['description'] = $desc;
       }
 
       // Override author with tus metadata
       if($author = $this->component->getTusServer()->getMetaDataValue('jauthor'))
       {
-        $data['imgauthor'] = $author;
+        $data['author'] = $author;
       }
     }
 

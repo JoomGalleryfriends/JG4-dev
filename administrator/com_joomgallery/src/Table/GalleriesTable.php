@@ -9,24 +9,20 @@
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
- 
+
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\Access\Access;
-use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
-use \Joomla\CMS\Filter\OutputFilter;
 
 /**
- * Tag table
+ * Galleries table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class TagTable extends Table
+class GalleriesTable extends Table
 {
   use JoomTableTrait;
 
@@ -37,15 +33,12 @@ class TagTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.tag';
+		$this->typeAlias = _JOOM_OPTION.'.galleries';
 
-		parent::__construct(_JOOM_TABLE_TAGS, 'id', $db);
-
-		$this->setColumnAlias('published', 'published');
-
+		parent::__construct(_JOOM_TABLE_GALLERIES, 'id', $db);
 	}
 
-	/**
+  /**
 	 * Overloaded bind function to pre-process the params.
 	 *
 	 * @param   array  $array   Named array
@@ -59,8 +52,8 @@ class TagTable extends Table
 	 */
 	public function bind($array, $ignore = '')
 	{
-		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task', '', 'cmd');
+		$date      = Factory::getDate();
+		$task      = Factory::getApplication()->input->get('task', '', 'cmd');
 
     // Support for title field: title
     if(\array_key_exists('title', $array))
@@ -72,7 +65,7 @@ class TagTable extends Table
       }
     }
 
-    // Support for alias field: alias
+		// Support for alias field: alias
 		if(empty($array['alias']))
 		{
 			if(empty($array['title']))
@@ -108,7 +101,7 @@ class TagTable extends Table
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['created_by']))
+		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
 		{
 			$array['created_by'] = Factory::getUser()->id;
 		}
@@ -118,7 +111,7 @@ class TagTable extends Table
 			$array['modified_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['modified_by']))
+		if($array['id'] == 0 && (!\key_exists('modified_by', $array) ||empty($array['modified_by'])))
 		{
 			$array['modified_by'] = Factory::getUser()->id;
 		}
@@ -128,41 +121,12 @@ class TagTable extends Table
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
-		if(isset($array['params']) && is_array($array['params']))
-		{
-			$registry = new Registry($array['params']);
-			$array['params'] = (string) $registry;
-		}
+    // Support for images
+    if(!isset($this->images))
+    {
+      $this->images = array();
+    }
 
-		if(isset($array['metadata']) && is_array($array['metadata']))
-		{
-			$registry = new Registry($array['metadata']);
-			$array['metadata'] = (string) $registry;
-		}
-
-		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.tag.' . $array['id']))
-		{
-			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml',	"/access/section[@name='tag']/");
-			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.tag.'.$array['id'])->getData();
-			$array_jaccess   = array();
-
-			foreach($actions as $action)
-			{
-				if(key_exists($action->name, $default_actions))
-				{
-					$array_jaccess[$action->name] = $default_actions[$action->name];
-				}
-			}
-
-			$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		}
-
-		// Bind the rules for ACL where supported.
-		if(isset($array['rules']) && is_array($array['rules']))
-		{
-			$this->setRules($array['rules']);
-		}
-
-		return parent::bind($array, $ignore);
+    return parent::bind($array, $ignore);
 	}
 }

@@ -96,7 +96,7 @@ function getExifDataDirect ($exifJsonString='') {
 
 ?>
 
-<h2><?php echo $this->item->imgtitle; ?></h2>
+<h2><?php echo $this->item->title; ?></h2>
 
 <a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->catid); ?>">
   <i class="jg-icon-arrow-left-alt"></i><span><?php echo Text::_('Back to: Category') . ' ' . $this->item->cattitle; ?></span>
@@ -146,8 +146,8 @@ function getExifDataDirect ($exifJsonString='') {
 <?php // Image ?>
 <figure class="figure joom-image text-center center">
   <div id="jg-loader"></div>
-  <img src="<?php echo JoomHelper::getImg($this->item, 'detail'); ?>" class="figure-img img-fluid rounded" alt="<?php echo $this->item->imgtitle; ?>" style="width:auto;" itemprop="image" loading="lazy">
-  <figcaption class="figure-caption"><?php echo nl2br($this->item->imgtext); ?></figcaption>
+  <img src="<?php echo JoomHelper::getImg($this->item, 'detail'); ?>" class="figure-img img-fluid rounded" alt="<?php echo $this->item->title; ?>" style="width:auto;" itemprop="image" loading="lazy">
+  <figcaption class="figure-caption"><?php echo nl2br($this->item->description); ?></figcaption>
 </figure>
 
 <?php // Image info and fields ?>
@@ -165,12 +165,12 @@ function getExifDataDirect ($exifJsonString='') {
 
         <tr>
             <th><?php echo Text::_('JAUTHOR'); ?></th>
-            <td><?php echo $this->escape($this->item->imgauthor); ?></td>
+            <td><?php echo $this->escape($this->item->author); ?></td>
         </tr>
 
         <tr>
-            <th><?php echo Text::_('COM_JOOMGALLERY_IMGDATE'); ?></th>
-            <td><?php echo $this->escape($this->item->imgdate); ?></td>
+            <th><?php echo Text::_('COM_JOOMGALLERY_DATE'); ?></th>
+            <td><?php echo $this->escape($this->item->date); ?></td>
         </tr>
 
     <tr>
@@ -185,7 +185,7 @@ function getExifDataDirect ($exifJsonString='') {
 
 		<tr>
 			<th><?php echo Text::_('COM_JOOMGALLERY_VOTES'); ?></th>
-			<td><?php echo $this->item->imgvotes; ?></td>
+			<td><?php echo $this->item->votes; ?></td>
 		</tr>
 
 		<tr>
