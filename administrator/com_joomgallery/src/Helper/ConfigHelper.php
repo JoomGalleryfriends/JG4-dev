@@ -162,7 +162,7 @@ class ConfigHelper
     {
       // We are in a joomgallery item form view
       $context   = 'com_joomgallery.'.Factory::getApplication()->getInput()->getCmd('view', '');
-      $contextID = $formdata->get('id', 0);
+      $contextID = $formdata->get('id', null);
 
       if($contextID == 0)
       {
@@ -190,7 +190,7 @@ class ConfigHelper
             $context   = 'com_joomgallery';
             $contextID = null;
           }
-          
+
           if($contextID == 0)
           {
             $contextID = null;
