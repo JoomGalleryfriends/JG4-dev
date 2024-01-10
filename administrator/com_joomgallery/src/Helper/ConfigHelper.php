@@ -158,16 +158,16 @@ class ConfigHelper
     $option = Factory::getApplication()->getInput()->getCmd('option');
     $layout = Factory::getApplication()->getInput()->getCmd('layout', 'default');
 
-    $contextID = $formdata->get('id', 0);
-    if($contextID == 0)
-    {
-      $contextID = null;
-    }
-
     if($option == 'com_joomgallery' && $layout == 'edit')
     {
       // We are in a joomgallery item form view
       $context   = 'com_joomgallery.'.Factory::getApplication()->getInput()->getCmd('view', '');
+      $contextID = $formdata->get('id', 0);
+
+      if($contextID == 0)
+      {
+        $contextID = null;
+      }
 
       return array($context, $contextID);
     }
@@ -182,13 +182,20 @@ class ConfigHelper
         {
           if($view = $uri->getVar('view', false))
           {
-            $context = 'com_joomgallery.'.$view;
+            $context   = 'com_joomgallery.'.$view;
+            $contextID = $uri->getVar('id', null);
           }
           else
           {
-            $context = 'com_joomgallery';
+            $context   = 'com_joomgallery';
+            $contextID = null;
           }
           
+          if($contextID == 0)
+          {
+            $contextID = null;
+          }
+
           return array($context, $contextID);
         }
       }
