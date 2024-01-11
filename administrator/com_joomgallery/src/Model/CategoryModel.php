@@ -357,12 +357,15 @@ class CategoryModel extends JoomAdminModel
           if($table->parent_id != $data['parent_id'])
           {
             $catMoved = true;
+            $old_path = $table->path;
           }
 
           // Check if the alias was changed
           if($table->alias != $data['alias'])
           {
             $aliasChanged = true;
+            $old_alias    = $table->alias;
+            $old_path     = $table->path;
           }
         }
 
@@ -415,6 +418,12 @@ class CategoryModel extends JoomAdminModel
         // Handle folders if parent category was changed
         if(!$isNew && $catMoved)
 			  {
+          // Adjust path of subcategory records
+          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          {
+            return false;
+          }
+
           // Get path back from old location temporarely
           $table->setPathWithLocation(true);
 
@@ -425,10 +434,22 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(false);
         }
         // Handle folders if alias was changed
-        elseif (!$isNew && $aliasChanged)
+        elseif(!$isNew && $aliasChanged)
         {
+          // Adjust path of subcategory records
+          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          {
+            return false;
+          }
+
+          // Get path back from old location temporarely
+          $table->setPathWithLocation(true);
+
           // Rename folder
 					$manager->renameCategory($table, $table->alias);
+
+          // Reset path
+          $table->setPathWithLocation(false);
         }
         else
         {
@@ -457,6 +478,18 @@ class CategoryModel extends JoomAdminModel
       $this->setError($e->getMessage());
 
       return false;
+    }
+
+    // Output warning messages
+		if(\count($this->component->getWarning()) > 0)
+		{
+			$this->component->printWarning();
+		}
+
+		// Output debug data
+		if(\count($this->component->getDebug()) > 0)
+		{
+			$this->component->printDebug();
     }
 
     // Set state
@@ -613,6 +646,51 @@ class CategoryModel extends JoomAdminModel
 
 		return true;
 	}
+
+  /**
+	 * Method to adjust path of child categories based on new path
+	 *
+   * @param   Table    $table     Table object of the current category.
+   * @param   string   $old_path  The old path of the current category.
+	 * @param   string   $new_path  The new path of the current category.
+	 *
+	 * @return  boolean  True if successful.
+	 *
+	 * @throws  Exception
+	 */
+  public function fixChildrenPath($table, $old_path, $new_path)
+  {
+    if(\is_null($table) || empty($table->id))
+    {
+      throw new Exception('To fix child category paths, table has to be loaded.');
+    }
+
+    // Get a list of children ids
+    $children = $this->getChildren($table->id, false);
+
+    foreach($children as $key => $cat)
+    {
+      $child_table = $this->getTable();
+      $child_table->load($cat['id']);
+
+      // Change path
+      $pos = \strpos($child_table->path, $old_path);
+      if($pos !== false) 
+      {
+        $child_table->path = \substr_replace($child_table->path, $new_path, $pos, \strlen($old_path));
+      }
+
+      // Store the data.
+      if(!$child_table->store())
+      {
+        $this->setError('Child category (ID='.$cat['id'].') tells: ' . $child_table->getError());
+
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   /**
    * Get children categories.

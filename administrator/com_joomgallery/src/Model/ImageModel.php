@@ -591,13 +591,13 @@ class ImageModel extends JoomAdminModel
 		}
 		
 		// Output warning messages
-		if(\count($this->component->getWarning()) > 1)
+		if(\count($this->component->getWarning()) > 0)
 		{
 			$this->component->printWarning();
 		}
 
 		// Output debug data
-		if(\count($this->component->getDebug()) > 1)
+		if(\count($this->component->getDebug()) > 0)
 		{
 			$this->component->printDebug();
 		}
