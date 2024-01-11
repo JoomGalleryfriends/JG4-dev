@@ -464,7 +464,7 @@ class CategoryModel extends JoomAdminModel
           $source_id = $app->input->get('origin_id', false, 'INT');
 
           // Copy folder (including files and subfolders)
-          $manager->copyCategory($source_id, $table->path);
+          //$manager->copyCategory($source_id, $table);
         }
 
         // Clean the cache.
@@ -579,6 +579,7 @@ class CategoryModel extends JoomAdminModel
 	{
 		$app  = Factory::getApplication();
 		$user = Factory::getUser();
+    $task = $app->input->get('task');
 
 		// Access checks.
 		if(!$user->authorise('core.create', _JOOM_OPTION))
@@ -586,10 +587,8 @@ class CategoryModel extends JoomAdminModel
 			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
 		}
 
-		$context = $this->option . '.' . $this->name;
-
-		// Include the plugins for the save events.
-		PluginHelper::importPlugin($this->events_map['save']);
+    // Set task to be save2copy
+    $app->input->set('task', 'save2copy');
 
 		$table = $this->getTable();
 
@@ -600,46 +599,39 @@ class CategoryModel extends JoomAdminModel
         // Reset the id to create a new record.
         $table->id = 0;
 
-        // Original category path
-        $origin_path = $table->path;
+        // Remove unnecessary fields
+        unset($table->form);
+        $table->level            = null;
+        $table->lft              = null;
+        $table->rgt              = null;
+        $table->alias            = null;
+        $table->asset_id         = null;
+        $table->published        = null;
+        $table->in_hidden        = null;
+        $table->created_time     = null;
+        $table->created_by       = null;
+        $table->modified_by      = null;
+        $table->modified_time    = null;
+        $table->checked_out      = null;
+        $table->checked_out_time = null;
 
-        // Specify where to insert the new node.
-        $table->setLocation($table->parent_id, 'last-child');
+        // Export data from table
+        $data = (array) $table->getFieldsValues();
 
-        // Clean entered data
-        if(!$table->check())
-        {
-          throw new \Exception($table->getError());
-        }
+        // Set the id of the origin category
+        $app->input->set('origin_id', $pk);
 
-        /// Create file manager service
-				$manager = JoomHelper::getService('FileManager');
-
-        // Copy folder
-				$manager->copyCategory($origin_path, $table->parent_id, $table->alias);
-
-        // Trigger the before save event.
-        $result = $app->triggerEvent($this->event_before_save, array($context, &$table, true, $table));
-
-        if(in_array(false, $result, true) || !$table->store(true, true))
-        {
-          throw new \Exception($table->getError());
-        }
-
-        // Rebuild entire nested set tree
-        if(!$table->rebuild())
-        {
-          throw new \Exception($table->getError());
-        }
-
-        // Trigger the after save event.
-        $app->triggerEvent($this->event_after_save, array($context, &$table, true));
+        // Save the copy
+        $this->save($data);
       }
       else
       {
         throw new \Exception($table->getError());
       }			
 		}
+
+    // Reset official task
+    $app->input->set('task', $task);
 
 		// Clean cache
 		$this->cleanCache();
