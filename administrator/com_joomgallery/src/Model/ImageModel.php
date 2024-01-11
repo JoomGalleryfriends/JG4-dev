@@ -551,10 +551,13 @@ class ImageModel extends JoomAdminModel
 					$this->setError($this->component->getDebug(true));
           $uploader->rollback($table);
 
-          if($isNew || $isCopy)
+          if($isNew)
           {
-            // Delete already stored record since image creation failed
-
+            // Delete the already stored new record if image creation failed
+            if(!$table->delete($table->$key))
+            {
+              $this->component->setError($table->getError());
+            }
           }
 
 					return false;
