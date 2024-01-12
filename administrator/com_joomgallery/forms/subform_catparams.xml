@@ -10,9 +10,9 @@
     <field name="jg_showrating"
            groupByFieldset="false"
            default="-1"
-           type="radio"
+           type="jgradio"
            class="btn-group btn-group-yesno"
-           layout="joomla.form.field.radio.configbtns"
+           useglobal="true"
            label="COM_JOOMGALLERY_CONFIG_ALLOW_RATING"
            description="COM_JOOMGALLERY_CONFIG_ALLOW_RATING_CAT_LONG">
       <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
@@ -23,9 +23,9 @@
     <field name="jg_dynamic_watermark"
            groupByFieldset="false"
            default="-1"
-           type="radio"
+           type="jgradio"
            class="btn-group btn-group-yesno"
-           layout="joomla.form.field.radio.configbtns"
+           useglobal="true"
            label="COM_JOOMGALLERY_CONFIG_ALLOW_WATERMARK"
            description="COM_JOOMGALLERY_CONFIG_ALLOW_WATERMARK_CAT_LONG">
       <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
@@ -36,9 +36,9 @@
     <field name="jg_download"
            groupByFieldset="false"
            default="-1"
-           type="radio"
+           type="jgradio"
            class="btn-group btn-group-yesno"
-           layout="joomla.form.field.radio.configbtns"
+           useglobal="true"
            label="COM_JOOMGALLERY_CONFIG_OFFER_DOWNLOAD"
            description="COM_JOOMGALLERY_CONFIG_OFFER_DOWNLOAD_CAT_LONG">
       <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
@@ -49,9 +49,9 @@
     <field name="jg_downloadwithwatermark"
            groupByFieldset="false"
            default="-1"
-           type="radio"
+           type="jgradio"
            class="btn-group btn-group-yesno"
-           layout="joomla.form.field.radio.configbtns"
+           useglobal="true"
            label="COM_JOOMGALLERY_CONFIG_ALLOW_WATERMARK_DOWNLOAD"
            description="COM_JOOMGALLERY_CONFIG_ALLOW_WATERMARK_DOWNLOAD_CAT_LONG">
       <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>

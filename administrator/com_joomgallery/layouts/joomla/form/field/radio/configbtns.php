@@ -44,9 +44,9 @@ extract($displayData);
  * @var   array    $options         Options available for this field.
  * @var   string   $dataAttribute   Miscellaneous data attributes preprocessed for HTML output
  * @var   array    $dataAttributes  Miscellaneous data attributes for eg, data-*.
+ * @var   bool     $globvalue       Calculated global inherited value
  */
 
-$comp        = Factory::getApplication()->bootComponent('com_joomgallery');
 $alt         = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $name);
 $isBtnGroup  = strpos(trim($class), 'btn-group') !== false;
 $isBtnYesNo  = strpos(trim($class), 'btn-group-yesno') !== false;
@@ -55,9 +55,12 @@ $btnClass    = $isBtnGroup ? 'btn btn-outline-secondary' : 'form-check-label';
 $blockStart  = $isBtnGroup ? '' : '<div class="form-check">';
 $blockEnd    = $isBtnGroup ? '' : '</div>';
 
-// Catch config name from form field name
-$configName_arr = explode('jg_', $name);
-$configName = preg_split('/[!"`#%&.,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+/', end($configName_arr))[0];
+// Set global value in first option
+if(strpos($options[0]->text, '%s') !== false)
+{
+  $globvalue         = $globvalue ? Text::_('JYES') : Text::_('JNO');
+  $options[0]->text  = str_replace('%s', $globvalue, $options[0]->text);
+}
 
 // Add the attributes of the fieldset in an array
 $containerClass = trim($class . ' radio' . ($readonly || $disabled ? ' disabled' : '') . ($readonly ? ' readonly' : ''));
@@ -82,21 +85,6 @@ if ($readonly || $disabled) {
 
 if ($dataAttribute) {
     $attribs[] = $dataAttribute;
-}
-
-// Guess context
-if(Factory::getApplication()->input->getCmd('task', 'display') == 'display')
-{
-  $view      = Factory::getApplication()->input->getCmd('view', 'images');
-  $contextID = Factory::getApplication()->input->getInt('id', 0);
-}
-
-// Load config service
-$config = false;
-if(!empty($view) && $contextID > 0 && in_array($view, array('image', 'category')))
-{
-  $config = true;
-  $comp->createConfig('com_joomgallery.'.$view, $contextID, false);
 }
 
 ?>
@@ -143,15 +131,7 @@ if(!empty($view) && $contextID > 0 && in_array($view, array('image', 'category')
                 <?php endif; ?>
                 <input class="<?php echo $classToggle; ?>" type="radio" id="<?php echo $oid; ?>" name="<?php echo $name; ?>" value="<?php echo $ovalue; ?>" <?php echo implode(' ', $attributes); ?>>
                 <label for="<?php echo $oid; ?>" class="<?php echo trim($optionClass); ?>"<?php echo $style; ?>>
-                    <?php
-                      $val = false;
-                      if($config)
-                      {
-                        $val = $comp->getConfig()->get($configName, false);
-                      }
-                      $val = $val ? Text::_('JYES') : Text::_('JNO');
-                    ?>
-                    <?php echo str_replace('%s', $val, $option->text); ?>
+                    <?php echo $option->text; ?>
                 </label>
             <?php echo $blockEnd; ?>
         <?php endforeach; ?>
