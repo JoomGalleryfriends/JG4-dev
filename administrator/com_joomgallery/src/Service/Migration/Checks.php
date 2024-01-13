@@ -199,7 +199,7 @@ class Checks
 
         if($this->message === '')
         {
-          $this->message = $title . ' (' . $desc . ')';
+          $this->message = $title;
         }
       }
       else
@@ -207,7 +207,7 @@ class Checks
         if($warning && $this->message === '')
         {
           // Add message if there is a warning
-          $this->message = $title . ' (' . $desc . ')';
+          $this->message = $title;
         }
       }
     }
