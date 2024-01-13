@@ -671,6 +671,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   */
   public function scriptSpecificChecks(string $type, Checks &$checks, string $category)
   {
+    $this->component->createConfig();
+
     if($type == 'pre')
     {
       // Get source db info
@@ -697,10 +699,10 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
       //------------------------
 
-      // Check catpath of JG3 category table if they are consistent
-      // Scheme: parent-paht/alias_cid
-      if($this->params->get('same_joomla', 1) == 1)
+      if($this->params->get('new_dirs', 1) == 1)
       {
+        // We want to use the new folder structure style
+        // Check catpath of JG3 category table if they are consistent and convertable
         $query = $db->getQuery(true)
                 ->select($db->quoteName(array('cid', 'alias', 'parent_id', 'catpath')))
                 ->from($db->quoteName($cattablename))
@@ -723,6 +725,15 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         if(\count($inconsistent) > 0)
         {
           $checks->addCheck($category, 'src_table_cat_path', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH_DESC', \implode(', ', $inconsistent)));
+        }
+      }
+      else
+      {
+        // We want to use the old folder structure style
+        // Check if compatibility mode is activated
+        if($this->component->getConfig()->get('jg_compatibility_mode', 0) == 0)
+        {
+          $checks->addCheck($category, 'compatibility_mode', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE'), Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE_DESC'));
         }
       }
 
@@ -784,7 +795,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $cat->catpath = \str_replace(\DIRECTORY_SEPARATOR, '/', $cat->catpath);
     $catpath_arr  = \explode('/', $cat->catpath);
     $catpath      = \end($catpath_arr);
-    $parentpath   = \rtrim($cat->catpath, $catpath);
+    $parentpath   = \rtrim($cat->catpath, '/'.$catpath);
 
     // Prepare alias
     $cat->alias = \str_replace(\DIRECTORY_SEPARATOR, '/', $cat->alias);
