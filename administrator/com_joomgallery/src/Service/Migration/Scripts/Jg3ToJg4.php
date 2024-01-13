@@ -683,7 +683,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       // Check if imgfilename and imgthumbname are the same
       $query = $db->getQuery(true)
               ->select($db->quoteName(array('id')))
-              ->from($tablename)
+              ->from($db->quoteName($tablename))
               ->where($db->quoteName('imgfilename') . ' != ' . $db->quoteName('imgthumbname'));
       $db->setQuery($query);
 
@@ -698,11 +698,12 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       //------------------------
 
       // Check catpath of JG3 category table if they are consistent
+      // Scheme: parent-paht/alias_cid
       if($this->params->get('same_joomla', 1) == 1)
       {
         $query = $db->getQuery(true)
-                ->select($db->quoteName(array('cid', 'alias', 'catpath')))
-                ->from($cattablename)
+                ->select($db->quoteName(array('cid', 'alias', 'parent_id', 'catpath')))
+                ->from($db->quoteName($cattablename))
                 ->where($db->quoteName('level') . ' > 0 ');
         $db->setQuery($query);
 
@@ -773,17 +774,43 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * 
    * @param   \stdClass   $cat   Category object
    *
-   * @return  bool        True if catpath is correct, false otherwise  
+   * @return  bool        True if catpath is correct, false otherwise
    *
    * @since   4.0.0
   */
   protected function checkCatpath(\stdClass $cat): bool
   {
+    // Prepare catpath
     $cat->catpath = \str_replace(\DIRECTORY_SEPARATOR, '/', $cat->catpath);
     $catpath_arr  = \explode('/', $cat->catpath);
     $catpath      = \end($catpath_arr);
+    $parentpath   = \rtrim($cat->catpath, $catpath);
 
-    if($catpath !== $cat->alias.'_'.$cat->cid)
+    // Prepare alias
+    $cat->alias = \str_replace(\DIRECTORY_SEPARATOR, '/', $cat->alias);
+    $alias_arr  = \explode('/', $cat->alias);
+    $alias      = \end($alias_arr);
+
+    // Check for alias_cid
+    if($catpath !== $alias.'_'.$cat->cid)
+    {
+      return false;
+    }
+
+    // Get path of parent category
+    list($db, $dbPrefix)      = $this->getDB('source');
+    list($tablename, $pkname) = $this->getSourceTableInfo('category');
+
+    $query = $db->getQuery(true)
+                ->select($db->quoteName('catpath'))
+                ->from($db->quoteName($tablename))
+                ->where($db->quoteName('cid') . ' = '. $db->quote($cat->parent_id));
+    $db->setQuery($query);
+
+    $path = $db->loadResult();
+
+    // Check for parent-path
+    if($parentpath !== $path)
     {
       return false;
     }
