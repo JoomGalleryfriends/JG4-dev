@@ -1018,10 +1018,21 @@ class MigrationModel extends AdminModel
       }
     }
 
-    // Disable auto-incrementing record ID
-    if($isNew && !$autoID && \in_array($key, \array_keys($data)) && \method_exists($table, 'insertID'))
+    // Special case: Use source IDs. Insert dummy record and after bind data on it.
+    if($isNew && !$autoID && \in_array($key, \array_keys($data)))
     {
-      $table->insertID();
+      if(!$this->insertDummyRecord($type, $data[$key]))
+      {
+        // Insert dummy failed. Stop migration of this record.
+        return false;
+      }
+
+      if(!$table->load($data[$key]))
+      {
+        $this->component->setError($table->getError());
+
+        return false;
+      }
     }
 
     // Change language to 'All' if multilanguage is not enabled
@@ -1121,5 +1132,76 @@ class MigrationModel extends AdminModel
     }
 
     return true;
+  }
+
+  /**
+	 * Method to insert an empty dummy record with a given primary key
+	 *
+   * @param   string    $type    Name of the content type to insert.
+   * @param   int       $key     Primary key to use.
+	 *
+	 * @return  bool|int  Primary key of the created dummy record or false on failure
+	 *
+	 * @since   4.0.0
+	 */
+  protected function insertDummyRecord(string $type, int $key)
+  {
+    list($db, $dbPrefix) = $this->component->getMigration()->getDB('destination');
+    $date                = Factory::getDate();
+
+    // Create and populate a dummy object.
+    $record = new stdClass();
+    $record->id = $key;
+
+    $needed = array('image', 'category', 'comment', 'gallery', 'tag');
+    if(\in_array($type, $needed))
+    {
+      $record->description = '';
+    }
+    
+    $needed = array('image');
+    if(\in_array($type, $needed))
+    {
+      $record->date = $date->toSql();
+      $record->imgmetadata = '';
+      $record->filename = '';
+    }
+    
+    $needed = array('image', 'category', 'imagetype', 'user');
+    if(\in_array($type, $needed))
+    {
+      $record->params = '';
+    }
+
+    $needed = array('image', 'category', 'gallery');
+    if(\in_array($type, $needed))
+    {
+      $record->metadesc = '';
+      $record->metakey = '';
+    }
+    
+    $needed = array('image', 'category', 'field', 'tag', 'gallery', 'user', 'vote', 'comment');
+    if(\in_array($type, $needed))
+    {
+      $record->created_time = $date->toSql();
+    }
+
+    $needed = array('image', 'category', 'tag', 'gallery', 'comment');
+    if(\in_array($type, $needed))
+    {
+      $record->modified_time = $date->toSql();
+    }
+
+    // Insert the object into the user profile table.
+    if(!$db->insertObject(JoomHelper::$content_types[$type], $record))
+    {
+      $this->component->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DUMMY_RECORD', $type, $key));
+
+      return false;
+    }
+    else
+    {
+      return $key;
+    }
   }
 }
