@@ -833,11 +833,11 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $new_state = $this->app->getInput()->get('state', 0, 'int');
     $src_pk    = $this->app->getInput()->get('src_pk', 0, 'int');
     $dest_pk   = $this->app->getInput()->get('dest_pk', 0, 'int');
-    $dest_pk   = $this->app->getInput()->get('error', '', 'string');
-    $error_msg = $this->app->getInput()->get('confirmation', false, 'bool');
+    $error_msg = $this->app->getInput()->get('error', '', 'string');
+    $cofirm    = $this->app->getInput()->get('confirmation', false, 'bool');
     $json      = \json_decode(\base64_decode($this->app->getInput()->get('migrateable', '', 'string')), true);
 
-    if(!$cofirm || empty($src_pk) || empty($dest_pk))
+    if(!$cofirm || empty($src_pk) || ($new_state === 1 && empty($dest_pk)))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_FORMCHECK'), 'warning');
     }
