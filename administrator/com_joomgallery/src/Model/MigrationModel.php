@@ -1018,12 +1018,12 @@ class MigrationModel extends AdminModel
       }
     }
 
-    // Special case: Use source IDs. Insert dummy record and after bind data on it.
+    // Special case: Use source IDs. Insert dummy record with JDatabase before binding data on it.
     if($isNew && !$autoID && \in_array($key, \array_keys($data)))
     {
       if(!$this->insertDummyRecord($type, $data[$key]))
       {
-        // Insert dummy failed. Stop migration of this record.
+        // Insert dummy failed. Stop migration.
         return false;
       }
 

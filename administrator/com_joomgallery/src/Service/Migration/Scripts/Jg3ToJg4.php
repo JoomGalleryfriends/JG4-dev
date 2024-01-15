@@ -412,14 +412,18 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         return false;
       }
 
-      // Store new foldername
-      $newName = $cat->path;
+      // Get new foldername out of path
+      $newName = \basename($cat->path);
 
-      // Reset old foldername
-      $cat->path = $data['catpath'];
+      // Get old foldername out of static_path
+      $oldName = \basename($cat->static_path);
+
+      // Create dummy object for category Renaming
+      $tmp_cat       = new \stdClass();
+      $tmp_cat->path = \substr($cat->path, 0, strrpos($cat->path, \basename($cat->path))) . $oldName;
 
       // Rename existing folders
-      $res = $this->component->getFileManager()->renameCategory($cat, $newName);
+      $res = $this->component->getFileManager()->renameCategory($tmp_cat, $newName);
     }
     else
     {
@@ -794,15 +798,11 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   protected function checkCatpath(\stdClass $cat): bool
   {
     // Prepare catpath
-    $cat->catpath = \str_replace(\DIRECTORY_SEPARATOR, '/', $cat->catpath);
-    $catpath_arr  = \explode('/', $cat->catpath);
-    $catpath      = \end($catpath_arr);
-    $parentpath   = \rtrim($cat->catpath, '/'.$catpath);
+    $catpath    = \basename($cat->catpath);
+    $parentpath = \rtrim($cat->catpath, '/'.$catpath);
 
     // Prepare alias
-    $cat->alias = \str_replace(\DIRECTORY_SEPARATOR, '/', $cat->alias);
-    $alias_arr  = \explode('/', $cat->alias);
-    $alias      = \end($alias_arr);
+    $alias      = \basename($cat->alias);
 
     // Check for alias_cid
     if($catpath !== $alias.'_'.$cat->cid)
