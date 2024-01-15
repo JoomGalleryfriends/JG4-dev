@@ -412,27 +412,31 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         return false;
       }
 
-      // Get new foldername out of path
-      $newName = \basename($cat->path);
+      // Rename folders if needed
+      if($this->params->get('new_dirs', 1) == 1)
+      {
+        // Get new foldername out of path
+        $newName = \basename($cat->path);
 
-      // Get old foldername out of static_path
-      $oldName = \basename($cat->static_path);
+        // Get old foldername out of static_path
+        $oldName = \basename($cat->static_path);
 
-      // Create dummy object for category Renaming
-      $tmp_cat       = new \stdClass();
-      $tmp_cat->path = \substr($cat->path, 0, strrpos($cat->path, \basename($cat->path))) . $oldName;
+        // Create dummy object for category Renaming
+        $tmp_cat       = new \stdClass();
+        $tmp_cat->path = \substr($cat->path, 0, strrpos($cat->path, \basename($cat->path))) . $oldName;
 
-      // Rename existing folders
-      $res = $this->component->getFileManager()->renameCategory($tmp_cat, $newName);
+        // Rename existing folders
+        return $this->component->getFileManager()->renameCategory($tmp_cat, $newName);
+      }      
     }
     else
     {
       // Recreate, copy or move
       // Create new folders
-      $res = $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
+      return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
     }
 
-    return $res;
+    return true;
   }
 
   /**
