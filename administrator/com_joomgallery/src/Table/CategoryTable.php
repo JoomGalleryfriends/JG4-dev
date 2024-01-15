@@ -226,9 +226,6 @@ class CategoryTable extends Table implements VersionableTableInterface
       }
     }
 
-		// Support for multiple field: robots
-		$this->multipleFieldSupport($array, 'robots');
-
 		if(isset($array['params']) && is_array($array['params']))
 		{
 			$registry = new Registry;

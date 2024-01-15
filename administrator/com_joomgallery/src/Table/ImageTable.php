@@ -228,9 +228,6 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
-		// Support for multiple field: robots
-		$this->multipleFieldSupport($array, 'robots');
-
 		// Support for empty date field: date
 		if(!\key_exists('date', $array) || $array['date'] == '0000-00-00' || empty($array['date']))
 		{
@@ -367,9 +364,6 @@ class ImageTable extends Table implements VersionableTableInterface
 				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
-
-    // Support for multiple field: robots
-		$this->multipleFieldSupport($array, 'robots');
 
 		// Support for subform field params
     if(empty($this->params))

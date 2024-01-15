@@ -1150,8 +1150,15 @@ class MigrationModel extends AdminModel
     $date                = Factory::getDate();
 
     // Create and populate a dummy object.
-    $record = new stdClass();
+    $record = new \stdClass();
     $record->id = $key;
+
+    $needed = array('category');
+    if(\in_array($type, $needed))
+    {
+      $record->lft = 2147483644;
+      $record->rgt = 2147483645;
+    }
 
     $needed = array('image', 'category', 'comment', 'gallery', 'tag');
     if(\in_array($type, $needed))
