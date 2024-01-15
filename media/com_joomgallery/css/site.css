@@ -21,6 +21,16 @@
 }
 
 /* List view */
+.js-stools-container-bar.flex-start .btn-toolbar {
+  justify-content: flex-start;
+}
+.js-stools-container-bar.flex-end .btn-toolbar {
+  justify-content: flex-end;
+}
+.pagination-toolbar.text-center {
+  text-align: center !important;
+  justify-content: center;
+}
 .jg_minithumb {
   border: 0;
   height: 80px;

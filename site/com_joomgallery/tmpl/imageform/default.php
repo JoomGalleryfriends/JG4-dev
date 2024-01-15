@@ -50,13 +50,13 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
       <fieldset>
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'Details')); ?>
         <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Details', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
-          <?php echo $this->form->renderField('imgtitle'); ?>
+          <?php echo $this->form->renderField('title'); ?>
           <?php echo $this->form->renderField('alias'); ?>
           <?php echo $this->form->renderField('catid'); ?>
           <?php echo $this->form->renderField('published'); ?>
-          <?php echo $this->form->renderField('imgauthor'); ?>
+          <?php echo $this->form->renderField('author'); ?>
           <?php echo $this->form->renderField('language'); ?>
-          <?php echo $this->form->renderField('imgtext'); ?>
+          <?php echo $this->form->renderField('description'); ?>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
         <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING', true)); ?>
@@ -75,7 +75,7 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
 
         <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Images', Text::_('COM_JOOMGALLERY_IMAGES', true)); ?>
           <?php echo $this->form->renderField('filename'); ?>
-          <?php echo $this->form->renderField('imgdate'); ?>
+          <?php echo $this->form->renderField('date'); ?>
           <?php echo $this->form->renderField('imgmetadata'); ?>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
@@ -100,8 +100,8 @@ $canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
         <input type="hidden" name="jform[checked_out]" value="<?php echo isset($this->item->checked_out) ? $this->item->checked_out : ''; ?>" />
         <input type="hidden" name="jform[hits]" value="<?php echo isset($this->item->hits) ? $this->item->hits : ''; ?>" />
         <input type="hidden" name="jform[downloads]" value="<?php echo isset($this->item->downloads) ? $this->item->downloads : ''; ?>" />
-        <input type="hidden" name="jform[imgvotes]" value="<?php echo isset($this->item->imgvotes) ? $this->item->imgvotes : ''; ?>" />
-        <input type="hidden" name="jform[imgvotesum]" value="<?php echo isset($this->item->imgvotesum) ? $this->item->imgvotesum : ''; ?>" />
+        <input type="hidden" name="jform[votes]" value="<?php echo isset($this->item->votes) ? $this->item->votes : ''; ?>" />
+        <input type="hidden" name="jform[votesum]" value="<?php echo isset($this->item->votesum) ? $this->item->votesum : ''; ?>" />
         <input type="hidden" name="jform[approved]" value="<?php echo isset($this->item->approved) ? $this->item->approved : ''; ?>" />
         <input type="hidden" name="jform[useruploaded]" value="<?php echo isset($this->item->useruploaded) ? $this->item->useruploaded : ''; ?>" /> */ ?>
         

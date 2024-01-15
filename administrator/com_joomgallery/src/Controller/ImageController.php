@@ -168,7 +168,7 @@ class ImageController extends JoomFormController
       $this->setMessage($model->getError(), 'error');
       return false;
     }
-    $form->setFieldAttribute('imgtitle', 'required', false);
+    $form->setFieldAttribute('title', 'required', false);
     $form->setFieldAttribute('replacetype', 'required', true);
     $form->setFieldAttribute('image', 'required', true);
 

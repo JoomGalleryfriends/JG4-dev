@@ -16,6 +16,7 @@ use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Session\Session;
 use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 $app           = Factory::getApplication();
@@ -104,12 +105,12 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
 <p><?php echo nl2br($this->item->description); ?></p>
 
-<?php if(count($this->item->children) == 0 && count($this->item->images) == 0) : ?>
+<?php if(count($this->item->children->items) == 0 && count($this->item->images->items) == 0) : ?>
   <p><?php echo Text::_('No elements in this category...') ?></p>
 <?php endif; ?>
 
 <?php // Subcategories ?>
-<?php if(count($this->item->children) > 0) : ?>
+<?php if(count($this->item->children->items) > 0) : ?>
   <?php if($this->item->parent_id > 0) : ?>
     <h3><?php echo Text::_('COM_JOOMGALLERY_SUBCATEGORIES') ?></h3>
   <?php else : ?>
@@ -120,7 +121,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <div id="jg-loader"></div>
   <?php endif; ?>
     <div class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-subcategories" data-masonry="{ pollDuration: 175 }">
-      <?php foreach($this->item->children as $key => $subcat) : ?>
+      <?php foreach($this->item->children->items as $key => $subcat) : ?>
         <div class="jg-image">
           <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
@@ -146,19 +147,36 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php endif; ?>
 
 <?php // Images ?>
-<?php if(count($this->item->images) > 0) : ?>
+<?php if(count($this->item->images->items) > 0) : ?>
   <h3>Images</h3>
+  <?php if(!empty($this->item->images->filterForm)) : ?>
+    <?php // Show image filters ?>
+    <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.$this->item->id.'&Itemid='.$this->menu->id.'&limitstart=0'); ?>" method="post" name="adminForm" id="adminForm">
+      <?php
+        {
+          echo LayoutHelper::render('joomla.searchtools.default', array(
+            'view' => $this->item->images, 
+            'options' => array('showSelector' => false, 'filterButton' => false, 'showNoResults' => false, 'showSearch' => false, 'barClass' => 'flex-end')
+          ));
+        }
+      ?>
+      <input type="hidden" name="task" value=""/>
+      <input type="hidden" name="filter_order" value=""/>
+      <input type="hidden" name="filter_order_Dir" value=""/>
+      <?php echo HTMLHelper::_('form.token'); ?>
+    </form>
+  <?php endif; ?>
   <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
-  <div id="jg-loader"></div>
+    <div id="jg-loader"></div>
     <div class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
-      <?php foreach($this->item->images as $key => $image) : ?>
+      <?php foreach($this->item->images->items as $key => $image) : ?>
         <div class="jg-image">
           <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->imgtitle; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
+              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
               <?php if ( $caption_align != 'none' && $category_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
-                <?php echo $this->escape($image->imgtitle); ?>
+                <?php echo $this->escape($image->title); ?>
               </div>
               <?php endif; ?>
             </a>
@@ -167,7 +185,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <?php if ($this->config->get('jg_category_view_show_title', 0)) : ?>
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-              <?php echo $this->escape($image->imgtitle); ?>
+              <?php echo $this->escape($image->title); ?>
             </a>
             <?php endif; ?>
             <?php if ($this->config->get('jg_category_view_show_description', 0)) : ?>
@@ -188,6 +206,10 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
       <?php endforeach; ?>
     </div>
   </div>
+  <?php
+    // Show images pagination
+    echo $this->item->images->pagination->getListFooter();
+  ?>
 <?php endif; ?>
 
 <?php /*if($canAddImg) : ?>
@@ -213,7 +235,7 @@ function fadeImg () {
 </script>
 <?php endif; ?>
 
-<?php if(count($this->item->children) > 0 && $category_class == 'justified') : ?>
+<?php if(count($this->item->children->items) > 0 && $category_class == 'justified') : ?>
 <script>
 window.addEventListener('load', function () {
   const container = document.querySelector('.jg-subcategories');

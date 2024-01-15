@@ -14,15 +14,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Table\Asset;
-use \Joomla\CMS\Table\Nested as Table;
-use \Joomla\CMS\Versioning\VersionableTableInterface;
-use \Joomla\Database\DatabaseDriver;
-use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\CMS\Access\Access;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\CMS\Table\Nested as Table;
+use \Joomla\Database\DatabaseDriver;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -67,48 +67,6 @@ class CategoryTable extends Table implements VersionableTableInterface
 	}
 
   /**
-	 * Check if a field is unique
-	 *
-	 * @param   string   $field    Name of the field
-   * @param   integer  $parent   Parent category id (default=null)
-	 *
-	 * @return  bool    True if unique
-	 */
-	private function isUnique ($field, $parent=null)
-	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($db->quoteName($field))
-			->from($db->quoteName($this->_tbl))
-			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
-			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
-    
-    if($parent > 0)
-    {
-      $query->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent));
-    }    
-
-		$db->setQuery($query);
-		$db->execute();
-
-		return ($db->getNumRows() == 0) ? true : false;
-	}
-
-	/**
-	 * Get the type alias for the history table
-	 *
-	 * @return  string  The alias as described above
-	 *
-	 * @since   4.0.0
-	 */
-	public function getTypeAlias()
-	{
-		return $this->typeAlias;
-	}
-
-  /**
 	 * Resets the root_id property to the default value: 0
 	 *
 	 * @return  void
@@ -119,32 +77,6 @@ class CategoryTable extends Table implements VersionableTableInterface
   {
     self::$root_id = 0;
   }
-
-  /**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-  /**
-	 * Method to return the title to use for the asset table.
-	 *
-	 * @return  string
-	 *
-	 * @since   4.0.0
-	 */
-	protected function _getAssetTitle()
-	{
-		return $this->title;
-	}
 
 	/**
 	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
@@ -226,6 +158,16 @@ class CategoryTable extends Table implements VersionableTableInterface
 	{
 		$date = Factory::getDate();
 		$task = Factory::getApplication()->input->get('task', '', 'cmd');
+
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
 
 		if($array['id'] == 0)
 		{
@@ -368,35 +310,6 @@ class CategoryTable extends Table implements VersionableTableInterface
   }
 
 	/**
-	 * This function convert an array of Access objects into an rules array.
-	 *
-	 * @param   array  $jaccessrules  An array of Access objects.
-	 *
-	 * @return  array
-	 */
-	private function JAccessRulestoArray($jaccessrules)
-	{
-		$rules = array();
-
-		foreach($jaccessrules as $action => $jaccess)
-		{
-			$actions = array();
-
-			if($jaccess)
-			{
-				foreach($jaccess->getData() as $group => $allow)
-				{
-					$actions[$group] = ((bool)$allow);
-				}
-			}
-
-			$rules[$action] = $actions;
-		}
-
-		return $rules;
-	}
-
-	/**
 	 * Overloaded check function
 	 *
 	 * @return bool
@@ -412,7 +325,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 		// Check if alias is unique
 		if(!$this->isUnique('alias'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentAlias =  $this->alias;
 
 			while(!$this->isUnique('alias'))
@@ -422,12 +335,12 @@ class CategoryTable extends Table implements VersionableTableInterface
 		}
 
     // Check if title is unique inside this parent category
-		if(!$this->isUnique('title', $this->parent_id))
+		if(!$this->isUnique('title', $this->parent_id, 'parent_id'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentTitle =  $this->title;
 
-			while(!$this->isUnique('title', $this->parent_id))
+			while(!$this->isUnique('title', $this->parent_id, 'parent_id'))
       {
 				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}

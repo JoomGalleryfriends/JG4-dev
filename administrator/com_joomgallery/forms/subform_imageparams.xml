@@ -8,11 +8,11 @@
         />
 
         <field name="jg_dynamic_watermark"
-               type="radio"
+               type="jgradio"
                groupByFieldset="false"
                default="-1"
                class="btn-group btn-group-yesno"
-               layout="joomla.form.field.radio.configbtns"
+               useglobal="true"
                label="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK"
                description="COM_JOOMGALLERY_CONFIG_ADD_WATERMARK_IMG_LONG" >
             <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
@@ -21,10 +21,11 @@
         </field>
         
         <!-- <field name="jg_showexifdata"
-               type="radio"
+               type="jgradio"
                groupByFieldset="false"
                default="-1"
                class="btn-group btn-group-yesno"
+               useglobal="true"
                label="COM_JOOMGALLERY_CONFIG_SHOW_EXIFDATA" 
                description="COM_JOOMGALLERY_CONFIG_SHOW_EXIFDATA_IMG_LONG" >
             <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
@@ -33,10 +34,11 @@
         </field>
 
         <field name="jg_showiptcdata"
-               type="radio"
+               type="jgradio"
                groupByFieldset="false"
                default="-1"
                class="btn-group btn-group-yesno"
+               useglobal="true"
                label="COM_JOOMGALLERY_CONFIG_SHOW_IPTCDATA"
                description="COM_JOOMGALLERY_CONFIG_SHOW_IPTCDATA_IMG_LONG" >
             <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
@@ -45,10 +47,11 @@
         </field>
         
         <field name="jg_showgeotagging"
-               type="radio"
+               type="jgradio"
                groupByFieldset="false"
                default="-1"
                class="btn-group btn-group-yesno"
+               useglobal="true"
                label="COM_JOOMGALLERY_CONFIG_SHOW_GEOTAGGING"
                description="COM_JOOMGALLERY_CONFIG_SHOW_GEOTAGGING_IMG_LONG" >
             <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>

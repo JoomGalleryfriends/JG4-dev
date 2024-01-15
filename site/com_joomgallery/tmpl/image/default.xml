@@ -9,9 +9,9 @@
         <fieldset name="request" >
             <field name="id"
                    type="sql"
-                   query="SELECT `id`,`imgtitle` FROM #__joomgallery ORDER BY `id`"
+                   query="SELECT `id`,`title` FROM #__joomgallery ORDER BY `id`"
                    key_field="id"
-                   value_field="imgtitle"
+                   value_field="title"
                    label="COM_JOOMGALLERY_IMAGES"
                    require="true" >
             </field>

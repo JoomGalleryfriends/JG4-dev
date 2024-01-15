@@ -14,15 +14,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
-use Joomla\CMS\Event\AbstractEvent;
-use \Joomla\CMS\Versioning\VersionableTableInterface;
-use \Joomla\Database\DatabaseDriver;
-use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\CMS\Access\Access;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\Database\DatabaseDriver;
+use \Joomla\CMS\Event\AbstractEvent;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Versioning\VersionableTableInterface;
 
 /**
  * Image table
@@ -46,32 +46,6 @@ class ImageTable extends Table implements VersionableTableInterface
 		parent::__construct(_JOOM_TABLE_IMAGES, 'id', $db);
 
 		$this->setColumnAlias('published', 'published');
-	}
-
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Method to return the title to use for the asset table.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6
-	 */
-	protected function _getAssetTitle()
-	{
-		return $this->imgtitle;
 	}
 
 	/**
@@ -165,10 +139,20 @@ class ImageTable extends Table implements VersionableTableInterface
       $array['id'] = 0;
     }
 
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
+
 		// Support for alias field: alias
 		if(empty($array['alias']))
 		{
-			if(empty($array['imgtitle']))
+			if(empty($array['title']))
 			{
 				$array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
 			}
@@ -176,11 +160,11 @@ class ImageTable extends Table implements VersionableTableInterface
 			{
 				if(Factory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['imgtitle']));
+					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
 				}
 				else
 				{
-					$array['alias'] = OutputFilter::stringURLSafe(trim($array['imgtitle']));
+					$array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
 				}
 			}
 		}
@@ -246,24 +230,22 @@ class ImageTable extends Table implements VersionableTableInterface
 		// Support for multiple field: robots
 		$this->multipleFieldSupport($array, 'robots');
 
-		// Support for empty date field: imgdate
-		if(!\key_exists('imgdate', $array) || $array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
+		// Support for empty date field: date
+		if(!\key_exists('date', $array) || $array['date'] == '0000-00-00' || empty($array['date']))
 		{
-			$array['imgdate'] = $date->toSql();
-			$this->imgdate    = $date->toSql();
+			$array['date'] = $date->toSql();
+			$this->date    = $date->toSql();
 		}
 
 		if(isset($array['params']) && is_array($array['params']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['params']);
+			$registry = new Registry($array['params']);
 			$array['params'] = (string) $registry;
 		}
 
 		if(isset($array['metadata']) && is_array($array['metadata']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['metadata']);
+			$registry = new Registry($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
 
@@ -367,14 +349,14 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
     // Check if title is unique inside this category
-		if(!$this->isUnique('imgtitle', $this->catid))
+		if(!$this->isUnique('title', $this->catid, 'catid'))
 		{
 			$count = 2;
-			$currentTitle =  $this->imgtitle;
+			$currentTitle =  $this->title;
 
-			while(!$this->isUnique('imgtitle', $this->catid))
+			while(!$this->isUnique('title', $this->catid, 'catid'))
       {
-				$this->imgtitle = $currentTitle . ' (' . $count++ . ')';
+				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
 
@@ -400,7 +382,7 @@ class ImageTable extends Table implements VersionableTableInterface
       $this->metakey = $this->loadDefaultField('metakey');
     }
 
-    // Support for field metakey
+    // Support for field imgmetadata
     if(empty($this->imgmetadata))
     {
       $this->imgmetadata = $this->loadDefaultField('imgmetadata');

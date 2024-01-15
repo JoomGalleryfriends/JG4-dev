@@ -200,7 +200,7 @@ class PlgFinderJoomgalleryimages extends Adapter
 
 		// Check if we can use the supplied SQL query.
 		$query = $query instanceof DatabaseQuery ? $query : $db->getQuery(true)
-		->select('a.id, a.imgtitle AS title, a.imgtitle AS summary, 1 AS state, a.access AS access');
+		->select('a.id, a.title AS title, a.title AS summary, 1 AS state, a.access AS access');
 
 		$query->from($this->table . ' as a');
     

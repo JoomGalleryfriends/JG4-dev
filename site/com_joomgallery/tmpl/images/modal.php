@@ -65,16 +65,16 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
                   <?php // Spaceholder for thumbnail image ?>
                 </th>
                 <th scope="col" style="min-width:180px">
-                  <?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_TITLE', 'a.imgtitle', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('grid.sort',  'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
                   <?php echo HTMLHelper::_('grid.sort',  'JCATEGORY', 'a.catid', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('grid.sort',  'JAUTHOR', 'a.imgauthor', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('grid.sort',  'JAUTHOR', 'a.author', $listDirn, $listOrder); ?>
                 </th>
                 <th scope="col" class="w-10 d-none d-md-table-cell">
-                  <?php echo HTMLHelper::_('grid.sort',  'JDATE', 'a.imgdate', $listDirn, $listOrder); ?>
+                  <?php echo HTMLHelper::_('grid.sort',  'JDATE', 'a.date', $listDirn, $listOrder); ?>
                 </th>
                 <?php if (Multilanguage::isEnabled()) : ?>
                   <th scope="col" class="w-10 d-none d-md-table-cell">
@@ -132,8 +132,8 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
 
                 <th scope="row" class="has-context">
                   <div class="break-word">
-                    <a class="pointer button-select" href="#" data-image-value="<?php echo (int) $item->id; ?>" data-image-title="<?php echo $this->escape($item->imgtitle); ?>" data-image-field="<?php echo $this->escape($field); ?>">
-                      <?php echo $this->escape($item->imgtitle); ?>
+                    <a class="pointer button-select" href="#" data-image-value="<?php echo (int) $item->id; ?>" data-image-title="<?php echo $this->escape($item->title); ?>" data-image-field="<?php echo $this->escape($field); ?>">
+                      <?php echo $this->escape($item->title); ?>
                     </a>
 
                     <div class="small">
@@ -156,8 +156,8 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
                 </td>
 
                 <td class="small d-none d-md-table-cell">
-                  <?php if ($item->imgauthor) : ?>
-                    <?php echo $this->escape($item->imgauthor); ?>
+                  <?php if ($item->author) : ?>
+                    <?php echo $this->escape($item->author); ?>
                   <?php else : ?>
                     <?php echo Text::_('COM_JOOMGALLERY_NO_USER'); ?>
                   <?php endif; ?>
@@ -165,7 +165,7 @@ $imgRequired  = (int) $input->get('required', 0, 'int');
 
                 <td class="small d-none d-md-table-cell text-center">
                   <?php
-                    $date = $item->imgdate;
+                    $date = $item->date;
                     echo $date > 0 ? HTMLHelper::_('date', $date, Text::_('DATE_FORMAT_LC4')) : '-';
                   ?>
                 </td>

@@ -37,14 +37,14 @@
            class="readonly"
            label="COM_JOOMGALLERY_DOWNLOADS" />
 
-    <field name="imgvotes"
+    <field name="votes"
            type="text"
            readonly="true"
            default="0"
            class="readonly"
            label="COM_JOOMGALLERY_VOTES" />
 
-    <field name="imgvotesum"
+    <field name="votesum"
            type="text"
            readonly="true"
            default="0"
@@ -74,7 +74,7 @@
            label="COM_JOOMGALLERY_FORM_LBL_IMAGE_USERUPLOADED"
            hidden="true" />
 
-    <field name="imgtitle"
+    <field name="title"
            type="text"
            maxlength="255"
            filter="safehtml"
@@ -99,7 +99,7 @@
     <field name="alias"
            type="text"
            class="inputbox"
-           generator="imgtitle"
+           generator="title"
            label="JALIAS"
            description="JFIELD_ALIAS_DESC"
            maxlength="255" />
@@ -130,7 +130,7 @@
         <option value="1">JYES</option>
     </field>
 
-    <field name="imgauthor"
+    <field name="author"
            type="text"
            maxlength="50"
            filter="string"
@@ -155,7 +155,7 @@
         <option value="1">JYES</option>
     </field>
 
-    <field name="imgtext"
+    <field name="description"
            type="editor"
            rows="250"
            buttons="true"
@@ -286,7 +286,7 @@
         <option value="1">JYES</option>
     </field>
 
-    <field name="imgdate"
+    <field name="date"
            type="calendar"
            format="%Y-%m-%d"
            timeformat="24"
@@ -298,8 +298,8 @@
            weeknumbers="false"
            filltable="false"
            default=""
-           label="COM_JOOMGALLERY_IMGDATE"
-           description="COM_JOOMGALLERY_IMGDATE_DESC" />
+           label="COM_JOOMGALLERY_DATE"
+           description="COM_JOOMGALLERY_DATE_DESC" />
 
     <field name="imgmetadata"
            type="editor"

@@ -40,7 +40,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
   <div class="row title-alias form-vertical mb-3">
     <div class="col-12 col-md-4">
-      <?php echo $this->form->renderField('imgtitle'); ?>
+      <?php echo $this->form->renderField('title'); ?>
     </div>
     <div class="col-12 col-md-4">
       <?php echo $this->form->renderField('alias'); ?>
@@ -58,8 +58,8 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
   <div class="row">
 		<div class="col-lg-9">
 			<fieldset class="adminform">
-        <?php echo $this->form->getLabel('imgtext'); ?>
-				<?php echo $this->form->getInput('imgtext'); ?>
+        <?php echo $this->form->getLabel('description'); ?>
+				<?php echo $this->form->getInput('description'); ?>
 			</fieldset>
 		</div>
     <div class="col-lg-3">
@@ -99,11 +99,11 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
       <fieldset id="fieldset-images-data" class="options-form">
         <legend><?php echo Text::_('INFO'); ?></legend>
         <div>
-          <?php echo $this->form->renderField('imgauthor'); ?>
-          <?php echo $this->form->renderField('imgdate'); ?>
+          <?php echo $this->form->renderField('author'); ?>
+          <?php echo $this->form->renderField('date'); ?>
           <?php echo $this->form->renderField('hits'); ?>
           <?php echo $this->form->renderField('downloads'); ?>
-          <?php echo $this->form->renderField('imgvotes'); ?>
+          <?php echo $this->form->renderField('votes'); ?>
           <?php echo $this->form->renderField('rating'); ?>
           <?php echo $this->form->renderField('imgmetadata'); ?>
         </div>          
@@ -172,7 +172,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
   <input type="hidden" name="jform[uploader]" value="html" />
   <?php /* <input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
 	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-	<input type="hidden" name="jform[imgvotes]" value="<?php echo $this->item->imgvotes; ?>" />
+	<input type="hidden" name="jform[votes]" value="<?php echo $this->item->votes; ?>" />
 	<input type="hidden" name="jform[useruploaded]" value="<?php echo $this->item->useruploaded; ?>" /> */ ?>
 	<?php echo HTMLHelper::_('form.token'); ?>
 
@@ -199,24 +199,24 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
 
     <?php
       $imgURL   = '{';
-      $imgTitle = '{';
+      $title = '{';
 
       foreach($this->imagetypes as $key => $imagetype)
       {
         $imgURL   .= $imagetype->typename.':"'.JoomHelper::getImg($this->item, $imagetype->typename).'",';
-        $imgTitle .= $imagetype->typename.':"'.Text::_('COM_JOOMGALLERY_'.strtoupper($imagetype->typename)).'",';
+        $title .= $imagetype->typename.':"'.Text::_('COM_JOOMGALLERY_'.strtoupper($imagetype->typename)).'",';
       }
 
       $imgURL .= '}';
-      $imgTitle .= '}';
+      $title .= '}';
     ?>
     let imgURL   = <?php echo $imgURL; ?>;
-    let imgTitle = <?php echo $imgTitle; ?>;
+    let title = <?php echo $title; ?>;
 
-    modalTitle.innerHTML = imgTitle[typename];
+    modalTitle.innerHTML = title[typename];
     let body  = '<div class="joom-image center">'
     body      = body + '<div class="joom-loader"><img src="<?php echo Uri::root(true); ?>/media/system/images/ajax-loader.gif" alt="loading..."></div>';
-    body      = body + '<img src="' + imgURL[typename] + '" alt="' + imgTitle[typename] + '">';
+    body      = body + '<img src="' + imgURL[typename] + '" alt="' + title[typename] + '">';
     body      = body + '</div>';
     modalBody.innerHTML  = body;
 
