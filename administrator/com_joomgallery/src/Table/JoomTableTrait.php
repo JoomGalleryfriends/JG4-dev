@@ -103,6 +103,24 @@ trait JoomTableTrait
       }
     }
 
+    // Support for field metadesc
+    if(property_exists($this, 'metadesc'))
+    {
+      if(empty($this->metadesc))
+      {
+        $this->metadesc = $this->loadDefaultField('metadesc');
+      }
+    }
+
+    // Support for field metakey
+    if(property_exists($this, 'metakey'))
+    {
+      if(empty($this->metakey))
+      {
+        $this->metakey = $this->loadDefaultField('metakey');
+      }
+    }
+
 		return parent::check();
 	}
 

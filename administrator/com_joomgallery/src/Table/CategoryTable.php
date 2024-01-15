@@ -364,6 +364,18 @@ class CategoryTable extends Table implements VersionableTableInterface
       $this->params = new Registry($this->params);
     }
 
+    // Support for field metadesc
+    if(empty($this->metadesc))
+    {
+      $this->metadesc = $this->loadDefaultField('metadesc');
+    }
+
+    // Support for field metakey
+    if(empty($this->metakey))
+    {
+      $this->metakey = $this->loadDefaultField('metakey');
+    }
+
 		return parent::check();
 	}
 
