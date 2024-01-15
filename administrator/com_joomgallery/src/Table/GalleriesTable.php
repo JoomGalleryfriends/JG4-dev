@@ -121,6 +121,9 @@ class GalleriesTable extends Table
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
+    // Support for multiple field: robots
+		$this->multipleFieldSupport($array, 'robots');
+
     // Support for images
     if(!isset($this->images))
     {

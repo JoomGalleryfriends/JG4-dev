@@ -368,6 +368,9 @@ class ImageTable extends Table implements VersionableTableInterface
 			}
 		}
 
+    // Support for multiple field: robots
+		$this->multipleFieldSupport($array, 'robots');
+
 		// Support for subform field params
     if(empty($this->params))
     {
