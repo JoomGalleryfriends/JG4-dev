@@ -375,6 +375,12 @@ class ImageTable extends Table implements VersionableTableInterface
       $this->params = new Registry($this->params);
     }
 
+		// Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
+    }
+
     // Support for field metadesc
     if(empty($this->metadesc))
     {

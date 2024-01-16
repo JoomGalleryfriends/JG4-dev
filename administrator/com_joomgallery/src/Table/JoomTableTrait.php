@@ -94,10 +94,23 @@ trait JoomTableTrait
       }
     }
 
+    // Support for field description
+    if(property_exists($this, 'description'))
+    {
+      if(empty($this->description))
+      {
+        $this->description = $this->loadDefaultField('description');
+      }
+    }
+
 		// Support for subform field params
     if(property_exists($this, 'params'))
     {
-      if(is_array($this->params))
+      if(empty($this->params))
+      {
+        $this->params = $this->loadDefaultField('params');
+      }
+      elseif(is_array($this->params))
       {
         $this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
       }

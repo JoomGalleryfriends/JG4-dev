@@ -355,10 +355,20 @@ class CategoryTable extends Table implements VersionableTableInterface
     $manager    = JoomHelper::getService('FileManager');
     $this->path = $manager->getCatPath(0, false, $this->parent_id, $this->alias);
 
-    // Support for params field
+    // Support for subform field params
+    if(empty($this->params))
+    {
+      $this->params = $this->loadDefaultField('params');
+    }
     if(isset($this->params))
     {
       $this->params = new Registry($this->params);
+    }
+
+    // Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
     }
 
     // Support for field metadesc
