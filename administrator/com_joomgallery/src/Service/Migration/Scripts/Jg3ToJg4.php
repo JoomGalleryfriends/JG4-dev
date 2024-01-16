@@ -780,6 +780,21 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           }
         }
       }
+
+      //------------------------
+
+      // Check use case: Move/Copy/Recreate at same joomla, local filesystem at old folder structure
+      if($this->params->get('image_usage', 0) > 0)
+      {
+        if( $this->params->get('same_joomla', 1) == 1 &&
+            $this->params->get('new_dirs', 1) == 0 &&
+            $this->component->getConfig()->get('jg_filesystem', 'local-images') == 'local-images'
+          )
+        {
+          // Move/Copy/Recreate is not possible since source and destination folders are identical
+          $checks->addCheck($category, 'copy_identical_folders', false, false, Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR'));
+        }
+      }
     }
 
     if($type == 'post')
