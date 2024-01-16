@@ -512,6 +512,19 @@ class MigrationModel extends AdminModel
           ->from($db->quoteName($migrateable->get('src_table')))
           ->order($db->quoteName($migrateable->get('src_pk', 'id')) . ' ASC');
 
+    // Apply id filter (reordering queue)
+    if(\property_exists($migrateable, 'queue') && !empty($migrateable->queue))
+    {
+      $queue = (array) $migrateable->get('queue', array());
+      $query->where($db->quoteName($migrateable->get('src_pk', 'id')) . ' IN (' . implode(',', $queue) .')');
+    }
+
+    // Gather migration types info
+    if(empty($this->component->getMigration()->get('types')))
+    {
+      $this->component->getMigration()->getSourceTableInfo($type);
+    }
+
     // Apply ordering based on level if it is a nested type
     if($this->component->getMigration()->get('types')[$type]->get('nested'))
     {
@@ -893,6 +906,9 @@ class MigrationModel extends AdminModel
         {
           \array_push($table->queue, $src_pk);
         }
+
+        // Reordering queue
+        $table->queue = $this->getQueue($type, $table);
 
         break;
 
