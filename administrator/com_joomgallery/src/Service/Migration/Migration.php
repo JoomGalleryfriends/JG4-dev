@@ -1314,7 +1314,11 @@ abstract class Migration implements MigrationInterface
       if(\is_string($mapping[$key]) && !empty($mapping[$key]))
       {
         $data[$mapping[$key]] = $value;
-        unset($data[$key]);
+
+        if($key !== $mapping[$key])
+        {
+          unset($data[$key]);
+        }
 
         continue;
       }
