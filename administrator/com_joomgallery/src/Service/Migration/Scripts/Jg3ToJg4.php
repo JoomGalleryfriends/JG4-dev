@@ -240,7 +240,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
       case 'image':
         // Apply mapping for image table
-        $mapping  = array( 'id' => $id, 'asset_id' => false, 'alias' => false, 'imgfilename' => 'filename', 'imgthumbname' => false,
+        $mapping  = array( 'id' => $id, 'asset_id' => false, 'alias' => false, 'imgtitle' => 'title', 'imgtext' => 'description', 'imgauthor' => 'author',
+                           'imgdate' => 'date', 'imgfilename' => 'filename', 'imgvotes' => 'votes', 'imgvotesum' => 'votesum', 'imgthumbname' => false,
                            'owner' => $owner, 'params' => array('params', false, false)
                           );
 
