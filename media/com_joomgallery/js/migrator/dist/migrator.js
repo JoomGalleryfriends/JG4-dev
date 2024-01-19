@@ -545,9 +545,10 @@ let startTask = function(type, button) {
  * @returns void
  */
 let finishTask = function(type, button, formId) {
-  let bar      = document.getElementById('progress-'+type);
-  let startBtn = button;
-  let stopBtn  = document.getElementById('stopBtn-'+type);
+  let bar        = document.getElementById('progress-'+type);
+  let startBtn   = button;
+  let stopBtn    = document.getElementById('stopBtn-'+type);
+  let dependency = document.getElementById('dependent_of-'+type);
 
   // Update migrateablesList
   getNextMigrationID(formId);
@@ -569,10 +570,16 @@ let finishTask = function(type, button, formId) {
 
   // If migration is completed
   if(migrateablesList[type]['completed']) {
-    // Update next start button
-    enableNextBtn(type, button);
-    // Update step 4 button
-    updateStep4Btn();
+    dependency = JSON.parse(dependency.innerHTML);
+    if(dependency.length > 0) {
+      // Reload page
+      location.reload();
+    } else {
+      // Update next start button
+      enableNextBtn(type, button);
+      // Update step 4 button
+      updateStep4Btn();
+    }    
   }
 }
 

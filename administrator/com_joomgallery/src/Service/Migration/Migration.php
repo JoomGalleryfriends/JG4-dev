@@ -163,9 +163,9 @@ abstract class Migration implements MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration, recordname)
+   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, ismigration, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: prerequirements, pkstoskip, ismigration, recordname
+   *                  Optional: dependent_on, pkstoskip, ismigration, recordname
    * 
    * @since   4.0.0
    */
@@ -173,7 +173,7 @@ abstract class Migration implements MigrationInterface
   {
     // Content type definition array
     // Order of the content types must correspond to the migration order
-    // Pay attention to the prerequirements when ordering here !!!
+    // Pay attention to the dependent_on when ordering here !!!
 
     /* Example:
     $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
@@ -492,7 +492,7 @@ abstract class Migration implements MigrationInterface
 
       foreach($types as $key => $list)
       {
-        $type = new Type($key, $list);
+        $type = new Type($key, $list, $types);
 
         $this->types[$key] = $type;
       }
@@ -553,6 +553,22 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
+   * Returns a type object based on type name.
+   * 
+   * @param   string   $type   The content type name
+   *
+   * @return  Type     Type object
+   * 
+   * @since   4.0.0
+   */
+  public function getType(string $name): Type
+  {
+    $this->loadTypes();
+
+    return $this->types[$name];
+  }
+
+  /**
    * True if the given record has to be migrated
    * False to skip the migration for this record
    *
@@ -570,12 +586,12 @@ abstract class Migration implements MigrationInterface
     // Content types that require another type beeing migrated completely
     if(!empty($this->types[$type]))
     {
-      foreach($this->types[$type]->get('prerequirement') as $key => $req)
+      foreach($this->types[$type]->get('dependent_on') as $key => $req)
       {
         if(!$this->migrateables[$req] || !$this->migrateables[$req]->completed || $this->migrateables[$req]->failed->count() > 0)
         {
           $this->continue = false;
-          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('prerequirement'))));
+          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('dependent_on'))));
 
           return false;
         }

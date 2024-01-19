@@ -153,9 +153,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, prerequirements, pkstoskip, ismigration, recordname)
+   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, ismigration, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: prerequirements, pkstoskip, ismigration, recordname
+   *                  Optional: dependent_on, pkstoskip, ismigration, recordname
    * 
    * @since   4.0.0
    */
@@ -163,7 +163,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     // Content type definition array
     // Order of the content types must correspond to the migration order
-    // Pay attention to the prerequirements when ordering here !!!
+    // Pay attention to the dependent_on when ordering here !!!
     $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
                     'image' =>    array('#__joomgallery', 'id', false, true, array('category')),
                     'catimage' => array(_JOOM_TABLE_CATEGORIES, 'id', false, false, array('category', 'image'), array(1), false, 'category')

@@ -92,6 +92,7 @@ Text::script('SUCCESS');
                 <input type="hidden" name="migrateable" value="<?php echo base64_encode(json_encode($migrateable, JSON_UNESCAPED_UNICODE)); ?>"/>
                 <input type="hidden" name="script" value="<?php echo $this->script->name; ?>"/>
                 <?php echo HTMLHelper::_('form.token'); ?>
+                <span id="dependent_of-<?php echo $type; ?>" style="display: none;"><?php echo json_encode($this->dependencies[$key]); ?></span>
                 <div class="progress mb-2">
                   <div id="progress-<?php echo $type; ?>" class="progress-bar" style="width: <?php echo $migrateable->progress; ?>%" role="progressbar" aria-valuenow="<?php echo $migrateable->progress; ?>" aria-valuemin="0" aria-valuemax="100"><?php if($migrateable->progress > 0){echo $migrateable->progress.'%';}; ?></div>
                 </div>

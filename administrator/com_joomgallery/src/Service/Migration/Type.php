@@ -90,13 +90,24 @@ class Type
   protected $skip = array(0);
 
   /**
-   * List of content types that has to be migrated before this one.
+   * List of types this type depends on.
+   * They have to be migrated before this one.
    *
    * @var  array
    *
    * @since  4.0.0
    */
-  protected $prerequirement = array();
+  protected $dependent_on = array();
+
+  /**
+   * List of types depending on this type.
+   * This type has to be migrated before the dependent ones.
+   *
+   * @var  array
+   *
+   * @since  4.0.0
+   */
+  protected $dependent_of = array();
 
   /**
    * Is this migration type really a migration?
@@ -113,12 +124,13 @@ class Type
    * 
    * @param  string  $name  Name of this content type
    * @param  array   $list  Source types info created by Migration::defineTypes()
+   * @param  array   $lists List of source types info
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function __construct($name, $list)
+  public function __construct($name, $list, $lists=array())
   {
     $this->name       = $name;
     $this->recordName = $name;
@@ -135,7 +147,7 @@ class Type
 
     if(\count($list) > 4)
     {
-      $this->prerequirement = $list[4];
+      $this->dependent_on = $list[4];
     }
 
     if(\count($list) > 5)
@@ -159,5 +171,17 @@ class Type
     {
       $this->recordName = $list[7];
     }
+
+    // search for types depending on this one
+    if(!empty($lists))
+    {
+      foreach($lists as $type_name => $type_list)
+      {
+        if(\count($type_list) > 4 && !empty($type_list[4]) && in_array($name, $type_list[4]))
+        {
+          array_push($this->dependent_of, $type_name);
+        }
+      }
+    }    
   }
 }
