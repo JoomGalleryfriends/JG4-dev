@@ -700,12 +700,12 @@
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS_NOTE_DESC"
-            default=""
+            default="None"
             validate="options"
             showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
             >
-            <option value="">NONE</option>
-            <option value="boxed">COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS_BOXED</option>
+            <option value="None">NONE</option>
+            <option value="Boxed">COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS_BOXED</option>
         </field>
         <field
             name="jg_category_view_justified_height"
@@ -716,7 +716,7 @@
             step="1"
             label="COM_JOOMGALLERY_CONFIG_JUSTIFIED_HEIGHT"
             description="COM_JOOMGALLERY_CONFIG_JUSTIFIED_HEIGHT_NOTE_DESC"
-            filter="integer"
+            filter="int"
             showon="jg_category_view_class:justified"
         />
         <field
@@ -728,13 +728,42 @@
             step="1"
             label="COM_JOOMGALLERY_CONFIG_JUSTIFIED_GAP"
             description="COM_JOOMGALLERY_CONFIG_JUSTIFIED_GAP_NOTE_DESC"
-            filter="integer"
+            filter="int"
             showon="jg_category_view_class:justified"
+        />
+        <field
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_NUMBERS"
+            type="spacer"
+            name="spacer2"
+            hr="false"
+            >
+        </field>
+        <field
+            name="jg_category_view_numb_subcategories"
+            type="number"
+            default="12"
+            min="1"
+            max="999"
+            step="1"
+            label="COM_JOOMGALLERY_CONFIG_NUMB_SUBCATEGORIES"
+            description="COM_JOOMGALLERY_CONFIG_NUMB_SUBCATEGORIES_DESC"
+            filter="int"
+        />
+        <field
+            name="jg_category_view_numb_images"
+            type="number"
+            default="16"
+            min="1"
+            max="9999"
+            step="1"
+            label="COM_JOOMGALLERY_CONFIG_NUMB_IMAGES"
+            description="COM_JOOMGALLERY_CONFIG_NUMB_IMAGES_DESC"
+            filter="int"
         />
         <field
             label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
             type="spacer"
-            name="spacer2"
+            name="spacer3"
             hr="false"
             >
         </field>
@@ -745,8 +774,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_category_view_caption_align"
@@ -766,22 +795,20 @@
             label="JGLOBAL_DESCRIPTION"
             layout="joomla.form.field.radio.switcher"
             validate="options"
-            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_category_view_show_imgdate"
             type="radio"
-            label="COM_JOOMGALLERY_IMGDATE"
-            description="COM_JOOMGALLERY_IMGDATE_DESC"
+            label="COM_JOOMGALLERY_DATE"
+            description="COM_JOOMGALLERY_DATE_DESC"
             layout="joomla.form.field.radio.switcher"
             validate="options"
-            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_category_view_show_imgauthor"
@@ -790,10 +817,9 @@
             description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC"
             layout="joomla.form.field.radio.switcher"
             validate="options"
-            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_category_view_show_tags"
@@ -801,10 +827,9 @@
             label="COM_JOOMGALLERY_TAGS"
             layout="joomla.form.field.radio.switcher"
             validate="options"
-            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
     </fieldset>
 
@@ -816,8 +841,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_category"
@@ -826,8 +851,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_description"
@@ -836,19 +861,19 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_imgdate"
             type="radio"
-            label="COM_JOOMGALLERY_IMGDATE"
-            description="COM_JOOMGALLERY_IMGDATE_DESC"
+            label="COM_JOOMGALLERY_DATE"
+            description="COM_JOOMGALLERY_DATE_DESC"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_imgauthor"
@@ -858,8 +883,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_created_by"
@@ -869,8 +894,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_votes"
@@ -879,8 +904,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_rating"
@@ -889,8 +914,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_hits"
@@ -899,8 +924,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_downloads"
@@ -909,8 +934,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_tags"
@@ -919,8 +944,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field
             name="jg_detail_view_show_metadata"
@@ -929,8 +954,8 @@
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
     </fieldset>
   </fieldset>
