@@ -42,7 +42,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   repairTask: () => (/* binding */ repairTask),
 /* harmony export */   stopTask: () => (/* binding */ stopTask),
-/* harmony export */   submitTask: () => (/* binding */ submitTask)
+/* harmony export */   submitTask: () => (/* binding */ submitTask),
+/* harmony export */   updateMigrateablesList: () => (/* binding */ updateMigrateablesList)
 /* harmony export */ });
 // Selectors used by this script
 let typeSelector = 'data-type';
@@ -75,6 +76,39 @@ var continueState = true;
  * @var {Boolean}  forceStop
  */
 var forceStop = false;
+
+/**
+ * Adds all completed migrateables to list
+ * 
+ * @param {Object}  event     Event object
+ * @param {Object}  element   DOM element object
+ */
+let updateMigrateablesList = function() {
+  let types_inputs = document.getElementsByName('type');
+  let types = {};
+
+  // Add all available migrateables to types object
+  types_inputs.forEach((type) => {
+    if(Boolean(type.value)) {
+      types[type.value] = false;
+    }
+  });
+
+  // Loop through all migrateables
+  Object.keys(types).forEach(type => {
+    let formId = formIdTmpl + '-' + type;
+    let form   = document.getElementById(formId);
+
+    let migrateable = atob(form.querySelector('[name="migrateable"]').value);
+    migrateable = JSON.parse(migrateable);
+
+    if(migrateable['completed'])
+    {
+      // Add migrateable in list
+      migrateablesList[type] = migrateable;
+    }
+  });
+}
 
 /**
  * Submit the migration task by pressing the button
@@ -607,12 +641,14 @@ let enableNextBtn = function(type, button) {
     }
   }
 
-  // Get next button
-  let nextBtn = document.getElementById(buttonTmpl + '-' + next_type);
+  if(next_type !== '') {
+    // Get next button
+    let nextBtn = document.getElementById(buttonTmpl + '-' + next_type);
 
-  // Enable button
-  nextBtn.classList.remove('disabled');
-  nextBtn.removeAttribute('disabled');
+    // Enable button
+    nextBtn.classList.remove('disabled');
+    nextBtn.removeAttribute('disabled');
+  }
 }
 
 /**
@@ -633,7 +669,7 @@ let updateStep4Btn = function() {
 
   // Check if all migrateables are available and completed
   let tot_complete = true;
-  Object.keys(types).forEach(type => {    
+  Object.keys(types).forEach(type => {
     if(Boolean(migrateablesList[type])) {
       if(!migrateablesList[type]['completed'])
       {

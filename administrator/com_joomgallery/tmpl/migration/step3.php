@@ -160,4 +160,18 @@ Text::script('SUCCESS');
 
   echo HTMLHelper::_('bootstrap.renderModal', 'repair-modal-box', $options, $body);
   ?>
+
+  <script>
+    var callback = function(){
+      // document ready function;
+      Migrator.updateMigrateablesList();
+    }; //end callback
+    
+    if(document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll))
+    {
+      callback();
+    } else {
+      document.addEventListener("DOMContentLoaded", callback);
+    }
+  </script>
 </div>
