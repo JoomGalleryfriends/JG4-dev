@@ -63,7 +63,7 @@ class HtmlView extends JoomGalleryView
       else
       {
         // Try to load the migration params
-        $this->params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.params', null);
+        $this->params = $this->get('Params');
 
         // Check if migration params exist
         if(\is_null($this->params) && $this->layout != 'step1')

@@ -96,7 +96,48 @@ class MigrationModel extends AdminModel
   }
 
   /**
-	 * Method to set the migration parameters in the migration script.
+	 * Method to get the migration parameters from the userstate or from the database.
+	 *
+	 * @return  array  $params  The migration parameters entered in the migration form
+	 *
+	 * @since   4.0.0
+	 */
+  public function getParams()
+  {
+    // Try to load params from user state
+    $params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->scriptName.'.params', array());
+
+    // Load params from db if there are migrateables in database
+    $db    = $this->getDbo();
+    $query = $db->getQuery(true);
+
+    // Select the required fields from the table.
+    $query->select('a.params');
+    $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
+    $query->where($db->quoteName('script') . ' = ' . $db->quote($this->scriptName));
+
+    $db->setQuery($query);
+
+    try
+    {
+      $params_db = $db->loadResult();
+    }
+    catch (\RuntimeException $e)
+    {
+      $this->component->setError($e->getMessage());
+    }
+
+    if($params_db)
+    {
+      // Override params from user state with the one from db
+      $params = \json_decode($params_db, true);
+    }
+    
+    return $params;
+  }
+
+  /**
+	 * Method to set the migration parameters in the model and the migration script.
    * 
    * @param   array  $params  The migration parameters entered in the migration form
 	 *
@@ -111,8 +152,7 @@ class MigrationModel extends AdminModel
 
     if(\is_null($params))
     {
-      // Check the session for validated migration parameters
-      $params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$info->name.'.params', null);
+      $params = $this->getParams();
     }
 
     if(\is_null($params))
@@ -340,7 +380,7 @@ class MigrationModel extends AdminModel
   public function getItems(): array
   {
     // Get types from migration service
-    $types = $this->component->getMigration()->getTypes();
+    $types = $this->component->getMigration()->getTypeNames();
 
     // Get available types from db
     try
@@ -595,7 +635,7 @@ class MigrationModel extends AdminModel
 		$data = $this->app->getUserState($name.'.step2.data', array());
 
     // Check the session for validated migration parameters
-    $params = $this->app->getUserState($name.'.params', null);
+    $params = $this->getParams();
 
 		return (empty($params)) ? $data : $params;
 	}

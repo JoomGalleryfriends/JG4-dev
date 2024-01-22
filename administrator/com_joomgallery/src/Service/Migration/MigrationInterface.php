@@ -225,7 +225,7 @@ interface MigrationInterface
   public function getSourceTables(): array;
 
   /**
-   * Returns a list of involved content types.
+   * Returns a list of content type names available in this migration script.
    * (Optional in migration scripts, can be overwritten if required.)
    *
    * @return  Type[]   List of type names
@@ -233,7 +233,7 @@ interface MigrationInterface
    * 
    * @since   4.0.0
    */
-  public function getTypes(): array;
+  public function getTypeNames(): array;
 
   /**
    * Returns a type object based on type name.

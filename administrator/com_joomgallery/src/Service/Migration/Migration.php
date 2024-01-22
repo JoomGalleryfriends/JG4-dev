@@ -721,15 +721,20 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
-   * Returns a list of involved content types.
+   * Returns a list of content type names available in this migration script.
    *
    * @return  Type[]   List of type names
    *                   array('image', 'category', ...)
    * 
    * @since   4.0.0
    */
-  public function getTypes(): array
+  public function getTypeNames(): array
   {
+    if(\is_null($this->params))
+    {
+      throw new Exception('Migration parameters need to be set in order to load types.', 1);
+    }
+
     $types = $this->defineTypes(true);
 
     return $types;
@@ -1452,7 +1457,7 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkMigrationQueues(Checks &$checks, string $category)
   {
-    $types        = $this->getTypes();
+    $types        = $this->getTypeNames();
     $migrateables = $this->getMigrateables();
 
     // Check if all types are existent in migrateables
