@@ -928,8 +928,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     parent::getMigrateables();
 
-    if($this->params->get('source_ids', 0) == 1 && \key_exists('catimage', $this->migrateables))
+    if(!\is_null($this->params) && $this->params->get('source_ids', 0) == 1 && \key_exists('catimage', $this->migrateables))
     {
+      // Special case: When using ids from source, category images don't have to be adjusted.
       unset($this->migrateables['catimage']);
     }
 
