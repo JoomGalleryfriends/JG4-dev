@@ -163,9 +163,9 @@ abstract class Migration implements MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, ismigration, recordname)
+   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, insertrecord, queuetablename, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: dependent_on, pkstoskip, ismigration, recordname
+   *                  Optional: dependent_on, pkstoskip, insertrecord, queuetablename, recordname
    * 
    * @since   4.0.0
    */
@@ -174,6 +174,10 @@ abstract class Migration implements MigrationInterface
     // Content type definition array
     // Order of the content types must correspond to the migration order
     // Pay attention to the dependent_on when ordering here !!!
+    //
+    // Assumption for insertrecord:
+    // If insertrecord == true assumes, that type is a migration; Means reading data from source db and write it to destination db (default)
+    // If insertrecord == false assumes, that type is an adjustment; Means reading data from destination db adjust it and write it back to destination db
 
     /* Example:
     $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
@@ -207,6 +211,135 @@ abstract class Migration implements MigrationInterface
     */
 
     return $data;
+  }
+
+  /**
+   * - Load a queue of ids from a specific migrateable object
+   * - Reload/Reorder the queue if migrateable object already has queue
+   * 
+   * @param   string     $type         Content type
+   * @param   object     $migrateable  Mibrateable object
+   *
+   * @return  array
+   *
+   * @since   4.0.0
+   */
+  public function getQueue(string $type, object $migrateable=null): array
+  {
+    if(\is_null($migrateable))
+    {
+      if(!$migrateable  = $this->getMigrateable($type))
+      {
+        return array();
+      }
+    }
+
+    $this->loadTypes();
+
+    // Queue gets always loaded from source db
+    $tablename  = $this->types[$type]->get('queue_tablename');
+    $primarykey = $this->types[$type]->get('pk');
+
+    // Get db object
+    list($db, $prefix) = $this->getDB('source');
+
+    // Initialize query object
+		$query = $db->getQuery(true);
+
+    // Create the query
+    $query->select($db->quoteName($primarykey))
+          ->from($db->quoteName($tablename))
+          ->order($db->quoteName($primarykey) . ' ASC');
+
+    // Apply id filter
+    // Reorder the queue if queue is not empty
+    if(\property_exists($migrateable, 'queue') && !empty($migrateable->queue))
+    {
+      $queue = (array) $migrateable->get('queue', array());
+      $query->where($db->quoteName($primarykey) . ' IN (' . implode(',', $queue) .')');
+    }
+
+    // Gather migration types info
+    if(empty($this->get('types')))
+    {
+      $this->getSourceTableInfo($type);
+    }
+
+    // Apply ordering based on level if it is a nested type
+    if($this->get('types')[$type]->get('nested'))
+    {
+      $query->order($db->quoteName('level') . ' ASC');
+    }
+
+    $db->setQuery($query);
+
+    // Attempt to load the queue
+    try
+    {
+      return $db->loadColumn();
+    }
+    catch(\Exception $e)
+    {
+      $this->component->setError($e->getMessage());
+
+      return array();
+    }
+  }
+
+  /**
+   * Returns an associative array containing the record data from source.
+   *
+   * @param   string   $type   Name of the content type
+   * @param   int      $pk     The primary key of the content type
+   * 
+   * @return  array    Associated array of a record data
+   * 
+   * @since   4.0.0
+   */
+  public function getData(string $type, int $pk): array
+  {
+    $this->loadTypes();
+
+    if($this->get('types')[$type]->get('insertRecord'))
+    {
+      // When insertRecord is set to true, we assume that data gets loaded from source table
+      list($tablename, $primarykey) = $this->getSourceTableInfo($type);
+
+      // Get db object
+      list($db, $prefix) = $this->getDB('source');
+    }
+    else
+    {
+      // We assume that this migration is just a data adjustment inside the destination table
+      $tablename  = JoomHelper::$content_types[$this->get('types')[$type]->get('recordName')];
+      $primarykey = 'id';
+
+      // Get db object
+      list($db, $prefix) = $this->getDB('destination');
+    }
+    
+    // Initialize query object
+    $query = $db->getQuery(true);
+
+    // Create the query
+    $query->select('*')
+          ->from($db->quoteName($tablename))
+          ->where($db->quoteName($primarykey) . ' = ' . $db->quote($pk));
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+
+    // Attempt to load the array
+    try
+    {
+      return $db->loadAssoc();
+    }
+    catch(\Exception $e)
+    {
+      $this->component->setError($e->getMessage());
+
+      return array();
+    }
   }
 
   /**
@@ -255,7 +388,7 @@ abstract class Migration implements MigrationInterface
   /**
    * Returns a list of content types which can be migrated.
    *
-   * @return  array  List of content types
+   * @return  Migrationtable[]  List of content types
    * 
    * @since   4.0.0
    */
@@ -274,13 +407,63 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
+   * Returns an object of a specific content type which can be migrated.
+   *
+   * @param   string               $type       Name of the content type
+   * @param   string               $withQueue  True to load the queue if not available
+   * 
+   * @return  Migrationtable|bool  Object of the content types on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function getMigrateable(string $type, bool $withQueue = true)
+  {
+    if( !\key_exists($type, $this->migrateables) || empty($this->migrateables[$type]) ||
+        ($withQueue && empty($this->migrateables[$type]->queue))
+      )
+    {
+      // Get MigrationModel
+      $model = $this->component->getMVCFactory()->createModel('migration', 'administrator');
+
+      // Get list of migration ids
+      $mig_ids = $model->getIdList();
+
+      if(!empty($mig_ids))
+      {
+        // Detect id of the requested type
+        $id = 0;
+        foreach($mig_ids[$this->name] as $key => $mig)
+        {
+          if($mig->type == $type)
+          {
+            $id = $mig->id;
+          }
+        }
+
+        // Load migrateable
+        if($id > 0)
+        {
+          $this->migrateables[$type] = $model->getItem($id, $withQueue);
+
+          return $this->migrateables[$type];
+        }
+      }
+           
+    }
+
+    return false;
+  }
+
+  /**
    * Prepare the migration.
    *
+   * @param   string   $type   Name of the content type
+   * 
    * @return  MigrationTable  The currently processed migrateable
    * 
    * @since   4.0.0
    */
-  public function prepareMigration(string $type)
+  public function prepareMigration(string $type): object
   {
     // Load migrateables to migration service
     $this->getMigrateables();
@@ -540,7 +723,7 @@ abstract class Migration implements MigrationInterface
   /**
    * Returns a list of involved content types.
    *
-   * @return  array    List of type names
+   * @return  Type[]   List of type names
    *                   array('image', 'category', ...)
    * 
    * @since   4.0.0
@@ -776,8 +959,20 @@ abstract class Migration implements MigrationInterface
     $directories = $this->getSourceDirs();
     $root        = $this->getSourceRootPath();
 
+    $dirs_checked = array();
     foreach($directories as $dir)
     {
+      // Make sure, we check each directory only once
+      if(!\in_array($dir, $dirs_checked))
+      {
+        \array_push($dirs_checked, $dir);
+      }
+      else
+      {
+        // Table already checked. Skip check.
+        continue;
+      }
+
       $check_name = 'src_dir_' . \basename($dir);
 
       if(!\is_dir($root . $dir))
@@ -810,8 +1005,20 @@ abstract class Migration implements MigrationInterface
     // Get all imagetypes
     $imagetypes = JoomHelper::getRecords('imagetypes', $this->component);
 
+    $dirs_checked = array();
     foreach($imagetypes as $imagetype)
     {
+      // Make sure, we check each directory only once
+      if(!\in_array($imagetype, $dirs_checked))
+      {
+        \array_push($dirs_checked, $imagetype);
+      }
+      else
+      {
+        // Table already checked. Skip check.
+        continue;
+      }
+
       $check_name = 'dest_dir_' . $imagetype->typename;
       $error      = false;
 
@@ -873,8 +1080,20 @@ abstract class Migration implements MigrationInterface
 
     // Check required tables
     $tables = $this->getSourceTables();
+    $tables_checked = array();
     foreach($tables as $tablename)
     {
+      // Make sure, we check each table only once
+      if(!\in_array($tablename, $tables_checked))
+      {
+        \array_push($tables_checked, $tablename);
+      }
+      else
+      {
+        // Table already checked. Skip check.
+        continue;
+      }
+
       $check_name = 'src_table_' . $tablename;
 
       // Check if required tables exists
@@ -976,8 +1195,20 @@ abstract class Migration implements MigrationInterface
     }
 
     // Check required tables
+    $tables_checked = array();
     foreach($tables as $tablename)
     {
+      // Make sure, we check each table only once
+      if(!\in_array($tablename, $tables_checked))
+      {
+        \array_push($tables_checked, $tablename);
+      }
+      else
+      {
+        // Table already checked. Skip check.
+        continue;
+      }
+
       $check_name = 'dest_table_' . $tablename;
 
       // Check if required tables exists

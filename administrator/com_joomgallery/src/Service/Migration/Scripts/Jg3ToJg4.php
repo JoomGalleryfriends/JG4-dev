@@ -153,9 +153,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, ismigration, recordname)
+   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, insertrecord, queuetablename, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: dependent_on, pkstoskip, ismigration, recordname
+   *                  Optional: dependent_on, pkstoskip, insertrecord, queuetablename, recordname
    * 
    * @since   4.0.0
    */
@@ -166,7 +166,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Pay attention to the dependent_on when ordering here !!!
     $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
                     'image' =>    array('#__joomgallery', 'id', false, true, array('category')),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'id', false, false, array('category', 'image'), array(1), false, 'category')
+                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false, array('category', 'image'), array(1), false, '#__joomgallery_catg', 'category')
                   );
 
     if($names_only)
@@ -174,13 +174,20 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       return \array_keys($types);
     }
 
+    // add special cases if tables in the same db with *_old at the end
     if($this->params->get('same_db'))
     {
       foreach($types as $key => $value)
       {
         if(\count($value) < 7 || (\count($value) > 6 && $value[6] !== false))
         {
+          // insertrecord == true, we assume tablename is from source db
           $types[$key][0] = $value[0] . '_old';
+        }
+        elseif(\count($value) > 7 && !empty($value[7]) && $value[6] == false)
+        {
+          // insertrecord == false and queuetablename given, we assume queuetablename is from source db
+          $types[$key][7] = $value[7] . '_old';
         }
       }
     }
@@ -216,7 +223,6 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
     $owner = \boolval($this->params->get('check_owner', 0)) ? 'created_by' : false;
-    $path  = false;
 
     // Configure mapping for each content type
     switch($type)
@@ -305,43 +311,103 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Returns an associative array containing the record data from source.
+   * - Load a queue of ids from a specific migrateable object
+   * - Reload/Reorder the queue if migrateable object already has queue
+   * 
+   * @param   string     $type         Content type
+   * @param   object     $migrateable  Mibrateable object
    *
-   * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
-   * 
-   * @return  array    Associated array of a record data
-   * 
+   * @return  array
+   *
    * @since   4.0.0
    */
-  public function getData(string $type, int $pk): array
+  public function getQueue(string $type, object $migrateable=null): array
   {
-    // Get source table info
-    list($tablename, $primarykey) = $this->getSourceTableInfo($type);
+    if(\is_null($migrateable))
+    {
+      if(!$migrateable  = $this->getMigrateable($type))
+      {
+        return array();
+      }
+    }
+
+    $this->loadTypes();
+
+    // Queue gets always loaded from source db
+    $tablename  = $this->types[$type]->get('queue_tablename');
+    $primarykey = $this->types[$type]->get('pk');
 
     // Get db object
     list($db, $prefix) = $this->getDB('source');
-    $query             = $db->getQuery(true);
+
+    // Initialize query object
+		$query = $db->getQuery(true);
 
     // Create the query
-    $query->select('*')
+    $query->select($db->quoteName($primarykey))
           ->from($db->quoteName($tablename))
-          ->where($db->quoteName($primarykey) . ' = ' . $db->quote($pk));
+          ->order($db->quoteName($primarykey) . ' ASC');
 
-    // Reset the query using our newly populated query object.
+    // Apply additional where clauses for specific content types
+    if($type == 'catimage')
+    {
+      $query->where($db->quoteName($primarykey) . ' > 1');
+      $query->where($db->quoteName('thumbnail') . ' > 0');
+    }
+
+    // Apply id filter
+    // Reorder the queue if queue is not empty
+    if(\property_exists($migrateable, 'queue') && !empty($migrateable->queue))
+    {
+      $queue = (array) $migrateable->get('queue', array());
+      $query->where($db->quoteName($primarykey) . ' IN (' . implode(',', $queue) .')');
+    }
+
+    // Gather migration types info
+    if(empty($this->get('types')))
+    {
+      $this->getSourceTableInfo($type);
+    }
+
+    // Apply ordering based on level if it is a nested type
+    if($this->get('types')[$type]->get('nested'))
+    {
+      $query->order($db->quoteName('level') . ' ASC');
+    }
+
     $db->setQuery($query);
 
-    // Attempt to load the array
+    // Attempt to load the queue
+    $queue = array();
     try
     {
-      return $db->loadAssoc();
+      $queue = $db->loadColumn();
     }
     catch(\Exception $e)
     {
       $this->component->setError($e->getMessage());
-
-      return array();
     }
+
+    // Postprocessing the queue
+    $needs_postprocessing = array('catimage');
+    if(!empty($queue) && \in_array($type, $needs_postprocessing))
+    {
+      if($type == 'catimage' && !\boolval($this->params->get('source_ids', 0)))
+      {
+        $mig_cat = $this->getMigrateable('category', false);
+
+        if($mig_cat && $mig_cat->id > 0)
+        {
+          // Adjust catid with new created/migrates categories
+          foreach($queue as $key => $old_id)
+          {
+            $queue[$key] = $mig_cat->successful->get($old_id);
+          }
+        }
+      }
+    }
+
+    return $queue;
   }
 
   /**

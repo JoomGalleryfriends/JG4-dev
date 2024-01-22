@@ -215,15 +215,16 @@ class MigrationModel extends AdminModel
   }
 
   /**
-   * Method to get a migrateable record.
+   * Method to get a migrateable record by id.
    *
-   * @param   integer  $pk  The id of the primary key.
+   * @param   integer  $pk         The id of the primary key.
+   * @param   bool     $withQueue  True to load the queue if empty.
    *
-   * @return  CMSObject|boolean  Object on success, false on failure.
+   * @return  object|boolean  Object on success, false on failure.
    *
    * @since   4.0.0
    */
-  public function getItem($pk = null)
+  public function getItem($pk = null, $withQueue = true)
   {
     $item = parent::getItem($pk);
 
@@ -306,7 +307,7 @@ class MigrationModel extends AdminModel
     }
 
     // Add queue if empty
-    if(!$item->completed && (\is_null($item->queue) || empty($item->queue)))
+    if($withQueue && !$item->completed && (\is_null($item->queue) || empty($item->queue)))
     {
       // Load queue
       $item->queue = $this->getQueue($type, $item);
@@ -485,55 +486,7 @@ class MigrationModel extends AdminModel
    */
   public function getQueue($type, $table=null): array
   {
-    // Retreive script
-    $script = $this->getScript();
-
-    // Create a new query object.
-		list($db, $dbPrefix) = $this->component->getMigration()->getDB('source');
-		$query               = $db->getQuery(true);
-
-    if(!$script)
-    {
-      return $query;
-    }
-
-    if(\is_null($table))
-    {
-      $migrateables = $this->component->getMigration()->getMigrateables();
-      $migrateable  = $migrateables[$type];
-    }
-    else
-    {
-      $migrateable = $table;
-    }
-
-    // Select the required fields from the table.
-    $query->select($db->quoteName($migrateable->get('src_pk', 'id')))
-          ->from($db->quoteName($migrateable->get('src_table')))
-          ->order($db->quoteName($migrateable->get('src_pk', 'id')) . ' ASC');
-
-    // Apply id filter (reordering queue)
-    if(\property_exists($migrateable, 'queue') && !empty($migrateable->queue))
-    {
-      $queue = (array) $migrateable->get('queue', array());
-      $query->where($db->quoteName($migrateable->get('src_pk', 'id')) . ' IN (' . implode(',', $queue) .')');
-    }
-
-    // Gather migration types info
-    if(empty($this->component->getMigration()->get('types')))
-    {
-      $this->component->getMigration()->getSourceTableInfo($type);
-    }
-
-    // Apply ordering based on level if it is a nested type
-    if($this->component->getMigration()->get('types')[$type]->get('nested'))
-    {
-      $query->order($db->quoteName('level') . ' ASC');
-    }
-
-    $db->setQuery($query);
-
-    return $db->loadColumn();
+    return $this->component->getMigration()->getQueue($type, $table);
   }
 
   /**
@@ -1024,8 +977,8 @@ class MigrationModel extends AdminModel
     // Get table primary key name
     $key = $table->getKeyName();
 
-    // Special case: Only modification not creation of record
-    if(!$this->component->getMigration()->get('types')[$type]->get('isMigration') && $data[$key] > 0)
+    // Special case: Only modification no creation of record
+    if(!$this->component->getMigration()->get('types')[$type]->get('insertRecord') && $data[$key] > 0)
     {
       if($table->load($data[$key]))
       {

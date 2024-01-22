@@ -110,14 +110,23 @@ class Type
   protected $dependent_of = array();
 
   /**
-   * Is this migration type really a migration?
-   * True to perform a migration, false to perform a modification at destination
+   * Table name used to load the queue
+   *
+   * @var  string
+   *
+   * @since  4.0.0
+   */
+  protected $queue_tablename = '#__joomgallery';
+
+  /**
+   * Do we have to create/inert new database records for this type?
+   * If no this type is just an adjustment of data within the destination table.
    *
    * @var  boolean
    *
    * @since  4.0.0
    */
-  protected $isMigration = true;
+  protected $insertRecord = true;
 
   /**
    * Constructor
@@ -140,10 +149,11 @@ class Type
       throw new Exception('Type object needs a list of at least 4 entries as the second argument.', 1);
     }
 
-    $this->tablename   = $list[0];
-    $this->pk          = $list[1];
-    $this->nested      = $list[2];
-    $this->categorized = $list[3];
+    $this->tablename       = $list[0];
+    $this->queue_tablename = $list[0];
+    $this->pk              = $list[1];
+    $this->nested          = $list[2];
+    $this->categorized     = $list[3];    
 
     if(\count($list) > 4)
     {
@@ -164,15 +174,20 @@ class Type
 
     if(\count($list) > 6)
     {
-      $this->isMigration = $list[6];
+      $this->insertRecord = $list[6];
     }
 
     if(\count($list) > 7)
     {
-      $this->recordName = $list[7];
+      $this->queue_tablename = $list[7];
+    }    
+
+    if(\count($list) > 8)
+    {
+      $this->recordName = $list[8];
     }
 
-    // search for types depending on this one
+    // search for types depending on this type
     if(!empty($lists))
     {
       foreach($lists as $type_name => $type_list)

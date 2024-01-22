@@ -68,14 +68,14 @@ interface MigrationInterface
 
   /**
    * A list of content type definitions depending on migration source
-   * (Required in migration scripts. The order of the content types must correspond to its migration order.)
+   * (Required in migration scripts. The order of the content types must correspond to its migration order)
    * 
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, ismigration, recordname)
+   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, insertrecord, queuetablename, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: dependent_on, pkstoskip, ismigration, recordname
+   *                  Optional: dependent_on, pkstoskip, insertrecord, queuetablename, recordname
    * 
    * @since   4.0.0
    */
@@ -107,19 +107,6 @@ interface MigrationInterface
   public function getImageSource(array $data): array;
 
   /**
-   * Returns an associative array containing the record data from source.
-   * (Required in migration scripts.)
-   *
-   * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
-   * 
-   * @return  array    Record data
-   * 
-   * @since   4.0.0
-   */
-  public function getData(string $type, int $pk): array;
-
-  /**
    * Converts data from source into the structure needed for JoomGallery.
    * (Optional in migration scripts, but highly recommended.)
    *
@@ -131,6 +118,32 @@ interface MigrationInterface
    * @since   4.0.0
    */
   public function convertData(string $type, array $data): array;
+
+    /**
+   * Load the a queue of ids from a specific migrateable object
+   * (Optional in migration scripts, but needed if queues have to be specially threated.)
+   * 
+   * @param   string     $type         Content type
+   * @param   object     $migrateable  Mibrateable object
+   *
+   * @return  array
+   *
+   * @since   4.0.0
+   */
+  public function getQueue(string $type, object $migrateable=null): array;
+
+    /**
+   * Returns an associative array containing the record data from source.
+   * (Optional in migration scripts, can be overwritten if required.)
+   *
+   * @param   string   $type   Name of the content type
+   * @param   int      $pk     The primary key of the content type
+   * 
+   * @return  array    Record data
+   * 
+   * @since   4.0.0
+   */
+  public function getData(string $type, int $pk): array;
 
   /**
    * Perform pre migration checks.
@@ -176,6 +189,18 @@ interface MigrationInterface
   public function getMigrateables(): array;
 
   /**
+   * Returns an object of a specific content type which can be migrated.
+   *
+   * @param   string               $type       Name of the content type
+   * @param   string               $withQueue  True to load the queue if not available
+   * 
+   * @return  Migrationtable|bool  Object of the content types on success, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function getMigrateable(string $type, bool $withQueue = true);
+
+  /**
    * Returns tablename and primarykey name of the source table
    * (Optional in migration scripts, can be overwritten if required.)
    *
@@ -203,12 +228,24 @@ interface MigrationInterface
    * Returns a list of involved content types.
    * (Optional in migration scripts, can be overwritten if required.)
    *
-   * @return  array    List of type names
+   * @return  Type[]   List of type names
    *                   array('image', 'category', ...)
    * 
    * @since   4.0.0
    */
   public function getTypes(): array;
+
+  /**
+   * Returns a type object based on type name.
+   * (Optional in migration scripts, can be overwritten if required.)
+   * 
+   * @param   string   $type   The content type name
+   *
+   * @return  Type     Type object
+   * 
+   * @since   4.0.0
+   */
+  public function getType(string $name): Type;
 
   /**
    * True if the given record has to be migrated
