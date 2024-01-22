@@ -287,7 +287,14 @@ class MigrationModel extends AdminModel
       if(\key_exists($type, JoomHelper::$content_types))
       {
         $item->dst_table = JoomHelper::$content_types[$type];
-      }      
+      }
+      // else
+      // {
+      //   // We have a migrateable record whos name does not correspond to the record name
+      //   $type_obj = $this->component->getMigration()->getType($type);
+
+      //   $item->dst_table = JoomHelper::$content_types[$type_obj->get('recordName')];
+      // }
       $item->dst_pk    = 'id';
     }
 

@@ -916,4 +916,23 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     return true;
   }
+
+  /**
+   * Returns a list of content types which can be migrated.
+   *
+   * @return  Migrationtable[]  List of content types
+   * 
+   * @since   4.0.0
+   */
+  public function getMigrateables(): array
+  {
+    parent::getMigrateables();
+
+    if($this->params->get('source_ids', 0) == 1 && \key_exists('catimage', $this->migrateables))
+    {
+      unset($this->migrateables['catimage']);
+    }
+
+    return $this->migrateables;
+  }
 }

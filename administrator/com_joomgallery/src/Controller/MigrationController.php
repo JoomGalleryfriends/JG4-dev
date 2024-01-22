@@ -146,7 +146,14 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     }
 
     // Get migrateables if available
-    $migrateables = $model->getMigrateables();
+    try
+    {
+      $migrateables = $model->getMigrateables();
+    }
+    catch(\Exception $e)
+    {
+      $migrateables = false;
+    }
 
     // Checkin migration records of this script
     if($migrateables)
