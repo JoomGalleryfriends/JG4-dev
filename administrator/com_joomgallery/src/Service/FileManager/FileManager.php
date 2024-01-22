@@ -1085,9 +1085,9 @@ class FileManager implements FileManagerInterface
   public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=false)
   {
     // We got a valid category object
-    if(\is_object($cat) && isset($cat->path))
+    if(\is_object($cat) && \property_exists($cat, 'path'))
     {
-      $path = $cat->path;
+      $path = $this->catReadPath($cat);
     }
     // We got a category path
     elseif(\is_string($cat) && $this->is_path($cat))
@@ -1112,21 +1112,21 @@ class FileManager implements FileManagerInterface
         return false;
       }
 
-      $path = $cat->path;
+      $path = $this->catReadPath($cat);
     }
     // We got a parent category plus alias
     elseif($parent && $alias)
     {
       // We got a valid parent category object
-      if(\is_object($parent) && isset($parent->path))
+      if(\is_object($parent) && \property_exists($parent, 'path'))
       {
-        if(empty($parent->path))
+        if(empty($this->catReadPath($parent)))
         {
           $path = $alias;
         }
         else
         {
-          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+          $path = $this->catReadPath($parent).\DIRECTORY_SEPARATOR.$alias;
         }
       }
       // We got a parent category path
@@ -1152,13 +1152,13 @@ class FileManager implements FileManagerInterface
           return false;
         }
 
-        if(empty($parent->path))
+        if(empty($this->catReadPath($parent)))
         {
           $path = $alias;
         }
         else
         {
-          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+          $path = $this->catReadPath($parent).\DIRECTORY_SEPARATOR.$alias;
         }
       }
     }
@@ -1347,5 +1347,28 @@ class FileManager implements FileManagerInterface
     }
 
     return true;
+  }
+
+  /**
+   * Get path from category object
+   * 
+   * @param   object  $cat  Category object
+   * 
+   * @return  string  Path to the category
+   * 
+   * @since   4.0.0
+   */
+  protected function catReadPath(object $cat): string
+  {
+    if($this->component->getConfig()->get('jg_compatibility_mode', 0) && !empty($cat->static_path))
+    {
+      // Compatibility mode active
+      return $cat->static_path;
+    }
+    else
+    {
+      // Standard method
+      return $cat->path;
+    }
   }
 }
