@@ -169,6 +169,12 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
                     'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false, array('category', 'image'), array(1), false, '#__joomgallery_catg', 'category')
                   );
 
+    if($this->params->get('source_ids', 0) == 1)
+    {
+      // Special case: When using ids from source, category images don't have to be adjusted.
+      unset($types['catimage']);
+    }
+
     if($names_only)
     {
       return \array_keys($types);
@@ -915,25 +921,5 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
 
     return true;
-  }
-
-  /**
-   * Returns a list of content types which can be migrated.
-   *
-   * @return  Migrationtable[]  List of content types
-   * 
-   * @since   4.0.0
-   */
-  public function getMigrateables(): array
-  {
-    parent::getMigrateables();
-
-    if(!\is_null($this->params) && $this->params->get('source_ids', 0) == 1 && \key_exists('catimage', $this->migrateables))
-    {
-      // Special case: When using ids from source, category images don't have to be adjusted.
-      unset($this->migrateables['catimage']);
-    }
-
-    return $this->migrateables;
   }
 }
