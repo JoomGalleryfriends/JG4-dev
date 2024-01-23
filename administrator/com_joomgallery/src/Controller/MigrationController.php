@@ -28,7 +28,6 @@ use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\Form\FormFactoryAwareInterface;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
-use stdClass;
 
 /**
  * Migration controller class.
@@ -218,6 +217,9 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       return false;
     }
 
+    // Load params
+    $model->setParams();
+
     // Get item to resume from the request.
     $cid = (array) $this->input->get('cid', [], 'int');
     $cid = \array_filter($cid);
@@ -306,6 +308,9 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Get the model.
       $model = $this->getModel();
+
+      // Load params
+      $model->setParams();
 
       // Attempt to load the migration item
       $item = $model->getItem($cid[0]);
@@ -901,7 +906,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 	 */
   protected function createRespond($data, bool $success = true, $error = null): string
   {
-    $obj = new stdClass;
+    $obj = new \stdClass;
 
     $obj->success  = $success;
     $obj->data     = $data;

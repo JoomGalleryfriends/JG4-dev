@@ -107,31 +107,34 @@ class MigrationModel extends AdminModel
     // Try to load params from user state
     $params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->scriptName.'.params', array());
 
-    // Load params from db if there are migrateables in database
-    $db    = $this->getDbo();
-    $query = $db->getQuery(true);
-
-    // Select the required fields from the table.
-    $query->select('a.params');
-    $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
-    $query->where($db->quoteName('script') . ' = ' . $db->quote($this->scriptName));
-
-    $db->setQuery($query);
-
-    try
+    if(!$params || empty($params))
     {
-      $params_db = $db->loadResult();
-    }
-    catch (\RuntimeException $e)
-    {
-      $this->component->setError($e->getMessage());
-    }
+      // Load params from db if there are migrateables in database
+      $db    = $this->getDbo();
+      $query = $db->getQuery(true);
 
-    if($params_db)
-    {
-      // Override params from user state with the one from db
-      $params = \json_decode($params_db, true);
-    }
+      // Select the required fields from the table.
+      $query->select('a.params');
+      $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
+      $query->where($db->quoteName('script') . ' = ' . $db->quote($this->scriptName));
+
+      $db->setQuery($query);
+
+      try
+      {
+        $params_db = $db->loadResult();
+      }
+      catch (\RuntimeException $e)
+      {
+        $this->component->setError($e->getMessage());
+      }
+
+      if($params_db && !empty($params_db))
+      {
+        // Override params from user state with the one from db
+        $params = \json_decode($params_db, true);
+      }
+    }    
     
     return $params;
   }
@@ -246,7 +249,7 @@ class MigrationModel extends AdminModel
 
     if(!$script)
     {
-      return false;
+      throw new \Exception('Migration script not found.');
     }
 
     $this->setParams();
@@ -328,13 +331,13 @@ class MigrationModel extends AdminModel
       {
         $item->dst_table = JoomHelper::$content_types[$type];
       }
-      // else
-      // {
-      //   // We have a migrateable record whos name does not correspond to the record name
-      //   $type_obj = $this->component->getMigration()->getType($type);
+      elseif($this->params && !empty($this->params))
+      {
+        // We have a migrateable record whos name does not correspond to the record name
+        $type_obj = $this->component->getMigration()->getType($type);
 
-      //   $item->dst_table = JoomHelper::$content_types[$type_obj->get('recordName')];
-      // }
+        $item->dst_table = JoomHelper::$content_types[$type_obj->get('recordName')];
+      }
       $item->dst_pk    = 'id';
     }
 
@@ -515,8 +518,10 @@ class MigrationModel extends AdminModel
 
     if(!$script)
     {
-      return false;
+      throw new \Exception('Migration script not found.');
     }
+
+    $this->setParams();
 
     return $this->component->getMigration()->get('sourceDeletion', false);
   }
@@ -534,37 +539,6 @@ class MigrationModel extends AdminModel
   public function getQueue($type, $table=null): array
   {
     return $this->component->getMigration()->getQueue($type, $table);
-  }
-
-  /**
-	 * Build an SQL query to load the list data.
-	 *
-	 * @return  DatabaseQuery
-	 *
-	 * @since   4.0.0
-	 */
-	protected function getListQuery()
-	{
-    // Retreive script
-    $script = $this->getScript();
-
-    // Create a new query object.
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
-
-    if(!$script)
-    {
-      return $query;
-    }
-
-    // Select the required fields from the table.
-		$query->select(array('a.id', 'a.type'));
-    $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
-
-    // Filter for the current script
-    $query->where($db->quoteName('a.script') . ' = ' . $db->quote($script->name));
-
-    return $query;
   }
 
   /**
@@ -616,30 +590,6 @@ class MigrationModel extends AdminModel
     return $form;
 	}
 
-	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed  The data for the form.
-	 *
-	 * @since   4.0.0
-	 */
-	protected function loadFormData()
-	{
-    if(!$this->component->getMigration())
-    {
-      $this->getScript();
-    }
-
-		// Check the session for previously entered form data.
-    $name = _JOOM_OPTION.'.migration.'.$this->component->getMigration()->get('name');
-		$data = $this->app->getUserState($name.'.step2.data', array());
-
-    // Check the session for validated migration parameters
-    $params = $this->getParams();
-
-		return (empty($params)) ? $data : $params;
-	}
-
   /**
 	 * Method to perform the pre migration checks.
    * 
@@ -651,7 +601,12 @@ class MigrationModel extends AdminModel
 	 */
   public function precheck($params)
   {
-    $info = $this->getScript();
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      throw new \Exception('Migration script not found.');
+    }
 
     // Set the migration parameters
     $this->setParams($params);
@@ -668,11 +623,17 @@ class MigrationModel extends AdminModel
 	 * @since   4.0.0
 	 */
   public function postcheck()
-  {   
-    // Prepare the migration object
-    $migs = $this->getMigrateables();
-    $keys = \array_keys($migs);
-    $this->setParams($migs[$keys[0]]->params);
+  {
+    // Retreive script
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      throw new \Exception('Migration script not found.');
+    }
+
+    // Set the migration parameters
+    $this->setParams();
 
     // Perform the postchecks
     return $this->component->getMigration()->postcheck();
@@ -690,13 +651,21 @@ class MigrationModel extends AdminModel
 	 */
   public function migrate(string $type, int $pk): object
   {
+    // Retreive script
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      throw new \Exception('Migration script not found.');
+    }
+
     // Initialise variables
     $new_pk    = $pk;
     $success   = true;
     $error_msg = '';
 
     // Prepare migration service and return migrateable object
-    $this->component->createMigration($this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd'));
+    $this->setParams();
     $mig = $this->component->getMigration()->prepareMigration($type);
 
     // Perform the migration of the element if needed
@@ -846,8 +815,16 @@ class MigrationModel extends AdminModel
 	 */
   public function applyState(string $type, int $state, int $src_pk, int $dest_pk = 0, string $error = ''): object
   {
+    // Retreive script
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      throw new \Exception('Migration script not found.');
+    }
+
     // Prepare migration service and return migrateable object
-    $this->component->createMigration($this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd'));
+    $this->setParams();
     $mig = $this->component->getMigration()->prepareMigration($type);
 
     // Load migration data table
@@ -983,13 +960,73 @@ class MigrationModel extends AdminModel
    */
   public function deleteSource()
   {
-    // Prepare the migration object
-    $migs = $this->getMigrateables();
-    $keys = \array_keys($migs);
-    $this->setParams($migs[$keys[0]]->params);
+    // Retreive script
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      throw new \Exception('Migration script not found.');
+    }
+
+    $this->setParams();
 
     // Delete sources
     return $this->component->getMigration()->deleteSource();
+  }
+
+  /**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  mixed  The data for the form.
+	 *
+	 * @since   4.0.0
+	 */
+	protected function loadFormData()
+	{
+    if(!$this->component->getMigration())
+    {
+      $this->getScript();
+    }
+
+		// Check the session for previously entered form data.
+    $name = _JOOM_OPTION.'.migration.'.$this->component->getMigration()->get('name');
+		$data = $this->app->getUserState($name.'.step2.data', array());
+
+    // Check the session for validated migration parameters
+    $params = $this->getParams();
+
+		return (empty($params)) ? $data : $params;
+	}
+
+  /**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @return  DatabaseQuery
+	 *
+	 * @since   4.0.0
+	 */
+	protected function getListQuery()
+	{
+    // Retreive script
+    $script = $this->getScript();
+
+    if(!$script)
+    {
+      throw new \Exception('Migration script not found.');
+    }
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    // Select the required fields from the table.
+		$query->select(array('a.id', 'a.type'));
+    $query->from($db->quoteName(_JOOM_TABLE_MIGRATION, 'a'));
+
+    // Filter for the current script
+    $query->where($db->quoteName('a.script') . ' = ' . $db->quote($script->name));
+
+    return $query;
   }
 
   /**
