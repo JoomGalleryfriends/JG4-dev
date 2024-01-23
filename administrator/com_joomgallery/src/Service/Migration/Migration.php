@@ -29,7 +29,6 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationInterface;
-use stdClass;
 
 /**
  * Migration Base Class
@@ -53,7 +52,7 @@ abstract class Migration implements MigrationInterface
   /**
 	 * Storage for the migration info object.
 	 *
-	 * @var   \stdClass
+	 * @var   object
 	 *
 	 * @since  4.0.0
 	 */
@@ -488,7 +487,7 @@ abstract class Migration implements MigrationInterface
    * Step 2
    * Perform pre migration checks.
    *
-   * @return  \stdClass[]  An array containing the precheck results.
+   * @return  object[]  An array containing the precheck results.
    * 
    * @since   4.0.0
    */
@@ -538,7 +537,7 @@ abstract class Migration implements MigrationInterface
    * Step 4
    * Perform post migration checks.
    *
-   * @return  void
+   * @return  object[]  An array containing the postcheck results.
    * 
    * @since   4.0.0
    */
