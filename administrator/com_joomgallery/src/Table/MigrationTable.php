@@ -284,7 +284,7 @@ class MigrationTable extends Table
     }   
 
     // Update completed property
-    if($total === $finished)
+    if($total === $finished || $total == 0)
     {
       $this->completed = true;
     }

@@ -361,6 +361,19 @@ class MigrationModel extends AdminModel
     {
       // Load queue
       $item->queue = $this->getQueue($type, $item);
+
+      // Calculate completed state
+      if(!isset($item->completed) || ($item->completed == false && empty($item->queue)))
+      {
+        $table = $this->getTable();
+        $table->queue      = $item->queue;
+        $table->successful = $item->successful;
+        $table->failed     = $item->failed;
+
+        $table->clcProgress();
+
+        $item->completed = $table->completed;
+      }
     }
 
     // Add params
