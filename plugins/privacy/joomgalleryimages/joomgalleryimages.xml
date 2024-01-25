@@ -23,6 +23,5 @@
     </config>
 
     <updateservers>
-        <server type="extension" priority="1" name="com_joomgallery">https://www.component-creator.com/index.php?task=builder.preupdatecheckhook&amp;option=com_combuilder&amp;component=NzMzOTAtMjAxMTE0</server>
     </updateservers>
 </extension>
