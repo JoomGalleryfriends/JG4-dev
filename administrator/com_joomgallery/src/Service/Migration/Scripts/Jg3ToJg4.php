@@ -351,8 +351,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     // Create the query
     $query->select($db->quoteName($primarykey))
-          ->from($db->quoteName($tablename))
-          ->order($db->quoteName($primarykey) . ' ASC');
+          ->from($db->quoteName($tablename));
 
     // Apply additional where clauses for specific content types
     if($type == 'catimage')
@@ -378,7 +377,12 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Apply ordering based on level if it is a nested type
     if($this->get('types')[$type]->get('nested'))
     {
-      $query->order($db->quoteName('level') . ' ASC');
+      //$query->order($db->quoteName('level') . ' ASC');
+      $query->order($db->quoteName('lft') . ' ASC');
+    }
+    else
+    {
+      $query->order($db->quoteName($primarykey) . ' ASC');
     }
 
     $db->setQuery($query);
