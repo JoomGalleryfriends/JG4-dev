@@ -13,13 +13,14 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Checks;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Migration;

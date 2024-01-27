@@ -13,17 +13,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Exception;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
-use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
-use \Joomla\Database\DatabaseInterface;
 use \Joomla\Database\DatabaseFactory;
+use \Joomla\Database\DatabaseInterface;
 use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
@@ -667,7 +665,7 @@ abstract class Migration implements MigrationInterface
     {
       if(\is_null($this->params))
       {
-        throw new Exception('Migration parameters need to be set in order to load types.', 1);
+        throw new \Exception('Migration parameters need to be set in order to load types.', 1);
       }
 
       $types = $this->defineTypes();
@@ -731,7 +729,7 @@ abstract class Migration implements MigrationInterface
   {
     if(\is_null($this->params))
     {
-      throw new Exception('Migration parameters need to be set in order to load types.', 1);
+      throw new \Exception('Migration parameters need to be set in order to load types.', 1);
     }
 
     $types = $this->defineTypes(true);
