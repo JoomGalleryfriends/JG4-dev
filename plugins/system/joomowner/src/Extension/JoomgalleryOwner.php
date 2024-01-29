@@ -12,6 +12,7 @@ namespace Joomgallery\Plugin\System\Joomowner\Extension;
 
 \defined('_JEXEC') or die;
 
+use Joomla\Event\Event;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\Priority;
@@ -19,6 +20,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Event\Result\ResultAwareInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -67,12 +69,17 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
 
   /**
    * Constructor
+   * 
+   * @param   DispatcherInterface  $dispatcher  The event dispatcher
+   * @param   array                $config      An optional associative array of configuration settings.
    *
    * @return  void
    * @since   4.0.0
    */
-  function __construct()
+  function __construct($dispatcher, $config)
   {
+    parent::__construct($dispatcher, $config);
+
     $defines = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
     require_once $defines;
 
@@ -115,51 +122,56 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    * Event triggered before a migrated record gets saved into the db.
    * Check if owner of JG record is valid and exists.
    *
-   * @param   string   $context  The context
-   * @param   object   &$table   The item
+   * @param   Event   $event
    *
    * @return  boolean  True to continue the save process, false to stop it
    *
    * @since   4.0.0
    */
-  public function onMigrationBeforeSave($context, &$table)
+  public function onMigrationBeforeSave(Event $event)
   {
+    [$context, &$table] = $event->getArguments();
+
     if(\strpos($context, 'com_joomgallery') !== 0)
     {
       // Do nothing if we are not handling joomgallery content
-      return true;
+      $this->setResult($event, true);
+
+      return;
     }
 
     // Guess the type of content
-    $typeAlias = \isset($table->typeAlias) ? $table->typeAlias : $context;
+    $typeAlias = isset($table->typeAlias) ? $table->typeAlias : $context;
     if(!$ownerField = $this->guessType($typeAlias))
     {
       // We couldnt guess the type of content we are dealing with
-      return true;
+      $this->setResult($event, true);
+
+      return;
     }
     
-    if(\isset($table->{$ownerField}) && !$this->isUserExists($table->{$ownerField}))
+    if(isset($table->{$ownerField}) && !$this->isUserExists($table->{$ownerField}))
     {
       // Provided user does not exist. Use fallback user instead.
       $table->{$ownerField} = (int) $this->params->get('fallbackUser');
     }
+
+    // Return the result
+		$this->setResult($event, true);
   }
 
   /**
    * Event triggered before an item gets saved into the db.
    * Check if owner of JG record is valid and exists.
    *
-   * @param   string   $context  The context
-   * @param   object   &$table   The item
-   * @param   boolean  $isNew    Is new item
-   * @param   array    $data     The validated data
-   *
-   * @return  boolean  True to continue the save process, false to stop it
+   * @param   Event   $event
    *
    * @since   4.0.0
    */
-  public function onContentBeforeSave($context, &$table, $isNew, $data)
+  public function onContentBeforeSave(Event $event)
   {
+    [$context, &$table, $isNew, $data] = $event->getArguments();
+
     if($context == 'com_plugins.plugin' && $table->name == 'plg_system_joomowner')
     {
       $newParams             = new Registry($table->params);
@@ -193,36 +205,45 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
     if(\strpos($context, 'com_joomgallery') !== 0)
     {
       // Do nothing if we are not handling joomgallery content
-      return true;
+      $this->setResult($event, true);
+
+      return;
     }
 
     // Guess the type of content
-    $typeAlias = \isset($table->typeAlias) ? $table->typeAlias : $context;
+    $typeAlias = isset($table->typeAlias) ? $table->typeAlias : $context;
     if(!$ownerField = $this->guessType($typeAlias))
     {
       // We couldnt guess the type of content we are dealing with
-      return true;
+		  $this->setResult($event, true);
+
+      return;
     }
 
-    if(\isset($table->{$ownerField}) && !$this->isUserExists($table->{$ownerField}))
+    if(isset($table->{$ownerField}) && !$this->isUserExists($table->{$ownerField}))
     {
       // Provided user does not exist. Use fallback user instead.
       $table->{$ownerField} = (int) $this->params->get('fallbackUser');
     }
+
+    // Return the result
+		$this->setResult($event, true);
   }
 
   /**
    * Event triggered before the user is deleted.
    * Handle JG records that are owned by the deleted user.
    *
-   * @param   array  $user
+   * @param   Event   $event
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function onUserBeforeDelete($user)
+  public function onUserBeforeDelete(Event $event)
   {
+    [$user] = $event->getArguments();
+
     $fallbackUser = $this->params->get('fallbackUser');
 
     if($user['id'] == $fallbackUser)
@@ -333,4 +354,30 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
 
     return '';
   }
+
+
+  /**
+   * Returns the plugin result
+   *
+   * @param   Event  $event  The event object
+   * @param   mixed  $value  The value to be added to the result
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  private function setResult(Event $event, $value): void
+	{
+		if($event instanceof ResultAwareInterface)
+    {
+			$event->addResult($value);
+			
+			return;
+		}
+
+		$result   = $event->getArgument('result', []) ?: [];
+		$result   = is_array($result) ? $result : [];
+		$result[] = $value;
+		$event->setArgument('result', $result);
+	}
 }
