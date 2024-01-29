@@ -117,14 +117,12 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    *
    * @param   string   $context  The context
    * @param   object   &$table   The item
-   * @param   boolean  $isNew    Is new item
-   * @param   array    $data     The validated data
    *
    * @return  boolean  True to continue the save process, false to stop it
    *
    * @since   4.0.0
    */
-  public function onMigrationBeforeSave($context, &$table, $isNew, $data)
+  public function onMigrationBeforeSave($context, &$table)
   {
     if(\strpos($context, 'com_joomgallery') !== 0)
     {
