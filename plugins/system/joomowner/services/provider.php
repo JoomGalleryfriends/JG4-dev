@@ -16,7 +16,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomgallery\Plugin\System\Extension\JoomgalleryOwner;
+use Joomgallery\Plugin\System\Joomowner\Extension\JoomgalleryOwner;
 
 return new class implements ServiceProviderInterface
 {

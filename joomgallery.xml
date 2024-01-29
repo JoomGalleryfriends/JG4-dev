@@ -77,10 +77,11 @@
     </config>
 
     <plugins>
-        <plugin group="finder" plugin="joomgalleryimages"/>
-        <plugin group="privacy" plugin="joomgalleryimages"/>
-        <plugin group="webservices" plugin="joomgallery"/>
+        <plugin group="system" plugin="joomowner"/>
+        <plugin group="privacy" plugin="joomgallery"/>
+        <!-- <plugin group="finder" plugin="joomgalleryimages"/>
         <plugin group="finder" plugin="joomgallerycategories"/>
+        <plugin group="webservices" plugin="joomgallery"/> -->
     </plugins>
 
     <updateservers>

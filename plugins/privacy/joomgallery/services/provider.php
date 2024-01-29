@@ -16,7 +16,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomgallery\Plugin\System\Privacy\Extension\JoomgalleryPrivacy;
+use Joomgallery\Plugin\Privacy\Joomgallery\Extension\JoomgalleryPrivacy;
 
 return new class implements ServiceProviderInterface
 {

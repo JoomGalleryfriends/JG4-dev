@@ -8,7 +8,7 @@
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
-namespace Joomgallery\Plugin\System\Privacy\Extension;
+namespace Joomgallery\Plugin\Privacy\Joomgallery\Extension;
 
 \defined('_JEXEC') or die;
 
