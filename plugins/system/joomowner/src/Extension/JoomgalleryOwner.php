@@ -204,10 +204,10 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
       return true;
     }
 
-    if(\isset($table->created_by) && !$this->isUserExists($table->created_by))
+    if(\isset($table->{$ownerField}) && !$this->isUserExists($table->{$ownerField}))
     {
       // Provided user does not exist. Use fallback user instead.
-      $table->created_by = (int) $this->params->get('fallbackUser');
+      $table->{$ownerField} = (int) $this->params->get('fallbackUser');
     }
   }
 
