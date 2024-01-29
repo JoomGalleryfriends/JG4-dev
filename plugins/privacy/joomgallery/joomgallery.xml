@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="privacy" version="4.0" method="upgrade">
+    <name>plg_privacy_joomgallery</name>
+    <creationDate>2021-12-27</creationDate>
+    <copyright>2008 - 2022  JoomGallery::ProjectTeam</copyright>
+    <license>GNU General Public License version 3 or later</license>
+    <author>JoomGallery::ProjectTeam</author>
+    <authorEmail>team@joomgalleryfriends.net</authorEmail>
+    <authorUrl>https://www.joomgalleryfriends.net/</authorUrl>
+    <version>4.0.0-dev</version>
+    <description>PLG_PRIVACY_JOOMGALLERY_XML_DESCRIPTION</description>
+    <namespace path="src">Joomgallery\Plugin\System\Privacy</namespace>
+    
+    <files>
+        <folder>services</folder>
+        <folder plugin="joomgallery">src</folder>
+    </files>
+
+    <languages>
+			<language tag="en-GB">language/en-GB/plg_privacy_joomgallery.ini</language>
+			<language tag="en-GB">language/en-GB/plg_privacy_joomgallery.sys.ini</language>
+    </languages>
+
+    <config>
+    </config>
+
+    <updateservers>
+        <server type="extension" priority="1" name="JoomGallery Privacy Plugin">https://www.joomgalleryfriends.net/components/com_newversion/xml/extensions3.xml</server>
+    </updateservers>
+</extension>
