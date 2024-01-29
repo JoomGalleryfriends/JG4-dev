@@ -226,7 +226,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
-    $owner = \boolval($this->params->get('check_owner', 0)) ? $this->types[$type]->get('owner') : false;
+    $owner = \boolval($this->params->get('check_owner', 1)) ? $this->types[$type]->get('owner') : false;
 
     // Configure mapping for each content type
     switch($type)
@@ -299,10 +299,10 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         break;
     }
 
-    // Strip owners with value zero (owner=0)
+    // Strip zero values for owners (owner=0)
     if(isset($data[$this->types[$type]->get('owner')]) && !$data[$this->types[$type]->get('owner')])
     {
-      // Owner is currently set to zero. Set it to be null
+      // Owner is currently set to zero or empty. Set it to be null
       $data[$this->types[$type]->get('owner')] = null;
     }
 
