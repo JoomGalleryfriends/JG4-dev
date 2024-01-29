@@ -203,7 +203,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
+		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
 			$array['created_by'] = Factory::getUser()->id;
 		}

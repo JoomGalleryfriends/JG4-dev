@@ -1136,8 +1136,13 @@ class MigrationModel extends AdminModel
       return false;
     }
 
+    // Trigger the onMigrationBeforeSave event
+    $event = new \Joomla\Event\Event('onMigrationBeforeSave', ['com_joomgallery.'.$recordType, $table]);
+    $this->getDispatcher()->dispatch($event->getName(), $event);
+    $results = $event->getArgument('result', []);
+
     // Store the data.
-    if(!$table->store()) 
+    if(\in_array(false, $results, true) || !$table->store())
     {
       $this->component->setError($table->getError());
 

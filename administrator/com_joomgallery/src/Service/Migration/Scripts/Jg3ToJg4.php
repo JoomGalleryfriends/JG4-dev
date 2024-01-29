@@ -154,9 +154,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * @param   bool    $names_only  True to load type names only. No migration parameters required.
    * 
    * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, dependent_on, pkstoskip, insertrecord, queuetablename, recordname)
+   *                  array(tablename, primarykey, isNested, isCategorized, owner, dependent_on, pkstoskip, insertrecord, queuetablename, recordname)
    *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: dependent_on, pkstoskip, insertrecord, queuetablename, recordname
+   *                  Optional: owner, dependent_on, pkstoskip, insertrecord, queuetablename, recordname
    * 
    * @since   4.0.0
    */
@@ -165,9 +165,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Content type definition array
     // Order of the content types must correspond to the migration order
     // Pay attention to the dependent_on when ordering here !!!
-    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, array(), array(1)),
-                    'image' =>    array('#__joomgallery', 'id', false, true, array('category')),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false, array('category', 'image'), array(1), false, '#__joomgallery_catg', 'category')
+    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, 'created_by', array(), array(1)),
+                    'image' =>    array('#__joomgallery', 'id', false, true, 'created_by', array('category')),
+                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false, 'created_by', array('category', 'image'), array(1), false, '#__joomgallery_catg', 'category')
                   );
 
     if($this->params->get('source_ids', 0) == 1)
@@ -186,15 +186,15 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     {
       foreach($types as $key => $value)
       {
-        if(\count($value) < 7 || (\count($value) > 6 && $value[6] !== false))
+        if(\count($value) < 8 || (\count($value) > 7 && $value[7] !== false))
         {
           // insertrecord == true, we assume tablename is from source db
           $types[$key][0] = $value[0] . '_old';
         }
-        elseif(\count($value) > 7 && !empty($value[7]) && $value[6] == false)
+        elseif(\count($value) > 8 && !empty($value[8]) && $value[7] == false)
         {
           // insertrecord == false and queuetablename given, we assume queuetablename is from source db
-          $types[$key][7] = $value[7] . '_old';
+          $types[$key][8] = $value[8] . '_old';
         }
       }
     }
@@ -224,12 +224,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
                                                     3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
     */
 
-    // The fieldname of owner (created_by)
-    $ownerFieldName = 'owner';
-
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
-    $owner = \boolval($this->params->get('check_owner', 0)) ? 'created_by' : false;
+    $owner = \boolval($this->params->get('check_owner', 0)) ? $this->types[$type]->get('owner') : false;
 
     // Configure mapping for each content type
     switch($type)
@@ -302,15 +299,11 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         break;
     }
 
-    // Check owner
-    if(\boolval($this->params->get('check_owner', 0)))
+    // Strip owners with value zero (owner=0)
+    if(isset($data[$this->types[$type]->get('owner')]) && !$data[$this->types[$type]->get('owner')])
     {
-      // Check if user with the provided userid exists
-      $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($data[$ownerFieldName]);
-      if(!$user || !$user->id)
-      {
-        $data[$ownerFieldName] = 0;
-      }
+      // Owner is currently set to zero. Set it to be null
+      $data[$this->types[$type]->get('owner')] = null;
     }
 
     // Apply mapping

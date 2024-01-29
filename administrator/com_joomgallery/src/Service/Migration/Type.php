@@ -63,6 +63,15 @@ class Type
   protected $pk = 'id';
 
   /**
+   * Name of the owner field
+   *
+   * @var  string
+   *
+   * @since  4.0.0
+   */
+  protected $owner = 'created_by';
+
+  /**
    * True if this content type is nested
    *
    * @var  boolean
@@ -157,34 +166,39 @@ class Type
 
     if(\count($list) > 4)
     {
-      $this->dependent_on = $list[4];
+      $this->owner = $list[4];
     }
 
     if(\count($list) > 5)
     {
-      if(\is_array($list[5]))
-      {
-        $this->skip = \array_merge($this->skip, $list[5]);
-      }
-      else
-      {
-        \array_push($this->skip, $list[5]);
-      }
+      $this->dependent_on = $list[5];
     }
 
     if(\count($list) > 6)
     {
-      $this->insertRecord = $list[6];
+      if(\is_array($list[6]))
+      {
+        $this->skip = \array_merge($this->skip, $list[6]);
+      }
+      else
+      {
+        \array_push($this->skip, $list[6]);
+      }
     }
 
     if(\count($list) > 7)
     {
-      $this->queue_tablename = $list[7];
-    }    
+      $this->insertRecord = $list[7];
+    }
 
     if(\count($list) > 8)
     {
-      $this->recordName = $list[8];
+      $this->queue_tablename = $list[8];
+    }    
+
+    if(\count($list) > 9)
+    {
+      $this->recordName = $list[9];
     }
 
     // search for types depending on this type
