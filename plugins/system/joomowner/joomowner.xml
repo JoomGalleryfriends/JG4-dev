@@ -18,6 +18,25 @@
     </files>
 
     <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="fallbackUser"
+                    type="user"
+                    label="PLG_SYSTEM_JOOMOWNER_FALLBACK_USER_LABEL"
+                    description="PLG_SYSTEM_JOOMOWNER_FALLBACK_USER_DESC"
+                    default="CURRENT"
+                />
+                <field name="userIdToChangeManualy"
+                    type="text"
+                    class="validate-numeric"
+                    maxlength="5"
+                    default=""
+                    label="PLG_SYSTEM_JOOMOWNER_ID_TO_CHANGE_MANUALY_LABEL"
+                    description="PLG_SYSTEM_JOOMOWNER_ID_TO_CHANGE_MANUALY_DESC"
+                    filter="INT"
+                />
+            </fieldset>
+        </fields>
     </config>
 
     <updateservers>
