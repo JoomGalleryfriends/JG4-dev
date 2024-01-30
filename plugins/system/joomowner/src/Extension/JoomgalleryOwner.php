@@ -15,7 +15,9 @@ namespace Joomgallery\Plugin\System\Joomowner\Extension;
 use Joomla\Event\Event;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
 use Joomla\Event\Priority;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -63,8 +65,7 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
                             'gallery'  => array('pl_name' => 'galleries'),
                             'image'    => array('pl_name' => 'images'),
                             'tag'      => array('pl_name' => 'tags'),
-                            'user'     => array('pl_name' => 'users'),
-                            'vote'     => array('pl_name' => 'votes')
+                            'user'     => array('pl_name' => 'users')
                           );
 
   /**
@@ -327,8 +328,7 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    */
   protected function isUserExists(int $userId): bool
   {
-    $com_users = $this->app->bootComponent('com_users');
-    $userTable = $com_users->getMVCFactory()->createTable('user', 'administrator');
+    $userTable = User::getTable();
 
     return $userTable->load((int) $userId) === true;
   }
