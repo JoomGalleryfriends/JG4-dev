@@ -243,7 +243,13 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    */
   public function onUserBeforeDelete(Event $event)
   {
+    // Joomla 4
     [$user] = $event->getArguments();
+    if(!$user)
+    {
+      // Joomla 5
+      $user = $event->getUser();
+    }
 
     $fallbackUser = $this->params->get('fallbackUser');
 
