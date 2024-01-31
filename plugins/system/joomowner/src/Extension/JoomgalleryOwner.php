@@ -52,6 +52,15 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
   protected $app = null;
 
   /**
+   * True if JoomGallery component is installed
+   *
+   * @var     int|bool
+   * 
+   * @since   4.0.0
+   */
+  protected static $jg_exists = null;
+
+  /**
    * List of tables connected to Joomla user table
    *
    * @var     array
@@ -81,25 +90,28 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
   {
     parent::__construct($dispatcher, $config);
 
-    $defines = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
-    require_once $defines;
-
-    foreach($this->tables as $name => $value)
+    if($this->isJGExists())
     {
-      $fieldname = 'created_by';
-      $pkname    = 'id';
+      $defines = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php';
+      require_once $defines;
 
-      if($name == 'user')
+      foreach($this->tables as $name => $value)
       {
-        $fieldname = 'cmsuser';
-      }
+        $fieldname = 'created_by';
+        $pkname    = 'id';
 
-      $this->tables[$name] = array( 'sing_name' => $name,
-                                    'pl_name'   => $value['pl_name'],
-                                    'tablename' => JoomHelper::getTableName($name),
-                                    'pk'        => $pkname,
-                                    'owner'     => $fieldname
-                                  );
+        if($name == 'user')
+        {
+          $fieldname = 'cmsuser';
+        }
+
+        $this->tables[$name] = array( 'sing_name' => $name,
+                                      'pl_name'   => $value['pl_name'],
+                                      'tablename' => JoomHelper::getTableName($name),
+                                      'pk'        => $pkname,
+                                      'owner'     => $fieldname
+                                    );
+      }
     }
   }
 
@@ -112,11 +124,18 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    */
   public static function getSubscribedEvents(): array
   {
-    return [
-      'onMigrationBeforeSave' => ['onMigrationBeforeSave', Priority::ABOVE_NORMAL],
-      'onContentBeforeSave'   => ['onContentBeforeSave', Priority::ABOVE_NORMAL],
-      'onUserBeforeDelete'    => ['onUserBeforeDelete', Priority::NORMAL],
-    ];
+    if(self::$jg_exists)
+    {
+      return [
+        'onMigrationBeforeSave' => ['onMigrationBeforeSave', Priority::ABOVE_NORMAL],
+        'onContentBeforeSave'   => ['onContentBeforeSave', Priority::ABOVE_NORMAL],
+        'onUserBeforeDelete'    => ['onUserBeforeDelete', Priority::NORMAL],
+      ];
+    }
+    else
+    {
+      return array();
+    }    
   }
 
   /**
@@ -337,6 +356,38 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
     $userTable = User::getTable();
 
     return $userTable->load((int) $userId) === true;
+  }
+
+  /**
+   * Check if JoomGallery component is installed.
+   *
+   * @return  int|bool   Extension id on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  protected function isJGExists()
+  {
+    if(\is_null(self::$jg_exists))
+    {
+      $query = $this->db->getQuery(true);
+
+      $query->select('extension_id')
+            ->from('#__extensions')
+            ->where( array( 'type LIKE ' . $this->db->quote('component'),
+                            'element LIKE ' . $this->db->quote('com_joomgallery')
+                          ));
+        
+      $this->db->setQuery($query);
+
+      if(!$res = $this->db->loadResult())
+      {
+        $res = false;
+      }
+
+      self::$jg_exists = $res;
+    }
+
+    return self::$jg_exists;
   }
 
 
