@@ -61,6 +61,15 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
   protected static $jg_exists = null;
 
   /**
+   * Load the language file on instantiation.
+   *
+   * @var    boolean
+   * 
+   * @since  4.0.0
+   */
+  protected $autoloadLanguage = true;
+
+  /**
    * List of tables connected to Joomla user table
    *
    * @var     array
