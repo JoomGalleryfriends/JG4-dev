@@ -150,7 +150,14 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    */
   public function onMigrationBeforeSave(Event $event)
   {
+    // Joomla 4
     [$context, &$table] = $event->getArguments();
+    if(!$context)
+    {
+      // Joomla 5
+      extract($event->getArguments());
+      $table = &$event->getItem();      
+    }
 
     if(\strpos($context, 'com_joomgallery') !== 0)
     {
@@ -190,7 +197,14 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    */
   public function onContentBeforeSave(Event $event)
   {
+    // Joomla 4
     [$context, &$table, $isNew, $data] = $event->getArguments();
+    if(!$context)
+    {
+      // Joomla 5
+      extract($event->getArguments());
+      $table = &$event->getItem();      
+    }
 
     if($context == 'com_plugins.plugin' && $table->name == 'plg_system_joomowner')
     {
