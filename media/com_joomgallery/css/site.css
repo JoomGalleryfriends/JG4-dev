@@ -1,6 +1,8 @@
 :root {
   --jg-color-link: #000000;
   --jg-color-hover: #000000;
+  --jg-gray-100: #f9fafb;
+  --jg-gray-200: #eaedf0;
   --jg-gray-300: #dfe3e7;
 }
 
@@ -126,6 +128,14 @@ table.itemList th.sort-cell .form-check-input {
 		transform: translateY(0);
 	}
 }
+.jg-image-thumb {
+  width: 100%;
+  height: auto;
+  filter: grayscale(100%);
+}
+.jg-image-thumb.loaded {
+  filter: grayscale(0);
+}
 .jg-image > .jg-image-thumbnail.boxed {
   padding: 1em;
   border: 1px solid var(--jg-gray-300);
@@ -188,20 +198,26 @@ table.itemList th.sort-cell .form-check-input {
 .jg-images[class*=" justified-"] .jg-image-thumb.end + .jg-image-caption-hover {
   right: 0;
 }
-.jg-images[class*=" justified-"] .jg-image-caption-hover, .jg-image > .jg-image-caption {
+.jg-images[class*=" justified-"] .jg-image-caption-hover, .jg-image > .jg-image-caption, .lg-sub-html > .jg-image-caption {
+  font-size: 0.875rem;
+}
+.lg-sub-html > .jg-image-description, .lg-sub-html > .jg-image-description > p {
   font-size: 0.875rem;
 }
 .jg-image > .jg-image-caption {
   padding: 0.5em 0;
 }
-.jg-image > .jg-image-caption.left, .jg-image-caption-hover.left {
+.jg-image > .jg-image-caption.left, .jg-image-caption-hover.left, .lg-sub-html > .jg-image-caption.left {
   text-align: left;
 }
-.jg-image > .jg-image-caption.center, .jg-image-caption-hover.center {
+.jg-image > .jg-image-caption.center, .jg-image-caption-hover.center, .lg-sub-html > .jg-image-caption.center {
   text-align: center;
 }
-.jg-image > .jg-image-caption.right, .jg-image-caption-hover.right {
+.jg-image > .jg-image-caption.right, .jg-image-caption-hover.right, .lg-sub-html > .jg-image-caption.right {
   text-align: right;
+}
+.com_joomgallery .lg-container {
+  font-family: revert;
 }
 a.jg-link:not(.btn) {
   color: var(--jg-color-link);
@@ -211,6 +227,9 @@ a.jg-link:not(.btn) {
 a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
   color: var(--jg-color-hover);
   text-decoration: underline 2px;
+}
+.btn.btn-outline-primary.loadMore {
+  
 }
 /* Single image view */
 #jg-loader {
@@ -249,4 +268,14 @@ a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
 .joom-image.center > img {
   display: block;
   margin: 0 auto;
+}
+.jg-metadata-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5em;
+}
+.jg-metadata {
+  padding: 0 .5rem;
+  border-radius: .25rem;
+  background: var(--jg-gray-100);
 }

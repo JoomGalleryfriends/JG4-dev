@@ -197,11 +197,12 @@ function getExifDataDirect ($exifJsonString='') {
             <th><?php echo Text::_('COM_JOOMGALLERY_IMGMETADATA'); ?></th>
             <td>
 
-                    <div class="">
+                    <div class="jg-metadata-container">
                         <?php $exifName2Values = getExifDataDirect ($this->item->imgmetadata); ?>
                         <?php foreach ($exifName2Values as $key => $value) : ?>
-                            <span class=""><?php echo Text::_($key); ?></span>
-                            <span class=""><?php echo $value; ?></span>
+                            <div class="jg-metadata">
+                                <?php echo Text::_($key) . ': ' . $value; ?></span>
+                            </div>
                         <?php endforeach; ?>
                     </div>
 

@@ -20,6 +20,11 @@
       "uri": "com_joomgallery/jg-icon-font.css"
     },
     {
+      "name": "com_joomgallery.lightgallery-bundle",
+      "type": "style",
+      "uri": "com_joomgallery/lightgallery-bundle.min.css"
+    },
+    {
       "name": "com_joomgallery.refresher",
       "type": "style",
       "uri": "com_joomgallery/refresher.css"
@@ -86,6 +91,22 @@
       "uri": "com_joomgallery/form-edit.js",
       "attributes": {
         "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.lightgallery",
+      "type": "script",
+      "uri": "com_joomgallery/lightgallery.min.js",
+      "attributes": {
+        "defer": false
+      }
+    },
+    {
+      "name": "com_joomgallery.infinite-scroll",
+      "type": "script",
+      "uri": "com_joomgallery/infinite-scroll.min.js",
+      "attributes": {
+        "defer": false
       }
     },
     {
