@@ -203,6 +203,8 @@ class Type
     switch($property)
     {
       case 'pkstoskip':
+        $previous = $this->$property ?? null;
+        
         if(\is_array($value))
         {
           $this->$property = \array_merge($this->$property, $value);
