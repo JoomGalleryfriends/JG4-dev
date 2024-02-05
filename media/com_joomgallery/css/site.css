@@ -128,14 +128,6 @@ table.itemList th.sort-cell .form-check-input {
 		transform: translateY(0);
 	}
 }
-.jg-image-thumb {
-  width: 100%;
-  height: auto;
-  filter: grayscale(100%);
-}
-.jg-image-thumb.loaded {
-  filter: grayscale(0);
-}
 .jg-image > .jg-image-thumbnail.boxed {
   padding: 1em;
   border: 1px solid var(--jg-gray-300);

@@ -237,6 +237,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementById('lightgallery-<?php echo $this->item->id; ?>'), {
   selector: '.item',
   speed: 500,
+  loop: false,
   download: false,
   licenseKey: '1111-1111-111-1111',
 });
