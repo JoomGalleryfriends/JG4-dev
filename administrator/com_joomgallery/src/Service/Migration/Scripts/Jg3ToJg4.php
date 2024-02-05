@@ -270,7 +270,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
-    $owner = \boolval($this->params->get('check_owner', 1)) ? $this->types[$type]->get('owner') : false;
+    $owner = \boolval($this->params->get('check_owner', 1)) ? $this->types[$type]->get('ownerFieldname') : false;
 
     // Configure mapping for each content type
     switch($type)
@@ -344,10 +344,10 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
 
     // Strip zero values for owners (owner=0)
-    if(isset($data[$this->types[$type]->get('owner')]) && !$data[$this->types[$type]->get('owner')])
+    if(isset($data[$this->types[$type]->get('ownerFieldname')]) && !$data[$this->types[$type]->get('ownerFieldname')])
     {
       // Owner is currently set to zero or empty. Set it to be null
-      $data[$this->types[$type]->get('owner')] = null;
+      $data[$this->types[$type]->get('ownerFieldname')] = null;
     }
 
     // Apply mapping
@@ -378,7 +378,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $this->loadTypes();
 
     // Queue gets always loaded from source db
-    $tablename  = $this->types[$type]->get('queue_tablename');
+    $tablename  = $this->types[$type]->get('queueTablename');
     $primarykey = $this->types[$type]->get('pk');
 
     // Get db object

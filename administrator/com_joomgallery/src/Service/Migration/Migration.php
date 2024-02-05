@@ -242,7 +242,7 @@ abstract class Migration implements MigrationInterface
     $this->loadTypes();
 
     // Queue gets always loaded from source db
-    $tablename  = $this->types[$type]->get('queue_tablename');
+    $tablename  = $this->types[$type]->get('queueTablename');
     $primarykey = $this->types[$type]->get('pk');
 
     // Get db object
@@ -804,7 +804,7 @@ abstract class Migration implements MigrationInterface
     }
 
     // Specific record primary keys which can be skiped
-    foreach($this->types[$type]->get('skip') as $skip)
+    foreach($this->types[$type]->get('pkstoskip') as $skip)
     {   
       if($pk == $skip)
       {
