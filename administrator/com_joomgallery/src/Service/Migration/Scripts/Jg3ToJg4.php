@@ -151,23 +151,34 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * A list of content type definitions depending on migration source
    * (Required in migration scripts. The order of the content types must correspond to its migration order)
    * 
-   * @param   bool    $names_only  True to load type names only. No migration parameters required.
+   * ------
+   * This method is multiple times, when the migration types are loaded. The first time it is called without
+   * the $type param, just to retrieve the array of source types info. The next times it is called with a
+   * $type param to load the optional type infos like ownerFieldname.
    * 
-   * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, owner, dependent_on, pkstoskip, insertrecord, queuetablename, recordname)
-   *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: owner, dependent_on, pkstoskip, insertrecord, queuetablename, recordname
+   * Needed: tablename, primarykey, isNested, isCategorized
+   * Optional: ownerFieldname, dependent_on, pkstoskip, insertRecord, queueTablename, recordName
+   * 
+   * Assumption for insertrecord:
+   * If insertrecord == true assumes, that type is a migration; Means reading data from source db and write it to destination db (default)
+   * If insertrecord == false assumes, that type is an adjustment; Means reading data from destination db adjust it and write it back to destination db
+   * 
+   * Attention:
+   * Order of the content types must correspond to the migration order
+   * Pay attention to the dependent_on when ordering here !!!
+   * 
+   * @param   bool   $names_only  True to load type names only. No migration parameters required.
+   * @param   Type   $type        Type object to set optional definitions
+   * 
+   * @return  array   The source types info, array(tablename, primarykey, isNested, isCategorized)
    * 
    * @since   4.0.0
    */
-  public function defineTypes($names_only = false): array
+  public function defineTypes($names_only=false, &$type=null): array
   {
-    // Content type definition array
-    // Order of the content types must correspond to the migration order
-    // Pay attention to the dependent_on when ordering here !!!
-    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, 'created_by', array(), array(1)),
-                    'image' =>    array('#__joomgallery', 'id', false, true, 'created_by', array('category')),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false, 'created_by', array('category', 'image'), array(1), false, '#__joomgallery_catg', 'category')
+    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false),
+                    'image' =>    array('#__joomgallery', 'id', false, true),
+                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false)
                   );
 
     if($this->params->get('source_ids', 0) == 1)
@@ -180,6 +191,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     {
       return \array_keys($types);
     }
+    //------- First point of return: Return names only
 
     // add special cases if tables in the same db with *_old at the end
     if($this->params->get('same_db'))
@@ -199,14 +211,58 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       }
     }
 
+    // Return here if type is not given
+    if(\is_null($type))
+    {
+      return $types;
+    }
+    //------- Second point of return: Don't load optional type infos
+
+    // Load the optional type infos:
+    // ownerFieldname, dependent_on, pkstoskip, insertRecord, queueTablename, recordName
+    switch($type->name)
+    {
+      case 'category':
+        $type->set('pkstoskip', array(1));
+        break;
+
+      case 'image':
+        $type->set('dependent_on', array('category'));
+        break;
+
+      case 'catimage':
+        $type->set('dependent_on', array('category', 'image'));
+        $type->set('pkstoskip', array(1));
+        $type->set('insertRecord', false);
+        $type->set('queueTablename', '#__joomgallery_catg');
+        $type->set('recordName', 'category');
+        break;
+      
+      default:
+        // No optional type infos needed
+        break;
+    }
+
     return $types;
   }
 
   /**
    * Converts data from source into the structure needed for JoomGallery.
+   * (Optional in migration scripts, but highly recommended.)
+   * 
+   * ------
+   * How mappings work:
+   * - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
+   * - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
+   * - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
+   * - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
+   *                                              1. ('destination field name'): Name of the field to be merged into.
+   *                                              2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
+   *                                              3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
    *
+   * 
    * @param   string  $type   Name of the content type
-   * @param   array   $data   Data received from getData() method.
+   * @param   array   $data   Source data received from getData()
    * 
    * @return  array   Converted data to save into JoomGallery
    * 
@@ -214,16 +270,6 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    */
   public function convertData(string $type, array $data): array
   {
-    /* How mappings work:
-       - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
-       - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
-       - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
-       - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
-                                                    1. ('destination field name'): Name of the field to be merged into.
-                                                    2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
-                                                    3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
-    */
-
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
     $owner = \boolval($this->params->get('check_owner', 1)) ? $this->types[$type]->get('owner') : false;

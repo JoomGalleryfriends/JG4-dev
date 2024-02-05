@@ -70,16 +70,30 @@ interface MigrationInterface
    * A list of content type definitions depending on migration source
    * (Required in migration scripts. The order of the content types must correspond to its migration order)
    * 
-   * @param   bool    $names_only  True to load type names only. No migration parameters required.
+   * ------
+   * This method is multiple times, when the migration types are loaded. The first time it is called without
+   * the $type param, just to retrieve the array of source types info. The next times it is called with a
+   * $type param to load the optional type infos like ownerFieldname.
    * 
-   * @return  array   The source types info
-   *                  array(tablename, primarykey, isNested, isCategorized, owner, dependent_on, pkstoskip, insertrecord, queuetablename, recordname)
-   *                  Needed: tablename, primarykey, isNested, isCategorized
-   *                  Optional: owner, dependent_on, pkstoskip, insertrecord, queuetablename, recordname
+   * Needed: tablename, primarykey, isNested, isCategorized
+   * Optional: ownerFieldname, dependent_on, pkstoskip, insertRecord, queueTablename, recordName
+   * 
+   * Assumption for insertrecord:
+   * If insertrecord == true assumes, that type is a migration; Means reading data from source db and write it to destination db (default)
+   * If insertrecord == false assumes, that type is an adjustment; Means reading data from destination db adjust it and write it back to destination db
+   * 
+   * Attention:
+   * Order of the content types must correspond to the migration order
+   * Pay attention to the dependent_on when ordering here !!!
+   * 
+   * @param   bool   $names_only  True to load type names only. No migration parameters required.
+   * @param   Type   $type        Type object to set optional definitions
+   * 
+   * @return  array   The source types info, array(tablename, primarykey, isNested, isCategorized)
    * 
    * @since   4.0.0
    */
-  public function defineTypes($names_only = false): array;
+  public function defineTypes($names_only=false, &$type=null): array;
 
   /**
    * Returns a list of involved source directories.
@@ -109,7 +123,18 @@ interface MigrationInterface
   /**
    * Converts data from source into the structure needed for JoomGallery.
    * (Optional in migration scripts, but highly recommended.)
+   * 
+   * ------
+   * How mappings work:
+   * - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
+   * - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
+   * - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
+   * - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
+   *                                              1. ('destination field name'): Name of the field to be merged into.
+   *                                              2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
+   *                                              3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
    *
+   * 
    * @param   string  $type   Name of the content type
    * @param   array   $data   Source data received from getData()
    * 
