@@ -880,7 +880,7 @@ abstract class Migration implements MigrationInterface
     if(!($src_xml = $this->getSourceXML()))
     {
       // Source XML not found
-      $checks->addCheck($category, 'src_xml', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_XML'));
+      $checks->addCheck($category, 'src_xml', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_XML', $src_xml));
       return;
     }
 

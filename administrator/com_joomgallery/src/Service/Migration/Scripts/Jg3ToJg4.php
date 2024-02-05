@@ -107,7 +107,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   /**
    * Returns the XML object of the source extension
    *
-   * @return  \SimpleXMLElement   Extension XML object or False on failure
+   * @return  \SimpleXMLElement|string   Extension XML object or XML path on failure
    * 
    * @since   4.0.0
    */
@@ -115,17 +115,34 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     if($this->params->get('same_joomla'))
     {
-      return \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery_old.xml'));
+      $path = Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery_old.xml');
+      $xml  = \simplexml_load_file($path);
+      
+      if($xml){return $xml;}else{return $path;}
     }
     else
     {
-      if(\file_exists(Path::clean($this->params->get('joomla_path') . '/components/com_joomgallery/joomgallery.xml')))
+      $joomla_root = $this->params->get('joomla_path');
+
+      // Remove directory separator at the end
+      if(\substr($joomla_root, -1) == '/' || \substr($joomla_root, -1) == \DIRECTORY_SEPARATOR)
       {
-        return \simplexml_load_file(Path::clean($this->params->get('joomla_path') . '/components/com_joomgallery/joomgallery.xml'));
+        $joomla_root = \substr($joomla_root, 0, -1);
+      }
+
+      if(\file_exists(Path::clean($joomla_root . '/components/com_joomgallery/joomgallery.xml')))
+      {
+        $path = Path::clean($joomla_root . '/components/com_joomgallery/joomgallery.xml');
+        $xml  = \simplexml_load_file($path);
+
+        if($xml){return $xml;}else{return $path;}
       }
       else
       {
-        return \simplexml_load_file(Path::clean($this->params->get('joomla_path') . '/components/com_joomgallery/joomgallery_old.xml'));
+        $path = Path::clean($joomla_root . '/components/com_joomgallery/joomgallery_old.xml');
+        $xml  = \simplexml_load_file($path);
+
+        if($xml){return $xml;}else{return $path;}
       }
     }
   }
