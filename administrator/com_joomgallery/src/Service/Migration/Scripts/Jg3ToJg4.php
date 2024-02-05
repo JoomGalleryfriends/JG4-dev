@@ -176,9 +176,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    */
   public function defineTypes($names_only=false, &$type=null): array
   {
-    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false),
-                    'image' =>    array('#__joomgallery', 'id', false, true),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false)
+    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, true),
+                    'image' =>    array('#__joomgallery', 'id', false, true, true),
+                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false, false)
                   );
 
     if($this->params->get('source_ids', 0) == 1)
@@ -193,21 +193,19 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
     //------- First point of return: Return names only
 
-    // add special cases if tables in the same db with *_old at the end
+    // add suffix, if source tables are in the same db with *_old at the end
+    $source_db_suffix = '';
     if($this->params->get('same_db'))
     {
-      foreach($types as $key => $value)
+      $source_db_suffix = '_old';
+    }
+
+    foreach($types as $key => $value)
+    {
+      if(\count($value) < 5 || (\count($value) > 4 && $value[4]))
       {
-        if(\count($value) < 8 || (\count($value) > 7 && $value[7] !== false))
-        {
-          // insertrecord == true, we assume tablename is from source db
-          $types[$key][0] = $value[0] . '_old';
-        }
-        elseif(\count($value) > 8 && !empty($value[8]) && $value[7] == false)
-        {
-          // insertrecord == false and queuetablename given, we assume queuetablename is from source db
-          $types[$key][8] = $value[8] . '_old';
-        }
+        // tablename is from source db and has to be checked
+        $types[$key][0] = $value[0] . $source_db_suffix;
       }
     }
 
@@ -234,7 +232,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         $type->set('dependent_on', array('category', 'image'));
         $type->set('pkstoskip', array(1));
         $type->set('insertRecord', false);
-        $type->set('queueTablename', '#__joomgallery_catg');
+        $type->set('queueTablename', '#__joomgallery_catg' . $source_db_suffix);
         $type->set('recordName', 'category');
         break;
       

@@ -692,9 +692,9 @@ abstract class Migration implements MigrationInterface
       }
 
       // Fill the dependent_of based on $types->dependent_on
-      foreach($types as $key => $type)
+      foreach($this->types as $key => $type)
       {
-        $type->setDependentOf($types);
+        $type->setDependentOf($this->types);
       }
     }
   }
