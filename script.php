@@ -683,7 +683,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         break;
 
       case 'thumbnail':
-        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"4","jg_imgtypewidth":"250","jg_imgtypeheight":"250","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"1","jg_imgtypequality":"60","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"2","jg_imgtypewidth":"360","jg_imgtypeheight":"360","jg_cropposition":"2","jg_imgtypeorinet":"1","jg_imgtypeanim":"0","jg_imgtypesharpen":"1","jg_imgtypequality":"60","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"[]"}';
         break;
       
       default:
