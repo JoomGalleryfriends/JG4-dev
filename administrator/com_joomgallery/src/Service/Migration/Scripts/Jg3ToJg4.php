@@ -130,16 +130,16 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         $joomla_root = \substr($joomla_root, 0, -1);
       }
 
-      if(\file_exists(Path::clean($joomla_root . '/components/com_joomgallery/joomgallery.xml')))
+      if(\file_exists(Path::clean($joomla_root . '/administrator/components/com_joomgallery/joomgallery.xml')))
       {
-        $path = Path::clean($joomla_root . '/components/com_joomgallery/joomgallery.xml');
+        $path = Path::clean($joomla_root . '/administrator/components/com_joomgallery/joomgallery.xml');
         $xml  = \simplexml_load_file($path);
 
         if($xml){return $xml;}else{return $path;}
       }
       else
       {
-        $path = Path::clean($joomla_root . '/components/com_joomgallery/joomgallery_old.xml');
+        $path = Path::clean($joomla_root . '/administrator/components/com_joomgallery/joomgallery_old.xml');
         $xml  = \simplexml_load_file($path);
 
         if($xml){return $xml;}else{return $path;}
