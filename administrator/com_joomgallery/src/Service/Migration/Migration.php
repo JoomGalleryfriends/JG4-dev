@@ -714,7 +714,7 @@ abstract class Migration implements MigrationInterface
     $tables = array();
     foreach($this->types as $key => $type)
     {
-      $tables[$key] = $this->types[$key]->get('tablename');
+      $tables[$key] = $this->types[$key]->get('queueTablename');
     }
 
     return $tables;
