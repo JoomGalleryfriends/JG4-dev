@@ -37,7 +37,7 @@
            type="list"
            groupByFieldset="false"
            default="0"
-           reset="orig:0;det:3;thumb:4"
+           reset="orig:0;det:3;thumb:2"
            label="COM_JOOMGALLERY_RESIZING"
            description="COM_JOOMGALLERY_FIELDS_RESIZING_DESC" >
         <option value="0">JNO</option>
