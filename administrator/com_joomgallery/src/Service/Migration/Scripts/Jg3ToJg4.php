@@ -573,6 +573,16 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       else
       {
         // Create old/JG3 folder structure (based on static_path)
+        if( $this->params->get('same_joomla', 1) == 1 &&
+            $this->component->getConfig()->get('jg_filesystem', 'local-images') == 'local-images'
+          )
+        {
+          // Recreate, copy or move within the same filesystem by keeping the old folder structure is impossible
+          $this->component->setError('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR');
+          
+          return false;
+        }
+
         return $this->component->getFileManager()->createCategory(\basename($cat->static_path), $cat->parent_id);
       }
     }
@@ -959,7 +969,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     // Prepare catpath
     $catpath    = \basename($cat->catpath);
-    $parentpath = \rtrim($cat->catpath, '/'.$catpath);
+    $parentpath = \substr($cat->catpath, 0, -1 * \strlen('/'.$catpath));
 
     // Prepare alias
     $alias      = \basename($cat->alias);
