@@ -547,6 +547,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       // Rename folders if needed
       if($this->params->get('new_dirs', 1) == 1)
       {
+        // Create new/JG4 folder structure
         // Get new foldername out of path
         $newName = \basename($cat->path);
 
@@ -564,8 +565,16 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     else
     {
       // Recreate, copy or move
-      // Create new folders
-      return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
+      if($this->params->get('new_dirs', 1) == 1)
+      {
+        // Create new/JG4 folder structure (based on alias)
+        return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
+      }
+      else
+      {
+        // Create old/JG3 folder structure (based on static_path)
+        return $this->component->getFileManager()->createCategory(\basename($cat->static_path), $cat->parent_id);
+      }
     }
 
     return true;
