@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS `#__joomgallery_fields`;
 DROP TABLE IF EXISTS `#__joomgallery_galleries`;
 DROP TABLE IF EXISTS `#__joomgallery_galleries_ref`;
 DROP TABLE IF EXISTS `#__joomgallery_img_types`;
+DROP TABLE IF EXISTS `#__joomgallery_migration`;
 DROP TABLE IF EXISTS `#__joomgallery_tags`;
 DROP TABLE IF EXISTS `#__joomgallery_tags_ref`;
 DROP TABLE IF EXISTS `#__joomgallery_users`;
