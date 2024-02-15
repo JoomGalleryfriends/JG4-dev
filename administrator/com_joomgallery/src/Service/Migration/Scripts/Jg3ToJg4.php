@@ -703,8 +703,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $this->component->createFileManager();
     $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
 
-    // Fetch available imagetypes
-    $imagetypes = $this->get('imagetypes_dict');
+    // Fetch available imagetypes from destination
+    $imagetypes = JoomHelper::getRecords('imagetypes', $this->component, 'typename');
 
     // Check the source mapping
     if(\count(\array_diff_key($imagetypes, $sources)) !== 0 || \count(\array_diff_key($sources, $imagetypes)) !== 0)

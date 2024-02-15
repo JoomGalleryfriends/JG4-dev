@@ -281,12 +281,13 @@ class JoomHelper
    *
    * @param   string      $name      The name of the record (available: categories,images,tags,imagetypes)
    * @param   Object      $com_obj   JoomgalleryComponent object if available
+   * @param   string      $key       Index the returning array by key
 	 *
 	 * @return  array|bool  Array on success, false on failure.
 	 *
 	 * @since   4.0.0
 	 */
-  public static function getRecords($name, $com_obj=null)
+  public static function getRecords($name, $com_obj=null, $key=null)
   {
     $availables = array('categories', 'images', 'tags', 'imagetypes');
 
@@ -297,7 +298,7 @@ class JoomHelper
       return false;
     }
 
-    // get the JoomgalleryComponent object if needed
+    // Get the JoomgalleryComponent object if needed
     if(!isset($com_obj) || !\strpos('JoomgalleryComponent', \get_class($com_obj)) === false)
     {
       $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
@@ -312,6 +313,24 @@ class JoomHelper
 
     // Attempt to load the record.
     $return = $model->getItems();
+
+    // Indexing the array if needed
+    if($return && !\is_null($key))
+    {
+      $ind_array = array();
+      foreach($return as $obj)
+      {
+        if(\property_exists($obj, $key))
+        {
+          $ind_array[$obj->{$key}] = $obj;
+        }
+      }
+
+      if(\count($ind_array) > 0)
+      {
+        $return = $ind_array;
+      }
+    }
 
     return $return;
   }
