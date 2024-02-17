@@ -492,15 +492,15 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Set old catid for image creation
     $img->catid = $data['catid'];
 
-    if($this->params->get('image_usage', 1) == 1)
+    if($this->params->get('image_usage', 0) == 1)
     {
       // Recreate imagetypes based on given image
       $res = $this->createImages($img, $img_source[0]);
     }
-    elseif($this->params->get('image_usage', 1) == 2 || $this->params->get('image_usage', 1) == 3)
+    elseif($this->params->get('image_usage', 0) == 2 || $this->params->get('image_usage', 0) == 3)
     {
       $copy = false;
-      if($this->params->get('image_usage', 1) == 2)
+      if($this->params->get('image_usage', 0) == 2)
       {
         $copy = true;
       }
@@ -533,7 +533,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Create file manager service
     $this->component->createFileManager();
 
-    if($this->params->get('image_usage', 1) == 0)
+    if($this->params->get('image_usage', 0) == 0)
     {
       // Direct usage
       if($this->params->get('same_joomla', 1) == 0)
@@ -901,7 +901,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       //------------------------
 
       // Check use case: Direct usage
-      if($this->params->get('image_usage', 1) == 0)
+      if($this->params->get('image_usage', 0) == 0)
       {
         if($this->params->get('same_joomla', 1) == 0)
         {
