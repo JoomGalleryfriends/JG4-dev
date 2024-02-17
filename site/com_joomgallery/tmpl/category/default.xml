@@ -111,6 +111,19 @@
                 filter="integer"
                 showon="jg_category_view_class:justified"
             />
+            <field
+                name="jg_category_view_lightbox"
+                type="list"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_LIGHTBOX_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_LIGHTBOX_DESC"
+                default="1"
+                useglobal="true"
+                parentclass="stack span-2-inline"
+                validate="options"
+                >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
         </fieldset>
     </fields>
 </metadata>
