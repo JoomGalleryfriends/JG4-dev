@@ -374,7 +374,7 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    *
    * @since   4.0.0
    */
-  protected function isUserExists(int $userId): bool
+  protected function isUserExists($userId): bool
   {
     $userTable = User::getTable();
 
