@@ -887,6 +887,12 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           $checks->addCheck($category, 'src_table_cat_path', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH_DESC', \implode(', ', $inconsistent)));
         }
+
+        // Check if compatibility mode is deactivated
+        if($this->component->getConfig()->get('jg_compatibility_mode', 0) == 1)
+        {
+          $checks->addCheck($category, 'compatibility_mode', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE'), Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE_OFF_DESC'));
+        }
       }
       else
       {
@@ -894,7 +900,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Check if compatibility mode is activated
         if($this->component->getConfig()->get('jg_compatibility_mode', 0) == 0)
         {
-          $checks->addCheck($category, 'compatibility_mode', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE'), Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE_DESC'));
+          $checks->addCheck($category, 'compatibility_mode', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE'), Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE_ON_DESC'));
         }
       }
 
