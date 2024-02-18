@@ -117,11 +117,10 @@
       </field>
 
       <field name="jg_compatibility_mode"
-             type="radio"
+             type="list"
              global_only="true"
+             sensitive="true"
              default="0"
-             class="btn-group"
-             layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_COMPATIBILITY_MODE"
              description="COM_JOOMGALLERY_CONFIG_COMPATIBILITY_MODE_LONG" >
           <option value="0">JNO</option>
