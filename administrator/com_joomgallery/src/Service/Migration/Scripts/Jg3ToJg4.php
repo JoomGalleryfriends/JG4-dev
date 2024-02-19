@@ -885,7 +885,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
         if(\count($inconsistent) > 0)
         {
-          $checks->addCheck($category, 'src_table_cat_path', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH_DESC', \implode(', ', $inconsistent)));
+          $checks->addCheck($category, 'src_table_cat_path', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH'), Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH_DESC'), Text::sprintf('FILES_JOOMGALLERY_MIGRATION_CHECK_CATEGORY_CATPATH_HELP', \implode(', ', $inconsistent)));
         }
 
         // Check if compatibility mode is deactivated

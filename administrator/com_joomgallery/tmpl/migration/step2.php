@@ -156,8 +156,10 @@ $wa->useStyle('com_joomgallery.admin')
     let modalTitle = modal.querySelector('.modal-title');
     let modalBody  = modal.querySelector('.modal-body');
 
+    let helpForum  = '<br/><br/><div class="alert alert-primary" role="alert"><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COMMON_CHECK_HELP'); ?></div>'
+
     modalTitle.innerHTML = element.getAttribute('data-title');
-    modalBody.innerHTML  = element.getAttribute('data-text');
+    modalBody.innerHTML  = element.getAttribute('data-text')+helpForum;
 
     let bsmodal = new bootstrap.Modal(modal, {keyboard: false});
     bsmodal.show();
