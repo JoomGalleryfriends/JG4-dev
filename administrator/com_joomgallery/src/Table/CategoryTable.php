@@ -353,7 +353,9 @@ class CategoryTable extends Table implements VersionableTableInterface
 
     // Create new path based on alias and parent category
     $manager    = JoomHelper::getService('FileManager');
-    $this->path = $manager->getCatPath(0, false, $this->parent_id, $this->alias);
+    $filesystem = JoomHelper::getService('Filesystem');
+    $this->path = $manager->getCatPath($this->id, false, $this->parent_id, $this->alias, false, false);
+    $this->path = $filesystem->cleanPath($this->path, '/');
 
     // Support for subform field params
     if(empty($this->params))
