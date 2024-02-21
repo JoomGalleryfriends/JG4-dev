@@ -8,6 +8,7 @@
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
+namespace Joomgallery\Plugin\Privacy\Joomgallery\Extension;
 
 \defined('_JEXEC') or die;
 
@@ -21,7 +22,7 @@ use Joomla\Component\Privacy\Administrator\Table\RequestTable;
  * @package JoomGallery
  * @since   4.0.0
  */
-class PlgPrivacyJoomgalleryimages extends PrivacyPlugin
+final class JoomgalleryPrivacy extends PrivacyPlugin
 {
 	/**
 	 * Processes an export request for image data
