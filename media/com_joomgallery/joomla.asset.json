@@ -112,7 +112,12 @@
     {
       "name": "com_joomgallery.masonry",
       "type": "script",
-      "uri": "com_joomgallery/masonry.min.js",
+      "uri": "com_joomgallery/masonry.min.js"
+    },
+    {
+      "name": "com_joomgallery.tasklessForm",
+      "type": "script",
+      "uri": "com_joomgallery/tasklessForm.js",
       "attributes": {
         "type": "module"
       }
@@ -137,6 +142,11 @@
       "name": "com_joomgallery.uppy",
       "type": "style",
       "uri": "com_joomgallery/uppy.css"
+    },
+    {
+      "name": "com_joomgallery.migrator",
+      "type": "script",
+      "uri": "com_joomgallery/migrator/dist/migrator.js"
     }
   ]
 }

@@ -33,6 +33,7 @@ use \Joomla\CMS\Versioning\VersionableTableInterface;
 class ImageTable extends Table implements VersionableTableInterface
 {
   use JoomTableTrait;
+	use MigrationTableTrait;
 
 	/**
 	 * Constructor
@@ -202,7 +203,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
+		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
 			$array['created_by'] = Factory::getUser()->id;
 		}
@@ -226,9 +227,6 @@ class ImageTable extends Table implements VersionableTableInterface
 		{
 			$array['modified_by'] = Factory::getUser()->id;
 		}
-
-		// Support for multiple field: robots
-		$this->multipleFieldSupport($array, 'robots');
 
 		// Support for empty date field: date
 		if(!\key_exists('date', $array) || $array['date'] == '0000-00-00' || empty($array['date']))
@@ -295,6 +293,13 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function store($updateNulls = true)
 	{
+    // Support for params field
+    if(isset($this->params) && !is_string($this->params))
+		{
+			$registry = new Registry($this->params);
+			$this->params = (string) $registry;
+		}
+    
     $success = parent::store($updateNulls);
 
     if($success)
@@ -365,10 +370,16 @@ class ImageTable extends Table implements VersionableTableInterface
     {
       $this->params = $this->loadDefaultField('params');
     }
-		elseif(\is_array($this->params))
-		{
-			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
-		}
+    if(isset($this->params))
+    {
+      $this->params = new Registry($this->params);
+    }
+
+		// Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
+    }
 
     // Support for field metadesc
     if(empty($this->metadesc))

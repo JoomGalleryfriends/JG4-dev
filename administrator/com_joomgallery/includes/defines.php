@@ -27,6 +27,7 @@ define('_JOOM_TABLE_GALLERIES',      '#__joomgallery_galleries');
 define('_JOOM_TABLE_GALLERIES_REF',  '#__joomgallery_galleries_ref');
 define('_JOOM_TABLE_IMG_TYPES',      '#__joomgallery_img_types');
 define('_JOOM_TABLE_TYPES',          '#__joomgallery_img_types');
+define('_JOOM_TABLE_MIGRATION',      '#__joomgallery_migration');
 define('_JOOM_TABLE_TAGS',           '#__joomgallery_tags');
 define('_JOOM_TABLE_TAGS_REF',       '#__joomgallery_tags_ref');
 define('_JOOM_TABLE_USERS',          '#__joomgallery_users');

@@ -60,11 +60,22 @@ img.jg-controlpanel-logo {
 .mr {
   margin-right: 1rem !important;
 }
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
 .modal .modal-body {
   margin: 1rem 2rem;
 }
 .modal .modal-body {
   margin: 1rem 2rem;
+}
+.card.border.active,
+.card.border.success {
+  border-color: var(--success) !important;
+}
+.card.border.error {
+  border-color: var(--danger) !important;
 }
 .controls .choices__inner.is-valid {
   border-color: #457d54;
@@ -81,6 +92,12 @@ img.jg-controlpanel-logo {
   background-repeat: no-repeat;
   background-position: right calc(0.375em + 0.25rem) center;
   background-size: calc(0.75em + 0.5rem) calc(0.75em + 0.5rem);
+}
+.log-area {
+  font-size: 0.85rem;
+  min-height: 100px;
+  max-height: 250px;
+  overflow-y: scroll;
 }
 .jcc-color-box {
   float: left;
@@ -198,4 +215,25 @@ joomla-field-image .jg_minithumb {
 }
 .uppy-Dashboard-Item-name {
   white-space: nowrap;
+}
+.jg-migration .card img {
+  max-width: 120px;
+}
+.jg-migration .card img {
+  max-width: 120px;
+}
+.jg-migration .navigation {
+  margin: 0 0 2rem;
+}
+.log-area p {
+  margin-bottom: 0.5rem;
+}
+.log-area .color-success {
+  color: var(--success)
+}
+.log-area .color-error {
+  color: var(--danger)
+}
+.log-area .color-warning {
+  color: var(--warning)
 }

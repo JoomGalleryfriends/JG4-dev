@@ -34,6 +34,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class CategoryTable extends Table implements VersionableTableInterface
 { 
   use JoomTableTrait;
+  use MigrationTableTrait;
   
   /**
    * Object property to hold the path of the new location reference node.
@@ -174,7 +175,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['created_by']))
+		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
 			$array['created_by'] = Factory::getUser()->id;
 		}
@@ -224,9 +225,6 @@ class CategoryTable extends Table implements VersionableTableInterface
         $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
       }
     }
-
-		// Support for multiple field: robots
-		$this->multipleFieldSupport($array, 'robots');
 
 		if(isset($array['params']) && is_array($array['params']))
 		{
@@ -283,6 +281,13 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function store($updateNulls = true)
 	{
     $this->setPathWithLocation();
+
+    // Support for params field
+    if(isset($this->params) && !is_string($this->params))
+		{
+			$registry = new Registry($this->params);
+			$this->params = (string) $registry;
+		}
 
 		return parent::store($updateNulls);
 	}
@@ -348,13 +353,37 @@ class CategoryTable extends Table implements VersionableTableInterface
 
     // Create new path based on alias and parent category
     $manager    = JoomHelper::getService('FileManager');
-    $this->path = $manager->getCatPath(0, false, $this->parent_id, $this->alias);
+    $filesystem = JoomHelper::getService('Filesystem');
+    $this->path = $manager->getCatPath($this->id, false, $this->parent_id, $this->alias, false, false);
+    $this->path = $filesystem->cleanPath($this->path, '/');
 
-		// Support for subform field params
-		if(is_array($this->params))
-		{
-			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
-		}
+    // Support for subform field params
+    if(empty($this->params))
+    {
+      $this->params = $this->loadDefaultField('params');
+    }
+    if(isset($this->params))
+    {
+      $this->params = new Registry($this->params);
+    }
+
+    // Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
+    }
+
+    // Support for field metadesc
+    if(empty($this->metadesc))
+    {
+      $this->metadesc = $this->loadDefaultField('metadesc');
+    }
+
+    // Support for field metakey
+    if(empty($this->metakey))
+    {
+      $this->metakey = $this->loadDefaultField('metakey');
+    }
 
 		return parent::check();
 	}

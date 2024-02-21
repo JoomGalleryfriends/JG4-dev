@@ -39,6 +39,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	protected $extension = 'JoomGallery';
 
   /**
+	 * List of incompatible Joomla versions
+	 *
+	 * @var array
+	 */
+	protected $incompatible = array('4.4.0', '4.4.1', '5.0.0', '5.0.1');
+
+  /**
 	 * Minimum PHP version required to install the extension
 	 *
 	 * @var  string
@@ -95,7 +102,16 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if Joomla version is correct
     if(version_compare(JVERSION, '4.0.0', '<'))
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', '4.x'), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 'error');
+
+      return false;
+    }
+
+    // Only proceed if it is not an incompatible Joomla version
+    $jversion = explode('-', JVERSION);
+    if(in_array($jversion[0], $this->incompatible))
+    {
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 'error');
 
       return false;
     }
@@ -103,7 +119,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if PHP version is correct
     if(version_compare(PHP_VERSION, $this->minPhp, '<='))
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.3', $this->minPhp), 'error');
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.4', $this->minPhp), 'error');
 
       return false;
     }
@@ -136,7 +152,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       // save release code information
       //-------------------------------
-      if (File::exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml'))
+      if(File::exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml'))
       {
         $xml = simplexml_load_file(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'joomgallery.xml');
         $this->act_code = $xml->version;
@@ -163,11 +179,12 @@ class com_joomgalleryInstallerScript extends InstallerScript
         }
       }
 
-      // copy old XML file (JGv1-3)
-      $xml_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+      // copy old XML file (JGv1-3) to temp folder
+      $xml_path   = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+      $tmp_folder = Factory::getApplication()->get('tmp_path');
       if(File::exists($xml_path.'joomgallery.xml'))
       {
-        File::copy($xml_path.'joomgallery.xml', $xml_path.'joomgallery_old.xml');
+        File::copy($xml_path.'joomgallery.xml', $tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml');
       }
 
       // remove old JoomGallery files and folders
@@ -417,6 +434,17 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       $app = Factory::getApplication();
 
+      if($this->fromOldJG)
+      {
+        // copy old XML file (JGv1-3) back from temp folder
+        $xml_path   = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR;
+        $tmp_folder = Factory::getApplication()->get('tmp_path');
+        if(File::exists($tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml'))
+        {
+          File::copy($tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml', $xml_path.'joomgallery_old.xml');
+        }
+      }      
+
       // Create default Category
       if(!$this->addDefaultCategory())
       {
@@ -533,10 +561,16 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Load JoomTableTrait
-    $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
-    $traitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\JoomTableTrait';
+    $joomtabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
+    $joomtabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\JoomTableTrait';
 
-    require_once $trait_path;
+    require_once $joomtabletrait_path;
+
+    // Load MigrationTableTrait
+    $migrationtabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'MigrationTableTrait.php';
+    $migrationtabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\MigrationTableTrait';
+
+    require_once $migrationtabletrait_path;
 
     // Load CategoryTable
     $class_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'CategoryTable.php';

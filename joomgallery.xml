@@ -53,6 +53,7 @@
             <menu link="option=com_joomgallery&amp;view=categories" view="categories" alt="Joomgallery/Categories">JCATEGORIES</menu>
             <menu link="option=com_joomgallery&amp;view=tags" view="tags" alt="Joomgallery/Tags">COM_JOOMGALLERY_TAGS</menu>
             <menu link="option=com_joomgallery&amp;view=configs" view="configs" alt="Joomgallery/Configs">COM_JOOMGALLERY_CONFIG_SETS</menu>
+            <menu link="option=com_joomgallery&amp;view=migration" view="migration" alt="Joomgallery/Migration">COM_JOOMGALLERY_MIGRATIONS</menu>
         </submenu>
         <files folder="administrator/com_joomgallery">
             <filename>access.xml</filename>
