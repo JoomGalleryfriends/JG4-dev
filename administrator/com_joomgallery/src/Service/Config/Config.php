@@ -24,11 +24,18 @@ use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
  * Provides methods to handle configuration sets of the gallery
  *
  * @package JoomGallery
- * @since   1.5.5
+ * @since   4.0.0
  */
 abstract class Config implements ConfigInterface
 {
   use ServiceTrait;
+
+  /**
+   * Name of the config service
+   *
+   * @var string
+   */
+  protected $name = 'Config';
 
   /**
    * Array with key values of subforms
@@ -52,18 +59,33 @@ abstract class Config implements ConfigInterface
   protected $ids = array('user' => null, 'category' => null, 'image' => null, 'menu' => null);
 
   /**
+   * Simple unique string for this parameter combination
+   *
+   * @var string
+   */
+  protected $storeId = null;
+
+  /**
+   * Array of cached parameter by usergroup and context.
+   *
+   * @var    array
+   */
+  protected static $cache = array();
+
+  /**
    * Loading the calculated settings for a specific content
    * to class properties
    *
    * @param   string   $context   Context of the content (default: com_joomgallery)
    * @param   int      $id        ID of the content if needed (default: null)
    * @param   bool		 $inclOwn   True, if you want to include settings of current item (default: true)
+   * @param   bool     $useCache  True, to load params from cache if available (default: true)
    *
    * @return  void
    *
-   * @since   4.0.0 
+   * @since   4.0.0
    */
-  public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true)
+  public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true, $useCache = true)
   {
     // Load application
     $this->getApp();
@@ -88,6 +110,10 @@ abstract class Config implements ConfigInterface
       $this->context = $context;
     }
 
+    // Get user and its groups
+    $user   = Factory::getUser();
+    $groups = $user->get('groups');
+
     // Completing $this->ids based on given context
     if(\count($context_array) > 1)
     {
@@ -98,34 +124,40 @@ abstract class Config implements ConfigInterface
           break;
 
         case 'category':
-          $this->ids['user']     = Factory::getUser()->get('id');
+          $this->ids['user']     = $user->get('id');
           $this->ids['category'] = (int) $id;
           break;
 
         case 'image':
           $img = $this->component->getMVCFactory()->createModel('image', 'administrator')->getItem($id);
 
-          $this->ids['user']     = Factory::getUser()->get('id');
+          $this->ids['user']     = $user->get('id');
           $this->ids['image']    = (int) $id;
           $this->ids['category'] = (int) $img->catid;
           break;
 
         case 'menu':
-          $this->ids['user'] = Factory::getUser()->get('id');
+          $this->ids['user'] = $user->get('id');
           $this->ids['menu'] = (int) $id;
           // TBD
           // Depending on frontend views and router 
           break;
         
         default:
-          $this->ids['user'] = Factory::getUser()->get('id');
+          $this->ids['user'] = $user->get('id');
           break;
       }
     }
     else
     {
-      $this->ids['user'] = Factory::getUser()->get('id');
+      $this->ids['user'] = $user->get('id');
     }
+    
+    // Creates a simple unique string for each parameter combination
+    $group         = $groups[0];  //ToDo: Select usergroup to be used by the selection in the user view
+    $contentId     = \is_null($id) ? '' : ':'.$id;
+    $own           = \is_null($inclOwn) ? '' : ':1';
+    $this->storeId = $this->name.$this->context.':'.$group.$contentId.$own;
   }
 
   /**
