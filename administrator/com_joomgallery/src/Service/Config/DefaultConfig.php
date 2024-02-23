@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\Config;
@@ -53,11 +52,11 @@ class DefaultConfig extends Config implements ConfigInterface
     parent::__construct($context, $id, $inclOwn, $useCache);
 
     // Check if we can use cached parameters
-    if($useCache && \key_exists(md5($this->storeId), $this->cache))
+    if($useCache && !empty(self::$cache) && \key_exists(\md5($this->storeId), self::$cache))
     {
       // The params for this context is available in the object cache.
       // Use cache instead.
-      $this->setProperties($this->cache[md5($this->storeId)]);
+      $this->setProperties(self::$cache[\md5($this->storeId)]);
 
       return;
     }
@@ -172,7 +171,6 @@ class DefaultConfig extends Config implements ConfigInterface
     * one instance of the Config object for contexts that have
     * the same exact configs.
     */
-    $this->cache[md5($this->storeId)] = $this->getProperties();
-
+    self::$cache[\md5($this->storeId)] = $this->getProperties();
   }
 }

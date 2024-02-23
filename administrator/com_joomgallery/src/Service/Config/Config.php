@@ -26,7 +26,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
  * @package JoomGallery
  * @since   4.0.0
  */
-abstract class Config implements ConfigInterface
+abstract class Config extends \stdClass implements ConfigInterface
 {
   use ServiceTrait;
 
@@ -154,10 +154,11 @@ abstract class Config implements ConfigInterface
     }
     
     // Creates a simple unique string for each parameter combination
-    $group         = $groups[0];  //ToDo: Select usergroup to be used by the selection in the user view
+    $group         = \array_values($groups)[0];  //ToDo: Select usergroup to be used by the selection in the user view
     $contentId     = \is_null($id) ? '' : ':'.$id;
     $own           = \is_null($inclOwn) ? '' : ':1';
-    $this->storeId = $this->name.$this->context.':'.$group.$contentId.$own;
+    $this->storeId = $this->name.':'.$this->context.':'.$group.$contentId.$own;
+    // ConfigName:context:usergroup:own
   }
 
   /**
@@ -173,11 +174,11 @@ abstract class Config implements ConfigInterface
 	{
     foreach($params as $key => $value)
     {
-      if(strncmp($key, 'jg_', strlen('jg_')) === 0)
+      if(\strncmp($key, 'jg_', \strlen('jg_')) === 0)
       {
         // param key starts with 'jg_'
 
-        if(in_array($key,$this->subforms))
+        if(\in_array($key, $this->subforms))
         {
           // param is a subform
           $object = \json_decode($value, false);
