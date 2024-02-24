@@ -113,7 +113,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    */
   public function getSourceXML()
   {
-    if($this->params->get('same_joomla'))
+    if($this->params->get('same_joomla', 1))
     {
       $path = Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery_old.xml');
       $xml  = \simplexml_load_file($path);
@@ -212,7 +212,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     // add suffix, if source tables are in the same db with *_old at the end
     $source_db_suffix = '';
-    if($this->params->get('same_db'))
+    if($this->params->get('same_db', 1))
     {
       $source_db_suffix = '_old';
     }

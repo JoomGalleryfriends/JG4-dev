@@ -605,7 +605,7 @@ abstract class Migration implements MigrationInterface
       throw new \Exception('Taget has to be eighter "source" or "destination". Given: ' . $target, 1);
     }
 
-    if($target === 'destination' || $this->params->get('same_db'))
+    if($target === 'destination' || $this->params->get('same_db', 1))
     {
       $db        = Factory::getContainer()->get(DatabaseInterface::class);
       $dbPrefix  = $this->app->get('dbprefix');
