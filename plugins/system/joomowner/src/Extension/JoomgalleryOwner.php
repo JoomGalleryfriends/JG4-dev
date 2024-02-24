@@ -253,11 +253,11 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
       return;
     }
 
-    // Guess the type of content
+    // Get the owner field
     $typeAlias = isset($table->typeAlias) ? $table->typeAlias : $context;
     if(!$ownerField = $this->guessType($typeAlias))
     {
-      // We couldnt guess the type of content we are dealing with
+      // We couldnt get the owner field. It probably does not exist.
 		  $this->setResult($event, true);
 
       return;
@@ -417,22 +417,25 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
   /**
    * Guess the content type based on a dot separated string.
    *
-   * @param   string  $string  Context like string
+   * @param   string        $string  Context like string
    *
-   * @return  string  Guessed type    
+   * @return  string|false  Guessed type on success, false otherwise   
    *
    * @since   4.0.0
    */
-  protected function guessType(string $string): string
+  protected function guessType(string $string)
   {
     $pieces = \explode('.', $string);
 
     if(\count($pieces) > 1)
     {
-      return $this->tables[$pieces[1]]['owner'];
+      if(\key_exists($pieces[1], $this->tables))
+      {
+        return $this->tables[$pieces[1]]['owner'];
+      }      
     }
 
-    return '';
+    return false;
   }
 
 
