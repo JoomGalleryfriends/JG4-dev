@@ -35,9 +35,12 @@ class JoomHelper
    *
    * @var array
    */
-  protected static $content_types = array('category'  => _JOOM_TABLE_CATEGORIES,
+  public static $content_types = array(   'category'  => _JOOM_TABLE_CATEGORIES,
+                                          'comment'   => _JOOM_TABLE_COMMENTS,
                                           'config'    => _JOOM_TABLE_CONFIGS,
+                                          'faulty'    => _JOOM_TABLE_FAULTIES,
                                           'field'     => _JOOM_TABLE_FIELDS,
+                                          'gallery'   => _JOOM_TABLE_GALLERIES,
                                           'image'     => _JOOM_TABLE_IMAGES,
                                           'imagetype' => _JOOM_TABLE_IMG_TYPES,
                                           'tag'       => _JOOM_TABLE_TAGS,
@@ -278,12 +281,13 @@ class JoomHelper
    *
    * @param   string      $name      The name of the record (available: categories,images,tags,imagetypes)
    * @param   Object      $com_obj   JoomgalleryComponent object if available
+   * @param   string      $key       Index the returning array by key
 	 *
 	 * @return  array|bool  Array on success, false on failure.
 	 *
 	 * @since   4.0.0
 	 */
-  public static function getRecords($name, $com_obj=null)
+  public static function getRecords($name, $com_obj=null, $key=null)
   {
     $availables = array('categories', 'images', 'tags', 'imagetypes');
 
@@ -294,7 +298,7 @@ class JoomHelper
       return false;
     }
 
-    // get the JoomgalleryComponent object if needed
+    // Get the JoomgalleryComponent object if needed
     if(!isset($com_obj) || !\strpos('JoomgalleryComponent', \get_class($com_obj)) === false)
     {
       $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
@@ -309,6 +313,24 @@ class JoomHelper
 
     // Attempt to load the record.
     $return = $model->getItems();
+
+    // Indexing the array if needed
+    if($return && !\is_null($key))
+    {
+      $ind_array = array();
+      foreach($return as $obj)
+      {
+        if(\property_exists($obj, $key))
+        {
+          $ind_array[$obj->{$key}] = $obj;
+        }
+      }
+
+      if(\count($ind_array) > 0)
+      {
+        $return = $ind_array;
+      }
+    }
 
     return $return;
   }
@@ -678,7 +700,7 @@ class JoomHelper
 	 *
 	 * @since   4.0.0
 	 */
-  protected static function isAvailable($name)
+  public static function isAvailable($name)
   {
     if(!\in_array($name, \array_keys(self::$content_types)))
     {
@@ -697,7 +719,7 @@ class JoomHelper
 	 *
 	 * @since   4.0.0
 	 */
-  protected static function getImgZero($type, $url=true, $root=true)
+  public static function getImgZero($type, $url=true, $root=true)
   {
     if($url)
     {
@@ -728,16 +750,16 @@ class JoomHelper
     static $avgdone       = false;
 
     $maxvoting            = $config->get('jg_maxvoting');
-    $imgvotesum           = 'imgvotesum';
-    $imgvotes             = 'imgvotes';
+    $votesum           = 'votesum';
+    $votes             = 'votes';
     if($tablealias != '')
     {
-      $imgvotesum = $tablealias.'.'.$imgvotesum;
-      $imgvotes   = $tablealias.'.'.$imgvotes;
+      $votesum = $tablealias.'.'.$votesum;
+      $votes   = $tablealias.'.'.$votes;
     }
 
     // Standard rating clause
-    $clause = 'ROUND(LEAST(IF(imgvotes > 0, '.$imgvotesum.'/'.$imgvotes.', 0.0), '.(float)$maxvoting.'), 2)';
+    $clause = 'ROUND(LEAST(IF(votes > 0, '.$votesum.'/'.$votes.', 0.0), '.(float)$maxvoting.'), 2)';
 
     // Advanced (weigthed) rating clause (Bayes)
     if($config->get('jg_ratingcalctype') == 1)
@@ -748,10 +770,10 @@ class JoomHelper
         // Needed values for weighted rating calculation
         $query = $db->getQuery(true)
               ->select('count(*) As imgcount')
-              ->select('SUM(imgvotes) As sumimgvotes')
-              ->select('SUM(imgvotesum/imgvotes) As sumimgratings')
+              ->select('SUM(votes) As sumvotes')
+              ->select('SUM(votesum/votes) As sumimgratings')
               ->from(_JOOM_TABLE_IMAGES)
-              ->where('imgvotes > 0');
+              ->where('votes > 0');
 
         $db->setQuery($query);
         $row = $db->loadObject();
@@ -759,7 +781,7 @@ class JoomHelper
         {
           if($row->imgcount > 0)
           {
-            $avgimgvote   = round($row->sumimgvotes / $row->imgcount, 2 );
+            $avgimgvote   = round($row->sumvotes / $row->imgcount, 2 );
             $avgimgrating = round($row->sumimgratings / $row->imgcount, 2);
             $avgdone      = true;
           }
@@ -767,7 +789,7 @@ class JoomHelper
       }
       if($avgdone)
       {
-        $clause = 'ROUND(LEAST(IF(imgvotes > 0, (('.$avgimgvote.'*'.$avgimgrating.') + '.$imgvotesum.') / ('.$avgimgvote.' + '.$imgvotes.'), 0.0), '.(float)$maxvoting.'), 2)';
+        $clause = 'ROUND(LEAST(IF(votes > 0, (('.$avgimgvote.'*'.$avgimgrating.') + '.$votesum.') / ('.$avgimgvote.' + '.$votes.'), 0.0), '.(float)$maxvoting.'), 2)';
       }
     }
 

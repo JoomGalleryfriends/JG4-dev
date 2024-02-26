@@ -97,18 +97,18 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
           </p>
           <?php echo $this->form->renderField('catid'); ?>
           <?php if(!$this->config->get('jg_useorigfilename')): ?>
-            <?php echo $this->form->renderField('imgtitle'); ?>
+            <?php echo $this->form->renderField('title'); ?>
             <?php if($this->config->get('jg_filenamenumber')): ?>
               <?php echo $this->form->renderField('nmb_start'); ?>
             <?php endif; ?>
           <?php endif; ?>
-          <?php echo $this->form->renderField('imgauthor'); ?>
+          <?php echo $this->form->renderField('author'); ?>
           <?php echo $this->form->renderField('published'); ?>
           <?php echo $this->form->renderField('access'); ?>
           <?php echo $this->form->renderField('language'); ?>
           <fieldset class="adminform">
-            <?php echo $this->form->getLabel('imgtext'); ?>
-            <?php echo $this->form->getInput('imgtext'); ?>
+            <?php echo $this->form->getLabel('description'); ?>
+            <?php echo $this->form->getInput('description'); ?>
           </fieldset>
           <input type="text" id="jform_id" class="hidden form-control readonly" name="jform[id]" value="" readonly/>
         </div>
@@ -119,7 +119,7 @@ $wa->addInlineScript('window.uppyVars = JSON.parse(\''. json_encode($this->js_va
     <input type="hidden" name="jform[uploader]" value="tus" />
     <input type="hidden" name="jform[multiple]" value="1" />
     <?php if($this->config->get('jg_useorigfilename')): ?>
-      <input type="hidden" name="jform[imgtitle]" value="title" />
+      <input type="hidden" name="jform[title]" value="title" />
     <?php endif; ?>
     <input type="hidden" name="id" value="0" />
     <?php echo HTMLHelper::_('form.token'); ?>

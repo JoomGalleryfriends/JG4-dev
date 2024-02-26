@@ -33,15 +33,15 @@ class JsonApiView extends BaseApiView
 		'hits', 
 		'downloads', 
 		'approved', 
-		'imgtitle', 
+		'title', 
 		'catid', 
 		'published', 
-		'imgauthor', 
+		'author', 
 		'language', 
 		'access', 
 		'created_by', 
 		'id', 
-		'imgdate', 
+		'date', 
 	];
 
 	/**
@@ -55,14 +55,14 @@ class JsonApiView extends BaseApiView
 		'hits', 
 		'downloads', 
 		'approved', 
-		'imgtitle', 
+		'title', 
 		'catid', 
 		'published', 
-		'imgauthor', 
+		'author', 
 		'language', 
 		'access', 
 		'created_by', 
 		'id', 
-		'imgdate', 
+		'date', 
 	];
 }

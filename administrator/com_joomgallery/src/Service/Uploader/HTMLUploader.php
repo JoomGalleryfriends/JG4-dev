@@ -133,9 +133,9 @@ class HTMLUploader extends BaseUploader implements UploaderInterface
   public function overrideData(&$data): bool
   {
     // Get upload date
-    if(empty($data['imgdate']) || \strpos($data['imgdate'], '1900-01-01') !== false)
+    if(empty($data['date']) || \strpos($data['date'], '1900-01-01') !== false)
     {
-      $data['imgdate'] = $data['created_time'];
+      $data['date'] = $data['created_time'];
     }
 
     // Override form data with image metadata

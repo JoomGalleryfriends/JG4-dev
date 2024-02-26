@@ -200,6 +200,7 @@ protected function getGalleryInfoData()
   $query = $db->getQuery(true)
               ->select($db->quoteName('manifest_cache'))
               ->from($db->quoteName('#__extensions'))
+              ->where($db->quoteName('type') . ' = ' . $db->quote('component'))
               ->where($db->quoteName('element') . ' = ' . $db->quote('com_joomgallery'));
   $db->setQuery($query);
 

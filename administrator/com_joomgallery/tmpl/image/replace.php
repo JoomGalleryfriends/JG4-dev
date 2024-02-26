@@ -59,7 +59,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
             <h2><?php echo Text::_('COM_JOOMGALLERY_IMAGE'); ?></h2>
           </div>
           <div class="card-body">
-            <?php echo $this->form->renderField('imgtitle'); ?>
+            <?php echo $this->form->renderField('title'); ?>
             <?php echo $this->form->renderField('alias'); ?>
             <?php echo $this->form->renderField('id'); ?>
             <?php echo $this->form->renderField('catid'); ?>

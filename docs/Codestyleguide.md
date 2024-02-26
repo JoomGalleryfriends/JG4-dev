@@ -270,7 +270,7 @@ function getPlural($count)
 ```php
 $db    = Factory::getDBO();
 $query = $db->getQuery(true)
-      ->select($db->quoteName(array('a.id', 'a.imgtitle')))
+      ->select($db->quoteName(array('a.id', 'a.title')))
       ->from($db->quoteName(_JOOM_TABLE_IMAGES, 'a'))
       ->where($db->quoteName('a.published') . ' = ' . $db->quote(1))
       ->where($db->quoteName('a.approved') . ' = ' . $db->quote(1))

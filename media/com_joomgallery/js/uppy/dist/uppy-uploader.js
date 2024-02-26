@@ -256,75 +256,6 @@ exports.RateLimit = RateLimit;
 
 /***/ }),
 
-/***/ "./node_modules/classnames/index.js":
-/*!******************************************!*\
-  !*** ./node_modules/classnames/index.js ***!
-  \******************************************/
-/***/ ((module, exports) => {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	Copyright (c) 2018 Jed Watson.
-	Licensed under the MIT License (MIT), see
-	http://jedwatson.github.io/classnames
-*/
-/* global define */
-
-(function () {
-	'use strict';
-
-	var hasOwn = {}.hasOwnProperty;
-	var nativeCodeString = '[native code]';
-
-	function classNames() {
-		var classes = [];
-
-		for (var i = 0; i < arguments.length; i++) {
-			var arg = arguments[i];
-			if (!arg) continue;
-
-			var argType = typeof arg;
-
-			if (argType === 'string' || argType === 'number') {
-				classes.push(arg);
-			} else if (Array.isArray(arg)) {
-				if (arg.length) {
-					var inner = classNames.apply(null, arg);
-					if (inner) {
-						classes.push(inner);
-					}
-				}
-			} else if (argType === 'object') {
-				if (arg.toString !== Object.prototype.toString && !arg.toString.toString().includes('[native code]')) {
-					classes.push(arg.toString());
-					continue;
-				}
-
-				for (var key in arg) {
-					if (hasOwn.call(arg, key) && arg[key]) {
-						classes.push(key);
-					}
-				}
-			}
-		}
-
-		return classes.join(' ');
-	}
-
-	if ( true && module.exports) {
-		classNames.default = classNames;
-		module.exports = classNames;
-	} else if (true) {
-		// register as 'classnames', consistent with npm package name
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
-			return classNames;
-		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {}
-}());
-
-
-/***/ }),
-
 /***/ "./node_modules/eventemitter3/index.js":
 /*!*********************************************!*\
   !*** ./node_modules/eventemitter3/index.js ***!
@@ -2191,19 +2122,19 @@ module.exports = function createNamespaceEmitter () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Component: () => (/* binding */ b),
-/* harmony export */   Fragment: () => (/* binding */ k),
-/* harmony export */   cloneElement: () => (/* binding */ F),
-/* harmony export */   createContext: () => (/* binding */ G),
+/* harmony export */   Fragment: () => (/* binding */ g),
+/* harmony export */   cloneElement: () => (/* binding */ E),
+/* harmony export */   createContext: () => (/* binding */ F),
 /* harmony export */   createElement: () => (/* binding */ y),
 /* harmony export */   createRef: () => (/* binding */ _),
 /* harmony export */   h: () => (/* binding */ y),
-/* harmony export */   hydrate: () => (/* binding */ E),
+/* harmony export */   hydrate: () => (/* binding */ B),
 /* harmony export */   isValidElement: () => (/* binding */ t),
 /* harmony export */   options: () => (/* binding */ l),
-/* harmony export */   render: () => (/* binding */ D),
-/* harmony export */   toChildArray: () => (/* binding */ C)
+/* harmony export */   render: () => (/* binding */ q),
+/* harmony export */   toChildArray: () => (/* binding */ $)
 /* harmony export */ });
-var n,l,u,t,i,o,r,f,e,c={},s=[],a=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,h=Array.isArray;function v(n,l){for(var u in l)n[u]=l[u];return n}function p(n){var l=n.parentNode;l&&l.removeChild(n)}function y(l,u,t){var i,o,r,f={};for(r in u)"key"==r?i=u[r]:"ref"==r?o=u[r]:f[r]=u[r];if(arguments.length>2&&(f.children=arguments.length>3?n.call(arguments,2):t),"function"==typeof l&&null!=l.defaultProps)for(r in l.defaultProps)void 0===f[r]&&(f[r]=l.defaultProps[r]);return d(l,f,i,o,null)}function d(n,t,i,o,r){var f={type:n,props:t,key:i,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,__h:null,constructor:void 0,__v:null==r?++u:r};return null==r&&null!=l.vnode&&l.vnode(f),f}function _(){return{current:null}}function k(n){return n.children}function b(n,l){this.props=n,this.context=l}function g(n,l){if(null==l)return n.__?g(n.__,n.__.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return"function"==typeof n.type?g(n):null}function m(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return m(n)}}function w(n){(!n.__d&&(n.__d=!0)&&i.push(n)&&!x.__r++||o!==l.debounceRendering)&&((o=l.debounceRendering)||r)(x)}function x(){var n,l,u,t,o,r,e,c,s;for(i.sort(f);n=i.shift();)n.__d&&(l=i.length,t=void 0,o=void 0,r=void 0,c=(e=(u=n).__v).__e,(s=u.__P)&&(t=[],o=[],(r=v({},e)).__v=e.__v+1,L(s,e,r,u.__n,void 0!==s.ownerSVGElement,null!=e.__h?[c]:null,t,null==c?g(e):c,e.__h,o),M(t,e,o),e.__e!=c&&m(e)),i.length>l&&i.sort(f));x.__r=0}function P(n,l,u,t,i,o,r,f,e,a,v){var p,y,_,b,m,w,x,P,C,H=0,I=t&&t.__k||s,T=I.length,j=T,z=l.length;for(u.__k=[],p=0;p<z;p++)null!=(b=u.__k[p]=null==(b=l[p])||"boolean"==typeof b||"function"==typeof b?null:"string"==typeof b||"number"==typeof b||"bigint"==typeof b?d(null,b,null,null,b):h(b)?d(k,{children:b},null,null,null):b.__b>0?d(b.type,b.props,b.key,b.ref?b.ref:null,b.__v):b)?(b.__=u,b.__b=u.__b+1,-1===(P=A(b,I,x=p+H,j))?_=c:(_=I[P]||c,I[P]=void 0,j--),L(n,b,_,i,o,r,f,e,a,v),m=b.__e,(y=b.ref)&&_.ref!=y&&(_.ref&&O(_.ref,null,b),v.push(y,b.__c||m,b)),null!=m&&(null==w&&(w=m),(C=_===c||null===_.__v)?-1==P&&H--:P!==x&&(P===x+1?H++:P>x?j>z-x?H+=P-x:H--:H=P<x&&P==x-1?P-x:0),x=p+H,"function"!=typeof b.type||P===x&&_.__k!==b.__k?"function"==typeof b.type||P===x&&!C?void 0!==b.__d?(e=b.__d,b.__d=void 0):e=m.nextSibling:e=S(n,m,e):e=$(b,e,n),"function"==typeof u.type&&(u.__d=e))):(_=I[p])&&null==_.key&&_.__e&&(_.__e==e&&(e=g(_)),q(_,_,!1),I[p]=null);for(u.__e=w,p=T;p--;)null!=I[p]&&("function"==typeof u.type&&null!=I[p].__e&&I[p].__e==u.__d&&(u.__d=I[p].__e.nextSibling),q(I[p],I[p]))}function $(n,l,u){for(var t,i=n.__k,o=0;i&&o<i.length;o++)(t=i[o])&&(t.__=n,l="function"==typeof t.type?$(t,l,u):S(u,t.__e,l));return l}function C(n,l){return l=l||[],null==n||"boolean"==typeof n||(h(n)?n.some(function(n){C(n,l)}):l.push(n)),l}function S(n,l,u){return null==u||u.parentNode!==n?n.insertBefore(l,null):l==u&&null!=l.parentNode||n.insertBefore(l,u),l.nextSibling}function A(n,l,u,t){var i=n.key,o=n.type,r=u-1,f=u+1,e=l[u];if(null===e||e&&i==e.key&&o===e.type)return u;if(t>(null!=e?1:0))for(;r>=0||f<l.length;){if(r>=0){if((e=l[r])&&i==e.key&&o===e.type)return r;r--}if(f<l.length){if((e=l[f])&&i==e.key&&o===e.type)return f;f++}}return-1}function H(n,l,u,t,i){var o;for(o in u)"children"===o||"key"===o||o in l||T(n,o,null,u[o],t);for(o in l)i&&"function"!=typeof l[o]||"children"===o||"key"===o||"value"===o||"checked"===o||u[o]===l[o]||T(n,o,l[o],u[o],t)}function I(n,l,u){"-"===l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!=typeof u||a.test(l)?u:u+"px"}function T(n,l,u,t,i){var o;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else{if("string"==typeof t&&(n.style.cssText=t=""),t)for(l in t)u&&l in u||I(n.style,l,"");if(u)for(l in u)t&&u[l]===t[l]||I(n.style,l,u[l])}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/(PointerCapture)$|Capture$/,"$1")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=u,u?t||n.addEventListener(l,o?z:j,o):n.removeEventListener(l,o?z:j,o);else if("dangerouslySetInnerHTML"!==l){if(i)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!==l&&"height"!==l&&"href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&"rowSpan"!==l&&"colSpan"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null==u||!1===u&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,u))}}function j(n){return this.l[n.type+!1](l.event?l.event(n):n)}function z(n){return this.l[n.type+!0](l.event?l.event(n):n)}function L(n,u,t,i,o,r,f,e,c,s){var a,p,y,d,_,g,m,w,x,$,C,S,A,H,I,T=u.type;if(void 0!==u.constructor)return null;null!=t.__h&&(c=t.__h,e=u.__e=t.__e,u.__h=null,r=[e]),(a=l.__b)&&a(u);n:if("function"==typeof T)try{if(w=u.props,x=(a=T.contextType)&&i[a.__c],$=a?x?x.props.value:a.__:i,t.__c?m=(p=u.__c=t.__c).__=p.__E:("prototype"in T&&T.prototype.render?u.__c=p=new T(w,$):(u.__c=p=new b(w,$),p.constructor=T,p.render=B),x&&x.sub(p),p.props=w,p.state||(p.state={}),p.context=$,p.__n=i,y=p.__d=!0,p.__h=[],p._sb=[]),null==p.__s&&(p.__s=p.state),null!=T.getDerivedStateFromProps&&(p.__s==p.state&&(p.__s=v({},p.__s)),v(p.__s,T.getDerivedStateFromProps(w,p.__s))),d=p.props,_=p.state,p.__v=u,y)null==T.getDerivedStateFromProps&&null!=p.componentWillMount&&p.componentWillMount(),null!=p.componentDidMount&&p.__h.push(p.componentDidMount);else{if(null==T.getDerivedStateFromProps&&w!==d&&null!=p.componentWillReceiveProps&&p.componentWillReceiveProps(w,$),!p.__e&&(null!=p.shouldComponentUpdate&&!1===p.shouldComponentUpdate(w,p.__s,$)||u.__v===t.__v)){for(u.__v!==t.__v&&(p.props=w,p.state=p.__s,p.__d=!1),u.__e=t.__e,u.__k=t.__k,u.__k.forEach(function(n){n&&(n.__=u)}),C=0;C<p._sb.length;C++)p.__h.push(p._sb[C]);p._sb=[],p.__h.length&&f.push(p);break n}null!=p.componentWillUpdate&&p.componentWillUpdate(w,p.__s,$),null!=p.componentDidUpdate&&p.__h.push(function(){p.componentDidUpdate(d,_,g)})}if(p.context=$,p.props=w,p.__P=n,p.__e=!1,S=l.__r,A=0,"prototype"in T&&T.prototype.render){for(p.state=p.__s,p.__d=!1,S&&S(u),a=p.render(p.props,p.state,p.context),H=0;H<p._sb.length;H++)p.__h.push(p._sb[H]);p._sb=[]}else do{p.__d=!1,S&&S(u),a=p.render(p.props,p.state,p.context),p.state=p.__s}while(p.__d&&++A<25);p.state=p.__s,null!=p.getChildContext&&(i=v(v({},i),p.getChildContext())),y||null==p.getSnapshotBeforeUpdate||(g=p.getSnapshotBeforeUpdate(d,_)),P(n,h(I=null!=a&&a.type===k&&null==a.key?a.props.children:a)?I:[I],u,t,i,o,r,f,e,c,s),p.base=u.__e,u.__h=null,p.__h.length&&f.push(p),m&&(p.__E=p.__=null)}catch(n){u.__v=null,(c||null!=r)&&(u.__e=e,u.__h=!!c,r[r.indexOf(e)]=null),l.__e(n,u,t)}else null==r&&u.__v===t.__v?(u.__k=t.__k,u.__e=t.__e):u.__e=N(t.__e,u,t,i,o,r,f,c,s);(a=l.diffed)&&a(u)}function M(n,u,t){for(var i=0;i<t.length;i++)O(t[i],t[++i],t[++i]);l.__c&&l.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u)})}catch(n){l.__e(n,u.__v)}})}function N(l,u,t,i,o,r,f,e,s){var a,v,y,d=t.props,_=u.props,k=u.type,b=0;if("svg"===k&&(o=!0),null!=r)for(;b<r.length;b++)if((a=r[b])&&"setAttribute"in a==!!k&&(k?a.localName===k:3===a.nodeType)){l=a,r[b]=null;break}if(null==l){if(null===k)return document.createTextNode(_);l=o?document.createElementNS("http://www.w3.org/2000/svg",k):document.createElement(k,_.is&&_),r=null,e=!1}if(null===k)d===_||e&&l.data===_||(l.data=_);else{if(r=r&&n.call(l.childNodes),v=(d=t.props||c).dangerouslySetInnerHTML,y=_.dangerouslySetInnerHTML,!e){if(null!=r)for(d={},b=0;b<l.attributes.length;b++)d[l.attributes[b].name]=l.attributes[b].value;(y||v)&&(y&&(v&&y.__html==v.__html||y.__html===l.innerHTML)||(l.innerHTML=y&&y.__html||""))}if(H(l,_,d,o,e),y)u.__k=[];else if(P(l,h(b=u.props.children)?b:[b],u,t,i,o&&"foreignObject"!==k,r,f,r?r[0]:t.__k&&g(t,0),e,s),null!=r)for(b=r.length;b--;)null!=r[b]&&p(r[b]);e||("value"in _&&void 0!==(b=_.value)&&(b!==l.value||"progress"===k&&!b||"option"===k&&b!==d.value)&&T(l,"value",b,d.value,!1),"checked"in _&&void 0!==(b=_.checked)&&b!==l.checked&&T(l,"checked",b,d.checked,!1))}return l}function O(n,u,t){try{"function"==typeof n?n(u):n.current=u}catch(n){l.__e(n,t)}}function q(n,u,t){var i,o;if(l.unmount&&l.unmount(n),(i=n.ref)&&(i.current&&i.current!==n.__e||O(i,null,u)),null!=(i=n.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount()}catch(n){l.__e(n,u)}i.base=i.__P=null,n.__c=void 0}if(i=n.__k)for(o=0;o<i.length;o++)i[o]&&q(i[o],u,t||"function"!=typeof n.type);t||null==n.__e||p(n.__e),n.__=n.__e=n.__d=void 0}function B(n,l,u){return this.constructor(n,u)}function D(u,t,i){var o,r,f,e;l.__&&l.__(u,t),r=(o="function"==typeof i)?null:i&&i.__k||t.__k,f=[],e=[],L(t,u=(!o&&i||t).__k=y(k,null,[u]),r||c,c,void 0!==t.ownerSVGElement,!o&&i?[i]:r?null:t.firstChild?n.call(t.childNodes):null,f,!o&&i?i:r?r.__e:t.firstChild,o,e),M(f,u,e)}function E(n,l){D(n,l,E)}function F(l,u,t){var i,o,r,f,e=v({},l.props);for(r in l.type&&l.type.defaultProps&&(f=l.type.defaultProps),u)"key"==r?i=u[r]:"ref"==r?o=u[r]:e[r]=void 0===u[r]&&void 0!==f?f[r]:u[r];return arguments.length>2&&(e.children=arguments.length>3?n.call(arguments,2):t),d(l.type,e,i||l.key,o||l.ref,null)}function G(n,l){var u={__c:l="__cC"+e++,__:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var u,t;return this.getChildContext||(u=[],(t={})[l]=this,this.getChildContext=function(){return t},this.shouldComponentUpdate=function(n){this.props.value!==n.value&&u.some(function(n){n.__e=!0,w(n)})},this.sub=function(n){u.push(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){u.splice(u.indexOf(n),1),l&&l.call(n)}}),n.children}};return u.Provider.__=u.Consumer.contextType=u}n=s.slice,l={__e:function(n,l,u,t){for(var i,o,r;l=l.__;)if((i=l.__c)&&!i.__)try{if((o=i.constructor)&&null!=o.getDerivedStateFromError&&(i.setState(o.getDerivedStateFromError(n)),r=i.__d),null!=i.componentDidCatch&&(i.componentDidCatch(n,t||{}),r=i.__d),r)return i.__E=i}catch(l){n=l}throw n}},u=0,t=function(n){return null!=n&&void 0===n.constructor},b.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=v({},this.state),"function"==typeof n&&(n=n(v({},u),this.props)),n&&v(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),w(this))},b.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),w(this))},b.prototype.render=k,i=[],r="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,f=function(n,l){return n.__v.__b-l.__v.__b},x.__r=0,e=0;
+var n,l,u,t,i,o,r,f,e,c={},s=[],a=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,h=Array.isArray;function v(n,l){for(var u in l)n[u]=l[u];return n}function p(n){var l=n.parentNode;l&&l.removeChild(n)}function y(l,u,t){var i,o,r,f={};for(r in u)"key"==r?i=u[r]:"ref"==r?o=u[r]:f[r]=u[r];if(arguments.length>2&&(f.children=arguments.length>3?n.call(arguments,2):t),"function"==typeof l&&null!=l.defaultProps)for(r in l.defaultProps)void 0===f[r]&&(f[r]=l.defaultProps[r]);return d(l,f,i,o,null)}function d(n,t,i,o,r){var f={type:n,props:t,key:i,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,constructor:void 0,__v:null==r?++u:r,__i:-1,__u:0};return null==r&&null!=l.vnode&&l.vnode(f),f}function _(){return{current:null}}function g(n){return n.children}function b(n,l){this.props=n,this.context=l}function m(n,l){if(null==l)return n.__?m(n.__,n.__i+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return"function"==typeof n.type?m(n):null}function k(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return k(n)}}function w(n){(!n.__d&&(n.__d=!0)&&i.push(n)&&!x.__r++||o!==l.debounceRendering)&&((o=l.debounceRendering)||r)(x)}function x(){var n,u,t,o,r,e,c,s,a;for(i.sort(f);n=i.shift();)n.__d&&(u=i.length,o=void 0,e=(r=(t=n).__v).__e,s=[],a=[],(c=t.__P)&&((o=v({},r)).__v=r.__v+1,l.vnode&&l.vnode(o),L(c,o,r,t.__n,void 0!==c.ownerSVGElement,32&r.__u?[e]:null,s,null==e?m(r):e,!!(32&r.__u),a),o.__.__k[o.__i]=o,M(s,o,a),o.__e!=e&&k(o)),i.length>u&&i.sort(f));x.__r=0}function C(n,l,u,t,i,o,r,f,e,a,h){var v,p,y,d,_,g=t&&t.__k||s,b=l.length;for(u.__d=e,P(u,l,g),e=u.__d,v=0;v<b;v++)null!=(y=u.__k[v])&&"boolean"!=typeof y&&"function"!=typeof y&&(p=-1===y.__i?c:g[y.__i]||c,y.__i=v,L(n,y,p,i,o,r,f,e,a,h),d=y.__e,y.ref&&p.ref!=y.ref&&(p.ref&&z(p.ref,null,y),h.push(y.ref,y.__c||d,y)),null==_&&null!=d&&(_=d),65536&y.__u||p.__k===y.__k?e=S(y,e,n):"function"==typeof y.type&&void 0!==y.__d?e=y.__d:d&&(e=d.nextSibling),y.__d=void 0,y.__u&=-196609);u.__d=e,u.__e=_}function P(n,l,u){var t,i,o,r,f,e=l.length,c=u.length,s=c,a=0;for(n.__k=[],t=0;t<e;t++)null!=(i=n.__k[t]=null==(i=l[t])||"boolean"==typeof i||"function"==typeof i?null:"string"==typeof i||"number"==typeof i||"bigint"==typeof i||i.constructor==String?d(null,i,null,null,i):h(i)?d(g,{children:i},null,null,null):void 0===i.constructor&&i.__b>0?d(i.type,i.props,i.key,i.ref?i.ref:null,i.__v):i)?(i.__=n,i.__b=n.__b+1,f=H(i,u,r=t+a,s),i.__i=f,o=null,-1!==f&&(s--,(o=u[f])&&(o.__u|=131072)),null==o||null===o.__v?(-1==f&&a--,"function"!=typeof i.type&&(i.__u|=65536)):f!==r&&(f===r+1?a++:f>r?s>e-r?a+=f-r:a--:a=f<r&&f==r-1?f-r:0,f!==t+a&&(i.__u|=65536))):(o=u[t])&&null==o.key&&o.__e&&(o.__e==n.__d&&(n.__d=m(o)),N(o,o,!1),u[t]=null,s--);if(s)for(t=0;t<c;t++)null!=(o=u[t])&&0==(131072&o.__u)&&(o.__e==n.__d&&(n.__d=m(o)),N(o,o))}function S(n,l,u){var t,i;if("function"==typeof n.type){for(t=n.__k,i=0;t&&i<t.length;i++)t[i]&&(t[i].__=n,l=S(t[i],l,u));return l}return n.__e!=l&&(u.insertBefore(n.__e,l||null),l=n.__e),l&&l.nextSibling}function $(n,l){return l=l||[],null==n||"boolean"==typeof n||(h(n)?n.some(function(n){$(n,l)}):l.push(n)),l}function H(n,l,u,t){var i=n.key,o=n.type,r=u-1,f=u+1,e=l[u];if(null===e||e&&i==e.key&&o===e.type)return u;if(t>(null!=e&&0==(131072&e.__u)?1:0))for(;r>=0||f<l.length;){if(r>=0){if((e=l[r])&&0==(131072&e.__u)&&i==e.key&&o===e.type)return r;r--}if(f<l.length){if((e=l[f])&&0==(131072&e.__u)&&i==e.key&&o===e.type)return f;f++}}return-1}function I(n,l,u){"-"===l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!=typeof u||a.test(l)?u:u+"px"}function T(n,l,u,t,i){var o;n:if("style"===l)if("string"==typeof u)n.style.cssText=u;else{if("string"==typeof t&&(n.style.cssText=t=""),t)for(l in t)u&&l in u||I(n.style,l,"");if(u)for(l in u)t&&u[l]===t[l]||I(n.style,l,u[l])}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/(PointerCapture)$|Capture$/,"$1")),l=l.toLowerCase()in n?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=u,u?t?u.u=t.u:(u.u=Date.now(),n.addEventListener(l,o?D:A,o)):n.removeEventListener(l,o?D:A,o);else{if(i)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!==l&&"height"!==l&&"href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&"rowSpan"!==l&&"colSpan"!==l&&"role"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null==u||!1===u&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,u))}}function A(n){var u=this.l[n.type+!1];if(n.t){if(n.t<=u.u)return}else n.t=Date.now();return u(l.event?l.event(n):n)}function D(n){return this.l[n.type+!0](l.event?l.event(n):n)}function L(n,u,t,i,o,r,f,e,c,s){var a,p,y,d,_,m,k,w,x,P,S,$,H,I,T,A=u.type;if(void 0!==u.constructor)return null;128&t.__u&&(c=!!(32&t.__u),r=[e=u.__e=t.__e]),(a=l.__b)&&a(u);n:if("function"==typeof A)try{if(w=u.props,x=(a=A.contextType)&&i[a.__c],P=a?x?x.props.value:a.__:i,t.__c?k=(p=u.__c=t.__c).__=p.__E:("prototype"in A&&A.prototype.render?u.__c=p=new A(w,P):(u.__c=p=new b(w,P),p.constructor=A,p.render=O),x&&x.sub(p),p.props=w,p.state||(p.state={}),p.context=P,p.__n=i,y=p.__d=!0,p.__h=[],p._sb=[]),null==p.__s&&(p.__s=p.state),null!=A.getDerivedStateFromProps&&(p.__s==p.state&&(p.__s=v({},p.__s)),v(p.__s,A.getDerivedStateFromProps(w,p.__s))),d=p.props,_=p.state,p.__v=u,y)null==A.getDerivedStateFromProps&&null!=p.componentWillMount&&p.componentWillMount(),null!=p.componentDidMount&&p.__h.push(p.componentDidMount);else{if(null==A.getDerivedStateFromProps&&w!==d&&null!=p.componentWillReceiveProps&&p.componentWillReceiveProps(w,P),!p.__e&&(null!=p.shouldComponentUpdate&&!1===p.shouldComponentUpdate(w,p.__s,P)||u.__v===t.__v)){for(u.__v!==t.__v&&(p.props=w,p.state=p.__s,p.__d=!1),u.__e=t.__e,u.__k=t.__k,u.__k.forEach(function(n){n&&(n.__=u)}),S=0;S<p._sb.length;S++)p.__h.push(p._sb[S]);p._sb=[],p.__h.length&&f.push(p);break n}null!=p.componentWillUpdate&&p.componentWillUpdate(w,p.__s,P),null!=p.componentDidUpdate&&p.__h.push(function(){p.componentDidUpdate(d,_,m)})}if(p.context=P,p.props=w,p.__P=n,p.__e=!1,$=l.__r,H=0,"prototype"in A&&A.prototype.render){for(p.state=p.__s,p.__d=!1,$&&$(u),a=p.render(p.props,p.state,p.context),I=0;I<p._sb.length;I++)p.__h.push(p._sb[I]);p._sb=[]}else do{p.__d=!1,$&&$(u),a=p.render(p.props,p.state,p.context),p.state=p.__s}while(p.__d&&++H<25);p.state=p.__s,null!=p.getChildContext&&(i=v(v({},i),p.getChildContext())),y||null==p.getSnapshotBeforeUpdate||(m=p.getSnapshotBeforeUpdate(d,_)),C(n,h(T=null!=a&&a.type===g&&null==a.key?a.props.children:a)?T:[T],u,t,i,o,r,f,e,c,s),p.base=u.__e,u.__u&=-161,p.__h.length&&f.push(p),k&&(p.__E=p.__=null)}catch(n){u.__v=null,c||null!=r?(u.__e=e,u.__u|=c?160:32,r[r.indexOf(e)]=null):(u.__e=t.__e,u.__k=t.__k),l.__e(n,u,t)}else null==r&&u.__v===t.__v?(u.__k=t.__k,u.__e=t.__e):u.__e=j(t.__e,u,t,i,o,r,f,c,s);(a=l.diffed)&&a(u)}function M(n,u,t){u.__d=void 0;for(var i=0;i<t.length;i++)z(t[i],t[++i],t[++i]);l.__c&&l.__c(u,n),n.some(function(u){try{n=u.__h,u.__h=[],n.some(function(n){n.call(u)})}catch(n){l.__e(n,u.__v)}})}function j(l,u,t,i,o,r,f,e,s){var a,v,y,d,_,g,b,k=t.props,w=u.props,x=u.type;if("svg"===x&&(o=!0),null!=r)for(a=0;a<r.length;a++)if((_=r[a])&&"setAttribute"in _==!!x&&(x?_.localName===x:3===_.nodeType)){l=_,r[a]=null;break}if(null==l){if(null===x)return document.createTextNode(w);l=o?document.createElementNS("http://www.w3.org/2000/svg",x):document.createElement(x,w.is&&w),r=null,e=!1}if(null===x)k===w||e&&l.data===w||(l.data=w);else{if(r=r&&n.call(l.childNodes),k=t.props||c,!e&&null!=r)for(k={},a=0;a<l.attributes.length;a++)k[(_=l.attributes[a]).name]=_.value;for(a in k)_=k[a],"children"==a||("dangerouslySetInnerHTML"==a?y=_:"key"===a||a in w||T(l,a,null,_,o));for(a in w)_=w[a],"children"==a?d=_:"dangerouslySetInnerHTML"==a?v=_:"value"==a?g=_:"checked"==a?b=_:"key"===a||e&&"function"!=typeof _||k[a]===_||T(l,a,_,k[a],o);if(v)e||y&&(v.__html===y.__html||v.__html===l.innerHTML)||(l.innerHTML=v.__html),u.__k=[];else if(y&&(l.innerHTML=""),C(l,h(d)?d:[d],u,t,i,o&&"foreignObject"!==x,r,f,r?r[0]:t.__k&&m(t,0),e,s),null!=r)for(a=r.length;a--;)null!=r[a]&&p(r[a]);e||(a="value",void 0!==g&&(g!==l[a]||"progress"===x&&!g||"option"===x&&g!==k[a])&&T(l,a,g,k[a],!1),a="checked",void 0!==b&&b!==l[a]&&T(l,a,b,k[a],!1))}return l}function z(n,u,t){try{"function"==typeof n?n(u):n.current=u}catch(n){l.__e(n,t)}}function N(n,u,t){var i,o;if(l.unmount&&l.unmount(n),(i=n.ref)&&(i.current&&i.current!==n.__e||z(i,null,u)),null!=(i=n.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount()}catch(n){l.__e(n,u)}i.base=i.__P=null,n.__c=void 0}if(i=n.__k)for(o=0;o<i.length;o++)i[o]&&N(i[o],u,t||"function"!=typeof n.type);t||null==n.__e||p(n.__e),n.__=n.__e=n.__d=void 0}function O(n,l,u){return this.constructor(n,u)}function q(u,t,i){var o,r,f,e;l.__&&l.__(u,t),r=(o="function"==typeof i)?null:i&&i.__k||t.__k,f=[],e=[],L(t,u=(!o&&i||t).__k=y(g,null,[u]),r||c,c,void 0!==t.ownerSVGElement,!o&&i?[i]:r?null:t.firstChild?n.call(t.childNodes):null,f,!o&&i?i:r?r.__e:t.firstChild,o,e),M(f,u,e)}function B(n,l){q(n,l,B)}function E(l,u,t){var i,o,r,f,e=v({},l.props);for(r in l.type&&l.type.defaultProps&&(f=l.type.defaultProps),u)"key"==r?i=u[r]:"ref"==r?o=u[r]:e[r]=void 0===u[r]&&void 0!==f?f[r]:u[r];return arguments.length>2&&(e.children=arguments.length>3?n.call(arguments,2):t),d(l.type,e,i||l.key,o||l.ref,null)}function F(n,l){var u={__c:l="__cC"+e++,__:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var u,t;return this.getChildContext||(u=[],(t={})[l]=this,this.getChildContext=function(){return t},this.shouldComponentUpdate=function(n){this.props.value!==n.value&&u.some(function(n){n.__e=!0,w(n)})},this.sub=function(n){u.push(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){u.splice(u.indexOf(n),1),l&&l.call(n)}}),n.children}};return u.Provider.__=u.Consumer.contextType=u}n=s.slice,l={__e:function(n,l,u,t){for(var i,o,r;l=l.__;)if((i=l.__c)&&!i.__)try{if((o=i.constructor)&&null!=o.getDerivedStateFromError&&(i.setState(o.getDerivedStateFromError(n)),r=i.__d),null!=i.componentDidCatch&&(i.componentDidCatch(n,t||{}),r=i.__d),r)return i.__E=i}catch(l){n=l}throw n}},u=0,t=function(n){return null!=n&&null==n.constructor},b.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=v({},this.state),"function"==typeof n&&(n=n(v({},u),this.props)),n&&v(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),w(this))},b.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),w(this))},b.prototype.render=g,i=[],r="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,f=function(n,l){return n.__v.__b-l.__v.__b},x.__r=0,e=0;
 //# sourceMappingURL=preact.module.js.map
 
 
@@ -2431,8 +2362,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _uriToBlob_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./uriToBlob.js */ "./node_modules/tus-js-client/lib.esm/browser/uriToBlob.js");
 /* harmony import */ var _sources_FileSource_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sources/FileSource.js */ "./node_modules/tus-js-client/lib.esm/browser/sources/FileSource.js");
 /* harmony import */ var _sources_StreamSource_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sources/StreamSource.js */ "./node_modules/tus-js-client/lib.esm/browser/sources/StreamSource.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw new Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw new Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2554,7 +2485,6 @@ function hashCode(str) {
     hash = (hash << 5) - hash + _char;
     hash &= hash; // Convert to 32bit integer
   }
-
   return hash;
 }
 
@@ -2571,7 +2501,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ XHRHttpStack)
 /* harmony export */ });
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -2725,7 +2655,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _httpStack_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./httpStack.js */ "./node_modules/tus-js-client/lib.esm/browser/httpStack.js");
 /* harmony import */ var _fileReader_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./fileReader.js */ "./node_modules/tus-js-client/lib.esm/browser/fileReader.js");
 /* harmony import */ var _fileSignature_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./fileSignature.js */ "./node_modules/tus-js-client/lib.esm/browser/fileSignature.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -2736,8 +2666,8 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
@@ -2814,7 +2744,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _isCordova_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isCordova.js */ "./node_modules/tus-js-client/lib.esm/browser/sources/isCordova.js");
 /* harmony import */ var _readAsByteArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./readAsByteArray.js */ "./node_modules/tus-js-client/lib.esm/browser/sources/readAsByteArray.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -2868,7 +2798,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ StreamSource)
 /* harmony export */ });
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -3076,7 +3006,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   WebStorageUrlStorage: () => (/* binding */ WebStorageUrlStorage),
 /* harmony export */   canStoreURLs: () => (/* binding */ canStoreURLs)
 /* harmony export */ });
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -3170,7 +3100,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
@@ -3183,7 +3113,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
 function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct.bind(); } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
+function _isNativeFunction(fn) { try { return Function.toString.call(fn).indexOf("[native code]") !== -1; } catch (e) { return typeof fn === "function"; } }
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 var DetailedError = /*#__PURE__*/function (_Error) {
@@ -3255,7 +3185,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ NoopUrlStorage)
 /* harmony export */ });
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -3310,18 +3240,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _error_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./error.js */ "./node_modules/tus-js-client/lib.esm/error.js");
 /* harmony import */ var _logger_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./logger.js */ "./node_modules/tus-js-client/lib.esm/logger.js");
 /* harmony import */ var _uuid_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uuid.js */ "./node_modules/tus-js-client/lib.esm/uuid.js");
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw new Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw new Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
@@ -3349,7 +3279,7 @@ var defaultOptions = {
   addRequestId: false,
   onBeforeRequest: null,
   onAfterResponse: null,
-  onShouldRetry: null,
+  onShouldRetry: defaultOnShouldRetry,
   chunkSize: Infinity,
   retryDelays: [0, 1000, 3000, 5000],
   parallelUploads: 1,
@@ -3367,7 +3297,8 @@ var BaseUpload = /*#__PURE__*/function () {
     _classCallCheck(this, BaseUpload);
     // Warn about removed options from previous versions
     if ('resume' in options) {
-      console.log('tus: The `resume` option has been removed in tus-js-client v2. Please use the URL storage API instead.'); // eslint-disable-line no-console
+      // eslint-disable-next-line no-console
+      console.log('tus: The `resume` option has been removed in tus-js-client v2. Please use the URL storage API instead.');
     }
 
     // The default options will already be added from the wrapper classes.
@@ -3709,7 +3640,6 @@ var BaseUpload = /*#__PURE__*/function () {
         this._req.abort();
         // Note: We do not close the file source here, so the user can resume in the future.
       }
-
       this._aborted = true;
 
       // Stop any timeout used for initiating a retry.
@@ -4235,7 +4165,7 @@ function openRequest(method, url, options) {
  *
  * @api private
  */
-function sendRequest(_x2, _x3, _x4) {
+function sendRequest(_x, _x2, _x3) {
   return _sendRequest2.apply(this, arguments);
 }
 /**
@@ -4292,7 +4222,7 @@ function isOnline() {
 
 /**
  * Checks whether or not it is ok to retry a request.
- * @param {Error} err the error returned from the last request
+ * @param {Error|DetailedError} err the error returned from the last request
  * @param {number} retryAttempt the number of times the request has already been retried
  * @param {object} options tus Upload options
  *
@@ -4312,6 +4242,15 @@ function shouldRetry(err, retryAttempt, options) {
   if (options && typeof options.onShouldRetry === 'function') {
     return options.onShouldRetry(err, retryAttempt, options);
   }
+  return defaultOnShouldRetry(err);
+}
+
+/**
+ * determines if the request should be retried. Will only retry if not a status 4xx except a 409 or 423
+ * @param {DetailedError} err
+ * @returns {boolean}
+ */
+function defaultOnShouldRetry(err) {
   var status = err.originalResponse ? err.originalResponse.getStatus() : 0;
   return (!inStatusCategory(status, 400) || status === 409 || status === 423) && isOnline();
 }
@@ -5906,14 +5845,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ jgProcessor)
 /* harmony export */ });
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/Translator */ "./node_modules/@uppy/utils/lib/Translator.js");
-/* harmony import */ var _gullerya_object_observer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @gullerya/object-observer */ "./node_modules/@gullerya/object-observer/dist/object-observer.min.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/BasePlugin.js");
+/* harmony import */ var _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/Translator */ "./node_modules/@uppy/utils/lib/Translator.js");
+/* harmony import */ var _gullerya_object_observer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @gullerya/object-observer */ "./node_modules/@gullerya/object-observer/dist/object-observer.min.js");
 
 
 
 
-class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
+class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
   /**
    * Constructor
    * Doc: https://uppy.io/docs/guides/building-plugins/#creating-a-plugin
@@ -5968,7 +5907,7 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
 
     // Initialize an object collecting the finished files
     // This object is observed during postprocessing (awaitSaveRequest)
-    this.finishedFiles = _gullerya_object_observer__WEBPACK_IMPORTED_MODULE_2__.Observable.from({}, { async: true });
+    this.finishedFiles = _gullerya_object_observer__WEBPACK_IMPORTED_MODULE_1__.Observable.from({}, { async: true });
 
     this.i18nInit();
   }
@@ -6177,10 +6116,10 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
       let formData = this.formData;
       formData.append('jform[uuid]', tusID);
       formData.append('jform[filecounter]', this.filecounters[fileID]);
-      if(formData.get('jform[imgtext]').trim().length === 0) {
+      if(formData.get('jform[description]').trim().length === 0) {
         // Receive text content from editor
-        let txt = Joomla.editors.instances['jform_imgtext'].getValue();
-        formData.set('jform[imgtext]', txt);
+        let txt = Joomla.editors.instances['jform_description'].getValue();
+        formData.set('jform[description]', txt);
       }
       let url = document.getElementById(this.formID).getAttribute('action');
 
@@ -6334,7 +6273,7 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
           this.addStateTxt(file, 'Saving successful');
 
           // Exchange title of the upload file
-          this.addTitle(file, response.data.record.imgtitle);
+          this.addTitle(file, response.data.record.title);
 
           // Add Button to upload form
           if(this.formData.get('jform[debug]') == 1) {
@@ -6403,7 +6342,7 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
       return new Promise((resolve) => {
         let nmbFinished = 0;
 
-        _gullerya_object_observer__WEBPACK_IMPORTED_MODULE_2__.Observable.observe(this.finishedFiles, changes => {
+        _gullerya_object_observer__WEBPACK_IMPORTED_MODULE_1__.Observable.observe(this.finishedFiles, changes => {
           // Executed every time something changes in this.finishedFiles
           nmbFinished++;
 
@@ -6472,6 +6411,92 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.BasePlugin {
 
 /***/ }),
 
+/***/ "./node_modules/classnames/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/classnames/index.js ***!
+  \******************************************/
+/***/ ((module, exports) => {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	Copyright (c) 2018 Jed Watson.
+	Licensed under the MIT License (MIT), see
+	http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+
+	function classNames () {
+		var classes = '';
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (arg) {
+				classes = appendClass(classes, parseValue(arg));
+			}
+		}
+
+		return classes;
+	}
+
+	function parseValue (arg) {
+		if (typeof arg === 'string' || typeof arg === 'number') {
+			return arg;
+		}
+
+		if (typeof arg !== 'object') {
+			return '';
+		}
+
+		if (Array.isArray(arg)) {
+			return classNames.apply(null, arg);
+		}
+
+		if (arg.toString !== Object.prototype.toString && !arg.toString.toString().includes('[native code]')) {
+			return arg.toString();
+		}
+
+		var classes = '';
+
+		for (var key in arg) {
+			if (hasOwn.call(arg, key) && arg[key]) {
+				classes = appendClass(classes, key);
+			}
+		}
+
+		return classes;
+	}
+
+	function appendClass (value, newClass) {
+		if (!newClass) {
+			return value;
+		}
+	
+		if (value) {
+			return value + ' ' + newClass;
+		}
+	
+		return value + newClass;
+	}
+
+	if ( true && module.exports) {
+		classNames.default = classNames;
+		module.exports = classNames;
+	} else if (true) {
+		// register as 'classnames', consistent with npm package name
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+			return classNames;
+		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {}
+}());
+
+
+/***/ }),
+
 /***/ "./node_modules/@gullerya/object-observer/dist/object-observer.min.js":
 /*!****************************************************************************!*\
   !*** ./node_modules/@gullerya/object-observer/dist/object-observer.min.js ***!
@@ -6487,928 +6512,6 @@ __webpack_require__.r(__webpack_exports__);
 const m="insert",x="update",E="delete",T="reverse",K="shuffle",c=Symbol.for("object-observer-meta-key-0"),$={async:1},N=o=>{if(!o||typeof o!="object")return null;const t={},e=[];for(const[r,n]of Object.entries(o))if(r==="path"){if(typeof n!="string"||n==="")throw new Error('"path" option, if/when provided, MUST be a non-empty string');t[r]=n}else if(r==="pathsOf"){if(o.path)throw new Error('"pathsOf" option MAY NOT be specified together with "path" option');if(typeof n!="string")throw new Error('"pathsOf" option, if/when provided, MUST be a string (MAY be empty)');t[r]=o.pathsOf.split(".").filter(Boolean)}else if(r==="pathsFrom"){if(o.path||o.pathsOf)throw new Error('"pathsFrom" option MAY NOT be specified together with "path"/"pathsOf" option/s');if(typeof n!="string"||n==="")throw new Error('"pathsFrom" option, if/when provided, MUST be a non-empty string');t[r]=n}else e.push(r);if(e.length)throw new Error(`'${e.join(", ")}' is/are not a valid observer option/s`);return t},Y=(o,t,e)=>{const r={};r[c]=t;for(const n in o)r[n]=g(o[n],n,t,e);return r},I=(o,t,e)=>{let r=o.length;const n=new Array(r);n[c]=t;for(let i=0;i<r;i++)n[i]=g(o[i],i,t,e);return n},B=(o,t)=>(o[c]=t,o),D=(o,t)=>{if(o===null)return t;let e=t;if(o.path){const r=o.path;e=t.filter(n=>n.path.join(".")===r)}else if(o.pathsOf){const r=o.pathsOf,n=r.join(".");e=t.filter(i=>(i.path.length===r.length+1||i.path.length===r.length&&(i.type===T||i.type===K))&&i.path.join(".").startsWith(n))}else if(o.pathsFrom){const r=o.pathsFrom;e=t.filter(n=>n.path.join(".").startsWith(r))}return e},R=(o,t)=>{try{o(t)}catch(e){console.error(`failed to notify listener ${o} with ${t}`,e)}},z=function(){const t=this.batches;this.batches=[];for(const[e,r]of t)R(e,r)},y=(o,t)=>{let e=o,r,n,i,l,h,s;const u=t.length;do{for(r=e.options.async,n=e.observers,s=n.length;s--;)if([i,l]=n[s],h=D(l,t),h.length)if(r){e.batches.length===0&&queueMicrotask(z.bind(e));let a;for(const p of e.batches)if(p[0]===i){a=p;break}a||(a=[i,[]],e.batches.push(a)),Array.prototype.push.apply(a[1],h)}else R(i,h);const f=e.parent;if(f){for(let a=0;a<u;a++){const p=t[a];t[a]=new b(p.type,[e.ownKey,...p.path],p.value,p.oldValue,p.object)}e=f}else e=null}while(e)},g=(o,t,e,r)=>r!==void 0&&r.has(o)?null:typeof o!="object"||o===null?o:Array.isArray(o)?new U({target:o,ownKey:t,parent:e,visited:r}).proxy:ArrayBuffer.isView(o)?new W({target:o,ownKey:t,parent:e}).proxy:o instanceof Date?o:new V({target:o,ownKey:t,parent:e,visited:r}).proxy,q=function(){const t=this[c],e=t.target,r=e.length-1;let n=e.pop();if(n&&typeof n=="object"){const l=n[c];l&&(n=l.detach())}const i=[new b(E,[r],void 0,n,this)];return y(t,i),n},H=function(){const t=this[c],e=t.target,r=arguments.length,n=new Array(r),i=e.length;for(let s=0;s<r;s++)n[s]=g(arguments[s],i+s,t);const l=Reflect.apply(e.push,e,n),h=[];for(let s=i,u=e.length;s<u;s++)h[s-i]=new b(m,[s],e[s],void 0,this);return y(t,h),l},G=function(){const t=this[c],e=t.target;let r,n,i,l,h;for(r=e.shift(),r&&typeof r=="object"&&(h=r[c],h&&(r=h.detach())),n=0,i=e.length;n<i;n++)l=e[n],l&&typeof l=="object"&&(h=l[c],h&&(h.ownKey=n));const s=[new b(E,[0],void 0,r,this)];return y(t,s),r},J=function(){const t=this[c],e=t.target,r=arguments.length,n=new Array(r);for(let s=0;s<r;s++)n[s]=g(arguments[s],s,t);const i=Reflect.apply(e.unshift,e,n);for(let s=0,u=e.length,f;s<u;s++)if(f=e[s],f&&typeof f=="object"){const a=f[c];a&&(a.ownKey=s)}const l=n.length,h=new Array(l);for(let s=0;s<l;s++)h[s]=new b(m,[s],e[s],void 0,this);return y(t,h),i},F=function(){const t=this[c],e=t.target;let r,n,i;for(e.reverse(),r=0,n=e.length;r<n;r++)if(i=e[r],i&&typeof i=="object"){const h=i[c];h&&(h.ownKey=r)}const l=[new b(T,[],void 0,void 0,this)];return y(t,l),this},P=function(t){const e=this[c],r=e.target;let n,i,l;for(r.sort(t),n=0,i=r.length;n<i;n++)if(l=r[n],l&&typeof l=="object"){const s=l[c];s&&(s.ownKey=n)}const h=[new b(K,[],void 0,void 0,this)];return y(e,h),this},L=function(t,e,r){const n=this[c],i=n.target,l=[],h=i.length,s=i.slice(0);if(e=e===void 0?0:e<0?Math.max(h+e,0):Math.min(e,h),r=r===void 0?h:r<0?Math.max(h+r,0):Math.min(r,h),e<h&&r>e){i.fill(t,e,r);let u;for(let f=e,a,p;f<r;f++)a=i[f],i[f]=g(a,f,n),f in s?(p=s[f],p&&typeof p=="object"&&(u=p[c],u&&(p=u.detach())),l.push(new b(x,[f],i[f],p,this))):l.push(new b(m,[f],i[f],void 0,this));y(n,l)}return this},C=function(t,e,r){const n=this[c],i=n.target,l=i.length;t=t<0?Math.max(l+t,0):t,e=e===void 0?0:e<0?Math.max(l+e,0):Math.min(e,l),r=r===void 0?l:r<0?Math.max(l+r,0):Math.min(r,l);const h=Math.min(r-e,l-t);if(t<l&&t!==e&&h>0){const s=i.slice(0),u=[];i.copyWithin(t,e,r);for(let f=t,a,p,O;f<t+h;f++)a=i[f],a&&typeof a=="object"&&(a=g(a,f,n),i[f]=a),p=s[f],p&&typeof p=="object"&&(O=p[c],O&&(p=O.detach())),!(typeof a!="object"&&a===p)&&u.push(new b(x,[f],a,p,this));y(n,u)}return this},Q=function(){const t=this[c],e=t.target,r=arguments.length,n=new Array(r),i=e.length;for(let w=0;w<r;w++)n[w]=g(arguments[w],w,t);const l=r===0?0:n[0]<0?i+n[0]:n[0],h=r<2?i-l:n[1],s=Math.max(r-2,0),u=Reflect.apply(e.splice,e,n),f=e.length;let a;for(let w=0,A;w<f;w++)A=e[w],A&&typeof A=="object"&&(a=A[c],a&&(a.ownKey=w));let p,O,j;for(p=0,O=u.length;p<O;p++)j=u[p],j&&typeof j=="object"&&(a=j[c],a&&(u[p]=a.detach()));const M=[];let d;for(d=0;d<h;d++)d<s?M.push(new b(x,[l+d],e[l+d],u[d],this)):M.push(new b(E,[l+d],void 0,u[d],this));for(;d<s;d++)M.push(new b(m,[l+d],e[l+d],void 0,this));return y(t,M),u},X=function(t,e){const r=this[c],n=r.target,i=t.length,l=n.slice(0);e=e||0,n.set(t,e);const h=new Array(i);for(let s=e;s<i+e;s++)h[s-e]=new b(x,[s],n[s],l[s],this);y(r,h)},Z={pop:q,push:H,shift:G,unshift:J,reverse:F,sort:P,fill:L,copyWithin:C,splice:Q},_={reverse:F,sort:P,fill:L,copyWithin:C,set:X};class b{constructor(t,e,r,n,i){this.type=t,this.path=e,this.value=r,this.oldValue=n,this.object=i}}class S{constructor(t,e){const{target:r,parent:n,ownKey:i,visited:l=new Set}=t;n&&i!==void 0?(this.parent=n,this.ownKey=i):(this.parent=null,this.ownKey=null),l.add(r);const h=e(r,this,l);l.delete(r),this.observers=[],this.revocable=Proxy.revocable(h,this),this.proxy=this.revocable.proxy,this.target=h,this.options=this.processOptions(t.options),this.options.async&&(this.batches=[])}processOptions(t){if(t){if(typeof t!="object")throw new Error(`Observable options if/when provided, MAY only be an object, got '${t}'`);const e=Object.keys(t).filter(r=>!(r in $));if(e.length)throw new Error(`'${e.join(", ")}' is/are not a valid Observable option/s`);return Object.assign({},t)}else return{}}detach(){return this.parent=null,this.target}set(t,e,r){let n=t[e];if(r!==n){const i=g(r,e,this);if(t[e]=i,n&&typeof n=="object"){const h=n[c];h&&(n=h.detach())}const l=n===void 0?[new b(m,[e],i,void 0,this.proxy)]:[new b(x,[e],i,n,this.proxy)];y(this,l)}return!0}deleteProperty(t,e){let r=t[e];if(delete t[e],r&&typeof r=="object"){const i=r[c];i&&(r=i.detach())}const n=[new b(E,[e],void 0,r,this.proxy)];return y(this,n),!0}}class V extends S{constructor(t){super(t,Y)}}class U extends S{constructor(t){super(t,I)}get(t,e){return Z[e]||t[e]}}class W extends S{constructor(t){super(t,B)}get(t,e){return _[e]||t[e]}}const v=Object.freeze({from:(o,t)=>{if(!o||typeof o!="object")throw new Error("observable MAY ONLY be created from a non-null object");if(o[c])return o;if(Array.isArray(o))return new U({target:o,ownKey:null,parent:null,options:t}).proxy;if(ArrayBuffer.isView(o))return new W({target:o,ownKey:null,parent:null,options:t}).proxy;if(o instanceof Date)throw new Error(`${o} found to be one of a non-observable types`);return new V({target:o,ownKey:null,parent:null,options:t}).proxy},isObservable:o=>!!(o&&o[c]),observe:(o,t,e)=>{if(!v.isObservable(o))throw new Error("invalid observable parameter");if(typeof t!="function")throw new Error(`observer MUST be a function, got '${t}'`);const r=o[c].observers;r.some(n=>n[0]===t)?console.warn("observer may be bound to an observable only once; will NOT rebind"):r.push([t,N(e)])},unobserve:(o,...t)=>{if(!v.isObservable(o))throw new Error("invalid observable parameter");const e=o[c].observers;let r=e.length;if(r){if(!t.length){e.splice(0);return}for(;r;)t.indexOf(e[--r][0])>=0&&e.splice(r,1)}}});class k{#t;#e;constructor(t){this.#t=t,this.#e=new Set,Object.freeze(this)}observe(t,e){const r=v.from(t);return v.observe(r,this.#t,e),this.#e.add(r),r}unobserve(t){v.unobserve(t,this.#t),this.#e.delete(t)}disconnect(){for(const t of this.#e)v.unobserve(t,this.#t);this.#e.clear()}}
 //# sourceMappingURL=object-observer.min.js.map
 
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/companion-client/lib/AuthError.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/@uppy/companion-client/lib/AuthError.js ***!
-  \**************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-
-
-class AuthError extends Error {
-  constructor() {
-    super('Authorization required');
-    this.name = 'AuthError';
-    this.isAuthError = true;
-  }
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AuthError);
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/companion-client/lib/Provider.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/@uppy/companion-client/lib/Provider.js ***!
-  \*************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Provider)
-/* harmony export */ });
-/* harmony import */ var _RequestClient_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RequestClient.js */ "./node_modules/@uppy/companion-client/lib/RequestClient.js");
-/* harmony import */ var _tokenStorage_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tokenStorage.js */ "./node_modules/@uppy/companion-client/lib/tokenStorage.js");
-
-
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-var id = 0;
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-
-const getName = id => {
-  return id.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-};
-function getOrigin() {
-  // eslint-disable-next-line no-restricted-globals
-  return location.origin;
-}
-function getRegex(value) {
-  if (typeof value === 'string') {
-    return new RegExp(`^${value}$`);
-  }
-  if (value instanceof RegExp) {
-    return value;
-  }
-  return undefined;
-}
-function isOriginAllowed(origin, allowedOrigin) {
-  const patterns = Array.isArray(allowedOrigin) ? allowedOrigin.map(getRegex) : [getRegex(allowedOrigin)];
-  return patterns.some(pattern => (pattern == null ? void 0 : pattern.test(origin)) || (pattern == null ? void 0 : pattern.test(`${origin}/`))); // allowing for trailing '/'
-}
-var _refreshingTokenPromise = /*#__PURE__*/_classPrivateFieldLooseKey("refreshingTokenPromise");
-var _getAuthToken = /*#__PURE__*/_classPrivateFieldLooseKey("getAuthToken");
-var _removeAuthToken = /*#__PURE__*/_classPrivateFieldLooseKey("removeAuthToken");
-class Provider extends _RequestClient_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(uppy, opts, getQueue) {
-    super(uppy, opts, getQueue);
-    Object.defineProperty(this, _removeAuthToken, {
-      value: _removeAuthToken2
-    });
-    Object.defineProperty(this, _getAuthToken, {
-      value: _getAuthToken2
-    });
-    Object.defineProperty(this, _refreshingTokenPromise, {
-      writable: true,
-      value: void 0
-    });
-    this.provider = opts.provider;
-    this.id = this.provider;
-    this.name = this.opts.name || getName(this.id);
-    this.pluginId = this.opts.pluginId;
-    this.tokenKey = `companion-${this.pluginId}-auth-token`;
-    this.companionKeysParams = this.opts.companionKeysParams;
-    this.preAuthToken = null;
-  }
-  async headers() {
-    const [headers, token] = await Promise.all([super.headers(), _classPrivateFieldLooseBase(this, _getAuthToken)[_getAuthToken]()]);
-    const authHeaders = {};
-    if (token) {
-      authHeaders['uppy-auth-token'] = token;
-    }
-    if (this.companionKeysParams) {
-      authHeaders['uppy-credentials-params'] = btoa(JSON.stringify({
-        params: this.companionKeysParams
-      }));
-    }
-    return {
-      ...headers,
-      ...authHeaders
-    };
-  }
-  onReceiveResponse(response) {
-    super.onReceiveResponse(response);
-    const plugin = this.uppy.getPlugin(this.pluginId);
-    const oldAuthenticated = plugin.getPluginState().authenticated;
-    const authenticated = oldAuthenticated ? response.status !== 401 : response.status < 400;
-    plugin.setPluginState({
-      authenticated
-    });
-    return response;
-  }
-  async setAuthToken(token) {
-    return this.uppy.getPlugin(this.pluginId).storage.setItem(this.tokenKey, token);
-  }
-  /**
-   * Ensure we have a preauth token if necessary. Attempts to fetch one if we don't,
-   * or rejects if loading one fails.
-   */
-  async ensurePreAuth() {
-    if (this.companionKeysParams && !this.preAuthToken) {
-      await this.fetchPreAuthToken();
-      if (!this.preAuthToken) {
-        throw new Error('Could not load authentication data required for third-party login. Please try again later.');
-      }
-    }
-  }
-  authUrl(queries) {
-    if (queries === void 0) {
-      queries = {};
-    }
-    const params = new URLSearchParams({
-      state: btoa(JSON.stringify({
-        origin: getOrigin()
-      })),
-      ...queries
-    });
-    if (this.preAuthToken) {
-      params.set('uppyPreAuthToken', this.preAuthToken);
-    }
-    return `${this.hostname}/${this.id}/connect?${params}`;
-  }
-  async login(queries) {
-    await this.ensurePreAuth();
-    return new Promise((resolve, reject) => {
-      const link = this.authUrl(queries);
-      const authWindow = window.open(link, '_blank');
-      const handleToken = e => {
-        if (e.source !== authWindow) {
-          this.uppy.log.warn('ignoring event from unknown source', e);
-          return;
-        }
-        const {
-          companionAllowedHosts
-        } = this.uppy.getPlugin(this.pluginId).opts;
-        if (!isOriginAllowed(e.origin, companionAllowedHosts)) {
-          reject(new Error(`rejecting event from ${e.origin} vs allowed pattern ${companionAllowedHosts}`));
-          return;
-        }
-
-        // Check if it's a string before doing the JSON.parse to maintain support
-        // for older Companion versions that used object references
-        const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-        if (data.error) {
-          const {
-            uppy
-          } = this;
-          const message = uppy.i18n('authAborted');
-          uppy.info({
-            message
-          }, 'warning', 5000);
-          reject(new Error('auth aborted'));
-          return;
-        }
-        if (!data.token) {
-          reject(new Error('did not receive token from auth window'));
-          return;
-        }
-        authWindow.close();
-        window.removeEventListener('message', handleToken);
-        this.setAuthToken(data.token);
-        resolve();
-      };
-      window.addEventListener('message', handleToken);
-    });
-  }
-  refreshTokenUrl() {
-    return `${this.hostname}/${this.id}/refresh-token`;
-  }
-  fileUrl(id) {
-    return `${this.hostname}/${this.id}/get/${id}`;
-  }
-
-  /** @protected */
-  async request() {
-    await _classPrivateFieldLooseBase(this, _refreshingTokenPromise)[_refreshingTokenPromise];
-    try {
-      // throw Object.assign(new Error(), { isAuthError: true }) // testing simulate access token expired (to refresh token)
-      return await super.request(...arguments);
-    } catch (err) {
-      if (!err.isAuthError) throw err; // only handle auth errors (401 from provider)
-
-      await _classPrivateFieldLooseBase(this, _refreshingTokenPromise)[_refreshingTokenPromise];
-
-      // Many provider requests may be starting at once, however refresh token should only be called once.
-      // Once a refresh token operation has started, we need all other request to wait for this operation (atomically)
-      _classPrivateFieldLooseBase(this, _refreshingTokenPromise)[_refreshingTokenPromise] = (async () => {
-        try {
-          const response = await super.request({
-            path: this.refreshTokenUrl(),
-            method: 'POST'
-          });
-          await this.setAuthToken(response.uppyAuthToken);
-        } finally {
-          _classPrivateFieldLooseBase(this, _refreshingTokenPromise)[_refreshingTokenPromise] = undefined;
-        }
-      })();
-      await _classPrivateFieldLooseBase(this, _refreshingTokenPromise)[_refreshingTokenPromise];
-
-      // now retry the request with our new refresh token
-      return super.request(...arguments);
-    }
-  }
-  async fetchPreAuthToken() {
-    if (!this.companionKeysParams) {
-      return;
-    }
-    try {
-      const res = await this.post(`${this.id}/preauth/`, {
-        params: this.companionKeysParams
-      });
-      this.preAuthToken = res.token;
-    } catch (err) {
-      this.uppy.log(`[CompanionClient] unable to fetch preAuthToken ${err}`, 'warning');
-    }
-  }
-  list(directory, options) {
-    return this.get(`${this.id}/list/${directory || ''}`, options);
-  }
-  async logout(options) {
-    const response = await this.get(`${this.id}/logout`, options);
-    await _classPrivateFieldLooseBase(this, _removeAuthToken)[_removeAuthToken]();
-    return response;
-  }
-  static initPlugin(plugin, opts, defaultOpts) {
-    /* eslint-disable no-param-reassign */
-    plugin.type = 'acquirer';
-    plugin.files = [];
-    if (defaultOpts) {
-      plugin.opts = {
-        ...defaultOpts,
-        ...opts
-      };
-    }
-    if (opts.serverUrl || opts.serverPattern) {
-      throw new Error('`serverUrl` and `serverPattern` have been renamed to `companionUrl` and `companionAllowedHosts` respectively in the 0.30.5 release. Please consult the docs (for example, https://uppy.io/docs/instagram/ for the Instagram plugin) and use the updated options.`');
-    }
-    if (opts.companionAllowedHosts) {
-      const pattern = opts.companionAllowedHosts;
-      // validate companionAllowedHosts param
-      if (typeof pattern !== 'string' && !Array.isArray(pattern) && !(pattern instanceof RegExp)) {
-        throw new TypeError(`${plugin.id}: the option "companionAllowedHosts" must be one of string, Array, RegExp`);
-      }
-      plugin.opts.companionAllowedHosts = pattern;
-    } else if (/^(?!https?:\/\/).*$/i.test(opts.companionUrl)) {
-      // does not start with https://
-      plugin.opts.companionAllowedHosts = `https://${opts.companionUrl.replace(/^\/\//, '')}`;
-    } else {
-      plugin.opts.companionAllowedHosts = new URL(opts.companionUrl).origin;
-    }
-    plugin.storage = plugin.opts.storage || _tokenStorage_js__WEBPACK_IMPORTED_MODULE_1__;
-    /* eslint-enable no-param-reassign */
-  }
-}
-async function _getAuthToken2() {
-  return this.uppy.getPlugin(this.pluginId).storage.getItem(this.tokenKey);
-}
-async function _removeAuthToken2() {
-  return this.uppy.getPlugin(this.pluginId).storage.removeItem(this.tokenKey);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/companion-client/lib/RequestClient.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/@uppy/companion-client/lib/RequestClient.js ***!
-  \******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ RequestClient)
-/* harmony export */ });
-/* harmony import */ var _uppy_utils_lib_fetchWithNetworkError__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/fetchWithNetworkError */ "./node_modules/@uppy/utils/lib/fetchWithNetworkError.js");
-/* harmony import */ var _uppy_utils_lib_ErrorWithCause__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/ErrorWithCause */ "./node_modules/@uppy/utils/lib/ErrorWithCause.js");
-/* harmony import */ var _uppy_utils_lib_emitSocketProgress__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/emitSocketProgress */ "./node_modules/@uppy/utils/lib/emitSocketProgress.js");
-/* harmony import */ var _uppy_utils_lib_getSocketHost__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/getSocketHost */ "./node_modules/@uppy/utils/lib/getSocketHost.js");
-/* harmony import */ var _uppy_utils_lib_EventManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/EventManager */ "./node_modules/@uppy/utils/lib/EventManager.js");
-/* harmony import */ var _AuthError_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./AuthError.js */ "./node_modules/@uppy/companion-client/lib/AuthError.js");
-/* harmony import */ var _Socket_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Socket.js */ "./node_modules/@uppy/companion-client/lib/Socket.js");
-
-
-let _Symbol$for;
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-var id = 0;
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-
-
-
-
-
-
-const packageJson = {
-  "version": "3.4.0"
-}; // Remove the trailing slash so we can always safely append /xyz.
-function stripSlash(url) {
-  return url.replace(/\/$/, '');
-}
-async function handleJSONResponse(res) {
-  if (res.status === 401) {
-    throw new _AuthError_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-  }
-  const jsonPromise = res.json();
-  if (res.ok) {
-    return jsonPromise;
-  }
-  let errMsg = `Failed request with status: ${res.status}. ${res.statusText}`;
-  try {
-    const errData = await jsonPromise;
-    errMsg = errData.message ? `${errMsg} message: ${errData.message}` : errMsg;
-    errMsg = errData.requestId ? `${errMsg} request-Id: ${errData.requestId}` : errMsg;
-  } catch {
-    /* if the response contains invalid JSON, let's ignore the error */
-  }
-  throw new Error(errMsg);
-}
-
-// todo pull out into core instead?
-const allowedHeadersCache = new Map();
-var _companionHeaders = /*#__PURE__*/_classPrivateFieldLooseKey("companionHeaders");
-var _getUrl = /*#__PURE__*/_classPrivateFieldLooseKey("getUrl");
-var _requestSocketToken = /*#__PURE__*/_classPrivateFieldLooseKey("requestSocketToken");
-_Symbol$for = Symbol.for('uppy test: getCompanionHeaders');
-class RequestClient {
-  constructor(uppy, opts, getQueue) {
-    Object.defineProperty(this, _getUrl, {
-      value: _getUrl2
-    });
-    Object.defineProperty(this, _companionHeaders, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _requestSocketToken, {
-      writable: true,
-      value: async (file, postBody) => {
-        if (file.remote.url == null) {
-          throw new Error('Cannot connect to an undefined URL');
-        }
-        const res = await this.post(file.remote.url, {
-          ...file.remote.body,
-          ...postBody
-        });
-        return res.token;
-      }
-    });
-    this.uppy = uppy;
-    this.opts = opts;
-    this.getQueue = getQueue;
-    this.onReceiveResponse = this.onReceiveResponse.bind(this);
-    _classPrivateFieldLooseBase(this, _companionHeaders)[_companionHeaders] = opts == null ? void 0 : opts.companionHeaders;
-  }
-  setCompanionHeaders(headers) {
-    _classPrivateFieldLooseBase(this, _companionHeaders)[_companionHeaders] = headers;
-  }
-  [_Symbol$for]() {
-    return _classPrivateFieldLooseBase(this, _companionHeaders)[_companionHeaders];
-  }
-  get hostname() {
-    const {
-      companion
-    } = this.uppy.getState();
-    const host = this.opts.companionUrl;
-    return stripSlash(companion && companion[host] ? companion[host] : host);
-  }
-  async headers() {
-    const defaultHeaders = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'Uppy-Versions': `@uppy/companion-client=${RequestClient.VERSION}`
-    };
-    return {
-      ...defaultHeaders,
-      ..._classPrivateFieldLooseBase(this, _companionHeaders)[_companionHeaders]
-    };
-  }
-  onReceiveResponse(_ref) {
-    let {
-      headers
-    } = _ref;
-    const state = this.uppy.getState();
-    const companion = state.companion || {};
-    const host = this.opts.companionUrl;
-
-    // Store the self-identified domain name for the Companion instance we just hit.
-    if (headers.has('i-am') && headers.get('i-am') !== companion[host]) {
-      this.uppy.setState({
-        companion: {
-          ...companion,
-          [host]: headers.get('i-am')
-        }
-      });
-    }
-  }
-  /*
-    Preflight was added to avoid breaking change between older Companion-client versions and
-    newer Companion versions and vice-versa. Usually the break will manifest via CORS errors because a
-    version of companion-client could be sending certain headers to a version of Companion server that
-    does not support those headers. In which case, the default preflight would lead to CORS.
-    So to avoid those errors, we do preflight ourselves, to see what headers the Companion server
-    we are communicating with allows. And based on that, companion-client knows what headers to
-    send and what headers to not send.
-     The preflight only happens once throughout the life-cycle of a certain
-    Companion-client <-> Companion-server pair (allowedHeadersCache).
-    Subsequent requests use the cached result of the preflight.
-    However if there is an error retrieving the allowed headers, we will try again next time
-  */
-  async preflight(path) {
-    const allowedHeadersCached = allowedHeadersCache.get(this.hostname);
-    if (allowedHeadersCached != null) return allowedHeadersCached;
-    const fallbackAllowedHeaders = ['accept', 'content-type', 'uppy-auth-token'];
-    const promise = (async () => {
-      try {
-        const response = await fetch(_classPrivateFieldLooseBase(this, _getUrl)[_getUrl](path), {
-          method: 'OPTIONS'
-        });
-        const header = response.headers.get('access-control-allow-headers');
-        if (header == null || header === '*') {
-          allowedHeadersCache.set(this.hostname, fallbackAllowedHeaders);
-          return fallbackAllowedHeaders;
-        }
-        this.uppy.log(`[CompanionClient] adding allowed preflight headers to companion cache: ${this.hostname} ${header}`);
-        const allowedHeaders = header.split(',').map(headerName => headerName.trim().toLowerCase());
-        allowedHeadersCache.set(this.hostname, allowedHeaders);
-        return allowedHeaders;
-      } catch (err) {
-        this.uppy.log(`[CompanionClient] unable to make preflight request ${err}`, 'warning');
-        // If the user gets a network error or similar, we should try preflight
-        // again next time, or else we might get incorrect behaviour.
-        allowedHeadersCache.delete(this.hostname); // re-fetch next time
-        return fallbackAllowedHeaders;
-      }
-    })();
-    allowedHeadersCache.set(this.hostname, promise);
-    return promise;
-  }
-  async preflightAndHeaders(path) {
-    const [allowedHeaders, headers] = await Promise.all([this.preflight(path), this.headers()]);
-    // filter to keep only allowed Headers
-    return Object.fromEntries(Object.entries(headers).filter(_ref2 => {
-      let [header] = _ref2;
-      if (!allowedHeaders.includes(header.toLowerCase())) {
-        this.uppy.log(`[CompanionClient] excluding disallowed header ${header}`);
-        return false;
-      }
-      return true;
-    }));
-  }
-
-  /** @protected */
-  async request(_ref3) {
-    let {
-      path,
-      method = 'GET',
-      data,
-      skipPostResponse,
-      signal
-    } = _ref3;
-    try {
-      const headers = await this.preflightAndHeaders(path);
-      const response = await (0,_uppy_utils_lib_fetchWithNetworkError__WEBPACK_IMPORTED_MODULE_0__["default"])(_classPrivateFieldLooseBase(this, _getUrl)[_getUrl](path), {
-        method,
-        signal,
-        headers,
-        credentials: this.opts.companionCookiesRule || 'same-origin',
-        body: data ? JSON.stringify(data) : null
-      });
-      if (!skipPostResponse) this.onReceiveResponse(response);
-      return handleJSONResponse(response);
-    } catch (err) {
-      if (err != null && err.isAuthError) throw err;
-      throw new _uppy_utils_lib_ErrorWithCause__WEBPACK_IMPORTED_MODULE_1__["default"](`Could not ${method} ${_classPrivateFieldLooseBase(this, _getUrl)[_getUrl](path)}`, {
-        cause: err
-      });
-    }
-  }
-  async get(path, options) {
-    if (options === void 0) {
-      options = undefined;
-    }
-    // TODO: remove boolean support for options that was added for backward compatibility.
-    // eslint-disable-next-line no-param-reassign
-    if (typeof options === 'boolean') options = {
-      skipPostResponse: options
-    };
-    return this.request({
-      ...options,
-      path
-    });
-  }
-  async post(path, data, options) {
-    if (options === void 0) {
-      options = undefined;
-    }
-    // TODO: remove boolean support for options that was added for backward compatibility.
-    // eslint-disable-next-line no-param-reassign
-    if (typeof options === 'boolean') options = {
-      skipPostResponse: options
-    };
-    return this.request({
-      ...options,
-      path,
-      method: 'POST',
-      data
-    });
-  }
-  async delete(path, data, options) {
-    if (data === void 0) {
-      data = undefined;
-    }
-    // TODO: remove boolean support for options that was added for backward compatibility.
-    // eslint-disable-next-line no-param-reassign
-    if (typeof options === 'boolean') options = {
-      skipPostResponse: options
-    };
-    return this.request({
-      ...options,
-      path,
-      method: 'DELETE',
-      data
-    });
-  }
-  async uploadRemoteFile(file, reqBody, options) {
-    if (options === void 0) {
-      options = {};
-    }
-    try {
-      if (file.serverToken) {
-        return await this.connectToServerSocket(file, this.getQueue());
-      }
-      const queueRequestSocketToken = this.getQueue().wrapPromiseFunction(_classPrivateFieldLooseBase(this, _requestSocketToken)[_requestSocketToken], {
-        priority: -1
-      });
-      const serverToken = await queueRequestSocketToken(file, reqBody).abortOn(options.signal);
-      if (!this.uppy.getState().files[file.id]) return undefined;
-      this.uppy.setFileState(file.id, {
-        serverToken
-      });
-      return await this.connectToServerSocket(this.uppy.getFile(file.id), this.getQueue());
-    } catch (err) {
-      var _err$cause;
-      if ((err == null || (_err$cause = err.cause) == null ? void 0 : _err$cause.name) === 'AbortError') {
-        // The file upload was aborted, it’s not an error
-        return undefined;
-      }
-      this.uppy.setFileState(file.id, {
-        serverToken: undefined
-      });
-      this.uppy.emit('upload-error', file, err);
-      throw err;
-    }
-  }
-  /**
-   * @param {UppyFile} file
-   */
-  async connectToServerSocket(file, queue) {
-    return new Promise((resolve, reject) => {
-      const token = file.serverToken;
-      const host = (0,_uppy_utils_lib_getSocketHost__WEBPACK_IMPORTED_MODULE_3__["default"])(file.remote.companionUrl);
-      const socket = new _Socket_js__WEBPACK_IMPORTED_MODULE_6__["default"]({
-        target: `${host}/api/${token}`,
-        autoOpen: false
-      });
-      const eventManager = new _uppy_utils_lib_EventManager__WEBPACK_IMPORTED_MODULE_4__["default"](this.uppy);
-      let queuedRequest;
-      eventManager.onFileRemove(file.id, () => {
-        socket.send('cancel', {});
-        queuedRequest.abort();
-        resolve(`upload ${file.id} was removed`);
-      });
-      eventManager.onPause(file.id, isPaused => {
-        if (isPaused) {
-          // Remove this file from the queue so another file can start in its place.
-          socket.send('pause', {});
-          queuedRequest.abort();
-        } else {
-          // Resuming an upload should be queued, else you could pause and then
-          // resume a queued upload to make it skip the queue.
-          queuedRequest.abort();
-          queuedRequest = queue.run(() => {
-            socket.open();
-            socket.send('resume', {});
-            return () => {};
-          });
-        }
-      });
-      eventManager.onPauseAll(file.id, () => {
-        socket.send('pause', {});
-        queuedRequest.abort();
-      });
-      eventManager.onCancelAll(file.id, function (_temp) {
-        let {
-          reason
-        } = _temp === void 0 ? {} : _temp;
-        if (reason === 'user') {
-          socket.send('cancel', {});
-          queuedRequest.abort();
-        }
-        resolve(`upload ${file.id} was canceled`);
-      });
-      eventManager.onResumeAll(file.id, () => {
-        queuedRequest.abort();
-        if (file.error) {
-          socket.send('pause', {});
-        }
-        queuedRequest = queue.run(() => {
-          socket.open();
-          socket.send('resume', {});
-          return () => {};
-        });
-      });
-      eventManager.onRetry(file.id, () => {
-        // Only do the retry if the upload is actually in progress;
-        // else we could try to send these messages when the upload is still queued.
-        // We may need a better check for this since the socket may also be closed
-        // for other reasons, like network failures.
-        if (socket.isOpen) {
-          socket.send('pause', {});
-          socket.send('resume', {});
-        }
-      });
-      eventManager.onRetryAll(file.id, () => {
-        // See the comment in the onRetry() call
-        if (socket.isOpen) {
-          socket.send('pause', {});
-          socket.send('resume', {});
-        }
-      });
-      socket.on('progress', progressData => (0,_uppy_utils_lib_emitSocketProgress__WEBPACK_IMPORTED_MODULE_2__["default"])(this, progressData, file));
-      socket.on('error', errData => {
-        const {
-          message
-        } = errData.error;
-        const error = Object.assign(new Error(message), {
-          cause: errData.error
-        });
-
-        // If the remote retry optimisation should not be used,
-        // close the socket—this will tell companion to clear state and delete the file.
-        if (!this.opts.useFastRemoteRetry) {
-          // Remove the serverToken so that a new one will be created for the retry.
-          this.uppy.setFileState(file.id, {
-            serverToken: null
-          });
-        } else {
-          socket.close();
-        }
-        this.uppy.emit('upload-error', file, error);
-        queuedRequest.done();
-        reject(error);
-      });
-      socket.on('success', data => {
-        const uploadResp = {
-          uploadURL: data.url
-        };
-        this.uppy.emit('upload-success', file, uploadResp);
-        queuedRequest.done();
-        socket.close();
-        resolve();
-      });
-      queuedRequest = queue.run(() => {
-        if (file.isPaused) {
-          socket.send('pause', {});
-        } else {
-          socket.open();
-        }
-        return () => {};
-      });
-    });
-  }
-}
-function _getUrl2(url) {
-  if (/^(https?:|)\/\//.test(url)) {
-    return url;
-  }
-  return `${this.hostname}/${url}`;
-}
-RequestClient.VERSION = packageJson.version;
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/companion-client/lib/SearchProvider.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/@uppy/companion-client/lib/SearchProvider.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ SearchProvider)
-/* harmony export */ });
-/* harmony import */ var _RequestClient_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RequestClient.js */ "./node_modules/@uppy/companion-client/lib/RequestClient.js");
-
-
-
-const getName = id => {
-  return id.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-};
-class SearchProvider extends _RequestClient_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(uppy, opts) {
-    super(uppy, opts);
-    this.provider = opts.provider;
-    this.id = this.provider;
-    this.name = this.opts.name || getName(this.id);
-    this.pluginId = this.opts.pluginId;
-  }
-  fileUrl(id) {
-    return `${this.hostname}/search/${this.id}/get/${id}`;
-  }
-  search(text, queries) {
-    return this.get(`search/${this.id}/list?q=${encodeURIComponent(text)}${queries ? `&${queries}` : ''}`);
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/companion-client/lib/Socket.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/@uppy/companion-client/lib/Socket.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ UppySocket)
-/* harmony export */ });
-/* harmony import */ var namespace_emitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! namespace-emitter */ "./node_modules/namespace-emitter/index.js");
-let _Symbol$for, _Symbol$for2;
-function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-var id = 0;
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-var _queued = /*#__PURE__*/_classPrivateFieldLooseKey("queued");
-var _emitter = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
-var _isOpen = /*#__PURE__*/_classPrivateFieldLooseKey("isOpen");
-var _socket = /*#__PURE__*/_classPrivateFieldLooseKey("socket");
-var _handleMessage = /*#__PURE__*/_classPrivateFieldLooseKey("handleMessage");
-_Symbol$for = Symbol.for('uppy test: getSocket');
-_Symbol$for2 = Symbol.for('uppy test: getQueued');
-class UppySocket {
-  constructor(opts) {
-    Object.defineProperty(this, _queued, {
-      writable: true,
-      value: []
-    });
-    Object.defineProperty(this, _emitter, {
-      writable: true,
-      value: namespace_emitter__WEBPACK_IMPORTED_MODULE_0__()
-    });
-    Object.defineProperty(this, _isOpen, {
-      writable: true,
-      value: false
-    });
-    Object.defineProperty(this, _socket, {
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, _handleMessage, {
-      writable: true,
-      value: e => {
-        try {
-          const message = JSON.parse(e.data);
-          this.emit(message.action, message.payload);
-        } catch (err) {
-          // TODO: use a more robust error handler.
-          console.log(err); // eslint-disable-line no-console
-        }
-      }
-    });
-    this.opts = opts;
-    if (!opts || opts.autoOpen !== false) {
-      this.open();
-    }
-  }
-  get isOpen() {
-    return _classPrivateFieldLooseBase(this, _isOpen)[_isOpen];
-  }
-  [_Symbol$for]() {
-    return _classPrivateFieldLooseBase(this, _socket)[_socket];
-  }
-  [_Symbol$for2]() {
-    return _classPrivateFieldLooseBase(this, _queued)[_queued];
-  }
-  open() {
-    if (_classPrivateFieldLooseBase(this, _socket)[_socket] != null) return;
-    _classPrivateFieldLooseBase(this, _socket)[_socket] = new WebSocket(this.opts.target);
-    _classPrivateFieldLooseBase(this, _socket)[_socket].onopen = () => {
-      _classPrivateFieldLooseBase(this, _isOpen)[_isOpen] = true;
-      while (_classPrivateFieldLooseBase(this, _queued)[_queued].length > 0 && _classPrivateFieldLooseBase(this, _isOpen)[_isOpen]) {
-        const first = _classPrivateFieldLooseBase(this, _queued)[_queued].shift();
-        this.send(first.action, first.payload);
-      }
-    };
-    _classPrivateFieldLooseBase(this, _socket)[_socket].onclose = () => {
-      _classPrivateFieldLooseBase(this, _isOpen)[_isOpen] = false;
-      _classPrivateFieldLooseBase(this, _socket)[_socket] = null;
-    };
-    _classPrivateFieldLooseBase(this, _socket)[_socket].onmessage = _classPrivateFieldLooseBase(this, _handleMessage)[_handleMessage];
-  }
-  close() {
-    var _classPrivateFieldLoo;
-    (_classPrivateFieldLoo = _classPrivateFieldLooseBase(this, _socket)[_socket]) == null ? void 0 : _classPrivateFieldLoo.close();
-  }
-  send(action, payload) {
-    // attach uuid
-
-    if (!_classPrivateFieldLooseBase(this, _isOpen)[_isOpen]) {
-      _classPrivateFieldLooseBase(this, _queued)[_queued].push({
-        action,
-        payload
-      });
-      return;
-    }
-    _classPrivateFieldLooseBase(this, _socket)[_socket].send(JSON.stringify({
-      action,
-      payload
-    }));
-  }
-  on(action, handler) {
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter].on(action, handler);
-  }
-  emit(action, payload) {
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter].emit(action, payload);
-  }
-  once(action, handler) {
-    _classPrivateFieldLooseBase(this, _emitter)[_emitter].once(action, handler);
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/companion-client/lib/index.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/@uppy/companion-client/lib/index.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Provider: () => (/* reexport safe */ _Provider_js__WEBPACK_IMPORTED_MODULE_1__["default"]),
-/* harmony export */   RequestClient: () => (/* reexport safe */ _RequestClient_js__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   SearchProvider: () => (/* reexport safe */ _SearchProvider_js__WEBPACK_IMPORTED_MODULE_2__["default"]),
-/* harmony export */   Socket: () => (/* reexport safe */ _Socket_js__WEBPACK_IMPORTED_MODULE_3__["default"])
-/* harmony export */ });
-/* harmony import */ var _RequestClient_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RequestClient.js */ "./node_modules/@uppy/companion-client/lib/RequestClient.js");
-/* harmony import */ var _Provider_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Provider.js */ "./node_modules/@uppy/companion-client/lib/Provider.js");
-/* harmony import */ var _SearchProvider_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SearchProvider.js */ "./node_modules/@uppy/companion-client/lib/SearchProvider.js");
-/* harmony import */ var _Socket_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Socket.js */ "./node_modules/@uppy/companion-client/lib/Socket.js");
-
-
-/**
- * Manages communications with Companion
- */
-
-
-
-
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/companion-client/lib/tokenStorage.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/@uppy/companion-client/lib/tokenStorage.js ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getItem: () => (/* binding */ getItem),
-/* harmony export */   removeItem: () => (/* binding */ removeItem),
-/* harmony export */   setItem: () => (/* binding */ setItem)
-/* harmony export */ });
-
-
-/**
- * This module serves as an Async wrapper for LocalStorage
- */
-function setItem(key, value) {
-  return new Promise(resolve => {
-    localStorage.setItem(key, value);
-    resolve();
-  });
-}
-function getItem(key) {
-  return Promise.resolve(localStorage.getItem(key));
-}
-function removeItem(key) {
-  return new Promise(resolve => {
-    localStorage.removeItem(key);
-    resolve();
-  });
-}
 
 /***/ }),
 
@@ -7471,7 +6574,10 @@ class BasePlugin {
     this.i18nInit();
   }
   i18nInit() {
-    const translator = new _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__["default"]([this.defaultLocale, this.uppy.locale, this.opts.locale]);
+    const onMissingKey = key => this.uppy.log(`Missing i18n string: ${key}`, 'error');
+    const translator = new _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__["default"]([this.defaultLocale, this.uppy.locale, this.opts.locale], {
+      onMissingKey
+    });
     this.i18n = translator.translate.bind(translator);
     this.i18nArray = translator.translateArray.bind(translator);
     this.setPluginState(); // so that UI re-renders and we see the updated locale
@@ -7870,11 +6976,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _uppy_utils_lib_getFileType__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/getFileType */ "./node_modules/@uppy/utils/lib/getFileType.js");
 /* harmony import */ var _uppy_utils_lib_getFileNameAndExtension__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/getFileNameAndExtension */ "./node_modules/@uppy/utils/lib/getFileNameAndExtension.js");
 /* harmony import */ var _uppy_utils_lib_generateFileID__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/generateFileID */ "./node_modules/@uppy/utils/lib/generateFileID.js");
-/* harmony import */ var _supportsUploadProgress_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./supportsUploadProgress.js */ "./node_modules/@uppy/core/lib/supportsUploadProgress.js");
-/* harmony import */ var _getFileName_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./getFileName.js */ "./node_modules/@uppy/core/lib/getFileName.js");
+/* harmony import */ var _supportsUploadProgress_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./supportsUploadProgress.js */ "./node_modules/@uppy/core/lib/supportsUploadProgress.js");
+/* harmony import */ var _getFileName_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./getFileName.js */ "./node_modules/@uppy/core/lib/getFileName.js");
 /* harmony import */ var _loggers_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./loggers.js */ "./node_modules/@uppy/core/lib/loggers.js");
-/* harmony import */ var _Restricter_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Restricter.js */ "./node_modules/@uppy/core/lib/Restricter.js");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/core/lib/locale.js");
+/* harmony import */ var _Restricter_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Restricter.js */ "./node_modules/@uppy/core/lib/Restricter.js");
+/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/core/lib/locale.js");
 let _Symbol$for, _Symbol$for2;
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 var id = 0;
@@ -7895,9 +7001,15 @@ function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + n
 
 
 const packageJson = {
-  "version": "3.5.0"
+  "version": "3.8.0"
 };
 
+const getDefaultUploadState = () => ({
+  totalProgress: 0,
+  allowNewUpload: true,
+  error: null,
+  recoveredState: null
+});
 
 /**
  * Uppy Core module.
@@ -7920,6 +7032,7 @@ var _startIfAutoProceed = /*#__PURE__*/_classPrivateFieldLooseKey("startIfAutoPr
 var _checkAndUpdateFileState = /*#__PURE__*/_classPrivateFieldLooseKey("checkAndUpdateFileState");
 var _addListeners = /*#__PURE__*/_classPrivateFieldLooseKey("addListeners");
 var _updateOnlineStatus = /*#__PURE__*/_classPrivateFieldLooseKey("updateOnlineStatus");
+var _requestClientById = /*#__PURE__*/_classPrivateFieldLooseKey("requestClientById");
 var _createUpload = /*#__PURE__*/_classPrivateFieldLooseKey("createUpload");
 var _getUpload = /*#__PURE__*/_classPrivateFieldLooseKey("getUpload");
 var _removeUpload = /*#__PURE__*/_classPrivateFieldLooseKey("removeUpload");
@@ -8068,13 +7181,27 @@ class Uppy {
       writable: true,
       value: this.updateOnlineStatus.bind(this)
     });
-    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_11__["default"];
+    // We need to store request clients by a unique ID, so we can share RequestClient instances across files
+    // this allows us to do rate limiting and synchronous operations like refreshing provider tokens
+    // example: refreshing tokens: if each file has their own requestclient,
+    // we don't have any way to synchronize all requests in order to
+    // - block all requests
+    // - refresh the token
+    // - unblock all requests and allow them to run with a the new access token
+    // back when we had a requestclient per file, once an access token expired,
+    // all 6 files would go ahead and refresh the token at the same time
+    // (calling /refresh-token up to 6 times), which will probably fail for some providers
+    Object.defineProperty(this, _requestClientById, {
+      writable: true,
+      value: new Map()
+    });
+    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_7__["default"];
     const defaultOptions = {
       id: 'uppy',
       autoProceed: false,
       allowMultipleUploadBatches: true,
       debug: false,
-      restrictions: _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.defaultOptions,
+      restrictions: _Restricter_js__WEBPACK_IMPORTED_MODULE_8__.defaultOptions,
       meta: {},
       onBeforeFileAdded: (file, files) => !Object.hasOwn(files, file.id),
       onBeforeUpload: files => files,
@@ -8105,23 +7232,21 @@ class Uppy {
     this.i18nInit();
     this.store = this.opts.store;
     this.setState({
+      ...getDefaultUploadState(),
       plugins: {},
       files: {},
       currentUploads: {},
-      allowNewUpload: true,
       capabilities: {
-        uploadProgress: (0,_supportsUploadProgress_js__WEBPACK_IMPORTED_MODULE_7__["default"])(),
+        uploadProgress: (0,_supportsUploadProgress_js__WEBPACK_IMPORTED_MODULE_10__["default"])(),
         individualCancellation: true,
         resumableUploads: false
       },
-      totalProgress: 0,
       meta: {
         ...this.opts.meta
       },
-      info: [],
-      recoveredState: null
+      info: []
     });
-    _classPrivateFieldLooseBase(this, _restricter)[_restricter] = new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.Restricter(() => this.opts, this.i18n);
+    _classPrivateFieldLooseBase(this, _restricter)[_restricter] = new _Restricter_js__WEBPACK_IMPORTED_MODULE_8__.Restricter(() => this.opts, this.i18n);
     _classPrivateFieldLooseBase(this, _storeUnsubscribe)[_storeUnsubscribe] = this.store.subscribe((prevState, nextState, patch) => {
       this.emit('state-update', prevState, nextState, patch);
       this.updateAll(nextState);
@@ -8208,7 +7333,10 @@ class Uppy {
     });
   }
   i18nInit() {
-    const translator = new _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__["default"]([this.defaultLocale, this.opts.locale]);
+    const onMissingKey = key => this.log(`Missing i18n string: ${key}`, 'error');
+    const translator = new _uppy_utils_lib_Translator__WEBPACK_IMPORTED_MODULE_0__["default"]([this.defaultLocale, this.opts.locale], {
+      onMissingKey
+    });
     this.i18n = translator.translate.bind(translator);
     this.i18nArray = translator.translateArray.bind(translator);
     this.locale = translator.locale;
@@ -8236,6 +7364,7 @@ class Uppy {
     this.setState(); // so that UI re-renders with new options
   }
 
+  // todo next major: rename to something better? (it doesn't just reset progress)
   resetProgress() {
     const defaultProgress = {
       percentage: 0,
@@ -8258,12 +7387,17 @@ class Uppy {
     });
     this.setState({
       files: updatedFiles,
-      totalProgress: 0,
-      allowNewUpload: true,
-      error: null,
-      recoveredState: null
+      ...getDefaultUploadState()
     });
     this.emit('reset-progress');
+  }
+
+  /** @protected */
+  clearUploadedFiles() {
+    this.setState({
+      ...getDefaultUploadState(),
+      files: {}
+    });
   }
   addPreProcessor(fn) {
     _classPrivateFieldLooseBase(this, _preProcessors)[_preProcessors].add(fn);
@@ -8666,13 +7800,11 @@ class Uppy {
       if (fileIDs.length) {
         this.removeFiles(fileIDs, 'cancel-all');
       }
-      this.setState({
-        totalProgress: 0,
-        error: null,
-        recoveredState: null
-      });
+      this.setState(getDefaultUploadState());
+      // todo should we call this.emit('reset-progress') like we do for resetProgress?
     }
   }
+
   retryUpload(fileID) {
     this.setFileState(fileID, {
       error: null,
@@ -8799,6 +7931,7 @@ class Uppy {
       _classPrivateFieldLooseBase(this, _plugins)[_plugins][plugin.type] = [plugin];
     }
     plugin.install();
+    this.emit('plugin-added', plugin);
     return this;
   }
 
@@ -8937,6 +8070,17 @@ class Uppy {
         break;
     }
   }
+  registerRequestClient(id, client) {
+    _classPrivateFieldLooseBase(this, _requestClientById)[_requestClientById].set(id, client);
+  }
+
+  /** @protected */
+  getRequestClientForFile(file) {
+    if (!file.remote) throw new Error(`Tried to get RequestClient for a non-remote file ${file.id}`);
+    const requestClient = _classPrivateFieldLooseBase(this, _requestClientById)[_requestClientById].get(file.remote.requestClientId);
+    if (requestClient == null) throw new Error(`requestClientId "${file.remote.requestClientId}" not registered for file "${file.id}"`);
+    return requestClient;
+  }
 
   /**
    * Restore an upload by its ID.
@@ -9010,7 +8154,7 @@ class Uppy {
       throw err;
     }).then(() => {
       if (!_classPrivateFieldLooseBase(this, _checkRequiredMetaFields)[_checkRequiredMetaFields](files)) {
-        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError(this.i18n('missingRequiredMetaField'));
+        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_8__.RestrictionError(this.i18n('missingRequiredMetaField'));
       }
     }).catch(err => {
       // Doing this in a separate catch because we already emited and logged
@@ -9106,7 +8250,7 @@ function _assertNewUploadAllowed2(file) {
     allowNewUpload
   } = this.getState();
   if (allowNewUpload === false) {
-    const error = new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError(this.i18n('noMoreFilesAllowed'), {
+    const error = new _Restricter_js__WEBPACK_IMPORTED_MODULE_8__.RestrictionError(this.i18n('noMoreFilesAllowed'), {
       file
     });
     _classPrivateFieldLooseBase(this, _informAndEmit)[_informAndEmit]([error]);
@@ -9124,7 +8268,7 @@ function _transformFile2(fileDescriptorOrFile) {
     data: fileDescriptorOrFile
   } : fileDescriptorOrFile;
   const fileType = (0,_uppy_utils_lib_getFileType__WEBPACK_IMPORTED_MODULE_4__["default"])(fileDescriptor);
-  const fileName = (0,_getFileName_js__WEBPACK_IMPORTED_MODULE_8__["default"])(fileType, fileDescriptor);
+  const fileName = (0,_getFileName_js__WEBPACK_IMPORTED_MODULE_11__["default"])(fileType, fileDescriptor);
   const fileExtension = (0,_uppy_utils_lib_getFileNameAndExtension__WEBPACK_IMPORTED_MODULE_5__["default"])(fileName).extension;
   const isRemote = Boolean(fileDescriptor.isRemote);
   const id = (0,_uppy_utils_lib_generateFileID__WEBPACK_IMPORTED_MODULE_6__.getSafeFileId)(fileDescriptor);
@@ -9190,9 +8334,10 @@ function _checkAndUpdateFileState2(filesToAdd) {
       // users are asked to re-select these half-recovered files and then this method will be called again.
       // In order to keep the progress, meta and everthing else, we keep the existing file,
       // but we replace `data`, and we remove `isGhost`, because the file is no longer a ghost now
-      if ((_existingFiles$newFil = existingFiles[newFile.id]) != null && _existingFiles$newFil.isGhost) {
+      const isGhost = (_existingFiles$newFil = existingFiles[newFile.id]) == null ? void 0 : _existingFiles$newFil.isGhost;
+      if (isGhost) {
         const {
-          isGhost,
+          isGhost: _,
           ...existingFileState
         } = existingFiles[newFile.id];
         newFile = {
@@ -9203,15 +8348,17 @@ function _checkAndUpdateFileState2(filesToAdd) {
       }
       const onBeforeFileAddedResult = this.opts.onBeforeFileAdded(newFile, nextFilesState);
       if (!onBeforeFileAddedResult && this.checkIfFileAlreadyExists(newFile.id)) {
-        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError(this.i18n('noDuplicates', {
+        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_8__.RestrictionError(this.i18n('noDuplicates', {
           fileName: newFile.name
         }), {
           file: fileToAdd
         });
       }
-      if (onBeforeFileAddedResult === false) {
+
+      // Pass through reselected files from Golden Retriever
+      if (onBeforeFileAddedResult === false && !isGhost) {
         // Don’t show UI info for this error, as it should be done by the developer
-        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_10__.RestrictionError('Cannot add the file because onBeforeFileAdded returned false.', {
+        throw new _Restricter_js__WEBPACK_IMPORTED_MODULE_8__.RestrictionError('Cannot add the file because onBeforeFileAdded returned false.', {
           isUserFacing: false,
           file: fileToAdd
         });
@@ -9603,33 +8750,6 @@ function getFileName(fileType, fileDescriptor) {
 
 /***/ }),
 
-/***/ "./node_modules/@uppy/core/lib/index.js":
-/*!**********************************************!*\
-  !*** ./node_modules/@uppy/core/lib/index.js ***!
-  \**********************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   BasePlugin: () => (/* reexport safe */ _BasePlugin_js__WEBPACK_IMPORTED_MODULE_2__["default"]),
-/* harmony export */   UIPlugin: () => (/* reexport safe */ _UIPlugin_js__WEBPACK_IMPORTED_MODULE_1__["default"]),
-/* harmony export */   Uppy: () => (/* reexport safe */ _Uppy_js__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   debugLogger: () => (/* reexport safe */ _loggers_js__WEBPACK_IMPORTED_MODULE_3__.debugLogger),
-/* harmony export */   "default": () => (/* reexport safe */ _Uppy_js__WEBPACK_IMPORTED_MODULE_0__["default"])
-/* harmony export */ });
-/* harmony import */ var _Uppy_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Uppy.js */ "./node_modules/@uppy/core/lib/Uppy.js");
-/* harmony import */ var _UIPlugin_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UIPlugin.js */ "./node_modules/@uppy/core/lib/UIPlugin.js");
-/* harmony import */ var _BasePlugin_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BasePlugin.js */ "./node_modules/@uppy/core/lib/BasePlugin.js");
-/* harmony import */ var _loggers_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./loggers.js */ "./node_modules/@uppy/core/lib/loggers.js");
-
-
-
-
-
-
-/***/ }),
-
 /***/ "./node_modules/@uppy/core/lib/locale.js":
 /*!***********************************************!*\
   !*** ./node_modules/@uppy/core/lib/locale.js ***!
@@ -9817,20 +8937,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Dashboard)
 /* harmony export */ });
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _uppy_status_bar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/status-bar */ "./node_modules/@uppy/status-bar/lib/index.js");
-/* harmony import */ var _uppy_informer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/informer */ "./node_modules/@uppy/informer/lib/index.js");
-/* harmony import */ var _uppy_thumbnail_generator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/thumbnail-generator */ "./node_modules/@uppy/thumbnail-generator/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/findAllDOMElements */ "./node_modules/@uppy/utils/lib/findAllDOMElements.js");
-/* harmony import */ var _uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/toArray */ "./node_modules/@uppy/utils/lib/toArray.js");
-/* harmony import */ var _uppy_utils_lib_getDroppedFiles__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/getDroppedFiles */ "./node_modules/@uppy/utils/lib/getDroppedFiles/index.js");
-/* harmony import */ var _uppy_provider_views__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/provider-views */ "./node_modules/@uppy/provider-views/lib/index.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/UIPlugin.js");
+/* harmony import */ var _uppy_status_bar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/status-bar */ "./node_modules/@uppy/status-bar/lib/index.js");
+/* harmony import */ var _uppy_informer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/informer */ "./node_modules/@uppy/informer/lib/index.js");
+/* harmony import */ var _uppy_thumbnail_generator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/thumbnail-generator */ "./node_modules/@uppy/thumbnail-generator/lib/index.js");
+/* harmony import */ var _uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/findAllDOMElements */ "./node_modules/@uppy/utils/lib/findAllDOMElements.js");
+/* harmony import */ var _uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/toArray */ "./node_modules/@uppy/utils/lib/toArray.js");
+/* harmony import */ var _uppy_utils_lib_getDroppedFiles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/getDroppedFiles */ "./node_modules/@uppy/utils/lib/getDroppedFiles/index.js");
+/* harmony import */ var _uppy_provider_views__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/provider-views */ "./node_modules/@uppy/provider-views/lib/index.js");
 /* harmony import */ var nanoid_non_secure__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! nanoid/non-secure */ "./node_modules/nanoid/non-secure/index.js");
-/* harmony import */ var memoize_one__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! memoize-one */ "./node_modules/memoize-one/dist/memoize-one.esm.js");
-/* harmony import */ var _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/trapFocus.js */ "./node_modules/@uppy/dashboard/lib/utils/trapFocus.js");
-/* harmony import */ var _utils_createSuperFocus_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/createSuperFocus.js */ "./node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js");
-/* harmony import */ var _components_Dashboard_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/Dashboard.js */ "./node_modules/@uppy/dashboard/lib/components/Dashboard.js");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/dashboard/lib/locale.js");
+/* harmony import */ var memoize_one__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! memoize-one */ "./node_modules/memoize-one/dist/memoize-one.esm.js");
+/* harmony import */ var _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/trapFocus.js */ "./node_modules/@uppy/dashboard/lib/utils/trapFocus.js");
+/* harmony import */ var _utils_createSuperFocus_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/createSuperFocus.js */ "./node_modules/@uppy/dashboard/lib/utils/createSuperFocus.js");
+/* harmony import */ var _components_Dashboard_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/Dashboard.js */ "./node_modules/@uppy/dashboard/lib/components/Dashboard.js");
+/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/dashboard/lib/locale.js");
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 var id = 0;
 function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
@@ -9848,10 +8968,10 @@ function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + n
 
 
 const packageJson = {
-  "version": "3.5.2"
+  "version": "3.7.1"
 };
 
-const memoize = memoize_one__WEBPACK_IMPORTED_MODULE_12__["default"]["default"] || memoize_one__WEBPACK_IMPORTED_MODULE_12__["default"];
+const memoize = memoize_one__WEBPACK_IMPORTED_MODULE_11__["default"]["default"] || memoize_one__WEBPACK_IMPORTED_MODULE_11__["default"];
 const TAB_KEY = 9;
 const ESC_KEY = 27;
 function createPromise() {
@@ -9874,7 +8994,10 @@ var _isTargetSupported = /*#__PURE__*/_classPrivateFieldLooseKey("isTargetSuppor
 var _getAcquirers = /*#__PURE__*/_classPrivateFieldLooseKey("getAcquirers");
 var _getProgressIndicators = /*#__PURE__*/_classPrivateFieldLooseKey("getProgressIndicators");
 var _getEditors = /*#__PURE__*/_classPrivateFieldLooseKey("getEditors");
-class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
+var _addSpecifiedPluginsFromOptions = /*#__PURE__*/_classPrivateFieldLooseKey("addSpecifiedPluginsFromOptions");
+var _autoDiscoverPlugins = /*#__PURE__*/_classPrivateFieldLooseKey("autoDiscoverPlugins");
+var _addSupportedPluginIfNoTarget = /*#__PURE__*/_classPrivateFieldLooseKey("addSupportedPluginIfNoTarget");
+class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_12__["default"] {
   constructor(uppy, _opts) {
     var _this;
     super(uppy, _opts);
@@ -10196,7 +9319,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
     this.disableInteractiveElements = disable => {
       var _classPrivateFieldLoo;
       const NODES_TO_DISABLE = ['a[href]', 'input:not([disabled])', 'select:not([disabled])', 'textarea:not([disabled])', 'button:not([disabled])', '[role="button"]:not([disabled])'];
-      const nodesToDisable = (_classPrivateFieldLoo = _classPrivateFieldLooseBase(this, _disabledNodes)[_disabledNodes]) != null ? _classPrivateFieldLoo : (0,_uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_5__["default"])(this.el.querySelectorAll(NODES_TO_DISABLE)).filter(node => !node.classList.contains('uppy-Dashboard-close'));
+      const nodesToDisable = (_classPrivateFieldLoo = _classPrivateFieldLooseBase(this, _disabledNodes)[_disabledNodes]) != null ? _classPrivateFieldLoo : (0,_uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_4__["default"])(this.el.querySelectorAll(NODES_TO_DISABLE)).filter(node => !node.classList.contains('uppy-Dashboard-close'));
       for (const node of nodesToDisable) {
         // Links can’t have `disabled` attr, so we use `aria-disabled` for a11y
         if (node.tagName === 'A') {
@@ -10253,7 +9376,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       // close modal on esc key press
       if (event.keyCode === ESC_KEY) this.requestCloseModal(event);
       // trap focus on tab key press
-      if (event.keyCode === TAB_KEY) _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_8__.forModal(event, this.getPluginState().activeOverlayType, this.el);
+      if (event.keyCode === TAB_KEY) _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_7__.forModal(event, this.getPluginState().activeOverlayType, this.el);
     };
     this.handleClickOutside = () => {
       if (this.opts.closeModalOnClickOutside) this.requestCloseModal();
@@ -10268,7 +9391,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       });
 
       // Add all dropped files
-      const files = (0,_uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_5__["default"])(event.clipboardData.files);
+      const files = (0,_uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_4__["default"])(event.clipboardData.files);
       if (files.length > 0) {
         this.uppy.log('[Dashboard] Files pasted');
         this.addFiles(files);
@@ -10276,7 +9399,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
     };
     this.handleInputChange = event => {
       event.preventDefault();
-      const files = (0,_uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_5__["default"])(event.target.files);
+      const files = (0,_uppy_utils_lib_toArray__WEBPACK_IMPORTED_MODULE_4__["default"])(event.target.files);
       if (files.length > 0) {
         this.uppy.log('[Dashboard] Files selected through input');
         this.addFiles(files);
@@ -10377,7 +9500,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       this.uppy.log('[Dashboard] Processing dropped files');
 
       // Add all dropped files
-      const files = await (0,_uppy_utils_lib_getDroppedFiles__WEBPACK_IMPORTED_MODULE_6__["default"])(event.dataTransfer, {
+      const files = await (0,_uppy_utils_lib_getDroppedFiles__WEBPACK_IMPORTED_MODULE_5__["default"])(event.dataTransfer, {
         logDropError
       });
       if (files.length > 0) {
@@ -10402,7 +9525,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
     };
     this.handleKeyDownInInline = event => {
       // Trap focus on tab key press.
-      if (event.keyCode === TAB_KEY) _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_8__.forInline(event, this.getPluginState().activeOverlayType, this.el);
+      if (event.keyCode === TAB_KEY) _utils_trapFocus_js__WEBPACK_IMPORTED_MODULE_7__.forInline(event, this.getPluginState().activeOverlayType, this.el);
     };
     // ___Why do we listen to the 'paste' event on a document instead of onPaste={props.handlePaste} prop,
     //    or this.el.addEventListener('paste')?
@@ -10468,7 +9591,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
     this.initEvents = () => {
       // Modal open button
       if (this.opts.trigger && !this.opts.inline) {
-        const showModalTrigger = (0,_uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_4__["default"])(this.opts.trigger);
+        const showModalTrigger = (0,_uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_3__["default"])(this.opts.trigger);
         if (showModalTrigger) {
           showModalTrigger.forEach(trigger => trigger.addEventListener('click', this.openModal));
         } else {
@@ -10477,6 +9600,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       }
       this.startListeningToResize();
       document.addEventListener('paste', this.handlePasteOnBody);
+      this.uppy.on('plugin-added', _classPrivateFieldLooseBase(this, _addSupportedPluginIfNoTarget)[_addSupportedPluginIfNoTarget]);
       this.uppy.on('plugin-remove', this.removeTarget);
       this.uppy.on('file-added', this.hideAllPanels);
       this.uppy.on('dashboard:modal-closed', this.hideAllPanels);
@@ -10497,13 +9621,14 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       }
     };
     this.removeEvents = () => {
-      const showModalTrigger = (0,_uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_4__["default"])(this.opts.trigger);
+      const showModalTrigger = (0,_uppy_utils_lib_findAllDOMElements__WEBPACK_IMPORTED_MODULE_3__["default"])(this.opts.trigger);
       if (!this.opts.inline && showModalTrigger) {
         showModalTrigger.forEach(trigger => trigger.removeEventListener('click', this.openModal));
       }
       this.stopListeningToResize();
       document.removeEventListener('paste', this.handlePasteOnBody);
       window.removeEventListener('popstate', this.handlePopState, false);
+      this.uppy.off('plugin-added', _classPrivateFieldLooseBase(this, _addSupportedPluginIfNoTarget)[_addSupportedPluginIfNoTarget]);
       this.uppy.off('plugin-remove', this.removeTarget);
       this.uppy.off('file-added', this.hideAllPanels);
       this.uppy.off('dashboard:modal-closed', this.hideAllPanels);
@@ -10637,7 +9762,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
         // eslint-disable-next-line no-console
         console.warn(`Unsupported option for "fileManagerSelectionType". Using default of "${this.opts.fileManagerSelectionType}".`);
       }
-      return (0,_components_Dashboard_js__WEBPACK_IMPORTED_MODULE_10__["default"])({
+      return (0,_components_Dashboard_js__WEBPACK_IMPORTED_MODULE_9__["default"])({
         state,
         isHidden: pluginState.isHidden,
         files,
@@ -10725,13 +9850,41 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
         handleDrop: this.handleDrop
       });
     };
-    this.discoverProviderPlugins = () => {
-      this.uppy.iteratePlugins(plugin => {
-        if (plugin && !plugin.target && plugin.opts && plugin.opts.target === this.constructor) {
-          this.addTarget(plugin);
+    Object.defineProperty(this, _addSpecifiedPluginsFromOptions, {
+      writable: true,
+      value: () => {
+        const plugins = this.opts.plugins || [];
+        plugins.forEach(pluginID => {
+          const plugin = this.uppy.getPlugin(pluginID);
+          if (plugin) {
+            plugin.mount(this, plugin);
+          } else {
+            this.uppy.log(`[Uppy] Dashboard could not find plugin '${pluginID}', make sure to uppy.use() the plugins you are specifying`, 'warning');
+          }
+        });
+      }
+    });
+    Object.defineProperty(this, _autoDiscoverPlugins, {
+      writable: true,
+      value: () => {
+        this.uppy.iteratePlugins(_classPrivateFieldLooseBase(this, _addSupportedPluginIfNoTarget)[_addSupportedPluginIfNoTarget]);
+      }
+    });
+    Object.defineProperty(this, _addSupportedPluginIfNoTarget, {
+      writable: true,
+      value: plugin => {
+        var _plugin$opts;
+        // Only these types belong on the Dashboard,
+        // we wouldn’t want to try and mount Compressor or Tus, for example.
+        const typesAllowed = ['acquirer', 'editor'];
+        if (plugin && !((_plugin$opts = plugin.opts) != null && _plugin$opts.target) && typesAllowed.includes(plugin.type)) {
+          const pluginAlreadyAdded = this.getPluginState().targets.some(installedPlugin => plugin.id === installedPlugin.id);
+          if (!pluginAlreadyAdded) {
+            plugin.mount(this, plugin);
+          }
         }
-      });
-    };
+      }
+    });
     this.install = () => {
       // Set default state for Dashboard
       this.setPluginState({
@@ -10767,15 +9920,8 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       if (target) {
         this.mount(target, this);
       }
-      const plugins = this.opts.plugins || [];
-      plugins.forEach(pluginID => {
-        const plugin = this.uppy.getPlugin(pluginID);
-        if (plugin) {
-          plugin.mount(this, plugin);
-        }
-      });
       if (!this.opts.disableStatusBar) {
-        this.uppy.use(_uppy_status_bar__WEBPACK_IMPORTED_MODULE_1__["default"], {
+        this.uppy.use(_uppy_status_bar__WEBPACK_IMPORTED_MODULE_0__["default"], {
           id: `${this.id}:StatusBar`,
           target: this,
           hideUploadButton: this.opts.hideUploadButton,
@@ -10789,13 +9935,13 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
         });
       }
       if (!this.opts.disableInformer) {
-        this.uppy.use(_uppy_informer__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        this.uppy.use(_uppy_informer__WEBPACK_IMPORTED_MODULE_1__["default"], {
           id: `${this.id}:Informer`,
           target: this
         });
       }
       if (!this.opts.disableThumbnailGenerator) {
-        this.uppy.use(_uppy_thumbnail_generator__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        this.uppy.use(_uppy_thumbnail_generator__WEBPACK_IMPORTED_MODULE_2__["default"], {
           id: `${this.id}:ThumbnailGenerator`,
           thumbnailWidth: this.opts.thumbnailWidth,
           thumbnailHeight: this.opts.thumbnailHeight,
@@ -10814,7 +9960,8 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       if (this.opts.theme === 'auto') {
         this.darkModeMediaQuery.addListener(this.handleSystemDarkModeChange);
       }
-      this.discoverProviderPlugins();
+      _classPrivateFieldLooseBase(this, _addSpecifiedPluginsFromOptions)[_addSpecifiedPluginsFromOptions]();
+      _classPrivateFieldLooseBase(this, _autoDiscoverPlugins)[_autoDiscoverPlugins]();
       this.initEvents();
     };
     this.uninstall = () => {
@@ -10840,6 +9987,9 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       if (this.opts.theme === 'auto') {
         this.darkModeMediaQuery.removeListener(this.handleSystemDarkModeChange);
       }
+      if (this.opts.disablePageScrollWhenModalOpen) {
+        document.body.classList.remove('uppy-Dashboard-isFixed');
+      }
       this.unmount();
       this.removeEvents();
     };
@@ -10847,7 +9997,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
     this.title = 'Dashboard';
     this.type = 'orchestrator';
     this.modalName = `uppy-Dashboard-${(0,nanoid_non_secure__WEBPACK_IMPORTED_MODULE_13__.nanoid)()}`;
-    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_11__["default"];
+    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_10__["default"];
 
     // set default options, must be kept in sync with packages/@uppy/react/src/DashboardModal.js
     const defaultOptions = {
@@ -10860,7 +10010,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       thumbnailWidth: 280,
       thumbnailType: 'image/jpeg',
       waitForThumbnailsBeforeUpload: false,
-      defaultPickerIcon: _uppy_provider_views__WEBPACK_IMPORTED_MODULE_7__.defaultPickerIcon,
+      defaultPickerIcon: _uppy_provider_views__WEBPACK_IMPORTED_MODULE_6__.defaultPickerIcon,
       showLinkToFileUploadResult: false,
       showProgressDetails: false,
       hideUploadButton: false,
@@ -10869,7 +10019,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       hidePauseResumeButton: false,
       hideProgressAfterFinish: false,
       doneButtonHandler: () => {
-        this.uppy.cancelAll();
+        this.uppy.clearUploadedFiles();
         this.requestCloseModal();
       },
       note: null,
@@ -10901,7 +10051,7 @@ class Dashboard extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       ..._opts
     };
     this.i18nInit();
-    this.superFocus = (0,_utils_createSuperFocus_js__WEBPACK_IMPORTED_MODULE_9__["default"])();
+    this.superFocus = (0,_utils_createSuperFocus_js__WEBPACK_IMPORTED_MODULE_8__["default"])();
     this.ifFocusedOnUppyRecently = false;
 
     // Timeouts
@@ -11514,6 +10664,10 @@ __webpack_require__.r(__webpack_exports__);
 
 function EditorPanel(props) {
   const file = props.files[props.fileCardFor];
+  const handleCancel = () => {
+    props.uppy.emit('file-editor:cancel', file);
+    props.hideAllPanels();
+  };
   return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("div", {
     className: classnames__WEBPACK_IMPORTED_MODULE_1__('uppy-DashboardContent-panel', props.className),
     role: "tabpanel",
@@ -11532,7 +10686,7 @@ function EditorPanel(props) {
   })), (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("button", {
     className: "uppy-DashboardContent-back",
     type: "button",
-    onClick: props.hideAllPanels
+    onClick: handleCancel
   }, props.i18n('cancel')), (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("button", {
     className: "uppy-DashboardContent-save",
     type: "button",
@@ -11632,7 +10786,6 @@ __webpack_require__.r(__webpack_exports__);
 function FileCard(props) {
   var _getMetaFields;
   const {
-    uppy,
     files,
     fileCardFor,
     toggleFileCard,
@@ -11668,7 +10821,6 @@ function FileCard(props) {
     });
   };
   const handleCancel = () => {
-    uppy.emit('file-editor:cancel', file);
     toggleFileCard(false);
   };
   const [form] = (0,preact_hooks__WEBPACK_IMPORTED_MODULE_1__.useState)(() => {
@@ -13583,9 +12735,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Informer)
 /* harmony export */ });
 /* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _FadeIn_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FadeIn.js */ "./node_modules/@uppy/informer/lib/FadeIn.js");
-/* harmony import */ var _TransitionGroup_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TransitionGroup.js */ "./node_modules/@uppy/informer/lib/TransitionGroup.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/UIPlugin.js");
+/* harmony import */ var _FadeIn_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FadeIn.js */ "./node_modules/@uppy/informer/lib/FadeIn.js");
+/* harmony import */ var _TransitionGroup_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TransitionGroup.js */ "./node_modules/@uppy/informer/lib/TransitionGroup.js");
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions  */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
@@ -13593,7 +12745,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const packageJson = {
-  "version": "3.0.3"
+  "version": "3.0.4"
 };
 /**
  * Informer
@@ -13602,13 +12754,13 @@ const packageJson = {
  * or for errors: `uppy.info('Error uploading img.jpg', 'error', 5000)`
  *
  */
-class Informer extends _uppy_core__WEBPACK_IMPORTED_MODULE_1__.UIPlugin {
+class Informer extends _uppy_core__WEBPACK_IMPORTED_MODULE_3__["default"] {
   constructor(uppy, opts) {
     super(uppy, opts);
     this.render = state => {
       return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("div", {
         className: "uppy uppy-Informer"
-      }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_TransitionGroup_js__WEBPACK_IMPORTED_MODULE_3__["default"], null, state.info.map(info => (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_FadeIn_js__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_TransitionGroup_js__WEBPACK_IMPORTED_MODULE_2__["default"], null, state.info.map(info => (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_FadeIn_js__WEBPACK_IMPORTED_MODULE_1__["default"], {
         key: info.message
       }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("p", {
         role: "alert"
@@ -14547,37 +13699,6 @@ function _extends() { _extends = Object.assign ? Object.assign.bind() : function
 
 /***/ }),
 
-/***/ "./node_modules/@uppy/provider-views/lib/Loader.js":
-/*!*********************************************************!*\
-  !*** ./node_modules/@uppy/provider-views/lib/Loader.js ***!
-  \*********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_ref => {
-  let {
-    i18n,
-    loading
-  } = _ref;
-  return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("div", {
-    className: "uppy-Provider-loading"
-  }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("span", null, i18n('loading')), typeof loading === 'string' &&
-  // todo improve this, see discussion in https://github.com/transloadit/uppy/pull/4399#discussion_r1162564445
-  (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("span", {
-    style: {
-      marginTop: '.7em'
-    }
-  }, loading));
-});
-
-/***/ }),
-
 /***/ "./node_modules/@uppy/provider-views/lib/ProviderView/AuthView.js":
 /*!************************************************************************!*\
   !*** ./node_modules/@uppy/provider-views/lib/ProviderView/AuthView.js ***!
@@ -14590,6 +13711,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.module.js");
+/* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! preact/hooks */ "./node_modules/preact/hooks/dist/hooks.module.js");
+
 
 function GoogleIcon() {
   return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("svg", {
@@ -14625,16 +13748,54 @@ function GoogleIcon() {
     d: "M4 4h18v18H4z"
   })));
 }
-function AuthView(props) {
-  const {
+const DefaultForm = _ref => {
+  let {
     pluginName,
-    pluginIcon,
-    i18nArray,
-    handleAuth
-  } = props;
+    i18n,
+    onAuth
+  } = _ref;
   // In order to comply with Google's brand we need to create a different button
   // for the Google Drive plugin
   const isGoogleDrive = pluginName === 'Google Drive';
+  const onSubmit = (0,preact_hooks__WEBPACK_IMPORTED_MODULE_1__.useCallback)(e => {
+    e.preventDefault();
+    onAuth();
+  }, [onAuth]);
+  return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("form", {
+    onSubmit: onSubmit
+  }, isGoogleDrive ? (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("button", {
+    type: "submit",
+    className: "uppy-u-reset uppy-c-btn uppy-c-btn-primary uppy-Provider-authBtn uppy-Provider-btn-google",
+    "data-uppy-super-focusable": true
+  }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(GoogleIcon, null), i18n('signInWithGoogle')) : (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("button", {
+    type: "submit",
+    className: "uppy-u-reset uppy-c-btn uppy-c-btn-primary uppy-Provider-authBtn",
+    "data-uppy-super-focusable": true
+  }, i18n('authenticateWith', {
+    pluginName
+  })));
+};
+const defaultRenderForm = _ref2 => {
+  let {
+    pluginName,
+    i18n,
+    onAuth
+  } = _ref2;
+  return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(DefaultForm, {
+    pluginName: pluginName,
+    i18n: i18n,
+    onAuth: onAuth
+  });
+};
+function AuthView(props) {
+  const {
+    loading,
+    pluginName,
+    pluginIcon,
+    i18n,
+    handleAuth,
+    renderForm = defaultRenderForm
+  } = props;
   const pluginNameComponent = (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("span", {
     className: "uppy-Provider-authTitleName"
   }, pluginName, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("br", null));
@@ -14644,20 +13805,15 @@ function AuthView(props) {
     className: "uppy-Provider-authIcon"
   }, pluginIcon()), (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("div", {
     className: "uppy-Provider-authTitle"
-  }, i18nArray('authenticateWithTitle', {
+  }, i18n('authenticateWithTitle', {
     pluginName: pluginNameComponent
-  })), isGoogleDrive ? (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("button", {
-    type: "button",
-    className: "uppy-u-reset uppy-c-btn uppy-c-btn-primary uppy-Provider-authBtn uppy-Provider-btn-google",
-    onClick: handleAuth,
-    "data-uppy-super-focusable": true
-  }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(GoogleIcon, null), i18nArray('signInWithGoogle')) : (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("button", {
-    type: "button",
-    className: "uppy-u-reset uppy-c-btn uppy-c-btn-primary uppy-Provider-authBtn",
-    onClick: handleAuth,
-    "data-uppy-super-focusable": true
-  }, i18nArray('authenticateWith', {
-    pluginName
+  })), (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("div", {
+    className: "uppy-Provider-authForm"
+  }, renderForm({
+    pluginName,
+    i18n,
+    loading,
+    onAuth: handleAuth
   })));
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AuthView);
@@ -14717,14 +13873,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AuthView_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AuthView.js */ "./node_modules/@uppy/provider-views/lib/ProviderView/AuthView.js");
 /* harmony import */ var _Header_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Header.js */ "./node_modules/@uppy/provider-views/lib/ProviderView/Header.js");
 /* harmony import */ var _Browser_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../Browser.js */ "./node_modules/@uppy/provider-views/lib/Browser.js");
-/* harmony import */ var _Loader_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Loader.js */ "./node_modules/@uppy/provider-views/lib/Loader.js");
-/* harmony import */ var _CloseWrapper_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../CloseWrapper.js */ "./node_modules/@uppy/provider-views/lib/CloseWrapper.js");
-/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../View.js */ "./node_modules/@uppy/provider-views/lib/View.js");
+/* harmony import */ var _CloseWrapper_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../CloseWrapper.js */ "./node_modules/@uppy/provider-views/lib/CloseWrapper.js");
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../View.js */ "./node_modules/@uppy/provider-views/lib/View.js");
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 var id = 0;
 function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
-// eslint-disable-next-line import/no-unresolved
 
 
 
@@ -14734,7 +13887,7 @@ function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + n
 
 
 const packageJson = {
-  "version": "3.5.0"
+  "version": "3.8.0"
 };
 function formatBreadcrumbs(breadcrumbs) {
   return breadcrumbs.slice(1).map(directory => directory.name).join('/');
@@ -14763,7 +13916,7 @@ var _withAbort = /*#__PURE__*/_classPrivateFieldLooseKey("withAbort");
 var _list = /*#__PURE__*/_classPrivateFieldLooseKey("list");
 var _listFilesAndFolders = /*#__PURE__*/_classPrivateFieldLooseKey("listFilesAndFolders");
 var _recursivelyListAllFiles = /*#__PURE__*/_classPrivateFieldLooseKey("recursivelyListAllFiles");
-class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
+class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_7__["default"] {
   /**
    * @param {object} plugin instance of the plugin
    * @param {object} opts
@@ -14816,7 +13969,8 @@ class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
 
     // Set default state for the plugin
     this.plugin.setPluginState({
-      authenticated: false,
+      authenticated: undefined,
+      // we don't know yet
       files: [],
       folders: [],
       breadcrumbs: [],
@@ -14824,6 +13978,7 @@ class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
       isSearchVisible: false,
       currentSelection: []
     });
+    this.registerRequestClient();
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -14883,6 +14038,14 @@ class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
         });
       });
     } catch (err) {
+      // This is the first call that happens when the provider view loads, after auth, so it's probably nice to show any
+      // error occurring here to the user.
+      if ((err == null ? void 0 : err.name) === 'UserFacingApiError') {
+        this.plugin.uppy.info({
+          message: this.plugin.uppy.i18n(err.message)
+        }, 'warning', 5000);
+        return;
+      }
       this.handleError(err);
     } finally {
       this.setLoading(false);
@@ -14940,18 +14103,29 @@ class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
       filterInput: ''
     });
   }
-  async handleAuth() {
-    const clientVersion = `@uppy/provider-views=${ProviderView.VERSION}`;
+  async handleAuth(authFormData) {
     try {
-      await this.provider.login({
-        uppyVersions: clientVersion
+      await _classPrivateFieldLooseBase(this, _withAbort)[_withAbort](async signal => {
+        this.setLoading(true);
+        await this.provider.login({
+          authFormData,
+          signal
+        });
+        this.plugin.setPluginState({
+          authenticated: true
+        });
+        this.preFirstRender();
       });
-      this.plugin.setPluginState({
-        authenticated: true
-      });
-      this.preFirstRender();
-    } catch (e) {
-      this.plugin.uppy.log(`login failed: ${e.message}`);
+    } catch (err) {
+      if (err.name === 'UserFacingApiError') {
+        this.plugin.uppy.info({
+          message: this.plugin.uppy.i18n(err.message)
+        }, 'warning', 5000);
+        return;
+      }
+      this.plugin.uppy.log(`login failed: ${err.message}`);
+    } finally {
+      this.setLoading(false);
     }
   }
   async handleScroll(event) {
@@ -15064,8 +14238,8 @@ class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
         // and that will allow the user to start the upload, so we need to make sure we have
         // finished all async operations before we add any file
         // see https://github.com/transloadit/uppy/pull/4384
-        this.plugin.uppy.log('Adding remote provider files');
-        this.plugin.uppy.addFiles(newFiles.map(file => this.getTagFile(file)));
+        this.plugin.uppy.log('Adding files from a remote provider');
+        this.plugin.uppy.addFiles(newFiles.map(file => this.getTagFile(file, this.requestClientId)));
         this.plugin.setPluginState({
           filterInput: ''
         });
@@ -15129,7 +14303,6 @@ class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
       currentSelection,
       files: hasInput ? filterItems(files) : files,
       folders: hasInput ? filterItems(folders) : folders,
-      username: this.username,
       getNextFolder: this.getNextFolder,
       getFolder: this.getFolder,
       loadAllFiles: this.opts.loadAllFiles,
@@ -15156,28 +14329,22 @@ class ProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
       uppyFiles: this.plugin.uppy.getFiles(),
       validateRestrictions: function () {
         return _this.plugin.uppy.validateRestrictions(...arguments);
-      }
+      },
+      isLoading: loading
     };
-    if (loading) {
-      return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_CloseWrapper_js__WEBPACK_IMPORTED_MODULE_7__["default"], {
-        onUnmount: this.clearSelection
-      }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_Loader_js__WEBPACK_IMPORTED_MODULE_6__["default"], {
-        i18n: this.plugin.uppy.i18n,
-        loading: loading
-      }));
-    }
-    if (!authenticated) {
-      return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_CloseWrapper_js__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    if (authenticated === false) {
+      return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_CloseWrapper_js__WEBPACK_IMPORTED_MODULE_6__["default"], {
         onUnmount: this.clearSelection
       }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_AuthView_js__WEBPACK_IMPORTED_MODULE_3__["default"], {
         pluginName: this.plugin.title,
         pluginIcon: pluginIcon,
         handleAuth: this.handleAuth,
-        i18n: this.plugin.uppy.i18n,
-        i18nArray: this.plugin.uppy.i18nArray
+        i18n: this.plugin.uppy.i18nArray,
+        renderForm: this.opts.renderAuthForm,
+        loading: loading
       }));
     }
-    return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_CloseWrapper_js__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    return (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_CloseWrapper_js__WEBPACK_IMPORTED_MODULE_6__["default"], {
       onUnmount: this.clearSelection
     }, (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)(_Browser_js__WEBPACK_IMPORTED_MODULE_5__["default"], browserProps));
   }
@@ -15466,7 +14633,7 @@ function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + n
 
 
 const packageJson = {
-  "version": "3.5.0"
+  "version": "3.8.0"
 };
 /**
  * SearchProviderView, used for Unsplash and future image search providers.
@@ -15519,6 +14686,7 @@ class SearchProviderView extends _View_js__WEBPACK_IMPORTED_MODULE_4__["default"
 
     // Set default state for the plugin
     this.plugin.setPluginState(this.defaultState);
+    this.registerRequestClient();
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -15852,6 +15020,10 @@ class View {
       details: error.toString()
     }, 'error', 5000);
   }
+  registerRequestClient() {
+    this.requestClientId = this.provider.provider;
+    this.plugin.uppy.registerRequestClient(this.requestClientId, this.provider);
+  }
 
   // todo document what is a "tagFile" or get rid of this concept
   getTagFile(file) {
@@ -15872,9 +15044,9 @@ class View {
         body: {
           fileId: file.id
         },
-        providerOptions: this.provider.opts,
         providerName: this.provider.name,
-        provider: this.provider.provider
+        provider: this.provider.provider,
+        requestClientId: this.requestClientId
       }
     };
     const fileType = (0,_uppy_utils_lib_getFileType__WEBPACK_IMPORTED_MODULE_0__["default"])(tagFile);
@@ -16324,12 +15496,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ StatusBar)
 /* harmony export */ });
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_emaFilter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/emaFilter */ "./node_modules/@uppy/utils/lib/emaFilter.js");
-/* harmony import */ var _uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/getTextDirection */ "./node_modules/@uppy/utils/lib/getTextDirection.js");
-/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./StatusBarStates.js */ "./node_modules/@uppy/status-bar/lib/StatusBarStates.js");
-/* harmony import */ var _StatusBarUI_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./StatusBarUI.js */ "./node_modules/@uppy/status-bar/lib/StatusBarUI.js");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/status-bar/lib/locale.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/UIPlugin.js");
+/* harmony import */ var _uppy_utils_lib_emaFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/emaFilter */ "./node_modules/@uppy/utils/lib/emaFilter.js");
+/* harmony import */ var _uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/getTextDirection */ "./node_modules/@uppy/utils/lib/getTextDirection.js");
+/* harmony import */ var _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./StatusBarStates.js */ "./node_modules/@uppy/status-bar/lib/StatusBarStates.js");
+/* harmony import */ var _StatusBarUI_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./StatusBarUI.js */ "./node_modules/@uppy/status-bar/lib/StatusBarUI.js");
+/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/status-bar/lib/locale.js");
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 var id = 0;
 function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
@@ -16339,22 +15511,22 @@ function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + n
 
 
 const packageJson = {
-  "version": "3.2.4"
+  "version": "3.2.5"
 };
 
 const speedFilterHalfLife = 2000;
 const ETAFilterHalfLife = 2000;
 function getUploadingState(error, isAllComplete, recoveredState, files) {
   if (error) {
-    return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_ERROR;
+    return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_ERROR;
   }
   if (isAllComplete) {
-    return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_COMPLETE;
+    return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_COMPLETE;
   }
   if (recoveredState) {
-    return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_WAITING;
+    return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_WAITING;
   }
-  let state = _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_WAITING;
+  let state = _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_WAITING;
   const fileIDs = Object.keys(files);
   for (let i = 0; i < fileIDs.length; i++) {
     const {
@@ -16362,17 +15534,17 @@ function getUploadingState(error, isAllComplete, recoveredState, files) {
     } = files[fileIDs[i]];
     // If ANY files are being uploaded right now, show the uploading state.
     if (progress.uploadStarted && !progress.uploadComplete) {
-      return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_UPLOADING;
+      return _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_UPLOADING;
     }
     // If files are being preprocessed AND postprocessed at this time, we show the
     // preprocess state. If any files are being uploaded we show uploading.
-    if (progress.preprocess && state !== _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_UPLOADING) {
-      state = _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_PREPROCESSING;
+    if (progress.preprocess && state !== _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_UPLOADING) {
+      state = _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_PREPROCESSING;
     }
     // If NO files are being preprocessed or uploaded right now, but some files are
     // being postprocessed, show the postprocess state.
-    if (progress.postprocess && state !== _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_UPLOADING && state !== _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_PREPROCESSING) {
-      state = _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_3__["default"].STATE_POSTPROCESSING;
+    if (progress.postprocess && state !== _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_UPLOADING && state !== _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_PREPROCESSING) {
+      state = _StatusBarStates_js__WEBPACK_IMPORTED_MODULE_2__["default"].STATE_POSTPROCESSING;
     }
   }
   return state;
@@ -16388,7 +15560,7 @@ var _previousSpeed = /*#__PURE__*/_classPrivateFieldLooseKey("previousSpeed");
 var _previousETA = /*#__PURE__*/_classPrivateFieldLooseKey("previousETA");
 var _computeSmoothETA = /*#__PURE__*/_classPrivateFieldLooseKey("computeSmoothETA");
 var _onUploadStart = /*#__PURE__*/_classPrivateFieldLooseKey("onUploadStart");
-class StatusBar extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
+class StatusBar extends _uppy_core__WEBPACK_IMPORTED_MODULE_5__["default"] {
   constructor(uppy, opts) {
     super(uppy, opts);
     Object.defineProperty(this, _computeSmoothETA, {
@@ -16444,7 +15616,7 @@ class StatusBar extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
     this.id = this.opts.id || 'StatusBar';
     this.title = 'StatusBar';
     this.type = 'progressindicator';
-    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_5__["default"];
+    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_4__["default"];
 
     // set default options, must be kept in sync with @uppy/react/src/StatusBar.js
     const defaultOptions = {
@@ -16503,7 +15675,7 @@ class StatusBar extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
       total: totalSize,
       remaining: totalSize - totalUploadedSize
     });
-    return (0,_StatusBarUI_js__WEBPACK_IMPORTED_MODULE_4__["default"])({
+    return (0,_StatusBarUI_js__WEBPACK_IMPORTED_MODULE_3__["default"])({
       error,
       uploadState: getUploadingState(error, isAllComplete, recoveredState, state.files || {}),
       allowNewUpload,
@@ -16540,7 +15712,7 @@ class StatusBar extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
   onMount() {
     // Set the text direction if the page has not defined one.
     const element = this.el;
-    const direction = (0,_uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_2__["default"])(element);
+    const direction = (0,_uppy_utils_lib_getTextDirection__WEBPACK_IMPORTED_MODULE_1__["default"])(element);
     if (!direction) {
       element.dir = 'ltr';
     }
@@ -16587,11 +15759,11 @@ function _computeSmoothETA2(totalBytes) {
     return Math.round(((_classPrivateFieldLoo4 = _classPrivateFieldLooseBase(this, _previousETA)[_previousETA]) != null ? _classPrivateFieldLoo4 : 0) / 100) / 10;
   }
   const currentSpeed = uploadedBytesSinceLastTick / dt;
-  const filteredSpeed = _classPrivateFieldLooseBase(this, _previousSpeed)[_previousSpeed] == null ? currentSpeed : (0,_uppy_utils_lib_emaFilter__WEBPACK_IMPORTED_MODULE_1__["default"])(currentSpeed, _classPrivateFieldLooseBase(this, _previousSpeed)[_previousSpeed], speedFilterHalfLife, dt);
+  const filteredSpeed = _classPrivateFieldLooseBase(this, _previousSpeed)[_previousSpeed] == null ? currentSpeed : (0,_uppy_utils_lib_emaFilter__WEBPACK_IMPORTED_MODULE_0__["default"])(currentSpeed, _classPrivateFieldLooseBase(this, _previousSpeed)[_previousSpeed], speedFilterHalfLife, dt);
   _classPrivateFieldLooseBase(this, _previousSpeed)[_previousSpeed] = filteredSpeed;
   const instantETA = totalBytes.remaining / filteredSpeed;
   const updatedPreviousETA = Math.max(_classPrivateFieldLooseBase(this, _previousETA)[_previousETA] - dt, 0);
-  const filteredETA = _classPrivateFieldLooseBase(this, _previousETA)[_previousETA] == null ? instantETA : (0,_uppy_utils_lib_emaFilter__WEBPACK_IMPORTED_MODULE_1__["default"])(instantETA, updatedPreviousETA, ETAFilterHalfLife, dt);
+  const filteredETA = _classPrivateFieldLooseBase(this, _previousETA)[_previousETA] == null ? instantETA : (0,_uppy_utils_lib_emaFilter__WEBPACK_IMPORTED_MODULE_0__["default"])(instantETA, updatedPreviousETA, ETAFilterHalfLife, dt);
   _classPrivateFieldLooseBase(this, _previousETA)[_previousETA] = filteredETA;
   _classPrivateFieldLooseBase(this, _lastUpdateTime)[_lastUpdateTime] = performance.now();
   return Math.round(filteredETA / 100) / 10;
@@ -16977,69 +16149,58 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
-
 var id = 0;
-
 function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore We don't want TS to generate types for the package.json
 const packageJson = {
-  "version": "3.0.3"
+  "version": "3.2.0"
 };
+var _callbacks = /*#__PURE__*/_classPrivateFieldLooseKey("callbacks");
+var _publish = /*#__PURE__*/_classPrivateFieldLooseKey("publish");
 /**
  * Default store that keeps state in a simple object.
  */
-
-var _callbacks = /*#__PURE__*/_classPrivateFieldLooseKey("callbacks");
-
-var _publish = /*#__PURE__*/_classPrivateFieldLooseKey("publish");
-
 class DefaultStore {
   constructor() {
     Object.defineProperty(this, _publish, {
       value: _publish2
     });
+    this.state = {};
     Object.defineProperty(this, _callbacks, {
       writable: true,
       value: new Set()
     });
-    this.state = {};
   }
-
   getState() {
     return this.state;
   }
-
   setState(patch) {
-    const prevState = { ...this.state
+    const prevState = {
+      ...this.state
     };
-    const nextState = { ...this.state,
+    const nextState = {
+      ...this.state,
       ...patch
     };
     this.state = nextState;
-
     _classPrivateFieldLooseBase(this, _publish)[_publish](prevState, nextState, patch);
   }
-
   subscribe(listener) {
     _classPrivateFieldLooseBase(this, _callbacks)[_callbacks].add(listener);
-
     return () => {
       _classPrivateFieldLooseBase(this, _callbacks)[_callbacks].delete(listener);
     };
   }
-
 }
-
 function _publish2() {
   for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
-
   _classPrivateFieldLooseBase(this, _callbacks)[_callbacks].forEach(listener => {
     listener(...args);
   });
 }
-
 DefaultStore.VERSION = packageJson.version;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DefaultStore);
 
@@ -17056,12 +16217,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ ThumbnailGenerator)
 /* harmony export */ });
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_dataURItoBlob__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/dataURItoBlob */ "./node_modules/@uppy/utils/lib/dataURItoBlob.js");
-/* harmony import */ var _uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isObjectURL */ "./node_modules/@uppy/utils/lib/isObjectURL.js");
-/* harmony import */ var _uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/isPreviewSupported */ "./node_modules/@uppy/utils/lib/isPreviewSupported.js");
-/* harmony import */ var exifr_dist_mini_esm_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! exifr/dist/mini.esm.mjs */ "./node_modules/exifr/dist/mini.esm.mjs");
-/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/thumbnail-generator/lib/locale.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/UIPlugin.js");
+/* harmony import */ var _uppy_utils_lib_dataURItoBlob__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/utils/lib/dataURItoBlob */ "./node_modules/@uppy/utils/lib/dataURItoBlob.js");
+/* harmony import */ var _uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/isObjectURL */ "./node_modules/@uppy/utils/lib/isObjectURL.js");
+/* harmony import */ var _uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/isPreviewSupported */ "./node_modules/@uppy/utils/lib/isPreviewSupported.js");
+/* harmony import */ var exifr_dist_mini_esm_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! exifr/dist/mini.esm.mjs */ "./node_modules/exifr/dist/mini.esm.mjs");
+/* harmony import */ var _locale_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./locale.js */ "./node_modules/@uppy/thumbnail-generator/lib/locale.js");
 
 
 
@@ -17069,7 +16230,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const packageJson = {
-  "version": "3.0.4"
+  "version": "3.0.6"
 };
 /**
  * Save a <canvas> element's content to a Blob object.
@@ -17096,7 +16257,7 @@ function canvasToBlob(canvas, type, quality) {
     });
   }
   return Promise.resolve().then(() => {
-    return (0,_uppy_utils_lib_dataURItoBlob__WEBPACK_IMPORTED_MODULE_1__["default"])(canvas.toDataURL(type, quality), {});
+    return (0,_uppy_utils_lib_dataURItoBlob__WEBPACK_IMPORTED_MODULE_0__["default"])(canvas.toDataURL(type, quality), {});
   }).then(blob => {
     if (blob === null) {
       throw new Error('could not extract blob, probably an old browser');
@@ -17159,11 +16320,11 @@ function protect(image) {
  * The Thumbnail Generator plugin
  */
 
-class ThumbnailGenerator extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugin {
+class ThumbnailGenerator extends _uppy_core__WEBPACK_IMPORTED_MODULE_5__["default"] {
   constructor(uppy, opts) {
     super(uppy, opts);
     this.onFileAdded = file => {
-      if (!file.preview && file.data && (0,_uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_3__["default"])(file.type) && !file.isRemote) {
+      if (!file.preview && file.data && (0,_uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_2__["default"])(file.type) && !file.isRemote) {
         this.addToQueue(file.id);
       }
     };
@@ -17186,7 +16347,7 @@ class ThumbnailGenerator extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugi
       }
 
       // Clean up object URLs.
-      if (file.preview && (0,_uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_2__["default"])(file.preview)) {
+      if (file.preview && (0,_uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_1__["default"])(file.preview)) {
         URL.revokeObjectURL(file.preview);
       }
     };
@@ -17194,7 +16355,7 @@ class ThumbnailGenerator extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugi
       const restoredFiles = this.uppy.getFiles().filter(file => file.isRestored);
       restoredFiles.forEach(file => {
         // Only add blob URLs; they are likely invalid after being restored.
-        if (!file.preview || (0,_uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_2__["default"])(file.preview)) {
+        if (!file.preview || (0,_uppy_utils_lib_isObjectURL__WEBPACK_IMPORTED_MODULE_1__["default"])(file.preview)) {
           this.addToQueue(file.id);
         }
       });
@@ -17235,7 +16396,7 @@ class ThumbnailGenerator extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugi
     this.queueProcessing = false;
     this.defaultThumbnailDimension = 200;
     this.thumbnailType = this.opts.thumbnailType || 'image/jpeg';
-    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_5__["default"];
+    this.defaultLocale = _locale_js__WEBPACK_IMPORTED_MODULE_4__["default"];
     const defaultOptions = {
       thumbnailWidth: null,
       thumbnailHeight: null,
@@ -17274,7 +16435,7 @@ class ThumbnailGenerator extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugi
         reject(event.error || new Error('Could not create thumbnail'));
       });
     });
-    const orientationPromise = (0,exifr_dist_mini_esm_mjs__WEBPACK_IMPORTED_MODULE_4__.rotation)(file.data).catch(() => 1);
+    const orientationPromise = (0,exifr_dist_mini_esm_mjs__WEBPACK_IMPORTED_MODULE_3__.rotation)(file.data).catch(() => 1);
     return Promise.all([onload, orientationPromise]).then(_ref => {
       let [image, orientation] = _ref;
       const dimensions = this.getProportionalDimensions(image, targetWidth, targetHeight, orientation.deg);
@@ -17377,7 +16538,7 @@ class ThumbnailGenerator extends _uppy_core__WEBPACK_IMPORTED_MODULE_0__.UIPlugi
     return Promise.resolve();
   }
   requestThumbnail(file) {
-    if ((0,_uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_3__["default"])(file.type) && !file.isRemote) {
+    if ((0,_uppy_utils_lib_isPreviewSupported__WEBPACK_IMPORTED_MODULE_2__["default"])(file.type) && !file.isRemote) {
       return this.createThumbnail(file, this.opts.thumbnailWidth, this.opts.thumbnailHeight).then(preview => {
         this.setPreviewURL(file.id, preview);
         this.uppy.log(`[ThumbnailGenerator] Generated thumbnail for ${file.id}`);
@@ -17493,16 +16654,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Tus)
 /* harmony export */ });
-/* harmony import */ var _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core/lib/BasePlugin.js */ "./node_modules/@uppy/core/lib/BasePlugin.js");
-/* harmony import */ var tus_js_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! tus-js-client */ "./node_modules/tus-js-client/lib.esm/browser/index.js");
-/* harmony import */ var _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/companion-client */ "./node_modules/@uppy/companion-client/lib/index.js");
-/* harmony import */ var _uppy_utils_lib_EventManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/EventManager */ "./node_modules/@uppy/utils/lib/EventManager.js");
-/* harmony import */ var _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/NetworkError */ "./node_modules/@uppy/utils/lib/NetworkError.js");
-/* harmony import */ var _uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/isNetworkError */ "./node_modules/@uppy/utils/lib/isNetworkError.js");
-/* harmony import */ var _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/RateLimitedQueue */ "./node_modules/@uppy/utils/lib/RateLimitedQueue.js");
-/* harmony import */ var _uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @uppy/utils/lib/hasProperty */ "./node_modules/@uppy/utils/lib/hasProperty.js");
-/* harmony import */ var _uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @uppy/utils/lib/fileFilters */ "./node_modules/@uppy/utils/lib/fileFilters.js");
-/* harmony import */ var _getFingerprint_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./getFingerprint.js */ "./node_modules/@uppy/tus/lib/getFingerprint.js");
+/* harmony import */ var _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @uppy/core/lib/BasePlugin.js */ "./node_modules/@uppy/core/lib/BasePlugin.js");
+/* harmony import */ var tus_js_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tus-js-client */ "./node_modules/tus-js-client/lib.esm/browser/index.js");
+/* harmony import */ var _uppy_utils_lib_EventManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/utils/lib/EventManager */ "./node_modules/@uppy/utils/lib/EventManager.js");
+/* harmony import */ var _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/utils/lib/NetworkError */ "./node_modules/@uppy/utils/lib/NetworkError.js");
+/* harmony import */ var _uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/utils/lib/isNetworkError */ "./node_modules/@uppy/utils/lib/isNetworkError.js");
+/* harmony import */ var _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @uppy/utils/lib/RateLimitedQueue */ "./node_modules/@uppy/utils/lib/RateLimitedQueue.js");
+/* harmony import */ var _uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @uppy/utils/lib/hasProperty */ "./node_modules/@uppy/utils/lib/hasProperty.js");
+/* harmony import */ var _uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @uppy/utils/lib/fileFilters */ "./node_modules/@uppy/utils/lib/fileFilters.js");
+/* harmony import */ var _getFingerprint_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./getFingerprint.js */ "./node_modules/@uppy/tus/lib/getFingerprint.js");
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 var id = 0;
 function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
@@ -17515,9 +16675,8 @@ function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + n
 
 
 
-
 const packageJson = {
-  "version": "3.2.0"
+  "version": "3.5.0"
 };
 /** @typedef {import('..').TusOptions} TusOptions */
 /** @typedef {import('tus-js-client').UploadOptions} RawTusOptions */
@@ -17558,7 +16717,7 @@ var _uploadLocalFile = /*#__PURE__*/_classPrivateFieldLooseKey("uploadLocalFile"
 var _getCompanionClientArgs = /*#__PURE__*/_classPrivateFieldLooseKey("getCompanionClientArgs");
 var _uploadFiles = /*#__PURE__*/_classPrivateFieldLooseKey("uploadFiles");
 var _handleUpload = /*#__PURE__*/_classPrivateFieldLooseKey("handleUpload");
-class Tus extends _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+class Tus extends _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_8__["default"] {
   /**
    * @param {Uppy} uppy
    * @param {TusOptions} opts
@@ -17641,7 +16800,6 @@ class Tus extends _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__["def
 
     // set default options
     const defaultOptions = {
-      useFastRemoteRetry: true,
       limit: 20,
       retryDelays: tusDefaultOptions.retryDelays,
       withCredentials: false
@@ -17665,7 +16823,7 @@ class Tus extends _uppy_core_lib_BasePlugin_js__WEBPACK_IMPORTED_MODULE_0__["def
      *
      * @type {RateLimitedQueue}
      */
-    this.requests = (_this$opts$rateLimite = this.opts.rateLimitedQueue) != null ? _this$opts$rateLimite : new _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_6__.RateLimitedQueue(this.opts.limit);
+    this.requests = (_this$opts$rateLimite = this.opts.rateLimitedQueue) != null ? _this$opts$rateLimite : new _uppy_utils_lib_RateLimitedQueue__WEBPACK_IMPORTED_MODULE_4__.RateLimitedQueue(this.opts.limit);
     _classPrivateFieldLooseBase(this, _retryDelayIterator)[_retryDelayIterator] = (_this$opts$retryDelay = this.opts.retryDelays) == null ? void 0 : _this$opts$retryDelay.values();
     this.uploaders = Object.create(null);
     this.uploaderEvents = Object.create(null);
@@ -17784,7 +16942,7 @@ function _uploadLocalFile2(file) {
     // now also includes `relativePath` for files added from folders.
     // This means you can add 2 identical files, if one is in folder a,
     // the other in folder b.
-    uploadOptions.fingerprint = (0,_getFingerprint_js__WEBPACK_IMPORTED_MODULE_9__["default"])(file);
+    uploadOptions.fingerprint = (0,_getFingerprint_js__WEBPACK_IMPORTED_MODULE_7__["default"])(file);
     uploadOptions.onBeforeRequest = req => {
       const xhr = req.getUnderlyingObject();
       xhr.withCredentials = !!opts.withCredentials;
@@ -17792,7 +16950,7 @@ function _uploadLocalFile2(file) {
       if (typeof opts.onBeforeRequest === 'function') {
         userProvidedPromise = opts.onBeforeRequest(req, file);
       }
-      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_7__["default"])(queuedRequest, 'shouldBeRequeued')) {
+      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_5__["default"])(queuedRequest, 'shouldBeRequeued')) {
         if (!queuedRequest.shouldBeRequeued) return Promise.reject();
         let done;
         const p = new Promise(res => {
@@ -17822,17 +16980,23 @@ function _uploadLocalFile2(file) {
       var _queuedRequest;
       this.uppy.log(err);
       const xhr = err.originalRequest ? err.originalRequest.getUnderlyingObject() : null;
-      if ((0,_uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_5__["default"])(xhr)) {
+      if ((0,_uppy_utils_lib_isNetworkError__WEBPACK_IMPORTED_MODULE_3__["default"])(xhr)) {
         // eslint-disable-next-line no-param-reassign
-        err = new _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_4__["default"](err, xhr);
+        err = new _uppy_utils_lib_NetworkError__WEBPACK_IMPORTED_MODULE_2__["default"](err, xhr);
       }
       this.resetUploaderReferences(file.id);
       (_queuedRequest = queuedRequest) == null ? void 0 : _queuedRequest.abort();
       this.uppy.emit('upload-error', file, err);
+      if (typeof opts.onError === 'function') {
+        opts.onError(err);
+      }
       reject(err);
     };
     uploadOptions.onProgress = (bytesUploaded, bytesTotal) => {
       this.onReceiveUploadUrl(file, upload.url);
+      if (typeof opts.onProgress === 'function') {
+        opts.onProgress(bytesUploaded, bytesTotal);
+      }
       this.uppy.emit('upload-progress', file, {
         uploader: this,
         bytesUploaded,
@@ -17848,6 +17012,9 @@ function _uploadLocalFile2(file) {
       this.uppy.emit('upload-success', file, uploadResp);
       if (upload.url) {
         this.uppy.log(`Download ${upload.file.name} from ${upload.url}`);
+      }
+      if (typeof opts.onSuccess === 'function') {
+        opts.onSuccess();
       }
       resolve(upload);
     };
@@ -17906,7 +17073,7 @@ function _uploadLocalFile2(file) {
       uploadOptions.onShouldRetry = defaultOnShouldRetry;
     }
     const copyProp = (obj, srcProp, destProp) => {
-      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_7__["default"])(obj, srcProp) && !(0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_7__["default"])(obj, destProp)) {
+      if ((0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_5__["default"])(obj, srcProp) && !(0,_uppy_utils_lib_hasProperty__WEBPACK_IMPORTED_MODULE_5__["default"])(obj, destProp)) {
         // eslint-disable-next-line no-param-reassign
         obj[destProp] = obj[srcProp];
       }
@@ -17925,9 +17092,9 @@ function _uploadLocalFile2(file) {
     copyProp(meta, 'type', 'filetype');
     copyProp(meta, 'name', 'filename');
     uploadOptions.metadata = meta;
-    upload = new tus_js_client__WEBPACK_IMPORTED_MODULE_1__.Upload(file.data, uploadOptions);
+    upload = new tus_js_client__WEBPACK_IMPORTED_MODULE_0__.Upload(file.data, uploadOptions);
     this.uploaders[file.id] = upload;
-    const eventManager = new _uppy_utils_lib_EventManager__WEBPACK_IMPORTED_MODULE_3__["default"](this.uppy);
+    const eventManager = new _uppy_utils_lib_EventManager__WEBPACK_IMPORTED_MODULE_1__["default"](this.uppy);
     this.uploaderEvents[file.id] = eventManager;
 
     // eslint-disable-next-line prefer-const
@@ -18016,25 +17183,22 @@ function _getCompanionClientArgs2(file) {
   };
 }
 async function _uploadFiles2(files) {
-  const filesFiltered = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_8__.filterNonFailedFiles)(files);
-  const filesToEmit = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_8__.filterFilesToEmitUploadStarted)(filesFiltered);
+  const filesFiltered = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_6__.filterNonFailedFiles)(files);
+  const filesToEmit = (0,_uppy_utils_lib_fileFilters__WEBPACK_IMPORTED_MODULE_6__.filterFilesToEmitUploadStarted)(filesFiltered);
   this.uppy.emit('upload-start', filesToEmit);
   await Promise.allSettled(filesFiltered.map((file, i) => {
     const current = i + 1;
     const total = files.length;
     if (file.isRemote) {
-      // INFO: the url plugin needs to use RequestClient,
-      // while others use Provider
-      const Client = file.remote.providerOptions.provider ? _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.Provider : _uppy_companion_client__WEBPACK_IMPORTED_MODULE_2__.RequestClient;
       const getQueue = () => this.requests;
-      const client = new Client(this.uppy, file.remote.providerOptions, getQueue);
       const controller = new AbortController();
       const removedHandler = removedFile => {
         if (removedFile.id === file.id) controller.abort();
       };
       this.uppy.on('file-removed', removedHandler);
-      const uploadPromise = client.uploadRemoteFile(file, _classPrivateFieldLooseBase(this, _getCompanionClientArgs)[_getCompanionClientArgs](file), {
-        signal: controller.signal
+      const uploadPromise = this.uppy.getRequestClientForFile(file).uploadRemoteFile(file, _classPrivateFieldLooseBase(this, _getCompanionClientArgs)[_getCompanionClientArgs](file), {
+        signal: controller.signal,
+        getQueue
       });
       this.requests.wrapSyncFunction(() => {
         this.uppy.off('file-removed', removedHandler);
@@ -18047,35 +17211,6 @@ async function _uploadFiles2(files) {
   }));
 }
 Tus.VERSION = packageJson.version;
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/ErrorWithCause.js":
-/*!********************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/ErrorWithCause.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _hasProperty_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hasProperty.js */ "./node_modules/@uppy/utils/lib/hasProperty.js");
-
-class ErrorWithCause extends Error {
-  constructor(message, options) {
-    if (options === void 0) {
-      options = {};
-    }
-    super(message);
-    this.cause = options.cause;
-    if (this.cause && (0,_hasProperty_js__WEBPACK_IMPORTED_MODULE_0__["default"])(this.cause, 'isNetworkError')) {
-      this.isNetworkError = this.cause.isNetworkError;
-    }
-  }
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ErrorWithCause);
 
 /***/ }),
 
@@ -18469,7 +17604,7 @@ function _call2(fn) {
       if (done) return;
       done = true;
       _classPrivateFieldLooseBase(this, _activeRequests)[_activeRequests] -= 1;
-      cancelActive(cause);
+      cancelActive == null ? void 0 : cancelActive(cause);
       _classPrivateFieldLooseBase(this, _queueNext)[_queueNext]();
     },
     done: () => {
@@ -18547,10 +17682,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Translator)
 /* harmony export */ });
-/* harmony import */ var _hasProperty_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hasProperty.js */ "./node_modules/@uppy/utils/lib/hasProperty.js");
 function _classPrivateFieldLooseBase(receiver, privateKey) { if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) { throw new TypeError("attempted to use private field on non-instance"); } return receiver; }
 var id = 0;
 function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
+// We're using a generic because languages have different plural rules.
 
 function insertReplacement(source, rx, replacement) {
   const newParts = [];
@@ -18583,9 +17718,8 @@ function insertReplacement(source, rx, replacement) {
  * @license https://github.com/airbnb/polyglot.js/blob/master/LICENSE
  * taken from https://github.com/airbnb/polyglot.js/blob/master/lib/polyglot.js#L299
  *
- * @param {string} phrase that needs interpolation, with placeholders
- * @param {object} options with values that will be used to replace placeholders
- * @returns {any[]} interpolated
+ * @param phrase that needs interpolation, with placeholders
+ * @param options with values that will be used to replace placeholders
  */
 function interpolate(phrase, options) {
   const dollarRegex = /\$/g;
@@ -18609,6 +17743,9 @@ function interpolate(phrase, options) {
   }
   return interpolated;
 }
+const defaultOnMissingKey = key => {
+  throw new Error(`missing string: ${key}`);
+};
 
 /**
  * Translates strings with interpolation & pluralization support.
@@ -18621,14 +17758,19 @@ function interpolate(phrase, options) {
  *
  * Usage example: `translator.translate('files_chosen', {smart_count: 3})`
  */
+var _onMissingKey = /*#__PURE__*/_classPrivateFieldLooseKey("onMissingKey");
 var _apply = /*#__PURE__*/_classPrivateFieldLooseKey("apply");
 class Translator {
-  /**
-   * @param {object|Array<object>} locales - locale or list of locales.
-   */
-  constructor(locales) {
+  constructor(locales, _temp) {
+    let {
+      onMissingKey = defaultOnMissingKey
+    } = _temp === void 0 ? {} : _temp;
     Object.defineProperty(this, _apply, {
       value: _apply2
+    });
+    Object.defineProperty(this, _onMissingKey, {
+      writable: true,
+      value: void 0
     });
     this.locale = {
       strings: {},
@@ -18644,13 +17786,14 @@ class Translator {
     } else {
       _classPrivateFieldLooseBase(this, _apply)[_apply](locales);
     }
+    _classPrivateFieldLooseBase(this, _onMissingKey)[_onMissingKey] = onMissingKey;
   }
   /**
    * Public translate method
    *
-   * @param {string} key
-   * @param {object} options with values that will be used later to replace placeholders in string
-   * @returns {string} translated (and interpolated)
+   * @param key
+   * @param options with values that will be used later to replace placeholders in string
+   * @returns string translated (and interpolated)
    */
   translate(key, options) {
     return this.translateArray(key, options).join('');
@@ -18659,15 +17802,14 @@ class Translator {
   /**
    * Get a translation and return the translated and interpolated parts as an array.
    *
-   * @param {string} key
-   * @param {object} options with values that will be used to replace placeholders
-   * @returns {Array} The translated and interpolated parts, in order.
+   * @returns The translated and interpolated parts, in order.
    */
   translateArray(key, options) {
-    if (!(0,_hasProperty_js__WEBPACK_IMPORTED_MODULE_0__["default"])(this.locale.strings, key)) {
-      throw new Error(`missing string: ${key}`);
+    let string = this.locale.strings[key];
+    if (string == null) {
+      _classPrivateFieldLooseBase(this, _onMissingKey)[_onMissingKey](key);
+      string = key;
     }
-    const string = this.locale.strings[key];
     const hasPluralForms = typeof string === 'object';
     if (hasPluralForms) {
       if (options && typeof options.smart_count !== 'undefined') {
@@ -18675,6 +17817,9 @@ class Translator {
         return interpolate(string[plural], options);
       }
       throw new Error('Attempted to use a string with plural forms, but no value was given for %{smart_count}');
+    }
+    if (typeof string !== 'string') {
+      throw new Error(`string was not a string`);
     }
     return interpolate(string, options);
   }
@@ -18890,15 +18035,15 @@ function dataURItoBlob(dataURI, opts, toFile) {
 
   // user may provide mime type, if not get it from data URI
   const mimeType = (_ref = (_opts$mimeType = opts.mimeType) != null ? _opts$mimeType : dataURIData == null ? void 0 : dataURIData[1]) != null ? _ref : 'plain/text';
-  let data;
-  if (dataURIData[2] != null) {
+  let data; // We add `!` to tell TS we're OK with `data` being not defined when the dataURI is invalid.
+  if ((dataURIData == null ? void 0 : dataURIData[2]) != null) {
     const binary = atob(decodeURIComponent(dataURIData[3]));
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
     }
     data = [bytes];
-  } else {
+  } else if ((dataURIData == null ? void 0 : dataURIData[3]) != null) {
     data = [decodeURIComponent(dataURIData[3])];
   }
 
@@ -18931,80 +18076,16 @@ __webpack_require__.r(__webpack_exports__);
  * Filters a sequence of values by updating the mixing the previous output value
  * with the new input using the exponential window function
  *
- * @param {*} newValue the n-th value of the sequence
- * @param {*} previousSmoothedValue the exponential average of the first n-1 values
- * @param {*} halfLife value of `dt` to move the smoothed value halfway between `previousFilteredValue` and `newValue`
- * @param {*} dt time elapsed between adding the (n-1)th and the n-th values
+ * @param newValue the n-th value of the sequence
+ * @param previousSmoothedValue the exponential average of the first n-1 values
+ * @param halfLife value of `dt` to move the smoothed value halfway between `previousFilteredValue` and `newValue`
+ * @param dt time elapsed between adding the (n-1)th and the n-th values
  * @returns the exponential average of the first n values
  */
 function emaFilter(newValue, previousSmoothedValue, halfLife, dt) {
   if (halfLife === 0 || newValue === previousSmoothedValue) return newValue;
   if (dt === 0) return previousSmoothedValue;
   return newValue + (previousSmoothedValue - newValue) * 2 ** (-dt / halfLife);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/emitSocketProgress.js":
-/*!************************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/emitSocketProgress.js ***!
-  \************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var lodash_throttle_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash/throttle.js */ "./node_modules/lodash/throttle.js");
-
-function emitSocketProgress(uploader, progressData, file) {
-  const {
-    progress,
-    bytesUploaded,
-    bytesTotal
-  } = progressData;
-  if (progress) {
-    uploader.uppy.log(`Upload progress: ${progress}`);
-    uploader.uppy.emit('upload-progress', file, {
-      uploader,
-      bytesUploaded,
-      bytesTotal
-    });
-  }
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (lodash_throttle_js__WEBPACK_IMPORTED_MODULE_0__(emitSocketProgress, 300, {
-  leading: true,
-  trailing: true
-}));
-
-/***/ }),
-
-/***/ "./node_modules/@uppy/utils/lib/fetchWithNetworkError.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/fetchWithNetworkError.js ***!
-  \***************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ fetchWithNetworkError)
-/* harmony export */ });
-/* harmony import */ var _NetworkError_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NetworkError.js */ "./node_modules/@uppy/utils/lib/NetworkError.js");
-
-
-/**
- * Wrapper around window.fetch that throws a NetworkError when appropriate
- */
-function fetchWithNetworkError() {
-  return fetch(...arguments).catch(err => {
-    if (err.name === 'AbortError') {
-      throw err;
-    } else {
-      throw new _NetworkError_js__WEBPACK_IMPORTED_MODULE_0__["default"](err);
-    }
-  });
 }
 
 /***/ }),
@@ -19022,13 +18103,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   filterNonFailedFiles: () => (/* binding */ filterNonFailedFiles)
 /* harmony export */ });
 function filterNonFailedFiles(files) {
-  const hasError = file => 'error' in file && file.error;
+  const hasError = file => 'error' in file && !!file.error;
   return files.filter(file => !hasError(file));
 }
 
 // Don't double-emit upload-started for Golden Retriever-restored files that were already started
 function filterFilesToEmitUploadStarted(files) {
-  return files.filter(file => !file.progress.uploadStarted || !file.isRestored);
+  return files.filter(file => {
+    var _file$progress;
+    return !((_file$progress = file.progress) != null && _file$progress.uploadStarted) || !file.isRestored;
+  });
 }
 
 /***/ }),
@@ -19049,9 +18133,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * Find one or more DOM elements.
- *
- * @param {string|Node} element
- * @returns {Node[]|null}
  */
 function findAllDOMElements(element) {
   if (typeof element === 'string') {
@@ -19082,9 +18163,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * Find a DOM element.
- *
- * @param {Node|string} element
- * @returns {Node|null}
  */
 function findDOMElement(element, context) {
   if (context === void 0) {
@@ -19120,7 +18198,7 @@ function encodeCharacter(character) {
 }
 function encodeFilename(name) {
   let suffix = '';
-  return name.replace(/[^A-Z0-9]/ig, character => {
+  return name.replace(/[^A-Z0-9]/gi, character => {
     suffix += `-${encodeCharacter(character)}`;
     return '/';
   }) + suffix;
@@ -19129,9 +18207,6 @@ function encodeFilename(name) {
 /**
  * Takes a file object and turns it into fileID, by converting file.name to lowercase,
  * removing extra characters and adding type, size and lastModified
- *
- * @param {object} file
- * @returns {string} the fileID
  */
 function generateFileID(file) {
   // It's tempting to do `[items].filter(Boolean).join('-')` here, but that
@@ -19198,18 +18273,18 @@ __webpack_require__.r(__webpack_exports__);
  * Each file has .relativePath prop appended to it (e.g. "/docs/Prague/ticket_from_prague_to_ufa.pdf")
  * if browser supports it. Otherwise it's undefined.
  *
- * @param {DataTransfer} dataTransfer
- * @param {Function} logDropError - a function that's called every time some
+ * @param dataTransfer
+ * @param options
+ * @param options.logDropError - a function that's called every time some
  * folder or some file error out (e.g. because of the folder name being too long
  * on Windows). Notice that resulting promise will always be resolved anyway.
  *
  * @returns {Promise} - Array<File>
  */
-async function getDroppedFiles(dataTransfer, _temp) {
-  let {
-    logDropError = () => {}
-  } = _temp === void 0 ? {} : _temp;
+async function getDroppedFiles(dataTransfer, options) {
+  var _options$logDropError;
   // Get all files from all subdirs. Works (at least) in Chrome, Mozilla, and Safari
+  const logDropError = (_options$logDropError = options == null ? void 0 : options.logDropError) != null ? _options$logDropError : Function.prototype;
   try {
     const accumulator = [];
     for await (const file of (0,_utils_webkitGetAsEntryApi_index_js__WEBPACK_IMPORTED_MODULE_0__["default"])(dataTransfer, logDropError)) {
@@ -19259,11 +18334,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /**
  * Recursive function, calls the original callback() when the directory is entirely parsed.
- *
- * @param {FileSystemDirectoryReader} directoryReader
- * @param {Array} oldEntries
- * @param {Function} logDropError
- * @param {Function} callback - called with ([ all files and directories in that directoryReader ])
  */
 function getFilesAndDirectoriesFromDirectory(directoryReader, oldEntries, logDropError, _ref) {
   let {
@@ -19306,7 +18376,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _getFilesAndDirectoriesFromDirectory_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFilesAndDirectoriesFromDirectory.js */ "./node_modules/@uppy/utils/lib/getDroppedFiles/utils/webkitGetAsEntryApi/getFilesAndDirectoriesFromDirectory.js");
 
-
 /**
  * Polyfill for the new (experimental) getAsFileSystemHandle API (using the popular webkitGetAsEntry behind the scenes)
  * so that we can switch to the getAsFileSystemHandle API once it (hopefully) becomes standard
@@ -19325,11 +18394,14 @@ function getAsFileSystemHandleFromEntry(entry, logDropError) {
       const directoryReader = entry.createReader();
       const entries = await new Promise(resolve => {
         (0,_getFilesAndDirectoriesFromDirectory_js__WEBPACK_IMPORTED_MODULE_0__["default"])(directoryReader, [], logDropError, {
-          onSuccess: dirEntries => resolve(dirEntries.map(file => getAsFileSystemHandleFromEntry(file, logDropError)))
+          onSuccess: dirEntries => resolve(dirEntries.map(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          file => getAsFileSystemHandleFromEntry(file, logDropError)))
         });
       });
       yield* entries;
-    }
+    },
+    isSameEntry: undefined
   };
 }
 function createPromiseToAddFileOrParseDirectory(entry, relativePath, lastResortFile) {
@@ -19344,6 +18416,7 @@ function createPromiseToAddFileOrParseDirectory(entry, relativePath, lastResortF
       if (entry.kind === 'file') {
         const file = await entry.getFile();
         if (file != null) {
+          ;
           file.relativePath = relativePath ? getNextRelativePath() : null;
           yield file;
         } else if (lastResortFile != null) yield lastResortFile;
@@ -19377,7 +18450,8 @@ async function* getFilesFromDataTransfer(dataTransfer, logDropError) {
     // TODO enable getAsFileSystemHandle API once we can get it working with subdirectories
     // IMPORTANT: Need to check isSecureContext *before* calling getAsFileSystemHandle
     // or else Chrome will crash when running in HTTP: https://github.com/transloadit/uppy/issues/4133
-    // if (window.isSecureContext && item.getAsFileSystemHandle != null) entry = await item.getAsFileSystemHandle()
+    // if (window.isSecureContext && item.getAsFileSystemHandle != null)
+    // fileSystemHandle = await item.getAsFileSystemHandle()
 
     // `webkitGetAsEntry` exists in all popular browsers (including non-WebKit browsers),
     // however it may be renamed to getAsEntry() in the future, so you should code defensively, looking for both.
@@ -19428,9 +18502,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /**
  * Takes a full filename string and returns an object {name, extension}
- *
- * @param {string} fullFileName
- * @returns {object} {name, extension}
  */
 function getFileNameAndExtension(fullFileName) {
   const lastDot = fullFileName.lastIndexOf('.');
@@ -19478,27 +18549,6 @@ function getFileType(file) {
 
 /***/ }),
 
-/***/ "./node_modules/@uppy/utils/lib/getSocketHost.js":
-/*!*******************************************************!*\
-  !*** ./node_modules/@uppy/utils/lib/getSocketHost.js ***!
-  \*******************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getSocketHost)
-/* harmony export */ });
-function getSocketHost(url) {
-  // get the host domain
-  const regex = /^(?:https?:\/\/|\/\/)?(?:[^@\n]+@)?(?:www\.)?([^\n]+)/i;
-  const host = regex.exec(url)[1];
-  const socketProtocol = /^http:\/\//i.test(url) ? 'ws' : 'wss';
-  return `${socketProtocol}://${host}`;
-}
-
-/***/ }),
-
 /***/ "./node_modules/@uppy/utils/lib/getTextDirection.js":
 /*!**********************************************************!*\
   !*** ./node_modules/@uppy/utils/lib/getTextDirection.js ***!
@@ -19512,9 +18562,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /**
  * Get the declared text direction for an element.
- *
- * @param {Node} element
- * @returns {string|undefined}
  */
 
 function getTextDirection(element) {
@@ -19548,9 +18595,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /**
  * Adds zero to strings shorter than two characters.
- *
- * @param {number} number
- * @returns {string}
  */
 function pad(number) {
   return number < 10 ? `0${number}` : number.toString();
@@ -19599,11 +18643,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /**
  * Check if an object is a DOM element. Duck-typing based on `nodeType`.
- *
- * @param {*} obj
  */
 function isDOMElement(obj) {
-  return (obj == null ? void 0 : obj.nodeType) === Node.ELEMENT_NODE;
+  if (typeof obj !== 'object' || obj === null) return false;
+  if (!('nodeType' in obj)) return false;
+  return obj.nodeType === Node.ELEMENT_NODE;
 }
 
 /***/ }),
@@ -19621,8 +18665,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /**
  * Checks if the browser supports Drag & Drop (not supported on mobile devices, for example).
- *
- * @returns {boolean}
  */
 function isDragDropSupported() {
   const div = document.body;
@@ -19674,9 +18716,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /**
  * Check if a URL string is an object URL from `URL.createObjectURL`.
- *
- * @param {string} url
- * @returns {boolean}
  */
 function isObjectURL(url) {
   return url.startsWith('blob:');
@@ -19720,6 +18759,7 @@ __webpack_require__.r(__webpack_exports__);
 //    https://github.com/jshttp/mime-db/blob/master/db.json
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  __proto__: null,
   md: 'text/markdown',
   markdown: 'text/markdown',
   mp4: 'video/mp4',
@@ -19881,10 +18921,6 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Truncates a string to the given number of chars (maxLength) by inserting '...' in the middle of that string.
  * Partially taken from https://stackoverflow.com/a/5723274/3192470.
- *
- * @param {string} string - string to be truncated
- * @param {number} maxLength - maximum size of the resulting string
- * @returns {string}
  */
 const separator = '...';
 function truncateString(string, maxLength) {
@@ -20987,10 +20023,10 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/index.js");
-/* harmony import */ var _jgDashboard_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./jgDashboard/index.js */ "./src/jgDashboard/index.js");
-/* harmony import */ var _uppy_tus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @uppy/tus */ "./node_modules/@uppy/tus/lib/index.js");
-/* harmony import */ var _jgprocessor_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./jgprocessor.js */ "./src/jgprocessor.js");
+/* harmony import */ var _uppy_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @uppy/core */ "./node_modules/@uppy/core/lib/Uppy.js");
+/* harmony import */ var _jgDashboard_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./jgDashboard/index.js */ "./src/jgDashboard/index.js");
+/* harmony import */ var _uppy_tus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uppy/tus */ "./node_modules/@uppy/tus/lib/index.js");
+/* harmony import */ var _jgprocessor_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./jgprocessor.js */ "./src/jgprocessor.js");
 // Script to handle tu uppy upload form
 
 
@@ -21032,7 +20068,7 @@ var callback = function() {
   document.getElementById('adminForm').classList.remove('was-validated');
   catidFieldValidity(true);
   
-  let uppy = new _uppy_core__WEBPACK_IMPORTED_MODULE_0__["default"]({
+  let uppy = new _uppy_core__WEBPACK_IMPORTED_MODULE_3__["default"]({
     autoProceed: false,
     onBeforeUpload: (files) => {return onBeforeUpload(files);},
     restrictions: {
@@ -21046,7 +20082,7 @@ var callback = function() {
     document.getElementById('drag-drop-area').innerHTML = '';
   }
 
-  uppy.use(_jgDashboard_index_js__WEBPACK_IMPORTED_MODULE_1__["default"], {
+  uppy.use(_jgDashboard_index_js__WEBPACK_IMPORTED_MODULE_0__["default"], {
     inline: true,
     target: window.uppyVars.uppyTarget,
     showProgressDetails: true,
@@ -21057,14 +20093,14 @@ var callback = function() {
     ],
   });
 
-  uppy.use(_uppy_tus__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  uppy.use(_uppy_tus__WEBPACK_IMPORTED_MODULE_1__["default"], {
     endpoint: window.uppyVars.TUSlocation,
     retryDelays: window.uppyVars.uppyDelays,
     allowedMetaFields: null,
     limit: window.uppyVars.uppyLimit
   });
 
-  uppy.use(_jgprocessor_js__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  uppy.use(_jgprocessor_js__WEBPACK_IMPORTED_MODULE_2__["default"], {
     formID: 'adminForm',
     semaCalls: window.uppyVars.semaCalls,
     semaTokens: window.uppyVars.semaTokens

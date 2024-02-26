@@ -214,15 +214,15 @@ class HtmlView extends JoomGalleryView
 			'a.`hits`'       => Text::_('COM_JOOMGALLERY_COMMON_HITS'),
 			'a.`downloads`'  => Text::_('COM_JOOMGALLERY_DOWNLOADS'),
 			'a.`approved`'   => Text::_('COM_JOOMGALLERY_APPROVED'),
-			'a.`imgtitle`'   => Text::_('JGLOBAL_TITLE'),
+			'a.`title`'   => Text::_('JGLOBAL_TITLE'),
 			'a.`catid`'      => Text::_('JCATEGORY'),
 			'a.`published`'  => Text::_('JSTATUS'),
-			'a.`imgauthor`'  => Text::_('JAUTHOR'),
+			'a.`author`'  => Text::_('JAUTHOR'),
 			'a.`language`'   => Text::_('JGRID_HEADING_LANGUAGE'),
 			'a.`access`'     => Text::_('JGRID_HEADING_ACCESS'),
 			'a.`created_by`' => Text::_('JGLOBAL_FIELD_CREATED_BY_LABEL'),
 			'a.`id`'         => Text::_('JGRID_HEADING_ID'),
-			'a.`imgdate`'    => Text::_('JDATE'),
+			'a.`date`'    => Text::_('JDATE'),
 		);
 	}
 

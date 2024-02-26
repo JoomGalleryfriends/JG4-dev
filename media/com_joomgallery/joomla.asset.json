@@ -20,6 +20,11 @@
       "uri": "com_joomgallery/jg-icon-font.css"
     },
     {
+      "name": "com_joomgallery.lightgallery-bundle",
+      "type": "style",
+      "uri": "com_joomgallery/lightgallery-bundle.min.css"
+    },
+    {
       "name": "com_joomgallery.refresher",
       "type": "style",
       "uri": "com_joomgallery/refresher.css"
@@ -89,9 +94,30 @@
       }
     },
     {
+      "name": "com_joomgallery.lightgallery",
+      "type": "script",
+      "uri": "com_joomgallery/lightgallery.min.js",
+      "attributes": {
+        "defer": false
+      }
+    },
+    {
+      "name": "com_joomgallery.infinite-scroll",
+      "type": "script",
+      "uri": "com_joomgallery/infinite-scroll.min.js",
+      "attributes": {
+        "defer": false
+      }
+    },
+    {
       "name": "com_joomgallery.masonry",
       "type": "script",
-      "uri": "com_joomgallery/masonry.min.js",
+      "uri": "com_joomgallery/masonry.min.js"
+    },
+    {
+      "name": "com_joomgallery.tasklessForm",
+      "type": "script",
+      "uri": "com_joomgallery/tasklessForm.js",
       "attributes": {
         "type": "module"
       }
@@ -116,6 +142,11 @@
       "name": "com_joomgallery.uppy",
       "type": "style",
       "uri": "com_joomgallery/uppy.css"
+    },
+    {
+      "name": "com_joomgallery.migrator",
+      "type": "script",
+      "uri": "com_joomgallery/migrator/dist/migrator.js"
     }
   ]
 }

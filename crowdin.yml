@@ -19,3 +19,6 @@ files:
   - source: /administrator/com_joomgallery/language/en-GB/com_joomgallery.iptc.ini
     translation: /administrator/com_joomgallery/language/%locale%/%original_file_name%
     update_option: update_as_unapproved
+  - source: /administrator/com_joomgallery/language/en-GB/com_joomgallery.migration.Jg3ToJg4.ini
+    translation: /administrator/com_joomgallery/language/%locale%/%original_file_name%
+    update_option: update_as_unapproved

@@ -42,16 +42,16 @@ class ImagesModel extends AdminImagesModel
 				'ordering', 'a.ordering',
 				'hits', 'a.hits',
 				'downloads', 'a.downloads',
-				'imgvotes', 'a.imgvotes',
-				'imgvotesum', 'a.imgvotesum',
+				'votes', 'a.votes',
+				'votesum', 'a.votesum',
 				'approved', 'a.approved',
-				'imgtitle', 'a.imgtitle',
+				'title', 'a.title',
 				'alias', 'a.alias',
 				'catid', 'a.catid',
 				'published', 'a.published',
-				'imgauthor', 'a.imgauthor',
+				'author', 'a.author',
 				'language', 'a.language',
-				'imgtext', 'a.imgtext',
+				'description', 'a.description',
 				'access', 'a.access',
 				'hidden', 'a.hidden',
 				'featured', 'a.featured',
@@ -60,7 +60,7 @@ class ImagesModel extends AdminImagesModel
 				'modified_time', 'a.modified_time',
 				'modified_by', 'a.modified_by',
 				'id', 'a.id',
-				'imgdate', 'a.imgdate'
+				'date', 'a.date'
 			);
 		}
 

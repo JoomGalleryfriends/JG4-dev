@@ -86,7 +86,7 @@ class ExternalconfigField extends FormField
 
     $this->value       = ComponentHelper::getParams($array[0])->get($array[1]);
     $this->readonly    = true;
-    $this->description = Text::_(\strval($this->external->element->attributes()->description)) . ' ('.Text::_('COM_JOOMGALLERY_IMAGE_SOURCE').': '.$array[0].')';
+    $this->description = Text::_(\strval($this->external->element->attributes()->description)) . ' ('.Text::_('COM_JOOMGALLERY_SOURCE').': '.$array[0].')';
 
     $html  = '<a class="btn btn-secondary inline" target="_blank" href="index.php?option=com_config&view=component&component='.$array[0].'">'.Text::_('JACTION_EDIT').'</a>';
     $html .= '<input id="'.$this->id.'" disabled class="form-control sensitive-input" type="text" name="'.$this->name.'" value="'.$this->value.'" aria-describedby="'.$this->id.'-desc">';

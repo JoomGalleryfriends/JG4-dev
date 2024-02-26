@@ -50,17 +50,17 @@ class ImagesModel extends JoomListModel
 				'ordering', 'a.ordering',
 				'hits', 'a.hits',
 				'downloads', 'a.downloads',
-				'imgvotes', 'a.imgvotes',
-				'imgvotesum', 'a.imgvotesum',
+				'votes', 'a.votes',
+				'votesum', 'a.votesum',
 				'approved', 'a.approved',
 				'useruploaded', 'a.useruploaded',
-				'imgtitle', 'a.imgtitle',
+				'title', 'a.title',
 				'alias', 'a.alias',
 				'cattitle', 'cattitle',
 				'published', 'a.published',
-				'imgauthor', 'a.imgauthor',
+				'author', 'a.author',
 				'language', 'a.language',
-				'imgtext', 'a.imgtext',
+				'description', 'a.description',
 				'access', 'a.access',
 				'hidden', 'a.hidden',
 				'featured', 'a.featured',
@@ -73,7 +73,7 @@ class ImagesModel extends JoomListModel
 				'metakey', 'a.metakey',
 				'robots', 'a.robots',
 				'filename', 'a.filename',
-				'imgdate', 'a.imgdate',
+				'date', 'a.date',
 				'imgmetadata', 'a.imgmetadata',
 				'params', 'a.params',
 			);
@@ -265,8 +265,8 @@ class ImagesModel extends JoomListModel
 			{
         $search = '%' . str_replace(' ', '%', trim($search)) . '%';
 				$query->where(
-					'(' . $db->quoteName('a.imgtitle') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
-						. ' OR ' . $db->quoteName('a.imgtext') . ' LIKE :search3)'
+					'(' . $db->quoteName('a.title') . ' LIKE :search1 OR ' . $db->quoteName('a.alias') . ' LIKE :search2'
+						. ' OR ' . $db->quoteName('a.description') . ' LIKE :search3)'
 				)
 					->bind([':search1', ':search2', ':search3'], $search);
 			}

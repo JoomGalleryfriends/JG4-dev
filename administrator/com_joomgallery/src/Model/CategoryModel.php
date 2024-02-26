@@ -357,12 +357,15 @@ class CategoryModel extends JoomAdminModel
           if($table->parent_id != $data['parent_id'])
           {
             $catMoved = true;
+            $old_path = $table->path;
           }
 
           // Check if the alias was changed
           if($table->alias != $data['alias'])
           {
             $aliasChanged = true;
+            $old_alias    = $table->alias;
+            $old_path     = $table->path;
           }
         }
 
@@ -396,6 +399,14 @@ class CategoryModel extends JoomAdminModel
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 
+        // Stop storing data if one of the plugins returns false
+        if(\in_array(false, $result, true))
+        {
+          $this->setError($table->getError());
+
+          return false;
+        }
+
         // Store the data.
         if(!$table->store())
         {
@@ -407,6 +418,12 @@ class CategoryModel extends JoomAdminModel
         // Handle folders if parent category was changed
         if(!$isNew && $catMoved)
 			  {
+          // Adjust path of subcategory records
+          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          {
+            return false;
+          }
+
           // Get path back from old location temporarely
           $table->setPathWithLocation(true);
 
@@ -417,10 +434,22 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(false);
         }
         // Handle folders if alias was changed
-        elseif (!$isNew && $aliasChanged)
+        elseif(!$isNew && $aliasChanged)
         {
+          // Adjust path of subcategory records
+          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          {
+            return false;
+          }
+
+          // Get path back from old location temporarely
+          $table->setPathWithLocation(true);
+
           // Rename folder
 					$manager->renameCategory($table, $table->alias);
+
+          // Reset path
+          $table->setPathWithLocation(false);
         }
         else
         {
@@ -435,14 +464,7 @@ class CategoryModel extends JoomAdminModel
           $source_id = $app->input->get('origin_id', false, 'INT');
 
           // Copy folder (including files and subfolders)
-          $manager->copyCategory($source_id, $table->path);
-        }
-
-        if(\in_array(false, $result, true))
-        {
-          $this->setError($table->getError());
-
-          return false;
+          //$manager->copyCategory($source_id, $table);
         }
 
         // Clean the cache.
@@ -458,6 +480,19 @@ class CategoryModel extends JoomAdminModel
       return false;
     }
 
+    // Output warning messages
+		if(\count($this->component->getWarning()) > 0)
+		{
+			$this->component->printWarning();
+		}
+
+		// Output debug data
+		if(\count($this->component->getDebug()) > 0)
+		{
+			$this->component->printDebug();
+    }
+
+    // Set state
     if(isset($table->$key))
     {
       $this->setState($this->getName() . '.id', $table->$key);
@@ -465,99 +500,13 @@ class CategoryModel extends JoomAdminModel
 
     $this->setState($this->getName() . '.new', $isNew);
 
+    // Create/update associations
     if($this->associationsContext && Associations::isEnabled() && !empty($data['associations']))
     {
-      $associations = $data['associations'];
-
-      // Unset any invalid associations
-      $associations = ArrayHelper::toInteger($associations);
-
-      // Unset any invalid associations
-      foreach($associations as $tag => $id)
-      {
-        if(!$id)
-        {
-          unset($associations[$tag]);
-        }
-      }
-
-      // Show a warning if the item isn't assigned to a language but we have associations.
-      if($associations && $table->language === '*')
-      {
-        $app->enqueueMessage(Text::_(strtoupper($this->option) . '_ERROR_ALL_LANGUAGE_ASSOCIATED'), 'warning');
-      }
-
-      // Get associationskey for edited item
-      $db    = $this->getDbo();
-      $id    = (int) $table->$key;
-      $query = $db->getQuery(true)
-          ->select($db->quoteName('key'))
-          ->from($db->quoteName('#__associations'))
-          ->where($db->quoteName('context') . ' = :context')
-          ->where($db->quoteName('id') . ' = :id')
-          ->bind(':context', $this->associationsContext)
-          ->bind(':id', $id, ParameterType::INTEGER);
-      $db->setQuery($query);
-      $oldKey = $db->loadResult();
-
-      if($associations || $oldKey !== null)
-      {
-        // Deleting old associations for the associated items
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__associations'))
-            ->where($db->quoteName('context') . ' = :context')
-            ->bind(':context', $this->associationsContext);
-
-        $where = [];
-
-        if($associations)
-        {
-          $where[] = $db->quoteName('id') . ' IN (' . implode(',', $query->bindArray(array_values($associations))) . ')';
-        }
-
-        if($oldKey !== null)
-        {
-          $where[] = $db->quoteName('key') . ' = :oldKey';
-          $query->bind(':oldKey', $oldKey);
-        }
-
-        $query->extendWhere('AND', $where, 'OR');
-        $db->setQuery($query);
-        $db->execute();
-      }
-
-      // Adding self to the association
-      if($table->language !== '*')
-      {
-        $associations[$table->language] = (int) $table->$key;
-      }
-
-      if(\count($associations) > 1)
-      {
-        // Adding new association for these items
-        $key   = md5(json_encode($associations));
-        $query = $db->getQuery(true)
-            ->insert($db->quoteName('#__associations'))
-            ->columns(
-                [
-                  $db->quoteName('id'),
-                  $db->quoteName('context'),
-                  $db->quoteName('key'),
-                ]
-            );
-
-        foreach($associations as $id)
-        {
-          $query->values(
-            implode(',', $query->bindArray([$id, $this->associationsContext, $key], [ParameterType::INTEGER, ParameterType::STRING, ParameterType::STRING]))
-          );
-        }
-
-        $db->setQuery($query);
-        $db->execute();
-      }
+      $this->createAssociations($table, $data['associations']);
     }
 
+    // Redirect to associations
     if($app->input->get('task') == 'editAssociations')
     {
       return $this->redirectToAssociations($data);
@@ -630,6 +579,7 @@ class CategoryModel extends JoomAdminModel
 	{
 		$app  = Factory::getApplication();
 		$user = Factory::getUser();
+    $task = $app->input->get('task');
 
 		// Access checks.
 		if(!$user->authorise('core.create', _JOOM_OPTION))
@@ -637,10 +587,8 @@ class CategoryModel extends JoomAdminModel
 			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
 		}
 
-		$context = $this->option . '.' . $this->name;
-
-		// Include the plugins for the save events.
-		PluginHelper::importPlugin($this->events_map['save']);
+    // Set task to be save2copy
+    $app->input->set('task', 'save2copy');
 
 		$table = $this->getTable();
 
@@ -651,40 +599,30 @@ class CategoryModel extends JoomAdminModel
         // Reset the id to create a new record.
         $table->id = 0;
 
-        // Original category path
-        $origin_path = $table->path;
+        // Remove unnecessary fields
+        unset($table->form);
+        $table->level            = null;
+        $table->lft              = null;
+        $table->rgt              = null;
+        $table->alias            = null;
+        $table->asset_id         = null;
+        $table->published        = null;
+        $table->in_hidden        = null;
+        $table->created_time     = null;
+        $table->created_by       = null;
+        $table->modified_by      = null;
+        $table->modified_time    = null;
+        $table->checked_out      = null;
+        $table->checked_out_time = null;
 
-        // Specify where to insert the new node.
-        $table->setLocation($table->parent_id, 'last-child');
+        // Export data from table
+        $data = (array) $table->getFieldsValues();
 
-        // Clean entered data
-        if(!$table->check())
-        {
-          throw new \Exception($table->getError());
-        }
+        // Set the id of the origin category
+        $app->input->set('origin_id', $pk);
 
-        /// Create file manager service
-				$manager = JoomHelper::getService('FileManager');
-
-        // Copy folder
-				$manager->copyCategory($origin_path, $table->parent_id, $table->alias);
-
-        // Trigger the before save event.
-        $result = $app->triggerEvent($this->event_before_save, array($context, &$table, true, $table));
-
-        if(in_array(false, $result, true) || !$table->store(true, true))
-        {
-          throw new \Exception($table->getError());
-        }
-
-        // Rebuild entire nested set tree
-        if(!$table->rebuild())
-        {
-          throw new \Exception($table->getError());
-        }
-
-        // Trigger the after save event.
-        $app->triggerEvent($this->event_after_save, array($context, &$table, true));
+        // Save the copy
+        $this->save($data);
       }
       else
       {
@@ -692,11 +630,59 @@ class CategoryModel extends JoomAdminModel
       }			
 		}
 
+    // Reset official task
+    $app->input->set('task', $task);
+
 		// Clean cache
 		$this->cleanCache();
 
 		return true;
 	}
+
+  /**
+	 * Method to adjust path of child categories based on new path
+	 *
+   * @param   Table    $table     Table object of the current category.
+   * @param   string   $old_path  The old path of the current category.
+	 * @param   string   $new_path  The new path of the current category.
+	 *
+	 * @return  boolean  True if successful.
+	 *
+	 * @throws  Exception
+	 */
+  public function fixChildrenPath($table, $old_path, $new_path)
+  {
+    if(\is_null($table) || empty($table->id))
+    {
+      throw new Exception('To fix child category paths, table has to be loaded.');
+    }
+
+    // Get a list of children ids
+    $children = $this->getChildren($table->id, false);
+
+    foreach($children as $key => $cat)
+    {
+      $child_table = $this->getTable();
+      $child_table->load($cat['id']);
+
+      // Change path
+      $pos = \strpos($child_table->path, $old_path);
+      if($pos !== false) 
+      {
+        $child_table->path = \substr_replace($child_table->path, $new_path, $pos, \strlen($old_path));
+      }
+
+      // Store the data.
+      if(!$child_table->store())
+      {
+        $this->setError('Child category (ID='.$cat['id'].') tells: ' . $child_table->getError());
+
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   /**
    * Get children categories.
