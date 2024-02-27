@@ -86,7 +86,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     {
       $info->set('extension','JoomGallery');
       $info->set('min', '3.6.0');
-      $info->set('max', '3.6.99');
+      $info->set('max', '3.7.99');
       $info->set('php_min', '5.6.0');
     }
     elseif($type === 'destination')
