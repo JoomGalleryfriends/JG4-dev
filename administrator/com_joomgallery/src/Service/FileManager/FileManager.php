@@ -1071,23 +1071,24 @@ class FileManager implements FileManagerInterface
   /**
    * Returns the path to a category without root path.
    *
-   * @param   object|int|string        $cat       Category object, category ID or category alias (new categories: ID=0)
-   * @param   string|bool              $type      Imagetype if needed
-   * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
-   * @param   string|bool              $alias     The category alias (default: false)
-   * @param   boolean                  $root      True to add the system root to the path
+   * @param   object|int|string        $cat             Category object, category ID or category alias (new categories: ID=0)
+   * @param   string|bool              $type            Imagetype if needed
+   * @param   object|int|string|bool   $parent          Parent category object, parent category ID, parent category alias or parent category path (default: false)
+   * @param   string|bool              $alias           The category alias (default: false)
+   * @param   boolean                  $root            True to add the system root to the path
+   * @param   boolean                  $compatibility   Take into account the compatibility mode when creating the path
    * 
    * 
    * @return  mixed   Path to the category on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=false)
+  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=false, $compatibility=true)
   {
     // We got a valid category object
-    if(\is_object($cat) && isset($cat->path))
+    if(\is_object($cat) && \property_exists($cat, 'path'))
     {
-      $path = $cat->path;
+      $path = $this->catReadPath($cat, $compatibility);
     }
     // We got a category path
     elseif(\is_string($cat) && $this->is_path($cat))
@@ -1112,21 +1113,21 @@ class FileManager implements FileManagerInterface
         return false;
       }
 
-      $path = $cat->path;
+      $path = $this->catReadPath($cat, $compatibility);
     }
     // We got a parent category plus alias
     elseif($parent && $alias)
     {
       // We got a valid parent category object
-      if(\is_object($parent) && isset($parent->path))
+      if(\is_object($parent) && \property_exists($parent, 'path'))
       {
-        if(empty($parent->path))
+        if(empty($this->catReadPath($parent, $compatibility)))
         {
           $path = $alias;
         }
         else
         {
-          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+          $path = $this->catReadPath($parent, $compatibility).\DIRECTORY_SEPARATOR.$alias;
         }
       }
       // We got a parent category path
@@ -1152,13 +1153,13 @@ class FileManager implements FileManagerInterface
           return false;
         }
 
-        if(empty($parent->path))
+        if(empty($this->catReadPath($parent, $compatibility)))
         {
           $path = $alias;
         }
         else
         {
-          $path = $parent->path.\DIRECTORY_SEPARATOR.$alias;
+          $path = $this->catReadPath($parent, $compatibility).\DIRECTORY_SEPARATOR.$alias;
         }
       }
     }
@@ -1347,5 +1348,29 @@ class FileManager implements FileManagerInterface
     }
 
     return true;
+  }
+
+  /**
+   * Get path from category object
+   * 
+   * @param   object   $cat             Category object
+   * @param   boolean  $compatibility   Take into account the compatibility mode
+   * 
+   * @return  string  Path to the category
+   * 
+   * @since   4.0.0
+   */
+  protected function catReadPath(object $cat, bool $compatibility): string
+  {
+    if($compatibility && $this->component->getConfig()->get('jg_compatibility_mode', 0) && !empty($cat->static_path))
+    {
+      // Compatibility mode active
+      return $cat->static_path;
+    }
+    else
+    {
+      // Standard method
+      return $cat->path;
+    }
   }
 }

@@ -42,6 +42,8 @@ use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusService
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusServiceTrait;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderServiceInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderServiceTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationServiceInterface;
+use Joomgallery\Component\Joomgallery\Administrator\Service\Migration\MigrationServiceTrait;
 
 /**
  * Component class for Joomgallery
@@ -75,6 +77,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   use RefresherServiceTrait;
   use TusServiceTrait;
   use UploaderServiceTrait;
+  use MigrationServiceTrait;
 
   /**
    * Storage for the component cache object
@@ -82,6 +85,13 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
    * @var MVCStorage
    */
   public $cache = false;
+
+  /**
+   * Storage for the xml of the current component
+   *
+   * @var \SimpleXMLElement
+   */
+  public $xml = null;
 
   /**
    * Storage for the current component version
@@ -115,10 +125,14 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
       $this->cache = new JoomCache();
     }
 
+    if(!$this->xml)
+    {
+      $this->xml  = \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery.xml'));
+    }
+
     if(!$this->version)
     {
-      $xml  = \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery.xml'));
-      $this->version = (string) $xml->version;
+      $this->version = (string) $this->xml->version;
     }
   }
 }

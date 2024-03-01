@@ -16,7 +16,15 @@
   const submitTask = task => {
     const form = document.getElementById(formId);
     const type = document.getElementById(typeId).value;
-    if (task === type+'.cancel' || document.formvalidator.isValid(form)) {
+    const btn = document.querySelector(`[${buttonDataSelector}="${task}"]`);
+    if (task === type+'.cancel') {
+      submitForm(task, form);
+    }
+    if (btn.parentElement.getAttribute('confirm-message')) {
+      if(confirm(btn.parentElement.getAttribute('confirm-message')) && document.formvalidator.isValid(form)) {
+        submitForm(task, form);
+      }
+    } else if (document.formvalidator.isValid(form)) {
       submitForm(task, form);
     }
   };

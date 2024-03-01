@@ -17,6 +17,8 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Registry\Registry;
+use \Joomla\Utilities\ArrayHelper;
+use \Joomla\Database\ParameterType;
 use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\CMS\Form\FormFactoryInterface;
@@ -232,4 +234,113 @@ abstract class JoomAdminModel extends AdminModel
 
 		parent::preprocessForm($form, $data, $group);
 	}
+
+  /**
+	 * Set or update associations.
+	 *
+   * @param   Table  &$table        Table object (with reference)
+	 * @param   array  $associations  List of associated ids
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+  protected function createAssociations(Table &$table, array $associations)
+  {
+    $key = $table->getKeyName();
+
+    // Unset any invalid associations
+    $associations = ArrayHelper::toInteger($associations);
+
+    // Unset any invalid associations
+    foreach($associations as $tag => $id)
+    {
+      if(!$id)
+      {
+        unset($associations[$tag]);
+      }
+    }
+
+    // Show a warning if the item isn't assigned to a language but we have associations.
+    if($associations && $table->language === '*')
+    {
+      Factory::getApplication()->enqueueMessage(Text::_(strtoupper($this->option) . '_ERROR_ALL_LANGUAGE_ASSOCIATED'),	'warning');
+    }
+
+    // Get associationskey for edited item
+    $db    = $this->getDbo();
+    $id    = (int) $table->$key;
+    $query = $db->getQuery(true)
+      ->select($db->quoteName('key'))
+      ->from($db->quoteName('#__associations'))
+      ->where($db->quoteName('context') . ' = :context')
+      ->where($db->quoteName('id') . ' = :id')
+      ->bind(':context', $this->associationsContext)
+      ->bind(':id', $id, ParameterType::INTEGER);
+    $db->setQuery($query);
+    $oldKey = $db->loadResult();
+
+    if($associations || $oldKey !== null)
+    {
+      // Deleting old associations for the associated items
+      $query = $db->getQuery(true)
+        ->delete($db->quoteName('#__associations'))
+        ->where($db->quoteName('context') . ' = :context')
+        ->bind(':context', $this->associationsContext);
+
+      $where = [];
+
+      if($associations)
+      {
+        $where[] = $db->quoteName('id') . ' IN (' . implode(',', $query->bindArray(array_values($associations))) . ')';
+      }
+
+      if($oldKey !== null)
+      {
+        $where[] = $db->quoteName('key') . ' = :oldKey';
+        $query->bind(':oldKey', $oldKey);
+      }
+
+      $query->extendWhere('AND', $where, 'OR');
+      $db->setQuery($query);
+      $db->execute();
+    }
+
+    // Adding self to the association
+    if($table->language !== '*')
+    {
+      $associations[$table->language] = (int) $table->$key;
+    }
+
+    if(\count($associations) > 1)
+    {
+      // Adding new association for these items
+      $key   = md5(json_encode($associations));
+      $query = $db->getQuery(true)
+        ->insert($db->quoteName('#__associations'))
+        ->columns(
+          [
+            $db->quoteName('id'),
+            $db->quoteName('context'),
+            $db->quoteName('key'),
+          ]
+        );
+
+      foreach($associations as $id)
+      {
+        $query->values(
+          implode(
+            ',',
+            $query->bindArray(
+              [$id, $this->associationsContext, $key],
+              [ParameterType::INTEGER, ParameterType::STRING, ParameterType::STRING]
+            )
+          )
+        );
+      }
+
+      $db->setQuery($query);
+      $db->execute();
+    }
+  }
 }

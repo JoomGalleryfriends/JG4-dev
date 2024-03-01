@@ -95,22 +95,34 @@
       <field name="jg_ext_upload_maxsize"
              type="externalconfig"
              label="com_media.upload_maxsize" />
-      <field name="jg_pathftpupload"
+
+      <!-- <field name="jg_pathftpupload"
              type="text"
              default="administrator/components/com_joomgallery/temp/ftp_upload/"
              maxlength="100"
              filter="string"
              class="unused"
              label="COM_JOOMGALLERY_CONFIG_FTPUPLOAD_PATH"
-             description="COM_JOOMGALLERY_CONFIG_FTPUPLOAD_PATH_LONG" />
+             description="COM_JOOMGALLERY_CONFIG_FTPUPLOAD_PATH_LONG" /> -->
 
       <field name="jg_use_real_paths"
              type="radio"
              default="0"
-             class="btn-group unused"
+             class="btn-group"
              layout="joomla.form.field.radio.switcher"
              label="COM_JOOMGALLERY_CONFIG_USE_REAL_PATHS"
              description="COM_JOOMGALLERY_CONFIG_USE_REAL_PATHS_LONG" >
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+      </field>
+
+      <field name="jg_compatibility_mode"
+             type="list"
+             global_only="true"
+             sensitive="true"
+             default="0"
+             label="COM_JOOMGALLERY_CONFIG_COMPATIBILITY_MODE"
+             description="COM_JOOMGALLERY_CONFIG_COMPATIBILITY_MODE_LONG" >
           <option value="0">JNO</option>
           <option value="1">JYES</option>
       </field>
@@ -633,6 +645,19 @@
              showon="jg_showrating:1"
              label="COM_JOOMGALLERY_CONFIG_VOTING_ONLY_ONCE"
              description="COM_JOOMGALLERY_CONFIG_VOTING_ONLY_ONCE_LONG" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
+    </fieldset>
+
+    <fieldset type="tab" name="user-comments" label="COM_JOOMGALLERY_COMMENTS">
+      <field name="jg_showcomments"
+             type="radio"
+             default="1"
+             class="btn-group unused"
+             layout="joomla.form.field.radio.switcher"
+             label="COM_JOOMGALLERY_CONFIG_COMMENT"
+             description="COM_JOOMGALLERY_CONFIG_COMMENT_LONG" >
         <option value="0">JNO</option>
         <option value="1">JYES</option>
       </field>

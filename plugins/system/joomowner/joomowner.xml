@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" version="4.0" method="upgrade">
+    <name>plg_system_joomowner</name>
+    <creationDate>2024-01-29</creationDate>
+    <copyright>2008 - 2024  JoomGallery::ProjectTeam</copyright>
+    <license>GNU General Public License version 3 or later</license>
+    <author>JoomGallery::ProjectTeam</author>
+    <authorEmail>team@joomgalleryfriends.net</authorEmail>
+    <authorUrl>https://www.joomgalleryfriends.net/</authorUrl>
+    <version>4.0.0-dev</version>
+    <description>PLG_SYSTEM_JOOMOWNER_XML_DESCRIPTION</description>
+    <namespace path="src">Joomgallery\Plugin\System\Joomowner</namespace>
+    
+    <files>
+        <folder>language</folder>
+        <folder>services</folder>
+        <folder plugin="joomowner">src</folder>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="fallbackUser"
+                    type="user"
+                    label="PLG_SYSTEM_JOOMOWNER_FALLBACK_USER_LABEL"
+                    description="PLG_SYSTEM_JOOMOWNER_FALLBACK_USER_DESC"
+                    default="CURRENT"
+                />
+                <field name="userIdToChangeManualy"
+                    type="text"
+                    class="validate-numeric"
+                    maxlength="5"
+                    default=""
+                    label="PLG_SYSTEM_JOOMOWNER_ID_TO_CHANGE_MANUALY_LABEL"
+                    description="PLG_SYSTEM_JOOMOWNER_ID_TO_CHANGE_MANUALY_DESC"
+                    filter="INT"
+                />
+            </fieldset>
+        </fields>
+    </config>
+
+    <updateservers>
+        <server type="extension" priority="1" name="JoomGallery Owner Plugin">https://www.joomgalleryfriends.net/components/com_newversion/xml/extensions3.xml</server>
+    </updateservers>
+</extension>

@@ -19,16 +19,13 @@ use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-$app           = Factory::getApplication();
-$this->config  = JoomHelper::getService('config');
-
-$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');
+$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');;
 $num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
 $caption_align    = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
 $image_class      = $this->params['menu']->get('jg_category_view_image_class', '', 'STRING');
 $justified_height = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
 $justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
-$show_title       = $this->params['menu']->get('jg_category_view_show_title', 0, 'INT');
+$lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
 
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
@@ -42,6 +39,13 @@ if ( $category_class == 'justified') {
   $wa->useScript('com_joomgallery.justified');
   $wa->addInlineStyle('.jg-images[class*=" justified-"] .jg-image-caption-hover { right: ' . $justified_gap . 'px; }');
 }
+
+if ( $lightbox ) {
+  $wa->useScript('com_joomgallery.lightgallery');
+  $wa->useStyle('com_joomgallery.lightgallery-bundle');
+}
+
+  $wa->useScript('com_joomgallery.infinite-scroll');
 
 $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd     = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
@@ -168,49 +172,56 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <?php endif; ?>
   <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
     <div id="jg-loader"></div>
-    <div class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
+    <div id="lightgallery-<?php echo $this->item->id; ?>" class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
       <?php foreach($this->item->images->items as $key => $image) : ?>
         <div class="jg-image">
           <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
+          <?php if ( $lightbox ) : ?>
+            <a class="item" href="#" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+          <?php else : ?>
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+          <?php endif; ?>
               <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
               <?php if ( $caption_align != 'none' && $category_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
                 <?php echo $this->escape($image->title); ?>
               </div>
               <?php endif; ?>
+              <?php if ( $caption_align != 'none' ) : ?>
+                <div id="jg-image-caption-<?php echo $image->id; ?>" style="display: none">
+                  <div class="jg-image-caption <?php echo $caption_align; ?>">
+                    <?php echo $this->escape($image->title); ?>
+                  </div>
+                  <div class="jg-image-description <?php echo $caption_align; ?>">
+                    <?php echo html_entity_decode($this->escape($image->description)); ?>
+                  </div>
+                </div>
+              <?php endif; ?>
             </a>
           </div>
           <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
-            <?php if ($this->config->get('jg_category_view_show_title', 0)) : ?>
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <?php echo $this->escape($image->title); ?>
             </a>
-            <?php endif; ?>
-            <?php if ($this->config->get('jg_category_view_show_description', 0)) : ?>
-              <div><?php echo Text::_('JGLOBAL_DESCRIPTION') . ': ' . nl2br($image->imgtext); ?></div>
-            <?php endif; ?>
-            <?php if ($this->config->get('jg_category_view_show_imgdate', 0)) : ?>
-              <div><?php echo Text::_('COM_JOOMGALLERY_IMGDATE') . ': ' . HTMLHelper::_('date', $image->imgdate, Text::_('DATE_FORMAT_LC4')); ?></div>
-            <?php endif; ?>
-            <?php if ($this->config->get('jg_category_view_show_imgauthor', 0)) : ?>
-              <div><?php echo Text::_('JAUTHOR') . ': ' . $this->escape($image->imgauthor); ?></div>
-            <?php endif; ?>
-            <?php if ($this->config->get('jg_category_view_show_tags', 0)) : ?>
-              <div><?php echo Text::_('COM_JOOMGALLERY_TAGS') . ': '; ?></div>
-            <?php endif; ?>
           </div>
           <?php endif; ?>
         </div>
       <?php endforeach; ?>
     </div>
   </div>
+
+  <div class="no-more-items hidden"><?php echo TEXT::_("TPL_SPICY_NO_MORE_ITEMS"); ?></div>
+
+  <?php // echo count($this->item->images->items); ?>
+  <div class="btn btn-outline-primary loadMore hidden">loadMore</div>
+
   <?php
     // Show images pagination
     echo $this->item->images->pagination->getListFooter();
   ?>
 <?php endif; ?>
+
 
 <?php /*if($canAddImg) : ?>
   <div class="mb-2">
@@ -221,16 +232,26 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </div>
 <?php endif; */?>
 
+<?php if ( $lightbox ) : ?>
+<script>
+const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementById('lightgallery-<?php echo $this->item->id; ?>'), {
+  selector: '.item',
+  speed: 500,
+  loop: false,
+  download: false,
+  licenseKey: '1111-1111-111-1111',
+});
+</script>
+<?php endif; ?>
+
 <?php if ( $category_class != 'justified') : ?>
 <script>
 let images = document.getElementsByTagName('img');
 for (let image of images) {
-  image.addEventListener('load', fadeImg);
-  image.style.opacity = '0';
+  image.addEventListener('load', loadImg);
 }
-function fadeImg () {
-  this.style.transition = 'opacity 1s';
-  this.style.opacity = '1';
+function loadImg () {
+  this.classList.add('loaded');
 }
 </script>
 <?php endif; ?>
@@ -266,6 +287,48 @@ window.addEventListener('load', function () {
 });
 </script>
 <?php endif; ?>
+
+<script>
+<?php if ( $category_class == 'masonry') : ?>
+const reloadMasonry = new Event('reload:masonry', {
+  bubbles: true,
+})
+<?php endif; ?>
+const infiniteScroll = new InfiniteScroll.default({
+  element       : '.jg-images--',
+  next          : '.page-link.next',
+  item          : '.jg-image',
+  disabledClass : 'disabled',
+  hiddenClass   : 'hidden',
+  responseType  : 'text/html',
+  requestMethod: 'GET',
+  viewportTriggerPoint: window.innerHeight - 100,
+  debounceTime: 500,
+  onComplete(container, html) {
+    <?php if ( $category_class == 'masonry') : ?>
+    dispatchEvent(reloadMasonry);
+    <?php endif; ?>
+    <?php if ( $lightbox ) : ?>
+    jgallery<?php echo $this->item->id; ?>.refresh();
+    <?php endif; ?>
+    console.log('scroll');
+
+    // Here you query the link to the next page
+    const next = html.querySelector('.page-link.next');
+
+    // If the link does not exist
+    if (!next) {
+        // Here you show your "No more posts are available" message 
+        document.querySelector('.no-more-items').classList.remove('hidden');
+        console.log('no more');
+    }
+  }
+});
+document.addEventListener('click', function (event) {
+  if (!event.target.matches('.loadMore')) return;
+  infiniteScroll.loadMore();
+}, false);
+</script>
 
 <script>
 window.onload = function() {

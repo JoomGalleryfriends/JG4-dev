@@ -53,6 +53,7 @@
             <menu link="option=com_joomgallery&amp;view=categories" view="categories" alt="Joomgallery/Categories">JCATEGORIES</menu>
             <menu link="option=com_joomgallery&amp;view=tags" view="tags" alt="Joomgallery/Tags">COM_JOOMGALLERY_TAGS</menu>
             <menu link="option=com_joomgallery&amp;view=configs" view="configs" alt="Joomgallery/Configs">COM_JOOMGALLERY_CONFIG_SETS</menu>
+            <menu link="option=com_joomgallery&amp;view=migration" view="migration" alt="Joomgallery/Migration">COM_JOOMGALLERY_MIGRATIONS</menu>
         </submenu>
         <files folder="administrator/com_joomgallery">
             <filename>access.xml</filename>
@@ -77,10 +78,11 @@
     </config>
 
     <plugins>
-        <plugin group="finder" plugin="joomgalleryimages"/>
-        <plugin group="privacy" plugin="joomgalleryimages"/>
-        <plugin group="webservices" plugin="joomgallery"/>
+        <plugin group="system" plugin="joomowner"/>
+        <plugin group="privacy" plugin="joomgallery"/>
+        <!-- <plugin group="finder" plugin="joomgalleryimages"/>
         <plugin group="finder" plugin="joomgallerycategories"/>
+        <plugin group="webservices" plugin="joomgallery"/> -->
     </plugins>
 
     <updateservers>
