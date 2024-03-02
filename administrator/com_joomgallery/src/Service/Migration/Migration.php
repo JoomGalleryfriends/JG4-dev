@@ -1098,6 +1098,7 @@ abstract class Migration implements MigrationInterface
     catch (\Exception $msg)
     {
       $checks->addCheck($category, 'src_table_connect', true, Text::_('JLIB_FORM_VALUE_SESSION_DATABASE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_TABLE_CONN_ERROR'));
+      return;
     }
 
     // Check required tables
