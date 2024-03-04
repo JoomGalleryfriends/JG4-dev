@@ -19,13 +19,17 @@ use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');;
+$app           = Factory::getApplication();
+$this->config  = JoomHelper::getService('config');
+
+$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');
 $num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
 $caption_align    = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
 $image_class      = $this->params['menu']->get('jg_category_view_image_class', '', 'STRING');
 $justified_height = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
 $justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
 $lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
+$show_title       = $this->params['menu']->get('jg_category_view_show_title', 0, 'INT');
 
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
@@ -201,9 +205,23 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           </div>
           <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
+            <?php if ($this->config->get('jg_category_view_show_title', 0)) : ?>
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <?php echo $this->escape($image->title); ?>
             </a>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_description', 0)) : ?>
+              <div><?php echo Text::_('JGLOBAL_DESCRIPTION') . ': ' . nl2br($image->imgtext); ?></div>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_imgdate', 0)) : ?>
+              <div><?php echo Text::_('COM_JOOMGALLERY_IMGDATE') . ': ' . HTMLHelper::_('date', $image->imgdate, Text::_('DATE_FORMAT_LC4')); ?></div>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_imgauthor', 0)) : ?>
+              <div><?php echo Text::_('JAUTHOR') . ': ' . $this->escape($image->imgauthor); ?></div>
+            <?php endif; ?>
+            <?php if ($this->config->get('jg_category_view_show_tags', 0)) : ?>
+              <div><?php echo Text::_('COM_JOOMGALLERY_TAGS') . ': '; ?></div>
+            <?php endif; ?>
           </div>
           <?php endif; ?>
         </div>
