@@ -29,7 +29,7 @@ $image_class      = $this->params['menu']->get('jg_category_view_image_class', '
 $justified_height = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
 $justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
 $lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
-$show_title       = $this->params['menu']->get('jg_category_view_show_title', 0, 'INT');
+$show_title       = $this->params['menu']->get('jg_category_view_images_show_title', 0, 'INT');
 
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
@@ -205,7 +205,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           </div>
           <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
-            <?php if ($this->config->get('jg_category_view_show_title', 0)) : ?>
+            <?php if ($show_title) : ?>
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
               <?php echo $this->escape($image->title); ?>
             </a>
