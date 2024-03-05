@@ -48,6 +48,15 @@ abstract class Migration implements MigrationInterface
 	protected $params = null;
 
   /**
+   * Storage for the source database driver object.
+   *
+   * @var    DatabaseInterface
+   * 
+   * @since  4.0.0
+   */
+  protected $src_db = true;
+
+  /**
 	 * Storage for the migration info object.
 	 *
 	 * @var   object
@@ -607,15 +616,22 @@ abstract class Migration implements MigrationInterface
 
     if($target === 'destination' || $this->params->get('same_db', 1))
     {
+      // Get database driver of the current joomla application
       $db        = Factory::getContainer()->get(DatabaseInterface::class);
       $dbPrefix  = $this->app->get('dbprefix');
     }
     else
     {
-      $options   = array ('driver' => $this->params->get('dbtype'), 'host' => $this->params->get('dbhost'), 'user' => $this->params->get('dbuser'), 'password' => $this->params->get('dbpass'), 'database' => $this->params->get('dbname'), 'prefix' => $this->params->get('dbprefix'));
-      $dbFactory = new DatabaseFactory();
-      $db        = $dbFactory->getDriver($this->params->get('dbtype'), $options);
-      $dbPrefix  = $this->params->get('dbprefix');
+      // Get database driver for the source joomla database
+      if(\is_null($this->src_db))
+      {
+        $options      = array ('driver' => $this->params->get('dbtype'), 'host' => $this->params->get('dbhost'), 'user' => $this->params->get('dbuser'), 'password' => $this->params->get('dbpass'), 'database' => $this->params->get('dbname'), 'prefix' => $this->params->get('dbprefix'));
+        $dbFactory    = new DatabaseFactory();
+        $this->src_db = $dbFactory->getDriver($this->params->get('dbtype'), $options);
+      }
+
+      $dbPrefix = $this->params->get('dbprefix');
+      $db       = $this->src_db;
     }
 
     return array($db, $dbPrefix);
