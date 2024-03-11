@@ -19,33 +19,66 @@ use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');;
-$num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
-$caption_align    = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
-$image_class      = $this->params['menu']->get('jg_category_view_image_class', '', 'STRING');
-$justified_height = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
-$justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
-$lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
+// $app          = Factory::getApplication();
+// $this->config = JoomHelper::getService('config');
+
+// subcategory params
+$subcategory_class          = $this->params['menu']->get('jg_category_view_subcategory_class', 'masonry', 'STRING');
+$subcategory_num_columns    = $this->params['menu']->get('jg_category_view_subcategory_num_columns', 3, 'INT');
+$subcategory_image_class    = $this->params['menu']->get('jg_category_view_subcategory_image_class', 0, 'INT');
+$numb_subcategories         = $this->params['menu']->get('jg_category_view_numb_subcategories', 12, 'INT');
+$subcategories_pagination   = $this->params['menu']->get('jg_category_view_subcategories_pagination', 'pagination', 'STRING');
+$subcategories_random_image = $this->params['menu']->get('jg_category_view_subcategories_random_image', 0, 'INT');
+
+// image params
+$category_class    = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');
+$num_columns       = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
+$caption_align     = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
+$image_class       = $this->params['menu']->get('jg_category_view_image_class', 0, 'INT');
+$justified_height  = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
+$justified_gap     = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
+$show_title        = $this->params['menu']->get('jg_category_view_images_show_title', 0, 'INT');
+$numb_images       = $this->params['menu']->get('jg_category_view_numb_images', 16, 'INT');
+$images_pagination = $this->params['menu']->get('jg_category_view_images_pagination', 'pagination', 'STRING');
+$image_link        = $this->params['menu']->get('jg_category_view_image_link', 'defaultview', 'STRING');
+$title_link        = $this->params['menu']->get('jg_category_view_title_link', 'defaultview', 'STRING');
+$show_description  = $this->params['menu']->get('jg_category_view_show_description', 0, 'INT');
+$show_imgdate      = $this->params['menu']->get('jg_category_view_show_imgdate', 0, 'INT');
+$show_imgauthor    = $this->params['menu']->get('jg_category_view_show_imgauthor', 0, 'INT');
+$show_tags         = $this->params['menu']->get('jg_category_view_show_tags', 0, 'INT');
+
+/*
+// For debug:
+echo 'debug $show_description: ' . '<pre>';
+print_r($show_description);
+echo '</pre>';
+Exit;
+*/
 
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
 $wa->useStyle('com_joomgallery.jg-icon-font');
 
-if ( $category_class == 'masonry') {
+if ($subcategory_class == 'masonry' || $category_class == 'masonry') {
   $wa->useScript('com_joomgallery.masonry');
 }
 
-if ( $category_class == 'justified') {
+if ($category_class == 'justified') {
   $wa->useScript('com_joomgallery.justified');
   $wa->addInlineStyle('.jg-images[class*=" justified-"] .jg-image-caption-hover { right: ' . $justified_gap . 'px; }');
 }
 
-if ( $lightbox ) {
+$lightbox = false;
+if($image_link == 'lightgallery' || $title_link == 'lightgallery') {
+  $lightbox = true;
+}
+
+if($lightbox) {
   $wa->useScript('com_joomgallery.lightgallery');
   $wa->useStyle('com_joomgallery.lightgallery-bundle');
 }
 
-  $wa->useScript('com_joomgallery.infinite-scroll');
+$wa->useScript('com_joomgallery.infinite-scroll');
 
 $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd     = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
@@ -107,7 +140,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </div>
 <?php endif; ?>
 
-<p><?php echo nl2br($this->item->description); ?></p>
+<p><?php echo $this->item->description; ?></p>
 
 <?php if(count($this->item->children->items) == 0 && count($this->item->images->items) == 0) : ?>
   <p><?php echo Text::_('No elements in this category...') ?></p>
@@ -121,23 +154,24 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
     <h3><?php echo Text::_('COM_JOOMGALLERY_CATEGORIES') ?></h3>
   <?php endif; ?>
   <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
-  <?php if(!($this->item->parent_id > 0)) : ?>
-  <div id="jg-loader"></div>
-  <?php endif; ?>
-    <div class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-subcategories" data-masonry="{ pollDuration: 175 }">
+    <?php if(!($this->item->parent_id > 0)) : ?>
+      <div id="jg-loader"></div>
+    <?php endif; ?>
+    <div class="jg-images <?php echo $subcategory_class; ?>-<?php echo $subcategory_num_columns; ?> jg-subcategories" data-masonry="{ pollDuration: 175 }">
       <?php foreach($this->item->children->items as $key => $subcat) : ?>
         <div class="jg-image">
-          <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
+          <div class="jg-image-thumbnail<?php if($subcategory_image_class && $subcategory_class != 'justified') : ?><?php echo ' boxed'; ?><?php endif; ?>">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
-              <img src="<?php echo JoomHelper::getImg($subcat->thumbnail, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $this->escape($subcat->title); ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
-              <?php if ( $caption_align != 'none' && $category_class == 'justified') : ?>
+              <img src="<?php echo JoomHelper::getImg($subcat->thumbnail, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $this->escape($subcat->title); ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $subcategory_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
+
+              <?php if($subcategory_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
               <?php echo $this->escape($subcat->title); ?>
               </div>
               <?php endif; ?>
             </a>
           </div>
-          <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
+          <?php if($subcategory_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
               <?php echo $this->escape($subcat->title); ?>
@@ -175,35 +209,86 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
     <div id="lightgallery-<?php echo $this->item->id; ?>" class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
       <?php foreach($this->item->images->items as $key => $image) : ?>
         <div class="jg-image">
-          <div class="jg-image-thumbnail<?php if(!empty($image_class) && $category_class != 'justified') : ?><?php echo ' ' . $image_class; ?><?php endif; ?>">
-          <?php if ( $lightbox ) : ?>
-            <a class="item" href="#" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
-          <?php else : ?>
-            <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-          <?php endif; ?>
+          <div class="jg-image-thumbnail<?php if($image_class && $category_class != 'justified') : ?><?php echo ' boxed'; ?><?php endif; ?>">
+            <?php if($category_class != 'justified') : ?>
+              <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
+            <?php endif; ?>
+
+            <?php if($image_link == 'lightgallery') : ?>
+              <a class="item" href="#" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+                <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
+                <?php if($show_title && $category_class == 'justified') : ?>
+                  <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
+                    <?php echo $this->escape($image->title); ?>
+                  </div>
+                <?php endif; ?>
+                <?php if($show_title) : ?>
+                  <div id="jg-image-caption-<?php echo $image->id; ?>" style="display: none">
+                    <div class="jg-image-caption <?php echo $caption_align; ?>">
+                      <?php echo $this->escape($image->title); ?>
+                    </div>
+                  </div>
+                <?php endif; ?>
+              </a>
+            <?php endif; ?>
+
+            <?php if($image_link == 'defaultview') : ?>
+              <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+                <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
+                <?php if($show_title && $category_class == 'justified') : ?>
+                  <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
+                    <?php echo $this->escape($image->title); ?>
+                  </div>
+                <?php endif; ?>
+              </a>
+            <?php endif; ?>
+
+            <?php if($image_link == 'none') : ?>
               <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
-              <?php if ( $caption_align != 'none' && $category_class == 'justified') : ?>
+            <?php endif; ?>
+
+            <?php if($category_class != 'justified') : ?>
+              </div>
+            <?php endif; ?>
+
+            <?php if($category_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
                 <?php echo $this->escape($image->title); ?>
               </div>
-              <?php endif; ?>
-              <?php if ( $caption_align != 'none' ) : ?>
-                <div id="jg-image-caption-<?php echo $image->id; ?>" style="display: none">
-                  <div class="jg-image-caption <?php echo $caption_align; ?>">
-                    <?php echo $this->escape($image->title); ?>
-                  </div>
-                  <div class="jg-image-description <?php echo $caption_align; ?>">
-                    <?php echo html_entity_decode($this->escape($image->description)); ?>
-                  </div>
-                </div>
-              <?php endif; ?>
-            </a>
+            <?php endif; ?>
+
           </div>
-          <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
+
+          <?php if($category_class != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
-            <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
-              <?php echo $this->escape($image->title); ?>
-            </a>
+            <?php if ($show_title) : ?>
+              <?php if($title_link == 'lightgallery' && $image_link != 'lightgallery') : ?>
+                <a class="item" href="#" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+                  <?php echo $this->escape($image->title); ?>
+                </a>
+              <?php else : ?>
+                <?php if($title_link == 'defaultview') : ?>
+                  <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+                    <?php echo $this->escape($image->title); ?>
+                  </a>
+                <?php else : ?>
+                  <?php echo $this->escape($image->title); ?>
+                <?php endif; ?>
+              <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if($show_description) : ?>
+              <div><?php echo Text::_('JGLOBAL_DESCRIPTION') . ': ' . $image->description; ?></div>
+            <?php endif; ?>
+            <?php if($show_imgdate) : ?>
+              <div><?php echo Text::_('COM_JOOMGALLERY_DATE') . ': ' . HTMLHelper::_('date', $image->date, Text::_('DATE_FORMAT_LC4')); ?></div>
+            <?php endif; ?>
+            <?php if($show_imgauthor) : ?>
+              <div><?php echo Text::_('JAUTHOR') . ': ' . $this->escape($image->author); ?></div>
+            <?php endif; ?>
+            <?php if($show_tags) : ?>
+              <div><?php echo Text::_('COM_JOOMGALLERY_TAGS') . ': '; ?></div>
+            <?php endif; ?>
           </div>
           <?php endif; ?>
         </div>
@@ -257,6 +342,7 @@ function loadImg () {
 <?php endif; ?>
 
 <?php if(count($this->item->children->items) > 0 && $category_class == 'justified') : ?>
+<?php /* zerstört subcategory layout
 <script>
 window.addEventListener('load', function () {
   const container = document.querySelector('.jg-subcategories');
@@ -270,6 +356,7 @@ window.addEventListener('load', function () {
   const imgjust = new ImgJust(container, imgs, options);
 });
 </script>
+*/ ?>
 <?php endif; ?>
 
 <?php if ( $category_class == 'justified') : ?>
