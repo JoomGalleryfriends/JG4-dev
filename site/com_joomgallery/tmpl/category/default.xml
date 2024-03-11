@@ -58,7 +58,6 @@
                 parentclass="span-3"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -74,11 +73,9 @@
                 parentclass="span-3"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
-
             <field
                 name="jg_category_view_numb_subcategories"
                 type="jgnumber"
@@ -100,7 +97,6 @@
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION_DESC"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="pagination">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
                 <option value="loadmore">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
                 <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
@@ -114,7 +110,6 @@
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES_DESC"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
@@ -135,7 +130,6 @@
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_IMAGES_CLASS_DESC"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="columns">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_GRID</option>
                 <option value="masonry">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_MASONRY</option>
                 <option value="justified">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_JUSTIFIED</option>
@@ -148,9 +142,8 @@
                 label="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_LABEL"
                 description="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_DESC"
                 validate="options"
-                showon="jg_category_view_class:-1[OR]jg_category_view_class:columns[OR]jg_category_view_class:masonry"
+                showon="jg_category_view_class!:justified"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -158,7 +151,6 @@
                 <option value="5">5</option>
                 <option value="6">6</option>
             </field>
-
             <field
                 name="jg_category_view_justified_height"
                 type="jgnumber"
@@ -192,8 +184,8 @@
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
                 parentclass="span-3"
                 validate="options"
+                showon="jg_category_view_class!:justified"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
@@ -218,7 +210,6 @@
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION_DESC"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="pagination">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
                 <option value="loadmore">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
                 <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
@@ -232,22 +223,9 @@
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_LINK_DESC"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="none">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_NONE</option>
                 <option value="defaultview">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_DETAILVIEW</option>
                 <option value="lightgallery">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_LIGHTGALLERY</option>
-            </field>
-            <field
-                name="jg_category_view_images_show_title"
-                type="jglist"
-                useglobal="true"
-                parentclass="span-3"
-                label="JGLOBAL_TITLE"
-                validate="options"
-                >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
-                <option value="0">JNO</option>
-                <option value="1">JYES</option>
             </field>
             <field
                 name="jg_category_view_caption_align"
@@ -257,13 +235,22 @@
                 label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_ALIGNMENT"
                 description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_ALIGNMENT_NOTE_DESC"
                 validate="options"
-                showon="jg_category_view_images_show_title:-1[OR]jg_category_view_images_show_title:1"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
-                <option value="none">JNONE</option>
                 <option value="left">JGLOBAL_LEFT</option>
                 <option value="center">JGLOBAL_CENTER</option>
                 <option value="right">JGLOBAL_RIGHT</option>
+            </field>
+            <field
+                name="jg_category_view_images_show_title"
+                type="jglist"
+                useglobal="true"
+                class="btn-group btn-group-yesno"
+                parentclass="span-3"
+                label="JGLOBAL_TITLE"
+                validate="options"
+                >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
             </field>
             <field
                 name="jg_category_view_title_link"
@@ -273,14 +260,12 @@
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK"
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK_DESC"
                 validate="options"
-                showon="jg_category_view_images_show_title:-1[OR]jg_category_view_images_show_title:1"
+                showon="jg_category_view_class!:justified[AND]jg_category_view_images_show_title:1"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="none">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_NONE</option>
                 <option value="defaultview">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_DETAILVIEW</option>
                 <option value="lightgallery">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_LIGHTGALLERY</option>
             </field>
-
 
             <field
                 label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
@@ -297,7 +282,6 @@
                 label="JGLOBAL_DESCRIPTION"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
@@ -310,7 +294,6 @@
                 description="COM_JOOMGALLERY_DATE_DESC"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
@@ -323,7 +306,6 @@
                 description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
@@ -335,7 +317,6 @@
                 label="COM_JOOMGALLERY_TAGS"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>

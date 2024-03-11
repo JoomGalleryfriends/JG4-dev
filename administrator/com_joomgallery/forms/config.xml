@@ -738,6 +738,7 @@
         <field
             name="jg_category_view_numb_subcategories"
             type="number"
+            class="unused"
             default="12"
             min="1"
             max="999"
@@ -749,6 +750,7 @@
         <field
             name="jg_category_view_subcategories_pagination"
             type="list"
+            class="unused"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION_DESC"
             default="pagination"
@@ -761,6 +763,7 @@
         <field
             name="jg_category_view_subcategories_random_image"
             type="radio"
+            class="unused"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES_DESC"
             layout="joomla.form.field.radio.switcher"
@@ -842,6 +845,7 @@
         <field
             name="jg_category_view_numb_images"
             type="number"
+            class="unused"
             default="16"
             min="1"
             max="9999"
@@ -853,6 +857,7 @@
         <field
             name="jg_category_view_images_pagination"
             type="list"
+            class="unused"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION_DESC"
             default="pagination"
@@ -875,6 +880,18 @@
             <option value="lightgallery">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_LIGHTGALLERY</option>
         </field>
         <field
+            name="jg_category_view_caption_align"
+            type="list"
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT"
+            description="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT_NOTE_DESC"
+            default="center"
+            validate="options"
+            >
+            <option value="left">JGLOBAL_LEFT</option>
+            <option value="center">JGLOBAL_CENTER</option>
+            <option value="right">JGLOBAL_RIGHT</option>
+        </field>
+        <field
             name="jg_category_view_images_show_title"
             type="radio"
             label="JGLOBAL_TITLE"
@@ -883,19 +900,6 @@
             >
             <option value="0">JNO</option>
             <option value="1">JYES</option>
-        </field>
-        <field
-            name="jg_category_view_caption_align"
-            type="list"
-            label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT"
-            description="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT_NOTE_DESC"
-            default="center"
-            validate="options"
-            showon="jg_category_view_images_show_title:1"
-            >
-            <option value="left">JGLOBAL_LEFT</option>
-            <option value="center">JGLOBAL_CENTER</option>
-            <option value="right">JGLOBAL_RIGHT</option>
         </field>
         <field
             name="jg_category_view_title_link"
@@ -962,7 +966,14 @@
         </field>
     </fieldset>
 
-    <fieldset type="tab" name="frontend-detailview" label="COM_JOOMGALLERY_CONFIG_TAB_DETAIL_VIEW">
+    <fieldset type="tab" name="frontend-detailview" label="COM_JOOMGALLERY_MENU_SINGLE_IMAGE_VIEW_OPTIONS">
+        <field
+            label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
+            type="spacer"
+            name="spacer3"
+            hr="false"
+            >
+        </field>
         <field
             name="jg_detail_view_show_title"
             type="radio"
