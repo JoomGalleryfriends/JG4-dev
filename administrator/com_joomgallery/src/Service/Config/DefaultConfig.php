@@ -166,11 +166,7 @@ class DefaultConfig extends Config implements ConfigInterface
       $this->setParamsToClass($menu->getParams());
     }
 
-    /**
-    * Cashing the calculated params allows us to store
-    * one instance of the Config object for contexts that have
-    * the same exact configs.
-    */
-    self::$cache[\md5($this->storeId)] = $this->getProperties();
+    // Store the calculated params to cache
+    $this->setCache($this->storeId);
   }
 }

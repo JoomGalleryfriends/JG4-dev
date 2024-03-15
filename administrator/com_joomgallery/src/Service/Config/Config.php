@@ -110,6 +110,13 @@ abstract class Config extends \stdClass implements ConfigInterface
       $this->context = $context;
     }
 
+    // Load cache from session
+    $cache = Factory::getSession()->get('com_joomgallery.configcache.'.$this->name);
+    if(!empty($cache))
+    {
+      self::$cache = $cache;
+    }
+
     // Get user and its groups
     $user   = Factory::getUser();
     $groups = $user->get('groups');
@@ -159,6 +166,102 @@ abstract class Config extends \stdClass implements ConfigInterface
     $own           = \is_null($inclOwn) ? '' : ':1';
     $this->storeId = $this->name.':'.$this->context.':'.$group.$contentId.$own;
     // ConfigName:context:usergroup:own
+  }
+
+  /**
+   * Store the current available caches to the session
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function storeCacheToSession()
+  {
+    // Store current caches to session
+    if(!empty(self::$cache))
+    {
+      Factory::getSession()->set('com_joomgallery.configcache.'.$this->name, self::$cache);
+    }
+  }
+
+  /**
+   * Empty all the cache
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function emptyCache()
+  {
+    $configServices = array('Config', 'DefaultConfig');
+
+    foreach($configServices as $service)
+    {
+      $this->deleteCache(false, $service);
+    }    
+  }
+
+  /**
+   * Delete object & session cache
+   *
+   * @param   int|false   $id     ID of the cache to be deleted. False: Delete all cache
+   * @param   string      $name   Name of the config service which cache gets deleted
+   * 
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  protected function deleteCache($id=false, $name=false)
+  {
+    if(!$name)
+    {
+      $name = $this->name;
+    }
+
+    if($id)
+    {
+      $ids = array($id, \md5($id));
+
+      // Get session cache as reference
+      $session &= Factory::getSession()->get('com_joomgallery.configcache.'.$name);      
+
+      // Delete cache
+      foreach($ids as $cid)
+      {
+        if(\key_exists($cid, self::$cache))
+        {
+          unset(self::$cache[$cid]);
+        }
+        if(\key_exists($cid, $session))
+        {
+          unset($session[$cid]);
+        }
+      }
+    }
+    else
+    {
+      self::$cache = array();
+      Factory::getSession()->set('com_joomgallery.configcache.'.$name, array());
+    }
+  }
+
+  /**
+   * Set properties to object cache
+   *
+   * @param   string   $storeId   The id under which to store the properties
+   * 
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  protected function setCache(string $storeId)
+  {
+    /**
+    * Cashing the calculated params allows us to store
+    * one instance of the Config object for contexts that have
+    * the same exact configs.
+    */
+    self::$cache[\md5($this->storeId)] = $this->getProperties();
   }
 
   /**
