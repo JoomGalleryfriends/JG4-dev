@@ -32,4 +32,22 @@ interface ConfigInterface
    * @since   4.0.0
    */
   public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true);
+
+  /**
+   * Store the current available caches to the session
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function storeCacheToSession();
+
+  /**
+   * Empty all the cache
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function emptyCache();
 }
