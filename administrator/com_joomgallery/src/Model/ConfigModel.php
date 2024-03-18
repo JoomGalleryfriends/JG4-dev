@@ -817,4 +817,21 @@ class ConfigModel extends JoomAdminModel
 
 		return $array;
 	}
+
+  /**
+   * Clean the cache
+   *
+   * @param   string  $group  The cache group
+   *
+   * @return  void
+   *
+   * @since   3.0
+   */
+  protected function cleanCache($group = null)
+  {
+    // Clean session storage
+    $this->component->getConfig()->emptyCache();
+
+    return parent::cleanCache($group);
+  }
 }

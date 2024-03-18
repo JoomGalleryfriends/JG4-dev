@@ -198,7 +198,7 @@ abstract class Config extends \stdClass implements ConfigInterface
     foreach($configServices as $service)
     {
       $this->deleteCache(false, $service);
-    }    
+    }
   }
 
   /**
