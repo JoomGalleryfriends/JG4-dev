@@ -101,23 +101,6 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   public $version = '';
 
   /**
-	 * Destructor
-	 *
-	 * @return  void
-   *
-	 * @since  4.0.0
-	 */
-	public function __destruct()
-	{
-    // Handle stuff at the very last, when the runtime finishes
-    // and the component gets destructed
-    if(isset($this->config))
-    {
-      $this->config->storeCacheToSession();
-    }
-	}
-
-  /**
 	 * Booting the extension. This is the function to set up the environment of the extension like
 	 * registering new class loaders, etc.
 	 *
