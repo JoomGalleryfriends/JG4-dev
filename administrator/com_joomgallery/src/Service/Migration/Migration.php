@@ -54,7 +54,7 @@ abstract class Migration implements MigrationInterface
    * 
    * @since  4.0.0
    */
-  protected $src_db = true;
+  protected $src_db = null;
 
   /**
 	 * Storage for the migration info object.
