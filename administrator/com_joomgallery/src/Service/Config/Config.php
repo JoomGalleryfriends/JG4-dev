@@ -15,8 +15,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
+use \Joomla\CMS\User\User;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 
 /**
  * Configuration Class
@@ -117,9 +120,8 @@ abstract class Config extends \stdClass implements ConfigInterface
       self::$cache = $cache;
     }
 
-    // Get user and its groups
-    $user   = Factory::getUser();
-    $groups = $user->get('groups');
+    // Get current user
+    $user = Factory::getApplication()->getIdentity();
 
     // Completing $this->ids based on given context
     if(\count($context_array) > 1)
@@ -161,7 +163,7 @@ abstract class Config extends \stdClass implements ConfigInterface
     }
     
     // Creates a simple unique string for each parameter combination
-    $group         = \array_values($groups)[0];  //ToDo: Select usergroup to be used by the selection in the user view
+    $group         = $this->getUsergroup($user);
     $contentId     = \is_null($id) ? '' : ':'.$id;
     $own           = \is_null($inclOwn) ? '' : ':1';
     $this->storeId = $this->name.':'.$this->context.':'.$group.$contentId.$own;
@@ -199,10 +201,26 @@ abstract class Config extends \stdClass implements ConfigInterface
 
     foreach($configServices as $service)
     {
-      // Conduct the regex
-      $context = $type ? 'com_joomgallery.'.$type : '';
-      //$group   = $this->getGroup($userId);
-      $regex = '/^'.$service.':'.$context.'.*:.*/';
+      if(\strpos($type, 'user') === 0)
+      {
+        // Delete only cache which is related to this user
+        $user_array = \explode('.', $type);
+        $user_id    = (\count($user_array) > 1) ? $user_array[1] : 0;
+        $user       = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $user_id);
+        $usergroups = $user->get('groups');
+        $regex      = '/^'.$service.':com_joomgallery.*:\b('.\implode('|', $usergroups).')\b:.*/';
+      }
+      elseif( \strpos($type, 'menu') === 0 || \strpos($type, 'config') === 0 ||
+              \strpos($type, 'image') === 0 || \strpos($type, 'category') === 0
+            )
+      {
+        // Delete the whole cache
+        $regex   = false;
+      }
+      else
+      {
+        return;
+      }
 
       // Delete cache based on regex
       $this->deleteCache($regex, $service);
@@ -229,17 +247,16 @@ abstract class Config extends \stdClass implements ConfigInterface
 
     if($storeId)
     {
-      // Get session cache as reference
-      $session &= Factory::getSession()->get('com_joomgallery.configcache.'.$name);
-
       // Delete matching entries in static object property
-      $this->del_preg_keys($storeId, self::$cache);
+      self::$cache = $this->del_preg_keys($storeId, self::$cache);
 
+      // Get session cache
+      $session = Factory::getSession()->get('com_joomgallery.configcache.'.$name);
       if($session && \is_array($session))
       {
         // Delete matching entries in session
-        $this->del_preg_keys($storeId, $session);
-      }      
+        Factory::getSession()->set('com_joomgallery.configcache.'.$name, $this->del_preg_keys($storeId, $session));
+      }
     }
     else
     {
@@ -352,26 +369,24 @@ abstract class Config extends \stdClass implements ConfigInterface
    * with the biggest group_id number
    * and correspond to the user group of the given user
 	 *
-   * @param   int    $id  id of the user
+   * @param   int|string|User   $user   User id, username or userobject
    * 
 	 * @return  array  record values
 	 *
 	 * @since   4.0.0
 	 */
-  protected function getParamsByUser($id)
+  protected function getParamsByUser($user)
   {
-    // get array of all user groups the current user is in
-    $user    = Factory::getUser($id);
-    $groups  = $user->get('groups');
+    $usergroup = $this->getUsergroup($user);
 
     // get a db connection
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // create the query
     $query = $db->getQuery(true);
-    $query->select($db->quoteName('id').', MAX('.$db->quoteName('group_id').')');
+    $query->select($db->quoteName('id'));
     $query->from($db->quoteName(_JOOM_TABLE_CONFIGS));
-    $query->where($db->quoteName('group_id').' IN '.' (\''.implode('\', \'', $groups).'\')');
+    $query->where($db->quoteName('group_id') . ' = ' . $db->quote($usergroup));
 
     // set the query
     $db->setQuery($query);
@@ -390,22 +405,93 @@ abstract class Config extends \stdClass implements ConfigInterface
   }
 
   /**
-	 * Deletes entriey of key or id in the array matching the given regex pattern
+	 * Get the usergoup id to use for loading the config set
 	 *
-   * @param   string   $pattern   The pattern to search for, as a string.
-   * @param   array    &$array    An array containing base64 encoded keys to delete. 
+   * @param   int|string|User   $user   User id, username or userobject
    * 
-	 * @return  bool     True on success, false otherwise.
+	 * @return  int               ID of the usergroup
 	 *
 	 * @since   4.0.0
 	 */
-  protected function del_preg_keys(string $pattern, array &$array)
+  protected function getUsergroup($user)
+  {
+    // Load user if needed
+    if(!($user instanceof User))
+    {
+      if(\is_numeric($user))
+      {
+        // We assume that $user is a user id
+        $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $user);
+      }
+      else
+      {
+        // We assume that $user is a username
+        $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($user);
+      }
+    }
+
+    $userGroups  = \array_values($user->get('groups'));
+    $configGroup = $this->getUserSetting($user->get('id'));
+    
+    if(\in_array($configGroup, $userGroups))
+    {
+      // Great there is a usergroup valid usergroup set in the user options
+      return $configGroup;
+    }
+    elseif(!empty($userGroups))
+    {
+      // There is no possible usergroup set in the user options
+      return $userGroups[0];
+    }
+    else
+    {
+      // This user has no usergoup
+      return 1;
+    }
+  }
+
+  /**
+   * Get user field 'config_usergroup' from DB
+   *
+   * @param   int   $userId  User id
+   *
+   * @return  int   Group id to use for clc config set
+   *
+   * @since   4.0.0
+   */
+  protected function getUserSetting($userId) 
+  {
+    // get a db connection
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+    $query = $db->getQuery(true)
+        ->select($db->quoteName('profile_value'))
+        ->from($db->quoteName('#__user_profiles'))
+        ->where($db->quoteName('profile_key') . ' = ' . $db->quote('joomgallery.config_usergroup'))
+        ->where($db->quoteName('user_id') . '=' . (int) $userId);
+
+    $db->setQuery($query);
+
+    return (int) $db->loadResult();
+  }
+
+  /**
+	 * Deletes entriey of key or id in the array matching the given regex pattern
+	 *
+   * @param   string   $pattern   The pattern to search for, as a string.
+   * @param   array    $array    An array containing base64 encoded keys to delete. 
+   * 
+	 * @return  array    The emptied array.
+	 *
+	 * @since   4.0.0
+	 */
+  protected function del_preg_keys(string $pattern, array $array)
   {
     // Check if the pattern provided is valid
     if(@\preg_match($pattern, '') === false)
     {
-      // Return false if the pattern is not valid
-      return false;
+      // Return the complete if the pattern is not valid
+      return $array;
     }
 
     foreach(\array_keys($array) as $key)
@@ -421,6 +507,6 @@ abstract class Config extends \stdClass implements ConfigInterface
       }
     }
 
-    return true;
+    return $array;
   }
 }

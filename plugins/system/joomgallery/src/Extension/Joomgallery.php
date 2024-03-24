@@ -12,6 +12,7 @@ namespace Joomgallery\Plugin\System\Joomgallery\Extension;
 
 \defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\Event\Event;
 use Joomla\CMS\Form\Form;
 use Joomla\Event\Priority;
@@ -140,7 +141,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
       $defaultgroup = $arguments['defaultgroup'];
     }
 
-    if(\strpos($defaultgroup, 'com_joomgallery') !== 0)
+    if(\strpos($defaultgroup, 'com_joomgallery') !== 0 && \strpos($defaultgroup, 'com_users') !== 0 && \strpos($defaultgroup, 'com_menus') !== 0)
     {
       // Do nothing if we are not handling joomgallery content
       $this->setResult($event, true);
@@ -161,25 +162,34 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     {
       case 'config':
         // If a configuration set is modified, delete all cache
+        JoomHelper::getComponent()->createConfig();
         JoomHelper::getComponent()->getConfig()->emptyCache();
         break;
 
       case 'user':
-        # code...
+        // If a user is modified, delete only usergroup cache
+        $userId = $this->guessType($defaultgroup, true);
+        JoomHelper::getComponent()->createConfig();
+        JoomHelper::getComponent()->getConfig()->emptyCache('user.'.$userId);
         break;
 
       case 'category':
         // If a category is modified, delete only category cache
+        JoomHelper::getComponent()->createConfig();
         JoomHelper::getComponent()->getConfig()->emptyCache('category');
         break;
 
       case 'image':
         // If an image is modified, delete only image cache
+        JoomHelper::getComponent()->createConfig();
         JoomHelper::getComponent()->getConfig()->emptyCache('image');
         break;
 
       case 'menu':
-        # code...
+        // If an image is modified, delete only image cache
+        $itemid = $this->guessType($defaultgroup, true);
+        JoomHelper::getComponent()->createConfig();
+        JoomHelper::getComponent()->getConfig()->emptyCache('menu.'.$itemid);
         break;
       
       default:
@@ -325,7 +335,25 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
 
     if($userId && $result && isset($data['joomgallery']) && (count($data['joomgallery'])))
     {
-      try 
+      // Create the onContentCleanCache event object
+      $options = [
+        'defaultgroup' => 'com_users.user.'.$userId,
+        'cachebase'    => $this->app->get('cache_path', JPATH_CACHE),
+        'result'       => true,
+      ];
+      $cacheEvent = new Event('onContentCleanCache', $options);
+
+      // Perform the onContentCleanCach event
+      if(!$this->onContentCleanCache($cacheEvent))
+      {
+        $this->setError($event, $cacheEvent->getError());
+        $this->setResult($event, true);
+
+        return;
+      }
+
+      // Update user fields
+      try
       {
         if(!$isNew)
         {
@@ -432,18 +460,56 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * Guess the content type based on a dot separated string.
    *
    * @param   string        $string  Context like string
+   * @param   bool          $id      Return id (second value)
    *
    * @return  string|false  Guessed type on success, false otherwise   
    *
    * @since   4.0.0
    */
-  protected function guessType(string $string)
+  protected function guessType(string $string, $id=false)
   {
+    // Detect type from menuitem
+    if(\strpos($string, 'com_menus') === 0)
+    {
+      // Get menuitem id from JInput
+      if(!$itemid = $this->app->input->get('id', 0, 'int'))
+      {
+        return false;
+      }
+
+      // Get menuitem model
+      $menuModel = $this->app->bootComponent('com_menus')->getMVCFactory()->createModel('item', 'administrator');
+      $menuItem  = $menuModel->getItem($itemid);
+
+      if(!$menuItem || \strpos($menuItem->link, 'com_joomgallery') === false)
+      {
+        // Menuitem is not related to joomgallery
+        return false;
+      }
+
+      // We have a menuitem that is related to joomgallery
+      foreach(\explode('&', $menuItem->link) as $key => $value)
+      {
+        // Read type from the link variable: 'view'
+        if(\strpos($value, 'view') !== false)
+        {
+          return \str_replace('view=', '', $value);
+        }
+      }
+    }
+
     $pieces = \explode('.', $string);
 
     if(\count($pieces) > 1)
     {
-      return \strtolower($pieces[1]);
+      if($id && \count($pieces) > 2)
+      {
+        return \strtolower($pieces[2]);
+      }
+      else
+      {
+        return \strtolower($pieces[1]);
+      }      
     }
 
     return false;
