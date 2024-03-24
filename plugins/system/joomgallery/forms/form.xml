@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
+  <fields name='joomgallery'>
+    <fieldset name="joomgallery" label="PLG_SYSTEM_JOOMGALLERY_FIELDS">
+      <field name="config_usergroup"
+            type="UserGroupList"
+            layout="joomla.form.field.list-fancy-select"
+            checksuperusergroup="1"
+            label="PLG_SYSTEM_JOOMGALLERY_CONFIGUSERGROUP_LABEL"
+		        description="PLG_SYSTEM_JOOMGALLERY_CONFIGUSERGROUP_DESC" />
+    </fieldset>
+  </fields>
+</form>
