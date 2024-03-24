@@ -187,59 +187,63 @@ abstract class Config extends \stdClass implements ConfigInterface
   /**
    * Empty all the cache
    *
+   * @param   string|false   $type   Type name of types to delete the cache from. False: Delete all types
+   * 
    * @return  void
    *
    * @since   4.0.0
    */
-  public function emptyCache()
+  public function emptyCache($type=false)
   {
     $configServices = array('Config', 'DefaultConfig');
 
     foreach($configServices as $service)
     {
-      $this->deleteCache(false, $service);
+      // Conduct the regex
+      $context = $type ? 'com_joomgallery.'.$type : '';
+      //$group   = $this->getGroup($userId);
+      $regex = '/^'.$service.':'.$context.'.*:.*/';
+
+      // Delete cache based on regex
+      $this->deleteCache($regex, $service);
     }
   }
 
   /**
    * Delete object & session cache
    *
-   * @param   int|false   $id     ID of the cache to be deleted. False: Delete all cache
-   * @param   string      $name   Name of the config service which cache gets deleted
+   * @param   string|false   $storeId   ID of the cache to be deleted. Can be a regex pattern to delete all matching items. False: Delete everything
+   * @param   string         $name      Name of the config service which cache gets deleted
    * 
    * @return  void
    *
    * @since   4.0.0
    */
-  protected function deleteCache($id=false, $name=false)
+  protected function deleteCache($storeId=false, $name=false)
   {
     if(!$name)
     {
+      // If no config service name is provided, use the name of the current service instance
       $name = $this->name;
     }
 
-    if($id)
+    if($storeId)
     {
-      $ids = array($id, \md5($id));
-
       // Get session cache as reference
-      $session &= Factory::getSession()->get('com_joomgallery.configcache.'.$name);      
+      $session &= Factory::getSession()->get('com_joomgallery.configcache.'.$name);
 
-      // Delete cache
-      foreach($ids as $cid)
+      // Delete matching entries in static object property
+      $this->del_preg_keys($storeId, self::$cache);
+
+      if($session && \is_array($session))
       {
-        if(\key_exists($cid, self::$cache))
-        {
-          unset(self::$cache[$cid]);
-        }
-        if(\key_exists($cid, $session))
-        {
-          unset($session[$cid]);
-        }
-      }
+        // Delete matching entries in session
+        $this->del_preg_keys($storeId, $session);
+      }      
     }
     else
     {
+      // No storeId provided. Delete everything.
       self::$cache = array();
       Factory::getSession()->set('com_joomgallery.configcache.'.$name, array());
     }
@@ -261,7 +265,7 @@ abstract class Config extends \stdClass implements ConfigInterface
     * one instance of the Config object for contexts that have
     * the same exact configs.
     */
-    self::$cache[\md5($this->storeId)] = $this->getProperties();
+    self::$cache[\base64_encode($this->storeId)] = $this->getProperties();
   }
 
   /**
@@ -383,5 +387,40 @@ abstract class Config extends \stdClass implements ConfigInterface
     }
 
     return $params;
+  }
+
+  /**
+	 * Deletes entriey of key or id in the array matching the given regex pattern
+	 *
+   * @param   string   $pattern   The pattern to search for, as a string.
+   * @param   array    &$array    An array containing base64 encoded keys to delete. 
+   * 
+	 * @return  bool     True on success, false otherwise.
+	 *
+	 * @since   4.0.0
+	 */
+  protected function del_preg_keys(string $pattern, array &$array)
+  {
+    // Check if the pattern provided is valid
+    if(@\preg_match($pattern, '') === false)
+    {
+      // Return false if the pattern is not valid
+      return false;
+    }
+
+    foreach(\array_keys($array) as $key)
+    {
+      // Decode the key
+      $decodedKey = \base64_decode($key);
+
+      // Check if the decoded key matches the pattern
+      if(\preg_match($pattern, $decodedKey))
+      {
+        // If it matches, unset the original (encoded) key from the array
+        unset($array[$key]);
+      }
+    }
+
+    return true;
   }
 }

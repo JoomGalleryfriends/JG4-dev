@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" version="4.0" method="upgrade">
+    <name>plg_system_joomgallery</name>
+    <creationDate>2024-03-20</creationDate>
+    <copyright>2008 - 2024  JoomGallery::ProjectTeam</copyright>
+    <license>GNU General Public License version 3 or later</license>
+    <author>JoomGallery::ProjectTeam</author>
+    <authorEmail>team@joomgalleryfriends.net</authorEmail>
+    <authorUrl>https://www.joomgalleryfriends.net/</authorUrl>
+    <version>4.0.0-dev</version>
+    <description>PLG_SYSTEM_JOOMGALLERY_XML_DESCRIPTION</description>
+    <namespace path="src">Joomgallery\Plugin\System\Joomgallery</namespace>
+    
+    <files>
+        <folder>language</folder>
+        <folder>services</folder>
+        <folder plugin="joomgallery">src</folder>
+    </files>
+
+    <updateservers>
+        <server type="extension" priority="1" name="JoomGallery Cache Plugin">https://www.joomgalleryfriends.net/components/com_newversion/xml/extensions3.xml</server>
+    </updateservers>
+</extension>
