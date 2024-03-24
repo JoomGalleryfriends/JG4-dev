@@ -17,6 +17,7 @@ use Joomla\Event\Event;
 use Joomla\CMS\Form\Form;
 use Joomla\Event\Priority;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Event\Result\ResultAwareInterface;
@@ -344,9 +345,10 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
       $cacheEvent = new Event('onContentCleanCache', $options);
 
       // Perform the onContentCleanCach event
-      if(!$this->onContentCleanCache($cacheEvent))
+      $this->onContentCleanCache($cacheEvent);
+      if($cacheEvent->getArgument('error', false))
       {
-        $this->setError($event, $cacheEvent->getError());
+        $this->setError($event, $cacheEvent->getArgument('error', ''));
         $this->setResult($event, true);
 
         return;
@@ -552,17 +554,14 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   private function setError(Event $event, $message): void
 	{
-		if($event instanceof ErrorAwareInterface)
+		if($event instanceof EventInterface)
     {
-			$event->addError($message);
+
+      $event->setArgument('error', $message);
+      $event->setArgument('errorMessage', $message);
 			
 			return;
 		}
-
-		$result   = $event->getArgument('result', []) ?: [];
-		$result   = \is_array($result) ? $result : [];
-		$result[] = $message;
-		$event->setArgument('result', $result);
 	} 
 
   /**
