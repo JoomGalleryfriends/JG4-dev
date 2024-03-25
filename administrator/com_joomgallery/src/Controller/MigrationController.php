@@ -499,19 +499,19 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
         {
             if($errors[$i] instanceof \Exception)
             {
-              $this->component->setWarning($errors[$i]->getMessage());
+              $this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
             }
             else
             {
-              $this->component->setWarning($errors[$i]);
+              $this->app->enqueueMessage($errors[$i], 'warning');
             }
         }
 
         // Save the form data in the session.
         $this->app->setUserState($context . '.data', $data);
 
-        // Redirect back to the edit screen.
-        $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
+        // Redirect back to step 1, the form.
+        $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step1', false));
 
         return false;
       }

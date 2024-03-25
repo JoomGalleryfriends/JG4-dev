@@ -21,6 +21,7 @@ use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filesystem\Folder;
+use \Joomla\Database\DatabaseFactory;
 use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -602,6 +603,67 @@ class MigrationModel extends AdminModel
     
     return $form;
 	}
+
+  /**
+   * Method to validate the form data.
+   *
+   * @param   Form    $form   The form to validate against.
+   * @param   array   $data   The data to validate.
+   * @param   string  $group  The name of the field group to validate.
+   *
+   * @return  array|boolean  Array of filtered data if valid, false otherwise.
+
+   * @since   4.0.0
+   */
+  public function validate($form, $data, $group = null)
+  {
+    $return = parent::validate($form, $data, $group);
+
+    // Validate field joomla_path
+    if(\key_exists('same_joomla', $data) && !$data['same_joomla'])
+    {
+      if(!\key_exists('joomla_path', $data) || !\file_exists($data['joomla_path']))
+      {
+        $this->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_JOOMLA_PATH', $_SERVER['DOCUMENT_ROOT'].'/your-subdomain'));
+
+        $return = false;
+      }
+    }
+
+    // Validate database connection
+    if(\key_exists('same_db', $data) && !$data['same_db'])
+    {
+      try
+      {
+        $options   = array ('driver' => $data['dbtype'], 'host' => $data['dbhost'], 'user' => $data['dbuser'], 'password' => $data['dbpass'], 'database' => $data['dbname'], 'prefix' => $data['dbprefix']);
+        $dbFactory = new DatabaseFactory();
+        $db        = $dbFactory->getDriver($data['dbtype'], $options);
+        $tableList = $db->getTableList();
+
+        // Check provided db prefix
+        $prefix = $data['dbprefix'];
+        $result = array_filter($tableList,
+          function($row) use($prefix)
+          {
+            return (strpos($row, $prefix) !== False);
+          }
+        );
+
+        if(empty($result))
+        {
+          throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DB_PREFIX'));
+        }
+      }
+      catch (\Exception $e)
+      {
+        $this->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DB_CREDENTIALS', $e->getMessage()));
+
+        $return = false;
+      }
+    }
+
+    return $return;
+  }
 
   /**
 	 * Method to perform the pre migration checks.
