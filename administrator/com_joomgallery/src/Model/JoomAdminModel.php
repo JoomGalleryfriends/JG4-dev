@@ -343,4 +343,18 @@ abstract class JoomAdminModel extends AdminModel
       $db->execute();
     }
   }
+
+  /**
+   * Clean the cache
+   *
+   * @param   string  $group  The cache group
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  protected function cleanCache($group = null)
+  {
+    return parent::cleanCache($this->typeAlias);
+  }
 }
