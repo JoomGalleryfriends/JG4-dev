@@ -321,7 +321,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           $this->component->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_FILENAME_DIFF', $data['id'], $data['alias']));
 
-          return false;
+          return array();
         }
 
         // Adjust catid with new created categories
