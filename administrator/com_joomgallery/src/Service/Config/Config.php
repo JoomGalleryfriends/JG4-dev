@@ -114,7 +114,7 @@ abstract class Config extends \stdClass implements ConfigInterface
     }
 
     // Load cache from session
-    $cache = Factory::getSession()->get('com_joomgallery.configcache.'.$this->name);
+    $cache = Factory::getApplication()->getSession()->get('com_joomgallery.configcache.'.$this->name);
     if(!empty($cache))
     {
       self::$cache = $cache;
@@ -133,33 +133,33 @@ abstract class Config extends \stdClass implements ConfigInterface
           break;
 
         case 'category':
-          $this->ids['user']     = $user->get('id');
+          $this->ids['user']     = $user->id;
           $this->ids['category'] = (int) $id;
           break;
 
         case 'image':
           $img = $this->component->getMVCFactory()->createModel('image', 'administrator')->getItem($id);
 
-          $this->ids['user']     = $user->get('id');
+          $this->ids['user']     = $user->id;
           $this->ids['image']    = (int) $id;
           $this->ids['category'] = (int) $img->catid;
           break;
 
         case 'menu':
-          $this->ids['user'] = $user->get('id');
+          $this->ids['user'] = $user->id;
           $this->ids['menu'] = (int) $id;
           // TBD
           // Depending on frontend views and router 
           break;
         
         default:
-          $this->ids['user'] = $user->get('id');
+          $this->ids['user'] = $user->id;
           break;
       }
     }
     else
     {
-      $this->ids['user'] = $user->get('id');
+      $this->ids['user'] = $user->id;
     }
     
     // Creates a simple unique string for each parameter combination
@@ -182,7 +182,7 @@ abstract class Config extends \stdClass implements ConfigInterface
     // Store current caches to session
     if(!empty(self::$cache))
     {
-      Factory::getSession()->set('com_joomgallery.configcache.'.$this->name, self::$cache);
+      Factory::getApplication()->getSession()->set('com_joomgallery.configcache.'.$this->name, self::$cache);
     }
   }
 
@@ -251,18 +251,18 @@ abstract class Config extends \stdClass implements ConfigInterface
       self::$cache = $this->del_preg_keys($storeId, self::$cache);
 
       // Get session cache
-      $session = Factory::getSession()->get('com_joomgallery.configcache.'.$name);
+      $session = Factory::getApplication()->getSession()->get('com_joomgallery.configcache.'.$name);
       if($session && \is_array($session))
       {
         // Delete matching entries in session
-        Factory::getSession()->set('com_joomgallery.configcache.'.$name, $this->del_preg_keys($storeId, $session));
+        Factory::getApplication()->getSession()->set('com_joomgallery.configcache.'.$name, $this->del_preg_keys($storeId, $session));
       }
     }
     else
     {
       // No storeId provided. Delete everything.
       self::$cache = array();
-      Factory::getSession()->set('com_joomgallery.configcache.'.$name, array());
+      Factory::getApplication()->getSession()->set('com_joomgallery.configcache.'.$name, array());
     }
   }
 
