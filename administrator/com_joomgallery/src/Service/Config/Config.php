@@ -129,6 +129,7 @@ abstract class Config extends \stdClass implements ConfigInterface
       switch($context_array[1])
       {
         case 'user':
+          $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $id);
           $this->ids['user'] = (int) $id;
           break;
 
@@ -182,7 +183,8 @@ abstract class Config extends \stdClass implements ConfigInterface
     // Store current caches to session
     if(!empty(self::$cache))
     {
-      Factory::getApplication()->getSession()->set('com_joomgallery.configcache.'.$this->name, self::$cache);
+      $res = \array_merge(Factory::getApplication()->getSession()->get('com_joomgallery.configcache.'.$this->name, array()), self::$cache);
+      Factory::getApplication()->getSession()->set('com_joomgallery.configcache.'.$this->name, $res);
     }
   }
 
@@ -203,23 +205,29 @@ abstract class Config extends \stdClass implements ConfigInterface
     {
       if(\strpos($type, 'user') === 0)
       {
-        // Delete only cache which is related to this user
+        // Delete only cache which is related to one of the usergoups this user is part of
         $user_array = \explode('.', $type);
         $user_id    = (\count($user_array) > 1) ? $user_array[1] : 0;
         $user       = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $user_id);
         $usergroups = $user->get('groups');
         $regex      = '/^'.$service.':com_joomgallery.*:\b('.\implode('|', $usergroups).')\b:.*/';
       }
-      elseif( \strpos($type, 'menu') === 0 || \strpos($type, 'config') === 0 ||
-              \strpos($type, 'image') === 0 || \strpos($type, 'category') === 0
-            )
+      elseif(\strpos($type, 'image') === 0)
       {
-        // Delete the whole cache
-        $regex   = false;
+        // Delete only cache which is related to context of type image
+        $context = 'com_joomgallery.image';
+        $regex = '/^'.$service.':'.$context.'.*:.*/';
+      }
+      elseif(\strpos($type, 'category') === 0)
+      {
+        // Delete only cache which is related to context of type image or category
+        $context = 'com_joomgallery.\b(image|category)\b';
+        $regex = '/^'.$service.':'.$context.'.*:.*/';
       }
       else
       {
-        return;
+        // Delete all cache
+        $regex   = false;
       }
 
       // Delete cache based on regex
