@@ -17,11 +17,10 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Path;
-use \Joomla\CMS\Object\CMSObject;
-use Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
-use stdClass;
 
 /**
  * JoomGallery Helper for the Backend
@@ -343,7 +342,7 @@ class JoomHelper
    * @param   string  $type   The name of the content type of the item
    * @param   int     $id     The item's id
 	 *
-	 * @return  \stdClass
+	 * @return  Registry
 	 *
 	 * @since   4.0.0
 	 */
@@ -364,15 +363,13 @@ class JoomHelper
     }
 
     // Initialise variables
-    $comp   = self::getComponent();
-    $comp->createAccess();
-    $acl    = $comp->getAccess();
-    $result = new \stdClass;
+    $acl    = self::getService('Access');
+    $result = new Registry;
 
-    // Fill actions list
+    // Fill actions list based on access XML
 		foreach(self::getActionsList($type) as $action)
 		{
-			$result->{$action} = $acl->checkACL($action, $assetName);
+			$result->set($action, $acl->checkACL($action, $assetName));
 		}
 
 		return $result;
