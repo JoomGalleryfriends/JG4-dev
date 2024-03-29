@@ -11,7 +11,7 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 
 // No direct access
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
@@ -342,5 +342,35 @@ abstract class JoomAdminModel extends AdminModel
       $db->setQuery($query);
       $db->execute();
     }
+  }
+
+  /**
+   * Method to test whether a record can be deleted.
+   *
+   * @param   object  $record  A record object.
+   *
+   * @return  boolean  True if allowed to delete the record. Defaults to the permission for the component.
+   *
+   * @since   1.6
+   */
+  protected function canDelete($record)
+  {
+    $acl = $this->component->getAccess();
+    return $acl->checkACL('core.delete', $this->option);
+  }
+
+  /**
+   * Method to test whether a record can have its state changed.
+   *
+   * @param   object  $record  A record object.
+   *
+   * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
+   *
+   * @since   1.6
+   */
+  protected function canEditState($record)
+  {
+    $acl = $this->component->getAccess();
+    return $acl->checkACL('core.edit.state', $this->option);
   }
 }

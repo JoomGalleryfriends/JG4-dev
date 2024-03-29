@@ -8,7 +8,8 @@
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
-defined('_JEXEC') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Extension\Service\Provider\RouterFactory;

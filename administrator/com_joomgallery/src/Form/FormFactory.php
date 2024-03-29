@@ -10,15 +10,15 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Form;
 
+// No direct access
+defined('_JEXEC') or die;
+
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\Database\DatabaseInterface;
 use \Joomla\Database\DatabaseAwareTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Form\ConfigForm;
-
-// No direct access
-defined('_JEXEC') or die;
 
 /**
  * Custom factory for creating ConfigForm objects

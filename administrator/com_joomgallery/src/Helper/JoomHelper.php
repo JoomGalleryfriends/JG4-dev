@@ -17,9 +17,11 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Object\CMSObject;
 use Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
+use stdClass;
 
 /**
  * JoomGallery Helper for the Backend
@@ -124,9 +126,9 @@ class JoomHelper
    *
    * @param   string          $name      The name of the record (available: category,image,tag, imagetype)
    * @param   int|string      $id        The id of the primary key, the alias or the filename
-   * @param   Object          $com_obj   JoomgalleryComponent object if available
+   * @param   object          $com_obj   JoomgalleryComponent object if available
 	 *
-	 * @return  CMSObject|bool  Object on success, false on failure.
+	 * @return  \stdClass|bool  Object on success, false on failure.
 	 *
 	 * @since   4.0.0
 	 */
@@ -136,7 +138,7 @@ class JoomHelper
     self::isAvailable($name);
 
     // We got a valid record object
-    if(\is_object($id) && $id instanceof \Joomla\CMS\Object\CMSObject && isset($id->id))
+    if(\is_object($id) && $id instanceof \stdClass && isset($id->id))
     {
       return $id;
     }
@@ -341,7 +343,7 @@ class JoomHelper
    * @param   string  $type   The name of the content type of the item
    * @param   int     $id     The item's id
 	 *
-	 * @return  CMSObject
+	 * @return  \stdClass
 	 *
 	 * @since   4.0.0
 	 */
@@ -361,17 +363,16 @@ class JoomHelper
       $assetName .= '.'.$id;
     }
 
-    $user   = Factory::getUser(); 
-		$result = new CMSObject;
+    // Initialise variables
+    $comp   = self::getComponent();
+    $comp->createAccess();
+    $acl    = $comp->getAccess();
+    $result = new \stdClass;
 
-		$actions = array(
-			'core.admin', 'core.manage', 'joom.upload', 'joom.upload.inown', 'core.create', 'joom.create.inown',
-      'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
-		);
-
-		foreach($actions as $action)
+    // Fill actions list
+		foreach(self::getActionsList($type) as $action)
 		{
-			$result->set($action, $user->authorise($action, $assetName));
+			$result->{$action} = $acl->checkACL($action, $assetName);
 		}
 
 		return $result;
@@ -738,13 +739,15 @@ class JoomHelper
    * Returns the rating clause for an SQL - query dependent on the rating calculation method selected.
    *
    * @param   string  $tablealias   Table alias
+   * 
    * @return  string  Rating clause
-   * @since   1.5.6
+   * 
+   * @since   4.0.0
    */
   public static function getSQLRatingClause($tablealias = '')
   {
     $db                   = Factory::getContainer()->get('DatabaseDriver');
-    $config               = JoomHelper::getService('config');
+    $config               = self::getService('config');
     static $avgimgvote    = 0.0;
     static $avgimgrating  = 0.0;
     static $avgdone       = false;
@@ -800,8 +803,10 @@ class JoomHelper
    * Returns the rating of an image
    *
    * @param   string  $imgid   Image id to get the rating for
+   * 
    * @return  float   Rating
-   * @since   1.5.6
+   * 
+   * @since   4.0.0
    */
   public static function getRating($imgid)
   {
@@ -809,7 +814,7 @@ class JoomHelper
     $db     = Factory::getContainer()->get('DatabaseDriver');
 
     $query = $db->getQuery(true)
-          ->select(JoomHelper::getSQLRatingClause() . ' AS rating')
+          ->select(self::getSQLRatingClause() . ' AS rating')
           ->from(_JOOM_TABLE_IMAGES)
           ->where($db->quoteName('id') . ' = ' . (int) $imgid);
 
@@ -820,5 +825,46 @@ class JoomHelper
     }
 
     return $rating;
+  }
+
+  /**
+   * Returns a list of all available access action names available
+   *
+   * @param   string  $type   The name of the content type
+   * @param   string  $comp   Component name for which the actions are returned
+   * 
+   * @return  array   List of access action names
+   * 
+   * @since   4.0.0
+   */
+  protected static function getActionsList($type = null, $comp = 'com_joomgallery')
+  {
+    $file = Path::clean(JPATH_ADMINISTRATOR . '/components/' . $comp . '/access.xml');
+
+    if(!$xml = \simplexml_load_file($file))
+    {
+      // Access XML not available
+      return array();
+    }    
+
+    if($type)
+    {
+      $result = $xml->xpath('/access/section[@name="'.\strtolower($type).'"]/action');
+    }
+    else
+    {
+      $result = $xml->xpath('/access/section/action');
+    }    
+
+    $list = array();
+    foreach($result as $node)
+    {
+      if(!\in_array(\strval($node['name']), $list))
+      {
+        \array_push($list, \strval($node['name']));
+      }
+    }
+
+    return $list;
   }
 }

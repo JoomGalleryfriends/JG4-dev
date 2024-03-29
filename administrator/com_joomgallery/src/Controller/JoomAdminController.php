@@ -11,7 +11,7 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 // No direct access
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\MVC\Controller\AdminController as BaseAdminController;
 use \Joomla\CMS\Application\CMSApplication;
