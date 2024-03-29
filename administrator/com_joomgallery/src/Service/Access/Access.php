@@ -373,14 +373,24 @@ class Access implements AccessInterface
    */
   protected function prepareAction(string $action): string
   {
+    // Clean action if it is dot separated (core.delete)
+    $act_array = \explode('.', $action, 2);
+    if(\count($act_array) >= 2)
+    {
+      $action = $act_array[1];
+    }
+
+    // Take away own and inown in action statement
+    $action = \str_replace(array('.own', '.inown'), '', $action);
+
     // Synonyms for add
-    $addSyn    = array('add', 'create', 'new');
+    $addSyn    = array('add', 'create', 'new', 'upload');
     // Synonyms for delete
     $delSyn    = array('delete', 'remove', 'drop', 'clear', 'erase');
     // Synonyms for edit
     $editSyn   = array('edit', 'change', 'modify', 'alter');
     // Synonyms for editstate
-    $stateSyn  = array('editstate', 'feature', 'unfeature', 'publish', 'unpublish', 'approve', 'unapprove');
+    $stateSyn  = array('editstate', 'edit.state', 'feature', 'unfeature', 'publish', 'unpublish', 'approve', 'unapprove');
     // Synonyms for admin
     $adminSyn  = array('admin', 'acl');
     // Synonyms for manage

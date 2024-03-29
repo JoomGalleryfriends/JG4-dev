@@ -10,7 +10,8 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 
-\defined('_JEXEC') or die;
+// No direct access
+defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;

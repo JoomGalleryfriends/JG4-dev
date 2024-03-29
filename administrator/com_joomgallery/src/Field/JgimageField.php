@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;

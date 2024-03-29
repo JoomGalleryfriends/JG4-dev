@@ -10,6 +10,9 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 
+// No direct access
+defined('_JEXEC') or die;
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\HTML\HTMLHelper;

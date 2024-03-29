@@ -13,14 +13,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Categories;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Toolbar\ToolbarHelper;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\HTML\Helpers\Sidebar;
 use \Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
-use stdClass;
 
 /**
  * View class for a list of Categories.
@@ -146,10 +145,10 @@ class HtmlView extends JoomGalleryView
     if($canDo->get('core.delete'))
     {
       // Get infos for confirmation message
-      $counts = new stdClass;
+      $counts = new \stdClass;
       foreach($this->items as $item)
       {
-        $counts->{$item->id} = new stdClass;
+        $counts->{$item->id} = new \stdClass;
         $counts->{$item->id}->img_count = $item->img_count;
         $counts->{$item->id}->child_count = $item->child_count;
       }

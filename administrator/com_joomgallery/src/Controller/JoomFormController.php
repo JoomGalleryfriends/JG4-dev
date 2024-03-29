@@ -11,7 +11,7 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 // No direct access
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
 use \Joomla\CMS\Application\CMSApplication;
@@ -102,5 +102,95 @@ class JoomFormController extends BaseFormController
     }
 
     return $res;
+  }
+
+  /**
+   * Method to checkin a row.
+   *
+   * @param   integer  $pk  The numeric id of the primary key.
+   *
+   * @return  boolean  False on failure or error, true otherwise.
+   *
+   * @since   1.6
+   */
+  public function checkin($pk = null)
+  {
+      // Only attempt to check the row in if it exists.
+      if($pk)
+      {
+        $user = $this->getCurrentUser();
+
+        // Get an instance of the row to checkin.
+        $table = $this->getTable();
+
+        if(!$table->load($pk))
+        {
+          $this->setError($table->getError());
+
+          return false;
+        }
+
+        // If there is no checked_out or checked_out_time field, just return true.
+        if(!$table->hasField('checked_out') || !$table->hasField('checked_out_time'))
+        {
+          return true;
+        }
+
+        $checkedOutField = $table->getColumnAlias('checked_out');
+
+        // Check if this is the user having previously checked out the row.
+        $acl = $this->component->getAccess();
+        if( $table->$checkedOutField > 0 && $table->$checkedOutField != $user->get('id') &&
+            !$acl->checkACL('core.manage', 'com_checkin')
+          )
+        {
+          $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'));
+
+          return false;
+        }
+
+        // Attempt to check the row in.
+        if(!$table->checkIn($pk))
+        {
+          $this->component->setError($table->getError());
+
+          return false;
+        }
+      }
+
+      return true;
+  }
+
+  /**
+   * Method to check if you can add a new record.   *
+   * Extended classes can override this if necessary.
+   *
+   * @param   array  $data  An array of input data.
+   *
+   * @return  boolean
+   *
+   * @since   1.6
+   */
+  protected function allowAdd($data = [])
+  {
+    $acl = $this->component->getAccess();
+    return $acl->checkACL('core.create', $this->option);
+  }
+
+  /**
+   * Method to check if you can edit an existing record.   *
+   * Extended classes can override this if necessary.
+   *
+   * @param   array   $data  An array of input data.
+   * @param   string  $key   The name of the key for the primary key; default is id.
+   *
+   * @return  boolean
+   *
+   * @since   1.6
+   */
+  protected function allowEdit($data = [], $key = 'id')
+  {
+    $acl = $this->component->getAccess();
+    return $acl->checkACL('core.edit', $this->option);
   }
 }

@@ -11,7 +11,7 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 
 // No direct access.
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
@@ -33,7 +33,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
  * @package JoomGallery
  * @since   4.0.0
  */
-class MigrationModel extends AdminModel
+class MigrationModel extends JoomAdminModel
 {
   /**
 	 * @var    string  Alias to manage history control

@@ -10,7 +10,8 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('JPATH_BASE') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Factory;
