@@ -294,6 +294,7 @@ let responseHandler = function(type, response) {
 
       // Update migrateables
       updateMigrateables(type, response.data);
+      tryCounter = 0;
     }
     else
     {
