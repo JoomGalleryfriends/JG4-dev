@@ -156,6 +156,112 @@ abstract class JoomAdminModel extends AdminModel
 	}
 
   /**
+   * Method override to check-in a record or an array of record
+   *
+   * @param   mixed  $pks  The ID of the primary key or an array of IDs
+   *
+   * @return  integer|boolean  Boolean false if there is an error, otherwise the count of records checked in.
+   *
+   * @since   1.6
+   */
+  public function checkin($pks = [])
+  {
+    $pks   = (array) $pks;
+    $table = $this->getTable();
+    $count = 0;
+
+    if(empty($pks))
+    {
+      $pks = [(int) $this->getState($this->getName() . '.id')];
+    }
+
+    $checkedOutField = $table->getColumnAlias('checked_out');
+
+    // Check in all items.
+    foreach ($pks as $pk)
+    {
+        if ($table->load($pk))
+        {
+          if($table->{$checkedOutField} > 0)
+          {
+            if(!$this->checkinOne($pk))
+            {
+              return false;
+            }
+
+            $count++;
+          }
+        }
+        else
+        {
+          $this->component->setError($table->getError());
+
+          return false;
+        }
+    }
+
+    return $count;
+  }
+
+  
+  /**
+   * Method to checkin a row.
+   *
+   * @param   integer  $pk  The numeric id of the primary key.
+   *
+   * @return  boolean  False on failure or error, true otherwise.
+   *
+   * @since   1.6
+   */
+  public function checkinOne($pk = null)
+  {
+    // Only attempt to check the row in if it exists.
+    if($pk)
+    {
+      $user = $this->getCurrentUser();
+
+      // Get an instance of the row to checkin.
+      $table = $this->getTable();
+
+      if(!$table->load($pk))
+      {
+        $this->setError($table->getError());
+
+        return false;
+      }
+
+      // If there is no checked_out or checked_out_time field, just return true.
+      if(!$table->hasField('checked_out') || !$table->hasField('checked_out_time'))
+      {
+        return true;
+      }
+
+      $checkedOutField = $table->getColumnAlias('checked_out');
+
+      // Check if this is the user having previously checked out the row.
+      $acl = $this->component->getAccess();
+      if( $table->$checkedOutField > 0 && $table->$checkedOutField != $user->get('id') &&
+          !$acl->checkACL('core.manage', 'com_checkin')
+        )
+      {
+        $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'));
+
+        return false;
+      }
+
+      // Attempt to check the row in.
+      if(!$table->checkIn($pk))
+      {
+        $this->component->setError($table->getError());
+
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
 	 * Method to load component specific parameters into model state.
    * 
    * @param   int   $id   ID of the content if needed (default: 0)
