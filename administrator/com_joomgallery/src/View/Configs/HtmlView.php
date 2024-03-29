@@ -97,7 +97,7 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    if($canDo->get('core.edit.state')  || count($this->transitions))
+    if($canDo->get('core.edit.state'))
     {
       // Batch button
       $dropdown = $toolbar->dropdownButton('status-group')

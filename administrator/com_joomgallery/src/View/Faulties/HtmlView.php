@@ -102,7 +102,7 @@ class HtmlView extends JoomGalleryView
 			}
 		}
 
-		if($canDo->get('core.edit.state')  || count($this->transitions))
+		if($canDo->get('core.edit.state'))
 		{
 			$dropdown = $toolbar->dropdownButton('status-group')
 				->text('JTOOLBAR_CHANGE_STATUS')
