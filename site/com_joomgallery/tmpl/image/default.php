@@ -17,7 +17,26 @@ use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Session\Session;
 use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomla\CMS\User\UserFactoryInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+
+
+// $app          = Factory::getApplication();
+// $this->config = JoomHelper::getService('config');
+
+// image params
+$show_title        = $this->params['menu']->get('jg_detail_view_show_title', 0, 'INT');
+$show_category     = $this->params['menu']->get('jg_detail_view_show_category', 0, 'INT');
+$show_description  = $this->params['menu']->get('jg_detail_view_show_description', 0, 'INT');
+$show_imgdate      = $this->params['menu']->get('jg_detail_view_show_imgdate', 0, 'INT');
+$show_imgauthor    = $this->params['menu']->get('jg_detail_view_show_imgauthor', 0, 'INT');
+$show_created_by   = $this->params['menu']->get('jg_detail_view_show_created_by', 0, 'INT');
+$show_votes        = $this->params['menu']->get('jg_detail_view_show_votes', 0, 'INT');
+$show_rating       = $this->params['menu']->get('jg_detail_view_show_rating', 0, 'INT');
+$show_hits         = $this->params['menu']->get('jg_detail_view_show_hits', 0, 'INT');
+$show_downloads    = $this->params['menu']->get('jg_detail_view_show_downloads', 0, 'INT');
+$show_tags         = $this->params['menu']->get('jg_detail_view_show_tags', 0, 'INT');
+$show_metadata     = $this->params['menu']->get('jg_detail_view_show_metadata', 0, 'INT');
 
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
@@ -96,7 +115,9 @@ function getExifDataDirect ($exifJsonString='') {
 
 ?>
 
-<h2><?php echo $this->item->title; ?></h2>
+<?php if ($show_title) : ?>
+  <h2><?php echo $this->item->title; ?></h2>
+<?php endif; ?>
 
 <a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->catid); ?>">
   <i class="jg-icon-arrow-left-alt"></i><span><?php echo Text::_('Back to: Category') . ' ' . $this->item->cattitle; ?></span>
@@ -147,67 +168,89 @@ function getExifDataDirect ($exifJsonString='') {
 <figure class="figure joom-image text-center center">
   <div id="jg-loader"></div>
   <img src="<?php echo JoomHelper::getImg($this->item, 'detail'); ?>" class="figure-img img-fluid rounded" alt="<?php echo $this->item->title; ?>" style="width:auto;" itemprop="image" loading="lazy">
-  <figcaption class="figure-caption"><?php echo nl2br($this->item->description); ?></figcaption>
+  <?php if ($show_description) : ?>
+    <figcaption class="figure-caption"><?php echo $this->item->description; ?></figcaption>
+  <?php endif; ?>
 </figure>
 
 <?php // Image info and fields ?>
 <div class="item_fields">
   <h3><?php echo Text::_('COM_JOOMGALLERY_IMAGE_INFO'); ?></h3>
     <table class="table">
-        <tr>
+      <tr>
+        <?php if ($show_category) : ?>
+          <tr>
             <th><?php echo Text::_('JCATEGORY'); ?></th>
             <td>
-        <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->catid); ?>">
-          <?php echo $this->escape($this->item->cattitle); ?>
-        </a>
-      </td>
-        </tr>
-
-        <tr>
+              <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->catid); ?>">
+                <?php echo $this->escape($this->item->cattitle); ?>
+              </a>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_imgdate) : ?>
+          <tr>
+            <th><?php echo Text::_('COM_JOOMGALLERY_DATE'); ?></th>
+            <td><?php echo HTMLHelper::_('date', $this->item->date, Text::_('DATE_FORMAT_LC4')); ?></td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_imgauthor) : ?>
+          <tr>
             <th><?php echo Text::_('JAUTHOR'); ?></th>
             <td><?php echo $this->escape($this->item->author); ?></td>
-        </tr>
-
-        <tr>
-            <th><?php echo Text::_('COM_JOOMGALLERY_DATE'); ?></th>
-            <td><?php echo $this->escape($this->item->date); ?></td>
-        </tr>
-
-    <tr>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_created_by) : ?>
+        <?php $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->created_by); ?>
+          <tr>
+            <th><?php echo Text::_('COM_JOOMGALLERY_OWNER'); ?></th>
+            <td><?php echo $this->escape($user->name); ?></td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_votes) : ?>
+          <tr>
+            <th><?php echo Text::_('COM_JOOMGALLERY_VOTES'); ?></th>
+            <td><?php echo $this->escape($this->item->votes); ?></td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_rating) : ?>
+          <tr>
+            <th><?php echo Text::_('COM_JOOMGALLERY_IMAGE_RATING'); ?></th>
+            <td><?php echo $this->escape($this->item->rating); ?></td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_hits) : ?>
+          <tr>
             <th><?php echo Text::_('JGLOBAL_HITS'); ?></th>
             <td><?php echo (int) $this->item->hits; ?></td>
-        </tr>
-
-    <tr>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_downloads) : ?>
+          <tr>
             <th><?php echo Text::_('COM_JOOMGALLERY_DOWNLOADS'); ?></th>
             <td><?php echo (int) $this->item->downloads; ?></td>
-        </tr>
-
-		<tr>
-			<th><?php echo Text::_('COM_JOOMGALLERY_VOTES'); ?></th>
-			<td><?php echo $this->item->votes; ?></td>
-		</tr>
-
-		<tr>
-			<th><?php echo Text::_('COM_JOOMGALLERY_RATING'); ?></th>
-			<td><?php echo $this->item->rating; ?></td>
-		</tr>
-
-        <tr>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_tags) : ?>
+          <tr>
+            <th><?php echo Text::_('COM_JOOMGALLERY_TAGS'); ?></th>
+            <td><?php // todo echo $this->escape($this->item->tags); ?></td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($show_metadata) : ?>
+          <tr>
             <th><?php echo Text::_('COM_JOOMGALLERY_IMGMETADATA'); ?></th>
             <td>
-
-                    <div class="jg-metadata-container">
-                        <?php $exifName2Values = getExifDataDirect ($this->item->imgmetadata); ?>
-                        <?php foreach ($exifName2Values as $key => $value) : ?>
-                            <div class="jg-metadata">
-                                <?php echo Text::_($key) . ': ' . $value; ?></span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-
+              <div class="">
+                <?php $exifName2Values = getExifDataDirect ($this->item->imgmetadata); ?>
+                <?php foreach ($exifName2Values as $key => $value) : ?>
+                  <span class=""><?php echo Text::_($key); ?></span>
+                  <span class=""><?php echo $value; ?></span>
+                <?php endforeach; ?>
+              </div>
             </td>
-        </tr>
+          </tr>
+        <?php endif; ?>
     </table>
 </div>
 
