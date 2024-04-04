@@ -13,9 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 
 /**
  * Parent HTML View Class for JoomGallery
@@ -31,7 +31,7 @@ class JoomGalleryView extends BaseHtmlView
    * @access  protected
    * @var     object
    */
-  var $app;
+  protected $app;
 
   /**
    * Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent
@@ -39,7 +39,15 @@ class JoomGalleryView extends BaseHtmlView
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
+
+  /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
 
   /**
    * JUser object, holds the current user data
@@ -47,7 +55,7 @@ class JoomGalleryView extends BaseHtmlView
    * @access  protected
    * @var     object
    */
-  var $user;
+  protected $user;
 
   /**
    * JDocument object
@@ -55,7 +63,7 @@ class JoomGalleryView extends BaseHtmlView
    * @access  protected
    * @var     object
    */
-  var $document;
+  protected $document;
 
   /**
    * Constructor
@@ -79,4 +87,22 @@ class JoomGalleryView extends BaseHtmlView
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_NOTE_DEVELOPMENT_VERSION'), 'warning');
     }
   }
+
+  /**
+	 * Method to get the access service class.
+	 *
+	 * @return  AccessInterface   Object on success, false on failure.
+   * @since   4.0.0
+	 */
+	public function getAcl(): AccessInterface
+	{
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
+
+		return $this->acl;
+	}
 }

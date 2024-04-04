@@ -51,6 +51,14 @@ abstract class JoomListModel extends ListModel
   protected $component;
 
   /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
+
+  /**
    * Item type
    *
    * @access  protected
@@ -99,9 +107,14 @@ abstract class JoomListModel extends ListModel
 	 */
 	public function getAcl(): AccessInterface
 	{
-		$this->component->createAccess();
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
 
-		return $this->component->getAccess();
+		return $this->acl;
 	}
 
   /**
