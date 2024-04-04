@@ -68,6 +68,14 @@ abstract class JoomAdminModel extends AdminModel
   protected $component;
 
   /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
+
+  /**
 	 * The prefix to use with controller messages.
 	 *
 	 * @access  protected
@@ -151,9 +159,14 @@ abstract class JoomAdminModel extends AdminModel
 	 */
 	public function getAcl(): AccessInterface
 	{
-		$this->component->createAccess();
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
 
-		return $this->getAcl;
+		return $this->acl;
 	}
 
   /**
