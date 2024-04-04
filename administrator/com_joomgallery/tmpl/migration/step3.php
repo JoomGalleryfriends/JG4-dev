@@ -11,15 +11,15 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Form\FormFactoryInterface;
 
-// Import CSS
-$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+// Import CSS & JS
+$wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
    ->useScript('com_joomgallery.migrator');

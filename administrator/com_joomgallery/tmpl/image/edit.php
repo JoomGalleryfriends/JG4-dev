@@ -11,14 +11,14 @@
 // No direct access 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')

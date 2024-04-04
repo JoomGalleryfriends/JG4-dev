@@ -11,21 +11,17 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
-	 ->useScript('form.validate');
+	 ->useScript('form.validate')
+   ->useStyle('com_joomgallery.admin');
 HTMLHelper::_('bootstrap.tooltip');
-
-// Import CSS
-$wa->useStyle('com_joomgallery.admin');
 
 // Import modal
 $importModal = array(

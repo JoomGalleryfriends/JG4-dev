@@ -13,17 +13,17 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Helper\ModuleHelper;
-use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-HTMLHelper::_('bootstrap.framework');
-
-HTMLHelper::_('stylesheet', 'com_joomgallery/admin.css', array('version' => 'auto', 'relative' => true));
+// Import CSS & JS
+$wa = $this->document->getWebAssetManager();
+$wa->useStyle('com_joomgallery.admin');
 
 ?>
+
 <div class="d-flex flex-row">
   <div class="flex-fill">
     <div id="j-main-container" class="j-main-container">

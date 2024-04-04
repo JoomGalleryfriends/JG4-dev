@@ -13,6 +13,12 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
 
+/**
+ * Array defining the exif codes
+ *
+ * @package JoomGallery
+ * @since   4.0.0
+ */
 $exif_config_array = array
 (
   "IFD0" => array

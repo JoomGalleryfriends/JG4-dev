@@ -13,6 +13,12 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
 
+/**
+ * Array defining the iptc codes
+ *
+ * @package JoomGallery
+ * @since   4.0.0
+ */
 $iptc_config_array = array
 (
   "IPTC" => array

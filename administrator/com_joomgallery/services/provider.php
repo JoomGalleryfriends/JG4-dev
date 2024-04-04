@@ -9,20 +9,19 @@
 *****************************************************************************************/
 
 // No direct access
-\defined('_JEXEC') or die;
+defined('_JEXEC') or die;
 
+use Joomla\DI\Container;
+use Joomla\CMS\HTML\Registry;
+use Joomla\DI\ServiceProviderInterface;
+use Joomla\CMS\Extension\ComponentInterface;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use Joomla\CMS\Extension\Service\Provider\MVCFactory;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Extension\Service\Provider\RouterFactory;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
 use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
-use Joomla\CMS\Extension\Service\Provider\MVCFactory;
-use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use Joomla\CMS\HTML\Registry;
-use Joomla\DI\Container;
-use Joomla\DI\ServiceProviderInterface;
-use Joomla\CMS\Extension\ComponentInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
-
 
 /**
  * The Joomgallery service provider.
@@ -61,4 +60,4 @@ return new class implements ServiceProviderInterface
 			}
 		);
 	}
-};
+}
