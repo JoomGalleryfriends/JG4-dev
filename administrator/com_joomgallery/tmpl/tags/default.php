@@ -11,20 +11,17 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Language\Multilanguage;
-use \Joomla\CMS\Button\PublishedButton;
+use Joomla\CMS\Button\PublishedButton;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-
-// Import CSS
-$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+// Import CSS & JS
+$wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
    ->useScript('multiselect');
@@ -39,7 +36,7 @@ $saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 if($saveOrder && !empty($this->items))
 {
 	$saveOrderingUrl = 'index.php?option=com_joomgallery&task=tags.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
-	HTMLHelper::_('draggablelist.draggable');
+  HTMLHelper::_('draggablelist.draggable');
 }
 ?>
 

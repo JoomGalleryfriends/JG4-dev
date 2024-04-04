@@ -11,18 +11,16 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Language\Multilanguage;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Language\Multilanguage;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-
-// Import CSS
-$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+// Import CSS & JS
+$wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin');
 

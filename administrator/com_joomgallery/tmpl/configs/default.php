@@ -11,24 +11,20 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Button\PublishedButton;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Session\Session;
-use \Joomla\CMS\Button\PublishedButton;
-
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-HTMLHelper::_('bootstrap.tooltip');
-HTMLHelper::_('behavior.multiselect');
-
-// Import CSS
-$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+// Import CSS & JS
+$wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
-    ->useScript('com_joomgallery.admin');
+    ->useScript('com_joomgallery.admin')
+    ->useScript('multiselect');
+HTMLHelper::_('bootstrap.tooltip');
 
 $user      = Factory::getUser();
 $userId    = $user->get('id');
