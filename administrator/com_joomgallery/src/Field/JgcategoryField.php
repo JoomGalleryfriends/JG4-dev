@@ -13,11 +13,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Form\FormField;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Layout\FileLayout;
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Form\FormField;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Layout\FileLayout;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Field to select a JoomGallery category ID from a modal list.
@@ -80,7 +80,12 @@ class JgcategoryField extends FormField
 		// If user can't access com_joomgallery the field should be readonly.
 		if ($return && !$this->readonly)
 		{
-			$this->readonly = !Factory::getUser()->authorise('core.manage', 'com_joomgallery');
+			// Get access service
+			$comp = Factory::getApplication()->bootComponent('com_joomgallery');
+			$comp->createAccess();
+    	$acl  = $comp->getAccess();
+
+			$this->readonly = !$acl->checkACL('core.manage', 'com_joomgallery');
 		}
 
 		return $return;
@@ -119,7 +124,7 @@ class JgcategoryField extends FormField
 		// Initialize value
 		$name = Text::_('COM_JOOMGALLERY_FIELDS_SELECT_CATEGORY');
 
-		if(is_numeric($this->value))
+		if(\is_numeric($this->value))
 		{
 			if($this->value > 0)
 			{
@@ -154,7 +159,7 @@ class JgcategoryField extends FormField
 			'excluded'   => $this->getExcluded(),
 		);
 
-		return array_merge($data, $extraData);
+		return \array_merge($data, $extraData);
 	}
 
 	/**
@@ -189,7 +194,7 @@ class JgcategoryField extends FormField
 	{
 		if (isset($this->element['category']))
 		{
-			return intval($this->element['category']);
+			return \intval($this->element['category']);
 		}
 	}
 
@@ -204,7 +209,7 @@ class JgcategoryField extends FormField
 	{
 		if (isset($this->element['exclude']))
 		{
-			return intval($this->element['exclude']);
+			return \intval($this->element['exclude']);
 		}
 	}
 }

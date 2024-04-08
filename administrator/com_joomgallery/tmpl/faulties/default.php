@@ -11,7 +11,6 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
@@ -25,7 +24,7 @@ $wa->useStyle('com_joomgallery.admin')
 		->useScript('multiselect');
 HTMLHelper::_('bootstrap.tooltip');
 
-$user      = Factory::getUser();
+$user      = $this->app->getIdentity();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');

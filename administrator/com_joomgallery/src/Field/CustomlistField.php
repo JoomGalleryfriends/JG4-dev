@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Form\Field\ListField;
+use \Joomla\CMS\Form\Field\ListField;
 
 /**
  * Form Field class for the Joomla Platform.
@@ -46,6 +46,6 @@ class CustomlistField extends ListField
           'sensitive'   => $this->getAttribute('sensitive')
         );
 
-        return array_merge($data, $extraData);
+        return \array_merge($data, $extraData);
     }
 }

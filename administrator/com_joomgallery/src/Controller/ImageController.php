@@ -13,11 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Response\JsonResponse;
-use Joomla\CMS\Factory;
-use \Joomla\CMS\MVC\Controller\FormController;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Response\JsonResponse;
 
 /**
  * Image controller class.
@@ -234,9 +232,9 @@ class ImageController extends JoomFormController
     // Check if there is a return value
     $return = $this->input->get('return', null, 'base64');
 
-    if (!\is_null($return) && Uri::isInternal(base64_decode($return)))
+    if (!\is_null($return) && Uri::isInternal(\base64_decode($return)))
     {
-      $url = base64_decode($return);
+      $url = \base64_decode($return);
     }
 
     // Redirect to the list screen.

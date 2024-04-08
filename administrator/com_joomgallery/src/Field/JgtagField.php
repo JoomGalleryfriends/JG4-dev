@@ -13,14 +13,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Form\Field\ListField;
-use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Helper\TagsHelper;
-use Joomla\CMS\Language\Multilanguage;
-use Joomla\Database\ParameterType;
-use Joomla\Utilities\ArrayHelper;
-use Joomla\CMS\Object\CMSObject;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Object\CMSObject;
+use \Joomla\Utilities\ArrayHelper;
+use \Joomla\Database\ParameterType;
+use \Joomla\CMS\Form\Field\ListField;
+use stdClass;
 
 /**
  * List of Tags field.
@@ -79,7 +77,7 @@ class JgtagField extends ListField
 
         if (!\is_array($this->value) && !empty($this->value))
         {
-            if ($this->value instanceof CMSObject)
+            if ($this->value instanceof \stdClass)
             {
                 if(empty($this->value))
                 {
@@ -100,7 +98,7 @@ class JgtagField extends ListField
             // String in format 2,5,4
             if (\is_string($this->value))
             {
-                $this->value = explode(',', $this->value);
+                $this->value = \explode(',', $this->value);
             }
 
             // Integer is given
@@ -271,7 +269,7 @@ class JgtagField extends ListField
         // }
 
         // Merge any additional options in the XML definition.
-        $options = array_merge(parent::getOptions(), $options);
+        $options = \array_merge(parent::getOptions(), $options);
 
         // Prepare nested data
         // if ($this->isNested()) {
@@ -294,10 +292,12 @@ class JgtagField extends ListField
      */
     protected function prepareOptionsNested(&$options)
     {
-        if ($options) {
-            foreach ($options as &$option) {
+        if($options)
+        {
+            foreach($options as &$option)
+            {
                 $repeat = (isset($option->level) && $option->level - 1 >= 0) ? $option->level - 1 : 0;
-                $option->text = str_repeat('- ', $repeat) . $option->text;
+                $option->text = \str_repeat('- ', $repeat) . $option->text;
             }
         }
 
@@ -313,12 +313,14 @@ class JgtagField extends ListField
      */
     public function isNested()
     {
-        if ($this->isNested === null) {
+        if($this->isNested === null)
+        {
             // If mode="nested" || ( mode not set & config = nested )
-            if (
-                isset($this->element['mode']) && (string) $this->element['mode'] === 'nested'
-                || !isset($this->element['mode']) && $this->comParams->get('tag_field_ajax_mode', 1) == 0
-            ) {
+            if(
+                isset($this->element['mode']) && (string) $this->element['mode'] === 'nested' ||
+                !isset($this->element['mode']) && $this->comParams->get('tag_field_ajax_mode', 1) == 0
+              )
+            {
                 $this->isNested = true;
             }
         }
@@ -333,11 +335,17 @@ class JgtagField extends ListField
      */
     public function allowCustom()
     {
-        if ($this->element['custom'] && \in_array((string) $this->element['custom'], array('0', 'false', 'deny'))) {
+        if($this->element['custom'] && \in_array((string) $this->element['custom'], array('0', 'false', 'deny')))
+        {
             return false;
         }
 
-        return Factory::getUser()->authorise('core.create', 'com_joomgallery.tag');
+        // Get access service
+		$comp = Factory::getApplication()->bootComponent('com_joomgallery');
+		$comp->createAccess();
+    	$acl  = $comp->getAccess();
+
+        return $acl->checkACL('core.create', 'com_joomgallery.tag');
     }
 
     /**
@@ -349,7 +357,8 @@ class JgtagField extends ListField
      */
     public function isRemoteSearch()
     {
-        if ($this->element['remote-search']) {
+        if($this->element['remote-search'])
+        {
             return !\in_array((string) $this->element['remote-search'], array('0', 'false', ''));
         }
 

@@ -13,8 +13,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Form\FormField;
 
 /**
  * Supports an HTML select list of categories
@@ -43,7 +43,7 @@ class ModifiedbyField extends FormField
 	{
 		// Initialize variables.
 		$html   = array();
-		$user   = Factory::getUser();
+		$user   = Factory::getApplication()->getIdentity();
 		$html[] = '<input type="hidden" name="' . $this->name . '" value="' . $user->id . '" />';
     
 		if(!$this->hidden)
@@ -51,6 +51,6 @@ class ModifiedbyField extends FormField
 			$html[] = "<div>" . $user->name . " (" . $user->username . ")</div>";
 		}
 
-		return implode($html);
+		return \implode($html);
 	}
 }

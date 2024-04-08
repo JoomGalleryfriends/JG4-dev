@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\MVC\Controller\FormController;
+use \Joomla\CMS\MVC\Controller\FormController;
 
 /**
  * Tag controller class.

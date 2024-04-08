@@ -35,7 +35,7 @@ class DisplayController extends BaseController
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
 
   /**
    * The context for storing internal data, e.g. record.
