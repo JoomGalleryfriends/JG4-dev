@@ -105,11 +105,11 @@ class JoomHelper
           $com_obj->{$createService}();
           break;
         default:
-          throw new Exception('Too many arguments passed to getService()');
+          throw new \Exception('Too many arguments passed to getService()');
           break;
       }
     }
-    catch (Exception $e)
+    catch (\Exception $e)
     {
       echo 'Creation of the service failed. Error: ',  $e->getMessage(), "\n";
     }
@@ -252,7 +252,7 @@ class JoomHelper
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
 
-    $id = intval($id);
+    $id = \intval($id);
 
     // We got a record id
     if(\is_numeric($id) && $id > 0)
@@ -394,7 +394,7 @@ class JoomHelper
 
     if($imagetype === false)
     {
-      throw new Exception("Imagetype not found.");
+      throw new \Exception("Imagetype not found.");
 
       return false;
     }
@@ -658,7 +658,7 @@ class JoomHelper
     }
 
     // Create database connection
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Create query
     $query = $db->getQuery(true);
@@ -726,7 +726,7 @@ class JoomHelper
     else
     {
       // Create file manager service
-			$manager    = self::getService('FileManager');
+			$manager = self::getService('FileManager');
 
       return $manager->getImgPath(0, $type, false, false, $root);
     }
@@ -743,7 +743,7 @@ class JoomHelper
    */
   public static function getSQLRatingClause($tablealias = '')
   {
-    $db                   = Factory::getContainer()->get('DatabaseDriver');
+    $db                   = Factory::getContainer()->get(DatabaseInterface::class);
     $config               = self::getService('config');
     static $avgimgvote    = 0.0;
     static $avgimgrating  = 0.0;
@@ -808,7 +808,7 @@ class JoomHelper
   public static function getRating($imgid)
   {
     $rating = 0.0;
-    $db     = Factory::getContainer()->get('DatabaseDriver');
+    $db     = Factory::getContainer()->get(DatabaseInterface::class);
 
     $query = $db->getQuery(true)
           ->select(self::getSQLRatingClause() . ' AS rating')

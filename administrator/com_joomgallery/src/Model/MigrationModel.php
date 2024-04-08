@@ -11,7 +11,7 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 
 // No direct access.
-\defined('_JEXEC') or die;
+defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
@@ -22,7 +22,6 @@ use \Joomla\CMS\Filesystem\Path;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\Database\DatabaseFactory;
-use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
@@ -41,6 +40,14 @@ class MigrationModel extends JoomAdminModel
 	 * @since  4.0.0
 	 */
 	public $typeAlias = _JOOM_OPTION.'.migration';
+
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'migration';
 
 	/**
 	 * @var    string  The prefix to use with controller messages
@@ -103,7 +110,7 @@ class MigrationModel extends JoomAdminModel
 	 *
 	 * @since   4.0.0
 	 */
-  public function getParams()
+  public function getParams(): array
   {
     // Try to load params from user state
     $params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->scriptName.'.params', array());

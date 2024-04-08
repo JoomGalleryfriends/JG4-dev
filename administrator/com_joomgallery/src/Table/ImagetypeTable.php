@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
-use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
 
 /**

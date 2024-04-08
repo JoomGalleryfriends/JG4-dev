@@ -17,6 +17,7 @@ use \Joomla\Input\Input;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomla\CMS\MVC\Controller\AdminController as BaseAdminController;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
  * JoomGallery Base of Joomla Administrator Controller
@@ -38,6 +39,14 @@ class JoomAdminController extends BaseAdminController
   protected $component;
 
   /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
+
+  /**
 	 * Constructor.
 	 *
 	 * @param   array                $config   An optional associative array of configuration settings.
@@ -55,6 +64,24 @@ class JoomAdminController extends BaseAdminController
 
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
   }
+
+  /**
+	 * Method to get the access service class.
+	 *
+	 * @return  AccessInterface   Object on success, false on failure.
+   * @since   4.0.0
+	 */
+	public function getAcl(): AccessInterface
+	{
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
+
+		return $this->acl;
+	}
 
   /**
    * Execute a task by triggering a Method in the derived class.

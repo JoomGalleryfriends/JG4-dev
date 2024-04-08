@@ -335,17 +335,17 @@ class JgtagField extends ListField
      */
     public function allowCustom()
     {
-        if($this->element['custom'] && \in_array((string) $this->element['custom'], array('0', 'false', 'deny')))
-        {
-            return false;
-        }
+      if($this->element['custom'] && \in_array((string) $this->element['custom'], array('0', 'false', 'deny')))
+      {
+          return false;
+      }
 
         // Get access service
-		$comp = Factory::getApplication()->bootComponent('com_joomgallery');
-		$comp->createAccess();
+		  $comp = Factory::getApplication()->bootComponent('com_joomgallery');
+		  $comp->createAccess();
     	$acl  = $comp->getAccess();
 
-        return $acl->checkACL('core.create', 'com_joomgallery.tag');
+      return $acl->checkACL('core.create', 'com_joomgallery.tag');
     }
 
     /**

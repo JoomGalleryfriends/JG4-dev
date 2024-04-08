@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
  * Methods supporting a list of Configs records.
@@ -73,12 +72,10 @@ class ConfigsModel extends JoomListModel
 	 */
 	protected function populateState($ordering = 'a.id', $direction = 'ASC')
 	{
-    $app = Factory::getApplication();
-
-    $forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
+    $forcedLanguage = $this->app->input->get('forcedLanguage', '', 'cmd');
 
     // Adjust the context to support modal layouts.
-		if ($layout = $app->input->get('layout'))
+		if ($layout = $this->app->input->get('layout'))
 		{
 			$this->context .= '.' . $layout;
 		}

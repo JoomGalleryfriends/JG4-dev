@@ -17,7 +17,6 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Tag model.

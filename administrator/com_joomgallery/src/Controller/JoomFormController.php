@@ -17,6 +17,7 @@ use \Joomla\Input\Input;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
  * JoomGallery Base of Joomla Form Controller
@@ -38,6 +39,14 @@ class JoomFormController extends BaseFormController
   protected $component;
 
   /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
+
+  /**
    * Constructor.
    *
    * @param   array                 $config       An optional associative array of configuration settings.
@@ -56,6 +65,24 @@ class JoomFormController extends BaseFormController
 
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
   }
+
+  /**
+	 * Method to get the access service class.
+	 *
+	 * @return  AccessInterface   Object on success, false on failure.
+   * @since   4.0.0
+	 */
+	public function getAcl(): AccessInterface
+	{
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
+
+		return $this->acl;
+	}
 
   /**
    * Execute a task by triggering a Method in the derived class.
@@ -116,8 +143,7 @@ class JoomFormController extends BaseFormController
    */
   protected function allowAdd($data = [])
   {
-    $acl = $this->component->getAccess();
-    return $acl->checkACL('core.create', $this->option);
+    return $this->getAcl()->checkACL('core.create', $this->option);
   }
 
   /**
@@ -133,7 +159,6 @@ class JoomFormController extends BaseFormController
    */
   protected function allowEdit($data = [], $key = 'id')
   {
-    $acl = $this->component->getAccess();
-    return $acl->checkACL('core.edit', $this->option);
+    return $this->getAcl()->checkACL('core.edit', $this->option);
   }
 }

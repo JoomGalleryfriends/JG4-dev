@@ -13,12 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 // No direct access
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Date\Date;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Button\ActionButton;
-use Joomla\CMS\Layout\FileLayout;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Layout\FileLayout;
+use \Joomla\CMS\Button\ActionButton;
 
 /**
  * The ApprovedButton class.

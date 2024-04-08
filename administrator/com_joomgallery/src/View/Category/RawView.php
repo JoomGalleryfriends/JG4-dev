@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Category;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Router\Route;
+use \Joomla\Component\Media\Administrator\Exception\InvalidPathException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
@@ -64,7 +65,7 @@ class RawView extends JoomGalleryView
     }
 
     // Set mime encoding
-    $this->document->setMimeEncoding($file_info->mime_type);
+    $this->getDocument()->setMimeEncoding($file_info->mime_type);
 
     // Set header to specify the file name
     $this->app->setHeader('Cache-Control','no-cache, must-revalidate');

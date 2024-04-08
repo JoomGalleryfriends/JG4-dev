@@ -19,7 +19,6 @@ use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Category model.

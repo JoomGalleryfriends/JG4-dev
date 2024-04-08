@@ -76,7 +76,7 @@ class FaultiesTable extends Table
 		}
 		elseif(is_array($this->paths))
 		{
-			$this->paths = json_encode($this->paths, JSON_UNESCAPED_UNICODE);
+			$this->paths = \json_encode($this->paths, JSON_UNESCAPED_UNICODE);
 		}
 	}
 }
