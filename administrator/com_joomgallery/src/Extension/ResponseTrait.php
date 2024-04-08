@@ -13,7 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Psr\Http\Message\ResponseInterface;
+use \Psr\Http\Message\ResponseInterface;
 
 /**
 * Trait implementing tools to create responses

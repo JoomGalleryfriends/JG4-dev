@@ -14,9 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Date\Date;
 use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Date\Date;
+
 
 /**
  * Supports an HTML select list of categories
@@ -51,7 +52,7 @@ class TimeupdatedField extends FormField
 
 		if($hidden == null || !$hidden)
 		{
-			if (!strtotime($old_time_updated))
+			if (!\strtotime($old_time_updated))
 			{
 				$html[] = '-';
 			}
@@ -63,9 +64,9 @@ class TimeupdatedField extends FormField
 			}
 		}
 
-		$time_updated = Factory::getDate('now', Factory::getConfig()->get('offset'))->toSql(true);
+		$time_updated = Factory::getDate('now', Factory::getApplication()->getConfig()->get('offset'))->toSql(true);
 		$html[]       = '<input type="hidden" name="' . $this->name . '" value="' . $time_updated . '" />';
 
-		return implode($html);
+		return \implode($html);
 	}
 }

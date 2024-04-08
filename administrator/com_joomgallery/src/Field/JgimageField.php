@@ -13,10 +13,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Form\FormField;
-use Joomla\CMS\Language\Text;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Form\FormField;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Field to select a JoomGallery image ID from a modal list.
@@ -77,9 +77,14 @@ class JgimageField extends FormField
 		$return = parent::setup($element, $value, $group);
 
 		// If user can't access com_joomgallery the field should be readonly.
-		if ($return && !$this->readonly)
+		if($return && !$this->readonly)
 		{
-			$this->readonly = !Factory::getUser()->authorise('core.manage', 'com_joomgallery');
+			// Get access service
+			$comp = Factory::getApplication()->bootComponent('com_joomgallery');
+			$comp->createAccess();
+    	$acl  = $comp->getAccess();
+
+			$this->readonly = !$acl->checkACL('core.manage', 'com_joomgallery');
 		}
 
 		return $return;
@@ -94,7 +99,7 @@ class JgimageField extends FormField
 	 */
 	protected function getInput()
 	{
-		if (empty($this->layout))
+		if(empty($this->layout))
 		{
 			throw new \UnexpectedValueException(sprintf('%s has no layout assigned.', $this->name));
 		}
@@ -118,7 +123,7 @@ class JgimageField extends FormField
 		// Initialize value
 		$name = Text::_('COM_JOOMGALLERY_FIELDS_SELECT_IMAGE');
 
-		if(is_numeric($this->value))
+		if(\is_numeric($this->value))
 		{
       if($this->value > 0)
       {
@@ -147,7 +152,7 @@ class JgimageField extends FormField
 			'excluded'   => $this->getExcluded(),
 		);
 
-		return array_merge($data, $extraData);
+		return \array_merge($data, $extraData);
 	}
 
 	/**
@@ -159,9 +164,9 @@ class JgimageField extends FormField
 	 */
 	protected function getCats()
 	{
-		if (isset($this->element['categories']))
+		if(isset($this->element['categories']))
 		{
-			return explode(',', $this->element['categories']);
+			return \explode(',', $this->element['categories']);
 		}
 	}
 
@@ -174,9 +179,9 @@ class JgimageField extends FormField
 	 */
 	protected function getExcluded()
 	{
-		if (isset($this->element['exclude']))
+		if(isset($this->element['exclude']))
 		{
-			return explode(',', $this->element['exclude']);
+			return \explode(',', $this->element['exclude']);
 		}
 	}
 }

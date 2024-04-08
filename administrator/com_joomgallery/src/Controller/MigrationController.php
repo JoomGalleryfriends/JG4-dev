@@ -14,13 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
 use \Joomla\Input\Input;
 use \Joomla\CMS\Log\Log;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
-use \Joomla\Registry\Registry;
-use Joomla\CMS\Session\Session;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Response\JsonResponse;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Controller\BaseController;
@@ -132,7 +129,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new Exception('Requested migration script does not exist.', 1);      
+      throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
     // Access check.
@@ -205,7 +202,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new Exception('Requested migration script does not exist.', 1);      
+      throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
     // Access check.
@@ -286,7 +283,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new Exception('Requested migration script does not exist.', 1);      
+      throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
     // Access check.
@@ -370,7 +367,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new Exception('Requested migration script does not exist.', 1);      
+      throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
     // Access check.
@@ -827,7 +824,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new Exception('Requested migration script does not exist.', 1);      
+      throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
     // Check if no errors detected in precheck (step 2)

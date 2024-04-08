@@ -13,10 +13,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
+use \Joomla\Input\Input;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use \Joomla\Input\Input;
+use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
 
 /**
  * JoomGallery Base of Joomla Form Controller
@@ -35,7 +35,7 @@ class JoomFormController extends BaseFormController
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
 
   /**
    * Constructor.

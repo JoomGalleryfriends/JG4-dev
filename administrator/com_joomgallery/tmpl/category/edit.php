@@ -139,10 +139,10 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	<input type="hidden" name="jform[path]" value="<?php echo $this->item->path; ?>" />
 	<input type="hidden" name="jform[in_hidden]" value="<?php echo $this->item->in_hidden; ?>" />
 
-	<?php if (Factory::getUser()->authorise('core.admin','joomgallery')) : ?>
-	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
-		<?php echo $this->form->getInput('rules'); ?>
-	<?php echo HTMLHelper::_('uitab.endTab'); ?>
+	<?php if($this->getAcl()->checkACL('core.admin','joomgallery')) : ?>
+		<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
+			<?php echo $this->form->getInput('rules'); ?>
+		<?php echo HTMLHelper::_('uitab.endTab'); ?>
   <?php endif; ?>  
 	<?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 

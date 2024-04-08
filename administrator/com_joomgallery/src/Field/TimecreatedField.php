@@ -14,9 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Date\Date;
+use \Joomla\CMS\Form\FormField;
+use \Joomla\CMS\Language\Text;
 
 /**
  * Supports an HTML select list of categories
@@ -48,9 +48,9 @@ class TimecreatedField extends FormField
 
 		$time_created = $this->value;
 
-		if(!strtotime($time_created))
+		if(!\strtotime($time_created))
 		{
-			$time_created = Factory::getDate('now', Factory::getConfig()->get('offset'))->toSql(true);
+			$time_created = Factory::getDate('now', Factory::getApplication()->getConfig()->get('offset'))->toSql(true);
 			$html[]       = '<input type="hidden" name="' . $this->name . '" value="' . $time_created . '" />';
 		}
 
@@ -63,6 +63,6 @@ class TimecreatedField extends FormField
 			$html[]      = "<div>" . $pretty_date . "</div>";
 		}
 
-		return implode($html);
+		return \implode($html);
 	}
 }

@@ -13,11 +13,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Router\Route;
-use Joomla\Utilities\ArrayHelper;
-use Joomla\CMS\MVC\Controller\AdminController;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Router\Route;
+use \Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\MVC\Controller\AdminController;
 
 /**
  * Categories list controller class.
@@ -32,7 +32,7 @@ class CategoriesController extends AdminController
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 */
 	public function duplicate()
 	{
