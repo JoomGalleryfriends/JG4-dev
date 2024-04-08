@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
  * Parent HTML View Class for JoomGallery
@@ -25,6 +26,22 @@ use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
  */
 class JoomGalleryView extends BaseHtmlView
 {
+  /**
+   * The active document object
+   *
+   * @access  public
+   * @var     Document
+   *
+   */
+  public $document;
+
+  /**
+   * The model state
+   *
+   * @var  object
+   */
+  protected $state;
+
   /**
    * Joomla\CMS\Application\AdministratorApplication
    *
@@ -58,14 +75,6 @@ class JoomGalleryView extends BaseHtmlView
   protected $user;
 
   /**
-   * JDocument object
-   *
-   * @access  protected
-   * @var     object
-   */
-  protected $document;
-
-  /**
    * Constructor
    *
    * @access  protected
@@ -78,8 +87,8 @@ class JoomGalleryView extends BaseHtmlView
 
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
-    $this->user      = Factory::getUser();
-    $this->document  = Factory::getDocument();
+    $this->user      = $this->app->getIdentity();
+    $this->document  = $this->app->getDocument();
 
     if(\strpos($this->component->version, 'dev'))
     {
@@ -104,5 +113,17 @@ class JoomGalleryView extends BaseHtmlView
     }
 
 		return $this->acl;
+	}
+
+  /**
+	 * Check if state is set
+	 *
+	 * @param   mixed  $state  State
+	 *
+	 * @return bool
+	 */
+	public function getState($state)
+	{
+		return isset($this->state->{$state}) ? $this->state->{$state} : false;
 	}
 }

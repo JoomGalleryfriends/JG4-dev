@@ -13,17 +13,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Images;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Toolbar\Toolbar;
-use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\HTML\Helpers\Sidebar;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\Component\Content\Administrator\Extension\ContentComponent;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
-use \Joomla\CMS\Uri\Uri;
 
 /**
  * View class for a list of Images.
@@ -35,9 +30,7 @@ class HtmlView extends JoomGalleryView
 {
 	protected $items;
 
-	protected $pagination;
-
-	protected $state;
+	protected $pagination;	
 
 	/**
 	 * Display the view
@@ -50,14 +43,14 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-		$this->items = $this->get('Items');
-    $this->state = $this->get('State');
-		$this->pagination = $this->get('Pagination');
-		$this->filterForm = $this->get('FilterForm');
+    $this->state         = $this->get('State');
+		$this->items         = $this->get('Items');    
+		$this->pagination    = $this->get('Pagination');
+		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		// Check for errors.
-		if(count($errors = $this->get('Errors')))
+		if(\count($errors = $this->get('Errors')))
 		{
 			throw new \Exception(implode("\n", $errors));
 		}
@@ -77,9 +70,6 @@ class HtmlView extends JoomGalleryView
    */
   protected function addToolbar()
   {
-    $state = $this->get('State');
-    $canDo = JoomHelper::getActions('image');
-
     ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES'), "image");
 
     $toolbar = Toolbar::getInstance('toolbar');
@@ -92,9 +82,9 @@ class HtmlView extends JoomGalleryView
     $toolbar->appendButton('Custom', $html);
 
     // New button
-    if(file_exists($formPath))
+    if(\file_exists($formPath))
     {
-      if($canDo->get('core.create'))
+      if($this->getAcl()->checkACL('core.create'))
       {
         $add_dropdown = $toolbar->dropdownButton('add-group')
           ->text('JTOOLBAR_NEW')
@@ -113,11 +103,11 @@ class HtmlView extends JoomGalleryView
     }
 
     
-    if($canDo->get('core.edit.state'))
+    if($this->getAcl()->checkACL('core.edit.state'))
     {
 
       // Batch button
-      if($canDo->get('core.edit'))
+      if($this->getAcl()->checkACL('core.edit'))
       {
         $batch_dropdown = $toolbar->dropdownButton('batch-group')
           ->text('JTOOLBAR_BATCH')
@@ -137,7 +127,7 @@ class HtmlView extends JoomGalleryView
       }
 
       // Image processing button
-      if($canDo->get('core.edit'))
+      if($this->getAcl()->checkACL('core.edit'))
       {
         $process_dropdown = $toolbar->dropdownButton('process-group')
           ->text('COM_JOOMGALLERY_CONFIG_TAB_IMAGE_PROCESSING')
@@ -173,7 +163,7 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    if($canDo->get('core.delete'))
+    if($this->getAcl()->checkACL('core.delete'))
     {
       $toolbar->delete('images.delete')
         ->text('JTOOLBAR_DELETE')
@@ -184,7 +174,7 @@ class HtmlView extends JoomGalleryView
     // Show trash and delete for components that uses the state field
     if(isset($this->items[0]->published))
     {
-      if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
+      if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $this->getAcl()->checkACL('core.delete'))
       {
         $toolbar->delete('images.delete')
           ->text('JTOOLBAR_EMPTY_TRASH')
@@ -193,7 +183,7 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    if($canDo->get('core.admin'))
+    if($this->getAcl()->checkACL('core.admin'))
     {
       $toolbar->preferences('com_joomgallery');
     }
@@ -224,17 +214,5 @@ class HtmlView extends JoomGalleryView
 			'a.`id`'         => Text::_('JGRID_HEADING_ID'),
 			'a.`date`'    => Text::_('JDATE'),
 		);
-	}
-
-	/**
-	 * Check if state is set
-	 *
-	 * @param   mixed  $state  State
-	 *
-	 * @return bool
-	 */
-	public function getState($state)
-	{
-		return isset($this->state->{$state}) ? $this->state->{$state} : false;
 	}
 }

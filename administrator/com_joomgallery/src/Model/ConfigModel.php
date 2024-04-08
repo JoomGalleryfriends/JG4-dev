@@ -21,7 +21,6 @@ use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Form\FormFactory;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Config model.

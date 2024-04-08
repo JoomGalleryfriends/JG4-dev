@@ -13,10 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\Database\ParameterType;
-use Joomla\Utilities\ArrayHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
+use \Joomla\CMS\Factory;
+use \Joomla\Database\ParameterType;
+use \Joomla\Utilities\ArrayHelper;
 
 /**
  * Methods supporting a list of Categories records.

@@ -28,7 +28,7 @@ $user      = $this->app->getIdentity();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canOrder  = $this->getAcl->checkACL('core.edit.state', 'com_joomgallery');
+$canOrder  = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery');
 $saveOrder = $listOrder == 'a.ordering';
 
 if ($saveOrder)
@@ -75,10 +75,10 @@ if ($saveOrder)
 					<tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php endif; ?>>
 						<?php foreach ($this->items as $i => $item) :
 							$ordering   = ($listOrder == 'a.ordering');
-							$canCreate  = $this->getAcl->checkACL('core.create', 'com_joomgallery');
-							$canEdit    = $this->getAcl->checkACL('core.edit', 'com_joomgallery');
-							$canCheckin = $this->getAcl->checkACL('core.manage', 'com_joomgallery');
-							$canChange  = $this->getAcl->checkACL('core.edit.state', 'com_joomgallery');
+							$canCreate  = $this->getAcl()->checkACL('core.create', 'com_joomgallery');
+							$canEdit    = $this->getAcl()->checkACL('core.edit', 'com_joomgallery');
+							$canCheckin = $this->getAcl()->checkACL('core.manage', 'com_joomgallery');
+							$canChange  = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery');
 						?>
 						<tr class="row<?php echo $i % 2; ?>">
 							<td >

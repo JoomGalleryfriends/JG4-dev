@@ -300,7 +300,9 @@ class JgcategorydropdownField extends ListField
 				 * To take save or create in a category you need to have create rights for that category unless the item is already in that category.
 				 * Unset the option if the user isn't authorised for it. In this field assets are always categories.
 				 */
-				if ($option->level != 0 && !$acl->checkACL('core.create', $extension . '.category.' . $option->value))
+        $assetKey = $extension . '.category.' . $option->value;
+
+				if ($option->level != 0 && !$acl->checkACL('core.create', $assetKey, $option->value, true))
 				{
 					unset($options[$i]);
 				}
@@ -336,13 +338,13 @@ class JgcategorydropdownField extends ListField
 				 */
 				$assetKey = $extension . '.category.' . $option->value;
 
-				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$acl->checkACL('core.create', $assetKey))
+				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$acl->checkACL('core.create', $assetKey, $option->value, true))
 				{
 					unset($options[$i]);
 					continue;
 				}
 
-				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$acl->checkACL('core.create', $assetKey))
+				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$acl->checkACL('core.create', $assetKey, $option->value, true))
 				{
 					unset($options[$i]);
 				}

@@ -18,7 +18,6 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
-
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -53,7 +52,7 @@ class ConfigHelper
         $exif_options = $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('EXIF');
         $iptc_options = $form->getField('jg_replaceinfo')->loadSubForm()->getField('source')->getAttribute('IPTC');
       }
-      elseif(strpos($form->getName(), 'subform.jg_replaceinfo') !== false)
+      elseif(\strpos($form->getName(), 'subform.jg_replaceinfo') !== false)
       {
         // We got a jg_replaceinfo subform
         $formtype     = 'subform';

@@ -23,7 +23,6 @@ use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Image model.

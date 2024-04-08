@@ -13,10 +13,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Image;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Toolbar\ToolbarHelper;
-use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Toolbar\Toolbar;
+use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
@@ -28,7 +28,6 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
  */
 class HtmlView extends JoomGalleryView
 {
-	protected $state;
 	protected $item;
 	protected $form;
   protected $config;
@@ -60,7 +59,7 @@ class HtmlView extends JoomGalleryView
     }
 
 		// Check for errors.
-		if(count($errors = $this->get('Errors')))
+		if(\count($errors = $this->get('Errors')))
 		{
 			throw new \Exception(implode("\n", $errors));
 		}
@@ -70,7 +69,7 @@ class HtmlView extends JoomGalleryView
       $this->addToolbarUpload();
 
       // Add variables to JavaScript
-      $js_vars = new \stdClass();
+      $js_vars               = new \stdClass();
       $js_vars->maxFileSize  = (100 * 1073741824); // 100GB
       $js_vars->TUSlocation  = $this->item->tus_location;
       $js_vars->allowedTypes = $this->getAllowedTypes();
@@ -114,7 +113,7 @@ class HtmlView extends JoomGalleryView
 
 		$toolbar = Toolbar::getInstance('toolbar');
 
-		$user  = Factory::getUser();
+		$user  = Factory::getApplication()->getIdentity();
 		$isNew = ($this->item->id == 0);
 
 		if(isset($this->item->checked_out))
@@ -126,33 +125,31 @@ class HtmlView extends JoomGalleryView
 			$checkedOut = false;
 		}
 
-		$canDo = JoomHelper::getActions();
-
 		ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_IMAGE_EDIT'), "image");
 
 		// If not checked out, can save the item.
-		if(!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
+		if(!$checkedOut && ($this->getAcl()->checkACL('core.edit') || ($this->getAcl()->checkACL('core.create'))))
 		{
 			ToolbarHelper::apply('image.apply', 'JTOOLBAR_APPLY');
 		}
 
-		if(!$checkedOut && ($canDo->get('core.create')))
+		if(!$checkedOut && ($this->getAcl()->checkACL('core.create')))
 		{
 			$saveGroup = $toolbar->dropdownButton('save-group');
 
 			$saveGroup->configure
             (
-				function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew)
+				function (Toolbar $childBar) use ($checkedOut, $isNew)
 				{
 					$childBar->save('image.save', 'JTOOLBAR_SAVE');
 
-					if(!$checkedOut && ($canDo->get('core.create')))
+					if(!$checkedOut && ($this->getAcl()->checkACL('core.create')))
 					{
 						$childBar->save2new('image.save2new');
 					}
 
 					// If an existing item, can save to a copy.
-					if(!$isNew && $canDo->get('core.create'))
+					if(!$isNew && $this->getAcl()->checkACL('core.create'))
 					{
 						$childBar->save2copy('image.save2copy');
 					}
@@ -243,10 +240,8 @@ class HtmlView extends JoomGalleryView
 
     ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_REPLACE'), "image");
 
-    $canDo = JoomHelper::getActions();
-
     // Add replace button
-		if($canDo->get('core.edit'))
+		if($this->getAcl()->checkACL('core.edit'))
 		{
 			ToolbarHelper::save('image.replace', 'COM_JOOMGALLERY_REPLACE');
 		}

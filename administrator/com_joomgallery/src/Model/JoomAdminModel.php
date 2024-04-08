@@ -11,7 +11,7 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 
 // No direct access
-\defined('_JEXEC') or die;
+defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
@@ -252,9 +252,8 @@ abstract class JoomAdminModel extends AdminModel
       $checkedOutField = $table->getColumnAlias('checked_out');
 
       // Check if this is the user having previously checked out the row.
-      $acl = $this->getAcl;
       if( $table->$checkedOutField > 0 && $table->$checkedOutField != $user->get('id') &&
-          !$acl->checkACL('core.manage', 'com_checkin')
+          !$user->authorise('core.manage', 'com_checkin')
         )
       {
         $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'));
@@ -290,12 +289,9 @@ abstract class JoomAdminModel extends AdminModel
     // Initialize re-usable member properties, and re-usable local variables
     $this->initBatch();
 
-    // Get access service
-    $acl = $this->getAcl;
-
     foreach($pks as $pk)
     {
-      if ($acl->checkacl('core.edit', $contexts[$pk]))
+      if ($this->getAcl()->checkacl('core.edit', $contexts[$pk]))
       {
         $this->table->reset();
         $this->table->load($pk);
@@ -352,12 +348,9 @@ abstract class JoomAdminModel extends AdminModel
     // Initialize re-usable member properties, and re-usable local variables
     $this->initBatch();
 
-    // Get access service
-    $acl = $this->getAcl;
-
     foreach($pks as $pk)
     {
-        if ($acl->checkacl('core.edit', $contexts[$pk]))
+        if ($this->getAcl()->checkacl('core.edit', $contexts[$pk]))
         {
           $this->table->reset();
           $this->table->load($pk);
@@ -421,13 +414,10 @@ abstract class JoomAdminModel extends AdminModel
       return false;
     }
 
-    // Get access service
-    $acl = $this->getAcl;
-
     // Parent exists so we proceed
     foreach ($pks as $pk)
     {
-      if(!$acl->checkacl('core.edit', $contexts[$pk]))
+      if(!$this->getAcl()->checkacl('core.edit', $contexts[$pk]))
       {
         $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
 
@@ -501,12 +491,9 @@ abstract class JoomAdminModel extends AdminModel
     $this->initBatch();
     $tags = [$value];
 
-    // Get access service
-    $acl = $this->getAcl;
-
     foreach ($pks as $pk)
     {
-        if($acl->checkacl('core.edit', $contexts[$pk]))
+        if($this->getAcl()->checkacl('core.edit', $contexts[$pk]))
         {
           $this->table->reset();
           $this->table->load($pk);
@@ -587,9 +574,7 @@ abstract class JoomAdminModel extends AdminModel
       }
 
       // Check that the user has create permission for the component
-      $acl = $this->getAcl;
-
-      if(!$acl->checkacl('core.create', _JOOM_OPTION . '.category.' . $categoryId))
+      if(!$this->getAcl()->checkacl('core.create', _JOOM_OPTION . '.category.' . $categoryId))
       {
         $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_CREATE'));
 
@@ -670,7 +655,7 @@ abstract class JoomAdminModel extends AdminModel
 	 */
 	protected function preprocessForm(Form $form, $data, $group = 'joomgallery')
 	{
-		if (!Multilanguage::isEnabled())
+		if(!Multilanguage::isEnabled())
 		{
 			$form->setFieldAttribute('language', 'type', 'hidden');
 			$form->setFieldAttribute('language', 'default', '*');
@@ -813,8 +798,7 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canDelete($record)
   {
-    $acl = $this->getAcl;
-    return $acl->checkACL('core.delete', $this->option);
+    return $this->getAcl()->checkACL('core.delete', $this->option);
   }
 
   /**
@@ -828,7 +812,6 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canEditState($record)
   {
-    $acl = $this->getAcl;
-    return $acl->checkACL('core.edit.state', $this->option);
+    return $this->getAcl()->checkACL('core.edit.state', $this->option);
   }
 }

@@ -18,7 +18,6 @@ use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\CMS\HTML\Helpers\Sidebar;
 use \Joomla\Component\Content\Administrator\Extension\ContentComponent;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
@@ -33,8 +32,6 @@ class HtmlView extends JoomGalleryView
 
 	protected $pagination;
 
-	protected $state;
-
 	/**
 	 * Display the view
 	 *
@@ -46,8 +43,8 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-    $this->items         = $this->get('Items');
-		$this->state         = $this->get('State');
+    $this->state         = $this->get('State');
+    $this->items         = $this->get('Items');		
 		$this->pagination    = $this->get('Pagination');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
@@ -79,9 +76,6 @@ class HtmlView extends JoomGalleryView
    */
   protected function addToolbar()
   {
-    $state = $this->get('State');
-    $canDo = JoomHelper::getActions('category');
-
     ToolbarHelper::title(Text::_('JCATEGORIES'), "folder-open");
 
     $toolbar = Toolbar::getInstance('toolbar');
@@ -94,18 +88,18 @@ class HtmlView extends JoomGalleryView
     $toolbar->appendButton('Custom', $html);
 
     // New button
-    if(file_exists($formPath))
+    if(\file_exists($formPath))
     {
-      if($canDo->get('core.create'))
+      if($this->getAcl()->checkACL('core.create'))
       {
         $toolbar->addNew('category.add');
       }
     }
 
-    if($canDo->get('core.edit.state'))
+    if($this->getAcl()->checkACL('core.edit.state'))
     {
       // Batch button
-      if($canDo->get('core.edit'))
+      if($this->getAcl()->checkACL('core.edit'))
       {
         $batch_dropdown = $toolbar->dropdownButton('batch-group')
           ->text('JTOOLBAR_BATCH')
@@ -142,7 +136,7 @@ class HtmlView extends JoomGalleryView
     }
 
     // Delete button
-    if($canDo->get('core.delete'))
+    if($this->getAcl()->checkACL('core.delete'))
     {
       // Get infos for confirmation message
       $counts = new \stdClass;
@@ -162,7 +156,7 @@ class HtmlView extends JoomGalleryView
       $this->deleteBtnJS  = 'var counts = '. \json_encode($counts).';';
     }
 
-    if($canDo->get('core.admin'))
+    if($this->getAcl()->checkACL('core.admin'))
     {
       $toolbar->standardButton('refresh')
         ->text('JTOOLBAR_REBUILD')
@@ -172,7 +166,7 @@ class HtmlView extends JoomGalleryView
     // Show trash and delete for components that uses the state field
     if(isset($this->items[0]->published))
     {
-      if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $canDo->get('core.delete'))
+      if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $this->getAcl()->checkACL('core.delete'))
       {
         $toolbar->delete('categories.delete')
           ->text('JTOOLBAR_EMPTY_TRASH')
@@ -181,7 +175,7 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    if($canDo->get('core.admin'))
+    if($this->getAcl()->checkACL('core.admin'))
     {
       $toolbar->preferences('com_joomgallery');
     }
@@ -206,17 +200,5 @@ class HtmlView extends JoomGalleryView
 			'a.`created_by`' => Text::_('JGLOBAL_FIELD_CREATED_BY_LABEL'),
 			'a.`id`'         => Text::_('JGRID_HEADING_ID'),
 		);
-	}
-
-	/**
-	 * Check if state is set
-	 *
-	 * @param   mixed  $state  State
-	 *
-	 * @return bool
-	 */
-	public function getState($state)
-	{
-		return isset($this->state->{$state}) ? $this->state->{$state} : false;
 	}
 }
