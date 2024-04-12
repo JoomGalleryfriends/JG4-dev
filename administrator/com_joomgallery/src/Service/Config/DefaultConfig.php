@@ -14,8 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\Config;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 
 /**
  * Configuration Class

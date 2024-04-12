@@ -14,8 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\User\User;
+use \Joomla\CMS\Language\Text;
 use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
@@ -395,6 +395,7 @@ abstract class Config extends \stdClass implements ConfigInterface
     $query->select($db->quoteName('id'));
     $query->from($db->quoteName(_JOOM_TABLE_CONFIGS));
     $query->where($db->quoteName('group_id') . ' = ' . $db->quote($usergroup));
+    $query->where($db->quoteName('published') . ' = 1');
 
     // set the query
     $db->setQuery($query);
@@ -443,12 +444,13 @@ abstract class Config extends \stdClass implements ConfigInterface
     
     if(\in_array($configGroup, $userGroups))
     {
-      // Great there is a usergroup valid usergroup set in the user options
+      // Great there is a valid usergroup selected in the user options
       return $configGroup;
     }
     elseif(!empty($userGroups))
     {
       // There is no possible usergroup set in the user options
+      // Use the first usergroup in the list
       return $userGroups[0];
     }
     else
