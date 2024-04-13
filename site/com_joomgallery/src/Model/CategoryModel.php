@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\Model\ListModel;
 use \Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * Model to get a category record.
@@ -50,7 +51,7 @@ class CategoryModel extends JoomItemModel
 		$user = $this->app->getIdentity();
 
 		// Check published state
-		if((!$user->authorise('core.edit.state', 'com_joomgallery')) && (!$user->authorise('core.edit', 'com_joomgallery')))
+		if((!$this->getAcl()->checkACL('core.edit.state', 'com_joomgallery')) && (!$this->getAcl()->checkACL('core.edit', 'com_joomgallery')))
 		{
 			$this->setState('filter.published', 1);
 			$this->setState('filter.archived', 2);
@@ -276,7 +277,7 @@ class CategoryModel extends JoomItemModel
     $listModel->getState();
 
     // Select fields to load
-    $fields = array('id', 'alias', 'title', 'description', 'author', 'date', 'hits', 'votes', 'votesum');
+    $fields = array('id', 'alias', 'catid', 'title', 'description', 'filename', 'author', 'date', 'hits', 'votes', 'votesum');
     $fields = $this->addColumnPrefix('a', $fields);
 
     // Apply preselected filters and fields selection for images
