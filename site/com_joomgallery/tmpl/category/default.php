@@ -31,12 +31,14 @@ $subcategories_pagination   = $this->params['menu']->get('jg_category_view_subca
 $subcategories_random_image = $this->params['menu']->get('jg_category_view_subcategories_random_image', 0, 'INT');
 
 // image params
-$category_class    = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');
-$num_columns       = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
-$caption_align     = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
-$image_class       = $this->params['menu']->get('jg_category_view_image_class', 0, 'INT');
-$justified_height  = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
-$justified_gap     = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
+$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');
+$num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
+$caption_align    = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
+$image_class      = $this->params['menu']->get('jg_category_view_image_class', '', 'STRING');
+$justified_height = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
+$justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
+$lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
+$use_pagination   = $this->params['menu']->get('jg_category_view_pagination', 0, 'INT');
 $show_title        = $this->params['menu']->get('jg_category_view_images_show_title', 0, 'INT');
 $numb_images       = $this->params['menu']->get('jg_category_view_numb_images', 16, 'INT');
 $images_pagination = $this->params['menu']->get('jg_category_view_images_pagination', 'pagination', 'STRING');
@@ -46,14 +48,6 @@ $show_description  = $this->params['menu']->get('jg_category_view_show_descripti
 $show_imgdate      = $this->params['menu']->get('jg_category_view_show_imgdate', 0, 'INT');
 $show_imgauthor    = $this->params['menu']->get('jg_category_view_show_imgauthor', 0, 'INT');
 $show_tags         = $this->params['menu']->get('jg_category_view_show_tags', 0, 'INT');
-
-/*
-// For debug:
-echo 'debug $show_description: ' . '<pre>';
-print_r($show_description);
-echo '</pre>';
-Exit;
-*/
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
@@ -79,7 +73,9 @@ if($lightbox) {
   $wa->useStyle('com_joomgallery.lightgallery-bundle');
 }
 
-$wa->useScript('com_joomgallery.infinite-scroll');
+if (!$use_pagination) {
+  $wa->useScript('com_joomgallery.infinite-scroll');
+}
 
 $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd     = $this->getAcl()->checkACL('add', 'com_joomgallery.category', $this->item->id, true);

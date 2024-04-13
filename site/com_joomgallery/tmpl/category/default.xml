@@ -320,6 +320,17 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
+            <field
+                name="jg_category_view_pagination"
+                type="list"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_DESC"
+                useglobal="true"
+                default="0"
+                >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
         </fieldset>
     </fields>
 </metadata>
