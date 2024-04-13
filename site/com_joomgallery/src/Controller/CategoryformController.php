@@ -10,15 +10,16 @@
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\MVC\Controller\FormController;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\MVC\Controller\FormController;
 
 /**
- * Category class.
+ * Category form controller class.
  * 
  * @package JoomGallery
  * @since   4.0.0
@@ -33,7 +34,7 @@ class CategoryformController extends FormController
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
 
 	/**
    * Joomgallery\Component\Joomgallery\Administrator\Service\Access\Access
@@ -41,7 +42,7 @@ class CategoryformController extends FormController
    * @access  protected
    * @var     object
    */
-  var $acl;
+  protected $acl;
 
   /**
    * Constructor.
@@ -72,7 +73,7 @@ class CategoryformController extends FormController
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 * @since   4.0.0
 	 */
 	public function save($key = NULL, $urlVar = NULL)
@@ -191,7 +192,7 @@ class CategoryformController extends FormController
 	 *
 	 * @return void
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function cancel($key = NULL)
 	{

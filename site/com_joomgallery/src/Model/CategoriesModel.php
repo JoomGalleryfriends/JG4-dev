@@ -73,7 +73,7 @@ class CategoriesModel extends AdminCategoriesModel
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 *
 	 * @since   4.0.0
 	 */
@@ -83,7 +83,7 @@ class CategoriesModel extends AdminCategoriesModel
 		parent::populateState($ordering, $direction);
 
     // Set filters based on how the view is used.
-    // e.g. user list of categories: $this->setState('filter.created_by', Factory::getUser());
+    // e.g. user list of categories: $this->setState('filter.created_by', Factory::getApplication()->getIdentity());
 
     $this->loadComponentParams();
 	}

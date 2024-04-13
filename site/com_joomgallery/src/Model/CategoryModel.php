@@ -47,8 +47,7 @@ class CategoryModel extends JoomItemModel
 	 */
 	protected function populateState()
 	{
-		$app  = Factory::getApplication('com_joomgallery');
-		$user = Factory::getUser();
+		$user = $this->app->getIdentity();
 
 		// Check published state
 		if((!$user->authorise('core.edit.state', 'com_joomgallery')) && (!$user->authorise('core.edit', 'com_joomgallery')))
@@ -70,7 +69,7 @@ class CategoryModel extends JoomItemModel
 
 		if(is_null($id))
 		{
-			throw new Exception('No ID provided to the model!', 500);
+			throw new \Exception('No ID provided to the model!', 500);
 		}
 
 		$this->setState('category.id', $id);
@@ -111,13 +110,13 @@ class CategoryModel extends JoomItemModel
 		// Add created by name
 		if(isset($this->item->created_by))
 		{
-			$this->item->created_by_name = Factory::getUser($this->item->created_by)->name;
+			$this->item->created_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->created_by)->name;
 		}
 
 		// Add modified by name
 		if(isset($this->item->modified_by))
 		{
-			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
+			$this->item->modified_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->modified_by)->name;
 		}
 
 		// Delete unnessecary properties
@@ -374,7 +373,7 @@ class CategoryModel extends JoomItemModel
   protected function setImagesModelState(ListModel &$listModel, array $fields = array())
   {
     // Get current user
-    $user = Factory::getUser();
+    $user = $this->app->getIdentity();
 
     // Apply selection
     if(\count($fields) > 0)
@@ -409,7 +408,7 @@ class CategoryModel extends JoomItemModel
   protected function setChildrenModelState(ListModel &$listModel, array $fields = array())
   {
     // Get current user
-    $user = Factory::getUser();
+    $user = $this->app->getIdentity();
 
     // Apply selection
     if(\count($fields) > 0)

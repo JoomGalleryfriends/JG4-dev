@@ -27,16 +27,26 @@
            label="COM_JOOMGALLERY_DOWNLOADS" />
 
     <field name="votes"
+           type="text"
+           readonly="true"
            default="0"
-           label="COM_JOOMGALLERY_VOTES"
-           hidden="true" />
+           class="readonly"
+           label="COM_JOOMGALLERY_VOTES" />
 
     <field name="votesum"
            type="text"
            readonly="true"
            default="0"
            class="readonly"
+           hidden="true"
            label="COM_JOOMGALLERY_IMAGE_RATING" />
+
+    <field name="rating"
+           type="text"
+           readonly="true"
+           default="0"
+           class="readonly"
+           label="COM_JOOMGALLERY_RATING" />
 
     <field name="approved"
            type="list"
@@ -113,7 +123,7 @@
            type="editor"
            rows="250"
            buttons="true"
-           filter="JComponentHelper::filterText"
+           filter="\Joomla\CMS\Component\ComponentHelper::filterText"
            label="JGLOBAL_DESCRIPTION" />
 
     <field name="access"
@@ -194,10 +204,6 @@
         <option value="4">noindex, nofollow</option>
     </field>
 
-    <field name="filename"
-           type="hidden"
-           filter="stirng" />
-
     <field name="date"
            type="calendar"
            format="%Y-%m-%d"
@@ -218,7 +224,7 @@
            editor="codemirror"
            buttons="false"
            default=""
-           filter="JComponentHelper::filterText"
+           filter="\Joomla\CMS\Component\ComponentHelper::filterText"
            label="COM_JOOMGALLERY_IMGMETADATA"
            description="COM_JOOMGALLERY_IMGMETADATA_DESC" />
 

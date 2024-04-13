@@ -7,19 +7,20 @@
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
+
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Session\Session;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-// Import JS & CSS
-$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+// Import CSS & JS
+$wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.list')
    ->useStyle('com_joomgallery.site')
    ->useScript('com_joomgallery.list-view')
@@ -28,10 +29,10 @@ $wa->useStyle('com_joomgallery.list')
 // Access check
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canEdit   = $this->acl->checkACL('edit', 'com_joomgallery.category');
-$canAdd    = $this->acl->checkACL('add', 'com_joomgallery.category', 1, true);
-$canDelete = $this->acl->checkACL('delete', 'com_joomgallery.category');
-$canOrder  = $this->acl->checkACL('editstate', 'com_joomgallery.category');
+$canEdit   = $this->getAcl()->checkACL('edit', 'com_joomgallery.category');
+$canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 1, true);
+$canDelete = $this->getAcl()->checkACL('delete', 'com_joomgallery.category');
+$canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category');
 $saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
 $returnURL = base64_encode(JoomHelper::getListRoute('categories', null, $this->getLayout()));
 
@@ -111,9 +112,9 @@ if($saveOrder && !empty($this->items))
 							<?php foreach ($this->items as $i => $item) :
                   // Access check
                   $ordering   = ($listOrder == 'a.ordering');
-                  $canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $item->id);
-                  $canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $item->id);
-                  $canChange  = $this->acl->checkACL('editstate', 'com_joomgallery.category', $item->id);
+                  $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $item->id);
+                  $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.category', $item->id);
+                  $canChange  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category', $item->id);
 									$canCheckin = $canChange || $item->checked_out == Factory::getUser()->id;
 									$disabled   = ($item->checked_out > 0) ? 'disabled' : '';
                 

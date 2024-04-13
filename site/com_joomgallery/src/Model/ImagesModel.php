@@ -13,9 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\ImagesModel as AdminImagesModel;
 
 /**
@@ -77,7 +74,7 @@ class ImagesModel extends AdminImagesModel
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 *
 	 * @since   4.0.0
 	 */
@@ -87,7 +84,7 @@ class ImagesModel extends AdminImagesModel
 		parent::populateState($ordering, $direction);
 
     // Set filters based on how the view is used.
-    // e.g. user list of images: $this->setState('filter.created_by', Factory::getUser());
+    // e.g. user list of images: $this->setState('filter.created_by', Factory::getApplication()->getIdentity());
 
     $this->loadComponentParams();
 	}

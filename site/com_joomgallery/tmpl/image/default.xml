@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-    <layout title="Single Image View" option="View">
+    <layout title="COM_JOOMGALLERY_VIEW_IMAGE_TITLE" option="JDEFAULT">
       <message>
-        <![CDATA[Display a single image with information]]>
+        <![CDATA[COM_JOOMGALLERY_VIEW_IMAGE_DESC]]>
       </message>
     </layout>
     <fields name="request">

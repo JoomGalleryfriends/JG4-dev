@@ -11,13 +11,13 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Session\Session;
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 $category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');;
 $num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
@@ -27,6 +27,7 @@ $justified_height = $this->params['menu']->get('jg_category_view_justified_heigh
 $justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
 $lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
 
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
 $wa->useStyle('com_joomgallery.jg-icon-font');
@@ -47,11 +48,11 @@ if ( $lightbox ) {
 
   $wa->useScript('com_joomgallery.infinite-scroll');
 
-$canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.category', $this->item->id);
-$canAdd     = $this->acl->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
-$canAddImg  = $this->acl->checkACL('add', 'com_joomgallery.image', $this->item->id, true);
-$canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.category', $this->item->id);
-$canCheckin = $this->acl->checkACL('editstate', 'com_joomgallery.category', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
+$canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $this->item->id);
+$canAdd     = $this->getAcl()->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
+$canAddImg  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', $this->item->id, true);
+$canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.category', $this->item->id);
+$canCheckin = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));
 
 ?>

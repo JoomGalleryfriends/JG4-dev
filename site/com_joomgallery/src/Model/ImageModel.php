@@ -41,14 +41,14 @@ class ImageModel extends JoomItemModel
 	 *
 	 * @since   4.0.0
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	protected function populateState()
 	{
-		$user = Factory::getUser();
+		$user = $this->app->getIdentity();
 
 		// Check published state
-		if((!$user->authorise('core.edit.state', 'com_joomgallery')) && (!$user->authorise('core.edit', 'com_joomgallery')))
+		if((!$this->getAcl()->checkACL('core.edit.state', 'com_joomgallery')) && (!$this->getAcl()->checkACL('core.edit', 'com_joomgallery')))
 		{
 			$this->setState('filter.published', 1);
 			$this->setState('filter.archived', 2);
@@ -65,9 +65,9 @@ class ImageModel extends JoomItemModel
 			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
 		}
 
-		if(is_null($id))
+		if(\is_null($id))
 		{
-			throw new Exception('No ID provided to the model!', 500);
+			throw new \Exception('No ID provided to the model!', 500);
 		}
 
 		$this->setState('image.id', $id);
@@ -82,7 +82,7 @@ class ImageModel extends JoomItemModel
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function getItem($id = null)
 	{
@@ -110,14 +110,16 @@ class ImageModel extends JoomItemModel
 			$this->item->cattitle = $this->getCategoryName($this->item->catid);
 		}
 
+		// Add created by name
 		if(isset($this->item->created_by))
 		{
-			$this->item->created_by_name = Factory::getUser($this->item->created_by)->name;
+			$this->item->created_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->created_by)->name;
 		}
 
+		// Add modified by name
 		if(isset($this->item->modified_by))
 		{
-			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
+			$this->item->modified_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->modified_by)->name;
 		}
 
     // Delete unnessecary properties

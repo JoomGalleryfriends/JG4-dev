@@ -10,12 +10,13 @@
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\MVC\Controller\FormController;
+use \Joomla\CMS\MVC\Controller\FormController;
 
 /**
- * Images class.
+ * Images list controller class.
  * 
  * @package JoomGallery
  * @since   4.0.0
