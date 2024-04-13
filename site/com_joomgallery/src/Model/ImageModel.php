@@ -46,8 +46,6 @@ class ImageModel extends JoomItemModel
 	 */
 	protected function populateState()
 	{
-		$user = $this->app->getIdentity();
-
 		// Check published state
 		if((!$this->getAcl()->checkACL('core.edit.state', 'com_joomgallery')) && (!$this->getAcl()->checkACL('core.edit', 'com_joomgallery')))
 		{

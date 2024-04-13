@@ -48,8 +48,6 @@ class CategoryModel extends JoomItemModel
 	 */
 	protected function populateState()
 	{
-		$user = $this->app->getIdentity();
-
 		// Check published state
 		if((!$this->getAcl()->checkACL('core.edit.state', 'com_joomgallery')) && (!$this->getAcl()->checkACL('core.edit', 'com_joomgallery')))
 		{
@@ -68,7 +66,7 @@ class CategoryModel extends JoomItemModel
 			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
 		}
 
-		if(is_null($id))
+		if(\is_null($id))
 		{
 			throw new \Exception('No ID provided to the model!', 500);
 		}
@@ -374,7 +372,8 @@ class CategoryModel extends JoomItemModel
   protected function setImagesModelState(ListModel &$listModel, array $fields = array())
   {
     // Get current user
-    $user = $this->app->getIdentity();
+    $user   = $this->app->getIdentity();
+    $params = $this->getParams();
 
     // Apply selection
     if(\count($fields) > 0)
@@ -392,6 +391,13 @@ class CategoryModel extends JoomItemModel
     if(Multilanguage::isEnabled())
     {
       $listModel->setState('filter.language', $this->item->language);
+    }
+
+    // Override number of images beeing loaded
+    if(!$params['menu']->get('jg_category_view_pagination', 0, 'int'));
+    {
+      // Load all images for infinity scroll
+      $listModel->setState('list.limit', '0');
     }
 
     // Apply ordering
