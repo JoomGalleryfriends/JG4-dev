@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Uri\Uri;
@@ -58,7 +59,7 @@ trait RoutingTrait
 		{
       $this->useReturnPage = true;
 
-			return base64_decode($return);
+			return \base64_decode($return);
 		}
 	}
 

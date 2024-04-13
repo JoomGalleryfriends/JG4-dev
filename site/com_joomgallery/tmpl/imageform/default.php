@@ -7,14 +7,16 @@
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
+
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
 
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
@@ -31,14 +33,14 @@ $lang->load('joomla', JPATH_ADMINISTRATOR);
 if($this->item->id)
 {
   // ID given -> edit
-  $canEdit  = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
+  $canEdit  = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $this->item->id);
 }
 else
 {
   // ID = null -> add
-  $canEdit  = $this->acl->checkACL('add', 'com_joomgallery.image', 1, true);
+  $canEdit  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 1, true);
 }
-$canAdmin = $this->acl->checkACL('admin', 'com_joomgallery');
+$canAdmin = $this->getAcl()->checkACL('admin', 'com_joomgallery');
 ?>
 
 <div class="jg image-edit front-end-edit item-page">

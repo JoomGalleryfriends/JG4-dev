@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\ImageModel as AdminImageModel;
 
 /**
@@ -56,9 +55,9 @@ class ImageformModel extends AdminImageModel
 			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
 		}
 
-		if(is_null($id))
+		if(\is_null($id))
 		{
-			throw new Exception('No ID provided to the model!', 500);
+			throw new \Exception('No ID provided to the model!', 500);
 		}
 
     $return = $this->app->input->get('return', '', 'base64');
@@ -76,7 +75,7 @@ class ImageformModel extends AdminImageModel
 	 *
 	 * @return  Object|boolean Object on success, false on failure.
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 */
 	public function getItem($id = null)
 	{
@@ -129,6 +128,6 @@ class ImageformModel extends AdminImageModel
    */
   public function getReturnPage()
   {
-    return base64_encode($this->getState('return_page', ''));
+    return \base64_encode($this->getState('return_page', ''));
   }
 }

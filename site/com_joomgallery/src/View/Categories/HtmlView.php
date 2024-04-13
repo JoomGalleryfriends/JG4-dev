@@ -1,5 +1,4 @@
 <?php
-
 /**
 ******************************************************************************************
 **   @version    4.0.0-dev                                                                  **
@@ -14,10 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Categories;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\View\GenericDataException;
-use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\MVC\View\GenericDataException;
+use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
  * View class for a list of Joomgallery.
@@ -25,18 +23,11 @@ use \Joomla\CMS\Language\Text;
  * @package JoomGallery
  * @since   4.0.0
  */
-class HtmlView extends BaseHtmlView
+class HtmlView extends JoomGalleryView
 {
 	protected $items;
 
 	protected $pagination;
-
-	/**
-	 * The model state
-	 *
-	 * @var   \Joomla\CMS\Object\CMSObject
-	 */
-	protected $state;
 
 	/**
 	 * The page parameters
@@ -46,12 +37,6 @@ class HtmlView extends BaseHtmlView
 	 * @since  4.0.0
 	 */
 	protected $params = array();
-  /**
-	 * The Access service class
-	 *
-	 * @var   \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Access
-	 */
-	protected $acl;
 
 	/**
 	 * Display the view
@@ -60,28 +45,25 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @return void
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function display($tpl = null)
 	{
 		$this->state         = $this->get('State');
     $this->params        = $this->get('Params');
 		$this->items         = $this->get('Items');
-    $this->acl           = $this->get('Acl');
 		$this->pagination    = $this->get('Pagination');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		// Check for errors.
-		if(count($errors = $this->get('Errors')))
+		if(\count($errors = $this->get('Errors')))
 		{
-			throw new GenericDataException(implode("\n", $errors), 500);
+			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
 
-		// Check acces view level
-
 		// Preprocess the list of items to find ordering divisions.
-		foreach ($this->items as &$item)
+		foreach($this->items as &$item)
 		{
 			$this->ordering[$item->parent_id][] = $item->id;
 		}
@@ -96,12 +78,11 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @return void
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	protected function _prepareDocument()
 	{
-		$app   = Factory::getApplication();
-		$menus = $app->getMenu();
+		$menus = $this->app->getMenu();
 		$title = null;
 
 		// Because the application sets a default page title,
@@ -121,13 +102,13 @@ class HtmlView extends BaseHtmlView
 
 		if(empty($title))
 		{
-			$title = $app->get('sitename');
+			$title = $this->app->get('sitename');
 		}
-		elseif($app->get('sitename_pagetitles', 0) == 1)
+		elseif($this->app->get('sitename_pagetitles', 0) == 1)
 		{
 			$title = Text::sprintf('JPAGETITLE', $app->get('sitename'), $title);
 		}
-		elseif($app->get('sitename_pagetitles', 0) == 2)
+		elseif($this->app->get('sitename_pagetitles', 0) == 2)
 		{
 			$title = Text::sprintf('JPAGETITLE', $title, $app->get('sitename'));
 		}
@@ -150,24 +131,12 @@ class HtmlView extends BaseHtmlView
 		}
 
     // Add Breadcrumbs
-    $pathway = $app->getPathway();
+    $pathway = $this->app->getPathway();
     $breadcrumbTitle = Text::_('COM_JOOMGALLERY_CATEGORIES');
 
-    if(!in_array($breadcrumbTitle, $pathway->getPathwayNames()))
+    if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
     {
       $pathway->addItem($breadcrumbTitle);
     }
-	}
-
-	/**
-	 * Check if state is set
-	 *
-	 * @param   mixed  $state  State
-	 *
-	 * @return bool
-	 */
-	public function getState($state)
-	{
-		return isset($this->state->{$state}) ? $this->state->{$state} : false;
 	}
 }

@@ -38,13 +38,15 @@ $show_downloads    = $this->params['menu']->get('jg_detail_view_show_downloads',
 $show_tags         = $this->params['menu']->get('jg_detail_view_show_tags', 0, 'INT');
 $show_metadata     = $this->params['menu']->get('jg_detail_view_show_metadata', 0, 'INT');
 
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
 $wa->useStyle('com_joomgallery.jg-icon-font');
 
-$canEdit    = $this->acl->checkACL('edit', 'com_joomgallery.image', $this->item->id);
-$canDelete  = $this->acl->checkACL('delete', 'com_joomgallery.image', $this->item->id);
-$canCheckin = $this->acl->checkACL('editstate', 'com_joomgallery.image', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
+// Access check
+$canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $this->item->id);
+$canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', $this->item->id);
+$canCheckin = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL  = base64_encode(JoomHelper::getViewRoute('image', $this->item->id, $this->item->catid, $this->item->language, $this->getLayout()));
 
 function getExifDataDirect ($exifJsonString='') {

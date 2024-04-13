@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Router\Route;
