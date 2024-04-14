@@ -77,7 +77,7 @@ class JgtagField extends ListField
 
         if (!\is_array($this->value) && !empty($this->value))
         {
-            if ($this->value instanceof \stdClass)
+            if (\is_object($this->value))
             {
                 if(empty($this->value))
                 {
