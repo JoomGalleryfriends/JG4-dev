@@ -14,11 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Object\CMSObject;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\Database\ParameterType;
 use \Joomla\CMS\Form\Field\ListField;
-use stdClass;
 
 /**
  * List of Tags field.
