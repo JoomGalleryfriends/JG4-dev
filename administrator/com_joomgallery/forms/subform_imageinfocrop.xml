@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <field name="xaxis"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="X-Axis"
+    />
+
+    <field name="yaxis"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="Y-Axis"
+    />
+
+    <field name="width"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="Width"
+    />
+
+    <field name="height"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="Height"
+    />
+</form>

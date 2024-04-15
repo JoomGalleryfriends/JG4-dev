@@ -244,6 +244,44 @@
            description="JFIELD_META_KEYWORDS_DESC"
     />
 
+    <field name="crop_xaxis"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="X-Axis"
+    />
+
+    <field name="crop_yaxis"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="Y-Axis"
+    />
+
+    <field name="crop_width"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="Width"
+    />
+
+    <field name="crop_height"
+           type="text"
+           class="inputbox"
+           filter="int"
+           default=""
+           label="height"
+    />
+
+    <field name="imgmetadata"
+           type="subform"
+           formsource="administrator/components/com_joomgallery/forms/subform_imageimgmetadata.xml"
+           layout="joomla.form.field.subform.default"
+    />
+
     <field name="robots"
            type="list"
            default="0"
@@ -301,14 +339,14 @@
            label="COM_JOOMGALLERY_DATE"
            description="COM_JOOMGALLERY_DATE_DESC" />
 
-    <field name="imgmetadata"
+    <!-- <field name="imgmetadata"
            type="editor"
            editor="codemirror"
            buttons="false"
            default=""
            filter="\Joomla\CMS\Component\ComponentHelper::filterText"
            label="COM_JOOMGALLERY_IMGMETADATA"
-           description="COM_JOOMGALLERY_IMGMETADATA_DESC" />
+           description="COM_JOOMGALLERY_IMGMETADATA_DESC" /> -->
 
     <field name="params"
            type="subform"

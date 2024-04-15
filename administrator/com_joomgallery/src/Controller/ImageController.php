@@ -242,6 +242,113 @@ class ImageController extends JoomFormController
     $this->setRedirect(Route::_($url, false));
   }
 
+  
+  public function crop()
+  {
+    // Check for request forgeries.
+    $this->checkToken();
+
+    throw new Exception('Task "image.crop" not yet implemented.', 1);    
+
+    $app     = $this->app;
+    $model   = $this->getModel();
+    $data    = $this->input->post->get('jform', [], 'array');
+    $context = (string) _JOOM_OPTION . '.' . $this->context . '.crop';
+    $id      = \intval($data['id']);
+
+    // Access check.
+    if (!$this->allowSave($data, $id))
+    {
+        $this->setMessage(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
+
+        $this->setRedirect(
+            Route::_('index.php?option=' . _JOOM_OPTION . '&view=' . $this->view_list . $this->getRedirectToListAppend(),false)
+        );
+
+        return false;
+    }
+
+    // Load form data
+    $form = $model->getForm($data, false);
+    if(!$form)
+    {
+        $this->setMessage($model->getError(), 'error');
+        return false;
+    }
+    $form->setFieldAttribute('imgtitle', 'required', false);
+    $form->setFieldAttribute('replacetype', 'required', true);
+    $form->setFieldAttribute('image', 'required', true);
+
+    // Test whether the data is valid.
+    $validData = $model->validate($form, $data);
+
+    // Check for validation errors.
+    if($validData === false)
+    {
+        // Get the validation messages.
+        $errors = $model->getErrors();
+
+        // Push up to three validation messages out to the user.
+        for($i = 0, $n = \count($errors); $i < $n && $i < 3; $i++)
+        {
+            if ($errors[$i] instanceof \Exception)
+            {
+                $this->setMessage($errors[$i]->getMessage(), 'warning');
+            }
+            else
+            {
+                $this->setMessage($errors[$i], 'warning');
+            }
+        }
+
+        // Save the data in the session.
+        $app->setUserState($context . '.data', $data);
+
+        // Redirect back to the crop screen.
+        $this->setRedirect(
+            Route::_('index.php?option=' . _JOOM_OPTION . '&view=image&layout=crop&id=' . $id, false)
+        );
+
+        return false;
+    }
+
+    // Attempt to replace the image.
+    if(!$model->crop($validData))
+    {
+        // Save the data in the session.
+        $app->setUserState($context . '.data', $validData);
+
+        // Redirect back to the replace screen.
+        $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype']), $model->getError()), 'error');
+
+        $this->setRedirect(
+            Route::_('index.php?option=' . _JOOM_OPTION . '&view=image&layout=crop&id=' . $id, false)
+        );
+
+        return false;
+    }
+
+    // Set message
+    $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype'])));
+
+    // Clear the data from the session.
+    $app->setUserState($context . '.data', null);
+
+    // Redirect to edit screen
+    $url = 'index.php?option=' . _JOOM_OPTION . '&view=image&layout=edit&id=' . $id;
+
+    // Check if there is a return value
+    $return = $this->input->get('return', null, 'base64');
+
+    if (!\is_null($return) && Uri::isInternal(base64_decode($return)))
+    {
+        $url = base64_decode($return);
+    }
+
+    // Redirect to the list screen.
+    $this->setRedirect(Route::_($url, false));
+  }
+
   /**
      * Method to cancel an edit.
      *

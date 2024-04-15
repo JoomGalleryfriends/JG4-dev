@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <field name="iptc_citylegacy"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_CITYLEGACY"
+           description="COM_JOOMGALLERY_IPTC_CITYLEGACY_DEFINITION"
+    />
+
+    <field name="iptc_contact"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_CONTACT"
+           description="COM_JOOMGALLERY_IPTC_CONTACT_DEFINITION"
+    />
+
+    <field name="iptc_copyright_notice"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_COPYRIGHTNOTICE"
+           description="COM_JOOMGALLERY_IPTC_COPYRIGHTNOTICE_DEFINITION"
+    />
+
+    <field name="iptc_country_code_legacy"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_COUNTRYCODELEGACY"
+           description="COM_JOOMGALLERY_IPTC_COUNTRYCODELEGACY_DEFINITION"
+    />
+
+    <field name="iptc_country_county"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_COUNTRYLEGACY"
+           description="COM_JOOMGALLERY_IPTC_COUNTRYLEGACY_DEFINITION"
+    />
+
+    <field name="iptc_creator"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_CREATOR"
+    />
+
+    <field name="iptc_creator_jobtitle"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_CREATORSJOBTITLE"
+           description="COM_JOOMGALLERY_IPTC_CREATORSJOBTITLE_DEFINITION"
+    />
+
+    <field name="iptc_credit"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_CREDITLINE"
+           description="COM_JOOMGALLERY_IPTC_CREDITLINE_DEFINITION"
+    />
+
+    <field name="iptc_date_created"
+           type="calendar"
+           translateformat="true"
+           showtime="true"
+           size="22"
+           filter="user_utc"
+           label="COM_JOOMGALLERY_IPTC_DATECREATED"
+           description="COM_JOOMGALLERY_IPTC_DATECREATED_DEFINITION"
+    />
+
+    <field name="iptc_desc"
+           type="textarea"
+           filter="string"
+           rows="5"
+           cols="40"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_DESCRIPTION"
+           descritpion="COM_JOOMGALLERY_IPTC_DESCRIPTION_DEFINITION"
+    />
+
+    <field name="iptc_author"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_DESCRIPTIONWRITER"
+           description="COM_JOOMGALLERY_IPTC_DESCRIPTIONWRITER_DEFINITION"
+    />
+
+    <field name="iptc_headline"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_HEADLINE"
+           description="COM_JOOMGALLERY_IPTC_HEADLINE_DEFINITION"
+    />
+
+    <field name="iptc_special_instructions"
+           type="textarea"
+           filter="string"
+           rows="5"
+           cols="40"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_INSTRUCTIONS"
+           description="COM_JOOMGALLERY_IPTC_INSTRUCTIONS_DEFINITION"
+    />
+
+    <field name="iptc_intellectualgenre"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_INTELLECTUALGENRE"
+           description="COM_JOOMGALLERY_IPTC_INTELLECTUALGENRE_DEFINITION"
+    />
+
+    <field name="iptc_keywords"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_KEYWORDS"
+           description="COM_JOOMGALLERY_IPTC_KEYWORDS_DEFINITION"
+    />
+
+    <field name="iptc_provinceorstatelegacy"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_PROVINCEORSTATELEGACY"
+           description="COM_JOOMGALLERY_IPTC_PROVINCEORSTATELEGACY_DEFINITION"
+    />
+
+    <field name="iptc_source"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_SOURCE"
+           description="COM_JOOMGALLERY_IPTC_SOURCE_DEFINITION"
+    />
+
+    <field name="iptc_location"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_SUBLOCATIONLEGACY"
+           description="COM_JOOMGALLERY_IPTC_SUBLOCATIONLEGACY_DEFINITION"
+    />
+
+    <field name="iptc_title"
+           type="input"
+           class="inputbox"
+           filter="string"
+           default=""
+           label="COM_JOOMGALLERY_IPTC_TITLE"
+           description="COM_JOOMGALLERY_IPTC_TITLE_DEFINITION"
+    />
+</form>

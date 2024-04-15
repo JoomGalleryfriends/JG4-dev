@@ -59,6 +59,11 @@ class HtmlView extends JoomGalleryView
       $this->form->setFieldAttribute('image', 'required', true);
     }
 
+    //Load languages
+    $lang = Factory::getApplication()->getLanguage();
+    $lang->load(_JOOM_OPTION.'.exif', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
+    $lang->load(_JOOM_OPTION.'.iptc', JPATH_ADMINISTRATOR.'/components/'._JOOM_OPTION);
+
 		// Check for errors.
 		if(count($errors = $this->get('Errors')))
 		{
@@ -92,6 +97,15 @@ class HtmlView extends JoomGalleryView
       }
       $this->addToolbarReplace();
       $this->modifyFieldsReplace();
+    }
+    elseif($this->_layout == 'crop')
+    {
+      if($this->item->id == 0)
+      {
+        throw new \Exception("View needs an image ID to be loaded.", 1);
+      }
+      $this->addToolbarCrop();
+      //$this->modifyFieldsReplace();
     }
     else
     {
@@ -250,6 +264,31 @@ class HtmlView extends JoomGalleryView
 		{
 			ToolbarHelper::save('image.replace', 'COM_JOOMGALLERY_REPLACE');
 		}
+
+    // Add cancel button
+    ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CANCEL');
+  }
+
+  /**
+   * Add the page title and toolbar for the imagetype cropping form.
+   *
+   * @return void
+   *
+   * @throws Exception
+   */
+  protected function addToolbarCrop()
+  {
+    Factory::getApplication()->input->set('hidemainmenu', true);
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_CROP'), "image");
+
+    /* $canDo = JoomHelper::getActions();
+    // Add replace button
+    if($canDo->get('core.edit'))
+    {
+        ToolbarHelper::save('image.crop', 'COM_JOOMGALLERY_CROP');
+    }*/
+    ToolbarHelper::save('image.crop', 'COM_JOOMGALLERY_CROP');
+
 
     // Add cancel button
     ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CANCEL');

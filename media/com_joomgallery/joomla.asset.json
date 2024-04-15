@@ -150,6 +150,19 @@
       "name": "com_joomgallery.migrator",
       "type": "script",
       "uri": "com_joomgallery/migrator/dist/migrator.js"
+    },
+    {
+      "name": "com_joomgallery.cropper",
+      "type": "script",
+      "uri": "com_joomgallery/cropper.min.js",
+      "dependencies": [
+        "jquery"
+      ]
+    },
+    {
+      "name": "com_joomgallery.cropper",
+      "type": "style",
+      "uri": "com_joomgallery/cropper.min.css"
     }
   ]
 }

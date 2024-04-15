@@ -105,7 +105,6 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
           <?php echo $this->form->renderField('downloads'); ?>
           <?php echo $this->form->renderField('votes'); ?>
           <?php echo $this->form->renderField('rating'); ?>
-          <?php echo $this->form->renderField('imgmetadata'); ?>
         </div>          
       </fieldset>
     </div>
@@ -139,6 +138,18 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 		</div>
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+  <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'CROP', "Image Metadata"); ?>
+    <div class="row">
+      <div class="col-12 col-lg-12">
+        <fieldset id="fieldset-metadata">
+          <div>
+            <?php echo $this->form->renderField('imgmetadata'); ?>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
 	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'DisplayParams', Text::_('COM_JOOMGALLERY_PARAMETERS', true)); ?>
 	<div class="row">
@@ -182,7 +193,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 // Image preview modal
 $options = array('modal-dialog-scrollable' => true,
                   'title'  => 'Test Title',
-                  'footer' => '<a id="replaceBtn" class="btn" href="'.Route::_('index.php?option=com_joomgallery&view=image&layout=replace&id='.(int) $this->item->id).'">'.Text::_('COM_JOOMGALLERY_REPLACE').'</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
+                  'footer' => '<a id="replaceBtn" class="btn" href="'.Route::_('index.php?option=com_joomgallery&view=image&layout=replace&id='.(int) $this->item->id).'">'.Text::_('COM_JOOMGALLERY_REPLACE').'</a><a id="cropBtn" class="btn" href="'.Route::_('index.php?option=com_joomgallery&view=image&layout=crop&id='.(int) $this->item->id).'">'.Text::_('COM_JOOMGALLERY_CROP').'</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('JCLOSE').'</button>',
                 );
 
 echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div id="modal-body">Content set by ajax.</div>');
@@ -196,6 +207,7 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
     let modalTitle = modal.querySelector('.modal-title');
     let modalBody  = modal.querySelector('.modal-body');
     let modalBtn   = document.getElementById('replaceBtn');
+    let cropBtn    = document.getElementById('cropBtn');
 
     <?php
       $imgURL   = '{';
@@ -221,6 +233,7 @@ echo HTMLHelper::_('bootstrap.renderModal', 'image-modal-box', $options, '<div i
     modalBody.innerHTML  = body;
 
     modalBtn.href = modalBtn.href + '&type=' + typename;
+    cropBtn.href  = cropBtn.href +'&type=' + typename;
 
     let bsmodal = new bootstrap.Modal(document.getElementById('image-modal-box'), {keyboard: false});
     bsmodal.show();
