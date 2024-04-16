@@ -12,6 +12,7 @@
     <namespace path="src">Joomgallery\Plugin\System\Joomgallery</namespace>
     
     <files>
+        <folder>forms</folder>
         <folder>language</folder>
         <folder>services</folder>
         <folder plugin="joomgallery">src</folder>
