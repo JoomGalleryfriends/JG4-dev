@@ -158,33 +158,6 @@ trait MessageTrait
   }
 
   /**
-   * Log a message
-   * 
-   * @param   string   $txt       The message for a new log entry.
-   * @param   integer  $priority  Message priority.
-   *
-   * @return  void
-   *
-   * @since   4.0.0
-  */
-  protected function addLog(string $txt, int $priority = 8, string $name = null)
-  {
-    if(\is_null($name) && \is_null($this->logName))
-    {
-      Log::add($txt, $priority, 'com_joomgallery');
-    }
-    else
-    {
-      if(\is_null($name))
-      {
-        $name = $this->logName;
-      }
-
-      Log::add($txt, $priority, 'com_joomgallery'.$name);
-    }
-  }
-
-  /**
    * Set a default logger to be used from now on
    * 
    * @param   string   $name   Name of the logger. Empty to use the default JoomGallery logger
@@ -197,6 +170,50 @@ trait MessageTrait
   {
     $this->addLogger($name);
     $this->logName = $name;
+  }
+
+  /**
+   * Log a message
+   * 
+   * @param   string   $txt       The message for a new log entry.
+   * @param   integer  $priority  Message priority.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function addLog(string $txt, int $priority = 8, string $name = null)
+  {
+    $this->addLogger($name);
+    
+    if(\is_null($name) && \is_null($this->logName))
+    {
+      Log::add($txt, $priority, 'com_joomgallery');
+    }
+    else
+    {
+      if(\is_null($name))
+      {
+        $name = $this->logName;
+      }
+
+      Log::add($txt, $priority, 'com_joomgallery.'.$name);
+    }
+  }
+
+  /**
+   * Log a message
+   * 
+   * @param   string   $txt       The message for a new log entry.
+   * @param   integer  $priority  Message priority.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function setLog(string $txt, int $priority = 8, string $name = null)
+  {
+    return $this->addLog($txt, $priority, $name);
   }
 
   /**
@@ -224,6 +241,24 @@ trait MessageTrait
   }
 
   /**
+   * Add text to the debug information storage
+   *
+   * @param   string   $txt         Text to add to the debugoutput
+   * @param   bool     $new_line    True to add text to a new line (default: true)
+   * @param   bool     $margin_top  True to add an empty line in front (default: false)
+   * @param   bool     $log         True to add error message to logfile (default: false)
+   * @param   string   $name        Name of the logger to be used (default: null)
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function setDebug($txt, $new_line=true, $margin_top=false, $log=false, $name=null)
+  {
+    return $this->addDebug($txt, $new_line, $margin_top, $log, $name);
+  }
+
+  /**
    * Add text to the warnings storage
    *
    * @param   string   $txt         Text to add to the debugoutput
@@ -248,6 +283,49 @@ trait MessageTrait
   }
 
   /**
+   * Add text to the warnings storage
+   *
+   * @param   string   $txt         Text to add to the debugoutput
+   * @param   bool     $new_line    True to add text to a new line (default: true)
+   * @param   bool     $margin_top  True to add an empty line in front (default: false)
+   * @param   bool     $log         True to add error message to logfile (default: false)
+   * @param   string   $name        Name of the logger to be used (default: null)
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function setWarning($txt, $new_line=true, $margin_top=false, $log=false, $name=null)
+  {
+    return $this->addWarning($txt, $new_line, $margin_top, $log, $name);
+  }
+
+  /**
+   * Set error and add it to the error storage
+   *
+   * @param   string   $txt         Text to add to the error storage
+   * @param   bool     $new_line    True to add text to a new line (default: true)
+   * @param   bool     $margin_top  True to add an empty line in front (default: false)
+   * @param   bool     $log         True to add error message to logfile (default: true)
+   * @param   string   $name        Name of the logger to be used (default: null)
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function addError($txt, $new_line=true, $margin_top=false, $log=true, $name=null)
+  {
+    $this->setMsg($txt, 'error', $new_line, $margin_top);
+    $this->error = true;
+
+    if($log)
+    {
+      $this->addLogger($name);
+      $this->addLog($txt, Log::ERROR, $name);
+    }
+  }
+
+  /**
    * Set error and add it to the error storage
    *
    * @param   string   $txt         Text to add to the error storage
@@ -262,14 +340,7 @@ trait MessageTrait
   */
   public function setError($txt, $new_line=true, $margin_top=false, $log=true, $name=null)
   {
-    $this->setMsg($txt, 'error', $new_line, $margin_top);
-    $this->error = true;
-
-    if($log)
-    {
-      $this->addLogger($name);
-      $this->addLog($txt, Log::ERROR, $name);
-    }
+    return $this->addError($txt, $new_line, $margin_top, $log, $name);
   }
 
   /**
