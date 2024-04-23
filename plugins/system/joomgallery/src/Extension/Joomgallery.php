@@ -282,7 +282,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     { 
       $userId = isset($data->id) ? $data->id : 0; 
   
-      if (!isset($data->joomgallery) and $userId > 0) 
+      if(!isset($data->joomgallery) and $userId > 0) 
       {
         try
         {
@@ -295,11 +295,10 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
 
           return;
         }
-      }
 
-      $data->joomgallery = array();
-      foreach($fields as $field) 
-      { 
+        $data->joomgallery = array();
+        foreach($fields as $field) 
+        { 
           $fieldName = str_replace('joomgallery.', '', $field[0]);
           $data->joomgallery[$fieldName] = json_decode($field[1], true);
       
@@ -307,6 +306,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
           {
             $data->joomgallery[$fieldName] = $field[1];
           }
+        }
       }
     }
   }
