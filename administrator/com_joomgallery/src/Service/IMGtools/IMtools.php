@@ -104,6 +104,17 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function version()
   {
+    // Check, if exec command is available
+    $disabled_functions = \explode(',', \ini_get('disable_functions'));
+
+    foreach($disabled_functions as $disabled_function)
+    {
+      if(trim($disabled_function) == 'exec')
+      {
+        return false;
+      }
+    }
+
     // Check availability and version of ImageMagick v7.x
     @\exec(\trim($this->impath).'magick -version', $output);
 
@@ -170,7 +181,8 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->commands = array();
 
     // Check, if exec command is available
-    $disabled_functions = \explode(',', \ini_get('disabled_functions'));
+    $disabled_functions = \explode(',', \ini_get('disable_functions'));
+
     foreach($disabled_functions as $disabled_function)
     {
       if(\trim($disabled_function) == 'exec')
@@ -941,6 +953,17 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    */
   public function getTypes(): array
   {
+    // Check, if exec command is available
+    $disabled_functions = \explode(',', \ini_get('disable_functions'));
+
+    foreach($disabled_functions as $disabled_function)
+    {
+      if(trim($disabled_function) == 'exec')
+      {
+        return array();
+      }
+    }
+
     // Get supported types of ImageMagick v7.x
     @\exec(\trim($this->impath).'magick -list format', $output);
 
