@@ -16,7 +16,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Utilities\ArrayHelper;
-use \Joomla\CMS\MVC\Controller\AdminController;
 
 /**
  * Configs list controller class.
@@ -24,7 +23,7 @@ use \Joomla\CMS\MVC\Controller\AdminController;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ConfigsController extends AdminController
+class ConfigsController extends JoomAdminController
 {
 	/**
 	 * Method to clone existing Configs

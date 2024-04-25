@@ -13,15 +13,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\Controller\FormController;
-
 /**
  * Category controller class.
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoryController extends FormController
+class CategoryController extends JoomFormController
 {
 	protected $view_list = 'categories';
 

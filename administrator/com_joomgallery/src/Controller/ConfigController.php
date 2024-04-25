@@ -16,7 +16,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\MVC\Controller\FormController;
 
 /**
  * Config controller class.
@@ -24,7 +23,7 @@ use \Joomla\CMS\MVC\Controller\FormController;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ConfigController extends FormController
+class ConfigController extends JoomFormController
 {
 	protected $view_list = 'configs';
 

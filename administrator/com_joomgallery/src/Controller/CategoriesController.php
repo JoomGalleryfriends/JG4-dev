@@ -17,7 +17,6 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
 use \Joomla\Utilities\ArrayHelper;
-use \Joomla\CMS\MVC\Controller\AdminController;
 
 /**
  * Categories list controller class.
@@ -25,7 +24,7 @@ use \Joomla\CMS\MVC\Controller\AdminController;
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoriesController extends AdminController
+class CategoriesController extends JoomAdminController
 {
 	/**
 	 * Method to clone existing Categories
