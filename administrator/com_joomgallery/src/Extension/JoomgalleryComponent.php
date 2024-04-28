@@ -113,21 +113,25 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
 	 */
   public function boot(ContainerInterface $container)
  	{
+    // JoomGallery definitions
     if(!\defined('_JOOM_OPTION'))
     {
       require_once JPATH_ADMINISTRATOR . '/components/com_joomgallery/includes/defines.php';
     }
 
+    // Initialize JoomGallery chache
     if(!$this->cache)
     {
       $this->cache = new JoomCache();
     }
 
+    // Load component manifest xml
     if(!$this->xml)
     {
       $this->xml  = \simplexml_load_file(Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery.xml'));
     }
 
+    // Read out component version
     if(!$this->version)
     {
       $this->version = (string) $this->xml->version;
