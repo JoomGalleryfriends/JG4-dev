@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\MVC;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\MVC\Factory\MVCFactory as MVCFactoryBase;
 use \Joomgallery\Component\Joomgallery\Administrator\User\User;
 
@@ -59,7 +60,17 @@ class MVCFactory extends MVCFactoryBase
    */
   public function loadIdentity(User $identity = null)
   {
-    $this->identity = $identity ?: $this->getUserFactory()->loadUserById(0);
+    if(\is_null($identity))
+    {
+      $appUser = Factory::getApplication()->getIdentity();
+      $id = $appUser->id ?: 0;
+
+      $this->identity = $this->getUserFactory()->loadUserById($id);
+    }
+    else
+    {
+      $this->identity = $identity;
+    }
 
     return $this;
   }

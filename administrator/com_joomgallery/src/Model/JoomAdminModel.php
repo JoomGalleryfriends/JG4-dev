@@ -116,7 +116,7 @@ abstract class JoomAdminModel extends AdminModel
 
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
-    $this->user      = Factory::getUser();
+    $this->user      = $this->component->getMVCFactory()->getIdentity();
     $this->typeAlias = _JOOM_OPTION.'.'.$this->type;
   }
 

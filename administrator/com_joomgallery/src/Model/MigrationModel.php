@@ -97,7 +97,7 @@ class MigrationModel extends JoomAdminModel
 
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
-    $this->user      = Factory::getUser();
+    $this->user      = $this->component->getMVCFactory()->getIdentity();
 
     // Create config service
     $this->component->createConfig();

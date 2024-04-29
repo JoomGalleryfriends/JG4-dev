@@ -46,9 +46,6 @@ class HtmlView extends JoomGalleryView
 	{
     $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_YET_AVAILABLE'), 'warning');
 
-		$user = $this->component->getMVCFactory()->getUserFactory()->loadUserById($id);
-    $tmp = 1;
-
     return;
 
     $this->state         = $this->get('State');

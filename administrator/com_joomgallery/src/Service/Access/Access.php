@@ -14,9 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\User\User;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\CMS\Access\Access as AccessBase;
+use \Joomgallery\Component\Joomgallery\Administrator\User\User;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Base\AccessOwn;
@@ -78,7 +78,7 @@ class Access implements AccessInterface
   /**
    * The user for which to check access
    *
-   * @var  \Joomla\CMS\User\User
+   * @var  \Joomgallery\Component\Joomgallery\Administrator\User\User
    */
   protected $user;
 
@@ -111,7 +111,7 @@ class Access implements AccessInterface
     }
 
     // Set current user
-    $this->user = $this->app->getIdentity();
+    $this->user = $this->component->getMVCFactory()->getIdentity();
 
     // Set acl map for components with advanced rules
     $mapPath = JPATH_ADMINISTRATOR.'/components/'.$this->option.'/includes/rules.php';
@@ -205,7 +205,8 @@ class Access implements AccessInterface
     // 1. Default permission checks based on asset table
     // (Global Configuration -> Recursive assets)
     // (Recursive assets for image: global -> component -> grand-parent -> parent -> type)
-    $this->allowed['default'] = $this->user->authorise($acl_rule, $asset);
+    $appuser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->user->get('id'));
+    $this->allowed['default'] = $appuser->authorise($acl_rule, $asset);
 
     if($this->user->get('isRoot') === true)
     {
@@ -292,20 +293,28 @@ class Access implements AccessInterface
    */
   public function setUser($user)
   {
-    if(!\is_object($user) && \is_numeric($user))
-    {
-      // user id given
-      $this->user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user);
-    }
-    elseif(!\is_object($user) && \is_string($user))
-    {
-      // username given
-      $this->user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($user);
-    }
-    elseif($user instanceof User)
+    if($user instanceof User)
     {
       // user object given
       $this->user = $user;
+    }
+    elseif(!\is_object($user))
+    {
+      if(\is_numeric($user))
+      {
+        // user id given
+        $appuser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user);
+      }
+      elseif(\is_string($user))
+      {
+        // username given
+        $appuser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($user);
+      }
+      
+      if(isset($appuser->id))
+      {
+        $this->user = new User($appuser->id);
+      }
     }
   }
 

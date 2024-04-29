@@ -81,7 +81,7 @@ abstract class JoomListModel extends ListModel
 
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
-    $this->user      = Factory::getUser();
+    $this->user      = $this->component->getMVCFactory()->getIdentity();
   }
 
   /**
