@@ -833,7 +833,7 @@ abstract class JoomAdminModel extends AdminModel
 
     if($table instanceof CurrentUserInterface)
     {
-      $table->setCurrentUser($this->component->getIdentity());
+      $table->setCurrentUser($this->component->getMVCFactory()->getIdentity());
     }
 
     return $table;

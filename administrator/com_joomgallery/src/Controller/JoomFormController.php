@@ -180,7 +180,7 @@ class JoomFormController extends BaseFormController
 
     if($model instanceof CurrentUserInterface)
     {
-      $model->setCurrentUser($this->component->getIdentity());
+      $model->setCurrentUser($this->component->getMVCFactory()->getIdentity());
     }
 
     return $model;
@@ -205,7 +205,7 @@ class JoomFormController extends BaseFormController
 
     if($view instanceof CurrentUserInterface)
     {
-      $view->setCurrentUser($this->component->getIdentity());
+      $view->setCurrentUser($this->component->getMVCFactory()->getIdentity());
     }
 
     return $view;

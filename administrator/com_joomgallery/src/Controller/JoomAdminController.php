@@ -158,7 +158,7 @@ class JoomAdminController extends BaseAdminController
 
     if($model instanceof CurrentUserInterface)
     {
-      $model->setCurrentUser($this->component->getIdentity());
+      $model->setCurrentUser($this->component->getMVCFactory()->getIdentity());
     }
 
     return $model;
@@ -183,7 +183,7 @@ class JoomAdminController extends BaseAdminController
 
     if($view instanceof CurrentUserInterface)
     {
-      $view->setCurrentUser($this->component->getIdentity());
+      $view->setCurrentUser($this->component->getMVCFactory()->getIdentity());
     }
 
     return $view;

@@ -162,7 +162,7 @@ abstract class JoomListModel extends ListModel
 
     if($table instanceof CurrentUserInterface)
     {
-      $table->setCurrentUser($this->component->getIdentity());
+      $table->setCurrentUser($this->component->getMVCFactory()->getIdentity());
     }
 
     return $table;
