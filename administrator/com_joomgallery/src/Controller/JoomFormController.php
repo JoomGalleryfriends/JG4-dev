@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 \defined('_JEXEC') or die;
 
 use \Joomla\Input\Input;
+use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
@@ -160,5 +161,53 @@ class JoomFormController extends BaseFormController
   protected function allowEdit($data = [], $key = 'id')
   {
     return $this->getAcl()->checkACL('core.edit', $this->option);
+  }
+
+  /**
+   * Method to load and return a model object.
+   *
+   * @param   string  $name    The name of the model.
+   * @param   string  $prefix  Optional model prefix.
+   * @param   array   $config  Configuration array for the model. Optional.
+   *
+   * @return  BaseDatabaseModel|boolean   Model object on success; otherwise false on failure.
+   *
+   * @since   3.0
+   */
+  protected function createModel($name, $prefix = '', $config = [])
+  {
+    $model = parent::createModel($name, $prefix, $config);
+
+    if($model instanceof CurrentUserInterface)
+    {
+      $model->setCurrentUser($this->component->getIdentity());
+    }
+
+    return $model;
+  }
+
+  /**
+   * Method to load and return a view object.
+   *
+   * @param   string  $name    The name of the view.
+   * @param   string  $prefix  Optional prefix for the view class name.
+   * @param   string  $type    The type of view.
+   * @param   array   $config  Configuration array for the view. Optional.
+   *
+   * @return  ViewInterface|null  View object on success; null or error result on failure.
+   *
+   * @since   3.0
+   * @throws  \Exception
+   */
+  protected function createView($name, $prefix = '', $type = '', $config = [])
+  {
+    $view = parent::createView($name, $prefix, $type, $config);
+
+    if($view instanceof CurrentUserInterface)
+    {
+      $view->setCurrentUser($this->component->getIdentity());
+    }
+
+    return $view;
   }
 }

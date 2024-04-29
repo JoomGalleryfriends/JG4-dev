@@ -22,6 +22,7 @@ use \Joomla\Utilities\ArrayHelper;
 use \Joomla\Database\ParameterType;
 use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -813,5 +814,28 @@ abstract class JoomAdminModel extends AdminModel
   protected function canEditState($record)
   {
     return $this->getAcl()->checkACL('core.edit.state', $this->option);
+  }
+
+  /**
+   * Method to load and return a table object.
+   *
+   * @param   string  $name    The name of the view
+   * @param   string  $prefix  The class prefix. Optional.
+   * @param   array   $config  Configuration settings to pass to Table::getInstance
+   *
+   * @return  Table|boolean  Table object or boolean false if failed
+   *
+   * @since   3.0
+   */
+  protected function _createTable($name, $prefix = 'Table', $config = [])
+  {
+    $table = parent::_createTable($name, $prefix, $config);
+
+    if($table instanceof CurrentUserInterface)
+    {
+      $table->setCurrentUser($this->component->getIdentity());
+    }
+
+    return $table;
   }
 }

@@ -18,13 +18,13 @@ use Joomla\DI\ServiceProviderInterface;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Extension\ComponentInterface;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use Joomla\CMS\Extension\Service\Provider\MVCFactory;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Extension\Service\Provider\RouterFactory;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
 use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
 use Joomgallery\Component\Joomgallery\Administrator\User\UserFactory;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent;
+use Joomgallery\Component\Joomgallery\Administrator\MVC\MVCFactoryProvider as MVCFactory;
 
 /**
  * The Joomgallery service provider.
@@ -55,22 +55,6 @@ return new class implements ServiceProviderInterface
 			function (Container $container)
 			{
 				$component = new JoomgalleryComponent($container->get(ComponentDispatcherFactoryInterface::class));
-
-        // Override default UserFactory
-        // Works only with Joomla v5.0.0 and newer. See https://github.com/joomla-framework/di/pull/48
-        try
-        {
-          $container->set(
-            UserFactoryInterface::class,
-            function (Container $container)
-            {
-              $db = $container->get(DatabaseInterface::class);
-              $factory = new UserFactory($db);
-  
-              return $factory;
-            }
-          );
-        } catch (\Exception $e) { /* Joomla v4.x */}
 
 				$component->setRegistry($container->get(Registry::class));
 				$component->setMVCFactory($container->get(MVCFactoryInterface::class));
