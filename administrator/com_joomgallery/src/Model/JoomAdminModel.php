@@ -275,160 +275,40 @@ abstract class JoomAdminModel extends AdminModel
   }
 
   /**
-   * Batch access level changes for a group of rows.
+   * Method to initialize member variables used by batch methods
+   * and other methods like saveorder()
    *
-   * @param   integer  $value     The new value matching an Asset Group ID.
-   * @param   array    $pks       An array of row IDs.
-   * @param   array    $contexts  An array of item contexts.
+   * @return  void
    *
-   * @return  boolean  True if successful, false otherwise and internal error is set.
-   *
-   * @since   1.7
+   * @since   3.8.2
    */
-  protected function batchAccess($value, $pks, $contexts)
+  public function initBatch()
   {
-    // Initialize re-usable member properties, and re-usable local variables
-    $this->initBatch();
+    parent::iniBatch();
 
-    foreach($pks as $pk)
-    {
-      if ($this->getAcl()->checkacl('core.edit', $contexts[$pk]))
-      {
-        $this->table->reset();
-        $this->table->load($pk);
-        $this->table->access = (int) $value;
-
-        $event = new BeforeBatchEvent(
-            $this->event_before_batch,
-            ['src' => $this->table, 'type' => 'access']
-        );
-        $this->dispatchEvent($event);
-
-        // Check the row.
-        if(!$this->table->check())
-        {
-          $this->component->setError($this->table->getError());
-
-          return false;
-        }
-
-        if(!$this->table->store())
-        {
-          $this->component->setError($this->table->getError());
-
-          return false;
-        }
-      }
-      else
-      {
-        $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
-
-        return false;
-      }
-    }
-
-    // Clean the cache
-    $this->cleanCache();
-
-    return true;
+    // Get current user
+    $this->user = $this->component->getMVCFactory()->getIdentity();
   }
 
   /**
-   * Batch language changes for a group of rows.
+   * Method to check the validity of the category ID for batch copy and move
    *
-   * @param   string  $value     The new value matching a language.
-   * @param   array   $pks       An array of row IDs.
-   * @param   array   $contexts  An array of item contexts.
+   * @param   integer  $categoryId  The category ID to check
    *
-   * @return  boolean  True if successful, false otherwise and internal error is set.
+   * @return  boolean
    *
-   * @since   2.5
+   * @since   3.2
    */
-  protected function batchLanguage($value, $pks, $contexts)
+  protected function checkCategoryId($categoryId)
   {
-    // Initialize re-usable member properties, and re-usable local variables
-    $this->initBatch();
-
-    foreach($pks as $pk)
+    // Check that the category exists
+    if($categoryId)
     {
-        if ($this->getAcl()->checkacl('core.edit', $contexts[$pk]))
-        {
-          $this->table->reset();
-          $this->table->load($pk);
-          $this->table->language = $value;
+      $categoryTable = $this->component->getMVCFactory()->createTable('Category', 'administrator');
 
-          $event = new BeforeBatchEvent(
-              $this->event_before_batch,
-              ['src' => $this->table, 'type' => 'language']
-          );
-          $this->dispatchEvent($event);
-
-          // Check the row.
-          if(!$this->table->check())
-          {
-            $this->component->setError($this->table->getError());
-
-            return false;
-          }
-
-          if(!$this->table->store())
-          {
-            $this->component->setError($this->table->getError());
-
-            return false;
-          }
-        }
-        else
-        {
-          $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
-
-          return false;
-        }
-    }
-
-    // Clean the cache
-    $this->cleanCache();
-
-    return true;
-  }
-
-  /**
-   * Batch move items to a new category
-   *
-   * @param   integer  $value     The new category ID.
-   * @param   array    $pks       An array of row IDs.
-   * @param   array    $contexts  An array of item contexts.
-   *
-   * @return  boolean  True if successful, false otherwise and internal error is set.
-   *
-   * @since   1.7
-   */
-  protected function batchMove($value, $pks, $contexts)
-  {
-    // Initialize re-usable member properties, and re-usable local variables
-    $this->initBatch();
-
-    $categoryId = (int) $value;
-
-    if(!$this->checkCategoryId($categoryId))
-    {
-      return false;
-    }
-
-    // Parent exists so we proceed
-    foreach ($pks as $pk)
-    {
-      if(!$this->getAcl()->checkacl('core.edit', $contexts[$pk]))
+      if(!$categoryTable->load($categoryId))
       {
-        $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
-
-        return false;
-      }
-
-      // Check that the row actually exists
-      if(!$this->table->load($pk))
-      {
-        if($error = $this->table->getError())
+        if($error = $categoryTable->getError())
         {
           // Fatal error
           $this->component->setError($error);
@@ -437,153 +317,30 @@ abstract class JoomAdminModel extends AdminModel
         }
         else
         {
-          // Not fatal error
-          $this->setError(Text::sprintf('JLIB_APPLICATION_ERROR_BATCH_MOVE_ROW_NOT_FOUND', $pk));
-          continue;
-        }
-      }
-
-      // Set the new category ID
-      $this->table->catid = $categoryId;
-
-      $event = new BeforeBatchEvent(
-          $this->event_before_batch,
-          ['src' => $this->table, 'type' => 'move']
-      );
-      $this->dispatchEvent($event);
-
-      // Check the row.
-      if(!$this->table->check())
-      {
-        $this->component->setError($this->table->getError());
-
-        return false;
-      }
-
-      // Store the row.
-      if(!$this->table->store())
-      {
-        $this->setError($this->table->getError());
-
-        return false;
-      }
-    }
-
-    // Clean the cache
-    $this->cleanCache();
-
-    return true;
-  }
-
-  /**
-   * Batch tag a list of item.
-   *
-   * @param   integer  $value     The value of the new tag.
-   * @param   array    $pks       An array of row IDs.
-   * @param   array    $contexts  An array of item contexts.
-   *
-   * @return  boolean  True if successful, false otherwise and internal error is set.
-   *
-   * @since   3.1
-   */
-  protected function batchTag($value, $pks, $contexts)
-  {
-    // Initialize re-usable member properties, and re-usable local variables
-    $this->initBatch();
-    $tags = [$value];
-
-    foreach ($pks as $pk)
-    {
-        if($this->getAcl()->checkacl('core.edit', $contexts[$pk]))
-        {
-          $this->table->reset();
-          $this->table->load($pk);
-
-          $setTagsEvent = \Joomla\CMS\Event\AbstractEvent::create(
-              'onTableSetNewTags',
-              [
-                  'subject'     => $this->table,
-                  'newTags'     => $tags,
-                  'replaceTags' => false,
-              ]
-          );
-
-          try
-          {
-            $this->table->getDispatcher()->dispatch('onTableSetNewTags', $setTagsEvent);
-          }
-          catch (\RuntimeException $e)
-          {
-            $this->component->setError($e->getMessage());
-
-            return false;
-          }
-        }
-        else
-        {
-          $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+          $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'));
 
           return false;
         }
+      }
     }
 
-    // Clean the cache
-    $this->cleanCache();
+    if(empty($categoryId))
+    {
+      $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'));
+
+      return false;
+    }
+
+    // Check that the user has create permission for the component
+    if(!$this->getAcl()->checkacl('create', 'category', $categoryId, true))
+    {
+      $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_CREATE'));
+
+      return false;
+    }
 
     return true;
   }
-
-  /**
-     * Method to check the validity of the category ID for batch copy and move
-     *
-     * @param   integer  $categoryId  The category ID to check
-     *
-     * @return  boolean
-     *
-     * @since   3.2
-     */
-    protected function checkCategoryId($categoryId)
-    {
-      // Check that the category exists
-      if($categoryId)
-      {
-        $categoryTable = $this->component->getMVCFactory()->createTable('Category', 'administrator');
-
-        if(!$categoryTable->load($categoryId))
-        {
-          if($error = $categoryTable->getError())
-          {
-            // Fatal error
-            $this->component->setError($error);
-
-            return false;
-          }
-          else
-          {
-            $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'));
-
-            return false;
-          }
-        }
-      }
-
-      if(empty($categoryId))
-      {
-        $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'));
-
-        return false;
-      }
-
-      // Check that the user has create permission for the component
-      if(!$this->getAcl()->checkacl('core.create', _JOOM_OPTION . '.category.' . $categoryId))
-      {
-        $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_CREATE'));
-
-        return false;
-      }
-
-      return true;
-    }
 
   /**
 	 * Method to load component specific parameters into model state.
@@ -799,7 +556,7 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canDelete($record)
   {
-    return $this->getAcl()->checkACL('core.delete', $this->option);
+    return $this->getAcl()->checkACL('delete', $this->type, $record->id);
   }
 
   /**
@@ -813,7 +570,7 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canEditState($record)
   {
-    return $this->getAcl()->checkACL('core.edit.state', $this->option);
+    return $this->getAcl()->checkACL('editstate', $this->type, $record->id);
   }
 
   /**

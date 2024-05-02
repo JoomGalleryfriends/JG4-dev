@@ -742,13 +742,13 @@ class ImageModel extends JoomAdminModel
 
 					if($error)
 					{
-						Log::add($error, Log::WARNING, 'jerror');
+						$this->component->addLog($error, Log::WARNING, 'jerror');
 
 						return false;
 					}
 					else
 					{
-						Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+						$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
 						return false;
 					}
@@ -813,7 +813,7 @@ class ImageModel extends JoomAdminModel
 					// Prune items that you can't change.
 					unset($pks[$i]);
 
-					Log::add(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+					$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
 					return false;
 				}
@@ -821,7 +821,7 @@ class ImageModel extends JoomAdminModel
 				// If the table is checked out by another user, drop it and report to the user trying to change its state.
 				if($table->hasField('checked_out') && $table->checked_out && ($table->checked_out != $user->id))
 				{
-					Log::add(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'), Log::WARNING, 'jerror');
+					$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'), Log::WARNING, 'jerror');
 
 					// Prune items that you can't change.
 					unset($pks[$i]);
@@ -1060,13 +1060,13 @@ class ImageModel extends JoomAdminModel
 
         if($error)
         {
-          Log::add($error, Log::WARNING, 'jerror');
+          $this->component->addLog($error, Log::WARNING, 'jerror');
 
           return false;
         }
         else
         {
-          Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+          $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
           return false;
         }

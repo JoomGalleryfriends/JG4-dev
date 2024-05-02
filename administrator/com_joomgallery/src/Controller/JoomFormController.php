@@ -144,7 +144,22 @@ class JoomFormController extends BaseFormController
    */
   protected function allowAdd($data = [])
   {
-    return $this->getAcl()->checkACL('core.create', $this->option);
+    switch($this->context)
+    {
+      case 'category':
+        $parent_id = $data['parent_id'] ?: 1;
+        return $this->getAcl()->checkACL('add','category', $parent_id, true);
+        break;
+
+      case 'image':
+        $catid = $data['catid'] ?: 1;
+        return $this->getAcl()->checkACL('add','image', $catid, true);
+        break;
+      
+      default:
+        return $this->getAcl()->checkACL('add', $this->context, $data['id']);
+        break;
+    }
   }
 
   /**
@@ -160,7 +175,7 @@ class JoomFormController extends BaseFormController
    */
   protected function allowEdit($data = [], $key = 'id')
   {
-    return $this->getAcl()->checkACL('core.edit', $this->option);
+    return $this->getAcl()->checkACL('edit', $this->context, $data['id']);
   }
 
   /**

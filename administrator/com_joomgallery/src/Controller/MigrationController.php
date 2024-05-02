@@ -982,7 +982,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
         if($results instanceof \Exception)
         {
           // Log an error
-          Log::add($results->getMessage(), Log::ERROR);
+          $this->component->addLog($results->getMessage(), Log::ERROR);
 
           // Set status header code
           $this->app->setHeader('status', $results->getCode(), true);

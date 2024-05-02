@@ -262,13 +262,13 @@ class CategoryModel extends JoomAdminModel
 
 					if($error)
 					{
-						Log::add($error, Log::WARNING, 'jerror');
+            $this->component->addLog($error, Log::WARNING, 'jerror');
 
 						return false;
 					}
 					else
 					{
-						Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+            $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
 						return false;
 					}
