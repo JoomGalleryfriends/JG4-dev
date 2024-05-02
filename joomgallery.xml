@@ -78,6 +78,7 @@
     </config>
 
     <plugins>
+        <plugin group="system" plugin="joomgallery"/>
         <plugin group="system" plugin="joomowner"/>
         <plugin group="privacy" plugin="joomgallery"/>
         <!-- <plugin group="finder" plugin="joomgalleryimages"/>

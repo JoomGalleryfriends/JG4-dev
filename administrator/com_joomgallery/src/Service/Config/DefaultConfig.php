@@ -13,10 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\Config;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
 
 /**
  * Configuration Class
@@ -29,25 +28,41 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\Config;
 class DefaultConfig extends Config implements ConfigInterface
 {
   /**
+   * Name of the config service
+   *
+   * @var string
+   */
+  protected $name = 'DefaultConfig';
+
+  /**
    * Loading the calculated settings for a specific content
    * to class properties
    *
    * @param   string   $context   Context of the content (default: com_joomgallery)
    * @param   int      $id        ID of the content if needed (default: null)
    * @param   bool		 $inclOwn   True, if you want to include settings of current item (default: true)
+   * @param   bool     $useCache  True, to load params from cache if available (default: true)
    *
    * @return  void
    *
-   * @since   4.0.0 
+   * @since   4.0.0
    */
-  public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true)
+  public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true, $useCache = true)
   {
-    parent::__construct($context, $id);
+    parent::__construct($context, $id, $inclOwn, $useCache);
 
-    // Check context
+    // Check if we can use cached parameters
+    if($useCache && !empty(self::$cache) && \key_exists(\base64_encode($this->storeId), self::$cache))
+    {
+      // The params for this context is available in the object cache.
+      // Use cache instead.
+      $this->setProperties(self::$cache[\base64_encode($this->storeId)]);
+      return;
+    }
+    
     $context_array = \explode('.', $context);
 
-    //---------Level 1---------
+    //-----Level 1: Global Config-----
 
     // Get global configuration set
     $glob_params = $this->getParamsByID(1);
@@ -62,7 +77,7 @@ class DefaultConfig extends Config implements ConfigInterface
     // Write config values to class properties
     $this->setParamsToClass($glob_params);
 
-    //---------Level 2---------
+    //------Level 2: Usergroup------
 
     // Get user specific configuration set
     $user_params = $this->getParamsByUser($this->ids['user']);
@@ -79,7 +94,8 @@ class DefaultConfig extends Config implements ConfigInterface
       return;
     }
 
-    //---------Level 3---------
+    //------Level 3: Category------
+
     if(isset($this->ids['category']) && $this->ids['category'] > 1)
     {
       // Load parent categories
@@ -106,7 +122,8 @@ class DefaultConfig extends Config implements ConfigInterface
       }
     }
 
-    //---------Level 4---------
+    //------Level 4: Image------
+
     if(isset($this->ids['image']))
     {
       // Load image
@@ -131,7 +148,8 @@ class DefaultConfig extends Config implements ConfigInterface
       }
     }
 
-    //---------Level 5---------
+    //------Level 5: Menuparams------
+
     if(isset($this->ids['menu']))
     {
       // Load menu item
@@ -146,5 +164,8 @@ class DefaultConfig extends Config implements ConfigInterface
       // Override class properties based on menu item params
       $this->setParamsToClass($menu->getParams());
     }
+
+    // Store the calculated params to cache
+    $this->setCache($this->storeId);
   }
 }

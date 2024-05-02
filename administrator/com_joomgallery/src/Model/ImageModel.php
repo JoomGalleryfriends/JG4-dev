@@ -1086,7 +1086,6 @@ class ImageModel extends JoomAdminModel
 		return true;
   }
 
-
   /**
    * Method to test whether a record can be recreated.
    *

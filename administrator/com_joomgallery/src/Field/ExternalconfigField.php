@@ -35,6 +35,14 @@ class ExternalconfigField extends FormField
 	protected $type = 'externalconfig';
 
   /**
+	 * Storage for the external field object.
+	 *
+	 * @var    FormField
+	 * @since  4.0.0
+	 */
+  protected $external = null;
+
+  /**
    * Method to attach a Form object to the field.
    *
    * @param   \SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
