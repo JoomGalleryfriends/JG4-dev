@@ -47,8 +47,8 @@ if ( $lightbox ) {
   $wa->useStyle('com_joomgallery.lightgallery-bundle');
 }
 
-if (!$use_pagination) {
-  $wa->useScript('com_joomgallery.infinite-scroll');
+if (!empty($use_pagination)) {
+  // $wa->useScript('com_joomgallery.infinite-scroll');
 }
 
 $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $this->item->id);
@@ -124,7 +124,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <?php else : ?>
     <h3><?php echo Text::_('COM_JOOMGALLERY_CATEGORIES') ?></h3>
   <?php endif; ?>
-  <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
+  <div class="jg-gallery<?php echo ' ' . $category_class; ?>" itemscope="" itemtype="https://schema.org/ImageGallery">
   <?php if(!($this->item->parent_id > 0)) : ?>
   <div id="jg-loader"></div>
   <?php endif; ?>
@@ -154,7 +154,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </div>
 <?php endif; ?>
 
-<?php // Images ?>
+<?php // Category ?>
 <?php if(count($this->item->images->items) > 0) : ?>
   <h3>Images</h3>
   <?php if(!empty($this->item->images->filterForm)) : ?>
@@ -174,7 +174,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
       <?php echo HTMLHelper::_('form.token'); ?>
     </form>
   <?php endif; ?>
-  <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
+  <div class="jg-gallery<?php echo ' ' . $category_class; ?>" itemscope="" itemtype="https://schema.org/ImageGallery">
     <div id="jg-loader"></div>
     <div id="lightgallery-<?php echo $this->item->id; ?>" class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
       <?php foreach($this->item->images->items as $key => $image) : ?>
@@ -204,28 +204,37 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
             </a>
           </div>
           <?php if ( $caption_align != 'none' && $category_class != 'justified') : ?>
-          <div class="jg-image-caption <?php echo $caption_align; ?>">
-            <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+            <div class="jg-image-caption <?php echo $caption_align; ?>">
+            <?php if ( $lightbox ) : ?>
+              <a class="item" href="#" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+            <?php else : ?>
+              <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+            <?php endif; ?>
               <?php echo $this->escape($image->title); ?>
-            </a>
-          </div>
+              </a>
+            </div>
           <?php endif; ?>
         </div>
       <?php endforeach; ?>
     </div>
   </div>
 
-  <div class="no-more-items hidden"><?php echo TEXT::_("TPL_SPICY_NO_MORE_ITEMS"); ?></div>
+  <?php if ( $use_pagination == '0' ) : ?>
+    <?php echo $this->item->images->pagination->getListFooter(); ?>
+  <?php endif; ?>
 
-  <?php // echo count($this->item->images->items); ?>
-  <div class="btn btn-outline-primary loadMore hidden">loadMore</div>
+  <?php if ( $use_pagination == '1' ) : ?>
+    <div class="infinite-scroll"></div>
+  <?php endif; ?>
 
-  <?php
-    // Show images pagination
-    echo $this->item->images->pagination->getListFooter();
-  ?>
+  <?php if ( $use_pagination == '2') : ?>
+    <div class="load-more-container">
+      <div id="loadMore" class="btn btn-outline-primary load-more"><span>Load More</span><i class="jg-icon-expand-more"></i></div>
+      <div id="noMore" class="btn btn-outline-primary hidden">No More Images</div>
+    </div>
+  <?php endif; ?>
+
 <?php endif; ?>
-
 
 <?php /*if($canAddImg) : ?>
   <div class="mb-2">
@@ -243,6 +252,11 @@ const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementB
   speed: 500,
   loop: false,
   download: false,
+  mobileSettings: {
+    controls: false,
+    showCloseIcon: true,
+    download: false,
+  },
   licenseKey: '1111-1111-111-1111',
 });
 </script>
@@ -255,7 +269,7 @@ for (let image of images) {
   image.addEventListener('load', loadImg);
 }
 function loadImg () {
-  this.classList.add('loaded');
+  this.closest('.jg-image').classList.add('loaded');
 }
 </script>
 <?php endif; ?>
@@ -292,47 +306,84 @@ window.addEventListener('load', function () {
 </script>
 <?php endif; ?>
 
+<?php if ( $use_pagination == '1') : ?>
 <script>
-<?php if ( $category_class == 'masonry') : ?>
-const reloadMasonry = new Event('reload:masonry', {
-  bubbles: true,
-})
-<?php endif; ?>
-const infiniteScroll = new InfiniteScroll.default({
-  element       : '.jg-images--',
-  next          : '.page-link.next',
-  item          : '.jg-image',
-  disabledClass : 'disabled',
-  hiddenClass   : 'hidden',
-  responseType  : 'text/html',
-  requestMethod: 'GET',
-  viewportTriggerPoint: window.innerHeight - 100,
-  debounceTime: 500,
-  onComplete(container, html) {
-    <?php if ( $category_class == 'masonry') : ?>
-    dispatchEvent(reloadMasonry);
-    <?php endif; ?>
-    <?php if ( $lightbox ) : ?>
-    jgallery<?php echo $this->item->id; ?>.refresh();
-    <?php endif; ?>
-    console.log('scroll');
+const category = document.querySelector('.jg-category');
+const items = Array.from(category.querySelectorAll('.jg-image'));
 
-    // Here you query the link to the next page
-    const next = html.querySelector('.page-link.next');
+maxItems = <?php echo $num_columns * 2; ?>;
+loadItems = <?php echo $num_columns * 2; ?>;
+hiddenClass = 'hidden-jg-image';
+hiddenItems = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
-    // If the link does not exist
-    if (!next) {
-        // Here you show your "No more posts are available" message 
-        document.querySelector('.no-more-items').classList.remove('hidden');
-        console.log('no more');
-    }
+items.forEach(function (item, index) {
+  if (index > maxItems - 1) {
+    item.classList.add(hiddenClass);
   }
 });
-document.addEventListener('click', function (event) {
-  if (!event.target.matches('.loadMore')) return;
-  infiniteScroll.loadMore();
-}, false);
+
+const observerOptions = {
+  root: null,
+  rootMargin: '0px',
+  threshold: 0.5
+};
+
+function observerCallback(entries, observer) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      [].forEach.call(document.querySelectorAll('.' + hiddenClass), function (
+        item,
+        index
+      ) {
+        if (index < loadItems) {
+          item.classList.remove(hiddenClass);
+        }
+      });
+      // console.log('enter');
+    }
+  });
+}
+
+const fadeElms = document.querySelectorAll('.infinite-scroll');
+const observer = new IntersectionObserver(observerCallback, observerOptions);
+fadeElms.forEach(el => observer.observe(el));
+
 </script>
+<?php endif; ?>
+
+<?php if ( $use_pagination == '2') : ?>
+<script>
+const category = document.querySelector('.jg-category');
+const items = Array.from(category.querySelectorAll('.jg-image'));
+const loadMore = document.getElementById('loadMore');
+
+maxItems = <?php echo $num_columns * 2; ?>;
+loadItems = <?php echo $num_columns * 2; ?>;
+hiddenClass = 'hidden-jg-image';
+hiddenItems = Array.from(document.querySelectorAll('.hidden-jg-image'));
+
+items.forEach(function (item, index) {
+  if (index > maxItems - 1) {
+    item.classList.add(hiddenClass);
+  }
+});
+
+loadMore.addEventListener('click', function () {
+  [].forEach.call(document.querySelectorAll('.' + hiddenClass), function (
+    item,
+    index
+  ) {
+    if (index < loadItems) {
+      item.classList.remove(hiddenClass);
+    }
+    if (document.querySelectorAll('.' + hiddenClass).length === 0) {
+      loadMore.style.display = 'none';
+      noMore.classList.remove('hidden');
+    }
+  });
+});
+</script>
+<?php endif; ?>
 
 <script>
 window.onload = function() {

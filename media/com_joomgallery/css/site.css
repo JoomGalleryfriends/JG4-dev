@@ -114,18 +114,26 @@ table.itemList th.sort-cell .form-check-input {
     grid-template-columns: repeat(1, 1fr);
   }
 }
+.hidden-jg-image {
+  visibility: hidden;
+  display: none;
+}
 .jg-image {
   padding: 0;
+}
+.jg-gallery:not(.justified) .jg-category .jg-image {
+  visibility: hidden;
+}
+.jg-gallery:not(.justified) .jg-category .jg-image.loaded {
+  visibility: visible;
   animation: fadein 1.5s;
 }
 @keyframes fadein { 
 	from {
 		opacity:0;
-		transform: translateY(15px);
 	}
 	to {
 		opacity:1;
-		transform: translateY(0);
 	}
 }
 .jg-image > .jg-image-thumbnail.boxed {
@@ -220,8 +228,15 @@ a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
   color: var(--jg-color-hover);
   text-decoration: underline 2px;
 }
-.btn.btn-outline-primary.loadMore {
-  
+.load-more-container {
+  text-align: center;
+}
+.btn.btn-outline-primary.load-more {
+  margin: 2em 0;
+}
+/* lightgallery view */
+html.lg-on {
+  overflow: hidden;
 }
 /* Single image view */
 #jg-loader {

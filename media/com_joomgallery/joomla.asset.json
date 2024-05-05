@@ -102,17 +102,12 @@
       }
     },
     {
-      "name": "com_joomgallery.infinite-scroll",
-      "type": "script",
-      "uri": "com_joomgallery/infinite-scroll.min.js",
-      "attributes": {
-        "defer": false
-      }
-    },
-    {
       "name": "com_joomgallery.masonry",
       "type": "script",
-      "uri": "com_joomgallery/masonry.min.js"
+      "uri": "com_joomgallery/masonry.min.js",
+      "attributes": {
+        "type": "module"
+      }
     },
     {
       "name": "com_joomgallery.tasklessForm",
