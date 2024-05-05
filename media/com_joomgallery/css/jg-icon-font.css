@@ -8,7 +8,7 @@
 [class^="jg-icon-"], [class*=" jg-icon-"] {
   display: inline-block;
   line-height: 0.05rem;
-  vertical-align: -0.125rem;
+  vertical-align: middle;
 }
 
 [class^="jg-icon-"]:before, [class*=" jg-icon-"]:before {
@@ -50,4 +50,7 @@
 }
 .jg-icon-edit:before {
   content: "\e908";
+}
+.jg-icon-expand-more:before {
+  content: "\e909";
 }
