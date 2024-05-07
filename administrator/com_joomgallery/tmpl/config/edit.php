@@ -81,7 +81,7 @@ $this->document->addScriptDeclaration($js);
 
     <?php foreach ($this->fieldsets as $key_L1 => $fieldset_L1) : ?>
 
-      <?php if ($key_L1 == 'permissions' && $this->user->authorise('core.admin','joomgallery')) : ?>
+      <?php if ($key_L1 == 'permissions' && $this->getAcl()->checkACL('admin')) : ?>
         <?php echo HTMLHelper::_('uitab.addTab', 'L1-tabset', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
           <?php echo $this->form->getInput('rules'); ?>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>

@@ -157,7 +157,8 @@ class JoomFormController extends BaseFormController
         break;
       
       default:
-        return $this->getAcl()->checkACL('add', $this->context, $data['id']);
+        $id = $data['id'] ?: 0;
+        return $this->getAcl()->checkACL('add', $this->context, $id);
         break;
     }
   }

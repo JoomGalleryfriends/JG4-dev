@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\User;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User as BaseUser;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
  * User class.  Handles all component interaction with a user
