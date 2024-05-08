@@ -196,6 +196,12 @@ class Access implements AccessInterface
     // Adjust asset for further checks when only parent given
     if($action == 'add' && $parent_pk)
     {
+      if(\in_array($asset_type, $this->media_types) && $action == 'add')
+      {
+        // Special acl rule for media upload
+        $acl_rule = $this->prefix.'.upload';
+      }
+
       // Get asset for parent checks
       $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
       $asset        = $asset_array[0].'.'.$parent_type.'.'.$pk;
@@ -208,7 +214,7 @@ class Access implements AccessInterface
     $appuser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->user->get('id'));
     $this->allowed['default'] = $appuser->authorise($acl_rule, $asset);
 
-    if($this->user->get('isRoot') === true)
+    if($appuser->get('isRoot') === true)
     {
       // If it is the super user
       return true;

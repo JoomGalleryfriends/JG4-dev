@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\User;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User as BaseUser;
+use \Joomla\CMS\Access\Access as AccessBase;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
@@ -65,6 +66,38 @@ class User extends BaseUser
    */
   public function authorise($action, $assetname = null)
   {
+    // Make sure we only check for core.admin once during the run.
+    if($this->isRoot === null)
+    {
+      $this->isRoot = false;
+
+      // Check for the configuration file failsafe.
+      $rootUser = Factory::getApplication()->get('root_user');
+
+      // The root_user variable can be a numeric user ID or a username.
+      if(\is_numeric($rootUser) && $this->id > 0 && $this->id == $rootUser)
+      {
+        $this->isRoot = true;
+      }
+      elseif($this->username && $this->username == $rootUser)
+      {
+        $this->isRoot = true;
+      }
+      elseif ($this->id > 0)
+      {
+        // Get all groups against which the user is mapped.
+        $identities = $this->getAuthorisedGroups();
+        \array_unshift($identities, $this->id * -1);
+
+        if(AccessBase::getAssetRules(1)->allow('core.admin', $identities))
+        {
+          $this->isRoot = true;
+
+          return true;
+        }
+      }
+    }
+
     return $this->getAcl()->checkACL($action, $assetname);
   }
 }
