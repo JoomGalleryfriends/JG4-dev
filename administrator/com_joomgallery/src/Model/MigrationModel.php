@@ -831,6 +831,9 @@ class MigrationModel extends AdminModel
       unset($table->queue[$key]);
     }
 
+    // Replace 'last' with currently migrated primary key
+    $table->last = $pk;
+
     if($success)
     {
       // Add migrated primary key to successful object

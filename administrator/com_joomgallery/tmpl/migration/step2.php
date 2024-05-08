@@ -108,7 +108,7 @@ $wa->useStyle('com_joomgallery.admin')
                         <tr>
                           <td>
                             <strong><?php echo $check->title; ?></strong><br />
-                            <small><?php echo $check->desc; ?></small>
+                            <small><span class="text-break"><?php echo $check->desc; ?></span></small>
                           </td>
                           <td><span class="badge bg-<?php echo $badgeClass; ?>"><?php echo $badgeText; ?></span></td>
                           <td>
