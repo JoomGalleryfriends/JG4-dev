@@ -27,6 +27,7 @@ $justified_height = $this->params['menu']->get('jg_category_view_justified_heigh
 $justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
 $lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
 $use_pagination   = $this->params['menu']->get('jg_category_view_pagination', 0, 'INT');
+$load_more_images = $this->params['menu']->get('jg_category_view_load_more_images', 3, 'INT');
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
@@ -224,7 +225,10 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <?php endif; ?>
 
   <?php if ( $use_pagination == '1' ) : ?>
-    <div class="infinite-scroll"></div>
+    <div class="load-more-container">
+      <div class="infinite-scroll"></div>
+      <div id="noMore" class="btn btn-outline-primary hidden">No More Images</div>
+    </div>
   <?php endif; ?>
 
   <?php if ( $use_pagination == '2') : ?>
@@ -311,13 +315,13 @@ window.addEventListener('load', function () {
 const category = document.querySelector('.jg-category');
 const items = Array.from(category.querySelectorAll('.jg-image'));
 
-maxItems = <?php echo $num_columns * 2; ?>;
-loadItems = <?php echo $num_columns * 2; ?>;
+maxImages = <?php echo $num_columns * 2; ?>;
+loadImages = <?php echo $num_columns * 2; ?>;
 hiddenClass = 'hidden-jg-image';
 hiddenItems = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
 items.forEach(function (item, index) {
-  if (index > maxItems - 1) {
+  if (index > maxImages - 1) {
     item.classList.add(hiddenClass);
   }
 });
@@ -335,8 +339,11 @@ function observerCallback(entries, observer) {
         item,
         index
       ) {
-        if (index < loadItems) {
+        if (index < loadImages) {
           item.classList.remove(hiddenClass);
+        }
+        if (document.querySelectorAll('.' + hiddenClass).length === 0) {
+          noMore.classList.remove('hidden');
         }
       });
       // console.log('enter');
@@ -357,13 +364,13 @@ const category = document.querySelector('.jg-category');
 const items = Array.from(category.querySelectorAll('.jg-image'));
 const loadMore = document.getElementById('loadMore');
 
-maxItems = <?php echo $num_columns * 2; ?>;
-loadItems = <?php echo $num_columns * 2; ?>;
+maxImages = <?php echo $num_columns * 2; ?>;
+loadImages = <?php echo $load_more_images; ?>;
 hiddenClass = 'hidden-jg-image';
 hiddenItems = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
 items.forEach(function (item, index) {
-  if (index > maxItems - 1) {
+  if (index > maxImages - 1) {
     item.classList.add(hiddenClass);
   }
 });
@@ -373,7 +380,7 @@ loadMore.addEventListener('click', function () {
     item,
     index
   ) {
-    if (index < loadItems) {
+    if (index < loadImages) {
       item.classList.remove(hiddenClass);
     }
     if (document.querySelectorAll('.' + hiddenClass).length === 0) {

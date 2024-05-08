@@ -137,6 +137,16 @@
                 <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
                 <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
             </field>
+            <field
+                name="jg_category_view_load_more_images"
+                type="text"
+                default="3"
+                parentclass="stack span-2-inline"
+                label="Number Of Images"
+                description="Number of images to be loaded per load more click."
+                filter="integer"
+                showon="jg_category_view_pagination:2"
+            />
         </fieldset>
     </fields>
 </metadata>
