@@ -138,12 +138,12 @@
                 <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
             </field>
             <field
-                name="jg_category_view_load_more_images"
+                name="jg_category_view_number_of_reloaded_images"
                 type="text"
                 default="3"
                 parentclass="stack span-2-inline"
-                label="Number Of Images"
-                description="Number of images to be loaded per load more click."
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_DESC"
                 filter="integer"
                 showon="jg_category_view_pagination:2"
             />
