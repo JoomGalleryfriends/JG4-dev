@@ -49,6 +49,7 @@ $show_imgdate      = $this->params['menu']->get('jg_category_view_show_imgdate',
 $show_imgauthor    = $this->params['menu']->get('jg_category_view_show_imgauthor', 0, 'INT');
 $show_tags         = $this->params['menu']->get('jg_category_view_show_tags', 0, 'INT');
 $load_more_images = $this->params['menu']->get('jg_category_view_load_more_images', 3, 'INT');
+$reloaded_images  = $this->params['menu']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
@@ -301,14 +302,14 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <?php if ( $use_pagination == '1' ) : ?>
     <div class="load-more-container">
       <div class="infinite-scroll"></div>
-      <div id="noMore" class="btn btn-outline-primary hidden">No More Images</div>
+      <div id="noMore" class="btn btn-outline-primary no-more-images hidden"><?php echo Text::_('COM_JOOMGALLERY_NO_MORE_IMAGES') ?></div>
     </div>
   <?php endif; ?>
 
   <?php if ( $use_pagination == '2') : ?>
     <div class="load-more-container">
-      <div id="loadMore" class="btn btn-outline-primary load-more"><span>Load More</span><i class="jg-icon-expand-more"></i></div>
-      <div id="noMore" class="btn btn-outline-primary hidden">No More Images</div>
+      <div id="loadMore" class="btn btn-outline-primary load-more"><span><?php echo Text::_('COM_JOOMGALLERY_LOAD_MORE') ?></span><i class="jg-icon-expand-more"></i></div>
+      <div id="noMore" class="btn btn-outline-primary no-more-images hidden"><?php echo Text::_('COM_JOOMGALLERY_NO_MORE_IMAGES') ?></div>
     </div>
   <?php endif; ?>
 
@@ -336,6 +337,15 @@ const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementB
     download: false,
   },
   licenseKey: '1111-1111-111-1111',
+});
+jgallery<?php echo $this->item->id; ?>.outer.on('click', (e) => {
+  const $item = jgallery<?php echo $this->item->id; ?>.outer.find('.lg-current .lg-image');
+  if (
+    e.target.classList.contains('lg-image') ||
+    $item.get().contains(e.target)
+  ) {
+    jgallery<?php echo $this->item->id; ?>.goToNextSlide();
+  }
 });
 </script>
 <?php endif; ?>
@@ -394,7 +404,7 @@ const items = Array.from(category.querySelectorAll('.jg-image'));
 maxImages = <?php echo $num_columns * 2; ?>;
 loadImages = <?php echo $num_columns * 2; ?>;
 hiddenClass = 'hidden-jg-image';
-hiddenItems = Array.from(document.querySelectorAll('.hidden-jg-image'));
+hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
 items.forEach(function (item, index) {
   if (index > maxImages - 1) {
@@ -441,9 +451,9 @@ const items = Array.from(category.querySelectorAll('.jg-image'));
 const loadMore = document.getElementById('loadMore');
 
 maxImages = <?php echo $num_columns * 2; ?>;
-loadImages = <?php echo $load_more_images; ?>;
+loadImages = <?php echo $reloaded_images; ?>;
 hiddenClass = 'hidden-jg-image';
-hiddenItems = Array.from(document.querySelectorAll('.hidden-jg-image'));
+hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
 items.forEach(function (item, index) {
   if (index > maxImages - 1) {

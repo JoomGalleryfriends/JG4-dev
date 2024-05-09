@@ -231,8 +231,14 @@ a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
 .load-more-container {
   text-align: center;
 }
-.btn.btn-outline-primary.load-more {
+.btn.btn-outline-primary.load-more, .btn.btn-outline-primary.no-more-images {
   margin: 2em 0;
+}
+.btn.btn-outline-primary.no-more-images:hover {
+  color: initial;
+  background-color: initial;
+  border-color: initial;
+  cursor: default;
 }
 /* lightgallery view */
 html.lg-on {
