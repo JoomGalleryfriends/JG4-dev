@@ -19,6 +19,5 @@
     </files>
 
     <updateservers>
-        <server type="extension" priority="1" name="JoomGallery Cache Plugin">https://www.joomgalleryfriends.net/components/com_newversion/xml/extensions3.xml</server>
     </updateservers>
 </extension>
