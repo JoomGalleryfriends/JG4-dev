@@ -280,22 +280,24 @@ let ajax = async function(formId, task) {
 }
 
 /**
- * Perform a migration task
+ * Search for the next migrateable id in the queue
+ * 
  * @param   {String}   formId   Id of the form element
  * 
- * @returns {String}   Id of the database record to be migrated
+ * @returns {String}   Id of the database record to be migrated next
  */
 let getNextMigrationID = function(formId) {
-  let type  = formId.replace(formIdTmpl + '-', '');
-  let form  = document.getElementById(formId);
+  let type   = formId.replace(formIdTmpl + '-', '');
+  let form   = document.getElementById(formId);
 
+  // Get migrateables from form
   let migrateable = atob(form.querySelector('[name="migrateable"]').value);
   migrateable = JSON.parse(migrateable);
 
-  // Overwrite migrateable in list
+  // Update/overwrite migrateables in list
   migrateablesList[type] = migrateable;
 
-  // Loop through queue
+  // Loop through queue to get next migrateable to be performed
   for (let id of migrateable.queue) {
     if (!(id in migrateable.successful) && !(id in migrateable.failed)) {
       migrateablesList[type]['currentID'] = id;
@@ -322,7 +324,6 @@ let responseHandler = function(type, response) {
     addLog(response.messages, type, 'error');
     addLog(response.data.error, type, 'error');
     
-
     // Try again...
   }
   else  {
@@ -341,6 +342,11 @@ let responseHandler = function(type, response) {
 
       // Update migrateables
       updateMigrateables(type, response.data);
+      
+      // Reset tryCounter if we are handling a different migrateable
+      if(migrateablesList[type]['currentID'] != migrateablesList[type]['last']) {
+        tryCounter = 0;
+      }
     }
     else
     {
