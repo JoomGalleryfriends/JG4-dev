@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Log\Log;
 
 /**
 * Trait to implement messaging tools
@@ -35,6 +36,14 @@ trait MessageTrait
    * @var bool
   */
   public $msgWithhold = false;
+
+  /**
+   * List of raw tasks without graphical output
+   * and therefore without message possibility
+   *
+   * @var array
+  */
+  public $rawTasks = array('image.ajaxsave');
 
   /**
 	 * Session storage path
@@ -73,6 +82,24 @@ trait MessageTrait
   protected $errors = array();
 
   /**
+   * State if logger is created
+   *
+   * @var bool
+   * 
+   * @since  4.0.0
+  */
+  protected $log = false;
+
+  /**
+   * Name of the logger to be used
+   *
+   * @var string
+   * 
+   * @since  4.0.0
+  */
+  protected $logName = null;
+
+  /**
    * Adds the storages to the session
    * 
    * @return  void
@@ -105,19 +132,95 @@ trait MessageTrait
   }
 
   /**
-   * Add text to the debug information storage
-   *
-   * @param   string   $txt         Text to add to the debugoutput
-   * @param   bool     $new_line    True to add text to a new line (default: true)
-   * @param   bool     $margin_top  True to add an empty line in front (default: false)
+   * Add a JoomGallery logger to the JLog class
+   * 
+   * @param   string   Name of the specific logger
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function addDebug($txt, $new_line=true, $margin_top=false)
+  protected function addLogger(string $name = null)
+  {
+    if(!$this->log)
+    {
+      if(\is_null($name))
+      {
+        Log::addLogger(['text_file' =>  'com_joomgallery.log.php'], Log::ALL, ['com_joomgallery']);
+      }
+      else
+      {
+        Log::addLogger(['text_file' =>  'com_joomgallery.'.$name.'.log.php'], Log::ALL, ['com_joomgallery.'.$name]);
+      }
+    }
+    
+    $this->log = true;
+  }
+
+  /**
+   * Log a message
+   * 
+   * @param   string   $txt       The message for a new log entry.
+   * @param   integer  $priority  Message priority.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function addLog(string $txt, int $priority = 8, string $name = null)
+  {
+    if(\is_null($name) && \is_null($this->logName))
+    {
+      Log::add($txt, $priority, 'com_joomgallery');
+    }
+    else
+    {
+      if(\is_null($name))
+      {
+        $name = $this->logName;
+      }
+
+      Log::add($txt, $priority, 'com_joomgallery'.$name);
+    }
+  }
+
+  /**
+   * Set a default logger to be used from now on
+   * 
+   * @param   string   $name   Name of the logger. Empty to use the default JoomGallery logger
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function setLogger(string $name = null)
+  {
+    $this->addLogger($name);
+    $this->logName = $name;
+  }
+
+  /**
+   * Add text to the debug information storage
+   *
+   * @param   string   $txt         Text to add to the debugoutput
+   * @param   bool     $new_line    True to add text to a new line (default: true)
+   * @param   bool     $margin_top  True to add an empty line in front (default: false)
+   * @param   bool     $log         True to add error message to logfile (default: false)
+   * @param   string   $name        Name of the logger to be used (default: null)
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  public function addDebug($txt, $new_line=true, $margin_top=false, $log=false, $name=null)
   {
     $this->setMsg($txt, 'debug', $new_line, $margin_top);
+
+    if($log)
+    {
+      $this->addLogger($name);
+      $this->addLog($txt, Log::DEBUG, $name);
+    }
   }
 
   /**
@@ -126,14 +229,22 @@ trait MessageTrait
    * @param   string   $txt         Text to add to the debugoutput
    * @param   bool     $new_line    True to add text to a new line (default: true)
    * @param   bool     $margin_top  True to add an empty line in front (default: false)
+   * @param   bool     $log         True to add error message to logfile (default: false)
+   * @param   string   $name        Name of the logger to be used (default: null)
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function addWarning($txt, $new_line=true, $margin_top=false)
+  public function addWarning($txt, $new_line=true, $margin_top=false, $log=false, $name=null)
   {
     $this->setMsg($txt, 'warning', $new_line, $margin_top);
+
+    if($log)
+    {
+      $this->addLogger($name);
+      $this->addLog($txt, Log::WARNING, $name);
+    }
   }
 
   /**
@@ -142,14 +253,23 @@ trait MessageTrait
    * @param   string   $txt         Text to add to the error storage
    * @param   bool     $new_line    True to add text to a new line (default: true)
    * @param   bool     $margin_top  True to add an empty line in front (default: false)
+   * @param   bool     $log         True to add error message to logfile (default: true)
+   * @param   string   $name        Name of the logger to be used (default: null)
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function setError($txt, $new_line=true, $margin_top=false)
+  public function setError($txt, $new_line=true, $margin_top=false, $log=true, $name=null)
   {
     $this->setMsg($txt, 'error', $new_line, $margin_top);
+    $this->error = true;
+
+    if($log)
+    {
+      $this->addLogger($name);
+      $this->addLog($txt, Log::ERROR, $name);
+    }
   }
 
   /**
@@ -481,6 +601,28 @@ trait MessageTrait
       default:
         throw new Exception("Selected storage does not exist.");
         return false;
+    }
+  }
+
+  /**
+	 * Checks if the current task is a raw tasks
+   * --> without message possibility
+	 *
+	 * @param   string   $context  controller.task
+	 *
+	 * @return  bool  True on success, false otherwise
+	 *
+	 * @since   4.0.0 
+	*/
+  public function isRawTask($context)
+  {
+    if(\in_array($context, $this->rawTasks))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
     }
   }
 }

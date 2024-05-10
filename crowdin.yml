@@ -1,7 +1,7 @@
 project_id_env: CROWDIN_PROJECT_ID
 api_token_env: CROWDIN_PERSONAL_TOKEN
 base_path: /
-preserve_hierarchy: true
+preserve_hierarchy: 1
 base_url: 'https://joomla.crowdin.com'
 files:
   - source: /site/com_joomgallery/language/en-GB/com_joomgallery.ini
@@ -17,5 +17,8 @@ files:
     translation: /administrator/com_joomgallery/language/%locale%/%original_file_name%
     update_option: update_as_unapproved
   - source: /administrator/com_joomgallery/language/en-GB/com_joomgallery.iptc.ini
+    translation: /administrator/com_joomgallery/language/%locale%/%original_file_name%
+    update_option: update_as_unapproved
+  - source: /administrator/com_joomgallery/language/en-GB/com_joomgallery.migration.Jg3ToJg4.ini
     translation: /administrator/com_joomgallery/language/%locale%/%original_file_name%
     update_option: update_as_unapproved

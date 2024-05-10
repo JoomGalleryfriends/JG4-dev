@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
@@ -1290,7 +1290,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     else
     {
       // Copy watermark, if no resize is needed
-      $this->dst_frames['image'] = $this->copyFrames_GD($this->src_frames['image'], $this->src_imginfo, $this->src_imginfo['transparency']);
+      $this->dst_frames = $this->copyFrames_GD($this->src_frames, $this->src_imginfo, $this->src_imginfo['transparency']);
     }
 
     // Check for failures
@@ -2451,7 +2451,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
 
           if(($rOrig != $rNew) || ($gOrig != $gNew) || ($bOrig != $bNew))
           {
-            $pixCol = \imageColorAllocate($img, $rNew, $gNew, $bNew);
+            $pixCol = \imageColorAllocate($img, (int) $rNew, (int) $gNew, (int) $bNew);
             \imageSetPixel($img, $x, $y, $pixCol);
           }
         }
@@ -2502,7 +2502,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
             $bNew = 0;
           }
           $rgbNew = ($rNew << 16) + ($gNew << 8) + $bNew;
-          \imageSetPixel($img, $x, $y, $rgbNew);
+          \imageSetPixel($img, $x, $y, (int) $rgbNew);
         }
       }
     }

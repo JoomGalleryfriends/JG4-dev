@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
@@ -51,7 +51,7 @@ class ImagesController extends JoomAdminController
 		$this->registerTask('featured', 'feature');
     $this->registerTask('unfeatured', 'feature');
 
-    $this->registerTask('approveded', 'approve');
+    $this->registerTask('approved', 'approve');
     $this->registerTask('unapproved', 'approve');
   }
 
@@ -134,6 +134,105 @@ class ImagesController extends JoomAdminController
 		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=images');
 	}
 
+  /**
+	 * Method to recreate imagetypes of existing Images
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 */
+	public function recreate()
+	{
+    // Get inputs
+    $pks     = $this->app->getUserStateFromRequest('joom.recreate.cid', 'cid', array(), 'array');
+    $type    = $this->app->getUserStateFromRequest('joom.recreate.type', 'type', 'original', 'cmd');
+    $count   = $this->app->getUserState('joom.recreate.count', 0);
+    $created = $this->app->getUserState('joom.recreate.created', array());
+    $error   = $this->app->getUserState('joom.recreate.error', array());
+
+    if($count === 0)
+    {
+      // Check for request forgeries
+      $this->checkToken();
+    }    
+
+    try
+    {
+      if($count > 0 && empty($pks))
+      {
+        throw new \Exception(Text::_('JERROR_NO_ITEMS_SELECTED'));
+      }
+
+      // Sanitize input array
+      $pks = ArrayHelper::toInteger($pks);
+
+      // Create refresher
+      $options = array( 'controller' => 'images',
+                        'task'       => 'recreate',
+                        'name'       => Text::_('COM_JOOMGALLERY_RECREATE_IMAGES'),
+                        'remaining'  => count($pks),
+                        'start'      => $this->input->getBool('cid')
+                      );
+      $this->component->createRefresher($options);
+      $refresher = $this->component->getRefresher();
+
+      // Iterate the items to recreate each one.
+		  foreach($pks as $key => $pk)
+      {
+        $model = $this->getModel('image');
+        if($model->recreate($pk, $type))
+        {
+          // Success
+          \array_push($created, $pk);
+        }
+        else
+        {
+          // Error
+          \array_push($error, $pk);
+        }
+        
+        // Remove item from todo-list
+        unset($pks[$key]);
+
+        // Count up
+        $count++;
+
+        // Check remaining time
+        if(!$refresher->check())
+        {
+          $this->app->setUserState('joom.recreate.cid', $pks);
+          $this->app->setUserState('joom.recreate.count', $count);
+          $this->app->setUserState('joom.recreate.created', $created);
+          $this->app->setUserState('joom.recreate.error', $error);
+          $refresher->refresh(count($pks));
+        }
+      }
+    }
+    catch (Exception $e)
+    {
+      Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
+    }
+
+    // Output success message
+    if(\count($created) > 0)
+    {
+      $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_IMAGES_RECREATED_SUCCESS', \implode(', ', $created)));
+    }
+
+    // Output error message
+    if(\count($error) > 0)
+    {
+      $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_IMAGES_RECREATED_ERROR', \implode(', ', $error)), 'error');
+    }
+
+    $this->app->setUserState('joom.recreate.cid', array());
+    $this->app->setUserState('joom.recreate.count', 0);
+    $this->app->setUserState('joom.recreate.created', array());
+    $this->app->setUserState('joom.recreate.error', array());
+
+    $this->setRedirect('index.php?option='._JOOM_OPTION.'&view=images');
+  }
+
 	/**
 	 * Proxy for getModel.
 	 *
@@ -211,7 +310,7 @@ class ImagesController extends JoomAdminController
         break;
 
       case 'approve':
-        $data  = array('approve' => 1, 'unapprove' => 0);
+        $data  = array('approved' => 1, 'unapproved' => 0);
         $msgs  = array('APPROVING', 'APPROVED', 'UNAPPROVED', '', '');
         break;
       
@@ -224,7 +323,7 @@ class ImagesController extends JoomAdminController
 
     $value = ArrayHelper::getValue($data, $task, 0, 'int');
 
-		if (empty($cid))
+		if(empty($cid))
 		{
 			$this->app->getLogger()->warning(Text::_($this->text_prefix . '_NO_ITEM_SELECTED'), array('image' => 'jerror'));
 		}

@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\View\Images;
@@ -87,6 +87,10 @@ class HtmlView extends JoomGalleryView
     // Check if the form exists before showing the add/edit buttons
     $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/src/View/Images';
 
+    // Show button back to control panel
+    $html = '<a href="index.php?option=com_joomgallery&amp;view=control" class="btn btn-primary"><span class="icon-arrow-left-4" title="'.Text::_('COM_JOOMGALLERY_CONTROL_PANEL').'"></span> '.Text::_('COM_JOOMGALLERY_CONTROL_PANEL').'</a>';
+    $toolbar->appendButton('Custom', $html);
+
     // New button
     if(file_exists($formPath))
     {
@@ -108,9 +112,11 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    // Batch button
+    
     if($canDo->get('core.edit.state') || count($this->transitions))
     {
+
+      // Batch button
       if($canDo->get('core.edit'))
       {
         $batch_dropdown = $toolbar->dropdownButton('batch-group')
@@ -130,11 +136,11 @@ class HtmlView extends JoomGalleryView
           ->listCheck(true);
       }
 
-      // Image manipulation button
+      // Image processing button
       if($canDo->get('core.edit'))
       {
         $process_dropdown = $toolbar->dropdownButton('process-group')
-          ->text('Image Manipulation')
+          ->text('COM_JOOMGALLERY_CONFIG_TAB_IMAGE_PROCESSING')
           ->toggleSplit(false)
           ->icon('fas fa-images')
           ->buttonClass('btn btn-action')
@@ -144,8 +150,8 @@ class HtmlView extends JoomGalleryView
 
         // Recreate button inside image manipulation
         $process_childBar->standardButton('recreate')
-          ->text('recreate - comes later')
-          ->icon('fas fa-refresh')
+          ->text('COM_JOOMGALLERY_RECREATE')
+          ->icon('icon-refresh')
           ->task('images.recreate')
           ->listCheck(true);
       }
@@ -208,15 +214,15 @@ class HtmlView extends JoomGalleryView
 			'a.`hits`'       => Text::_('COM_JOOMGALLERY_COMMON_HITS'),
 			'a.`downloads`'  => Text::_('COM_JOOMGALLERY_DOWNLOADS'),
 			'a.`approved`'   => Text::_('COM_JOOMGALLERY_APPROVED'),
-			'a.`imgtitle`'   => Text::_('JGLOBAL_TITLE'),
+			'a.`title`'   => Text::_('JGLOBAL_TITLE'),
 			'a.`catid`'      => Text::_('JCATEGORY'),
 			'a.`published`'  => Text::_('JSTATUS'),
-			'a.`imgauthor`'  => Text::_('JAUTHOR'),
+			'a.`author`'  => Text::_('JAUTHOR'),
 			'a.`language`'   => Text::_('JGRID_HEADING_LANGUAGE'),
 			'a.`access`'     => Text::_('JGRID_HEADING_ACCESS'),
 			'a.`created_by`' => Text::_('JGLOBAL_FIELD_CREATED_BY_LABEL'),
 			'a.`id`'         => Text::_('JGRID_HEADING_ID'),
-			'a.`imgdate`'    => Text::_('JDATE'),
+			'a.`date`'    => Text::_('JDATE'),
 		);
 	}
 

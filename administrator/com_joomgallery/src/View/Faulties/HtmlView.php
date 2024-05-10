@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\View\Faulties;
@@ -47,6 +47,10 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
+    $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_YET_AVAILABLE'), 'warning');
+
+    return;
+
     $this->items = $this->get('Items');
 		$this->state = $this->get('State');
 		$this->pagination = $this->get('Pagination');
@@ -83,6 +87,10 @@ class HtmlView extends JoomGalleryView
 
 		// Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR . '/src/View/Faulties';
+
+		// Show button back to control panel
+		$html = '<a href="index.php?option=com_joomgallery&amp;view=control" class="btn btn-primary"><span class="icon-arrow-left-4" title="'.Text::_('COM_JOOMGALLERY_CONTROL_PANEL').'"></span> '.Text::_('COM_JOOMGALLERY_CONTROL_PANEL').'</a>';
+		$toolbar->appendButton('Custom', $html);
 
 		if(file_exists($formPath))
 		{

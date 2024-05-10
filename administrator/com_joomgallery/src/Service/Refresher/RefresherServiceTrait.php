@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\Refresher;
@@ -44,14 +44,16 @@ trait RefresherServiceTrait
 
   /**
 	 * Creates the refresher helper class
+   * 
+   * @param   array  $params   An array with optional parameters
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createRefresher(): void
+	public function createRefresher($params = array()): void
 	{
-    $this->refresher = new Refresher;
+    $this->refresher = new Refresher($params);
 
     return;
 	}

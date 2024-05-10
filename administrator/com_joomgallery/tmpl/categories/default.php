@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
  
 // No direct access 
@@ -22,7 +22,7 @@ use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Button\PublishedButton;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
+//HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
 
 // Import CSS
 $wa = $this->document->getWebAssetManager();
@@ -225,7 +225,7 @@ if($saveOrder && !empty($this->items))
 
                 <td class="d-none d-md-table-cell">
                 <?php if($item->img_count > 0) : ?>
-                  <a href="<?php echo JRoute::_('index.php?option='._JOOM_OPTION.'&view=images&filter[category]='.$item->id); ?>">
+                  <a href="<?php echo Route::_('index.php?option='._JOOM_OPTION.'&view=images&filter[category]='.$item->id); ?>">
                     <span class="badge bg-info"><?php echo (int) $item->img_count; ?></span>
                   </a>
                 <?php else : ?>
@@ -261,6 +261,7 @@ if($saveOrder && !empty($this->items))
         <?php endif; ?>
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
+        <input type="hidden" name="form_submited" value="1"/>
         <input type="hidden" id="del_force" name="del_force" value="0"/>
 				<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
 				<?php echo HTMLHelper::_('form.token'); ?>

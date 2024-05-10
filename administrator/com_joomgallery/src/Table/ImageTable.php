@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
@@ -14,13 +14,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Table\Asset;
+use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Table\Table as Table;
-use Joomla\CMS\Event\AbstractEvent;
-use \Joomla\CMS\Versioning\VersionableTableInterface;
-use \Joomla\Database\DatabaseDriver;
-use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\Database\DatabaseDriver;
+use \Joomla\CMS\Event\AbstractEvent;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Versioning\VersionableTableInterface;
 
 /**
  * Image table
@@ -30,35 +32,8 @@ use \Joomla\Registry\Registry;
  */
 class ImageTable extends Table implements VersionableTableInterface
 {
-	/**
-	 * Check if a field is unique
-	 *
-	 * @param   string   $field    Name of the field
-   * @param   integer  $catid    Category id (default=null)
-	 *
-	 * @return  bool    True if unique
-	 */
-	private function isUnique ($field, $catid=null)
-	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($db->quoteName($field))
-			->from($db->quoteName($this->_tbl))
-			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
-			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
-
-    if($catid > 0)
-    {
-      $query->where($db->quoteName('catid') . ' = ' . $db->quote($catid));
-    }
-
-		$db->setQuery($query);
-		$db->execute();
-
-		return ($db->getNumRows() == 0) ? true : false;
-	}
+  use JoomTableTrait;
+	use MigrationTableTrait;
 
 	/**
 	 * Constructor
@@ -75,47 +50,71 @@ class ImageTable extends Table implements VersionableTableInterface
 	}
 
 	/**
-	 * Get the type alias for the history table
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
 	 *
-	 * @return  string  The alias as described above
+	 * @param   Table   $table  Table name
+	 * @param   integer  $id     Id
 	 *
-	 * @since   4.0.0
+	 * @see Table::_getAssetParentId
+	 *
+	 * @return mixed The id on success, false on failure.
 	 */
-	public function getTypeAlias()
+	protected function _getAssetParentId($table = null, $id = null)
 	{
-		return $this->typeAlias;
+		// We will retrieve the parent-asset from the Asset-table
+		$assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+
+		if($this->catid)
+		{
+			// The image has a category as asset-parent
+			$catId = (int) $this->catid;
+			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$catId);
+		}
+
+		// Return the found asset-parent-id
+		if($assetTable->id)
+		{
+			$assetParentId = $assetTable->id;
+		}
+		else
+		{
+			// If no asset-parent can be found we take the global asset
+			$assetParentId = $assetTable->getRootId();
+		}
+
+		return $assetParentId;
 	}
 
   /**
-     * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
-     *
-     * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
-     *                           If not set the instance property value is used.
-     * @param   boolean  $reset  True to reset the default values before loading the new row.
-     *
-     * @return  boolean  True if successful. False if row not found.
-     *
-     * @since   1.7.0
-     * @throws  \InvalidArgumentException
-     * @throws  \RuntimeException
-     * @throws  \UnexpectedValueException
-     */
-    public function load($keys = null, $reset = true)
+   * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
+   *
+   * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.
+   *                           If not set the instance property value is used.
+   * @param   boolean  $reset  True to reset the default values before loading the new row.
+   *
+   * @return  boolean  True if successful. False if row not found.
+   *
+   * @since   1.7.0
+   * @throws  \InvalidArgumentException
+   * @throws  \RuntimeException
+   * @throws  \UnexpectedValueException
+   */
+  public function load($keys = null, $reset = true)
+  {
+    $success = parent::load($keys, $reset);
+
+    if($success)
     {
-      $success = parent::load($keys, $reset);
+      // Record successfully loaded
+      // load Tags
+      $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
+      $tags_model = $com_obj->getMVCFactory()->createModel('Tags', 'administrator');
 
-      if($success)
-      {
-        // Record successfully loaded
-        // load Tags
-        $com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
-        $tags_model = $com_obj->getMVCFactory()->createModel('Tags');
-
-        $this->tags = $tags_model->getMappedItems($this->id);
-      }
-      
-      return $success;
+      $this->tags = $tags_model->getMappedItems($this->id);
     }
+    
+    return $success;
+  }
 
 	/**
 	 * Overloaded bind function to pre-process the params.
@@ -131,14 +130,30 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function bind($array, $ignore = '')
 	{
-		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task');
+		$date      = Factory::getDate();
+		$task      = Factory::getApplication()->input->get('task', '', 'cmd');
+		$component = Factory::getApplication()->bootComponent('com_joomgallery');
 
+    // Support for id field
+    if(!\key_exists('id', $array))
+    {
+      $array['id'] = 0;
+    }
+
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
 
 		// Support for alias field: alias
 		if(empty($array['alias']))
 		{
-			if(empty($array['imgtitle']))
+			if(empty($array['title']))
 			{
 				$array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
 			}
@@ -146,14 +161,25 @@ class ImageTable extends Table implements VersionableTableInterface
 			{
 				if(Factory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['imgtitle']));
+					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
 				}
 				else
 				{
-					$array['alias'] = OutputFilter::stringURLSafe(trim($array['imgtitle']));
+					$array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
 				}
 			}
 		}
+    else
+    {
+      if(Factory::getConfig()->get('unicodeslugs') == 1)
+      {
+        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
+      }
+      else
+      {
+        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
+      }
+    }
 
 		// Support for multiple or not foreign key field: catid
 			if(!empty($array['catid']))
@@ -177,9 +203,14 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['created_by']))
+		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
 			$array['created_by'] = Factory::getUser()->id;
+		}
+
+		if($array['id'] == 0 && !$component->getConfig()->get('jg_approve'))
+		{
+			$array['approved'] = 1;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
@@ -187,7 +218,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['modified_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['modified_by']))
+		if($array['id'] == 0 && (!\key_exists('modified_by', $array) ||empty($array['modified_by'])))
 		{
 			$array['modified_by'] = Factory::getUser()->id;
 		}
@@ -197,27 +228,22 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['modified_by'] = Factory::getUser()->id;
 		}
 
-		// Support for multiple field: robots
-		$this->multipleFieldSupport($array, 'robots');
-
-		// Support for empty date field: imgdate
-		if($array['imgdate'] == '0000-00-00' || empty($array['imgdate']))
+		// Support for empty date field: date
+		if(!\key_exists('date', $array) || $array['date'] == '0000-00-00' || empty($array['date']))
 		{
-			$array['imgdate'] = $date->toSql();
-			$this->imgdate    = $date->toSql();
+			$array['date'] = $date->toSql();
+			$this->date    = $date->toSql();
 		}
 
 		if(isset($array['params']) && is_array($array['params']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['params']);
+			$registry = new Registry($array['params']);
 			$array['params'] = (string) $registry;
 		}
 
 		if(isset($array['metadata']) && is_array($array['metadata']))
 		{
-			$registry = new Registry;
-			$registry->loadArray($array['metadata']);
+			$registry = new Registry($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
 
@@ -267,6 +293,13 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function store($updateNulls = true)
 	{
+    // Support for params field
+    if(isset($this->params) && !is_string($this->params))
+		{
+			$registry = new Registry($this->params);
+			$this->params = (string) $registry;
+		}
+    
     $success = parent::store($updateNulls);
 
     if($success)
@@ -274,7 +307,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Record successfully stored
      	// Store Tags
 	  	$com_obj    = Factory::getApplication()->bootComponent('com_joomgallery');
-    	$tags_model = $com_obj->getMVCFactory()->createModel('Tags');
+    	$tags_model = $com_obj->getMVCFactory()->createModel('Tags', 'administrator');
 
       // Create tags
       $this->tags = $tags_model->storeTagsList($this->tags);
@@ -293,35 +326,6 @@ class ImageTable extends Table implements VersionableTableInterface
     }
 
     return $success;
-	}
-
-	/**
-	 * This function convert an array of Access objects into an rules array.
-	 *
-	 * @param   array  $jaccessrules  An array of Access objects.
-	 *
-	 * @return  array
-	 */
-	private function JAccessRulestoArray($jaccessrules)
-	{
-		$rules = array();
-
-		foreach($jaccessrules as $action => $jaccess)
-		{
-			$actions = array();
-
-			if($jaccess)
-			{
-				foreach($jaccess->getData() as $group => $allow)
-				{
-					$actions[$group] = ((bool)$allow);
-				}
-			}
-
-			$rules[$action] = $actions;
-		}
-
-		return $rules;
 	}
 
 	/**
@@ -350,68 +354,52 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
     // Check if title is unique inside this category
-		if(!$this->isUnique('imgtitle', $this->catid))
+		if(!$this->isUnique('title', $this->catid, 'catid'))
 		{
 			$count = 2;
-			$currentTitle =  $this->imgtitle;
+			$currentTitle =  $this->title;
 
-			while(!$this->isUnique('imgtitle', $this->catid))
+			while(!$this->isUnique('title', $this->catid, 'catid'))
       {
-				$this->imgtitle = $currentTitle . ' (' . $count++ . ')';
+				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
 
 		// Support for subform field params
-		if(is_array($this->params))
-		{
-			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
-		}
+    if(empty($this->params))
+    {
+      $this->params = $this->loadDefaultField('params');
+    }
+    if(isset($this->params))
+    {
+      $this->params = new Registry($this->params);
+    }
+
+		// Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
+    }
+
+    // Support for field metadesc
+    if(empty($this->metadesc))
+    {
+      $this->metadesc = $this->loadDefaultField('metadesc');
+    }
+
+    // Support for field metakey
+    if(empty($this->metakey))
+    {
+      $this->metakey = $this->loadDefaultField('metakey');
+    }
+
+    // Support for field imgmetadata
+    if(empty($this->imgmetadata))
+    {
+      $this->imgmetadata = $this->loadDefaultField('imgmetadata');
+    }
 
 		return parent::check();
-	}
-
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-		$assetParent = Table::getInstance('Asset');
-
-		// Default: if no asset-parent can be found we take the global asset
-		$assetParentId = $assetParent->getRootId();
-
-		// The item has the component as asset-parent
-		$assetParent->loadByName(_JOOM_OPTION);
-
-		// Return the found asset-parent-id
-		if($assetParent->id)
-		{
-			$assetParentId = $assetParent->id;
-		}
-
-		return $assetParentId;
 	}
 
   /**
@@ -431,7 +419,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Record successfully deleted
       // Delete Tag mapping
       $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
-      $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+      $tag_model = $com_obj->getMVCFactory()->createModel('Tag', 'administrator');
 
       // remove tag from mapping
       foreach($this->tags as $tag)
@@ -638,36 +626,5 @@ class ImageTable extends Table implements VersionableTableInterface
 	public function publish($pks = null, $state = 1, $userId = 0)
 	{
     return $this->changeState('publish', $pks, $state, $userId);
-  }
-
-  /**
-   * Support for multiple field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function multipleFieldSupport(&$data, $fieldName)
-  {
-    if(isset($data[$fieldName]))
-		{
-			if(is_array($data[$fieldName]))
-			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
-			}
-			elseif(strpos($data[$fieldName], ',') != false)
-			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
-			}
-			elseif(strlen($data[$fieldName]) == 0)
-			{
-				$data[$fieldName] = '';
-			}
-		}
-		else
-		{
-			$data[$fieldName] = '';
-		}
   } 
 }

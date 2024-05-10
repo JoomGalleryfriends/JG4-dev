@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
@@ -14,13 +14,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Table\Nested as Table;
-use \Joomla\CMS\Versioning\VersionableTableInterface;
-use \Joomla\Database\DatabaseDriver;
-use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\CMS\Table\Nested as Table;
+use \Joomla\Database\DatabaseDriver;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -31,6 +33,9 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  */
 class CategoryTable extends Table implements VersionableTableInterface
 { 
+  use JoomTableTrait;
+  use MigrationTableTrait;
+  
   /**
    * Object property to hold the path of the new location reference node.
    *
@@ -48,36 +53,6 @@ class CategoryTable extends Table implements VersionableTableInterface
   protected $_old_location_path = null;
 
 	/**
-	 * Check if a field is unique
-	 *
-	 * @param   string   $field    Name of the field
-   * @param   integer  $parent   Parent category id (default=null)
-	 *
-	 * @return  bool    True if unique
-	 */
-	private function isUnique ($field, $parent=null)
-	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($db->quoteName($field))
-			->from($db->quoteName($this->_tbl))
-			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
-			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
-    
-    if($parent > 0)
-    {
-      $query->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent));
-    }    
-
-		$db->setQuery($query);
-		$db->execute();
-
-		return ($db->getNumRows() == 0) ? true : false;
-	}
-
-	/**
 	 * Constructor
 	 *
 	 * @param   JDatabase  &$db  A database connector object
@@ -92,16 +67,57 @@ class CategoryTable extends Table implements VersionableTableInterface
 		$this->getRootId();
 	}
 
-	/**
-	 * Get the type alias for the history table
+  /**
+	 * Resets the root_id property to the default value: 0
 	 *
-	 * @return  string  The alias as described above
+	 * @return  void
 	 *
 	 * @since   4.0.0
 	 */
-	public function getTypeAlias()
+  public static function resetRootId()
+  {
+    self::$root_id = 0;
+  }
+
+	/**
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+	 *
+	 * @param   Table   $table  Table name
+	 * @param   integer  $id     Id
+	 *
+	 * @see Table::_getAssetParentId
+	 *
+	 * @return mixed The id on success, false on failure.
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
 	{
-		return $this->typeAlias;
+		// We will retrieve the parent-asset from the Asset-table
+    $assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+
+		if($this->parent_id && \intval($this->parent_id) >= 1)
+		{
+			// The item has a category as asset-parent
+			$parent_id = \intval($this->parent_id);
+			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$parent_id);
+		}
+		else
+		{
+			// The item has the component as asset-parent
+			$assetTable->loadByName(_JOOM_OPTION);
+		}
+
+		// Return the found asset-parent-id
+		if($assetTable->id)
+		{
+			$assetParentId = $assetTable->id;
+		}
+		else
+		{
+			// If no asset-parent can be found we take the global asset
+			$assetParentId = $assetTable->getRootId();
+		}
+
+		return $assetParentId;
 	}
 
   /**
@@ -142,14 +158,24 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function bind($array, $ignore = '')
 	{
 		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task');
+		$task = Factory::getApplication()->input->get('task', '', 'cmd');
+
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
 
 		if($array['id'] == 0)
 		{
 			$array['created_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['created_by']))
+		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
 			$array['created_by'] = Factory::getUser()->id;
 		}
@@ -169,7 +195,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['modified_time'] = $date->toSql();
 		}
 
-    	// Support for alias field: alias
+    // Support for alias field: alias
 		if(empty($array['alias']))
 		{
 			if(empty($array['title']))
@@ -188,9 +214,17 @@ class CategoryTable extends Table implements VersionableTableInterface
 				}
 			}
 		}
-
-		// Support for multiple field: robots
-		$this->multipleFieldSupport($array, 'robots');
+    else
+    {
+      if(Factory::getConfig()->get('unicodeslugs') == 1)
+      {
+        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
+      }
+      else
+      {
+        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
+      }
+    }
 
 		if(isset($array['params']) && is_array($array['params']))
 		{
@@ -248,6 +282,13 @@ class CategoryTable extends Table implements VersionableTableInterface
 	{
     $this->setPathWithLocation();
 
+    // Support for params field
+    if(isset($this->params) && !is_string($this->params))
+		{
+			$registry = new Registry($this->params);
+			$this->params = (string) $registry;
+		}
+
 		return parent::store($updateNulls);
 	}
 
@@ -274,35 +315,6 @@ class CategoryTable extends Table implements VersionableTableInterface
   }
 
 	/**
-	 * This function convert an array of Access objects into an rules array.
-	 *
-	 * @param   array  $jaccessrules  An array of Access objects.
-	 *
-	 * @return  array
-	 */
-	private function JAccessRulestoArray($jaccessrules)
-	{
-		$rules = array();
-
-		foreach($jaccessrules as $action => $jaccess)
-		{
-			$actions = array();
-
-			if($jaccess)
-			{
-				foreach($jaccess->getData() as $group => $allow)
-				{
-					$actions[$group] = ((bool)$allow);
-				}
-			}
-
-			$rules[$action] = $actions;
-		}
-
-		return $rules;
-	}
-
-	/**
 	 * Overloaded check function
 	 *
 	 * @return bool
@@ -318,7 +330,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 		// Check if alias is unique
 		if(!$this->isUnique('alias'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentAlias =  $this->alias;
 
 			while(!$this->isUnique('alias'))
@@ -328,26 +340,50 @@ class CategoryTable extends Table implements VersionableTableInterface
 		}
 
     // Check if title is unique inside this parent category
-		if(!$this->isUnique('title', $this->parent_id))
+		if(!$this->isUnique('title', $this->parent_id, 'parent_id'))
 		{
-			$count = 0;
+			$count = 2;
 			$currentTitle =  $this->title;
 
-			while(!$this->isUnique('title', $this->parent_id))
+			while(!$this->isUnique('title', $this->parent_id, 'parent_id'))
       {
 				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
 
-    // Check if path is correct
+    // Create new path based on alias and parent category
     $manager    = JoomHelper::getService('FileManager');
-    $this->path = $manager->getCatPath($this->id, false, $this->parent_id, $this->alias);
+    $filesystem = JoomHelper::getService('Filesystem');
+    $this->path = $manager->getCatPath($this->id, false, $this->parent_id, $this->alias, false, false);
+    $this->path = $filesystem->cleanPath($this->path, '/');
 
-		// Support for subform field params
-		if(is_array($this->params))
-		{
-			$this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
-		}
+    // Support for subform field params
+    if(empty($this->params))
+    {
+      $this->params = $this->loadDefaultField('params');
+    }
+    if(isset($this->params))
+    {
+      $this->params = new Registry($this->params);
+    }
+
+    // Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
+    }
+
+    // Support for field metadesc
+    if(empty($this->metadesc))
+    {
+      $this->metadesc = $this->loadDefaultField('metadesc');
+    }
+
+    // Support for field metakey
+    if(empty($this->metakey))
+    {
+      $this->metakey = $this->loadDefaultField('metakey');
+    }
 
 		return parent::check();
 	}
@@ -386,50 +422,6 @@ class CategoryTable extends Table implements VersionableTableInterface
     }
   }
 
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-		$assetParent = Table::getInstance('Asset');
-
-		// Default: if no asset-parent can be found we take the global asset
-		$assetParentId = $assetParent->getRootId();
-
-		// The item has the component as asset-parent
-		$assetParent->loadByName(_JOOM_OPTION);
-
-		// Return the found asset-parent-id
-		if($assetParent->id)
-		{
-			$assetParentId = $assetParent->id;
-		}
-
-		return $assetParentId;
-	}
-
   /**
    * Delete a record by id
    *
@@ -460,6 +452,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 
     $db->setQuery($checkQuery);
 
+    // Add root category
     if(empty($db->loadAssoc()))
     {
       $query = $db->getQuery(true)
@@ -483,10 +476,66 @@ class CategoryTable extends Table implements VersionableTableInterface
 
       if(!$db->execute())
       {
+        Factory::getApplication()->enqueueMessage(Text::_('Error create root category'), 'error');
+
+        return false;
+      }      
+      $root_catid = $db->insertid();
+
+      // Get parent id for asset
+      $old_parentID = $this->parent_id;
+      $this->parent_id = 0;
+      $parentId = $this->_getAssetParentId();
+      $this->parent_id = $old_parentID;
+      
+      // Get asset name
+      $name = $this->typeAlias . '.1';
+
+      // Create asset for root category
+      $assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+      $assetTable->loadByName($name);
+
+      if($assetTable->getError())
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Error load asset for root category creation'), 'error');
+
         return false;
       }
-      
-      return $db->insertid();
+      else
+      {
+        // Specify how a new or moved node asset is inserted into the tree.
+        if(empty($assetTable->id) || $assetTable->parent_id != $parentId)
+        {
+          $assetTable->setLocation($parentId, 'last-child');
+        }
+
+        // Prepare the asset to be stored.
+        $assetTable->parent_id = $parentId;
+        $assetTable->name      = $name;
+        $assetTable->title     = 'Root';
+        $assetTable->rules     = '{}';
+
+        if(!$assetTable->check() || !$assetTable->store(false))
+        {
+          Factory::getApplication()->enqueueMessage(Text::_('Error create asset for root category'), 'error');
+
+          return false;
+        }
+      }
+
+      // Connect root category with asset table
+      $query = $db->getQuery(true);
+      $query->update($db->quoteName(_JOOM_TABLE_CATEGORIES))->set($db->quoteName('asset_id') . ' = ' . $assetTable->id)->where($db->quoteName('id') . ' = ' . $root_catid);
+      $db->setQuery($query);
+
+      if(!$db->execute())
+      {
+        Factory::getApplication()->enqueueMessage(Text::_('Error connect root category with asset'), 'error');
+
+        return false;
+      }
+
+      return $root_catid;
     }
 
     return true;
@@ -501,44 +550,13 @@ class CategoryTable extends Table implements VersionableTableInterface
   {
     $rootId = parent::getRootId();
 
-    // If root is not set then create it
+    // If root is not set then create it.
     if($rootId === false)
     {
       $rootId = $this->addRoot();
     }
 
     return $rootId;
-  }
-
-  /**
-   * Support for multiple field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function multipleFieldSupport(&$data, $fieldName)
-  {
-    if(isset($data[$fieldName]))
-		{
-			if(is_array($data[$fieldName]))
-			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
-			}
-			elseif(strpos($data[$fieldName], ',') != false)
-			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
-			}
-			elseif(strlen($data[$fieldName]) == 0)
-			{
-				$data[$fieldName] = '';
-			}
-		}
-		else
-		{
-			$data[$fieldName] = '';
-		}
   }
 
   /**

@@ -1,11 +1,11 @@
 <?php
 /** 
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
@@ -13,9 +13,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\Uri\Uri;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Language\Text;
+use \Joomla\Registry\Registry;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -139,5 +141,66 @@ class ConfigHelper
     {
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
     }
+  }
+
+  /**
+	 * - Checks if we are visiting a joomgallery form
+   * - If yes, guess context and item id
+   * 
+   * @param   Registry     Form data
+	 *
+	 * @return  array|bool   array(context, id) on success, false otherwise
+	 *
+	 * @since   4.0.0
+	 */
+  public static function getFormContext($formdata)
+  {
+    $option = Factory::getApplication()->getInput()->getCmd('option');
+    $layout = Factory::getApplication()->getInput()->getCmd('layout', 'default');
+
+    if($option == 'com_joomgallery' && $layout == 'edit')
+    {
+      // We are in a joomgallery item form view
+      $context   = 'com_joomgallery.'.Factory::getApplication()->getInput()->getCmd('view', '');
+      $contextID = $formdata->get('id', null);
+
+      if($contextID == 0)
+      {
+        $contextID = null;
+      }
+
+      return array($context, $contextID);
+    }
+    elseif($option == 'com_menus' && $layout == 'edit')
+    {
+      // We are in a menu item form view      
+      if($formdata->get('type', '') == 'component')
+      {
+        $uri = new Uri($formdata->get('link'));
+
+        if($uri->getVar('option', 'com_menus') == 'com_joomgallery')
+        {
+          if($view = $uri->getVar('view', false))
+          {
+            $context   = 'com_joomgallery.'.$view;
+            $contextID = $uri->getVar('id', null);
+          }
+          else
+          {
+            $context   = 'com_joomgallery';
+            $contextID = null;
+          }
+
+          if($contextID == 0)
+          {
+            $contextID = null;
+          }
+
+          return array($context, $contextID);
+        }
+      }
+    }
+
+    return false;
   }
 }

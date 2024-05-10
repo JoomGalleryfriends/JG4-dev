@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 // No direct access
@@ -86,10 +86,11 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     </div>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-    <?php /*<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-    <input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-    <input type="hidden" name="jform[asset_id]" value="<?php echo $this->item->asset_id; ?>" /> */ ?>
-
+    <?php if (Factory::getUser()->authorise('core.admin','joomgallery')) : ?>
+      <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
+        <?php echo $this->form->getInput('rules'); ?>
+      <?php echo HTMLHelper::_('uitab.endTab'); ?>
+    <?php endif; ?>
     
     <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
   </div>

@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
@@ -14,11 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Access\Access;
-use \Joomla\CMS\Table\Table as Table;
-use \Joomla\CMS\Versioning\VersionableTableInterface;
-use \Joomla\Database\DatabaseDriver;
+use \Joomla\CMS\Table\Table;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Access\Access;
+use \Joomla\Database\DatabaseDriver;
 
 /**
  * Config table
@@ -26,8 +25,10 @@ use \Joomla\Registry\Registry;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ConfigTable extends Table implements VersionableTableInterface
+class ConfigTable extends Table
 {
+  use JoomTableTrait;
+  
 	/**
 	 * Constructor
 	 *
@@ -43,42 +44,6 @@ class ConfigTable extends Table implements VersionableTableInterface
 	}
 
 	/**
-	 * Get the type alias for the history table
-	 *
-	 * @return  string  The alias as described above
-	 *
-	 * @since   4.0.0
-	 */
-	public function getTypeAlias()
-	{
-		return $this->typeAlias;
-	}
-
-  /**
-	 * Check if a field is unique
-	 *
-	 * @param   string   $field    Name of the field
-	 *
-	 * @return  bool    True if unique
-	 */
-	private function isUnique ($field)
-	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($db->quoteName($field))
-			->from($db->quoteName($this->_tbl))
-			->where($db->quoteName($field) . ' = ' . $db->quote($this->$field))
-			->where($db->quoteName('id') . ' <> ' . (int) $this->{$this->_tbl_key});
-
-		$db->setQuery($query);
-		$db->execute();
-
-		return ($db->getNumRows() == 0) ? true : false;
-	}
-
-	/**
 	 * Overloaded bind function to pre-process the params.
 	 *
 	 * @param   array  $array   Named array
@@ -88,14 +53,25 @@ class ConfigTable extends Table implements VersionableTableInterface
 	 *
 	 * @see     Table:bind
 	 * @since   4.0.0
+   * 
 	 * @throws  \InvalidArgumentException
 	 */
 	public function bind($array, $ignore = '')
 	{
 		$date = Factory::getDate();
-		$task = Factory::getApplication()->input->get('task');
+		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
-		if($array['id'] == 0 && empty($array['created_by']))
+    // Support for title field: title
+    if(\array_key_exists('title', $array))
+    {
+      $array['title'] = \trim($array['title']);
+      if(empty($array['title']))
+      {
+        $array['title'] = 'Unknown';
+      }
+    }
+
+		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
 			$array['created_by'] = Factory::getUser()->id;
 		}
@@ -233,52 +209,6 @@ class ConfigTable extends Table implements VersionableTableInterface
 	}
 
 	/**
-	 * Method to store a row in the database from the Table instance properties.
-	 *
-	 * If a primary key value is set the row with that primary key value will be updated with the instance property values.
-	 * If no primary key value is set a new row will be inserted into the database with the properties from the Table instance.
-	 *
-	 * @param   boolean  $updateNulls  True to update fields even if they are null.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   4.0.0
-	 */
-	public function store($updateNulls = true)
-	{
-		return parent::store($updateNulls);
-	}
-
-	/**
-	 * This function convert an array of Access objects into an rules array.
-	 *
-	 * @param   array  $jaccessrules  An array of Access objects.
-	 *
-	 * @return  array
-	 */
-	private function JAccessRulestoArray($jaccessrules)
-	{
-		$rules = array();
-
-		foreach($jaccessrules as $action => $jaccess)
-		{
-			$actions = array();
-
-			if($jaccess)
-			{
-				foreach($jaccess->getData() as $group => $allow)
-				{
-					$actions[$group] = ((bool)$allow);
-				}
-			}
-
-			$rules[$action] = $actions;
-		}
-
-		return $rules;
-	}
-
-	/**
 	 * Overloaded check function
 	 *
 	 * @return bool
@@ -342,127 +272,4 @@ class ConfigTable extends Table implements VersionableTableInterface
 
 		return parent::check();
 	}
-
-	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-	 * @see Table::_getAssetName
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-		$assetParent = Table::getInstance('Asset');
-
-		// Default: if no asset-parent can be found we take the global asset
-		$assetParentId = $assetParent->getRootId();
-
-		// The item has the component as asset-parent
-		$assetParent->loadByName(_JOOM_OPTION);
-
-		// Return the found asset-parent-id
-		if($assetParent->id)
-		{
-			$assetParentId = $assetParent->id;
-		}
-
-		return $assetParentId;
-	}
-
-  /**
-   * Delete a record by id
-   *
-   * @param   mixed  $pk  Primary key value to delete. Optional
-   *
-   * @return bool
-   */
-  public function delete($pk = null)
-  {
-    $this->load($pk);
-    $result = parent::delete($pk);
-
-    return $result;
-  }
-
-  /**
-   * Support for multiple field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function multipleFieldSupport(&$data, $fieldName)
-  {
-    if(isset($data[$fieldName]))
-		{
-			if(is_array($data[$fieldName]))
-			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
-			}
-			elseif(strpos($data[$fieldName], ',') != false)
-			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
-			}
-			elseif(strlen($data[$fieldName]) == 0)
-			{
-				$data[$fieldName] = '';
-			}
-		}
-		else
-		{
-			$data[$fieldName] = '';
-		}
-  }
-
-  /**
-   * Support for number field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function numberFieldSupport(&$data, $fieldName)
-  {
-    if($data[$fieldName] === '')
-		{
-			$data[$fieldName] = null;
-			$this->{$fieldName} = null;
-		}
-  }
-
-  /**
-   * Support for number field
-   *
-   * @param   array   $data       Form data
-   * @param   string  $fieldName  Name of the field
-   *
-   * @return  void
-   */
-  protected function subformFieldSupport(&$data, $fieldName)
-  {
-    if((!empty($data[$fieldName]) && (is_array($data[$fieldName]))))
-    {
-      \array_push($this->_jsonEncode, $fieldName);
-    }
-  }
 }

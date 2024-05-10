@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-  <fieldset>
+  <fieldset name="general">
     <field name="jg_imgtype"
            type="customlist"
            groupByFieldset="false"
@@ -37,7 +37,7 @@
            type="list"
            groupByFieldset="false"
            default="0"
-           reset="orig:0;det:3;thumb:4"
+           reset="orig:0;det:3;thumb:2"
            label="COM_JOOMGALLERY_RESIZING"
            description="COM_JOOMGALLERY_FIELDS_RESIZING_DESC" >
         <option value="0">JNO</option>
@@ -50,7 +50,7 @@
     <field name="jg_imgtypewidth"
            type="number"
            default=""
-           reset="orig:1;det:1000;thumb:250"
+           reset="orig:1;det:1000;thumb:360"
            groupByFieldset="false"
            filter="int"
            min="1"
@@ -63,7 +63,7 @@
     <field name="jg_imgtypeheight"
            type="number"
            default=""
-           reset="orig:1;det:1000;thumb:250"
+           reset="orig:1;det:1000;thumb:360"
            groupByFieldset="false"
            filter="int"
            min="1"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
-  <fieldset>
+  <fieldset name="general">
     <field name="id"
            type="text"
            readonly="true"
@@ -87,7 +87,7 @@
            type="editor"
            cols="250"
            buttons="true"
-           filter="JComponentHelper::filterText"
+           filter="\Joomla\CMS\Component\ComponentHelper::filterText"
            label="JGLOBAL_DESCRIPTION"
            hide="pagebreak" />
 

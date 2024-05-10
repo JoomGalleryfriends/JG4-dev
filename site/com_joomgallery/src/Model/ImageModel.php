@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Site\Model;
@@ -14,23 +14,23 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\MVC\Model\ItemModel;
-use \Joomla\CMS\Helper\TagsHelper;
-use \Joomla\CMS\Object\CMSObject;
-use \Joomgallery\Component\Joomgallery\Site\Helper\JoomHelper;
 
 /**
- * Joomgallery model.
+ * Model to get an image record.
  * 
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImageModel extends ItemModel
+class ImageModel extends JoomItemModel
 {
-	public $_item;
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'image';
 
 	/**
 	 * Method to auto-populate the model state.
@@ -45,7 +45,6 @@ class ImageModel extends ItemModel
 	 */
 	protected function populateState()
 	{
-		$app  = Factory::getApplication('com_joomgallery');
 		$user = Factory::getUser();
 
 		// Check published state
@@ -56,28 +55,24 @@ class ImageModel extends ItemModel
 		}
 
 		// Load state from the request userState on edit or from the passed variable on default
-		if(Factory::getApplication()->input->get('layout') == 'edit')
+		$id = $this->app->input->getInt('id', null);
+		if($id)
 		{
-			$id = Factory::getApplication()->getUserState('com_joomgallery.edit.image.id');
+			$this->app->setUserState('com_joomgallery.edit.image.id', $id);
 		}
 		else
 		{
-			$id = Factory::getApplication()->input->get('id');
-			Factory::getApplication()->setUserState('com_joomgallery.edit.image.id', $id);
+			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
+		}
+
+		if(is_null($id))
+		{
+			throw new Exception('No ID provided to the model!', 500);
 		}
 
 		$this->setState('image.id', $id);
 
-		// Load the parameters.
-		$params       = $app->getParams();
-		$params_array = $params->toArray();
-
-		if(isset($params_array['item_id']))
-		{
-			$this->setState('image.id', $params_array['item_id']);
-		}
-
-		$this->setState('params', $params);
+		$this->loadComponentParams($id);
 	}
 
 	/**
@@ -91,251 +86,71 @@ class ImageModel extends ItemModel
 	 */
 	public function getItem($id = null)
 	{
-		if($this->_item === null)
+		if($this->item === null)
 		{
-			$this->_item = false;
+			$this->item = false;
 
 			if(empty($id))
 			{
 				$id = $this->getState('image.id');
 			}
 
-			// Get a level row instance.
-			$table = $this->getTable();
+			// Attempt to load the item
+			$adminModel = $this->component->getMVCFactory()->createModel('image', 'administrator');
+			$this->item = $adminModel->getItem($id);
 
-			// Attempt to load the row.
-			if($table && $table->load($id))
-			{
-				// Check published state.
-				if($published = $this->getState('filter.published'))
-				{
-					if(isset($table->state) && $table->state != $published)
-					{
-						throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 403);
-					}
-				}
-
-				// Convert the Table to a clean CMSObject.
-				$properties  = $table->getProperties(1);
-				$this->_item = ArrayHelper::toObject($properties, CMSObject::class);
-			}
-
-			if(empty($this->_item))
+			if(empty($this->item))
 			{
 				throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 404);
 			}
 		}
 
-		if(isset($this->_item->catid) && $this->_item->catid != '')
+		if(isset($this->item->catid) && $this->item->catid != '')
 		{
-			if(is_object($this->_item->catid))
-			{
-				$this->_item->catid = ArrayHelper::fromObject($this->_item->catid);
-			}
-
-			$values    = (is_array($this->_item->catid)) ? $this->_item->catid : explode(',',$this->_item->catid);
-			$textValue = array();
-
-			foreach($values as $value)
-			{
-				$db    = Factory::getDbo();
-				$query = $db->getQuery(true);
-
-				$query
-					->select('`#__joomgallery_categories_3681153`.`title`')
-					->from($db->quoteName('#__joomgallery_categories', '#__joomgallery_categories_3681153'))
-					->where($db->quoteName('id') . ' = ' . $db->quote($value));
-
-				$db->setQuery($query);
-				$results = $db->loadObject();
-
-				if($results)
-				{
-					$textValue[] = $results->title;
-				}
-			}
-
-			$this->_item->catid = !empty($textValue) ? implode(', ', $textValue) : $this->_item->catid;
+			$this->item->cattitle = $this->getCategoryName($this->item->catid);
 		}
 
-		if(isset($this->_item->created_by))
+		if(isset($this->item->created_by))
 		{
-			$this->_item->created_by_name = Factory::getUser($this->_item->created_by)->name;
+			$this->item->created_by_name = Factory::getUser($this->item->created_by)->name;
 		}
 
-		if(isset($this->_item->modified_by))
+		if(isset($this->item->modified_by))
 		{
-			$this->_item->modified_by_name = Factory::getUser($this->_item->modified_by)->name;
+			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
 		}
 
-		return $this->_item;
-	}
-
-	/**
-	 * Get an instance of Table class
-	 *
-	 * @param   string $type   Name of the Table class to get an instance of.
-	 * @param   string $prefix Prefix for the table class name. Optional.
-	 * @param   array  $config Array of configuration values for the Table object. Optional.
-	 *
-	 * @return  Table|bool Table if success, false on failure.
-	 */
-	public function getTable($type = 'Image', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
-
-	/**
-	 * Get the id of an item by alias
-	 *
-	 * @param   string $alias Item alias
-	 *
-	 * @return  mixed
-	 */
-	public function getItemIdByAlias($alias)
-	{
-		$table      = $this->getTable();
-		$properties = $table->getProperties();
-		$result     = null;
-		$aliasKey   = null;
-
-		if(method_exists($this, 'getAliasFieldNameByView'))
+    // Delete unnessecary properties
+		$toDelete = array('asset_id', 'params');
+		foreach($toDelete as $property)
 		{
-			$aliasKey   = $this->getAliasFieldNameByView('image');
+			unset($this->item->{$property});
 		}
 
-		if(key_exists('alias', $properties))
-		{
-			$table->load(array('alias' => $alias));
-			$result = $table->id;
-		}
-		elseif(isset($aliasKey) && key_exists($aliasKey, $properties))
-		{
-			$table->load(array($aliasKey => $alias));
-			$result = $table->id;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Method to check in an item.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkin($id = null)
-	{
-		// Get the id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('image.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Attempt to check the row in.
-			if(method_exists($table, 'checkin'))
-			{
-				if(!$table->checkin($id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Method to check out an item for editing.
-	 *
-	 * @param   integer $id The id of the row to check out.
-	 *
-	 * @return  boolean True on success, false on failure.
-	 *
-	 * @since   4.0.0
-	 */
-	public function checkout($id = null)
-	{
-		// Get the user id.
-		$id = (!empty($id)) ? $id : (int) $this->getState('image.id');
-
-		if($id)
-		{
-			// Initialise the table
-			$table = $this->getTable();
-
-			// Get the current user object.
-			$user = Factory::getUser();
-
-			// Attempt to check the row out.
-			if(method_exists($table, 'checkout'))
-			{
-				if(!$table->checkout($user->get('id'), $id))
-				{
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Publish the element
-	 *
-	 * @param   int $id    Item id
-	 * @param   int $state Publish state
-	 *
-	 * @return  boolean
-	 */
-	public function publish($id, $state)
-	{
-		$table = $this->getTable();
-
-		$table->load($id);
-		$table->state = $state;
-
-		return $table->store();
-	}
-
-	/**
-	 * Method to delete an item
-	 *
-	 * @param   int $id Element id
-	 *
-	 * @return  bool
-	 */
-	public function delete($id)
-	{
-		$table = $this->getTable();
-
-		return $table->delete($id);
+		return $this->item;
 	}
 
   /**
-	 * Get alias based on view name
-   * 
-   * @param  string  $view  view name
+	 * Method to load the title of a category
 	 *
-	 * @return string
+	 * @param   int  $catid  Category id
+	 *
+	 * @return  string|bool  The category title on success, false otherwise
 	 */
-	public function getAliasFieldNameByView($view)
-	{
-		switch ($view)
-		{
-			case 'image':
-			case 'imageform':
-				return 'alias';
-			break;
-			case 'category':
-			case 'categoryform':
-				return 'alias';
-			break;
-		}
-	}
+  protected function getCategoryName(int $catid)
+  {
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    // Select the required field from the table.
+		$query->select($db->quoteName('title'));
+    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES))
+          ->where($db->quoteName('id') . " = " . $db->quote($catid));
+
+    // Reset the query using our newly populated query object.
+    $db->setQuery($query);
+    
+    return $db->loadResult();
+  }
 }

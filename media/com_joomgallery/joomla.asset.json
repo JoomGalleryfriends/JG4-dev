@@ -10,6 +10,26 @@
       "uri": "com_joomgallery/admin.css"
     },
     {
+      "name": "com_joomgallery.site",
+      "type": "style",
+      "uri": "com_joomgallery/site.css"
+    },
+    {
+      "name": "com_joomgallery.jg-icon-font",
+      "type": "style",
+      "uri": "com_joomgallery/jg-icon-font.css"
+    },
+    {
+      "name": "com_joomgallery.lightgallery-bundle",
+      "type": "style",
+      "uri": "com_joomgallery/lightgallery-bundle.min.css"
+    },
+    {
+      "name": "com_joomgallery.refresher",
+      "type": "style",
+      "uri": "com_joomgallery/refresher.css"
+    },
+    {
       "name": "com_joomgallery.admin",
       "type": "script",
       "uri": "com_joomgallery/admin.js",
@@ -24,6 +44,14 @@
       "name": "com_joomgallery.catBtns",
       "type": "script",
       "uri": "com_joomgallery/catBtns.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "com_joomgallery.list-view",
+      "type": "script",
+      "uri": "com_joomgallery/list-view.js",
       "attributes": {
         "defer": true
       }
@@ -56,6 +84,72 @@
       "attributes": {
         "type": "module"
       }
+    },
+    {
+      "name": "com_joomgallery.form-edit",
+      "type": "script",
+      "uri": "com_joomgallery/form-edit.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.lightgallery",
+      "type": "script",
+      "uri": "com_joomgallery/lightgallery.min.js",
+      "attributes": {
+        "defer": false
+      }
+    },
+    {
+      "name": "com_joomgallery.infinite-scroll",
+      "type": "script",
+      "uri": "com_joomgallery/infinite-scroll.min.js",
+      "attributes": {
+        "defer": false
+      }
+    },
+    {
+      "name": "com_joomgallery.masonry",
+      "type": "script",
+      "uri": "com_joomgallery/masonry.min.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.tasklessForm",
+      "type": "script",
+      "uri": "com_joomgallery/tasklessForm.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.justified",
+      "type": "script",
+      "uri": "com_joomgallery/imgjust.min.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "com_joomgallery.uppy-uploader",
+      "type": "script",
+      "uri": "com_joomgallery/uppy/dist/uppy-uploader.js",
+      "attributes": {
+        "type": "module"
+      }
+    },
+    {
+      "name": "com_joomgallery.uppy",
+      "type": "style",
+      "uri": "com_joomgallery/uppy.css"
+    },
+    {
+      "name": "com_joomgallery.migrator",
+      "type": "script",
+      "uri": "com_joomgallery/migrator/dist/migrator.js"
     }
   ]
 }

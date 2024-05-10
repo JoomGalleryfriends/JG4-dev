@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\View\Image;
@@ -29,10 +29,10 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 class HtmlView extends JoomGalleryView
 {
 	protected $state;
-
 	protected $item;
-
 	protected $form;
+  protected $config;
+  protected $imagetypes;
 
 	/**
 	 * Display the view
@@ -48,7 +48,10 @@ class HtmlView extends JoomGalleryView
 		$this->state      = $this->get('State');
 		$this->item       = $this->get('Item');
 		$this->form       = $this->get('Form');
+    $this->config     = JoomHelper::getService('config');
     $this->imagetypes = JoomHelper::getRecords('imagetypes');
+    $rating           = JoomHelper::getRating($this->item->id);
+    $this->form->setvalue('rating', '', $rating);
 
     if($this->item->id == 0)
     {
@@ -65,6 +68,30 @@ class HtmlView extends JoomGalleryView
     if($this->_layout == 'upload')
     {
       $this->addToolbarUpload();
+
+      // Add variables to JavaScript
+      $js_vars = new \stdClass();
+      $js_vars->maxFileSize  = (100 * 1073741824); // 100GB
+      $js_vars->TUSlocation  = $this->item->tus_location;
+      $js_vars->allowedTypes = $this->getAllowedTypes();
+
+      $js_vars->uppyTarget   = '#drag-drop-area';          // Id of the DOM element to apply the uppy form
+      $js_vars->uppyLimit    = 5;                          // Number of concurrent tus upploads (only file upload)
+      $js_vars->uppyDelays   = array(0, 1000, 3000, 5000); // Delay in ms between upload retrys
+
+      $js_vars->semaCalls    = $this->config->get('jg_parallelprocesses', 1); // Number of concurrent async calls to save the record to DB (including image processing)
+      $js_vars->semaTokens   = 100;                                           // Prealloc space for 100 tokens
+
+      $this->js_vars = $js_vars;
+    }
+    elseif($this->_layout == 'replace')
+    {
+      if($this->item->id == 0)
+      {
+        throw new \Exception("View needs an image ID to be loaded.", 1);
+      }
+      $this->addToolbarReplace();
+      $this->modifyFieldsReplace();
     }
     else
     {
@@ -162,5 +189,96 @@ class HtmlView extends JoomGalleryView
     $server = $this->component->getTusServer();
 
     $this->item->tus_location = $server->getLocation();
+  }
+
+  /**
+	 * Get array of all allowed filetypes based on the config parameter jg_imagetypes.
+	 *
+	 * @return  array  List with all allowed filetypes
+	 *
+	 */
+  protected function getAllowedTypes()
+  {
+    $types = \explode(',', $this->config->get('jg_imagetypes'));
+
+    // add different types of jpg files
+    $jpg_array = array('jpg', 'jpeg', 'jpe', 'jfif');
+    if (\in_array('jpg', $types) || \in_array('jpeg', $types) || \in_array('jpe', $types) || \in_array('jfif', $types))
+    {
+      foreach ($jpg_array as $jpg)
+      {
+        if(!\in_array($jpg, $types))
+        {
+          \array_push($types, $jpg);
+        }
+      }
+    }
+
+    // add point to types
+    foreach ($types as $key => $type)
+    {
+      if(\substr($type, 0, 1) !== '.')
+      {
+        $types[$key] = '.'. \strtolower($type);
+      }
+      else
+      {
+        $types[$key] = \strtolower($type);
+      }
+    }
+
+    return $types;
+  }
+
+  /**
+	 * Add the page title and toolbar for the imagetype replace form.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
+	protected function addToolbarReplace()
+	{
+    Factory::getApplication()->input->set('hidemainmenu', true);
+
+    ToolbarHelper::title(Text::_('COM_JOOMGALLERY_IMAGES').' :: '.Text::_('COM_JOOMGALLERY_REPLACE'), "image");
+
+    $canDo = JoomHelper::getActions();
+
+    // Add replace button
+		if($canDo->get('core.edit'))
+		{
+			ToolbarHelper::save('image.replace', 'COM_JOOMGALLERY_REPLACE');
+		}
+
+    // Add cancel button
+    ToolbarHelper::cancel('image.cancel', 'JTOOLBAR_CANCEL');
+  }
+
+  /**
+	 * Modify form fields according to view needs.
+	 *
+	 * @return void
+	 *
+	 */
+	protected function modifyFieldsReplace()
+	{
+    $this->form->setFieldAttribute('title', 'required', false);
+    $this->form->setFieldAttribute('replacetype', 'required', true);
+    $this->form->setFieldAttribute('image', 'required', true);
+    $this->form->setFieldAttribute('catid', 'required', false);
+
+    $this->form->setFieldAttribute('id', 'type', 'hidden');
+
+    $this->form->setFieldAttribute('title', 'readonly', true);
+    $this->form->setFieldAttribute('alias', 'readonly', true);
+    $this->form->setFieldAttribute('catid', 'readonly', true);
+
+    if($this->app->input->get('type', '', 'string') !== '')
+    {
+      $this->form->setFieldAttribute('replacetype', 'readonly', true);
+    }    
+
+    $this->form->setFieldAttribute('replacetype', 'default', $this->app->input->get('type', 'original', 'string'));
   }
 }

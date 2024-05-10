@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 // No direct access
@@ -144,7 +144,7 @@ if ($saveOrder && !empty($this->items))
                 <th scope="row" class="has-context">
                   <div class="break-word">
                     <?php if (isset($item->checked_out) && $item->checked_out && ($canEdit || $canChange)) : ?>
-                      <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'images.', $canCheckin); ?>
+                      <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'configs.', $canCheckin); ?>
                     <?php endif; ?>
 
                     <?php if ($canEdit || $canEditOwn) : ?>
@@ -177,6 +177,7 @@ if ($saveOrder && !empty($this->items))
 
 				<input type="hidden" name="task" value=""/>
 				<input type="hidden" name="boxchecked" value="0"/>
+        <input type="hidden" name="form_submited" value="1"/>
 				<input type="hidden" name="list[fullorder]" value="<?php echo $listOrder; ?> <?php echo $listDirn; ?>"/>
 				<?php echo HTMLHelper::_('form.token'); ?>
 			</div>

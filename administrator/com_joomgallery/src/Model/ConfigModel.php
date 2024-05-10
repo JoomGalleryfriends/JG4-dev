@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
@@ -13,17 +13,15 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Form\FormFactory;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
-use \Joomla\CMS\Filesystem\File;
-use stdClass;
 
 /**
  * Config model.
@@ -33,26 +31,13 @@ use stdClass;
  */
 class ConfigModel extends JoomAdminModel
 {
-	/**
-	 * @var    string  The prefix to use with controller messages.
-	 *
-	 * @since  4.0.0
-	 */
-	protected $text_prefix = _JOOM_OPTION_UC;
-
-	/**
-	 * @var    string  Alias to manage history control
-	 *
-	 * @since  4.0.0
-	 */
-	public $typeAlias = _JOOM_OPTION.'.config';
-
-	/**
-	 * @var    null  Item data
-	 *
-	 * @since  4.0.0
-	 */
-	protected $item = null;
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'config';
 
   /**
 	 * @var    null  Form object
@@ -67,22 +52,6 @@ class ConfigModel extends JoomAdminModel
 	 * @since  4.0.0
 	 */
 	protected $fieldsets = array();
-
-	/**
-	 * Returns a reference to the a Table object, always creating it.
-	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  Table    A database object
-	 *
-	 * @since   4.0.0
-	 */
-	public function getTable($type = 'Config', $prefix = 'Administrator', $config = array())
-	{
-		return parent::getTable($type, $prefix, $config);
-	}
 
 	/**
 	 * Method to get the record form.
@@ -141,13 +110,13 @@ class ConfigModel extends JoomAdminModel
 		// Check the session for previously entered form data.
 		$data = $this->app->getUserState(_JOOM_OPTION.'.edit.config.data', array());
 
+    if($this->item === null)
+    {
+      $this->item = $this->getItem();
+    }
+
 		if(empty($data))
 		{
-			if($this->item === null)
-			{
-				$this->item = $this->getItem();
-			}
-
 			$data = $this->item;
 		}
 
@@ -347,8 +316,8 @@ class ConfigModel extends JoomAdminModel
     // id of the data to be saved
     $id = intval($data['id']);
 
-    $mod_items = $this->component->getMVCFactory()->createModel('imagetypes');
-    $model     = $this->component->getMVCFactory()->createModel('imagetype');
+    $mod_items = $this->component->getMVCFactory()->createModel('imagetypes', 'administrator');
+    $model     = $this->component->getMVCFactory()->createModel('imagetype', 'administrator');
 
     // get all existing imagetypes in the database
     $imagetypes_list = $mod_items->getItems();
@@ -373,7 +342,7 @@ class ConfigModel extends JoomAdminModel
       // update data
       $imagetype_db->typename = $staticprocessing['jg_imgtypename'];
       $imagetype_db->path     = $staticprocessing['jg_imgtypepath'];
-      $imagetype_db->params   = $this->encodeParams($staticprocessing);
+      $imagetype_db->params   = $this->updateParams($staticprocessing, $imagetype_db->params);
 
       if(empty($imagetype_db->typename))
       {
@@ -463,39 +432,12 @@ class ConfigModel extends JoomAdminModel
     parent::publish($pks, $value);
   }
 
-	/**
-	 * Prepare and sanitise the table prior to saving.
-	 *
-	 * @param   Table  $table  Table Object
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function prepareTable($table)
-	{
-		jimport('joomla.filter.output');
-
-		if(empty($table->id))
-		{
-			// Set ordering to the last item if not set
-			if (@$table->ordering === '')
-			{
-				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM '._JOOM_TABLE_CONFIGS);
-        
-				$max             = $db->loadResult();
-				$table->ordering = $max + 1;
-			}
-		}
-	}
-
   /**
 	 * Initialize new stdObject with default config params of jg_staticprocessing.
 	 *
    * @param   string     $type    Imagetype (default:original)
    * 
-	 * @return  stdClass   Default config params of jg_staticprocessing
+	 * @return  \stdClass   Default config params of jg_staticprocessing
 	 *
 	 * @since   4.0.0
 	 */
@@ -566,7 +508,7 @@ class ConfigModel extends JoomAdminModel
       // initialize stdClass object
       if(!isset($new_staticprocessing['jg_staticprocessing'.$key]))
       {
-        $new_staticprocessing['jg_staticprocessing'.$key] = new stdClass();
+        $new_staticprocessing['jg_staticprocessing'.$key] = new \stdClass();
       }
 
       // create staticprocessing array
@@ -605,24 +547,50 @@ class ConfigModel extends JoomAdminModel
   }
 
   /**
-	 * Encode params string.
+	 * Update the staticprocessing params string.
 	 *
-   * @param   array    $data     Form data
+   * @param   array    $data       New submitted params form data
+   * @param   string   $old_data   JSON string of old params
    * 
-	 * @return  string   Params json string
+	 * @return  string   Params JSON string
 	 *
 	 * @since   4.0.0
 	 */
-  protected function encodeParams($data)
+  protected function updateParams(array $data, string $old_data=''): string
   {
+    // Decode old params string
+    if($old_data === '')
+    {
+      $old_data = array();
+    }
+    else
+    {
+      $old_data = \json_decode($old_data, true);
+    }
+
+    // support for jg_imgtypename
     if(\array_key_exists('jg_imgtypename', $data))
     {
       unset($data['jg_imgtypename']);
     }
 
+    // support for jg_imgtypepath
     if(\array_key_exists('jg_imgtypepath', $data))
     {
       unset($data['jg_imgtypepath']);
+    }
+
+    // support for jg_imgtype
+    if(!\array_key_exists('jg_imgtype', $data))
+    {
+      if(\array_key_exists('jg_imgtype', $old_data))
+      {
+        $data['jg_imgtype'] = $old_data['jg_imgtype'];
+      }
+      else
+      {
+        $data['jg_imgtype'] = 1;
+      }      
     }
 
     return json_encode($data);

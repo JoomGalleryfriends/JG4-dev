@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
@@ -16,7 +16,6 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
-use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
@@ -27,15 +26,23 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
  */
 class TagsModel extends JoomListModel
 {
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'tag';
+
 	/**
-	* Constructor.
-	*
-	* @param   array  $config  An optional associative array of configuration settings.
-	*
-	* @see        JController
-	* @since      1.6
-	*/
-	public function __construct($config = array())
+   * Constructor
+   * 
+   * @param   array  $config  An optional associative array of configuration settings.
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  function __construct($config = array())
 	{
 		if(empty($config['filter_fields']))
 		{
@@ -73,28 +80,32 @@ class TagsModel extends JoomListModel
 	{
     $app = Factory::getApplication();
 
-    $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', $search);
+    $forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
 
-    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-		$this->setState('filter.published', $published);
-
-    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
-		$this->setState('filter.language', $language);
-
-		$formSubmited = $app->input->post->get('form_submited');
-
-    // Gets the value of a user state variable and sets it in the session
-		$this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
-
-    if ($formSubmited)
+    // Adjust the context to support modal layouts.
+		if ($layout = $app->input->get('layout'))
 		{
-			$access = $app->input->post->get('access');
-			$this->setState('filter.access', $access);
+			$this->context .= '.' . $layout;
 		}
 
-		// List state information.
+    // Adjust the context to support forced languages.
+		if ($forcedLanguage)
+		{
+			$this->context .= '.' . $forcedLanguage;
+		}
+
+    // List state information.
 		parent::populateState($ordering, $direction);
+
+    // Load the filter state.
+    $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$this->setState('filter.search', $search);
+    $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
+    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
+		$this->setState('filter.language', $language);
+    $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', array());
+    $this->setState('filter.access', $access);
 
     // Force a language
 		if (!empty($forcedLanguage))
@@ -102,18 +113,6 @@ class TagsModel extends JoomListModel
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
-
-		// $context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
-		// $this->setState('filter.search', $context);
-
-		// // Split context into component and optional section
-		// $parts = FieldsHelper::extract($context);
-
-		// if($parts)
-		// {
-		// 	$this->setState('filter.component', $parts[0]);
-		// 	$this->setState('filter.section', $parts[1]);
-		// }
 	}
 
 	/**
@@ -133,10 +132,9 @@ class TagsModel extends JoomListModel
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . serialize($this->getState('filter.access'));
 		$id .= ':' . $this->getState('filter.published');
-		$id .= ':' . serialize($this->getState('filter.created_by'));
 		$id .= ':' . $this->getState('filter.language');
+    $id .= ':' . serialize($this->getState('filter.access'));
 
 		return parent::getStoreId($id);
 	}
@@ -189,17 +187,20 @@ class TagsModel extends JoomListModel
     // Filter by access level.
 		$filter_access = $this->state->get("filter.access");
     
-    if(is_numeric($filter_access))
+    if(!empty($filter_access))
 		{
-			$filter_access = (int) $filter_access;
-			$query->where($db->quoteName('a.access') . ' = :access')
-				    ->bind(':access', $filter_access, ParameterType::INTEGER);
-		}
-		elseif (is_array($filter_access))
-		{
-			$filter_access = ArrayHelper::toInteger($filter_access);
-			$query->whereIn($db->quoteName('a.access'), $filter_access);
-		}
+      if(is_numeric($filter_access))
+      {
+        $filter_access = (int) $filter_access;
+        $query->where($db->quoteName('a.access') . ' = :access')
+              ->bind(':access', $filter_access, ParameterType::INTEGER);
+      }
+      elseif (is_array($filter_access))
+      {
+        $filter_access = ArrayHelper::toInteger($filter_access);
+        $query->whereIn($db->quoteName('a.access'), $filter_access);
+      }
+    }
 
 		// Filter by search
 		$search = $this->getState('filter.search');
@@ -246,15 +247,14 @@ class TagsModel extends JoomListModel
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'a.id'); 
 		$orderDirn = $this->state->get('list.direction', 'ASC');
-
-		// if($orderCol && $orderDirn)
-		// {
-    //   $query->order($db->escape($orderCol . ' ' . $orderDirn));
-		// }
-    // else
-    // {
-      $query->order($db->escape($this->state->get('list.fullordering', 'a.id ASC')));
-    // }
+    if($orderCol && $orderDirn)
+    {
+      $query->order($db->escape($orderCol . ' ' . $orderDirn));
+    }
+    else
+    {
+      $query->order($db->escape($this->state->get('list.fullordering', 'a.lft ASC')));
+    }
 
 		return $query;
 	}
@@ -437,7 +437,7 @@ class TagsModel extends JoomListModel
 	public function storeTagsList($tags)
 	{
 		$com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
-    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag', 'administrator');
 
     foreach($tags as $key => $tag)
     {
@@ -489,7 +489,7 @@ class TagsModel extends JoomListModel
     $current_tags = ArrayHelper::toInteger($current_tags);
 
     $com_obj   = Factory::getApplication()->bootComponent('com_joomgallery');
-    $tag_model = $com_obj->getMVCFactory()->createModel('Tag');
+    $tag_model = $com_obj->getMVCFactory()->createModel('Tag', 'administrator');
 
     $success = true;
     foreach($new_tags as $tag_id)

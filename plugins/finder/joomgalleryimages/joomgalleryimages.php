@@ -1,12 +1,12 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @subpackage plg_finderjoomgalleryimages                                            **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 \defined('_JEXEC') or die;
@@ -200,7 +200,7 @@ class PlgFinderJoomgalleryimages extends Adapter
 
 		// Check if we can use the supplied SQL query.
 		$query = $query instanceof DatabaseQuery ? $query : $db->getQuery(true)
-		->select('a.id, a.imgtitle AS title, a.imgtitle AS summary, 1 AS state, a.access AS access');
+		->select('a.id, a.title AS title, a.title AS summary, 1 AS state, a.access AS access');
 
 		$query->from($this->table . ' as a');
     

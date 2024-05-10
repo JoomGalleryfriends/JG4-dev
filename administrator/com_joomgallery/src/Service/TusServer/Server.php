@@ -1,11 +1,11 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0                                                                  **
+**   @version    4.0.0-dev                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2022  JoomGallery::ProjectTeam                                  **
-**   @license    GNU General Public License version 2 or later                          **
+**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
@@ -1212,6 +1212,22 @@ class Server implements ServerInterface
         $this->directory = $directory . (substr($directory, -1) !== DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '');
 
         return $this;
+    }
+
+    /**
+     * Get the directory where the file is stored
+     * 
+     * @return string
+     */
+    public function getDirectory(): string
+    {
+      if(\substr($this->directory, -1) != '/')
+      {
+        // directory should end with a slash (/)
+        return $this->directory. '/';
+      }
+
+      return $this->directory;
     }
 
     /**

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
-  <fieldset>
+  <fieldset name="general">
     <field name="ordering"/>
 
     <field name="id"
@@ -12,7 +12,7 @@
     <field name="alias"
            type="text"
            class="inputbox"
-           generator="imgtitle"
+           generator="title"
            label="JALIAS"
            description="JFIELD_ALIAS_DESC"
            maxlength="255" />
@@ -60,7 +60,7 @@
     <field name="description"
            type="editor"
            buttons="true"
-           filter="JComponentHelper::filterText"
+           filter="\Joomla\CMS\Component\ComponentHelper::filterText"
            label="JGLOBAL_DESCRIPTION" />
 
     <field name="created_time"
@@ -103,5 +103,20 @@
            class="inputbox"
            size="45"
            labelclass="control-label" />
+  </fieldset>
+  <fieldset name="accesscontrol">
+    <field name="asset_id"
+           type="hidden"
+           filter="unset" />
+
+    <field name="rules"
+           type="rules"
+           label="JFIELD_RULES_LABEL"
+           translate_label="false"
+           filter="rules"
+           validate="rules"
+           class="inputbox"
+           component="com_joomgallery"
+           section="tag" />
   </fieldset>
 </form>

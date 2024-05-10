@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="4.0" method="upgrade">
     <name>com_joomgallery</name>
-    <creationDate>2022-01-01</creationDate>
-    <copyright>2008 - 2022  JoomGallery::ProjectTeam</copyright>
-    <license>GNU General Public License version 2 or later</license>
+    <creationDate>2023-09-10</creationDate>
+    <copyright>2008 - 2023  JoomGallery::ProjectTeam</copyright>
+    <license>GNU General Public License version 3 or later</license>
     <author>JoomGallery::ProjectTeam</author>
     <authorEmail>team@joomgalleryfriends.net</authorEmail>
     <authorUrl>https://www.joomgalleryfriends.net/</authorUrl>
-    <version>4.0.0</version>
+    <version>4.0.0-dev</version>
     <description>JoomGallery 4, a native gallery component for Joomla! 4.x </description>
     <namespace path="src">Joomgallery\Component\Joomgallery</namespace>
 
@@ -19,9 +19,9 @@
         </sql>
     </install>
     <update> <!-- Runs on update -->
-        <sql>
-            <file driver="mysql" charset="utf8">sql/update.mysql.utf8.sql</file>
-        </sql>
+      <schemas>
+        <schemapath type="mysql">sql/updates/mysql</schemapath>
+      </schemas>
     </update>
     <uninstall> <!-- Runs on uninstall -->
         <sql>
@@ -29,21 +29,17 @@
         </sql>
     </uninstall>
 
-    <api>
-      <files folder="webservices">
-        <folder>src</folder>
-      </files>
-    </api>
-
     <files folder="site/com_joomgallery">
         <folder>forms</folder>
         <folder>language</folder>
+        <folder>layouts</folder>
         <folder>src</folder>
         <folder>tmpl</folder>
     </files>
 
     <media destination="com_joomgallery" folder="media/com_joomgallery">
         <folder>css</folder>
+        <folder>fonts</folder>
         <folder>js</folder>
         <folder>images</folder>
         <filename>joomla.asset.json</filename>
@@ -52,11 +48,12 @@
     <administration>
         <menu>COM_JOOMGALLERY</menu>
         <submenu>
+            <menu link="option=com_joomgallery&amp;view=control" view="control" img="class:home">COM_JOOMGALLERY_CONTROL_PANEL</menu>
             <menu link="option=com_joomgallery&amp;view=images" view="images" alt="Joomgallery/Images">COM_JOOMGALLERY_IMAGES</menu>
             <menu link="option=com_joomgallery&amp;view=categories" view="categories" alt="Joomgallery/Categories">JCATEGORIES</menu>
             <menu link="option=com_joomgallery&amp;view=tags" view="tags" alt="Joomgallery/Tags">COM_JOOMGALLERY_TAGS</menu>
             <menu link="option=com_joomgallery&amp;view=configs" view="configs" alt="Joomgallery/Configs">COM_JOOMGALLERY_CONFIG_SETS</menu>
-            <menu link="option=com_joomgallery&amp;view=faulties" view="faulties" alt="Joomgallery/Maintenance">COM_JOOMGALLERY_MAINTENANCE</menu>
+            <menu link="option=com_joomgallery&amp;view=migration" view="migration" alt="Joomgallery/Migration">COM_JOOMGALLERY_MIGRATIONS</menu>
         </submenu>
         <files folder="administrator/com_joomgallery">
             <filename>access.xml</filename>
@@ -81,11 +78,12 @@
     </config>
 
     <plugins>
-        <plugin group="finder" plugin="joomgalleryimages"/>
-        <plugin group="privacy" plugin="joomgalleryimages"/>
-        <plugin group="webservices" plugin="joomgallery"/>
+        <plugin group="system" plugin="joomgallery"/>
+        <plugin group="system" plugin="joomowner"/>
+        <plugin group="privacy" plugin="joomgallery"/>
+        <!-- <plugin group="finder" plugin="joomgalleryimages"/>
         <plugin group="finder" plugin="joomgallerycategories"/>
-        <plugin group="webservices" plugin="joomgallery"/>
+        <plugin group="webservices" plugin="joomgallery"/> -->
     </plugins>
 
     <updateservers>

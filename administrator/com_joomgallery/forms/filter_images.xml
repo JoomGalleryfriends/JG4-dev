@@ -60,8 +60,8 @@
             <option value="*">JGLOBAL_SORT_BY</option>
             <option value="a.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
             <option value="a.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
-            <option value="a.imgtitle ASC">JGLOBAL_TITLE_ASC</option>
-            <option value="a.imgtitle DESC">JGLOBAL_TITLE_DESC</option>
+            <option value="a.title ASC">JGLOBAL_TITLE_ASC</option>
+            <option value="a.title DESC">JGLOBAL_TITLE_DESC</option>
             <option value="a.published ASC">JSTATUS_ASC</option>
             <option value="a.published DESC">JSTATUS_DESC</option>
             <option value="a.featured ASC">JFEATURED_ASC</option>
@@ -74,10 +74,10 @@
             <option value="a.access DESC">JGRID_HEADING_ACCESS_DESC</option>
             <option value="a.created_by ASC">COM_JOOMGALLERY_COMMON_CREATEDBY_ASC</option>
             <option value="a.created_by DESC">COM_JOOMGALLERY_COMMON_CREATEDBY_DESC</option>
-            <option value="a.imgauthor ASC">JAUTHOR_ASC</option>
-            <option value="a.imgauthor DESC">JAUTHOR_DESC</option>
-            <option value="a.imgdate ASC">JDATE_ASC</option>
-            <option value="a.imgdate DESC">JDATE_DESC</option>
+            <option value="a.author ASC">JAUTHOR_ASC</option>
+            <option value="a.author DESC">JAUTHOR_DESC</option>
+            <option value="a.date ASC">JDATE_ASC</option>
+            <option value="a.date DESC">JDATE_DESC</option>
             <option value="a.hits ASC">JGLOBAL_HITS_ASC</option>
             <option value="a.hits DESC">JGLOBAL_HITS_DESC</option>
             <option value="a.downloads ASC">COM_JOOMGALLERY_DOWNLOADS_ASC</option>
