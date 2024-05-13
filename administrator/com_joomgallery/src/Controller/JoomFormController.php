@@ -147,11 +147,23 @@ class JoomFormController extends BaseFormController
     switch($this->context)
     {
       case 'category':
+        if($this->task == 'add')
+        {
+          // We try to open an empty category edit view, always allow this
+          return true;
+        }
+
         $parent_id = $data['parent_id'] ?: 1;
         return $this->getAcl()->checkACL('add','category', $parent_id, true);
         break;
 
       case 'image':
+        if($this->task == 'add')
+        {
+          // We try to open an empty image edit view, always allow this
+          return true;
+        }
+
         $catid = $data['catid'] ?: 1;
         return $this->getAcl()->checkACL('add','image', $catid, true);
         break;
