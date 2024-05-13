@@ -158,7 +158,7 @@ class JoomFormController extends BaseFormController
         break;
 
       case 'image':
-        if($this->task == 'add')
+        if($this->task == 'add' || $this->task == 'multipleadd')
         {
           // We try to open an empty image edit view, always allow this
           return true;
