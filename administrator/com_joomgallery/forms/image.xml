@@ -105,7 +105,7 @@
            maxlength="255" />
 
     <field name="catid"
-           type="jgcategorydropdown"
+           type="jgcategory"
            label="JCATEGORY"
            default=""
            show_root="false"
