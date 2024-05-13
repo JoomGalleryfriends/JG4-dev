@@ -21,7 +21,8 @@ use \Joomla\CMS\Language\Text;
 HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
-	 ->useScript('form.validate');
+	 ->useScript('form.validate')
+   ->useScript('bootstrap.modal');
 HTMLHelper::_('bootstrap.tooltip');
 
 // Import CSS
