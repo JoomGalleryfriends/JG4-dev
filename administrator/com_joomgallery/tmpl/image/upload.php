@@ -24,6 +24,7 @@ $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
    ->useScript('com_joomgallery.uppy-uploader')
+   ->useScript('bootstrap.modal')
    ->useStyle('com_joomgallery.uppy')
    ->useStyle('com_joomgallery.admin');
 
