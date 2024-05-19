@@ -198,9 +198,8 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
         break;
     }
 
-
     // Return the result
-		$this->setResult($event, true);
+		$this->setResult($event, true, false);
   }
 
   /**
@@ -215,7 +214,11 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onContentPrepareForm(Event $event)
   {
-    [$form, $data] = $event->getArguments();
+    try
+    {
+      [$form, $data] = $event->getArguments();
+    } catch (\Throwable $th) { }
+    
     if(!$form)
     {
       // Joomla 5
@@ -261,7 +264,11 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onContentPrepareData(Event $event)
   {
-    [$context, $data] = $event->getArguments();
+    try
+    {
+      [$context, $data] = $event->getArguments();
+    } catch (\Throwable $th) { }
+    
     if(!$context)
     {
       // Joomla 5
@@ -322,7 +329,11 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onUserAfterSave(Event $event)
   { 
-    [$data, $isNew, $result, $error] = $event->getArguments();
+    try
+    {
+      [$data, $isNew, $result, $error] = $event->getArguments();
+    } catch (\Throwable $th) { }
+    
     if(!$data)
     {
       // Joomla 5
@@ -390,7 +401,11 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onUserAfterDelete(Event $event)
   { 
-    [$data, $result, $error] = $event->getArguments();
+    try
+    {
+      [$data, $result, $error] = $event->getArguments();
+    } catch (\Throwable $th) { }
+    
     if(!$data)
     {
       // Joomla 5
@@ -522,12 +537,13 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    *
    * @param   Event  $event  The event object
    * @param   mixed  $value  The value to be added to the result
+   * @param   bool   $array  True, if the reuslt has to be added/set to the result array. False to override the boolean result value.
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  private function setResult(Event $event, $value): void
+  private function setResult(Event $event, $value, $array=true): void
 	{
 		if($event instanceof ResultAwareInterface)
     {
@@ -536,9 +552,18 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
 			return;
 		}
 
-		$result   = $event->getArgument('result', []) ?: [];
-		$result   = is_array($result) ? $result : [];
-		$result[] = $value;
+    if($array)
+    {
+      $result   = $event->getArgument('result', []) ?: [];
+		  $result   = is_array($result) ? $result : [];
+		  $result[] = $value;
+    }
+    else
+    {
+      $result   = $event->getArgument('result', true) ?: true;
+      $result   = ($result == false) ? false : $value;
+    }
+		
 		$event->setArgument('result', $result);
 	}
 
