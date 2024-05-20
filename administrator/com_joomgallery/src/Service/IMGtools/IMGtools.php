@@ -440,8 +440,15 @@ abstract class IMGtools implements IMGtoolsInterface
       }
       else
       {
-        // In all other cases dont copy metadata
-        $success = true;
+        if($src_imagetype == 'WEBP' && $dst_imgtype == 'WEBP')
+        {
+          $success = $this->copyWEBPmetadata($src_file,$dst_file);
+        }
+        else
+        {
+          // In all other cases dont copy metadata
+          $success = true;
+        }
       }
     }
 
@@ -1307,6 +1314,124 @@ abstract class IMGtools implements IMGtoolsInterface
       $png = \substr($_dfp,0,$len-12) . $data . \substr($_dfp,$len-12,12);
 
       return \file_put_contents($dst_file, $png);
+    }
+    else
+    {
+      // File doesn't exist
+      return false;
+    }
+  }
+
+  protected function copyWEBPmetadata($src_file, $dst_file)
+  {
+    if(\file_exists($src_file) && \file_exists($dst_file))
+    {
+        $_src_chunks = array();
+        $_fp         = \fopen($src_file, 'r');
+        $chunks      = array();
+
+        if(!$_fp)
+        {
+          // Unable to open file
+          return false;
+        }
+
+        // Read the magic bytes and verify
+        // https://stackoverflow.com/questions/30049951/php-detect-if-file-is-webp-image
+        $header = \fread($_fp, 8);
+
+        if (!exif_imagetype($src_file) === IMAGETYPE_WEBP)
+        {
+          return false;
+        }
+
+        // Loop through the chunks. Byte 0-3 is length, Byte 4-7 is type
+        $chunkHeader = \fread($_fp, 8);
+        while($chunkHeader)
+        {
+            // Extract length and type from binary data
+            $chunk = @\unpack('Nsize/a4type', $chunkHeader);
+
+            // Store position into internal array
+            if(!\key_exists($chunk['type'], $_src_chunks))
+            {
+              $_src_chunks[$chunk['type']] = array();
+            }
+
+            $_src_chunks[$chunk['type']][] = array(
+              'offset' => \ftell($_fp),
+              'size' => $chunk['size']
+            );
+
+            // Skip to next chunk (over body and CRC)
+            \fseek($_fp, $chunk['size'] + 4, SEEK_CUR);
+
+            // Read next chunk header
+            $chunkHeader = \fread($_fp, 8);
+        }
+
+        // Read iTXt chunk
+        if(isset($_src_chunks['iTXt']))
+        {
+          foreach($_src_chunks['iTXt'] as $chunk)
+          {
+            if($chunk['size'] > 0)
+            {
+              \fseek($_fp, $chunk['offset'], SEEK_SET);
+              $chunks['iTXt'] = \fread($_fp, $chunk['size']);
+            }
+          }
+        }
+
+        // Read tEXt chunk
+        if(isset($_src_chunks['tEXt']))
+        {
+          foreach($_src_chunks['tEXt'] as $chunk)
+          {
+            if($chunk['size'] > 0)
+            {
+              \fseek($_fp, $chunk['offset'], SEEK_SET);
+              $chunks['tEXt'] = \fread($_fp, $chunk['size']);
+            }
+          }
+        }
+
+        // Read zTXt chunk
+        if(isset($_src_chunks['zTXt']))
+        {
+          foreach($_src_chunks['zTXt'] as $chunk)
+          {
+            if($chunk['size'] > 0)
+            {
+              \fseek($_fp, $chunk['offset'], SEEK_SET);
+              $chunks['zTXt'] = \fread($_fp, $chunk['size']);
+            }
+          }
+        }
+
+        // Write chucks to destination image
+        $_dfp = \file_get_contents($dst_file);
+        $data = '';
+
+        if(isset($chunks['iTXt']))
+        {
+          $data .= \pack("N",\strlen($chunks['iTXt'])) . 'iTXt' . $chunks['iTXt'] . \pack("N", \crc32('iTXt' . $chunks['iTXt']));
+        }
+
+        if(isset($chunks['tEXt']))
+        {
+          $data .= \pack("N",\strlen($chunks['tEXt'])) . 'tEXt' . $chunks['tEXt'] . \pack("N", \crc32('tEXt' . $chunks['tEXt']));
+        }
+
+        if(isset($chunks['zTXt']))
+        {
+          $data .= \pack("N",\strlen($chunks['zTXt'])) . 'zTXt' . $chunks['zTXt'] . \pack("N", \crc32('zTXt' . $chunks['zTXt']));
+        }
+
+        $len = \strlen($_dfp);
+        $png = \substr($_dfp,0,$len-12) . $data . \substr($_dfp,$len-12,12);
+
+        return \file_put_contents($dst_file, $png);
     }
     else
     {

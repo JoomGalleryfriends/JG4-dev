@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <field name="iptc"
+           type="subform"
+           formsource="administrator/components/com_joomgallery/forms/subform_metadata_iptc.xml"
+           layout="joomla.form.field.subform.default"
+           label="IPTC"
+    />
+
+    <field name="exif"
+           type="subform"
+           formsource="administrator/components/com_joomgallery/forms/subform_metadata_exif.xml"
+           layout="joomla.form.field.subform.default"
+           label="EXIF"
+    />
+
+    <!-- <field name="xmp" type="subform"
+           formsource="subform_metadata_xmp.xml"
+           label="IPTC" description="Subform Field Description" /> -->
+</form>

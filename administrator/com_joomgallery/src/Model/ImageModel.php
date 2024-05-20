@@ -988,6 +988,77 @@ class ImageModel extends JoomAdminModel
     return true;
   }
 
+  public function crop()
+  {
+    throw new Exception('Task "image.crop" not yet implemented.', 1);
+    
+    $table = $this->getTable();
+    $app   = Factory::getApplication();
+    $key   = $table->getKeyName();
+    $pk    = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
+
+    // Rertrieve request image file data
+    if(\array_key_exists('image', $app->input->files->get('jform')) && !empty($app->input->files->get('jform')['image'])
+        && $app->input->files->get('jform')['image']['error'] != 4 &&  $app->input->files->get('jform')['image']['size'] > 0)
+    {
+        $data['images'] = array();
+        \array_push($data['images'], $app->input->files->get('jform')['image']);
+    }
+
+    try
+    {
+        // Load image table
+        $table->load($pk);
+
+        // Create uploader service
+        $uploader = JoomHelper::getService('uploader', array('single', false));
+
+        // Set replacement settings
+        $uploader->type         = $data['replacetype'];
+        $uploader->processImage = \boolval($data['replaceprocess']);
+
+        // Set filename in data since it will not be new created during retrieveImage()
+        $data['filename']       = $table->filename;
+
+        // Retrieve image
+        // (check upload, check user upload limit, create filename, onJoomBeforeSave)
+        if(!$uploader->retrieveImage($data, false))
+        {
+            $this->setError($this->component->getDebug(true));
+
+            return false;
+        }
+
+        // Create images
+        // (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
+        if(!$uploader->createImage($table))
+        {
+            $uploader->rollback();
+            $this->setError($this->component->getDebug(true));
+
+            return false;
+        }
+
+        // Clean the cache.
+        $this->cleanCache();
+    }
+    catch (\Exception $e)
+    {
+        $uploader->rollback();
+        $this->setError($e->getMessage());
+
+        return false;
+    }
+
+    // Output debug data
+    if(\count($this->component->getDebug()) > 1)
+    {
+        $this->component->printDebug();
+    }
+
+    return true;
+  }
+
   /**
    * Method to recreate the imagetypes for one Image.
    *
@@ -1085,7 +1156,6 @@ class ImageModel extends JoomAdminModel
 
 		return true;
   }
-
 
   /**
    * Method to test whether a record can be recreated.
