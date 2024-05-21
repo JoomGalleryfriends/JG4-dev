@@ -6,6 +6,16 @@
                class="alert alert-info"
                description="COM_JOOMGALLERY_CONFIG_TYPEPARAMS_INFO"
         />
+    
+    <field name="jg_filesystem"
+           type="jglist"
+           default="local-images"
+           dynamic="true"
+           useglobal="true"
+           script="getFilesystemOptions"
+           label="COM_JOOMGALLERY_CONFIG_FILESYSTEM"
+           description="COM_JOOMGALLERY_CONFIG_FILESYSTEM_LONG" >
+    </field>
 
     <field name="jg_showrating"
            groupByFieldset="false"
