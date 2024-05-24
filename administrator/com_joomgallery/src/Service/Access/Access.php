@@ -149,6 +149,12 @@ class Access implements AccessInterface
     $asset_array  = \explode('.', $asset);
     $asset_lenght = \count($asset_array);
 
+    // Get pk from asset
+    if($asset_lenght >= 3 && $pk == 0)
+    {
+      $pk = \intval($asset_array[2]);
+    }
+
     // Get imagetype from asset
     if($asset_lenght > 1)
     {

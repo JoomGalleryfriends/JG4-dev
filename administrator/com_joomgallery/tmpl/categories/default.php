@@ -113,7 +113,7 @@ if($saveOrder && !empty($this->items))
                 $ordering   = ($listOrder == 'a.ordering');
                 $canCreate  = $this->getAcl()->checkACL('core.create', _JOOM_OPTION.'.category.'.$item->id, $item->id, true);
                 $canEdit    = $this->getAcl()->checkACL('core.edit', _JOOM_OPTION.'.category.'.$item->id);
-                $canEditOwn = $this->getAcl()->checkACL('core.edit.own', _JOOM_OPTION.'.category.'.$item->id) && $item->created_by == $userId;
+                $canEditOwn = $this->getAcl()->checkACL('core.edit.own', _JOOM_OPTION.'.category.'.$item->id) && $item->created_by_id == $userId;
                 $canCheckin = $user->authorise('core.admin', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
                 $canChange  = $this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.category.'.$item->id);
 
