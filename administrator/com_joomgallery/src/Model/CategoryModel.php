@@ -366,6 +366,17 @@ class CategoryModel extends JoomAdminModel
             $old_alias    = $table->alias;
             $old_path     = $table->path;
           }
+
+          // Check if the state was changed
+          if($table->published != $data['published'])
+          {
+            if(!$this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.category.'.$table->id))
+            {
+              // We are not allowed to change the published state
+              $this->component->addWarning(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
+              $data['published'] = $table->published;
+            }
+          }
         }
 
         if($table->parent_id != $data['parent_id'] || $data['id'] == 0)
