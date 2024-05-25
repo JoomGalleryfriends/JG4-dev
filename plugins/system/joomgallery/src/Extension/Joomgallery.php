@@ -145,7 +145,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     if(\strpos($defaultgroup, 'com_joomgallery') !== 0 && \strpos($defaultgroup, 'com_users') !== 0 && \strpos($defaultgroup, 'com_menus') !== 0)
     {
       // Do nothing if we are not handling joomgallery content
-      $this->setResult($event, true);
+      $this->setResult($event, true, false);
 
       return;
     }
@@ -154,7 +154,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     if(!$type = $this->guessType($defaultgroup))
     {
       // Type not recognized. Do nothing.
-      $this->setResult($event, true);
+      $this->setResult($event, true, false);
 
       return;
     }
