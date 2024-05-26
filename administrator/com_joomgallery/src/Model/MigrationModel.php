@@ -1257,7 +1257,7 @@ class MigrationModel extends JoomAdminModel
     if($type === 'image')
     {
       // Delete corresponding imagetypes
-      $manager = JoomHelper::getService('FileManager');
+      $manager = JoomHelper::getService('FileManager', $table->catid);
 
       if(!$manager->deleteImages($table))
       {

@@ -210,7 +210,7 @@ class CategoryModel extends JoomAdminModel
 					}
 
 					// Create file manager service
-					$manager = JoomHelper::getService('FileManager');
+					$manager = JoomHelper::getService('FileManager', array($table->id));
 
           // Delete corresponding folders
 					if(!$manager->deleteCategory($table, $force_delete))
@@ -411,7 +411,7 @@ class CategoryModel extends JoomAdminModel
         }
 
         // Create file manager service
-				$manager = JoomHelper::getService('FileManager');
+				$manager = JoomHelper::getService('FileManager', array($data['parent_id']));
 
         // Bind the data.
         if(!$table->bind($data))
@@ -464,6 +464,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(true);
 
           // Move folder (including files and subfolders)
+          // ToDo: Handle a change in the filesystem
 					$manager->moveCategory($table, $table->parent_id);
 
           // Reset path

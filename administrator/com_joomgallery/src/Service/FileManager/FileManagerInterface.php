@@ -10,7 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
 /**
 * Interface for the file manager classes

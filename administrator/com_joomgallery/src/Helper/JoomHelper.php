@@ -464,7 +464,7 @@ class JoomHelper
       else
       {
         // Create file manager service
-			  $manager    = self::getService('FileManager');
+			  $manager    = self::getService('FileManager', array($img->catid));
         // Create file manager service
 			  $filesystem = self::getService('Filesystem');
         
@@ -476,7 +476,7 @@ class JoomHelper
     else
     {
       // Create file manager service
-			$manager = self::getService('FileManager');
+			$manager = self::getService('FileManager', array($img->catid));
 
       if($root)
       {
@@ -727,7 +727,7 @@ class JoomHelper
     else
     {
       // Create file manager service
-			$manager = self::getService('FileManager');
+			$manager = self::getService('FileManager', array(1));
 
       return $manager->getImgPath(0, $type, false, false, $root);
     }
