@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
   <fieldset name="general">
     <field name="params_note"
                type="note"
@@ -8,10 +8,9 @@
         />
     
     <field name="jg_filesystem"
-           type="jglist"
-           default="local-images"
-           dynamic="true"
+           type="jgdynamiclist"
            useglobal="true"
+           sensitive="true"
            script="getFilesystemOptions"
            label="COM_JOOMGALLERY_CONFIG_FILESYSTEM"
            description="COM_JOOMGALLERY_CONFIG_FILESYSTEM_LONG" >
