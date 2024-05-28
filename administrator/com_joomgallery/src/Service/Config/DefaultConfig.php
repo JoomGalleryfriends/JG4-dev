@@ -100,7 +100,7 @@ class DefaultConfig extends Config implements ConfigInterface
     {
       // Load parent categories
       $cat_model = $this->component->getMVCFactory()->createModel('Category', 'administrator');
-      $parents   = $cat_model->getParents($this->ids['category'], true);
+      $parents   = $cat_model->getParents($this->ids['category'], true, false, true);
 
       if($parents === false && empty($parents))
       {
