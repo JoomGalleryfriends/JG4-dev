@@ -402,7 +402,7 @@ const category = document.querySelector('.jg-category');
 const items = Array.from(category.querySelectorAll('.jg-image'));
 
 maxImages = <?php echo $num_columns * 2; ?>;
-loadImages = <?php echo $num_columns * 2; ?>;
+loadImages = <?php echo $num_columns * 3; ?>;
 hiddenClass = 'hidden-jg-image';
 hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
@@ -414,8 +414,8 @@ items.forEach(function (item, index) {
 
 const observerOptions = {
   root: null,
-  rootMargin: '0px',
-  threshold: 0.5
+  rootMargin: '200px',
+  threshold: 0
 };
 
 function observerCallback(entries, observer) {
