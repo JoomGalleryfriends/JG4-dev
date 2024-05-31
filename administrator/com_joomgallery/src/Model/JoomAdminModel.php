@@ -171,13 +171,53 @@ abstract class JoomAdminModel extends AdminModel
 	}
 
   /**
+	 * Method to save image from form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   4.0.0
+	 */
+	public function save($data)
+	{
+    $table = $this->getTable();
+    $key   = $table->getKeyName();
+		$pk    = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
+
+    // Change language to 'All' if multilangugae is not enabled
+    if (!Multilanguage::isEnabled())
+    {
+      $data['language'] = '*';
+    }
+
+    if($pk > 0)
+		{
+      $table->load($pk);
+
+      // Check if the state was changed
+      if($table->published != $data['published'])
+      {
+        if(!$this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.image.'.$table->id))
+        {
+          // We are not allowed to change the published state
+          $this->component->addWarning(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
+          $data['published'] = $table->published;
+        }
+      }
+    }
+
+    return parent::save($data);
+  }
+
+  /**
    * Method override to check-in a record or an array of record
    *
    * @param   mixed  $pks  The ID of the primary key or an array of IDs
    *
    * @return  integer|boolean  Boolean false if there is an error, otherwise the count of records checked in.
    *
-   * @since   1.6
+   * @since   4.0.0
    */
   public function checkin($pks = [])
   {
@@ -225,7 +265,7 @@ abstract class JoomAdminModel extends AdminModel
    *
    * @return  boolean  False on failure or error, true otherwise.
    *
-   * @since   1.6
+   * @since   4.0.0
    */
   public function checkinOne($pk = null)
   {
@@ -280,7 +320,7 @@ abstract class JoomAdminModel extends AdminModel
    *
    * @return  void
    *
-   * @since   3.8.2
+   * @since   4.0.0
    */
   public function initBatch()
   {
@@ -297,7 +337,7 @@ abstract class JoomAdminModel extends AdminModel
    *
    * @return  boolean
    *
-   * @since   3.2
+   * @since   4.0.0
    */
   protected function checkCategoryId($categoryId)
   {
@@ -398,6 +438,55 @@ abstract class JoomAdminModel extends AdminModel
 				$table->ordering = $max + 1;
 			}
 		}
+	}
+
+  /**
+	 * Method to get the record form.
+	 *
+	 * @param   array    $data      An optional array of data for the form to interogate.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  \JForm|boolean  A \JForm object on success, false on failure
+	 *
+	 * @since   4.0.0
+	 */
+	public function getForm($data = array(), $loadData = true)
+	{
+		// Get the form.
+		$form = $this->loadForm($this->typeAlias, $this->type, array('control' => 'jform', 'load_data' => $loadData));
+
+		if(empty($form))
+		{
+			return false;
+		}
+
+    // On edit, we get ID from state, but on save, we use data from input
+		$id = (int) $this->getState($this->type.'.id', $this->app->getInput()->getInt('id', null));
+
+		// Object uses for checking edit state permission of item
+		$record = new \stdClass();
+		$record->id = $id;
+
+    // Modify the form based on Edit State access controls.
+		if(!$this->canEditState($record))
+		{
+			// Disable fields for display.
+			$form->setFieldAttribute('ordering', 'disabled', 'true');
+			$form->setFieldAttribute('published', 'disabled', 'true');
+
+			// Disable fields while saving.
+			// The controller has already verified this is an article you can edit.
+			$form->setFieldAttribute('ordering', 'filter', 'unset');
+			$form->setFieldAttribute('published', 'filter', 'unset');
+		}
+
+    // Don't allow to change the created_user_id user if not allowed to access com_users.
+    if(!$this->user->authorise('core.manage', 'com_users'))
+    {
+      $form->setFieldAttribute('created_by', 'filter', 'unset');
+    }
+
+		return $form;
 	}
 
   /**
@@ -552,7 +641,7 @@ abstract class JoomAdminModel extends AdminModel
    *
    * @return  boolean  True if allowed to delete the record. Defaults to the permission for the component.
    *
-   * @since   1.6
+   * @since   4.0.0
    */
   protected function canDelete($record)
   {
@@ -566,7 +655,7 @@ abstract class JoomAdminModel extends AdminModel
    *
    * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
    *
-   * @since   1.6
+   * @since   4.0.0
    */
   protected function canEditState($record)
   {
@@ -582,7 +671,7 @@ abstract class JoomAdminModel extends AdminModel
    *
    * @return  Table|boolean  Table object or boolean false if failed
    *
-   * @since   3.0
+   * @since   4.0.0
    */
   protected function _createTable($name, $prefix = 'Table', $config = [])
   {
