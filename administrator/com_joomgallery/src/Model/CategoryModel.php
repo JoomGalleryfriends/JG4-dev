@@ -51,21 +51,47 @@ class CategoryModel extends JoomAdminModel
 		// Get the form.
 		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));
 
-    // Apply filter to exclude child categories
-    $children = $form->getFieldAttribute('parent_id', 'children', 'true');
-    $children = filter_var($children, FILTER_VALIDATE_BOOLEAN);
-    if(!$children)
-    {
-      $form->setFieldAttribute('parent_id', 'exclude', $this->item->id);
-    }
-
-		// Apply filter for current category on thumbnail field
-    $form->setFieldAttribute('thumbnail', 'categories', $this->item->id);
-
-		if(empty($form))
+    if(empty($form))
 		{
 			return false;
 		}
+
+    // On edit, we get ID from state, but on save, we use data from input
+		$id = (int) $this->getState('category.id', $this->app->getInput()->getInt('id', 0));
+
+		// Object uses for checking edit state permission of image
+		$record = new \stdClass();
+		$record->id = $id;
+
+    // Apply filter to exclude child categories
+    $children = $form->getFieldAttribute('parent_id', 'children', 'true');
+    $children = \filter_var($children, FILTER_VALIDATE_BOOLEAN);
+    if(!$children)
+    {
+      $form->setFieldAttribute('parent_id', 'exclude', $id);
+    }
+
+		// Apply filter for current category on thumbnail field
+    $form->setFieldAttribute('thumbnail', 'categories', $id);
+
+    // Modify the form based on Edit State access controls.
+		if(!$this->canEditState($record))
+		{
+			// Disable fields for display.
+			$form->setFieldAttribute('ordering', 'disabled', 'true');
+			$form->setFieldAttribute('published', 'disabled', 'true');
+
+			// Disable fields while saving.
+			// The controller has already verified this is an article you can edit.
+			$form->setFieldAttribute('ordering', 'filter', 'unset');
+			$form->setFieldAttribute('published', 'filter', 'unset');
+		}
+
+    // Don't allow to change the created_user_id user if not allowed to access com_users.
+    if(!$this->user->authorise('core.manage', 'com_users'))
+    {
+      $form->setFieldAttribute('created_by', 'filter', 'unset');
+    }
 
 		return $form;
 	}

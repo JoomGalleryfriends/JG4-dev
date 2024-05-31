@@ -18,7 +18,7 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
 
-/**
+/*
  * Tag model.
  * 
  * @package JoomGallery
@@ -33,29 +33,6 @@ class TagModel extends JoomAdminModel
    * @var     string
    */
   protected $type = 'tag';
-
-	/**
-	 * Method to get the record form.
-	 *
-	 * @param   array    $data      An optional array of data for the form to interogate.
-	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  \JForm|boolean  A \JForm object on success, false on failure
-	 *
-	 * @since   4.0.0
-	 */
-	public function getForm($data = array(), $loadData = true)
-	{
-		// Get the form.
-		$form = $this->loadForm($this->typeAlias, 'tag', array('control' => 'jform', 'load_data' => $loadData));
-
-		if(empty($form))
-		{
-			return false;
-		}
-
-		return $form;
-	}	
 
 	/**
 	 * Method to get the data that should be injected in the form.
@@ -230,26 +207,6 @@ class TagModel extends JoomAdminModel
 
 		return true;
 	}
-
-  /**
-   * Method to save the form data.
-   *
-   * @param   array  $data  The form data.
-   *
-   * @return  boolean  True on success, False on error.
-   *
-   * @since   4.0.0
-   */
-  public function save($data)
-  {
-    // Change language to 'All' if multilangugae is not enabled
-    if (!Multilanguage::isEnabled())
-    {
-      $data['language'] = '*';
-    }
-
-    return parent::save($data);
-  }
 
   /**
 	 * Method to delete one or more tags.
