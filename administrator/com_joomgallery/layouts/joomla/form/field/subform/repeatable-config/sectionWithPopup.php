@@ -9,11 +9,16 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 
 extract($displayData);
+
+// Load bootstrap modal
+$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+$wa->useScript('bootstrap.modal');
 
 /**
  * Layout variables
