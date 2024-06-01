@@ -9,7 +9,7 @@ https://www.en.joomgalleryfriends.net/
 https://www.forum.joomgalleryfriends.net
 
 **Project-Management:**
-https://github.com/orgs/JoomGalleryfriends/projects/1 (Access only for Team-Members)
+https://www.forum.joomgalleryfriends.net/forum/index.php?thread/361-priorisierung/&postID=2056#post2056 (ToDo List)
 
 **Project Presentation:**
 https://docs.google.com/presentation/d/1kXGfGRrHswU0M3yh0zUvOwW1fYqB07cksHzNxzcEyxI
