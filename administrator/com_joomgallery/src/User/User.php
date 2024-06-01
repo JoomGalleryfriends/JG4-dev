@@ -98,6 +98,15 @@ class User extends BaseUser
       }
     }
 
-    return $this->getAcl()->checkACL($action, $assetname);
+    if(\strpos($assetname, 'joomgallery') !== false)
+    {
+      // For com_joomgallery
+      return $this->getAcl()->checkACL($action, $assetname);
+    }
+    else
+    {
+      // For core components
+      return $this->isRoot ? true : (bool) AccessBase::check($this->id, $action, $assetname);
+    }    
   }
 }
