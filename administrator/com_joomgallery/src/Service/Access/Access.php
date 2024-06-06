@@ -90,6 +90,13 @@ class Access implements AccessInterface
   public $allowed = array('default' => null, 'own' => null, 'upload' => null, 'upload-own' => null);
 
   /**
+   * Storage containing all acl checks with a mark to check for that
+   *
+   * @var array
+   */
+  public $tocheck = array('default' => true, 'own' => false, 'upload' => false, 'upload-own' => false);
+
+  /**
    * Initialize class for specific option
    *
    * @return  void
@@ -241,6 +248,7 @@ class Access implements AccessInterface
           $acl_rule = $this->prefix.'.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
         }
         
+        $this->tocheck['own'] = true;
         $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
       }
 
@@ -254,21 +262,40 @@ class Access implements AccessInterface
         $parent_action = $this->prefix.'.upload';
 
         // Check for the category in general
+        $this->tocheck['upload']     = true;
         $this->allowed['upload']     = AccessBase::check($this->user->get('id'), $parent_action, $parent_asset);
 
         // Check also against parent ownership
+        $this->tocheck['upload-own'] = true;
         $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action.'.'.$this->aclMap[$action]['own'], $parent_asset);
       }
     }
 
     // Apply the results
-    $results    = array('own', 'upload', 'upload-own');
+    //--------
+
+    // Basic: Apply the core result
     $allowedRes = $this->allowed['default'];
-    foreach($results as $res)
+
+    // Advanced: Apply owner result
+    if($this->tocheck['own'] === true)
     {
-      if($this->allowed[$res] !== null)
+      $allowedRes = $this->allowed['default'] || $this->allowed['own'];
+    }
+
+    // Advanced: Apply media items result
+    if($this->tocheck['upload'] === true)
+    {
+      if($this->allowed['upload'] !== null)
       {
-        $allowedRes = $this->allowed[$res];
+        // Override the result from core
+        $allowedRes = $this->allowed['upload'];
+      }
+
+      if($this->tocheck['upload-own'] === true)
+      {
+        // Action requires an owner check
+        $allowedRes = $allowedRes || $this->allowed['upload-own'];
       }
     }
 
