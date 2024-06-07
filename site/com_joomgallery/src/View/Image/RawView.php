@@ -23,5 +23,19 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\Image\RawView as Admin
  */
 class RawView extends AdminRawView
 {
-  // Use the RawView class from administrator application
+  /**
+	 * Postprocessing the image after retrieving the image ressource
+	 *
+	 * @param   \stdClass  $file_info    Object with file information
+   * @param   resource   $resource     Image resource
+	 *
+	 * @return void
+	 */
+  public function ppImage(&$file_info, &$resource)
+  {
+    // postprocessing image
+    $tmp = 1;
+
+    return;
+  }
 }

@@ -63,6 +63,9 @@ class RawView extends JoomGalleryView
       $this->app->redirect(Route::_('index.php', false), 404);
     }
 
+    // Postprocessing of the image
+    $this->ppImage($file_info, $ressource);
+
     // Set mime encoding
     $this->getDocument()->setMimeEncoding($file_info->mime_type);
 
@@ -74,5 +77,18 @@ class RawView extends JoomGalleryView
 
     \ob_end_clean(); //required here or large files will not work
     \fpassthru($ressource);
+  }
+
+  /**
+	 * Postprocessing the image after retrieving the image ressource
+	 *
+	 * @param   \stdClass  $file_info    Object with file information
+   * @param   resource   $resource     Image resource
+	 *
+	 * @return void
+	 */
+  public function ppImage(&$file_info, &$resource)
+  {
+    return;
   }
 }
