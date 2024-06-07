@@ -11,12 +11,14 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 // No direct access
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\Controller\AdminController as BaseAdminController;
+use \Joomla\Input\Input;
+use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use \Joomla\Input\Input;
+use \Joomla\CMS\MVC\Controller\AdminController as BaseAdminController;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
  * JoomGallery Base of Joomla Administrator Controller
@@ -35,7 +37,15 @@ class JoomAdminController extends BaseAdminController
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
+
+  /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
 
   /**
 	 * Constructor.
@@ -55,6 +65,24 @@ class JoomAdminController extends BaseAdminController
 
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
   }
+
+  /**
+	 * Method to get the access service class.
+	 *
+	 * @return  AccessInterface   Object on success, false on failure.
+   * @since   4.0.0
+	 */
+	public function getAcl(): AccessInterface
+	{
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
+
+		return $this->acl;
+	}
 
   /**
    * Execute a task by triggering a Method in the derived class.
@@ -111,5 +139,53 @@ class JoomAdminController extends BaseAdminController
     }
 
     return $res;
+  }
+
+  /**
+   * Method to load and return a model object.
+   *
+   * @param   string  $name    The name of the model.
+   * @param   string  $prefix  Optional model prefix.
+   * @param   array   $config  Configuration array for the model. Optional.
+   *
+   * @return  BaseDatabaseModel|boolean   Model object on success; otherwise false on failure.
+   *
+   * @since   3.0
+   */
+  protected function createModel($name, $prefix = '', $config = [])
+  {
+    $model = parent::createModel($name, $prefix, $config);
+
+    if($model instanceof CurrentUserInterface)
+    {
+      $model->setCurrentUser($this->component->getMVCFactory()->getIdentity());
+    }
+
+    return $model;
+  }
+
+  /**
+   * Method to load and return a view object.
+   *
+   * @param   string  $name    The name of the view.
+   * @param   string  $prefix  Optional prefix for the view class name.
+   * @param   string  $type    The type of view.
+   * @param   array   $config  Configuration array for the view. Optional.
+   *
+   * @return  ViewInterface|null  View object on success; null or error result on failure.
+   *
+   * @since   3.0
+   * @throws  \Exception
+   */
+  protected function createView($name, $prefix = '', $type = '', $config = [])
+  {
+    $view = parent::createView($name, $prefix, $type, $config);
+
+    if($view instanceof CurrentUserInterface)
+    {
+      $view->setCurrentUser($this->component->getMVCFactory()->getIdentity());
+    }
+
+    return $view;
   }
 }

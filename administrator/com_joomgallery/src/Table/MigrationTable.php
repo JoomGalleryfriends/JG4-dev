@@ -58,9 +58,9 @@ class MigrationTable extends Table
 		parent::__construct(_JOOM_TABLE_MIGRATION, 'id', $db);
 
 		// Initialize queue, successful and failed
-		$this->queue = array();
+		$this->queue      = array();
 		$this->successful = new Registry();
-		$this->failed = new Registry();
+		$this->failed     = new Registry();
 	}
 
 	/**
@@ -103,14 +103,14 @@ class MigrationTable extends Table
 		}
 
 		// Support for failed field
-    if(isset($this->failed) && !is_string($this->failed))
+    if(isset($this->failed) && !\is_string($this->failed))
 		{
 			$registry = new Registry($this->failed);
 			$this->failed = (string) $registry;
 		}
 
     // Support for params field
-    if(isset($this->params) && !is_string($this->params))
+    if(isset($this->params) && !\is_string($this->params))
 		{
 			$registry = new Registry($this->params);
 			$this->params = (string) $registry;
@@ -134,13 +134,13 @@ class MigrationTable extends Table
     $date = Factory::getDate();
 
     // Support for queue field
-    if(isset($array['queue']) && is_array($array['queue']))
+    if(isset($array['queue']) && \is_array($array['queue']))
 		{
 			$array['queue'] = \json_encode($array['queue'], JSON_UNESCAPED_UNICODE);
 		}
 
 		// Support for successful field
-    if(isset($array['successful']) && is_array($array['successful']))
+    if(isset($array['successful']) && \is_array($array['successful']))
 		{
       $registry = new Registry;
 			$registry->loadArray($array['successful']);
@@ -148,7 +148,7 @@ class MigrationTable extends Table
 		}
 
 		// Support for failed field
-    if(isset($array['failed']) && is_array($array['failed']))
+    if(isset($array['failed']) && \is_array($array['failed']))
 		{
 			$registry = new Registry;
 			$registry->loadArray($array['failed']);
@@ -156,7 +156,7 @@ class MigrationTable extends Table
 		}
 
     // Support for params field
-    if(isset($array['params']) && is_array($array['params']))
+    if(isset($array['params']) && \is_array($array['params']))
 		{
 			$registry = new Registry;
 			$registry->loadArray($array['params']);

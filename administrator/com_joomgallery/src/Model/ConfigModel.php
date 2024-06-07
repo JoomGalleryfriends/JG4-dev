@@ -21,7 +21,6 @@ use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Form\FormFactory;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Config model.
@@ -73,11 +72,35 @@ class ConfigModel extends JoomAdminModel
 			return false;
 		}
 
+		// On edit, we get ID from state, but on save, we use data from input
+		$id = (int) $this->getState('config.id', $this->app->getInput()->getInt('id', null));
+
     // Special threatment for Global Configuration set
-    if($this->item->id === 1)
+    if($id === 1)
     {
       $this->form->setFieldAttribute('title', 'readonly', 'true');
       $this->form->setFieldAttribute('group_id', 'readonly', 'true');
+    }
+
+		// Object uses for checking edit state permission of image
+		$record = new \stdClass();
+		$record->id = $id;
+
+		// Modify the form based on Edit State access controls.
+		if(!$this->canEditState($record))
+		{
+			// Disable fields for display.
+			$this->form->setFieldAttribute('published', 'disabled', 'true');
+
+			// Disable fields while saving.
+			// The controller has already verified this is an article you can edit.
+			$this->form->setFieldAttribute('published', 'filter', 'unset');
+		}
+
+		// Don't allow to change the created_user_id user if not allowed to access com_users.
+    if(!$this->user->authorise('core.manage', 'com_users'))
+    {
+      $this->form->setFieldAttribute('created_by', 'filter', 'unset');
     }
 
 		return $this->form;

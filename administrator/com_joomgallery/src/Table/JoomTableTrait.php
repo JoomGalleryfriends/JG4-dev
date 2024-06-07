@@ -10,17 +10,18 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 
-\defined('_JEXEC') or die;
+// No direct access
+defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Access\Rules;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\Database\DatabaseInterface;
 
 /**
 * Trait for Table methods
@@ -59,13 +60,13 @@ trait JoomTableTrait
 	public function check()
 	{
 		// If there is an ordering column and this is a new row then get the next ordering value
-		if(property_exists($this, 'ordering') && $this->id == 0)
+		if(\property_exists($this, 'ordering') && $this->id == 0)
 		{
 			$this->ordering = self::getNextOrder();
 		}
 
 		// Check if alias is unique
-    if(property_exists($this, 'alias'))
+    if(\property_exists($this, 'alias'))
     {
       if(!$this->isUnique('alias'))
       {
@@ -80,7 +81,7 @@ trait JoomTableTrait
     }
 
     // Check if title is unique inside this category
-    if(property_exists($this, 'title'))
+    if(\property_exists($this, 'title'))
     {
       if(!$this->isUnique('title'))
       {
@@ -95,7 +96,7 @@ trait JoomTableTrait
     }
 
     // Support for field description
-    if(property_exists($this, 'description'))
+    if(\property_exists($this, 'description'))
     {
       if(empty($this->description))
       {
@@ -104,20 +105,20 @@ trait JoomTableTrait
     }
 
 		// Support for subform field params
-    if(property_exists($this, 'params'))
+    if(\property_exists($this, 'params'))
     {
       if(empty($this->params))
       {
         $this->params = $this->loadDefaultField('params');
       }
-      elseif(is_array($this->params))
+      elseif(\is_array($this->params))
       {
-        $this->params = json_encode($this->params, JSON_UNESCAPED_UNICODE);
+        $this->params = \json_encode($this->params, JSON_UNESCAPED_UNICODE);
       }
     }
 
     // Support for field metadesc
-    if(property_exists($this, 'metadesc'))
+    if(\property_exists($this, 'metadesc'))
     {
       if(empty($this->metadesc))
       {
@@ -126,7 +127,7 @@ trait JoomTableTrait
     }
 
     // Support for field metakey
-    if(property_exists($this, 'metakey'))
+    if(\property_exists($this, 'metakey'))
     {
       if(empty($this->metakey))
       {
@@ -198,16 +199,23 @@ trait JoomTableTrait
       }
     }
 
-		if(\array_key_exists('params', $array) && isset($array['params']) && is_array($array['params']))
+		if(\array_key_exists('params', $array) && isset($array['params']) && \is_array($array['params']))
 		{
 			$registry = new Registry($array['params']);
 			$array['params'] = (string) $registry;
 		}
 
-		if(\array_key_exists('metadata', $array) && isset($array['metadata']) && is_array($array['metadata']))
+		if(\array_key_exists('metadata', $array) && isset($array['metadata']) && \is_array($array['metadata']))
 		{
 			$registry = new Registry($array['metadata']);
 			$array['metadata'] = (string) $registry;
+		}
+
+    // Bind the rules for ACL where supported.
+		if(isset($array['rules']))
+		{
+      $rules = new Rules($array['rules']);
+			$this->setRules($rules);
 		}
 
 		return parent::bind($array, $ignore);
@@ -264,7 +272,7 @@ trait JoomTableTrait
 	protected function _getAssetParentId($table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
-		$assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+		$assetTable = new Asset($this->getDbo());
 
 		// The item has the component as asset-parent
 		$assetTable->loadByName(_JOOM_OPTION);
@@ -292,13 +300,13 @@ trait JoomTableTrait
 	 *
 	 * @since   4.0.0
 	 */
-  public function getFieldsValues($exclude=array())
+  public function getFieldsValues($exclude = array())
   {
     // Convert to the CMSObject before adding other data.
 		$properties = $this->getProperties(1);
 		$item = ArrayHelper::toObject($properties, CMSObject::class);
 
-		if(property_exists($item, 'params'))
+		if(\property_exists($item, 'params'))
 		{
 			$registry = new Registry($item->params);
 			$item->params = $registry->toArray();
@@ -306,7 +314,7 @@ trait JoomTableTrait
 
 		if(isset($item->params))
 		{
-		  $item->params = json_encode($item->params);
+		  $item->params = \json_encode($item->params);
 		}
 
     // Delete excluded properties
@@ -332,7 +340,7 @@ trait JoomTableTrait
 	 */
 	protected function isUnique($field, $parent=null, $parentfield='parent_id')
 	{
-		$db = Factory::getDbo();
+		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
 		$query
@@ -364,15 +372,15 @@ trait JoomTableTrait
   {
     if(isset($data[$fieldName]))
 		{
-			if(is_array($data[$fieldName]))
+			if(\is_array($data[$fieldName]))
 			{
-				$data[$fieldName] = implode(',',$data[$fieldName]);
+				$data[$fieldName] = \implode(',',$data[$fieldName]);
 			}
-			elseif(strpos($data[$fieldName], ',') != false)
+			elseif(\strpos($data[$fieldName], ',') != false)
 			{
-				$data[$fieldName] = explode(',',$data[$fieldName]);
+				$data[$fieldName] = \explode(',',$data[$fieldName]);
 			}
-			elseif(strlen($data[$fieldName]) == 0)
+			elseif(\strlen($data[$fieldName]) == 0)
 			{
 				$data[$fieldName] = '';
 			}
@@ -410,7 +418,7 @@ trait JoomTableTrait
    */
   protected function subformFieldSupport(&$data, $fieldName)
   {
-    if((!empty($data[$fieldName]) && (is_array($data[$fieldName]))))
+    if((!empty($data[$fieldName]) && (\is_array($data[$fieldName]))))
     {
       \array_push($this->_jsonEncode, $fieldName);
     }

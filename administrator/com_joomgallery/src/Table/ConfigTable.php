@@ -15,9 +15,11 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Access\Rules;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\Database\DatabaseDriver;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Config table
@@ -71,19 +73,19 @@ class ConfigTable extends Table
       }
     }
 
-		if(!\key_exists('created_by', $array) || empty($array['created_by']))
+		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
 		{
-			$array['created_by'] = Factory::getUser()->id;
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($array['id'] == 0 && empty($array['modified_by']))
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
     // Support for multiple field: jg_replaceshowwarning
@@ -168,41 +170,46 @@ class ConfigTable extends Table
     $this->subformFieldSupport($array, 'jg_dynamicprocessing');
 
     // 
-		if(isset($array['params']) && is_array($array['params']))
+		if(isset($array['params']) && \is_array($array['params']))
 		{
 			$registry = new Registry;
 			$registry->loadArray($array['params']);
 			$array['params'] = (string) $registry;
 		}
 
-		if(isset($array['metadata']) && is_array($array['metadata']))
+		if(isset($array['metadata']) && \is_array($array['metadata']))
 		{
 			$registry = new Registry;
 			$registry->loadArray($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
 
-		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.config.' . $array['id']))
-		{
-			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml',	"/access/section[@name='config']/");
-			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.config.' . $array['id'])->getData();
-			$array_jaccess   = array();
+    // // Get access service
+    // JoomHelper::getComponent()->createAccess();
+    // $acl = JoomHelper::getComponent()->getAccess();
 
-			foreach($actions as $action)
-			{
-				if(key_exists($action->name, $default_actions))
-				{
-					$array_jaccess[$action->name] = $default_actions[$action->name];
-				}
-			}
+		// if(!$acl->checkACL('core.admin'))
+		// {
+		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml',	"/access/section[@name='config']/");
+		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.config.' . $array['id'])->getData();
+		// 	$array_jaccess   = array();
 
-			$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		}
+		// 	foreach($actions as $action)
+		// 	{
+		// 		if(key_exists($action->name, $default_actions))
+		// 		{
+		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
+		// 		}
+		// 	}
+
+		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
+		// }
 
 		// Bind the rules for ACL where supported.
-		if(isset($array['rules']) && is_array($array['rules']))
+		if(isset($array['rules']))
 		{
-			$this->setRules($array['rules']);
+      $rules = new Rules($array['rules']);
+			$this->setRules($rules);
 		}
 
 		return parent::bind($array, $ignore);
@@ -216,7 +223,7 @@ class ConfigTable extends Table
 	public function check()
 	{
 		// If there is an ordering column and this is a new row then get the next ordering value
-		if(property_exists($this, 'ordering') && $this->id == 0)
+		if(\property_exists($this, 'ordering') && $this->id == 0)
 		{
 			$this->ordering = self::getNextOrder();
 		}
@@ -234,9 +241,9 @@ class ConfigTable extends Table
 		}
 
 		// Support for subform field jg_replaceinfo
-		if(is_array($this->jg_replaceinfo))
+		if(\is_array($this->jg_replaceinfo))
 		{
-			$this->jg_replaceinfo = json_encode($this->jg_replaceinfo, JSON_UNESCAPED_UNICODE);
+			$this->jg_replaceinfo = \json_encode($this->jg_replaceinfo, JSON_UNESCAPED_UNICODE);
 		}
 		if(\is_null($this->jg_replaceinfo))
 		{
@@ -244,9 +251,9 @@ class ConfigTable extends Table
 		}
 
 		// Support for subform field jg_staticprocessing
-		if(is_array($this->jg_staticprocessing))
+		if(\is_array($this->jg_staticprocessing))
 		{
-			$this->jg_staticprocessing = json_encode($this->jg_staticprocessing, JSON_UNESCAPED_UNICODE);
+			$this->jg_staticprocessing = \json_encode($this->jg_staticprocessing, JSON_UNESCAPED_UNICODE);
 		}
 		if(\is_null($this->jg_staticprocessing))
 		{
@@ -254,9 +261,9 @@ class ConfigTable extends Table
 		}
 
 		// Support for subform field jg_dynamicprocessing
-		if(is_array($this->jg_dynamicprocessing))
+		if(\is_array($this->jg_dynamicprocessing))
 		{
-			$this->jg_dynamicprocessing = json_encode($this->jg_dynamicprocessing, JSON_UNESCAPED_UNICODE);
+			$this->jg_dynamicprocessing = \json_encode($this->jg_dynamicprocessing, JSON_UNESCAPED_UNICODE);
 		}
 		if(\is_null($this->jg_dynamicprocessing))
 		{
@@ -264,9 +271,9 @@ class ConfigTable extends Table
 		}
 
     // Support for media manager image select
-    if(!empty($this->jg_wmfile) && strpos($this->jg_wmfile, '#') !== false)
+    if(!empty($this->jg_wmfile) && \strpos($this->jg_wmfile, '#') !== false)
     {
-      $this->jg_wmfile = explode('#', $this->jg_wmfile)[0];
+      $this->jg_wmfile = \explode('#', $this->jg_wmfile)[0];
     }
 
 

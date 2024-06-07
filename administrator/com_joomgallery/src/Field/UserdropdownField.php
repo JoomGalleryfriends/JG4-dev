@@ -10,12 +10,14 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
+// No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Form\Field\ListField;
-use Joomla\CMS\Language\Text;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomla\CMS\Form\Field\ListField;
+use \Joomla\Database\DatabaseInterface;
 
 class UserdropdownField extends ListField
 {
@@ -45,7 +47,7 @@ class UserdropdownField extends ListField
 		$multiple     = $this->getAttribute('multiple','false');
 		
 		// Get a db connection.
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// Create a new query object.
 		$query = $db->getQuery(true);

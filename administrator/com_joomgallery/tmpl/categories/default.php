@@ -11,20 +11,16 @@
 // No direct access 
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Button\PublishedButton;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-//HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-
-// Import CSS
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
@@ -32,11 +28,11 @@ $wa->useStyle('com_joomgallery.admin')
    ->useScript('table.columns')
    ->useScript('multiselect');
 
-$user      = Factory::getUser();
+$user      = $this->app->getIdentity();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canOrder  = $user->authorise('core.edit.state', 'com_joomgallery');
+$canOrder  = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery');
 $saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
 
 if($saveOrder && !empty($this->items))
@@ -115,11 +111,11 @@ if($saveOrder && !empty($this->items))
             <tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="false"<?php endif; ?>>
               <?php foreach ($this->items as $i => $item) :
                 $ordering   = ($listOrder == 'a.ordering');
-                $canCreate  = $user->authorise('core.create', _JOOM_OPTION.'.category.'.$item->id);
-                $canEdit    = $user->authorise('core.edit', _JOOM_OPTION.'.category.'.$item->id);
-                $canEditOwn = $user->authorise('core.edit.own', _JOOM_OPTION.'.category.'.$item->id) && $item->created_by == $userId;
+                $canCreate  = $this->getAcl()->checkACL('core.create', _JOOM_OPTION.'.category.'.$item->id, $item->id, true);
+                $canEdit    = $this->getAcl()->checkACL('core.edit', _JOOM_OPTION.'.category.'.$item->id);
+                $canEditOwn = $this->getAcl()->checkACL('core.edit.own', _JOOM_OPTION.'.category.'.$item->id) && $item->created_by_id == $userId;
                 $canCheckin = $user->authorise('core.admin', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
-                $canChange  = $user->authorise('core.edit.state', _JOOM_OPTION.'.category.'.$item->id);
+                $canChange  = $this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.category.'.$item->id);
 
                 // Get the parents of item for sorting
 								if ($item->level > 1)

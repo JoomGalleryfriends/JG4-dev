@@ -10,11 +10,12 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Log\Log;
+use \Joomla\CMS\Language\Text;
 
 /**
 * Trait to implement messaging tools

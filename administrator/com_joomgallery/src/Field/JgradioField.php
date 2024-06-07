@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 /**
@@ -46,7 +47,7 @@ class JgradioField extends JglistField
 
     $data = $this->getLayoutData();
 
-    $data['options']   = (array) $this->getOptions();
+    $data['options'] = (array) $this->getOptions();
 
     if($this->element['useglobal'])
     {
@@ -72,6 +73,6 @@ class JgradioField extends JglistField
         'value'   => (string) $this->value,
     ];
 
-    return array_merge($data, $extraData);
+    return \array_merge($data, $extraData);
   }
 }

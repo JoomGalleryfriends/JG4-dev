@@ -10,10 +10,12 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('JPATH_BASE') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\FormField;
+use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * Supports an HTML select list of categories
@@ -48,11 +50,11 @@ class CreatedbyField extends FormField
 
 		if($user_id)
 		{
-			$user = Factory::getUser($user_id);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 		}
 		else
 		{
-			$user   = Factory::getUser();
+			$user   = Factory::getApplication()->getIdentity();
 			$html[] = '<input type="hidden" name="' . $this->name . '" value="' . $user->id . '" />';
 		}
 

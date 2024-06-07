@@ -8,33 +8,32 @@
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Table;
+namespace Joomgallery\Component\Joomgallery\Administrator\User;
 
 // No direct access
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
-use \Joomla\CMS\Table\Table;
-use \Joomla\Database\DatabaseDriver;
+use \Joomla\CMS\User\UserFactory as BaseUserFactory;
 
 /**
- * Imagetype table
+ * JoomGallery factory for creating User objects
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class ImagetypeTable extends Table
+class UserFactory extends BaseUserFactory
 {
-  use JoomTableTrait;
-
-	/**
-	 * Constructor
-	 *
-	 * @param   JDatabase  &$db  A database connector object
-	 */
-	public function __construct(DatabaseDriver $db)
-	{
-		$this->typeAlias = _JOOM_OPTION.'.imagetype';
-
-		parent::__construct(_JOOM_TABLE_IMG_TYPES, 'id', $db);
-	}
+  /**
+   * Method to get an instance of a user for the given id.
+   *
+   * @param   int  $id  The id
+   *
+   * @return  User
+   *
+   * @since   4.0.0
+   */
+  public function loadUserById(int $id): User
+  {
+    return new User($id);
+  }
 }

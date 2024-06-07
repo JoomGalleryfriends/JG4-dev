@@ -50,7 +50,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 *
 	 * @var  string
 	 */
-	protected $minPhp = '7.4.0';
+	protected $minPhp = '8.0.0';
 
   /**
    * Release code of the currently installed version
@@ -100,7 +100,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	public function preflight($type, $parent)
 	{
     // Only proceed if Joomla version is correct
-    if(version_compare(JVERSION, '4.0.0', '<'))
+    if(version_compare(JVERSION, '4.4.0', '<'))
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 'error');
 

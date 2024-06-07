@@ -11,22 +11,18 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
-   ->useScript('bootstrap.modal');
+   ->useScript('bootstrap.modal')
+   ->useStyle('com_joomgallery.admin');
 HTMLHelper::_('bootstrap.tooltip');
-
-// Import CSS
-$wa->useStyle('com_joomgallery.admin');
 
 // Import modal
 $importModal = array(
@@ -85,7 +81,7 @@ $this->document->addScriptDeclaration($js);
 
     <?php foreach ($this->fieldsets as $key_L1 => $fieldset_L1) : ?>
 
-      <?php if ($key_L1 == 'permissions' && $this->user->authorise('core.admin','joomgallery')) : ?>
+      <?php if ($key_L1 == 'permissions' && $this->getAcl()->checkACL('admin')) : ?>
         <?php echo HTMLHelper::_('uitab.addTab', 'L1-tabset', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
           <?php echo $this->form->getInput('rules'); ?>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>

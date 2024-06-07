@@ -61,7 +61,7 @@ class FieldsTable extends Table
 
 		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
 		{
-			$array['created_by'] = Factory::getUser()->id;
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		return parent::bind($array, $ignore);
@@ -79,9 +79,9 @@ class FieldsTable extends Table
 		{
 			$this->value = $this->loadDefaultField('value');
 		}
-		elseif(is_array($this->value))
+		elseif(\is_array($this->value))
 		{
-			$this->value = json_encode($this->value, JSON_UNESCAPED_UNICODE);
+			$this->value = \json_encode($this->value, JSON_UNESCAPED_UNICODE);
 		}
 	}
 }

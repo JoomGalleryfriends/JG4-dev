@@ -10,10 +10,11 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('JPATH_BASE') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Form\ConfigForm;
-use Joomla\CMS\Form\Field\SubformField;
+use \Joomla\CMS\Form\Field\SubformField;
+use \Joomgallery\Component\Joomgallery\Administrator\Form\ConfigForm;
 
 /**
  * The Field to load the form inside current form
@@ -28,110 +29,110 @@ use Joomla\CMS\Form\Field\SubformField;
  */
 class ConfigsubformField extends SubformField
 {
-    /**
-     * The form field type.
-     * @var    string
-     */
-    protected $type = 'configsubform';
+  /**
+   * The form field type.
+   * @var    string
+   */
+  protected $type = 'configsubform';
 
-    /**
-     * Loads the form instance for the subform.
-     *
-     * @return  ConfigForm  The form instance.
-     *
-     * @throws  \InvalidArgumentException if no form provided.
-     * @throws  \RuntimeException if the form could not be loaded.
-     *
-     * @since   3.9.7
-     */
-    public function loadSubForm()
+  /**
+   * Loads the form instance for the subform.
+   *
+   * @return  ConfigForm  The form instance.
+   *
+   * @throws  \InvalidArgumentException if no form provided.
+   * @throws  \RuntimeException if the form could not be loaded.
+   *
+   * @since   3.9.7
+   */
+  public function loadSubForm()
+  {
+    $control = $this->name;
+
+    if($this->multiple)
     {
-        $control = $this->name;
-
-        if($this->multiple)
-        {
-          $control .= '[' . $this->fieldname . 'X]';
-        }
-
-        // Prepare the form template
-        $formname = 'subform.' . str_replace(['jform[', '[', ']'], ['', '.', ''], $this->name);
-        $tmpl     = ConfigForm::getInstance($formname, $this->formsource, ['control' => $control]);
-
-        // Get fields with dynamic options
-        $dyn_fields = $tmpl->getDynamicFields();
-
-        // Add options to dynamic fields
-        foreach($dyn_fields as $key => $field)
-        {
-          $tmpl->setDynamicOptions($field);
-        }
-
-        return $tmpl;
+      $control .= '[' . $this->fieldname . 'X]';
     }
 
-    /**
-     * Binds given data to the subform and its elements.
-     *
-     * @param   ConfigForm   $subForm  Form instance of the subform.
-     *
-     * @return  ConfigForm[]  Array of Form instances for the rows.
-     *
-     * @since   3.9.7
-     */
-    protected function loadSubFormData($subForm)
-    {
-        $value = $this->value ? (array) $this->value : [];
+    // Prepare the form template
+    $formname = 'subform.' . str_replace(['jform[', '[', ']'], ['', '.', ''], $this->name);
+    $tmpl     = ConfigForm::getInstance($formname, $this->formsource, ['control' => $control]);
 
-        // Simple form, just bind the data and return one row.
-        if(!$this->multiple)
+    // Get fields with dynamic options
+    $dyn_fields = $tmpl->getDynamicFields();
+
+    // Add options to dynamic fields
+    foreach($dyn_fields as $key => $field)
+    {
+      $tmpl->setDynamicOptions($field);
+    }
+
+    return $tmpl;
+  }
+
+  /**
+   * Binds given data to the subform and its elements.
+   *
+   * @param   ConfigForm   $subForm  Form instance of the subform.
+   *
+   * @return  ConfigForm[]  Array of Form instances for the rows.
+   *
+   * @since   3.9.7
+   */
+  protected function loadSubFormData($subForm)
+  {
+      $value = $this->value ? (array) $this->value : [];
+
+      // Simple form, just bind the data and return one row.
+      if(!$this->multiple)
+      {
+        // Preprocess form
+          // Get fields with dynamic options
+          $dyn_fields = $subForm->getDynamicFields();
+
+          // Add options to dynamic fields
+          foreach($dyn_fields as $key => $field)
+          {
+            $subForm->setDynamicOptions($field);
+          }
+
+        // Bind form data
+        $subForm->bind($value);
+
+        return [$subForm];
+      }
+
+      // Multiple rows possible: Construct array and bind values to their respective forms.
+      $forms = [];
+      $value = array_values($value);
+
+      // Show as many rows as we have values, but at least min and at most max.
+      $c = \max($this->min, \min(\count($value), $this->max));
+
+      for($i = 0; $i < $c; $i++)
+      {
+        $control  = $this->name . '[' . $this->fieldname . $i . ']';
+        $itemForm = ConfigForm::getInstance($subForm->getName() . $i, $this->formsource, ['control' => $control]);
+
+        if(!empty($value[$i]))
         {
           // Preprocess form
             // Get fields with dynamic options
-            $dyn_fields = $subForm->getDynamicFields();
+            $dyn_fields = $itemForm->getDynamicFields();
 
             // Add options to dynamic fields
             foreach($dyn_fields as $key => $field)
             {
-              $subForm->setDynamicOptions($field);
+              $itemForm->setDynamicOptions($field);
             }
 
           // Bind form data
-          $subForm->bind($value);
-
-          return [$subForm];
+          $itemForm->bind($value[$i]);
         }
 
-        // Multiple rows possible: Construct array and bind values to their respective forms.
-        $forms = [];
-        $value = array_values($value);
+        $forms[] = $itemForm;
+      }
 
-        // Show as many rows as we have values, but at least min and at most max.
-        $c = max($this->min, min(\count($value), $this->max));
-
-        for($i = 0; $i < $c; $i++)
-        {
-          $control  = $this->name . '[' . $this->fieldname . $i . ']';
-          $itemForm = ConfigForm::getInstance($subForm->getName() . $i, $this->formsource, ['control' => $control]);
-
-          if(!empty($value[$i]))
-          {
-            // Preprocess form
-              // Get fields with dynamic options
-              $dyn_fields = $itemForm->getDynamicFields();
-
-              // Add options to dynamic fields
-              foreach($dyn_fields as $key => $field)
-              {
-                $itemForm->setDynamicOptions($field);
-              }
-
-            // Bind form data
-            $itemForm->bind($value[$i]);
-          }
-
-          $forms[] = $itemForm;
-        }
-
-        return $forms;
-    }
+      return $forms;
+  }
 }

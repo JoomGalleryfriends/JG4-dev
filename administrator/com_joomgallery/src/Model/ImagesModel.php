@@ -14,9 +14,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use Joomla\Database\ParameterType;
-use Joomla\Utilities\ArrayHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
+use \Joomla\Database\ParameterType;
+use \Joomla\Utilities\ArrayHelper;
 
 /**
  * Methods supporting a list of Images records.

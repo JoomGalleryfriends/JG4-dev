@@ -10,13 +10,14 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('JPATH_BASE') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Component\ComponentHelper;
-use \Joomla\CMS\Language\Text;
 
 /**
  * Supports a config field whose content is defined in com_config
@@ -72,7 +73,7 @@ class ExternalconfigField extends FormField
     $this->external = $config_form->getField($array[1]);
 
     // Load external language
-    $lang = Factory::getLanguage();
+    $lang = Factory::getApplication()->getLanguage();
     $lang->load($array[0], JPATH_ADMINISTRATOR);
 
     return $res;

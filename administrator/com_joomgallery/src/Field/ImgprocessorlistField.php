@@ -10,13 +10,14 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('JPATH_BASE') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Form\Field\ListField;
-use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\MVC\View\HtmlView;
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Plugin\PluginHelper;
+use \Joomla\CMS\Form\Field\ListField;
+
 
 /**
  * Form Field class for the Joomla Platform.
@@ -57,7 +58,7 @@ class ImgProcessorListField extends ListField
       }
       else
       {
-        throw new Exception(Text::sprintf('COM_JOOMGALLERY_PLUGIN_ERROR_RETURN_VALUE', 'onJoomImgProcessorGetName',  'array',  'value, text, desc'));
+        throw new \Exception(Text::sprintf('COM_JOOMGALLERY_PLUGIN_ERROR_RETURN_VALUE', 'onJoomImgProcessorGetName',  'array',  'value, text, desc'));
       }
     }
 

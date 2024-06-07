@@ -10,12 +10,12 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Controller\FormController;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
-use Joomla\CMS\Router\Route;
 
 /**
  * Config controller class.
@@ -23,7 +23,7 @@ use Joomla\CMS\Router\Route;
  * @package JoomGallery
  * @since   4.0.0
  */
-class ConfigController extends FormController
+class ConfigController extends JoomFormController
 {
 	protected $view_list = 'configs';
 

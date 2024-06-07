@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
@@ -57,7 +58,7 @@ class JglistField extends ListField
 
     $data = $this->getLayoutData();
 
-    $data['options']   = (array) $this->getOptions();
+    $data['options'] = (array) $this->getOptions();
 
     if($this->element['useglobal'])
     {
@@ -76,13 +77,13 @@ class JglistField extends ListField
    */
   protected function getOptions()
   {
-    $fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
+    $fieldname = \preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
     $options   = [];
 
     foreach($this->element->xpath('option') as $option)
     {
       // Filter requirements
-      $requires = explode(',', (string) $option['requires']);
+      $requires = \explode(',', (string) $option['requires']);
 
       // Requires multilanguage
       if(\in_array('multilanguage', $requires) && !Multilanguage::isEnabled())
@@ -115,7 +116,7 @@ class JglistField extends ListField
       }
 
       $value = (string) $option['value'];
-      $text  = trim((string) $option) != '' ? trim((string) $option) : $value;
+      $text  = \trim((string) $option) != '' ? \trim((string) $option) : $value;
 
       $disabled = (string) $option['disabled'];
       $disabled = ($disabled === 'true' || $disabled === 'disabled' || $disabled === '1');
@@ -142,7 +143,7 @@ class JglistField extends ListField
 
       if((string) $option['showon'])
       {
-        $encodedConditions = json_encode( FormHelper::parseShowOnConditions((string) $option['showon'], $this->formControl, $this->group) );
+        $encodedConditions = \json_encode( FormHelper::parseShowOnConditions((string) $option['showon'], $this->formControl, $this->group) );
         $tmp['optionattr'] = " data-showon='" . $encodedConditions . "'";
       }
 
@@ -153,25 +154,25 @@ class JglistField extends ListField
     if($this->element['useglobal'])
     {
       // Add global option if not already available
-      if(strpos($options[0]->text, '%s') === false)
+      if(\strpos($options[0]->text, '%s') === false)
       {
         $tmp        = new \stdClass();
         $tmp_def    = (string) $this->element['default'];
         $tmp->value = $tmp_def ? $tmp_def : ''; 
         $tmp->text  = Text::_('JGLOBAL_USE_GLOBAL_VALUE');
 
-        array_unshift($options, $tmp);
+        \array_unshift($options, $tmp);
       }
     }
 
-    reset($options);
+    \reset($options);
 
     return $options;
   }
 
   protected function getGlobalValue($default='')
   {
-    $fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
+    $fieldname = \preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
 
     // Guess form context
     $context = ConfigHelper::getFormContext($this->form->getData());

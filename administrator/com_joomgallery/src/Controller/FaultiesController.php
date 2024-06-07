@@ -10,15 +10,11 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\AdminController;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -27,7 +23,7 @@ use Joomla\Utilities\ArrayHelper;
  * @package JoomGallery
  * @since   4.0.0
  */
-class FaultiesController extends AdminController
+class FaultiesController extends JoomAdminController
 {
 	/**
 	 * Method to clone existing Faulties
@@ -57,7 +53,7 @@ class FaultiesController extends AdminController
       
 			$this->setMessage(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'));
 		}
-		catch (Exception $e)
+		catch(\Exception $e)
 		{
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
 		}
