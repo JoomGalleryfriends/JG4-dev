@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
  * Methods supporting a list of Images records.

@@ -1,5 +1,4 @@
 <?php
-
 /**
 ******************************************************************************************
 **   @version    4.0.0-dev                                                                  **
@@ -14,21 +13,20 @@ namespace Joomgallery\Component\Joomgallery\Site\Service;
 // No direct access
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Component\Router\RouterViewConfiguration;
-use Joomla\CMS\Component\Router\RouterView;
-use Joomla\CMS\Component\Router\Rules\StandardRules;
-use Joomla\CMS\Component\Router\Rules\NomenuRules;
-use Joomla\CMS\Component\Router\Rules\MenuRules;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Categories\Categories;
-use Joomla\CMS\Application\SiteApplication;
-use Joomla\CMS\Categories\CategoryFactoryInterface;
-use Joomla\CMS\Categories\CategoryInterface;
-use Joomla\Database\DatabaseInterface;
-use Joomla\CMS\Menu\AbstractMenu;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Menu\AbstractMenu;
+use \Joomla\Database\DatabaseInterface;
+use \Joomla\CMS\Component\Router\RouterView;
+use \Joomla\CMS\Component\Router\RouterViewConfiguration;
+use \Joomla\CMS\Application\SiteApplication;
+use \Joomla\CMS\Categories\CategoryInterface;
+use \Joomla\CMS\Categories\CategoryFactoryInterface;
+use \Joomla\CMS\Component\Router\Rules\MenuRules;
+use \Joomla\CMS\Component\Router\Rules\NomenuRules;
+use \Joomla\CMS\Component\Router\Rules\StandardRules;
 
 /**
- * Class JoomgalleryRouter
+ * Joomgallery Router class
  *
  */
 class Router extends RouterView
@@ -64,23 +62,23 @@ class Router extends RouterView
 		$images = new RouterViewConfiguration('images');
 		$this->registerView($images);
 
-	    $image = new RouterViewConfiguration('image');
-	    $image->setKey('id')->setParent($images);
-	    $this->registerView($image);
+    $image = new RouterViewConfiguration('image');
+    $image->setKey('id')->setParent($images);
+    $this->registerView($image);
 
-	    $imageform = new RouterViewConfiguration('imageform');
-	    $imageform->setKey('id');
+    $imageform = new RouterViewConfiguration('imageform');
+    $imageform->setKey('id');
 
-	    $this->registerView($imageform);$categories = new RouterViewConfiguration('categories');
-			$this->registerView($categories);
+    $this->registerView($imageform);$categories = new RouterViewConfiguration('categories');
+    $this->registerView($categories);
 
-	    $category = new RouterViewConfiguration('category');
-	    $category->setKey('id')->setParent($categories);
-	    $this->registerView($category);
+    $category = new RouterViewConfiguration('category');
+    $category->setKey('id')->setParent($categories);
+    $this->registerView($category);
 
-	    $categoryform = new RouterViewConfiguration('categoryform');
-	    $categoryform->setKey('id');
-	    $this->registerView($categoryform);
+    $categoryform = new RouterViewConfiguration('categoryform');
+    $categoryform->setKey('id');
+    $this->registerView($categoryform);
 
 		parent::__construct($app, $menu);
 
@@ -99,10 +97,12 @@ class Router extends RouterView
    */
   public function getImageSegment($id, $query)
   {
-    if(!strpos($id, ':'))
+    if(!\strpos($id, ':'))
     {
-      $db = Factory::getDbo();
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+
       $dbquery = $db->getQuery(true);
+
       $dbquery->select($dbquery->qn('alias'))
         ->from($dbquery->qn('#__joomgallery'))
         ->where('id = ' . $dbquery->q($id));
@@ -113,7 +113,7 @@ class Router extends RouterView
 
     if($this->noIDs)
     {
-      list($void, $segment) = explode(':', $id, 2);
+      list($void, $segment) = \explode(':', $id, 2);
 
       return array($void => $segment);
     }
@@ -144,10 +144,12 @@ class Router extends RouterView
    */
   public function getCategorySegment($id, $query)
   {
-    if(!strpos($id, ':'))
+    if(!\strpos($id, ':'))
     {
-      $db = Factory::getDbo();
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+
       $dbquery = $db->getQuery(true);
+
       $dbquery->select($dbquery->qn('alias'))
         ->from($dbquery->qn('#__joomgallery_categories'))
         ->where('id = ' . $dbquery->q($id));
@@ -158,7 +160,7 @@ class Router extends RouterView
 
     if($this->noIDs)
     {
-      list($void, $segment) = explode(':', $id, 2);
+      list($void, $segment) = \explode(':', $id, 2);
 
       return array($void => $segment);
     }
@@ -192,8 +194,10 @@ class Router extends RouterView
   {
     if($this->noIDs)
     {
-      $db = Factory::getDbo();
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+
       $dbquery = $db->getQuery(true);
+
       $dbquery->select($dbquery->qn('id'))
         ->from($dbquery->qn('#__joomgallery'))
         ->where('alias = ' . $dbquery->q($segment));
@@ -230,8 +234,10 @@ class Router extends RouterView
   {
     if($this->noIDs)
     {
-      $db = Factory::getDbo();
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+
       $dbquery = $db->getQuery(true);
+
       $dbquery->select($dbquery->qn('id'))
         ->from($dbquery->qn('#__joomgallery_categories'))
         ->where('alias = ' . $dbquery->q($segment));
@@ -267,7 +273,7 @@ class Router extends RouterView
 	 */
 	private function getCategories(array $options = []): CategoryInterface
 	{
-		$key = serialize($options);
+		$key = \serialize($options);
 
 		if(!isset($this->categoryCache[$key]))
 		{

@@ -21,6 +21,7 @@ use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
+use stdClass;
 
 /**
  * JoomGallery Helper for the Backend

@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Router\Route;
@@ -31,7 +32,7 @@ class CategoryController extends JoomBaseController
 	 *
 	 * @since   4.0.0
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 */
 	public function edit()
 	{

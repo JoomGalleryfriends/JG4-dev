@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-    <layout title="Category View" option="View">
+    <layout title="COM_JOOMGALLERY_VIEW_CATEGORY_TITLE" option="JDEFAULT">
       <message>
-        <![CDATA[View containing a wall of filtered thumbnails of a specific category]]>
+        <![CDATA[COM_JOOMGALLERY_VIEW_CATEGORY_DESC]]>
       </message>
     </layout>
     <fields name="request">
@@ -320,6 +320,29 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
+            <field
+                name="jg_category_view_pagination"
+                type="list"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_DESC"
+                default="0"
+                parentclass="stack span-2-inline"
+                validate="options"
+                >
+                <option value="0">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT0</option>
+                <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
+                <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
+            </field>
+            <field
+                name="jg_category_view_number_of_reloaded_images"
+                type="text"
+                default="3"
+                parentclass="stack span-2-inline"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_DESC"
+                filter="integer"
+                showon="jg_category_view_pagination:2"
+            />
         </fieldset>
     </fields>
 </metadata>
