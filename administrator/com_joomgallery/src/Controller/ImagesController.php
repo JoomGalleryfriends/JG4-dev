@@ -10,18 +10,17 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Multilanguage;
-use Joomla\CMS\Language\Text;
-use Joomla\Input\Input;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Utilities\ArrayHelper;
-use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use Joomgallery\Component\Joomgallery\Administrator\Controller\JoomAdminController;
+use \Joomla\CMS\Factory;
+use \Joomla\Input\Input;
+use \Joomla\CMS\Router\Route;
+use \Joomla\CMS\Language\Text;
+use \Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Application\CMSApplication;
+use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Controller\JoomAdminController;
 
 /**
  * Images list controller class.
@@ -208,7 +207,7 @@ class ImagesController extends JoomAdminController
         }
       }
     }
-    catch (Exception $e)
+    catch(\Exception $e)
     {
       Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
     }
@@ -256,7 +255,7 @@ class ImagesController extends JoomAdminController
 	 *
 	 * @since   4.0.0
 	 *
-	 * @throws  Exception
+	 * @throws  \Exception
 	 */
 	public function saveOrderAjax()
 	{

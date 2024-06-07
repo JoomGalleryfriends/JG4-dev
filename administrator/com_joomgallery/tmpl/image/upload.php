@@ -11,22 +11,20 @@
 // No direct access 
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Layout\FileLayout;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\FileLayout;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+// Import CSS & JS
 $wa = $this->document->getWebAssetManager();
-//$wa->registerAndUseStyle('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.min.css');
-//$wa->registerAndUseScript('com_joomgallery.uppy', _JOOM_OPTION.'/uppy/uppy-'.$uppy_version.'.js', [], ['type' => 'module', 'defer' => true]);
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
    ->useScript('com_joomgallery.uppy-uploader')
+   ->useScript('bootstrap.modal')
    ->useStyle('com_joomgallery.uppy')
    ->useStyle('com_joomgallery.admin');
-
 HTMLHelper::_('bootstrap.tooltip');
 
 $app = Factory::getApplication();

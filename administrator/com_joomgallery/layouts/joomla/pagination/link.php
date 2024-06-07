@@ -19,7 +19,8 @@ $display    = $item->text;
 $app        = Factory::getApplication();
 $span_class = '';
 
-switch ((string) $item->text) {
+switch((string) $item->text)
+{
     // Check for "Start" item
     case Text::_('JLIB_HTML_START'):
         $icon = $app->getLanguage()->isRtl() ? 'icon-angle-double-right' : 'icon-angle-double-left';
@@ -53,25 +54,35 @@ switch ((string) $item->text) {
         break;
 }
 
-if ($icon !== null) {
+if($icon !== null)
+{
     $display = '<span class="' . $icon . '" aria-hidden="true"></span>';
 }
 
-if ($displayData['active']) {
-    if ($item->base > 0) {
+if($displayData['active'])
+{
+    if($item->base > 0)
+    {
         $limit = 'limitstart.value=' . $item->base;
-    } else {
+    }
+    else
+    {
         $limit = 'limitstart.value=0';
     }
 
     $class = 'active';
 
-    if ($app->isClient('administrator')) {
+    if($app->isClient('administrator'))
+    {
         $link = 'href="#" onclick="document.adminForm.' . $item->prefix . $limit . '; Joomla.submitform();return false;"';
-    } elseif ($app->isClient('site')) {
+    }
+    elseif ($app->isClient('site'))
+    {
         $link = 'href="' . $item->link . '"';
     }
-} else {
+}
+else
+{
     $class = (property_exists($item, 'active') && $item->active) ? 'active' : 'disabled';
 }
 

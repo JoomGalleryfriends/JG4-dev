@@ -11,6 +11,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+/**
+ * Array containing TUS server specifications
+ *
+ * @package JoomGallery
+ * @since   4.0.0
+ */
 $tus_specs_array = array
 (
   'Headers' => array(

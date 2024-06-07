@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\Model\ListModel;
 use \Joomla\CMS\Language\Multilanguage;
+use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * Model to get a category record.
@@ -47,11 +48,8 @@ class CategoryModel extends JoomItemModel
 	 */
 	protected function populateState()
 	{
-		$app  = Factory::getApplication('com_joomgallery');
-		$user = Factory::getUser();
-
 		// Check published state
-		if((!$user->authorise('core.edit.state', 'com_joomgallery')) && (!$user->authorise('core.edit', 'com_joomgallery')))
+		if((!$this->getAcl()->checkACL('core.edit.state', 'com_joomgallery')) && (!$this->getAcl()->checkACL('core.edit', 'com_joomgallery')))
 		{
 			$this->setState('filter.published', 1);
 			$this->setState('filter.archived', 2);
@@ -68,9 +66,9 @@ class CategoryModel extends JoomItemModel
 			$id = (int) $this->app->getUserState('com_joomgallery.edit.image.id', null);
 		}
 
-		if(is_null($id))
+		if(\is_null($id))
 		{
-			throw new Exception('No ID provided to the model!', 500);
+			throw new \Exception('No ID provided to the model!', 500);
 		}
 
 		$this->setState('category.id', $id);
@@ -111,13 +109,13 @@ class CategoryModel extends JoomItemModel
 		// Add created by name
 		if(isset($this->item->created_by))
 		{
-			$this->item->created_by_name = Factory::getUser($this->item->created_by)->name;
+			$this->item->created_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->created_by)->name;
 		}
 
 		// Add modified by name
 		if(isset($this->item->modified_by))
 		{
-			$this->item->modified_by_name = Factory::getUser($this->item->modified_by)->name;
+			$this->item->modified_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->modified_by)->name;
 		}
 
 		// Delete unnessecary properties
@@ -277,7 +275,7 @@ class CategoryModel extends JoomItemModel
     $listModel->getState();
 
     // Select fields to load
-    $fields = array('id', 'alias', 'title', 'description', 'author', 'date', 'hits', 'votes', 'votesum');
+    $fields = array('id', 'alias', 'catid', 'title', 'description', 'filename', 'author', 'date', 'hits', 'votes', 'votesum');
     $fields = $this->addColumnPrefix('a', $fields);
 
     // Apply preselected filters and fields selection for images
@@ -374,7 +372,8 @@ class CategoryModel extends JoomItemModel
   protected function setImagesModelState(ListModel &$listModel, array $fields = array())
   {
     // Get current user
-    $user = Factory::getUser();
+    $user   = $this->app->getIdentity();
+    $params = $this->getParams();
 
     // Apply selection
     if(\count($fields) > 0)
@@ -394,6 +393,13 @@ class CategoryModel extends JoomItemModel
       $listModel->setState('filter.language', $this->item->language);
     }
 
+    // Override number of images beeing loaded
+    if(!$params['menu']->get('jg_category_view_pagination', 0, 'int'));
+    {
+      // Load all images for infinity scroll
+      $listModel->setState('list.limit', '0');
+    }
+
     // Apply ordering
     $listModel->setState('list.fullordering', 'a.id ASC');
   }
@@ -409,7 +415,7 @@ class CategoryModel extends JoomItemModel
   protected function setChildrenModelState(ListModel &$listModel, array $fields = array())
   {
     // Get current user
-    $user = Factory::getUser();
+    $user = $this->app->getIdentity();
 
     // Apply selection
     if(\count($fields) > 0)

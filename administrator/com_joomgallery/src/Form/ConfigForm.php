@@ -10,16 +10,15 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Form;
 
+// No direct access
+defined('_JEXEC') or die;
+
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Event\AbstractEvent;
 use \Joomla\Database\DatabaseInterface;
-
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
-
-// No direct access
-defined('_JEXEC') or die;
 
 /**
  * Form Class for the Joomla Platform.

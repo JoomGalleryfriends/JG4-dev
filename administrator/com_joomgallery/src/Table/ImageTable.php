@@ -16,13 +16,14 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Access\Rules;
 use \Joomla\CMS\Access\Access;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Event\AbstractEvent;
-use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Image table
@@ -62,7 +63,7 @@ class ImageTable extends Table implements VersionableTableInterface
 	protected function _getAssetParentId($table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
-		$assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+		$assetTable = new Asset($this->getDbo());
 
 		if($this->catid)
 		{
@@ -205,7 +206,7 @@ class ImageTable extends Table implements VersionableTableInterface
 
 		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
-			$array['created_by'] = Factory::getUser()->id;
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($array['id'] == 0 && !$component->getConfig()->get('jg_approve'))
@@ -220,12 +221,12 @@ class ImageTable extends Table implements VersionableTableInterface
 
 		if($array['id'] == 0 && (!\key_exists('modified_by', $array) ||empty($array['modified_by'])))
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		// Support for empty date field: date
@@ -235,39 +236,44 @@ class ImageTable extends Table implements VersionableTableInterface
 			$this->date    = $date->toSql();
 		}
 
-		if(isset($array['params']) && is_array($array['params']))
+		if(isset($array['params']) && \is_array($array['params']))
 		{
 			$registry = new Registry($array['params']);
 			$array['params'] = (string) $registry;
 		}
 
-		if(isset($array['metadata']) && is_array($array['metadata']))
+		if(isset($array['metadata']) && \is_array($array['metadata']))
 		{
 			$registry = new Registry($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
 
-		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.image.' . $array['id']))
-		{
-			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='image']/");
-			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.image.' . $array['id'])->getData();
-			$array_jaccess   = array();
+    // // Get access service
+    // JoomHelper::getComponent()->createAccess();
+    // $acl = JoomHelper::getComponent()->getAccess();
 
-			foreach($actions as $action)
-			{
-				if(key_exists($action->name, $default_actions))
-				{
-					$array_jaccess[$action->name] = $default_actions[$action->name];
-				}
-			}
+		// if(!$acl->checkACL('core.admin'))
+		// {
+		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='image']/");
+		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.image.' . $array['id'])->getData();
+		// 	$array_jaccess   = array();
 
-			$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		}
+		// 	foreach($actions as $action)
+		// 	{
+		// 		if(\key_exists($action->name, $default_actions))
+		// 		{
+		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
+		// 		}
+		// 	}
+
+		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
+		// }
 
 		// Bind the rules for ACL where supported.
-		if(isset($array['rules']) && is_array($array['rules']))
+		if(isset($array['rules']))
 		{
-			$this->setRules($array['rules']);
+      $rules = new Rules($array['rules']);
+			$this->setRules($rules);
 		}
 
     // Support for tags

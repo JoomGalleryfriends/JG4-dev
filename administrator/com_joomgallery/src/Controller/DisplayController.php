@@ -11,6 +11,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
@@ -34,7 +35,7 @@ class DisplayController extends BaseController
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
 
   /**
    * The context for storing internal data, e.g. record.

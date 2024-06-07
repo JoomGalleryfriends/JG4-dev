@@ -10,13 +10,13 @@
 
 namespace Joomgallery\Component\Joomgallery\Site\Dispatcher;
 
-defined('JPATH_PLATFORM') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
-use Joomla\CMS\Dispatcher\ComponentDispatcher;
-use Joomla\CMS\Language\Text;
+use \Joomla\CMS\Dispatcher\ComponentDispatcher;
 
 /**
- * ComponentDispatcher class for Com_Joomgallery
+ * ComponentDispatcher class for com_joomgallery
  * 
  * @package JoomGallery
  * @since   4.0.0

@@ -11,7 +11,7 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 
 // No direct access.
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
@@ -22,7 +22,6 @@ use \Joomla\CMS\Filesystem\Path;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\Database\DatabaseFactory;
-use \Joomla\CMS\MVC\Model\AdminModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
@@ -33,7 +32,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
  * @package JoomGallery
  * @since   4.0.0
  */
-class MigrationModel extends AdminModel
+class MigrationModel extends JoomAdminModel
 {
   /**
 	 * @var    string  Alias to manage history control
@@ -41,6 +40,14 @@ class MigrationModel extends AdminModel
 	 * @since  4.0.0
 	 */
 	public $typeAlias = _JOOM_OPTION.'.migration';
+
+  /**
+   * Item type
+   *
+   * @access  protected
+   * @var     string
+   */
+  protected $type = 'migration';
 
 	/**
 	 * @var    string  The prefix to use with controller messages
@@ -90,7 +97,7 @@ class MigrationModel extends AdminModel
 
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
-    $this->user      = Factory::getUser();
+    $this->user      = $this->component->getMVCFactory()->getIdentity();
 
     // Create config service
     $this->component->createConfig();
@@ -103,7 +110,7 @@ class MigrationModel extends AdminModel
 	 *
 	 * @since   4.0.0
 	 */
-  public function getParams()
+  public function getParams(): array
   {
     // Try to load params from user state
     $params = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->scriptName.'.params', array());

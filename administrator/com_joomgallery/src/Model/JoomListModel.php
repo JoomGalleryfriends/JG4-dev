@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\MVC\Model\ListModel;
+use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
@@ -51,6 +52,14 @@ abstract class JoomListModel extends ListModel
   protected $component;
 
   /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
+
+  /**
    * Item type
    *
    * @access  protected
@@ -72,7 +81,7 @@ abstract class JoomListModel extends ListModel
 
     $this->app       = Factory::getApplication('administrator');
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
-    $this->user      = Factory::getUser();
+    $this->user      = $this->component->getMVCFactory()->getIdentity();
   }
 
   /**
@@ -99,9 +108,14 @@ abstract class JoomListModel extends ListModel
 	 */
 	public function getAcl(): AccessInterface
 	{
-		$this->component->createAccess();
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
 
-		return $this->component->getAccess();
+		return $this->acl;
 	}
 
   /**
@@ -129,5 +143,28 @@ abstract class JoomListModel extends ListModel
 		$configs     = new Registry($configArray);
 
 		$this->setState('parameters.configs', $configs);
+  }
+
+  /**
+   * Method to load and return a table object.
+   *
+   * @param   string  $name    The name of the view
+   * @param   string  $prefix  The class prefix. Optional.
+   * @param   array   $config  Configuration settings to pass to Table::getInstance
+   *
+   * @return  Table|boolean  Table object or boolean false if failed
+   *
+   * @since   3.0
+   */
+  protected function _createTable($name, $prefix = 'Table', $config = [])
+  {
+    $table = parent::_createTable($name, $prefix, $config);
+
+    if($table instanceof CurrentUserInterface)
+    {
+      $table->setCurrentUser($this->component->getMVCFactory()->getIdentity());
+    }
+
+    return $table;
   }
 }

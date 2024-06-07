@@ -10,9 +10,10 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('JPATH_BASE') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
-use Joomla\CMS\Form\Field\RadioField;
+use \Joomla\CMS\Form\Field\RadioField;
 
 /**
  * Form Field class for the Joomla Platform.
@@ -46,6 +47,6 @@ class CustomradioField extends RadioField
           'sensitive'   => $this->getAttribute('sensitive')
         );
 
-        return array_merge($data, $extraData);
+        return \array_merge($data, $extraData);
     }
 }

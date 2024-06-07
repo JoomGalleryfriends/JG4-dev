@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
@@ -51,7 +52,7 @@ class JgnumberField extends NumberField
    */
   protected function getInput()
   {
-    $fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
+    $fieldname = \preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
     
     if($this->element['useglobal'])
     {
@@ -77,6 +78,6 @@ class JgnumberField extends NumberField
     }
 
     // Trim the trailing line in the layout file
-    return rtrim($this->getRenderer($this->layout)->render($this->getLayoutData()), PHP_EOL);
+    return \rtrim($this->getRenderer($this->layout)->render($this->getLayoutData()), PHP_EOL);
   }
 }

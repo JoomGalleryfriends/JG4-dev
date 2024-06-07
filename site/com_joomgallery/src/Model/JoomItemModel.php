@@ -59,6 +59,14 @@ abstract class JoomItemModel extends ItemModel
 	protected $item = null;
 
   /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
+
+  /**
 	 * Constructor
 	 *
 	 * @param   array                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).
@@ -91,18 +99,23 @@ abstract class JoomItemModel extends ItemModel
 		return $params;
 	}
 
-	/**
-	 * Method to get the access service class.
-	 *
-	 * @return  AccessInterface   Object on success, false on failure.
-   * @since   4.0.0
-	 */
-	public function getAcl(): AccessInterface
-	{
-		$this->component->createAccess();
+  /**
+  * Method to get the access service class.
+  *
+  * @return  AccessInterface   Object on success, false on failure.
+  * @since   4.0.0
+  */
+ public function getAcl(): AccessInterface
+ {
+   // Create access service
+   if(\is_null($this->acl))
+   {
+     $this->component->createAccess();
+     $this->acl = $this->component->getAccess();
+   }
 
-		return $this->component->getAccess();
-	}
+   return $this->acl;
+ }
 
   /**
 	 * Get an instance of Table class
@@ -138,7 +151,7 @@ abstract class JoomItemModel extends ItemModel
 			$table = $this->getTable();
 
 			// Attempt to check the row in.
-			if(method_exists($table, 'checkin'))
+			if(\method_exists($table, 'checkin'))
 			{
 				if(!$table->checkin($id))
 				{
@@ -170,10 +183,10 @@ abstract class JoomItemModel extends ItemModel
 			$table = $this->getTable();
 
 			// Get the current user object.
-			$user = Factory::getUser();
+			$user = $this->app->getIdentity();
 
 			// Attempt to check the row out.
-			if(method_exists($table, 'checkout'))
+			if(\method_exists($table, 'checkout'))
 			{
 				if(!$table->checkout($user->get('id'), $id))
 				{

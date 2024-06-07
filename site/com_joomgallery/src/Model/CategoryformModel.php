@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomgallery\Component\Joomgallery\Administrator\Model\CategoryModel as AdminCategoryModel;
 
 /**
@@ -58,7 +57,7 @@ class CategoryformModel extends AdminCategoryModel
 
 		if(is_null($id))
 		{
-			throw new Exception('No ID provided to the model!', 500);
+			throw new \Exception('No ID provided to the model!', 500);
 		}
 
     $return = $this->app->input->get('return', '', 'base64');
@@ -140,6 +139,6 @@ class CategoryformModel extends AdminCategoryModel
    */
   public function getReturnPage()
   {
-    return base64_encode($this->getState('return_page', ''));
+    return \base64_encode($this->getState('return_page', ''));
   }
 }

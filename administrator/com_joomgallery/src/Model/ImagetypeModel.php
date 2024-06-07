@@ -13,10 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
-use Joomla\Utilities\ArrayHelper;
-use Joomla\CMS\Object\CMSObject;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
+use \Joomla\Registry\Registry;
+use \Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Object\CMSObject;
 
 /**
  * Imagetype model.
@@ -33,29 +32,6 @@ class ImagetypeModel extends JoomAdminModel
    * @var     string
    */
   protected $type = 'imagetype';
-
-  /**
-	 * Method to get the record form.
-	 *
-	 * @param   array    $data      An optional array of data for the form to interogate.
-	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  \JForm|boolean  A \JForm object on success, false on failure
-	 *
-	 * @since   4.0.0
-	 */
-	public function getForm($data = array(), $loadData = true)
-	{
-    // Get the form.
-		$form = $this->loadForm($this->typeAlias, 'imagetype', array('control' => 'jform', 'load_data' => $loadData));
-
-		if(empty($form))
-		{
-			return false;
-		}
-
-		return $form;
-  }
 
   /**
 	 * Method to get the data that should be injected in the form.

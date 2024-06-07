@@ -19,7 +19,6 @@ use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Category model.
@@ -52,21 +51,47 @@ class CategoryModel extends JoomAdminModel
 		// Get the form.
 		$form = $this->loadForm($this->typeAlias, 'category', array('control' => 'jform', 'load_data' => $loadData ));
 
-    // Apply filter to exclude child categories
-    $children = $form->getFieldAttribute('parent_id', 'children', 'true');
-    $children = filter_var($children, FILTER_VALIDATE_BOOLEAN);
-    if(!$children)
-    {
-      $form->setFieldAttribute('parent_id', 'exclude', $this->item->id);
-    }
-
-		// Apply filter for current category on thumbnail field
-    $form->setFieldAttribute('thumbnail', 'categories', $this->item->id);
-
-		if(empty($form))
+    if(empty($form))
 		{
 			return false;
 		}
+
+    // On edit, we get ID from state, but on save, we use data from input
+		$id = (int) $this->getState('category.id', $this->app->getInput()->getInt('id', 0));
+
+		// Object uses for checking edit state permission of image
+		$record = new \stdClass();
+		$record->id = $id;
+
+    // Apply filter to exclude child categories
+    $children = $form->getFieldAttribute('parent_id', 'children', 'true');
+    $children = \filter_var($children, FILTER_VALIDATE_BOOLEAN);
+    if(!$children)
+    {
+      $form->setFieldAttribute('parent_id', 'exclude', $id);
+    }
+
+		// Apply filter for current category on thumbnail field
+    $form->setFieldAttribute('thumbnail', 'categories', $id);
+
+    // Modify the form based on Edit State access controls.
+		if(!$this->canEditState($record))
+		{
+			// Disable fields for display.
+			$form->setFieldAttribute('ordering', 'disabled', 'true');
+			$form->setFieldAttribute('published', 'disabled', 'true');
+
+			// Disable fields while saving.
+			// The controller has already verified this is an article you can edit.
+			$form->setFieldAttribute('ordering', 'filter', 'unset');
+			$form->setFieldAttribute('published', 'filter', 'unset');
+		}
+
+    // Don't allow to change the created_user_id user if not allowed to access com_users.
+    if(!$this->user->authorise('core.manage', 'com_users'))
+    {
+      $form->setFieldAttribute('created_by', 'filter', 'unset');
+    }
 
 		return $form;
 	}
@@ -263,13 +288,13 @@ class CategoryModel extends JoomAdminModel
 
 					if($error)
 					{
-						Log::add($error, Log::WARNING, 'jerror');
+            $this->component->addLog($error, Log::WARNING, 'jerror');
 
 						return false;
 					}
 					else
 					{
-						Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+            $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
 						return false;
 					}
@@ -366,6 +391,17 @@ class CategoryModel extends JoomAdminModel
             $aliasChanged = true;
             $old_alias    = $table->alias;
             $old_path     = $table->path;
+          }
+
+          // Check if the state was changed
+          if($table->published != $data['published'])
+          {
+            if(!$this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.category.'.$table->id))
+            {
+              // We are not allowed to change the published state
+              $this->component->addWarning(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
+              $data['published'] = $table->published;
+            }
           }
         }
 

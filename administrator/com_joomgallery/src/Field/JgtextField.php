@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
@@ -51,7 +52,7 @@ class JgtextField extends TextField
    */
   protected function getInput()
   {
-    $fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
+    $fieldname = \preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
     
     if($this->element['useglobal'])
     {

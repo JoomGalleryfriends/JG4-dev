@@ -103,7 +103,7 @@ class GalleriesTable extends Table
 
 		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
-			$array['created_by'] = Factory::getUser()->id;
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
@@ -113,12 +113,12 @@ class GalleriesTable extends Table
 
 		if($array['id'] == 0 && (!\key_exists('modified_by', $array) ||empty($array['modified_by'])))
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
     // Support for images

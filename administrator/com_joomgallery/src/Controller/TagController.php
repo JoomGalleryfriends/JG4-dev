@@ -10,9 +10,8 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
-
-use Joomla\CMS\MVC\Controller\FormController;
 
 /**
  * Tag controller class.
@@ -20,7 +19,7 @@ use Joomla\CMS\MVC\Controller\FormController;
  * @package JoomGallery
  * @since   4.0.0
  */
-class TagController extends FormController
+class TagController extends JoomFormController
 {
 	protected $view_list = 'tags';
 }

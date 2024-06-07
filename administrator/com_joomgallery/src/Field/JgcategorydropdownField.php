@@ -10,14 +10,16 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
-\defined('JPATH_BASE') or die;
+// No direct access
+\defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Form\Field\ListField;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Language\Text;
-use Joomla\Database\ParameterType;
-use Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\HTML\HTMLHelper;
+use \Joomla\Utilities\ArrayHelper;
+use \Joomla\Database\ParameterType;
+use \Joomla\CMS\Form\Field\ListField;
+use \Joomla\Database\DatabaseInterface;
 
 /**
  * Category Edit field for JoomGallery
@@ -26,6 +28,14 @@ use Joomla\Utilities\ArrayHelper;
  */
 class JgcategorydropdownField extends ListField
 {
+	/**
+	 * A flexible category list that respects access controls
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
+	public $type = 'jgcategorydropdown';
+
 	/**
 	 * To allow creation of new categories.
 	 *
@@ -41,14 +51,6 @@ class JgcategorydropdownField extends ListField
 	 * @since  3.9.11
 	 */
 	protected $customPrefix;
-
-	/**
-	 * A flexible category list that respects access controls
-	 *
-	 * @var    string
-	 * @since  1.6
-	 */
-	public $type = 'jgcategorydropdown';
 
 	/**
 	 * Name of the layout being used to render the field
@@ -147,7 +149,7 @@ class JgcategorydropdownField extends ListField
 	protected function getOptions()
 	{
 		$options = array();
-		$published = $this->element['published'] ? explode(',', (string) $this->element['published']) : array(0, 1);
+		$published = $this->element['published'] ? \explode(',', (string) $this->element['published']) : array(0, 1);
 		$name = (string) $this->element['name'];
 
 		// Let's get the id for the current item, either category or content item.
@@ -170,12 +172,18 @@ class JgcategorydropdownField extends ListField
 		}
 
 		// Account for case that a submitted form has a multi-value category id field (e.g. a filtering form), just use the first category
-		$oldCat = is_array($oldCat)
-			? (int) reset($oldCat)
+		$oldCat = \is_array($oldCat)
+			? (int) \reset($oldCat)
 			: (int) $oldCat;
 
-		$db   = Factory::getDbo();
-		$user = Factory::getUser();
+		// Initialize needed classes
+		$comp = Factory::getApplication()->bootComponent('com_joomgallery');
+		$db   = Factory::getContainer()->get(DatabaseInterface::class);
+		$user = Factory::getApplication()->getIdentity();
+
+		// Get access service
+		$comp->createAccess();
+    $acl  = $comp->getAccess();
 
 		$query = $db->getQuery(true)
 			->select(
@@ -197,7 +205,7 @@ class JgcategorydropdownField extends ListField
 		{
 			if (strpos($this->element['language'], ',') !== false)
 			{
-				$language = explode(',', $this->element['language']);
+				$language = \explode(',', $this->element['language']);
 			}
 			else
 			{
@@ -213,7 +221,7 @@ class JgcategorydropdownField extends ListField
 
 		// Filter categories on User Access Level
 		// Filter by access level on categories.
-		if (!$user->authorise('core.admin'))
+		if (!$acl->checkACL('core.admin'))
 		{
 			$groups = $user->getAuthorisedViewLevels();
 			$query->whereIn($db->quoteName('a.access'), $groups);
@@ -269,11 +277,11 @@ class JgcategorydropdownField extends ListField
 
 			if ($options[$i]->published == 1 && $options[$i]->hidden == 0 && $options[$i]->in_hidden == 0 || $options[$i]->level == 0)
 			{
-				$options[$i]->text = str_repeat('- ', !$options[$i]->level ? 0 : $options[$i]->level - 1) . $options[$i]->text;
+				$options[$i]->text = \str_repeat('- ', !$options[$i]->level ? 0 : $options[$i]->level - 1) . $options[$i]->text;
 			}
 			else
 			{
-				$options[$i]->text = str_repeat('- ', !$options[$i]->level ? 0 : $options[$i]->level - 1) . '[' . $options[$i]->text . ']';
+				$options[$i]->text = \str_repeat('- ', !$options[$i]->level ? 0 : $options[$i]->level - 1) . '[' . $options[$i]->text . ']';
 			}
 
 			// Displays language code if not set to All
@@ -292,7 +300,9 @@ class JgcategorydropdownField extends ListField
 				 * To take save or create in a category you need to have create rights for that category unless the item is already in that category.
 				 * Unset the option if the user isn't authorised for it. In this field assets are always categories.
 				 */
-				if ($option->level != 0 && !$user->authorise('core.create', $extension . '.category.' . $option->value))
+        $assetKey = $extension . '.category.' . $option->value;
+
+				if ($option->level != 0 && !$acl->checkACL('core.create', $assetKey, $option->value, true))
 				{
 					unset($options[$i]);
 				}
@@ -310,13 +320,13 @@ class JgcategorydropdownField extends ListField
 			{
 				$assetKey = $extension . '.category.' . $oldCat;
 
-				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$user->authorise('core.edit.state', $assetKey))
+				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$acl->checkACL('core.edit.state', $assetKey))
 				{
 					unset($options[$i]);
 					continue;
 				}
 
-				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$user->authorise('core.edit.state', $assetKey))
+				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$acl->checkACL('core.edit.state', $assetKey))
 				{
 					unset($options[$i]);
 					continue;
@@ -328,13 +338,13 @@ class JgcategorydropdownField extends ListField
 				 */
 				$assetKey = $extension . '.category.' . $option->value;
 
-				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$user->authorise('core.create', $assetKey))
+				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$acl->checkACL('core.create', $assetKey, $option->value, true))
 				{
 					unset($options[$i]);
 					continue;
 				}
 
-				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$user->authorise('core.create', $assetKey))
+				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$acl->checkACL('core.create', $assetKey, $option->value, true))
 				{
 					unset($options[$i]);
 				}
@@ -364,14 +374,14 @@ class JgcategorydropdownField extends ListField
 			{
 				$parent = new \stdClass;
 				$parent->text = Text::_('JGLOBAL_ROOT_PARENT');
-				array_unshift($options, $parent);
+				\array_unshift($options, $parent);
 			}
 
-			array_unshift($options, HTMLHelper::_('select.option', '0', Text::_('JGLOBAL_ROOT')));
+			\array_unshift($options, HTMLHelper::_('select.option', '0', Text::_('JGLOBAL_ROOT')));
 		}
 
 		// Merge any additional options in the XML definition.
-		return array_merge(parent::getOptions(), $options);
+		return \array_merge(parent::getOptions(), $options);
 	}
 
 	/**

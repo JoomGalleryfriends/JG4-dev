@@ -10,6 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
+// No direct access
 \defined('_JEXEC') or die;
 
 use \Joomla\Input\Input;
@@ -33,7 +34,7 @@ class JoomBaseController extends BaseController
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
 
 	/**
    * Joomgallery\Component\Joomgallery\Administrator\Service\Access\Access
@@ -41,7 +42,7 @@ class JoomBaseController extends BaseController
    * @access  protected
    * @var     object
    */
-  var $acl;
+  protected $acl;
 
 	/**
 	 * Constructor.

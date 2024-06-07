@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomListModel;
 
 /**
  * Methods supporting a list of Faulties records.

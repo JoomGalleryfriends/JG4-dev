@@ -11,35 +11,31 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Layout\LayoutHelper;
-use \Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Language\Multilanguage;
-use \Joomla\CMS\Button\PublishedButton;
+use Joomla\CMS\Button\PublishedButton;
 
-HTMLHelper::addIncludePath(JPATH_COMPONENT . '/src/Helper/');
-
-// Import CSS
-$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+// Import CSS & JS
+$wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.admin')
    ->useScript('multiselect');
 
-$user      = Factory::getUser();
+$user      = $this->app->getIdentity();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canOrder  = $user->authorise('core.edit.state', 'com_joomgallery');
+$canOrder  = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery');
 $saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 
 if($saveOrder && !empty($this->items))
 {
 	$saveOrderingUrl = 'index.php?option=com_joomgallery&task=tags.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
-	HTMLHelper::_('draggablelist.draggable');
+  HTMLHelper::_('draggablelist.draggable');
 }
 ?>
 
@@ -105,10 +101,10 @@ if($saveOrder && !empty($this->items))
             <tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php endif; ?>>
             <?php foreach ($this->items as $i => $item) :
               $ordering         = ($listOrder == 'a.ordering');
-              $canEdit          = $user->authorise('core.edit',       'com_joomgallery.tag.'.$item->id);
-              $canCheckin       = $user->authorise('core.manage',     'com_joomgallery') || $item->checked_out == $userId || is_null($item->checked_out);
-              $canEditOwn       = $user->authorise('core.edit.own',   'com_joomgallery.tag.'.$item->id) && $item->created_by_id == $userId;
-              $canChange        = $user->authorise('core.edit.state', 'com_joomgallery.tag.'.$item->id) && $canCheckin;
+              $canEdit          = $this->getAcl()->checkACL('core.edit',       'com_joomgallery.tag.'.$item->id);
+              $canCheckin       = $this->getAcl()->checkACL('core.manage',     'com_joomgallery') || $item->checked_out == $userId || is_null($item->checked_out);
+              $canEditOwn       = $this->getAcl()->checkACL('core.edit.own',   'com_joomgallery.tag.'.$item->id) && $item->created_by_id == $userId;
+              $canChange        = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery.tag.'.$item->id) && $canCheckin;
               ?>
 
               <tr class="row<?php echo $i % 2; ?>">

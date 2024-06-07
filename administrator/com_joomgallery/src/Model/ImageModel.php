@@ -23,7 +23,6 @@ use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
-use \Joomgallery\Component\Joomgallery\Administrator\Model\JoomAdminModel;
 
 /**
  * Image model.
@@ -121,6 +120,34 @@ class ImageModel extends JoomAdminModel
 		{
 			return false;
 		}
+
+		// On edit, we get ID from state, but on save, we use data from input
+		$id = (int) $this->getState('image.id', $this->app->getInput()->getInt('id', null));
+
+		// Object uses for checking edit state permission of image
+		$record = new \stdClass();
+		$record->id = $id;
+
+		// Modify the form based on Edit State access controls.
+		if(!$this->canEditState($record))
+		{
+			// Disable fields for display.
+			$form->setFieldAttribute('featured', 'disabled', 'true');
+			$form->setFieldAttribute('ordering', 'disabled', 'true');
+			$form->setFieldAttribute('published', 'disabled', 'true');
+
+			// Disable fields while saving.
+			// The controller has already verified this is an article you can edit.
+			$form->setFieldAttribute('featured', 'filter', 'unset');
+			$form->setFieldAttribute('ordering', 'filter', 'unset');
+			$form->setFieldAttribute('published', 'filter', 'unset');
+		}
+
+		// Don't allow to change the created_user_id user if not allowed to access com_users.
+    if(!$this->user->authorise('core.manage', 'com_users'))
+    {
+      $form->setFieldAttribute('created_by', 'filter', 'unset');
+    }
 
 		return $form;
 	}
@@ -375,6 +402,17 @@ class ImageModel extends JoomAdminModel
 				{
 					$aliasChanged = true;
           $old_alias    = $table->alias;
+				}
+
+				// Check if the state was changed
+				if($table->published != $data['published'])
+				{
+					if(!$this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.image.'.$table->id))
+					{
+						// We are not allowed to change the published state
+						$this->component->addWarning(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
+						$data['published'] = $table->published;
+					}
 				}
 			}
 
@@ -743,13 +781,13 @@ class ImageModel extends JoomAdminModel
 
 					if($error)
 					{
-						Log::add($error, Log::WARNING, 'jerror');
+						$this->component->addLog($error, Log::WARNING, 'jerror');
 
 						return false;
 					}
 					else
 					{
-						Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+						$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
 						return false;
 					}
@@ -814,7 +852,7 @@ class ImageModel extends JoomAdminModel
 					// Prune items that you can't change.
 					unset($pks[$i]);
 
-					Log::add(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+					$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
 					return false;
 				}
@@ -822,7 +860,7 @@ class ImageModel extends JoomAdminModel
 				// If the table is checked out by another user, drop it and report to the user trying to change its state.
 				if($table->hasField('checked_out') && $table->checked_out && ($table->checked_out != $user->id))
 				{
-					Log::add(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'), Log::WARNING, 'jerror');
+					$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'), Log::WARNING, 'jerror');
 
 					// Prune items that you can't change.
 					unset($pks[$i]);
@@ -1061,13 +1099,13 @@ class ImageModel extends JoomAdminModel
 
         if($error)
         {
-          Log::add($error, Log::WARNING, 'jerror');
+          $this->component->addLog($error, Log::WARNING, 'jerror');
 
           return false;
         }
         else
         {
-          Log::add(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
+          $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), Log::WARNING, 'jerror');
 
           return false;
         }

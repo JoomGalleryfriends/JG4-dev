@@ -15,13 +15,13 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Asset;
+use Joomla\CMS\Access\Rules;
 use \Joomla\CMS\Access\Access;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\CMS\Table\Nested as Table;
 use \Joomla\Database\DatabaseDriver;
-use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -92,7 +92,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 	protected function _getAssetParentId($table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
-    $assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+    $assetTable = new Asset($this->getDbo());
 
 		if($this->parent_id && \intval($this->parent_id) >= 1)
 		{
@@ -177,17 +177,17 @@ class CategoryTable extends Table implements VersionableTableInterface
 
 		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
-			$array['created_by'] = Factory::getUser()->id;
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($array['id'] == 0 && empty($array['modified_by']))
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
@@ -226,41 +226,46 @@ class CategoryTable extends Table implements VersionableTableInterface
       }
     }
 
-		if(isset($array['params']) && is_array($array['params']))
+		if(isset($array['params']) && \is_array($array['params']))
 		{
 			$registry = new Registry;
 			$registry->loadArray($array['params']);
 			$array['params'] = (string) $registry;
 		}
 
-		if(isset($array['metadata']) && is_array($array['metadata']))
+		if(isset($array['metadata']) && \is_array($array['metadata']))
 		{
 			$registry = new Registry;
 			$registry->loadArray($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
 
-		if(!Factory::getUser()->authorise('core.admin', _JOOM_OPTION.'.category.'.$array['id']))
-		{
-			$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='category']/");
-			$default_actions = Access::getAssetRules(_JOOM_OPTION.'.category.'.$array['id'])->getData();
-			$array_jaccess   = array();
+    // // Get access service
+    // JoomHelper::getComponent()->createAccess();
+    // $acl = JoomHelper::getComponent()->getAccess();
 
-			foreach($actions as $action)
-			{
-				if (key_exists($action->name, $default_actions))
-				{
-					$array_jaccess[$action->name] = $default_actions[$action->name];
-				}
-			}
+		// if(!$acl->checkACL('core.admin'))
+		// {
+		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='category']/");
+		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.category.'.$array['id'])->getData();
+		// 	$array_jaccess   = array();
 
-			$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		}
+		// 	foreach($actions as $action)
+		// 	{
+		// 		if (\key_exists($action->name, $default_actions))
+		// 		{
+		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
+		// 		}
+		// 	}
+
+		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
+		// }
 
 		// Bind the rules for ACL where supported.
-		if(isset($array['rules']) && is_array($array['rules']))
+		if(isset($array['rules']))
 		{
-			$this->setRules($array['rules']);
+      $rules = new Rules($array['rules']);
+			$this->setRules($rules);
 		}
 
 		return parent::bind($array, $ignore);
@@ -283,7 +288,7 @@ class CategoryTable extends Table implements VersionableTableInterface
     $this->setPathWithLocation();
 
     // Support for params field
-    if(isset($this->params) && !is_string($this->params))
+    if(isset($this->params) && !\is_string($this->params))
 		{
 			$registry = new Registry($this->params);
 			$this->params = (string) $registry;
@@ -322,7 +327,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function check()
 	{
 		// If there is an ordering column and this is a new row then get the next ordering value
-		if(property_exists($this, 'ordering') && $this->id == 0)
+		if(\property_exists($this, 'ordering') && $this->id == 0)
 		{
 			$this->ordering = self::getNextOrder();
 		}
@@ -443,7 +448,7 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public function addRoot()
   {
-    $db = Factory::getDbo();
+    $db = $this->getDbo();
 
     $checkQuery = $db->getQuery(true);
     $checkQuery->select('*');
@@ -492,7 +497,7 @@ class CategoryTable extends Table implements VersionableTableInterface
       $name = $this->typeAlias . '.1';
 
       // Create asset for root category
-      $assetTable = new Asset(Factory::getContainer()->get(DatabaseInterface::class));
+      $assetTable = new Asset($this->getDbo());
       $assetTable->loadByName($name);
 
       if($assetTable->getError())

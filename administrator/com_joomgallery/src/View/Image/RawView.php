@@ -64,7 +64,7 @@ class RawView extends JoomGalleryView
     }
 
     // Set mime encoding
-    $this->document->setMimeEncoding($file_info->mime_type);
+    $this->getDocument()->setMimeEncoding($file_info->mime_type);
 
     // Set header to specify the file name
     $this->app->setHeader('Cache-Control','no-cache, must-revalidate');

@@ -72,7 +72,7 @@ class CommentsTable extends Table
 
 		if(!\key_exists('created_by', $array) || empty($array['created_by']))
 		{
-			$array['created_by'] = Factory::getUser()->id;
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
@@ -82,12 +82,12 @@ class CommentsTable extends Table
 
 		if($array['id'] == 0 && empty($array['modified_by']))
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
-			$array['modified_by'] = Factory::getUser()->id;
+			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		return parent::bind($array, $ignore);

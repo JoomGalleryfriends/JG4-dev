@@ -10,11 +10,12 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 
+// No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Form\Field\ListField;
-use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 class JgimagetypeField extends ListField
@@ -54,5 +55,4 @@ class JgimagetypeField extends ListField
 
 		return $options;
 	}
-
 }

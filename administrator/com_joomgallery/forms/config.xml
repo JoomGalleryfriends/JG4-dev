@@ -729,6 +729,7 @@
             name="jg_category_view_subcategory_image_class"
             type="radio"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
+            default="0"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -766,6 +767,7 @@
             class="unused"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES_DESC"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -811,6 +813,7 @@
             name="jg_category_view_image_class"
             type="radio"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
+            default="0"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
@@ -895,6 +898,7 @@
             name="jg_category_view_images_show_title"
             type="radio"
             label="JGLOBAL_TITLE"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -926,6 +930,7 @@
             name="jg_category_view_show_description"
             type="radio"
             label="JGLOBAL_DESCRIPTION"
+            default="0"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -937,6 +942,7 @@
             type="radio"
             label="COM_JOOMGALLERY_DATE"
             description="COM_JOOMGALLERY_DATE_DESC"
+            default="0"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -948,6 +954,7 @@
             type="radio"
             label="JAUTHOR"
             description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC"
+            default="0"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -958,6 +965,7 @@
             name="jg_category_view_show_tags"
             type="radio"
             label="COM_JOOMGALLERY_TAGS"
+            default="0"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -978,6 +986,7 @@
             name="jg_detail_view_show_title"
             type="radio"
             label="JGLOBAL_TITLE"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -988,6 +997,7 @@
             name="jg_detail_view_show_category"
             type="radio"
             label="JCATEGORY"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -998,6 +1008,7 @@
             name="jg_detail_view_show_description"
             type="radio"
             label="JGLOBAL_DESCRIPTION"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1009,6 +1020,7 @@
             type="radio"
             label="COM_JOOMGALLERY_DATE"
             description="COM_JOOMGALLERY_DATE_DESC"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1020,6 +1032,7 @@
             type="radio"
             label="JAUTHOR"
             description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1031,6 +1044,7 @@
             type="radio"
             label="COM_JOOMGALLERY_OWNER"
             description="COM_JOOMGALLERY_FIELDS_OWNER_DESC"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1041,6 +1055,7 @@
             name="jg_detail_view_show_votes"
             type="radio"
             label="COM_JOOMGALLERY_VOTES"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1051,6 +1066,7 @@
             name="jg_detail_view_show_rating"
             type="radio"
             label="COM_JOOMGALLERY_IMAGE_RATING"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1061,6 +1077,7 @@
             name="jg_detail_view_show_hits"
             type="radio"
             label="JGLOBAL_HITS"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1071,6 +1088,7 @@
             name="jg_detail_view_show_downloads"
             type="radio"
             label="COM_JOOMGALLERY_DOWNLOADS"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1081,6 +1099,7 @@
             name="jg_detail_view_show_tags"
             type="radio"
             label="COM_JOOMGALLERY_TAGS"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >
@@ -1091,6 +1110,7 @@
             name="jg_detail_view_show_metadata"
             type="radio"
             label="COM_JOOMGALLERY_IMGMETADATA"
+            default="1"
             layout="joomla.form.field.radio.switcher"
             validate="options"
             >

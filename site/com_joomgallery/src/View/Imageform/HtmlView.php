@@ -14,10 +14,9 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Imageform;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\View\GenericDataException;
-use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\MVC\View\GenericDataException;
+use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
  * View class for a list of Joomgallery.
@@ -25,28 +24,14 @@ use \Joomla\CMS\Language\Text;
  * @package JoomGallery
  * @since   4.0.0
  */
-class HtmlView extends BaseHtmlView
+class HtmlView extends JoomGalleryView
 {
-	/**
-	 * The model state
-	 *
-	 * @var   \Joomla\CMS\Object\CMSObject
-	 */
-	protected $state;
-
 	/**
 	 * The category object
 	 *
 	 * @var  \stdClass
 	 */
 	protected $item;
-
-  /**
-	 * The Access service class
-	 *
-	 * @var   \Joomgallery\Component\Joomgallery\Administrator\Service\Access\Access
-	 */
-	protected $acl;
 
   /**
 	 * The form object
@@ -80,13 +65,12 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @return void
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function display($tpl = null)
 	{
 		$this->state  = $this->get('State');
 		$this->params = $this->get('Params');
-		$this->acl    = $this->get('Acl');
 		$this->item   = $this->get('Item');
 		$this->form		= $this->get('Form');
 
@@ -94,15 +78,15 @@ class HtmlView extends BaseHtmlView
     $this->return_page = $this->get('ReturnPage');
 
 		// Check for errors.
-		if(count($errors = $this->get('Errors')))
+		if(\count($errors = $this->get('Errors')))
 		{
-			throw new GenericDataException(implode("\n", $errors), 500);
+			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
 
     // Check acces view level
-		if(!in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
+		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
     }
 
 		$this->_prepareDocument();
@@ -115,12 +99,11 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @return void
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	protected function _prepareDocument()
 	{
-		$app   = Factory::getApplication();
-		$menus = $app->getMenu();
+		$menus = $this->app->getMenu();
 		$title = null;
 
 		// Because the application sets a default page title,
@@ -140,15 +123,15 @@ class HtmlView extends BaseHtmlView
 
 		if(empty($title))
 		{
-			$title = $app->get('sitename');
+			$title = $this->app->get('sitename');
 		}
-		elseif($app->get('sitename_pagetitles', 0) == 1)
+		elseif($this->app->get('sitename_pagetitles', 0) == 1)
 		{
-			$title = Text::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+			$title = Text::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
 		}
-		elseif($app->get('sitename_pagetitles', 0) == 2)
+		elseif($this->app->get('sitename_pagetitles', 0) == 2)
 		{
-			$title = Text::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+			$title = Text::sprintf('JPAGETITLE', $title, $this->app->get('sitename'));
 		}
 
 		$this->document->setTitle($title);
@@ -169,17 +152,17 @@ class HtmlView extends BaseHtmlView
 		}
 
     // Add Breadcrumbs
-    $pathway = $app->getPathway();
+    $pathway = $this->app->getPathway();
     $breadcrumbList = Text::_('COM_JOOMGALLERY_IMAGES');
 
-    if(!in_array($breadcrumbList, $pathway->getPathwayNames()))
+    if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
     {
       $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=images");
     }
 
     $breadcrumbTitle = isset($this->item->id) ? Text::_("JGLOBAL_EDIT") : Text::_("JGLOBAL_FIELD_ADD");
 
-    if(!in_array($breadcrumbTitle, $pathway->getPathwayNames()))
+    if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
     {
       $pathway->addItem($breadcrumbTitle);
     }

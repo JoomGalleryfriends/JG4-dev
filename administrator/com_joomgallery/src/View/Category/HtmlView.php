@@ -13,11 +13,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View\Category;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Toolbar\ToolbarHelper;
-use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomla\CMS\Toolbar\Toolbar;
+use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
@@ -28,8 +27,6 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
  */
 class HtmlView extends JoomGalleryView
 {
-	protected $state;
-
 	protected $item;
 
 	protected $form;
@@ -72,7 +69,7 @@ class HtmlView extends JoomGalleryView
 
 		$toolbar = Toolbar::getInstance('toolbar');
 
-		$user  = Factory::getUser();
+		$user  = Factory::getApplication()->getIdentity();
 		$isNew = ($this->item->id == 0);
 
 		if(isset($this->item->checked_out))
@@ -84,33 +81,31 @@ class HtmlView extends JoomGalleryView
 			$checkedOut = false;
 		}
 
-		$canDo = JoomHelper::getActions();
-
 		ToolbarHelper::title(Text::_('JCATEGORIES').' :: '.Text::_('COM_JOOMGALLERY_CATEGORY_EDIT'), "folder-open");
 
 		// If not checked out, can save the item.
-		if(!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
+		if(!$checkedOut && ($this->getAcl()->checkACL('core.edit') || ($this->getAcl()->checkACL('core.create'))))
 		{
 			ToolbarHelper::apply('category.apply', 'JTOOLBAR_APPLY');
 		}
 
-		if(!$checkedOut && ($canDo->get('core.create')))
+		if(!$checkedOut && ($this->getAcl()->checkACL('core.create')))
 		{
 			$saveGroup = $toolbar->dropdownButton('save-group');
 
 			$saveGroup->configure
 			(
-				function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew)
+				function (Toolbar $childBar) use ($checkedOut, $isNew)
 				{
 					$childBar->save('category.save', 'JTOOLBAR_SAVE');
 
-					if(!$checkedOut && ($canDo->get('core.create')))
+					if(!$checkedOut && ($this->getAcl()->checkACL('core.create')))
 					{
 						$childBar->save2new('category.save2new');
 					}
 
 					// If an existing item, can save to a copy.
-					if(!$isNew && $canDo->get('core.create'))
+					if(!$isNew && $this->getAcl()->checkACL('core.create'))
 					{
 						$childBar->save2copy('category.save2copy');
 					}

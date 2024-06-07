@@ -11,12 +11,14 @@
 namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 // No direct access
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
-use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
+use \Joomla\Input\Input;
+use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use \Joomla\Input\Input;
+use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
  * JoomGallery Base of Joomla Form Controller
@@ -35,7 +37,15 @@ class JoomFormController extends BaseFormController
    * @access  protected
    * @var     object
    */
-  var $component;
+  protected $component;
+
+  /**
+   * JoomGallery access service
+   *
+   * @access  protected
+   * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
+   */
+  protected $acl = null;
 
   /**
    * Constructor.
@@ -56,6 +66,24 @@ class JoomFormController extends BaseFormController
 
     $this->component = $this->app->bootComponent(_JOOM_OPTION);
   }
+
+  /**
+	 * Method to get the access service class.
+	 *
+	 * @return  AccessInterface   Object on success, false on failure.
+   * @since   4.0.0
+	 */
+	public function getAcl(): AccessInterface
+	{
+    // Create access service
+    if(\is_null($this->acl))
+    {
+      $this->component->createAccess();
+      $this->acl = $this->component->getAccess();
+    }
+
+		return $this->acl;
+	}
 
   /**
    * Execute a task by triggering a Method in the derived class.
@@ -102,5 +130,112 @@ class JoomFormController extends BaseFormController
     }
 
     return $res;
+  }
+
+  /**
+   * Method to check if you can add a new record.   *
+   * Extended classes can override this if necessary.
+   *
+   * @param   array  $data  An array of input data.
+   *
+   * @return  boolean
+   *
+   * @since   1.6
+   */
+  protected function allowAdd($data = [])
+  {
+    switch($this->context)
+    {
+      case 'category':
+        if($this->task == 'add')
+        {
+          // We try to open an empty category edit view, always allow this
+          return true;
+        }
+
+        $parent_id = $data['parent_id'] ?: 1;
+        return $this->getAcl()->checkACL('add','category', $parent_id, true);
+        break;
+
+      case 'image':
+        if($this->task == 'add' || $this->task == 'multipleadd')
+        {
+          // We try to open an empty image edit view, always allow this
+          return true;
+        }
+
+        $catid = $data['catid'] ?: 1;
+        return $this->getAcl()->checkACL('add','image', $catid, true);
+        break;
+      
+      default:
+        $id = $data['id'] ?: 0;
+        return $this->getAcl()->checkACL('add', $this->context, $id);
+        break;
+    }
+  }
+
+  /**
+   * Method to check if you can edit an existing record.   *
+   * Extended classes can override this if necessary.
+   *
+   * @param   array   $data  An array of input data.
+   * @param   string  $key   The name of the key for the primary key; default is id.
+   *
+   * @return  boolean
+   *
+   * @since   1.6
+   */
+  protected function allowEdit($data = [], $key = 'id')
+  {
+    return $this->getAcl()->checkACL('edit', $this->context, $data['id']);
+  }
+
+  /**
+   * Method to load and return a model object.
+   *
+   * @param   string  $name    The name of the model.
+   * @param   string  $prefix  Optional model prefix.
+   * @param   array   $config  Configuration array for the model. Optional.
+   *
+   * @return  BaseDatabaseModel|boolean   Model object on success; otherwise false on failure.
+   *
+   * @since   3.0
+   */
+  protected function createModel($name, $prefix = '', $config = [])
+  {
+    $model = parent::createModel($name, $prefix, $config);
+
+    if($model instanceof CurrentUserInterface)
+    {
+      $model->setCurrentUser($this->component->getMVCFactory()->getIdentity());
+    }
+
+    return $model;
+  }
+
+  /**
+   * Method to load and return a view object.
+   *
+   * @param   string  $name    The name of the view.
+   * @param   string  $prefix  Optional prefix for the view class name.
+   * @param   string  $type    The type of view.
+   * @param   array   $config  Configuration array for the view. Optional.
+   *
+   * @return  ViewInterface|null  View object on success; null or error result on failure.
+   *
+   * @since   3.0
+   * @throws  \Exception
+   */
+  protected function createView($name, $prefix = '', $type = '', $config = [])
+  {
+    $view = parent::createView($name, $prefix, $type, $config);
+
+    if($view instanceof CurrentUserInterface)
+    {
+      $view->setCurrentUser($this->component->getMVCFactory()->getIdentity());
+    }
+
+    return $view;
   }
 }
