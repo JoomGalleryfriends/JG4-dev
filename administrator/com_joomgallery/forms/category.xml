@@ -71,9 +71,10 @@
 
     <field name="password"
            type="password"
-           size="100"
            label="JGLOBAL_PASSWORD"
-           description="COM_JOOMGALLERY_FIELDS_PASSWORD_DESC" />
+           description="COM_JOOMGALLERY_FIELDS_PASSWORD_DESC"
+           filter="raw"
+           strengthmeter="true" />
 
     <field name="language"
            type="language"

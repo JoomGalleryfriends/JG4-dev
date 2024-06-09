@@ -115,7 +115,10 @@ class CategoryModel extends JoomAdminModel
 				$this->item = $this->getItem();
 			}
 
-			$data = $this->item;			
+			$data = $this->item;
+
+      // Support for password field
+      $data->password = '';
 
 			// Support for multiple or not foreign key field: robots
 			$array = array();

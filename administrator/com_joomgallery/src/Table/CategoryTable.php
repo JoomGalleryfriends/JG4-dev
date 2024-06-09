@@ -15,8 +15,8 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Asset;
-use Joomla\CMS\Access\Rules;
-use \Joomla\CMS\Access\Access;
+use \Joomla\CMS\Access\Rules;
+use \Joomla\CMS\User\UserHelper;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filter\OutputFilter;
@@ -133,7 +133,19 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public function load($keys = null, $reset = true)
   {
-    $res = parent::load($keys, $reset);
+    $res  = parent::load($keys, $reset);
+    $comp = Factory::getApplication('administrator')->bootComponent(_JOOM_OPTION);
+    $user = $comp->getMVCFactory()->getIdentity();
+    $comp->createAccess();
+
+    // Return password only if user is admin or owner    
+    if(isset($this->password) && !empty($this->password))
+    {
+      if(!$comp->getAccess()->checkACL('admin') || $user->id != $this->created_by)
+      {
+        $this->password = '';
+      }
+    }
 
     if(isset($this->path))
     {
@@ -226,6 +238,19 @@ class CategoryTable extends Table implements VersionableTableInterface
       }
     }
 
+    // Support for password field
+    if(isset($array['password']))
+    {
+      if(!empty($array['password']))
+      {
+        $array['password'] = UserHelper::hashPassword($array['password']);
+      }
+      else
+      {
+        unset($array['password']);
+      }
+    }
+
 		if(isset($array['params']) && \is_array($array['params']))
 		{
 			$registry = new Registry;
@@ -239,27 +264,6 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$registry->loadArray($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
-
-    // // Get access service
-    // JoomHelper::getComponent()->createAccess();
-    // $acl = JoomHelper::getComponent()->getAccess();
-
-		// if(!$acl->checkACL('core.admin'))
-		// {
-		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='category']/");
-		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.category.'.$array['id'])->getData();
-		// 	$array_jaccess   = array();
-
-		// 	foreach($actions as $action)
-		// 	{
-		// 		if (\key_exists($action->name, $default_actions))
-		// 		{
-		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
-		// 		}
-		// 	}
-
-		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		// }
 
 		// Bind the rules for ACL where supported.
 		if(isset($array['rules']))
