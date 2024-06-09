@@ -36,6 +36,14 @@ class CategoryModel extends JoomAdminModel
    */
   protected $type = 'category';
 
+  /**
+   * True if a password is set
+   *
+   * @access  protected
+   * @var     bool
+   */
+  protected $is_password = true;
+
 	/**
 	 * Method to get the record form.
 	 *
@@ -73,6 +81,15 @@ class CategoryModel extends JoomAdminModel
 
 		// Apply filter for current category on thumbnail field
     $form->setFieldAttribute('thumbnail', 'categories', $id);
+
+    // Disable remove password field if no password is set
+    if(!$this->is_password)
+    {
+      $form->setFieldAttribute('rm_password', 'disabled', 'true');
+      $form->setFieldAttribute('rm_password', 'filter', 'unset');
+      $form->setFieldAttribute('rm_password', 'hidden', 'true');
+      $form->setFieldAttribute('rm_password', 'class', 'hidden');
+    }    
 
     // Modify the form based on Edit State access controls.
 		if(!$this->canEditState($record))
@@ -118,6 +135,10 @@ class CategoryModel extends JoomAdminModel
 			$data = $this->item;
 
       // Support for password field
+      if(isset($data->password) && empty($data->password))
+      {
+        $this->is_password = false;
+      }
       $data->password = '';
 
 			// Support for multiple or not foreign key field: robots

@@ -63,6 +63,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 				<?php echo $this->form->renderField('published'); ?>
 				<?php echo $this->form->renderField('access'); ?>
 				<?php echo $this->form->renderField('password'); ?>
+        <?php echo $this->form->renderField('rm_password'); ?>
 				<?php echo $this->form->renderField('language'); ?>
 			</fieldset>
 		</div>

@@ -76,6 +76,15 @@
            filter="raw"
            strengthmeter="true" />
 
+    <field name="rm_password"
+           type="radio"
+           label="COM_JOOMGALLERY_FIELDS_REMOVE_PASSWORD_LABEL"
+           class="btn-group"
+           default="0">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
     <field name="language"
            type="language"
            client="administrator"

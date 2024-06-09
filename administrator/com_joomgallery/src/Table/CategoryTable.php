@@ -241,13 +241,20 @@ class CategoryTable extends Table implements VersionableTableInterface
     // Support for password field
     if(isset($array['password']))
     {
-      if(!empty($array['password']))
+      if(isset($array['rm_password']) && $array['rm_password'] == true)
       {
-        $array['password'] = UserHelper::hashPassword($array['password']);
+        $array['password'] = '';
       }
       else
       {
-        unset($array['password']);
+        if(!empty($array['password']))
+        {
+          $array['password'] = UserHelper::hashPassword($array['password']);
+        }
+        else
+        {
+          unset($array['password']);
+        }
       }
     }
 
