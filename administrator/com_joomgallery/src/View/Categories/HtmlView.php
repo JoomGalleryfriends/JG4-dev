@@ -90,7 +90,7 @@ class HtmlView extends JoomGalleryView
     // New button
     if(\file_exists($formPath))
     {
-      if($this->getAcl()->checkACL('core.create'))
+      if($this->getAcl()->checkACL('add'))
       {
         $toolbar->addNew('category.add');
       }
@@ -136,7 +136,8 @@ class HtmlView extends JoomGalleryView
     }
 
     // Delete button
-    if($this->getAcl()->checkACL('core.delete'))
+    $this->deleteBtnJS  = 'var counts = 0;';
+    if($this->getAcl()->checkACL('delete', 'category'))
     {
       // Get infos for confirmation message
       $counts = new \stdClass;
