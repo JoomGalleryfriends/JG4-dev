@@ -338,8 +338,8 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     {
       // Joomla 5
       extract($event->getArguments());
-      $data    = $event->getData();
-      $result  = $event->getResult();
+      $data    = $event->getUser();
+      $result  = $event->getSavingResult();
     }
 
     // Save the extra input into the database 
@@ -410,8 +410,8 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     {
       // Joomla 5
       extract($event->getArguments());
-      $data    = $event->getData();
-      $result  = $event->getResult();
+      $data    = $event->getUser();
+      $result  = $event->getDeletingResult();
     }
 
     if(!$result)
