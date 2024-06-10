@@ -36,8 +36,8 @@ $justified_height  = $this->params['menu']->get('jg_category_view_justified_heig
 $justified_gap     = $this->params['menu']->get('jg_category_view_justified_gap');
 $show_title        = $this->params['menu']->get('jg_category_view_images_show_title');
 $numb_images       = $this->params['menu']->get('jg_category_view_numb_images');
-$use_pagination    = $this->params['menu']->get('jg_category_view_pagination'); // neu von peter
-$reloaded_images   = $this->params['menu']->get('jg_category_view_number_of_reloaded_images'); // neu von peter
+$use_pagination    = $this->params['menu']->get('jg_category_view_pagination');
+$reloaded_images   = $this->params['menu']->get('jg_category_view_number_of_reloaded_images');
 $image_link        = $this->params['menu']->get('jg_category_view_image_link');
 $title_link        = $this->params['menu']->get('jg_category_view_title_link');
 $show_description  = $this->params['menu']->get('jg_category_view_show_description');
@@ -110,7 +110,7 @@ if (!isset($use_pagination))
 }
 if (!isset($reloaded_images))
 {
-  $reloaded_images = $this->params['menu']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
+  $reloaded_images = $this->params['configs']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
 }
 if (!isset($image_link))
 {
