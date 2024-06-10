@@ -67,10 +67,11 @@
             </field>
             <field
                 name="jg_category_view_subcategory_image_class"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
                 parentclass="span-3"
+                class="btn-group btn-group-yesno"
                 validate="options"
                 >
                 <option value="0">JNO</option>
@@ -103,9 +104,10 @@
             </field>
             <field
                 name="jg_category_view_subcategories_random_image"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 parentclass="span-3"
+                class="btn-group btn-group-yesno"
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES"
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES_DESC"
                 validate="options"
@@ -162,7 +164,7 @@
                 label="COM_JOOMGALLERY_MENU_JUSTIFIED_HEIGHT"
                 description="COM_JOOMGALLERY_MENU_JUSTIFIED_HEIGHT_NOTE_DESC"
                 filter="int"
-                showon="jg_category_view_class:-1[OR]jg_category_view_class:justified"
+                showon="jg_category_view_class!:columns[AND]jg_category_view_class!:masonry"
             />
             <field
                 name="jg_category_view_justified_gap"
@@ -175,14 +177,15 @@
                 label="COM_JOOMGALLERY_MENU_JUSTIFIED_GAP"
                 description="COM_JOOMGALLERY_MENU_JUSTIFIED_GAP_NOTE_DESC"
                 filter="int"
-                showon="jg_category_view_class:-1[OR]jg_category_view_class:justified"
+                showon="jg_category_view_class!:columns[AND]jg_category_view_class!:masonry"
             />
             <field
                 name="jg_category_view_image_class"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
                 parentclass="span-3"
+                class="btn-group btn-group-yesno"
                 validate="options"
                 showon="jg_category_view_class!:justified"
                 >
@@ -215,6 +218,32 @@
                 <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
             </field>
             <field
+                name="jg_category_view_pagination"
+                type="jglist"
+                useglobal="true"
+                parentclass="span-3"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_DESC"
+                validate="options"
+                >
+                <option value="0">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT0</option>
+                <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
+                <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
+            </field>
+            <field
+                name="jg_category_view_number_of_reloaded_images"
+                type="jgnumber"
+                useglobal="true"
+                parentclass="span-3"
+                min="1"
+                max="9999"
+                step="1"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_DESC"
+                filter="int"
+                showon="jg_category_view_pagination:2"
+            />
+            <field
                 name="jg_category_view_image_link"
                 type="jglist"
                 useglobal="true"
@@ -242,7 +271,7 @@
             </field>
             <field
                 name="jg_category_view_images_show_title"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 class="btn-group btn-group-yesno"
                 parentclass="span-3"
@@ -260,7 +289,7 @@
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK"
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK_DESC"
                 validate="options"
-                showon="jg_category_view_class!:justified[AND]jg_category_view_images_show_title:1"
+                showon="jg_category_view_class!:justified[AND]jg_category_view_images_show_title!:0"
                 >
                 <option value="none">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_NONE</option>
                 <option value="defaultview">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_DETAILVIEW</option>

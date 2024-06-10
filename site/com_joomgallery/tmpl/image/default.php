@@ -20,23 +20,68 @@ use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\User\UserFactoryInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-
-// $app          = Factory::getApplication();
-// $this->config = JoomHelper::getService('config');
-
 // image params
-$show_title        = $this->params['menu']->get('jg_detail_view_show_title', 0, 'INT');
-$show_category     = $this->params['menu']->get('jg_detail_view_show_category', 0, 'INT');
-$show_description  = $this->params['menu']->get('jg_detail_view_show_description', 0, 'INT');
-$show_imgdate      = $this->params['menu']->get('jg_detail_view_show_imgdate', 0, 'INT');
-$show_imgauthor    = $this->params['menu']->get('jg_detail_view_show_imgauthor', 0, 'INT');
-$show_created_by   = $this->params['menu']->get('jg_detail_view_show_created_by', 0, 'INT');
-$show_votes        = $this->params['menu']->get('jg_detail_view_show_votes', 0, 'INT');
-$show_rating       = $this->params['menu']->get('jg_detail_view_show_rating', 0, 'INT');
-$show_hits         = $this->params['menu']->get('jg_detail_view_show_hits', 0, 'INT');
-$show_downloads    = $this->params['menu']->get('jg_detail_view_show_downloads', 0, 'INT');
-$show_tags         = $this->params['menu']->get('jg_detail_view_show_tags', 0, 'INT');
-$show_metadata     = $this->params['menu']->get('jg_detail_view_show_metadata', 0, 'INT');
+$show_title        = $this->params['menu']->get('jg_detail_view_show_title');
+$show_category     = $this->params['menu']->get('jg_detail_view_show_category');
+$show_description  = $this->params['menu']->get('jg_detail_view_show_description');
+$show_imgdate      = $this->params['menu']->get('jg_detail_view_show_imgdate');
+$show_imgauthor    = $this->params['menu']->get('jg_detail_view_show_imgauthor');
+$show_created_by   = $this->params['menu']->get('jg_detail_view_show_created_by');
+$show_votes        = $this->params['menu']->get('jg_detail_view_show_votes');
+$show_rating       = $this->params['menu']->get('jg_detail_view_show_rating');
+$show_hits         = $this->params['menu']->get('jg_detail_view_show_hits');
+$show_downloads    = $this->params['menu']->get('jg_detail_view_show_downloads');
+$show_tags         = $this->params['menu']->get('jg_detail_view_show_tags');
+$show_metadata     = $this->params['menu']->get('jg_detail_view_show_metadata');
+
+if (!isset($show_title))
+{
+  $show_title        = $this->params['configs']->get('jg_detail_view_show_title', 0, 'INT');
+}
+if (!isset($show_category))
+{
+  $show_category        = $this->params['configs']->get('jg_detail_view_show_category', 0, 'INT');
+}
+if (!isset($show_description))
+{
+  $show_description        = $this->params['configs']->get('jg_detail_view_show_description', 0, 'INT');
+}
+if (!isset($show_imgdate))
+{
+  $show_imgdate        = $this->params['configs']->get('jg_detail_view_show_imgdate', 0, 'INT');
+}
+if (!isset($show_imgauthor))
+{
+  $show_imgauthor        = $this->params['configs']->get('jg_detail_view_show_imgauthor', 0, 'INT');
+}
+if (!isset($show_created_by))
+{
+  $show_created_by        = $this->params['configs']->get('jg_detail_view_show_created_by', 0, 'INT');
+}
+if (!isset($show_votes))
+{
+  $show_votes        = $this->params['configs']->get('jg_detail_view_show_votes', 0, 'INT');
+}
+if (!isset($show_rating))
+{
+  $show_rating        = $this->params['configs']->get('jg_detail_view_show_rating', 0, 'INT');
+}
+if (!isset($show_hits))
+{
+  $show_hits        = $this->params['configs']->get('jg_detail_view_show_hits', 0, 'INT');
+}
+if (!isset($show_downloads))
+{
+  $show_downloads        = $this->params['configs']->get('jg_detail_view_show_downloads', 0, 'INT');
+}
+if (!isset($show_tags))
+{
+  $show_tags        = $this->params['configs']->get('jg_detail_view_show_tags', 0, 'INT');
+}
+if (!isset($show_metadata))
+{
+  $show_metadata        = $this->params['configs']->get('jg_detail_view_show_metadata', 0, 'INT');
+}
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
