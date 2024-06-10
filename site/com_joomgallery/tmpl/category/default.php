@@ -104,10 +104,6 @@ if (!isset($numb_images))
 {
   $numb_images = $this->params['configs']->get('jg_category_view_numb_images', 16, 'INT');
 }
-if (!isset($images_pagination))
-{
-  $images_pagination = $this->params['configs']->get('jg_category_view_images_pagination', 'pagination', 'STRING');
-}
 if (!isset($use_pagination))
 {
   $use_pagination = $this->params['configs']->get('jg_category_view_pagination', 0, 'INT');

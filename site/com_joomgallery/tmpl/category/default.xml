@@ -45,7 +45,6 @@
                 parentclass="span-3"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="columns">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_GRID</option>
                 <option value="masonry">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_MASONRY</option>
             </field>
@@ -205,19 +204,6 @@
                 filter="int"
             />
             <field
-                name="jg_category_view_images_pagination"
-                type="jglist"
-                useglobal="true"
-                parentclass="span-3"
-                label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION"
-                description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION_DESC"
-                validate="options"
-                >
-                <option value="pagination">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
-                <option value="loadmore">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
-                <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
-            </field>
-            <field
                 name="jg_category_view_pagination"
                 type="jglist"
                 useglobal="true"
@@ -349,29 +335,6 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
-            <field
-                name="jg_category_view_pagination"
-                type="list"
-                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_LABEL"
-                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_DESC"
-                default="0"
-                parentclass="stack span-2-inline"
-                validate="options"
-                >
-                <option value="0">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT0</option>
-                <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
-                <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
-            </field>
-            <field
-                name="jg_category_view_number_of_reloaded_images"
-                type="text"
-                default="3"
-                parentclass="stack span-2-inline"
-                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_LABEL"
-                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_DESC"
-                filter="integer"
-                showon="jg_category_view_pagination:2"
-            />
         </fieldset>
     </fields>
 </metadata>
