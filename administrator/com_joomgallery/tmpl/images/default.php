@@ -127,9 +127,9 @@ if($saveOrder && !empty($this->items))
               <?php foreach ($this->items as $i => $item) :
                 $ordering   = ($listOrder == 'a.ordering');
                 $canEdit    = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.image.'.$item->id);
-                $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.image.'.$item->id) && $canCheckin;
                 $canEditCat = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.category.'.$item->catid);
-                $canCheckin = $user->authorise('core.admin', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
+                $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
+                $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.image.'.$item->id) && $canCheckin;
                 ?>
 
               <tr class="row<?php echo $i % 2; ?>">
