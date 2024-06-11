@@ -32,7 +32,7 @@ $user      = $this->app->getIdentity();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canOrder  = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery');
+$canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery');
 $saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
 
 if($saveOrder && !empty($this->items))
@@ -111,10 +111,9 @@ if($saveOrder && !empty($this->items))
             <tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="false"<?php endif; ?>>
               <?php foreach ($this->items as $i => $item) :
                 $ordering   = ($listOrder == 'a.ordering');
-                $canCreate  = $this->getAcl()->checkACL('add', _JOOM_OPTION.'.category.'.$item->id, $item->id, true);
                 $canEdit    = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.category.'.$item->id);
+                $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.category.'.$item->id);
                 $canCheckin = $user->authorise('core.admin', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
-                $canChange  = $this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.category.'.$item->id);
 
                 // Get the parents of item for sorting
 								if ($item->level > 1)
