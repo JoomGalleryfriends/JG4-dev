@@ -102,8 +102,8 @@ if($saveOrder && !empty($this->items))
             <?php foreach ($this->items as $i => $item) :
               $ordering   = ($listOrder == 'a.ordering');
               $canEdit    = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.tag.'.$item->id);
+              $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
               $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.tag.'.$item->id) && $canCheckin;
-              $canCheckin = $user->authorise('core.admin', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
               ?>
 
               <tr class="row<?php echo $i % 2; ?>">
