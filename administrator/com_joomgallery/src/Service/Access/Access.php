@@ -250,7 +250,7 @@ class Access implements AccessInterface
     if($asset_lenght >= 3)
     {
       // We are checking for a specific item, based on pk      
-      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0 && \key_exists('.'.$asset_type, $this->aclMap[$action]['own-assets']))
+      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0 && \in_array('.'.$asset_type, $this->aclMap[$action]['own-assets']))
       {
        
         $this->tocheck['own'] = true;
