@@ -177,15 +177,22 @@ trait MessageTrait
    * Log a message
    * 
    * @param   string   $txt       The message for a new log entry.
-   * @param   integer  $priority  Message priority.
+   * @param   mixed    $priority  Message priority.
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function addLog(string $txt, int $priority = 8, string $name = null)
+  public function addLog(string $txt, $priority = 8, string $name = null)
   {
     $this->addLogger($name);
+
+    if(\is_string($priority))
+    {
+      $priority = \strtoupper($priority);
+      $constant = "Joomla\CMS\Log\Log::$priority";
+      $priority = \constant($constant);
+    }
     
     if(\is_null($name) && \is_null($this->logName))
     {
@@ -206,13 +213,13 @@ trait MessageTrait
    * Log a message
    * 
    * @param   string   $txt       The message for a new log entry.
-   * @param   integer  $priority  Message priority.
+   * @param   mixed    $priority  Message priority.
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  public function setLog(string $txt, int $priority = 8, string $name = null)
+  public function setLog(string $txt, $priority = 8, string $name = null)
   {
     return $this->addLog($txt, $priority, $name);
   }
