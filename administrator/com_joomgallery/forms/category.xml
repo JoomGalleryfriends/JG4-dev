@@ -73,8 +73,7 @@
            type="password"
            label="JGLOBAL_PASSWORD"
            description="COM_JOOMGALLERY_FIELDS_PASSWORD_DESC"
-           filter="raw"
-           strengthmeter="true" />
+           filter="raw" />
 
     <field name="rm_password"
            type="radio"
