@@ -382,7 +382,19 @@ class CategoryModel extends JoomAdminModel
     if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
     {
       $table->newTags = $data['tags'];
-    }    
+    }
+
+    // Password
+    if(isset($data['rm_password']) && $data['rm_password'] == true)
+    {
+      $table->rm_pw = true;
+    }
+    elseif(isset($data['password']) && !empty($data['password']))
+    {
+      $table->new_pw = $data['password'];
+    }
+    unset($data['rm_password']);
+    unset($data['password']);
 
     // Change language to 'All' if multilangugae is not enabled
     if (!Multilanguage::isEnabled())

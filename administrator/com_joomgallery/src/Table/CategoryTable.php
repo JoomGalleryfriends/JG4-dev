@@ -52,6 +52,22 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   protected $_old_location_path = null;
 
+  /**
+   * Set here the new password
+   *
+   * @var    string
+   * @since  4.0.0
+   */
+  public $new_pw = '';
+
+  /**
+   * True, if you want to delete current password
+   *
+   * @var    bool
+   * @since  4.0.0
+   */
+  public $rm_pw = false;
+
 	/**
 	 * Constructor
 	 *
@@ -238,26 +254,6 @@ class CategoryTable extends Table implements VersionableTableInterface
       }
     }
 
-    // Support for password field
-    if(isset($array['password']))
-    {
-      if(isset($array['rm_password']) && $array['rm_password'] == true)
-      {
-        $array['password'] = '';
-      }
-      else
-      {
-        if(!empty($array['password']))
-        {
-          $array['password'] = UserHelper::hashPassword($array['password']);
-        }
-        else
-        {
-          unset($array['password']);
-        }
-      }
-    }
-
 		if(isset($array['params']) && \is_array($array['params']))
 		{
 			$registry = new Registry;
@@ -297,6 +293,22 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function store($updateNulls = true)
 	{
     $this->setPathWithLocation();
+
+    // Support for password field
+    if(isset($this->password))
+    {
+      if(\strlen($this->new_pw) > 0)
+      {
+        // Set a new password
+        $this->password = UserHelper::hashPassword($this->new_pw);
+      }
+
+      if($this->rm_pw)
+      {
+        // Remove current password
+        $this->password = '';
+      }
+    }
 
     // Support for params field
     if(isset($this->params) && !\is_string($this->params))
