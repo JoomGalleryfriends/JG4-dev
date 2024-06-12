@@ -31,6 +31,7 @@ $layout  = $isModal ? 'modal' : 'edit';
 $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 ?>
 
+<div class="jg jg-category">
 <form
 	action="<?php echo Route::_('index.php?option=com_joomgallery&layout='.$layout.$tmpl.'&id=' . (int) $this->item->id); ?>"
 	method="post" enctype="multipart/form-data" name="adminForm" id="category-form" class="form-validate"
@@ -151,3 +152,4 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	<?php echo HTMLHelper::_('form.token'); ?>
 
 </form>
+</div>
