@@ -204,7 +204,10 @@ class Access implements AccessInterface
     //---------------------
     
     // Reset allowed array
-    $this->allowed = array('default' => null, 'own' => null, 'upload' => null, 'upload-own' => null);
+    foreach($this->allowed as $key => $value)
+    {
+      $this->allowed[$key] = null;
+    }
 
     // Adjust asset for further checks when only parent given
     if($action == 'add' && $parent_pk)
@@ -233,21 +236,23 @@ class Access implements AccessInterface
       return true;
     }
 
+    // 2. Permission checks based on asset table and owner
+    // Adjust acl rule for the own check
+    if($acl_rule_array[1] === 'edit')
+    {
+      $acl_rule = 'core.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+    }
+    else
+    {
+      $acl_rule = $this->prefix.'.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
+    }
+
     if($asset_lenght >= 3)
     {
-      // 2. Permission checks based on asset table and owner
-      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0)
+      // We are checking for a specific item, based on pk      
+      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0 && \in_array('.'.$asset_type, $this->aclMap[$action]['own-assets']))
       {
-        // Current user is the owner
-        if($acl_rule_array[1] === 'edit')
-        {
-          $acl_rule = 'core.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
-        }
-        else
-        {
-          $acl_rule = $this->prefix.'.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
-        }
-        
+       
         $this->tocheck['own'] = true;
         $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
       }
@@ -269,6 +274,15 @@ class Access implements AccessInterface
         $this->tocheck['upload-own'] = true;
         $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action.'.'.$this->aclMap[$action]['own'], $parent_asset);
       }
+    }
+    else
+    {
+      // We are checking for the own asset in general
+      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && \in_array('.'.$asset_type, $this->aclMap[$action]['own-assets']))
+      {
+        $this->tocheck['own'] = true;
+        $this->allowed['own'] = AccessBase::check($this->user->get('id'), $acl_rule, $asset);
+      }      
     }
 
     // Apply the results
