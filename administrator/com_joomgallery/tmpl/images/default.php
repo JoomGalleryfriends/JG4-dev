@@ -33,7 +33,7 @@ $user      = $this->app->getIdentity();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery');
+$canOrder  = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery');
 $saveOrder = ($listOrder == 'a.ordering' && \strtolower($listDirn) == 'asc');
 
 if($saveOrder && !empty($this->items))
@@ -125,11 +125,13 @@ if($saveOrder && !empty($this->items))
             </tfoot>
             <tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo \strtolower($listDirn); ?>" <?php endif; ?>>
               <?php foreach ($this->items as $i => $item) :
-                $ordering   = ($listOrder == 'a.ordering');
-                $canEdit    = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.image.'.$item->id);
-                $canEditCat = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.category.'.$item->catid);
-                $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
-                $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.image.'.$item->id) && $canCheckin;
+                $ordering         = ($listOrder == 'a.ordering');
+                $canEdit          = $this->getAcl()->checkACL('core.edit',       'com_joomgallery.image.'.$item->id);
+                $canCheckin       = $this->getAcl()->checkACL('core.manage',     'com_joomgallery') || $item->checked_out == $userId || is_null($item->checked_out);
+                $canEditOwn       = $this->getAcl()->checkACL('core.edit.own',   'com_joomgallery.image.'.$item->id) && $item->created_by_id == $userId;
+                $canChange        = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery.image.'.$item->id) && $canCheckin;
+                $canEditCat       = $this->getAcl()->checkACL('core.edit',       'com_joomgallery.category.'.$item->catid);
+                $canEditOwnCat    = $this->getAcl()->checkACL('core.edit.own',   'com_joomgallery.category.'.$item->catid) && $item->cat_uid == $userId;
                 ?>
 
               <tr class="row<?php echo $i % 2; ?>">
@@ -193,7 +195,7 @@ if($saveOrder && !empty($this->items))
                       <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'images.', $canCheckin); ?>
                     <?php endif; ?>
 
-                    <?php if ($canEdit) : ?>
+                    <?php if ($canEdit || $canEditOwn) : ?>
                       <?php
                         $ImgUrl     = Route::_('index.php?option=com_joomgallery&task=image.edit&id='.(int) $item->id);
                         $EditImgTxt = Text::_('COM_JOOMGALLERY_IMAGE_EDIT');
@@ -211,7 +213,7 @@ if($saveOrder && !empty($this->items))
 
                     <div class="small">
                       <?php echo Text::_('JCATEGORY') . ': '; ?>
-                      <?php if ($canEditCat) : ?>
+                      <?php if ($canEditCat || $canEditOwnCat) : ?>
                         <?php
                           $CatUrl     = Route::_('index.php?option=com_joomgallery&task=category.edit&id='.(int) $item->catid);
                           $EditCatTxt = Text::_('COM_JOOMGALLERY_CATEGORY_EDIT');

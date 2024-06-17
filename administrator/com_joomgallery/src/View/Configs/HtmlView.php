@@ -84,7 +84,7 @@ class HtmlView extends JoomGalleryView
     // New button
     if(file_exists($formPath))
     {
-      if($this->getAcl()->checkACL('add', 'config'))
+      if($this->getAcl()->checkACL('core.create'))
       {
         $toolbar->addNew('config.add');
       }
@@ -126,7 +126,7 @@ class HtmlView extends JoomGalleryView
     }
 
     // Delete button
-    if($this->getAcl()->checkACL('delete', 'config'))
+    if($this->getAcl()->checkACL('core.delete'))
     {
       $toolbar->delete('configs.delete')
         ->text('JTOOLBAR_DELETE')

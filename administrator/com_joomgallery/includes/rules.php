@@ -21,26 +21,21 @@ defined('_JEXEC') or die;
 $rules_map_array = array
 (
   'add'       => array(   'name'   => 'add',
-                          'rule'   => 'core.create',
+                          'rule'   => 'core.create', 
                           'assets' => array(  '.', 
                                               '.image', 
                                               '.category',
                                               '.config',
                                               '.tag'
                                             ),
-                          'own'    => 'inown',
-                          'own-assets' => array( '.', 
-                                                 '.image', 
-                                                 '.category'
-                                               )
+                          'own'    => 'inown'
                       ),
 
   'admin'     => array(   'name'   => 'admin',
                           'rule'   => 'core.admin',
                           'assets' => array(  '.'
                                             ),
-                          'own'    => false,
-                          'own-assets' => array()
+                          'own'    => false
                       ),
 
   'delete'    => array(   'name'   => 'delete', 
@@ -51,11 +46,7 @@ $rules_map_array = array
                                               '.config',
                                               '.tag'
                                             ),
-                          'own'    => 'own',
-                          'own-assets' => array( '.', 
-                                                 '.image', 
-                                                 '.category'
-                                               )
+                          'own'    => 'own'
                       ),
 
   'edit'      => array(   'name'   => 'edit',
@@ -66,13 +57,7 @@ $rules_map_array = array
                                               '.config',
                                               '.tag'
                                             ),
-                          'own'    => 'own',
-                          'own-assets' => array(  '.',
-                                                  '.image',
-                                                  '.category',
-                                                  '.config',
-                                                  '.tag'
-                                                )
+                          'own'    => 'own'
                       ),
 
   'editstate' => array(   'name'   => 'editstate',
@@ -83,15 +68,13 @@ $rules_map_array = array
                                               '.config',
                                               '.tag'
                                             ),
-                          'own'    => false,
-                          'own-assets' => array()
+                          'own'    => false
                       ),
 
   'manage'    => array(   'name'   => 'manage',
                           'rule'   => 'core.manage', 
                           'assets' => array(  '.'
                                             ),
-                          'own'    => false,
-                          'own-assets' => array()
+                          'own'    => false
                       )
 );

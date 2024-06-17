@@ -29,7 +29,7 @@ $user      = $this->app->getIdentity();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery');
+$canOrder  = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery');
 $saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 
 if($saveOrder && !empty($this->items))
@@ -100,10 +100,11 @@ if($saveOrder && !empty($this->items))
             </tfoot>
             <tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php endif; ?>>
             <?php foreach ($this->items as $i => $item) :
-              $ordering   = ($listOrder == 'a.ordering');
-              $canEdit    = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.tag.'.$item->id);
-              $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
-              $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.tag.'.$item->id) && $canCheckin;
+              $ordering         = ($listOrder == 'a.ordering');
+              $canEdit          = $this->getAcl()->checkACL('core.edit',       'com_joomgallery.tag.'.$item->id);
+              $canCheckin       = $this->getAcl()->checkACL('core.manage',     'com_joomgallery') || $item->checked_out == $userId || is_null($item->checked_out);
+              $canEditOwn       = $this->getAcl()->checkACL('core.edit.own',   'com_joomgallery.tag.'.$item->id) && $item->created_by_id == $userId;
+              $canChange        = $this->getAcl()->checkACL('core.edit.state', 'com_joomgallery.tag.'.$item->id) && $canCheckin;
               ?>
 
               <tr class="row<?php echo $i % 2; ?>">
@@ -151,7 +152,7 @@ if($saveOrder && !empty($this->items))
                       <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'tags.', $canCheckin); ?>
                     <?php endif; ?>
 
-                    <?php if ($canEdit) : ?>
+                    <?php if ($canEdit || $canEditOwn) : ?>
                       <?php
                         $TagUrl     = Route::_('index.php?option=com_joomgallery&task=tag.edit&id='.(int) $item->id);
                         $EditTagTxt = Text::_('COM_JOOMGALLERY_TAG_EDIT');

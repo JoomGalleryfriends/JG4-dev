@@ -84,7 +84,7 @@ class HtmlView extends JoomGalleryView
     // New button
     if(file_exists($formPath))
     {
-      if($this->getAcl()->checkACL('add', 'tag'))
+      if($this->getAcl()->checkACL('core.create'))
       {
         $toolbar->addNew('tag.add');
       }
@@ -130,7 +130,7 @@ class HtmlView extends JoomGalleryView
     }
 
     // Delete button
-    if($this->getAcl()->checkACL('delete', 'tag'))
+    if($this->getAcl()->checkACL('core.delete'))
     {
       $toolbar->delete('tags.delete')
         ->text('JTOOLBAR_DELETE')

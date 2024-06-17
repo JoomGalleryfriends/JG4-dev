@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="4.0" method="upgrade">
     <name>com_joomgallery</name>
-    <creationDate>2024-06-14</creationDate>
-    <copyright>2008 - 2024  JoomGallery::ProjectTeam</copyright>
+    <creationDate>2023-09-10</creationDate>
+    <copyright>2008 - 2023  JoomGallery::ProjectTeam</copyright>
     <license>GNU General Public License version 3 or later</license>
     <author>JoomGallery::ProjectTeam</author>
     <authorEmail>team@joomgalleryfriends.net</authorEmail>
     <authorUrl>https://www.joomgalleryfriends.net/</authorUrl>
     <version>4.0.0-dev</version>
-    <description>JoomGallery 4, a native gallery component for Joomla! 4.x and 5.x</description>
+    <description>JoomGallery 4, a native gallery component for Joomla! 4.x </description>
     <namespace path="src">Joomgallery\Component\Joomgallery</namespace>
 
     <scriptfile>script.php</scriptfile>

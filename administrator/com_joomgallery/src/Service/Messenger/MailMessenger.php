@@ -63,7 +63,7 @@ class MailMessenger extends Messenger implements MessengerInterface
     {
       try
       {
-        $this->component->addLog(Text::_($exception->getMessage()), 'warning', 'jerror');
+        $this->component->addLog(Text::_($exception->getMessage()), Log::WARNING, 'jerror');
 
         $this->component->setError(Text::_('COM_JOOMGALLERY_ERROR_MAIL_FAILED'));
 

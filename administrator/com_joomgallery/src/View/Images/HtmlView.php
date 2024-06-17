@@ -84,7 +84,7 @@ class HtmlView extends JoomGalleryView
     // New button
     if(\file_exists($formPath))
     {
-      if($this->getAcl()->checkACL('add'))
+      if($this->getAcl()->checkACL('core.create'))
       {
         $add_dropdown = $toolbar->dropdownButton('add-group')
           ->text('JTOOLBAR_NEW')
@@ -101,9 +101,11 @@ class HtmlView extends JoomGalleryView
           ->task('image.multipleadd');
       }
     }
+
     
     if($this->getAcl()->checkACL('core.edit.state'))
     {
+
       // Batch button
       if($this->getAcl()->checkACL('core.edit'))
       {
@@ -161,7 +163,7 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    if($this->getAcl()->checkACL('delete', 'image'))
+    if($this->getAcl()->checkACL('core.delete'))
     {
       $toolbar->delete('images.delete')
         ->text('JTOOLBAR_DELETE')
