@@ -55,7 +55,7 @@ class RawView extends JoomGalleryView
     // Get image ressource
     try
     {
-      list($file_info, $ressource) = $this->component->getFilesystem()->getResource($img_path);
+      list($file_info, $resource) = $this->component->getFilesystem()->getResource($img_path);
     }
     catch (InvalidPathException $e)
     {
@@ -63,8 +63,14 @@ class RawView extends JoomGalleryView
       $this->app->redirect(Route::_('index.php', false), 404);
     }
 
+    // Create config service
+    $this->component->createConfig('com_joomgallery.image', $id);
+
     // Postprocessing of the image
-    $this->ppImage($file_info, $ressource);
+    if(!$this->ppImage($file_info, $resource, $type))
+    {
+      $this->app->redirect(Route::_('index.php', false), 404);
+    }    
 
     // Set mime encoding
     $this->getDocument()->setMimeEncoding($file_info->mime_type);
@@ -76,7 +82,7 @@ class RawView extends JoomGalleryView
     $this->app->setHeader('Content-Length',\strval($file_info->size));
 
     \ob_end_clean(); //required here or large files will not work
-    \fpassthru($ressource);
+    \fpassthru($resource);
   }
 
   /**
@@ -84,11 +90,12 @@ class RawView extends JoomGalleryView
 	 *
 	 * @param   \stdClass  $file_info    Object with file information
    * @param   resource   $resource     Image resource
+   * @param   string     $imagetype    Type of image (original, detail, thumbnail, ...)
 	 *
-	 * @return void
+	 * @return  bool       True on success, false otherwise
 	 */
-  public function ppImage(&$file_info, &$resource)
+  public function ppImage(&$file_info, &$resource, $imagetype)
   {
-    return;
+    return true;
   }
 }

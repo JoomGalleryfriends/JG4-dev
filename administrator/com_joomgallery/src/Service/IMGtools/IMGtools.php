@@ -200,7 +200,7 @@ abstract class IMGtools implements IMGtoolsInterface
     {
       // $img is a string
       $tmp_stream = \stream_get_contents($img);
-      $info       = \getimagesize($tmp_stream);
+      $info       = \getimagesizefromstring($tmp_stream);
     }
     else
     {
