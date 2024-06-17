@@ -150,7 +150,7 @@ abstract class Config extends \stdClass implements ConfigInterface
           $this->ids['user'] = $user->id;
           $this->ids['menu'] = (int) $id;
           // TBD
-          // Depending on frontend views and router 
+          // Depending on frontend views and router
           break;
         
         default:
@@ -161,6 +161,17 @@ abstract class Config extends \stdClass implements ConfigInterface
     else
     {
       $this->ids['user'] = $user->id;
+    }
+
+    // Add menuid if called from the frontend
+    if(Factory::getApplication()->isClient('site'))
+    {
+      $menuitem = Factory::getApplication()->getMenu()->getActive();
+
+      if(isset($menuitem->id) && $menuitem->component == 'com_joomgallery')
+      {
+        $this->ids['menu'] = (int) $menuitem->id;
+      }
     }
     
     // Creates a simple unique string for each parameter combination
