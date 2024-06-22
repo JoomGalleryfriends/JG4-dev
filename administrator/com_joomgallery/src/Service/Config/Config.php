@@ -343,7 +343,7 @@ abstract class Config extends \stdClass implements ConfigInterface
           // set param to class property
           if(!isset($this->$key) || $value !== $this->$key)
           {
-            if($value == '-1')
+            if($value == '-1' || $value == '')
             {
               continue;
             }
