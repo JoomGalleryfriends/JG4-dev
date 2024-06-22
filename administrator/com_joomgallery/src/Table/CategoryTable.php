@@ -295,7 +295,7 @@ class CategoryTable extends Table implements VersionableTableInterface
     $this->setPathWithLocation();
 
     // Support for password field
-    if(isset($this->password))
+    if(\property_exists($this, 'password'))
     {
       if(\strlen($this->new_pw) > 0)
       {
