@@ -21,6 +21,11 @@
            label="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME"
            description="COM_JOOMGALLERY_CONFIG_IP_TYPE_NAME_LONG" />
 
+    <field name="original_note"
+           type="note"
+           class="alert alert-primary original-note"
+           description="COM_JOOMGALLERY_CONFIG_STATIC_PROCESS_ORIGINAL_LONG" />
+
     <field name="jg_imgtypepath"
            type="customtext"
            default=""
