@@ -142,7 +142,12 @@ class MigrationModel extends JoomAdminModel
         // Override params from user state with the one from db
         $params = \json_decode($params_db, true);
       }
-    }    
+    }
+
+    if(!\is_array($params))
+    {
+      $params = $params->toArray();
+    }
     
     return $params;
   }

@@ -318,7 +318,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Create tags
       $start = microtime(true);
       $this->tags = $tags_model->storeTagsList($this->tags);
-      $this->component->addLog('storeTagsList();'.\strval(microtime(true) - $start), 128, 'migration');
+      $com_obj ->addLog('storeTagsList();'.\strval(microtime(true) - $start), 128, 'migration');
       if($this->tags === false)
       {
         $this->setError('Tags Model reports '.$tags_model->getError());
@@ -328,7 +328,7 @@ class ImageTable extends Table implements VersionableTableInterface
       // Update tags mapping
       $start = microtime(true);
       $upd_mapping = $tags_model->updateMapping($this->tags, $this->id);
-      $this->component->addLog('updateMapping();'.\strval(microtime(true) - $start), 128, 'migration');
+      $com_obj->addLog('updateMapping();'.\strval(microtime(true) - $start), 128, 'migration');
 
       if(!$upd_mapping)
       {
