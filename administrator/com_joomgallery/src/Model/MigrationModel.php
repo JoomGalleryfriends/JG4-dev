@@ -1152,7 +1152,9 @@ class MigrationModel extends JoomAdminModel
     $recordType = $this->component->getMigration()->get('types')[$type]->get('recordName');
 
     // Check content type
+    $start = microtime(true);
     JoomHelper::isAvailable($recordType);
+    $this->component->addLog('JoomHelper::isAvailable();'.\strval(microtime(true) - $start), 128, 'migration');
 
     // Create table
     if(!$table = $this->getMVCFactory()->createTable($recordType, 'administrator'))
@@ -1181,13 +1183,21 @@ class MigrationModel extends JoomAdminModel
     // Special case: Use source IDs. Insert dummy record with JDatabase before binding data on it.
     if($isNew && !$autoID && \in_array($key, \array_keys($data)))
     {
-      if(!$this->insertDummyRecord($type, $data[$key]))
+      $start = microtime(true);
+      $dummy = $this->insertDummyRecord($type, $data[$key]);
+      $this->component->addLog('insertDummyRecord();'.\strval(microtime(true) - $start), 128, 'migration');
+
+      if(!$dummy)
       {
         // Insert dummy failed. Stop migration.
         return false;
       }
 
-      if(!$table->load($data[$key]))
+      $start = microtime(true);
+      $loadTable = $table->load($data[$key]);
+      $this->component->addLog('loadTable();'.\strval(microtime(true) - $start), 128, 'migration');
+
+      if(!$loadTable)
       {
         $this->component->setError($table->getError());
 
@@ -1208,11 +1218,17 @@ class MigrationModel extends JoomAdminModel
     if($isNew && $this->component->getMigration()->get('types')[$type]->get('nested'))
     {
       // Assumption: parent primary key name for all nested types at destination is 'parent_id'
+      $start = microtime(true);
       $table->setLocation($data['parent_id'], 'last-child');
+      $this->component->addLog('setLocationTable();'.\strval(microtime(true) - $start), 128, 'migration');
     }
 
     // Bind migrated data to table object
-    if(!$table->bind($data))
+    $start = microtime(true);
+    $bindTable = $table->bind($data);
+    $this->component->addLog('bindTable();'.\strval(microtime(true) - $start), 128, 'migration');
+
+    if(!$bindTable)
     {
       $this->component->setError($table->getError());
 
@@ -1220,10 +1236,16 @@ class MigrationModel extends JoomAdminModel
     }
 
     // Prepare the row for saving
+    $start = microtime(true);
 		$this->prepareTable($table);
+    $this->component->addLog('prepareTable();'.\strval(microtime(true) - $start), 128, 'migration');
 
     // Check the data.
-    if(!$table->check())
+    $start = microtime(true);
+    $checkTable = $table->check();
+    $this->component->addLog('prepareTable();'.\strval(microtime(true) - $start), 128, 'migration');
+
+    if(!$checkTable)
     {
       $this->component->setError($table->getError());
 
@@ -1231,12 +1253,18 @@ class MigrationModel extends JoomAdminModel
     }
 
     // Trigger the onMigrationBeforeSave event
+    $start = microtime(true);
     $event = new \Joomla\Event\Event('onMigrationBeforeSave', ['com_joomgallery.'.$recordType, $table]);
     $this->getDispatcher()->dispatch($event->getName(), $event);
     $results = $event->getArgument('result', []);
+    $this->component->addLog('onMigrationBeforeSave();'.\strval(microtime(true) - $start), 128, 'migration');
 
     // Store the data.
-    if(\in_array(false, $results, true) || !$table->store())
+    $start = microtime(true);
+    $storeTable = $table->store();
+    $this->component->addLog('storeTable();'.\strval(microtime(true) - $start), 128, 'migration');
+
+    if(\in_array(false, $results, true) || !$storeTable)
     {
       $this->component->setError($table->getError());
 
