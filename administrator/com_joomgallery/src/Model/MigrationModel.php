@@ -1248,7 +1248,7 @@ class MigrationModel extends JoomAdminModel
     // Check the data.
     $start = microtime(true);
     $checkTable = $table->check();
-    $this->component->addLog('prepareTable();'.\strval(microtime(true) - $start), 128, 'migration');
+    $this->component->addLog('checkTable();'.\strval(microtime(true) - $start), 128, 'migration');
 
     if(!$checkTable)
     {
