@@ -135,7 +135,7 @@ class CategoryModel extends JoomAdminModel
 			$data = $this->item;
 
       // Support for password field
-      if(isset($data->password) && empty($data->password))
+      if(\property_exists($data, 'password') && empty($data->password))
       {
         $this->is_password = false;
       }
