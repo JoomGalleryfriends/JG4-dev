@@ -36,6 +36,14 @@ class CategoryModel extends JoomAdminModel
    */
   protected $type = 'category';
 
+  /**
+   * True if a password is set
+   *
+   * @access  protected
+   * @var     bool
+   */
+  protected $is_password = true;
+
 	/**
 	 * Method to get the record form.
 	 *
@@ -73,6 +81,15 @@ class CategoryModel extends JoomAdminModel
 
 		// Apply filter for current category on thumbnail field
     $form->setFieldAttribute('thumbnail', 'categories', $id);
+
+    // Disable remove password field if no password is set
+    if(!$this->is_password)
+    {
+      $form->setFieldAttribute('rm_password', 'disabled', 'true');
+      $form->setFieldAttribute('rm_password', 'filter', 'unset');
+      $form->setFieldAttribute('rm_password', 'hidden', 'true');
+      $form->setFieldAttribute('rm_password', 'class', 'hidden');
+    }    
 
     // Modify the form based on Edit State access controls.
 		if(!$this->canEditState($record))
@@ -115,7 +132,14 @@ class CategoryModel extends JoomAdminModel
 				$this->item = $this->getItem();
 			}
 
-			$data = $this->item;			
+			$data = $this->item;
+
+      // Support for password field
+      if(\property_exists($data, 'password') && empty($data->password))
+      {
+        $this->is_password = false;
+      }
+      $data->password = '';
 
 			// Support for multiple or not foreign key field: robots
 			$array = array();
@@ -358,7 +382,19 @@ class CategoryModel extends JoomAdminModel
     if(\array_key_exists('tags', $data) && \is_array($data['tags']) && \count($data['tags']) > 0)
     {
       $table->newTags = $data['tags'];
-    }    
+    }
+
+    // Password
+    if(isset($data['rm_password']) && $data['rm_password'] == true)
+    {
+      $table->rm_pw = true;
+    }
+    elseif(isset($data['password']) && !empty($data['password']))
+    {
+      $table->new_pw = $data['password'];
+    }
+    unset($data['rm_password']);
+    unset($data['password']);
 
     // Change language to 'All' if multilangugae is not enabled
     if (!Multilanguage::isEnabled())

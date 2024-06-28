@@ -15,8 +15,8 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Asset;
-use Joomla\CMS\Access\Rules;
-use \Joomla\CMS\Access\Access;
+use \Joomla\CMS\Access\Rules;
+use \Joomla\CMS\User\UserHelper;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filter\OutputFilter;
@@ -51,6 +51,22 @@ class CategoryTable extends Table implements VersionableTableInterface
    * @since  4.0.0
    */
   protected $_old_location_path = null;
+
+  /**
+   * Set here the new password
+   *
+   * @var    string
+   * @since  4.0.0
+   */
+  public $new_pw = '';
+
+  /**
+   * True, if you want to delete current password
+   *
+   * @var    bool
+   * @since  4.0.0
+   */
+  public $rm_pw = false;
 
 	/**
 	 * Constructor
@@ -133,7 +149,19 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public function load($keys = null, $reset = true)
   {
-    $res = parent::load($keys, $reset);
+    $res  = parent::load($keys, $reset);
+    $comp = Factory::getApplication('administrator')->bootComponent(_JOOM_OPTION);
+    $user = $comp->getMVCFactory()->getIdentity();
+    $comp->createAccess();
+
+    // Return password only if user is admin or owner    
+    if(isset($this->password) && !empty($this->password))
+    {
+      if(!$comp->getAccess()->checkACL('admin') || $user->id != $this->created_by)
+      {
+        $this->password = '';
+      }
+    }
 
     if(isset($this->path))
     {
@@ -240,27 +268,6 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-    // // Get access service
-    // JoomHelper::getComponent()->createAccess();
-    // $acl = JoomHelper::getComponent()->getAccess();
-
-		// if(!$acl->checkACL('core.admin'))
-		// {
-		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='category']/");
-		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.category.'.$array['id'])->getData();
-		// 	$array_jaccess   = array();
-
-		// 	foreach($actions as $action)
-		// 	{
-		// 		if (\key_exists($action->name, $default_actions))
-		// 		{
-		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
-		// 		}
-		// 	}
-
-		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		// }
-
 		// Bind the rules for ACL where supported.
 		if(isset($array['rules']))
 		{
@@ -286,6 +293,22 @@ class CategoryTable extends Table implements VersionableTableInterface
 	public function store($updateNulls = true)
 	{
     $this->setPathWithLocation();
+
+    // Support for password field
+    if(\property_exists($this, 'password'))
+    {
+      if(\strlen($this->new_pw) > 0)
+      {
+        // Set a new password
+        $this->password = UserHelper::hashPassword($this->new_pw);
+      }
+
+      if($this->rm_pw)
+      {
+        // Remove current password
+        $this->password = '';
+      }
+    }
 
     // Support for params field
     if(isset($this->params) && !\is_string($this->params))
