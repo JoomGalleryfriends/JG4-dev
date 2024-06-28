@@ -203,6 +203,9 @@ joomla-field-image .jg_minithumb {
 .jg .modal .btn {
   color: var(--white);
 }
+.jg-category .password-group > div.text-center {
+  display: none;
+}
 .uppy-Dashboard-inner {
   background-color: var(--white);
   border: none;
