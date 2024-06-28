@@ -198,9 +198,16 @@ abstract class IMGtools implements IMGtoolsInterface
     // create stream wrapper in case a string is passed as $img
     if($is_stream)
     {
-      // $img is a string
-      $tmp_stream = \stream_get_contents($img);
-      $info       = \getimagesizefromstring($tmp_stream);
+      if(\is_resource($img))
+      {
+        $string_stream = \stream_get_contents($img);
+      }
+      else
+      {
+        $string_stream = $img;
+      }
+      
+      $info       = \getimagesizefromstring($string_stream);
     }
     else
     {
@@ -254,11 +261,11 @@ abstract class IMGtools implements IMGtoolsInterface
       // Detect, if png has transparency
       if($is_stream)
       {
-        $pngtype = \ord(\substr($img, 25, 1));
+        $pngtype = \ord(\substr($string_stream, 25, 1));
       }
       else
       {
-        $pngtype = \ord(@\file_get_contents($img, false, null, 25, 1));
+        $pngtype = \ord(\file_get_contents($img, false, null, 25, 1));
       }
 
       if($pngtype == 4 || $pngtype == 6)
@@ -273,19 +280,19 @@ abstract class IMGtools implements IMGtoolsInterface
       // Detect, if webp has transparency or animation
       if($is_stream)
       {
-        $webptype = \ord(\substr($img, 25, 1));
+        $webptype = \ord(\substr($string_stream, 25, 1));
       }
       else
       {
-        $webptype = file_get_contents($img);
-        $included = strpos($webptype, "ALPH");
+        $webptype = \file_get_contents($img);
+        $included = \strpos($webptype, "ALPH");
         if($included !== FALSE)
         {
           $this->res_imginfo['transparency'] = true;
         }
         else
         {
-          $included = strpos($webptype, "VP8L");
+          $included = \strpos($webptype, "VP8L");
           if($included !== FALSE)
           {
             $this->res_imginfo['transparency'] = true;
@@ -293,14 +300,14 @@ abstract class IMGtools implements IMGtoolsInterface
         }
 
         // Detect, if webp has animation
-        $included = strpos($webptype, "ANIM");
+        $included = \strpos($webptype, "ANIM");
         if($included !== FALSE)
         {
           $this->res_imginfo['animation'] = true;
         }
         else
         {
-          $included = strpos($webptype, "ANMF");
+          $included = \strpos($webptype, "ANMF");
           if($included !== FALSE)
           {
             $this->res_imginfo['animation'] = true;
