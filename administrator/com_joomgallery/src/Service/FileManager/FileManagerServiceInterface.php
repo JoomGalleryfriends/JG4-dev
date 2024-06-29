@@ -10,7 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
 /**
 * The file manager service
@@ -30,12 +30,15 @@ interface FileManagerServiceInterface
 
   /**
 	 * Creates the file manager helper class
+   * 
+   * @param   int          $catid       Id of the category for wich the filsystem is chosen
+   * @param   array|bool   $selection   List of imagetypes to consider or false to consider all (default: False)
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createFileManager(): void;
+	public function createFileManager($catid, $selection=False);
 
 	/**
 	 * Returns the file manager helper class.

@@ -61,13 +61,14 @@ class FileManager implements FileManagerInterface
   /**
    * Constructor
    * 
-   * @param   array|bool     $selection    List of imagetypes to consider or false to consider all (default: False)
+   * @param   int          $catid       Id of the category for wich the filsystem is chosen
+   * @param   array|bool   $selection   List of imagetypes to consider or false to consider all (default: False)
    *
    * @return  void
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
-  public function __construct($selection=False)
+  public function __construct($catid, $selection=False)
   {
     // Load application
     $this->getApp();
@@ -75,8 +76,8 @@ class FileManager implements FileManagerInterface
     // Load component
     $this->getComponent();
 
-    // Instantiate config service
-    $this->component->createConfig();
+    // Instantiate config service based on provided category
+    $this->component->createConfig('com_joomgallery.category', $catid);
 
     // Instantiate filesystem service
     $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));

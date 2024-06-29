@@ -369,7 +369,7 @@ abstract class Migration implements MigrationInterface
   public function migrateFiles(ImageTable $img, array $data): bool
   {
     // Default: Recreate images based on source image
-    $this->component->createFileManager();
+    $this->component->createFileManager($img->catid);
 
     // Get source image
     $img_source = $this->getImageSource($data);
@@ -395,7 +395,7 @@ abstract class Migration implements MigrationInterface
   public function migrateFolder(CategoryTable $cat, array $data): bool
   {
     // Default: Create new folders
-    $this->component->createFileManager();
+    $this->component->createFileManager($cat->id);
     return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
   }
 

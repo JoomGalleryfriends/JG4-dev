@@ -110,11 +110,12 @@ class ConfigHelper
    * @param   Form    $form    Form object containing jg_filesystem form field
 	 *
 	 * @return  array   List of options
+   * @return  bool    True to return a list of array, false for a list of objects
 	 *
 	 * @since   4.0.0
    * @throws  \Exception
 	 */
-  public static function getFilesystemOptions($form)
+  public static function getFilesystemOptions($form, $array=true)
   {
     // Check if we got a valid form object
     if(\is_object($form) && $form instanceof Form && $form->getName() == 'com_joomgallery.config')
@@ -127,10 +128,17 @@ class ConfigHelper
       {
         foreach ($provider->adapterNames as $adapter)
         {
-          $val  = $provider->name . '-' . $adapter;
-          $text = $provider->displayName . ' (' . $adapter . ')';
+          $val    = $provider->name . '-' . $adapter;
+          $text   = $provider->displayName . ' (' . $adapter . ')';
+          $option = array('text' => $text, 'value'=>$val);
 
-          \array_push($options, array('text' => $text, 'value'=>$val));
+          // Convert to object if needed
+          if(!$array)
+          {
+            $option = (object) $option;
+          }
+
+          \array_push($options, $option);
         }
       }
 

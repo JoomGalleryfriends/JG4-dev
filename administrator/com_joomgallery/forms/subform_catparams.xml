@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
   <fieldset name="general">
     <field name="params_note"
                type="note"
                class="alert alert-info"
                description="COM_JOOMGALLERY_CONFIG_TYPEPARAMS_INFO"
         />
+    
+    <field name="jg_filesystem"
+           type="jgdynamiclist"
+           useglobal="true"
+           sensitive="true"
+           script="getFilesystemOptions"
+           label="COM_JOOMGALLERY_CONFIG_FILESYSTEM"
+           description="COM_JOOMGALLERY_CONFIG_FILESYSTEM_LONG" >
+    </field>
 
     <field name="jg_showrating"
            groupByFieldset="false"

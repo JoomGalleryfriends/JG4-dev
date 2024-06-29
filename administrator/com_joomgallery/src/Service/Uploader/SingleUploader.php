@@ -173,7 +173,7 @@ class SingleUploader extends BaseUploader implements UploaderInterface
     }    
     
     // Create file manager service
-    $this->component->createFileManager(array($this->type));
+    $this->component->createFileManager($data_row->catid, array($this->type));
 
     // Process image to create imagetype
     if(!$this->component->getFileManager()->createImages($this->src_file, $data_row->filename, $data_row->catid, $this->processImage))

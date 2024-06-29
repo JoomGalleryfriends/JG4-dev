@@ -531,7 +531,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   public function migrateFolder(CategoryTable $cat, array $data): bool
   {
     // Create file manager service
-    $this->component->createFileManager();
+    $this->component->createFileManager($cat->id);
 
     if($this->params->get('image_usage', 0) == 0)
     {
@@ -674,7 +674,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   protected function createImages(ImageTable $img, string $source): bool
   {
     // Create file manager service
-    $this->component->createFileManager();
+    $this->component->createFileManager($img->catid);
 
     // Update catid based on migrated categories
     $migrated_cats  = $this->get('migrateables')['category']->successful;
@@ -700,7 +700,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   protected function reuseImages(ImageTable $img, array $sources, bool $copy = false): bool
   {
     // Create services
-    $this->component->createFileManager();
+    $this->component->createFileManager($img->catid);
     $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
 
     // Fetch available imagetypes from destination

@@ -234,7 +234,7 @@ class CategoryModel extends JoomAdminModel
 					}
 
 					// Create file manager service
-					$manager = JoomHelper::getService('FileManager');
+					$manager = JoomHelper::getService('FileManager', array($table->id));
 
           // Delete corresponding folders
 					if(!$manager->deleteCategory($table, $force_delete))
@@ -368,6 +368,8 @@ class CategoryModel extends JoomAdminModel
     $catMoved     = false;
 		$isCopy       = false;
     $aliasChanged = false;
+    $hasChildren  = false;
+    $hasImages    = false;
 
     $key = $table->getKeyName();
     $pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
@@ -439,6 +441,34 @@ class CategoryModel extends JoomAdminModel
               $data['published'] = $table->published;
             }
           }
+          
+          // Check if category has subcategories (childs)
+          if(!$this->getChildren($pk))
+          {
+            $hasChildren = true;
+          }
+
+          // Check if category has images
+          if($this->getNumImages($pk) != 0)
+          {
+            $hasImages = true;
+          }
+        }
+
+        // Check that filesystem field content is allowed
+        if(\key_exists('jg_filesystem', $data['params']) && $data['params']['jg_filesystem'] != '' && $data['parent_id'] != 1)
+        {
+          // Only allowed in toplevel categories
+          $this->setError(Text::_('COM_JOOMGALLERY_ERROR_FILESYSTEM_ONLY_TOP_LEVEL_CAT'));
+          
+          return false;
+        }
+        elseif(\key_exists('jg_filesystem', $data['params']) && $data['params']['jg_filesystem'] != '' && ($hasChildren || $hasImages))
+        {
+          // Only allowed if there are no images and no subcategories
+          $this->setError(Text::_('COM_JOOMGALLERY_ERROR_FILESYSTEM_ONLY_EMPTY_CAT'));
+          
+          return false;
         }
 
         if($table->parent_id != $data['parent_id'] || $data['id'] == 0)
@@ -447,7 +477,7 @@ class CategoryModel extends JoomAdminModel
         }
 
         // Create file manager service
-				$manager = JoomHelper::getService('FileManager');
+				$manager = JoomHelper::getService('FileManager', array($data['parent_id']));
 
         // Bind the data.
         if(!$table->bind($data))
@@ -730,7 +760,7 @@ class CategoryModel extends JoomAdminModel
     }
 
     // Get a list of children ids
-    $children = $this->getChildren($table->id, false);
+    $children = $this->getChildren($table->id, false, true);
 
     foreach($children as $key => $cat)
     {
@@ -759,14 +789,15 @@ class CategoryModel extends JoomAdminModel
   /**
    * Get children categories.
    * 
-   * @param   integer  $pk     The id of the primary key.
-   * @param   bool     $self   Include current node id (default: false)
+   * @param   integer  $pk        The id of the primary key.
+   * @param   bool     $self      Include current node id (default: false)
+   * @param   bool     $setError  True to set an Error if no childern found (default: false)
    *
    * @return  mixed    An array of categories or false if an error occurs.
    *
    * @since   4.0.0
    */
-  public function getChildren($pk = null, $self = false)
+  public function getChildren($pk = null, $self = false, $setError=false)
   {
     if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
     {
@@ -791,7 +822,10 @@ class CategoryModel extends JoomAdminModel
     $children = $table->getNodeTree('children', $self, $root);
     if(!$children)
     {
-      $this->setError($table->getError());
+      if($setError)
+      {
+        $this->setError($table->getError());
+      }      
 
       return false;
     }
@@ -802,15 +836,16 @@ class CategoryModel extends JoomAdminModel
   /**
    * Get parent categories.
    * 
-   * @param   integer  $pk     The id of the primary key.
-   * @param   bool     $self   Include current node id (default: false)
-   * @param   bool     $root   Include root node (default: false)
+   * @param   integer  $pk        The id of the primary key.
+   * @param   bool     $self      Include current node id (default: false)
+   * @param   bool     $root      Include root node (default: false)
+   * @param   bool     $setError  True to set an Error if no parents found (default: false)
    *
    * @return  mixed    An array of categories or false if an error occurs.
    *
    * @since   4.0.0
    */
-  public function getParents($pk = null, $self = false, $root = false)
+  public function getParents($pk = null, $self = false, $root = false, $setError=false)
   {
     if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
     {
@@ -828,7 +863,10 @@ class CategoryModel extends JoomAdminModel
     $parents = $table->getNodeTree('parents', $self, $root);
     if(!$parents)
     {
-      $this->setError($table->getError());
+      if($setError)
+      {
+        $this->setError($table->getError());
+      }
 
       return false;
     }
@@ -839,15 +877,16 @@ class CategoryModel extends JoomAdminModel
   /**
    * Get category tree
    * 
-   * @param   integer  $pk     The id of the primary key.
-   * @param   bool     $self   Include current node id (default: false)
-   * @param   bool     $root   Include root node (default: false)
+   * @param   integer  $pk        The id of the primary key.
+   * @param   bool     $self      Include current node id (default: false)
+   * @param   bool     $root      Include root node (default: false)
+   * @param   bool     $setError  True to set an Error if tree is empty (default: false)
    *
    * @return  mixed    An array of categories or false if an error occurs.
    *
    * @since   4.0.0
    */
-  public function getTree($pk = null, $root = false)
+  public function getTree($pk = null, $root = false, $setError=false)
   {
     if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
     {
@@ -865,7 +904,10 @@ class CategoryModel extends JoomAdminModel
     $tree = $table->getNodeTree('cpl', true, $root);
     if(!$tree)
     {
-      $this->setError($table->getError());
+      if($setError)
+      {
+        $this->setError($table->getError());
+      }
 
       return false;
     }
@@ -876,14 +918,15 @@ class CategoryModel extends JoomAdminModel
   /**
    * Get direct left or right sibling (adjacent) of the category.
    * 
-   * @param   integer  $pk    The id of the primary key.
-   * @param   string   $side  Left or right side ribling. 
+   * @param   integer  $pk        The id of the primary key.
+   * @param   string   $side      Left or right side ribling.
+   * @param   bool     $setError  True to set an Error if no sibling found (default: false) 
    *
    * @return  mixed    List of sibling or false if an error occurs.
    *
    * @since   4.0.0
    */
-  public function getSibling($pk, $side)
+  public function getSibling($pk, $side, $setError=false)
   {
     if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
     {
@@ -902,7 +945,10 @@ class CategoryModel extends JoomAdminModel
 
     if(!$sibling)
     {
-      $this->setError($table->getError());
+      if($setError)
+      {
+        $this->setError($table->getError());
+      }
 
       return false;
     }
@@ -913,14 +959,15 @@ class CategoryModel extends JoomAdminModel
   /**
    * Get all left and/or right siblings (adjacent) of the category.
    * 
-   * @param   integer  $pk    The id of the primary key.
-   * @param   string   $side  Left, right or both sides siblings.
+   * @param   integer  $pk        The id of the primary key.
+   * @param   string   $side      Left, right or both sides siblings.
+   * @param   bool     $setError  True to set an Error if no siblings found (default: false)
    *
    * @return  mixed    List of siblings or false if an error occurs.
    *
    * @since   4.0.0
    */
-  public function getSiblings($pk, $side)
+  public function getSiblings($pk, $side, $setError=false)
   {
     $parent_id = null;
     if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
@@ -956,11 +1003,57 @@ class CategoryModel extends JoomAdminModel
 
     if(!$sibling)
     {
-      $this->setError($table->getError());
+      if($setError)
+      {
+        $this->setError($table->getError());
+      }
 
       return false;
     }
     
     return $sibling;
+  }
+
+  /**
+   * Get the number of images in this category
+   * 
+   * @param   integer  $pk        The id of the primary key.
+   * @param   bool     $setError  True to set an Error if no images are found (default: false)
+   *
+   * @return  integer  Number of images in this category
+   *
+   * @since   4.0.0
+   */
+  public function getNumImages($pk, $setError=false)
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = \intval($this->item->id);
+    }
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+    $query->select('COUNT(*)')
+          ->from($db->quoteName(_JOOM_TABLE_IMAGES))
+          ->where($db->quoteName('catid') . " = " . $db->quote($pk));
+
+    try
+    {
+      $db->setQuery($query);
+      $count = \intval($db->loadResult());
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+    }
+
+    if(!$count && $setError)
+    {
+      $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_IMAGES_FOUND'));
+    }
+
+    return $count;
   }
 }

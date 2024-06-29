@@ -10,7 +10,7 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
-\defined('JPATH_PLATFORM') or die;
+\defined('_JEXEC') or die;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManager;
 
@@ -45,15 +45,16 @@ trait FileManagerServiceTrait
   /**
 	 * Creates the file manager helper class
    * 
-   * @param   array|bool     $selection    List of imagetypes to consider or false to consider all (default: False)
+   * @param   int          $catid       Id of the category for wich the filsystem is chosen
+   * @param   array|bool   $selection   List of imagetypes to consider or false to consider all (default: False)
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createFileManager($selection=False): void
+	public function createFileManager($catid, $selection=False): void
 	{
-    $this->fileManager = new FileManager($selection);
+    $this->fileManager = new FileManager($catid, $selection);
 
     return;
 	}

@@ -194,7 +194,7 @@ abstract class Uploader implements UploaderInterface
       }
 
       // Generate image filename
-      $this->component->createFileManager();
+      $this->component->createFileManager($data['catid']);
       $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
 
       // Make an alias proposition if not given
@@ -417,7 +417,7 @@ abstract class Uploader implements UploaderInterface
     }
 
     // Create file manager service
-    $this->component->createFileManager();    
+    $this->component->createFileManager($data_row->catid);
     
     // Create image types
     if(!$this->component->getFileManager()->createImages($this->src_file, $data_row->filename, $data_row->catid))
@@ -488,7 +488,7 @@ abstract class Uploader implements UploaderInterface
     if($data_row)
     {
       // Create file manager service
-      $this->component->createFileManager();
+      $this->component->createFileManager($data_row->catid);
 
       // Delete just created images
       $this->component->getFileManager()->deleteImages($data_row);
