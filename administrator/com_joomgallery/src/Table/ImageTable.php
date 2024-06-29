@@ -316,7 +316,9 @@ class ImageTable extends Table implements VersionableTableInterface
     	$tags_model = $com_obj->getMVCFactory()->createModel('Tags', 'administrator');
 
       // Create tags
+      $start = microtime(true);
       $this->tags = $tags_model->storeTagsList($this->tags);
+      $com_obj ->addLog('storeTagsList();'.\strval(microtime(true) - $start), 128, 'migration');
       if($this->tags === false)
       {
         $this->setError('Tags Model reports '.$tags_model->getError());
@@ -324,7 +326,11 @@ class ImageTable extends Table implements VersionableTableInterface
       }
 
       // Update tags mapping
-      if(!$tags_model->updateMapping($this->tags, $this->id))
+      $start = microtime(true);
+      $upd_mapping = $tags_model->updateMapping($this->tags, $this->id);
+      $com_obj->addLog('updateMapping();'.\strval(microtime(true) - $start), 128, 'migration');
+
+      if(!$upd_mapping)
       {
         $this->setError('Tags Model reports '.$tags_model->getError());
         $success = false;
@@ -341,6 +347,8 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function check()
 	{
+    $com_obj = Factory::getApplication()->bootComponent('com_joomgallery');
+
 		// If there is an ordering column and this is a new row then get the next ordering value
 		if(property_exists($this, 'ordering') && $this->id == 0)
 		{
@@ -348,6 +356,7 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
 		// Check if alias is unique
+    $start = microtime(true);
 		if(!$this->isUnique('alias'))
 		{
 			$count = 2;
@@ -358,8 +367,10 @@ class ImageTable extends Table implements VersionableTableInterface
 				$this->alias = $currentAlias . '-' . $count++;
 			}
 		}
+    $com_obj->addLog('checkAlias();'.\strval(microtime(true) - $start), 128, 'migration');
 
     // Check if title is unique inside this category
+    $start = microtime(true);
 		if(!$this->isUnique('title', $this->catid, 'catid'))
 		{
 			$count = 2;
@@ -370,8 +381,10 @@ class ImageTable extends Table implements VersionableTableInterface
 				$this->title = $currentTitle . ' (' . $count++ . ')';
 			}
 		}
+    $com_obj->addLog('checkTitle();'.\strval(microtime(true) - $start), 128, 'migration');
 
 		// Support for subform field params
+    $start = microtime(true);
     if(empty($this->params))
     {
       $this->params = $this->loadDefaultField('params');
@@ -380,6 +393,7 @@ class ImageTable extends Table implements VersionableTableInterface
     {
       $this->params = new Registry($this->params);
     }
+    $com_obj->addLog('checkParamsField();'.\strval(microtime(true) - $start), 128, 'migration');
 
 		// Support for field description
     if(empty($this->description))
@@ -405,7 +419,11 @@ class ImageTable extends Table implements VersionableTableInterface
       $this->imgmetadata = $this->loadDefaultField('imgmetadata');
     }
 
-		return parent::check();
+    $start = microtime(true);
+    $succ = parent::check();
+    $com_obj->addLog('checkTableParent();'.\strval(microtime(true) - $start), 128, 'migration');
+
+		return $succ;
 	}
 
   /**
