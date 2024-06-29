@@ -858,18 +858,29 @@
             filter="int"
         />
         <field
-            name="jg_category_view_images_pagination"
+            name="jg_category_view_pagination"
             type="list"
-            class="unused"
-            label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION"
-            description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION_DESC"
-            default="pagination"
+            label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_LABEL"
+            description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_DESC"
+            default="0"
             validate="options"
             >
-            <option value="pagination">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
-            <option value="loadmore">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
-            <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
+            <option value="0">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT0</option>
+            <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
+            <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
         </field>
+        <field
+            name="jg_category_view_number_of_reloaded_images"
+            type="number"
+            min="1"
+            max="9999"
+            step="1"
+            label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_LABEL"
+            description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_DESC"
+            filter="int"
+            default="3"
+            showon="jg_category_view_pagination:2"
+        />
         <field
             name="jg_category_view_image_link"
             type="list"
