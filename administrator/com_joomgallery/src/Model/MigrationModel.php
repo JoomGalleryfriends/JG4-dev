@@ -1368,4 +1368,32 @@ class MigrationModel extends JoomAdminModel
       return $key;
     }
   }
+
+  /**
+   * Method to test whether a record can be deleted.
+   *
+   * @param   object  $record  A record object.
+   *
+   * @return  boolean  True if allowed to delete the record. Defaults to the permission for the component.
+   *
+   * @since   4.0.0
+   */
+  protected function canDelete($record)
+  {
+    return $this->getAcl()->checkACL('admin', 'com_joomgallery');
+  }
+
+  /**
+   * Method to test whether a record can have its state changed.
+   *
+   * @param   object  $record  A record object.
+   *
+   * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
+   *
+   * @since   4.0.0
+   */
+  protected function canEditState($record)
+  {
+    return $this->getAcl()->checkACL('admin', 'com_joomgallery');
+  }
 }
