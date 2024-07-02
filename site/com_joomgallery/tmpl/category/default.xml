@@ -45,7 +45,6 @@
                 parentclass="span-3"
                 validate="options"
                 >
-                <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
                 <option value="columns">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_GRID</option>
                 <option value="masonry">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_MASONRY</option>
             </field>
@@ -67,10 +66,11 @@
             </field>
             <field
                 name="jg_category_view_subcategory_image_class"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
                 parentclass="span-3"
+                class="btn-group btn-group-yesno"
                 validate="options"
                 >
                 <option value="0">JNO</option>
@@ -103,9 +103,10 @@
             </field>
             <field
                 name="jg_category_view_subcategories_random_image"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 parentclass="span-3"
+                class="btn-group btn-group-yesno"
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES"
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES_DESC"
                 validate="options"
@@ -162,7 +163,7 @@
                 label="COM_JOOMGALLERY_MENU_JUSTIFIED_HEIGHT"
                 description="COM_JOOMGALLERY_MENU_JUSTIFIED_HEIGHT_NOTE_DESC"
                 filter="int"
-                showon="jg_category_view_class:-1[OR]jg_category_view_class:justified"
+                showon="jg_category_view_class!:columns[AND]jg_category_view_class!:masonry"
             />
             <field
                 name="jg_category_view_justified_gap"
@@ -175,14 +176,15 @@
                 label="COM_JOOMGALLERY_MENU_JUSTIFIED_GAP"
                 description="COM_JOOMGALLERY_MENU_JUSTIFIED_GAP_NOTE_DESC"
                 filter="int"
-                showon="jg_category_view_class:-1[OR]jg_category_view_class:justified"
+                showon="jg_category_view_class!:columns[AND]jg_category_view_class!:masonry"
             />
             <field
                 name="jg_category_view_image_class"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
                 parentclass="span-3"
+                class="btn-group btn-group-yesno"
                 validate="options"
                 showon="jg_category_view_class!:justified"
                 >
@@ -202,18 +204,31 @@
                 filter="int"
             />
             <field
-                name="jg_category_view_images_pagination"
+                name="jg_category_view_pagination"
                 type="jglist"
                 useglobal="true"
                 parentclass="span-3"
-                label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION"
-                description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_PAGINATION_DESC"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_DESC"
                 validate="options"
                 >
-                <option value="pagination">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
-                <option value="loadmore">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
-                <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
+                <option value="0">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT0</option>
+                <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
+                <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
             </field>
+            <field
+                name="jg_category_view_number_of_reloaded_images"
+                type="jgnumber"
+                useglobal="true"
+                parentclass="span-3"
+                min="1"
+                max="9999"
+                step="1"
+                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_LABEL"
+                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_DESC"
+                filter="int"
+                showon="jg_category_view_pagination:2"
+            />
             <field
                 name="jg_category_view_image_link"
                 type="jglist"
@@ -242,7 +257,7 @@
             </field>
             <field
                 name="jg_category_view_images_show_title"
-                type="jglist"
+                type="jgradio"
                 useglobal="true"
                 class="btn-group btn-group-yesno"
                 parentclass="span-3"
@@ -260,7 +275,7 @@
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK"
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK_DESC"
                 validate="options"
-                showon="jg_category_view_class!:justified[AND]jg_category_view_images_show_title:1"
+                showon="jg_category_view_class!:justified[AND]jg_category_view_images_show_title!:0"
                 >
                 <option value="none">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_NONE</option>
                 <option value="defaultview">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_DETAILVIEW</option>
@@ -320,29 +335,6 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
-            <field
-                name="jg_category_view_pagination"
-                type="list"
-                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_LABEL"
-                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_DESC"
-                default="0"
-                parentclass="stack span-2-inline"
-                validate="options"
-                >
-                <option value="0">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT0</option>
-                <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
-                <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
-            </field>
-            <field
-                name="jg_category_view_number_of_reloaded_images"
-                type="text"
-                default="3"
-                parentclass="stack span-2-inline"
-                label="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_LABEL"
-                description="COM_JOOMGALLERY_MENU_CATEGORY_VIEW_NUMBER_OF_RELOADED_IMAGES_DESC"
-                filter="integer"
-                showon="jg_category_view_pagination:2"
-            />
         </fieldset>
     </fields>
 </metadata>

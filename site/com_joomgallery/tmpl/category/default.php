@@ -19,37 +19,32 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-// $app          = Factory::getApplication();
-// $this->config = JoomHelper::getService('config');
-
 // subcategory params
-$subcategory_class          = $this->params['menu']->get('jg_category_view_subcategory_class', 'masonry', 'STRING');
-$subcategory_num_columns    = $this->params['menu']->get('jg_category_view_subcategory_num_columns', 3, 'INT');
-$subcategory_image_class    = $this->params['menu']->get('jg_category_view_subcategory_image_class', 0, 'INT');
-$numb_subcategories         = $this->params['menu']->get('jg_category_view_numb_subcategories', 12, 'INT');
-$subcategories_pagination   = $this->params['menu']->get('jg_category_view_subcategories_pagination', 'pagination', 'STRING');
-$subcategories_random_image = $this->params['menu']->get('jg_category_view_subcategories_random_image', 0, 'INT');
+$subcategory_class          = $this->params['configs']->get('jg_category_view_subcategory_class', 'masonry', 'STRING');
+$subcategory_num_columns    = $this->params['configs']->get('jg_category_view_subcategory_num_columns', 3, 'INT');
+$subcategory_image_class    = $this->params['configs']->get('jg_category_view_subcategory_image_class', 0, 'INT');
+$numb_subcategories         = $this->params['configs']->get('jg_category_view_numb_subcategories', 12, 'INT');
+$subcategories_pagination   = $this->params['configs']->get('jg_category_view_subcategories_pagination', 'pagination', 'STRING');
+$subcategories_random_image = $this->params['configs']->get('jg_category_view_subcategories_random_image', 0, 'INT');
 
 // image params
-$category_class   = $this->params['menu']->get('jg_category_view_class', 'masonry', 'STRING');
-$num_columns      = $this->params['menu']->get('jg_category_view_num_columns', 6, 'INT');
-$caption_align    = $this->params['menu']->get('jg_category_view_caption_align', 'right', 'STRING');
-$image_class      = $this->params['menu']->get('jg_category_view_image_class', '', 'STRING');
-$justified_height = $this->params['menu']->get('jg_category_view_justified_height', 320, 'INT');
-$justified_gap    = $this->params['menu']->get('jg_category_view_justified_gap', 5, 'INT');
-$lightbox         = $this->params['menu']->get('jg_category_view_lightbox', 1, 'INT');
-$use_pagination   = $this->params['menu']->get('jg_category_view_pagination', 0, 'INT');
-$show_title        = $this->params['menu']->get('jg_category_view_images_show_title', 0, 'INT');
-$numb_images       = $this->params['menu']->get('jg_category_view_numb_images', 16, 'INT');
-$images_pagination = $this->params['menu']->get('jg_category_view_images_pagination', 'pagination', 'STRING');
-$image_link        = $this->params['menu']->get('jg_category_view_image_link', 'defaultview', 'STRING');
-$title_link        = $this->params['menu']->get('jg_category_view_title_link', 'defaultview', 'STRING');
-$show_description  = $this->params['menu']->get('jg_category_view_show_description', 0, 'INT');
-$show_imgdate      = $this->params['menu']->get('jg_category_view_show_imgdate', 0, 'INT');
-$show_imgauthor    = $this->params['menu']->get('jg_category_view_show_imgauthor', 0, 'INT');
-$show_tags         = $this->params['menu']->get('jg_category_view_show_tags', 0, 'INT');
-$load_more_images = $this->params['menu']->get('jg_category_view_load_more_images', 3, 'INT');
-$reloaded_images  = $this->params['menu']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
+$category_class   = $this->params['configs']->get('jg_category_view_class', 'masonry', 'STRING');
+$num_columns      = $this->params['configs']->get('jg_category_view_num_columns', 6, 'INT');
+$caption_align    = $this->params['configs']->get('jg_category_view_caption_align', 'right', 'STRING');
+$image_class      = $this->params['configs']->get('jg_category_view_image_class', 0, 'INT');
+$justified_height = $this->params['configs']->get('jg_category_view_justified_height', 320, 'INT');
+$justified_gap    = $this->params['configs']->get('jg_category_view_justified_gap', 5, 'INT');
+$show_title       = $this->params['configs']->get('jg_category_view_images_show_title', 0, 'INT');
+$numb_images      = $this->params['configs']->get('jg_category_view_numb_images', 16, 'INT');
+$use_pagination   = $this->params['configs']->get('jg_category_view_pagination', 0, 'INT');
+$reloaded_images  = $this->params['configs']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
+$image_link       = $this->params['configs']->get('jg_category_view_image_link', 'defaultview', 'STRING');
+$title_link       = $this->params['configs']->get('jg_category_view_title_link', 'defaultview', 'STRING');
+$show_description = $this->params['configs']->get('jg_category_view_show_description', 0, 'INT');
+$show_imgdate     = $this->params['configs']->get('jg_category_view_show_imgdate', 0, 'INT');
+$show_imgauthor   = $this->params['configs']->get('jg_category_view_show_imgauthor', 0, 'INT');
+$show_tags        = $this->params['configs']->get('jg_category_view_show_tags', 0, 'INT');
+
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
