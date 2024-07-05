@@ -159,9 +159,9 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * Read image from file or image string (stream)
    * Supported image-types: jpg, png, gif, webp
    *
-   * @param   string  $file        Path to source file or image string
-   * @param   bool    $is_stream   True if $src is image string (stream) (default: false)
-   * @param   bool    $base64      True if input string is base64 decoded (default: false)
+   * @param   string|resource  $file        Path to source file or image string or resource
+   * @param   bool             $is_stream   True if $src is image string (stream) (default: false)
+   * @param   bool             $base64      True if input string is base64 decoded (default: false)
    *
    * @return  bool    True on success, false otherwise
    *
@@ -1766,10 +1766,10 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * Creates GD image objects from different file types with one frame
    * Supported: JPG, PNG, GIF, WEBP
    *
-   * @param   string  $src_file     Path to source file
-   * @param   array   $imginfo      array with source image informations
+   * @param   string|resource  $file      Path to source file or image string or resource
+   * @param   array            $imginfo   Array with source image informations
    *
-   * @return  array   $src_frame[0: ["durtion": 0, "image": GDobject]] on success, false otherwise
+   * @return  array            $src_frame[0: ["durtion": 0, "image": GDobject]] on success, false otherwise
    *
    * @since   3.5.0
    */
@@ -1777,24 +1777,39 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
   {
     $src_frame = array(array('duration'=>0));
 
-    switch ($this->src_type)
+    if(\is_resource($src_file))
     {
-      case 'PNG':
-        $src_frame[0]['image'] = \imagecreatefrompng($src_file);
-        break;
-      case 'GIF':
-        $src_frame[0]['image'] = \imagecreatefromgif($src_file);
-        break;
-      case 'JPG':
-        $src_frame[0]['image'] = \imagecreatefromjpeg($src_file);
-        break;
-      case 'WEBP':
-        $src_frame[0]['image'] = \imagecreatefromwebp($src_file);
-        break;
-      default:
-        return false;
-        break;
+      if(\get_resource_type($src_file) == 'stream')
+      {
+        $src_file              = \stream_get_contents($src_file, null, 0);
+        $src_frame[0]['image'] = \imagecreatefromstring($src_file);
+      }
+      elseif(\get_resource_type($src_file) == 'gd')
+      {
+        $src_frame[0]['image'] = $src_file;
+      }      
     }
+    else
+    {
+      switch ($this->src_type)
+      {
+        case 'PNG':
+          $src_frame[0]['image'] = \imagecreatefrompng($src_file);
+          break;
+        case 'GIF':
+          $src_frame[0]['image'] = \imagecreatefromgif($src_file);
+          break;
+        case 'JPG':
+          $src_frame[0]['image'] = \imagecreatefromjpeg($src_file);
+          break;
+        case 'WEBP':
+          $src_frame[0]['image'] = \imagecreatefromwebp($src_file);
+          break;
+        default:
+          return false;
+          break;
+      }
+    }    
 
     // Convert pallete images to true color images
     if(\function_exists('imagepalettetotruecolor') && $this->src_type != 'GIF')

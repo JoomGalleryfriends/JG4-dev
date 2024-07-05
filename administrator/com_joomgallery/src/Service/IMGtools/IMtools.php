@@ -167,9 +167,9 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    * Read image from file or image string (stream)
    * Supported image-types: depending on IM version
    *
-   * @param   string  $file        Path to source file or image string
-   * @param   bool    $is_stream   True if $src is image string (stream) (default: false)
-   * @param   bool    $base64      True if input string is base64 decoded (default: false)
+   * @param   string|resource  $file        Path to source file or image string or resource
+   * @param   bool             $is_stream   True if $src is image string (stream) (default: false)
+   * @param   bool             $base64      True if input string is base64 decoded (default: false)
    *
    * @return  bool    True on success, false otherwise
    *
@@ -450,23 +450,36 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // Define temporary image file to be created
-    $tmp_folder = $this->app->get('tmp_path');
-    $tmp_file   = $tmp_folder.'/tmp_img_'.$this->rndNumber.'.'.\strtolower($this->dst_type);
+    $tmp_folder   = $this->app->get('tmp_path');
+    $tmp_dst_file = $tmp_folder.'/tmp_dst_img_'.$this->rndNumber.'.'.\strtolower($this->dst_type);
 
-    if(!$this->write($tmp_file, $quality))
+    // Create temporary source file from stream
+    $tmp_src_file = $tmp_folder.'/tmp_src_img_'.$this->rndNumber.'.'.\strtolower($this->src_type);    
+    if(\is_resource($this->src_file))
+    {
+      \rewind($this->src_file);
+    }    
+    \file_put_contents($tmp_src_file, $this->src_file);
+    $this->src_file = $tmp_src_file;
+
+    if(!$this->write($tmp_dst_file, $quality))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'));
-      $this->rollback('', $tmp_file);
+      $this->rollback($tmp_src_file, $tmp_dst_file);
 
       return false;
     }
 
-    $stream = \file_get_contents($tmp_file);
+    $stream = \file_get_contents($tmp_dst_file);
 
-    // Delete temporary image file
-    if(File::exists($tmp_file))
+    // Delete temporary image files
+    if(File::exists($tmp_dst_file))
     {
-      File::delete($tmp_file);
+      File::delete($tmp_dst_file);
+    }
+    if(File::exists($tmp_src_file))
+    {
+      File::delete($tmp_src_file);
     }
 
     if(!$base64)

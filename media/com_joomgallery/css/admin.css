@@ -10,10 +10,10 @@ img.jg-controlpanel-logo {
 
 .module-actions {
   -webkit-box-ordinal-group: 2;
-      -ms-flex-order: 1;
-          order: 1;
+  -ms-flex-order: 1;
+  order: 1;
   -webkit-margin-start: auto;
-          margin-inline-start: auto;
+  margin-inline-start: auto;
 }
 .dropdown-item.unpublish-module {
   display:none;
@@ -37,7 +37,6 @@ img.jg-controlpanel-logo {
   font-size: 0.85em;
   color: #666;
 }
-
 .wrapper .container-main {
   overflow: hidden;
 }
@@ -69,6 +68,15 @@ img.jg-controlpanel-logo {
 }
 .modal .modal-body {
   margin: 1rem 2rem;
+}
+td .modal .form-control {
+  width: 100%;
+}
+.modal .control-group .alert {
+  display: block;
+  margin: 0;
+  flex-grow: 1;
+  width: 100%;
 }
 .card.border.active,
 .card.border.success {
@@ -119,6 +127,12 @@ img.jg-controlpanel-logo {
 .jg.jg-config joomla-field-fancy-select.mb-0 div
 {
   margin-bottom: 0;
+}
+.jg.jg-config .jg_staticprocessing .modal .original-note {
+  display: none;
+}
+.jg.jg-config .jg_staticprocessing.original .modal .original-note {
+  display: initial;
 }
 .jg .control-label.unused label {
   color: red;
