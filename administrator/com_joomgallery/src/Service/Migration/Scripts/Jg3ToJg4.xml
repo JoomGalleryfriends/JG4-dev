@@ -93,6 +93,16 @@
   </fieldset>
 
   <fieldset name="destination" description="COM_JOOMGALLERY_FIELDS_DEST_DESC" label="COM_JOOMGALLERY_FIELDS_DEST_LBL">
+    <field name="extented_log"
+           type="radio"
+           class="btn-group"
+           layout="joomla.form.field.radio.switcher"
+           default="0"
+           label="COM_JOOMGALLERY_FIELDS_EXTENTED_LOG_LABEL"
+           description="COM_JOOMGALLERY_FIELDS_EXTENTED_LOG_DESC">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
     <field name="check_owner"
            type="radio"
            class="btn-group"

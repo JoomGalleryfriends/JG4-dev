@@ -787,7 +787,7 @@ class ImageModel extends JoomAdminModel
 					}
 					else
 					{
-						$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), 'warning', 'jerror');
+						$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED') . '; Image ID: ' . $pk, 'warning', 'jerror');
 
 						return false;
 					}

@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Utilities\ArrayHelper;
@@ -44,6 +45,7 @@ class TagsController extends JoomAdminController
 		{
 			if(empty($pks))
 			{
+				$this->component->addLog(Text::_('JERROR_NO_ITEMS_SELECTED'), 'error', 'jerror');
 				throw new \Exception(Text::_('JERROR_NO_ITEMS_SELECTED'));
 			}
 
@@ -54,15 +56,18 @@ class TagsController extends JoomAdminController
       if(\count($pks) > 1)
       {
         $this->setMessage(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'), 'error', 'jerror');
       }
       else
       {
         $this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SUCCESS_DUPLICATED'));
+		$this->component->addLog(Text::_('COM_JOOMGALLERY_ITEM_SUCCESS_DUPLICATED'), 'info', 'jerror');
       }
 		}
 		catch(\Exception $e)
 		{
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
+			$this->component->addLog($e->getMessage(), 'error', 'jerror');
 		}
 
 		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=tags');
