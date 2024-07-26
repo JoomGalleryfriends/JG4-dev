@@ -99,7 +99,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
     else
     {
-      $this->component->addLog('Type must be eighter "source" or "destination", but "'.$type.'" given.', 'error', 'jerror');
+      $this->component->addLog('Type must be eighter "source" or "destination", but "'.$type.'" given.', 'error', 'migration');
       throw new \Exception('Type must be eighter "source" or "destination", but "'.$type.'" given.', 1);
     }
 
@@ -322,7 +322,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         if($data['imgfilename'] !== $data['imgthumbname'])
         {
           $this->component->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_FILENAME_DIFF', $data['id'], $data['alias']));
-          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_FILENAME_DIFF', $data['id'], $data['alias']), 'error', 'jerror');
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_FILENAME_DIFF', $data['id'], $data['alias']), 'error', 'migration');
 
           return array();
         }
@@ -454,7 +454,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     catch(\Exception $e)
     {
       $this->component->setError($e->getMessage());
-      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+      $this->component->addLog($e->getMessage(), 'error', 'migration');
     }
 
     // Postprocessing the queue
@@ -544,7 +544,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       {
         // Direct usage from other source is impossible
         $this->component->setError('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR');
-        $this->component->addLog('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR', 'error', 'jerror');
+        $this->component->addLog('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR', 'error', 'migration');
         
         return false;
       }
@@ -584,7 +584,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           // Recreate, copy or move within the same filesystem by keeping the old folder structure is impossible
           $this->component->setError('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR');
-          $this->component->addLog('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR', 'error', 'jerror');
+          $this->component->addLog('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR', 'error', 'migration');
           
           return false;
         }
@@ -715,7 +715,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Check the source mapping
     if(\count(\array_diff_key($imagetypes, $sources)) !== 0 || \count(\array_diff_key($sources, $imagetypes)) !== 0)
     {
-      $this->component->addLog('Imagetype mapping from migration script does not match component configuration!', 'error', 'jerror');
+      $this->component->addLog('Imagetype mapping from migration script does not match component configuration!', 'error', 'migration');
       throw new \Exception('Imagetype mapping from migration script does not match component configuration!', 1);
     }
 
@@ -750,7 +750,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       {
         // Debug info
         $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \ucfirst($folder_dst)));
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \ucfirst($folder_dst)), 'error', 'jerror');
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', \ucfirst($folder_dst)), 'error', 'migration');
         $error = true;
 
         continue;
@@ -773,7 +773,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
             if(!File::copy($img_src, Path::clean(JPATH_ROOT . '/' . $img_dst)))
             {
               $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type));
-              $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src)), 'error', 'jerror');
+              $this->component->addLog('Jg3ToJg4 - ' . 'Action File::copy: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
+              $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
               $error = true;
               continue;
             }
@@ -783,7 +784,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
             if(!File::move($img_src, Path::clean(JPATH_ROOT . '/' . $img_dst)))
             {
               $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type));
-              $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src)), 'error', 'jerror');
+              $this->component->addLog('Jg3ToJg4 - ' . 'Action File::move: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
+              $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
               $error = true;
               continue;
             }
@@ -807,12 +809,14 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         if($copy)
         {
           $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type));
-          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src)), 'error', 'jerror');
+          $this->component->addLog('Jg3ToJg4 - ' . 'Action copy: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
+          $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
         }
         else
         {
           $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type));
-          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src)), 'error', 'jerror');
+          $this->component->addLog('Jg3ToJg4 - ' . 'Action move: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
+          $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
         }
         
         $error = true;
@@ -913,7 +917,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         if($this->component->getConfig()->get('jg_compatibility_mode', 0) == 0)
         {
           $checks->addCheck($category, 'compatibility_mode', false, false, Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE'), Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE_ON_DESC'));
-          $this->component->addLog(Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE_ON_DESC'), 'error', 'jerror');
+          $this->component->addLog(Text::_('FILES_JOOMGALLERY_MIGRATION_CHECK_COMPATIBILITY_MODE_ON_DESC'), 'error', 'migration');
         }
       }
 
@@ -926,7 +930,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           // Direct usage is not possible when source is outside this joomla installation
           $checks->addCheck($category, 'direct_usage_joomla', false, false, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR'));
-          $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR'), 'error', 'jerror');
+          $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR'), 'error', 'migration');
         }
         else
         {
@@ -936,13 +940,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           {
             // Direct usage only possible with the three standard imagetypes
             $checks->addCheck($category, 'direct_usage_imgtypes', false, false, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_IMGTYPES_ERROR'));
-            $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_IMGTYPES_ERROR'), 'error', 'jerror');
+            $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_IMGTYPES_ERROR'), 'error', 'migration');
           }
           else
           {
             // Make sure that original is deactivated is it was the case in JG3
             $checks->addCheck($category, 'direct_usage_orig', true, true, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ORIGINAL_WARNING'));
-            $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ORIGINAL_WARNING'), 'error', 'jerror');
+            $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ORIGINAL_WARNING'), 'error', 'migration');
           }
 
           $this->component->createConfig();
@@ -950,7 +954,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           {
             // Direct usage is only possible with local filesystem
             $checks->addCheck($category, 'direct_usage_local', false, false, Text::_('COM_JOOMGALLERY_DIRECT_USAGE'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_LOCAL_ERROR'));
-            $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_LOCAL_ERROR'), 'error', 'jerror');
+            $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_LOCAL_ERROR'), 'error', 'migration');
           }
         }
       }
@@ -967,7 +971,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           // Move/Copy/Recreate is not possible since source and destination folders are identical
           $checks->addCheck($category, 'copy_identical_folders', false, false, Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR'));
-          $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR'), 'error', 'jerror');
+          $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR'), 'error', 'migration');
         }
       }
     }

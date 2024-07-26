@@ -302,7 +302,9 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
     catch (FileNotFoundException $e)
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'error', 'jerror');
+      $this->component->addLog('FileNotFoundException in function getFile in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'jerror');
+      $this->component->addLog('$adapter: ' . $adapter, 'warning', 'jerror');
+      $this->component->addLog('$path: ' . $path, 'warning', 'jerror');
       throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
     }
     catch (\Exception $e)

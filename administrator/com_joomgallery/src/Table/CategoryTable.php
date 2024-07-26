@@ -604,6 +604,8 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public function getNodeTree($type = 'cpl', $self = false, $root = false)
   {
+    $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+
     // Check if object is loaded
     if(!$this->id)
     {
@@ -687,7 +689,7 @@ class CategoryTable extends Table implements VersionableTableInterface
       if($type === 'children')
       {
         $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_CHILDREN_FOUND'));
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_CHILDREN_FOUND'), 'error', 'jerror');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_CHILDREN_FOUND'), 'warning', 'jerror');
       }
       elseif($type === 'parents')
       {

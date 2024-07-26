@@ -222,7 +222,6 @@ class ImagesController extends JoomAdminController
     if(\count($created) > 0)
     {
       $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_IMAGES_RECREATED_SUCCESS', \implode(', ', $created)));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_IMAGES_RECREATED_SUCCESS', \implode(', ', $created)), 'info', 'jerror');
     }
 
     // Output error message

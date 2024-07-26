@@ -1093,7 +1093,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     {
       // Nothing to do
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_ONLY_JPG'));
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_ONLY_JPG'), 'warning', 'jerror');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_ONLY_JPG'), 'info', 'jerror');
       $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
       return true;

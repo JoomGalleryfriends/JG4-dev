@@ -372,7 +372,6 @@ class FileManager implements FileManagerInterface
       if(!$error)
       {
         $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-        // $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_IMAGETYPE', $filename, $imagetype->typename), 'info', 'jerror');
       }
     }
 
@@ -426,7 +425,6 @@ class FileManager implements FileManagerInterface
 
       // Deletion successful
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
-      // $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_DELETE_IMAGETYPE', \basename($file), $imagetype->typename), 'info', 'jerror');
     }
 
     if($error)
@@ -666,14 +664,13 @@ class FileManager implements FileManagerInterface
     {
       // Renaming failed
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_IMAGE', \basename($file_orig)));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_IMAGE', \basename($file_orig)), 'error', 'jerror');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_IMAGE', \basename($file_orig)), 'warning', 'jerror');
 
       return false;
     }
 
     // Renaming successful
     $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_IMAGE', \basename($file_orig)));
-    $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_IMAGE', \basename($file_orig)), 'error', 'jerror');
 
     return true;
   }
@@ -782,7 +779,14 @@ class FileManager implements FileManagerInterface
           // There are still images and subcategories available
           // Deletion not allowed
           $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)));
-          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)), 'error', 'jerror');
+          if(\is_object($cat) && \property_exists($cat, 'path'))
+          {
+            $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)) . '; Category ID: ' . $cat->id, 'error', 'jerror');
+          }
+          else
+          {
+            $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)) . '; Category ID: ' . $cat, 'error', 'jerror');
+          }
 
           return false;
         }
@@ -791,7 +795,14 @@ class FileManager implements FileManagerInterface
           // ToDo delete images and subfolders if forced
 
           $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)));
-          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)), 'error', 'jerror');
+          if(\is_object($cat) && \property_exists($cat, 'path'))
+          {
+            $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)) . '; Category ID: ' . $cat->id, 'error', 'jerror');
+          }
+          else
+          {
+            $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY_NOTEMPTY', \basename($path)) . '; Category ID: ' . $cat, 'error', 'jerror');
+          }
 
           return false;
         }
@@ -827,7 +838,6 @@ class FileManager implements FileManagerInterface
 
     // Debug info
     $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_DELETE_CATEGORY', \basename($path)));
-    $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_DELETE_CATEGORY', \basename($path)), 'error', 'jerror');
 
     return true;
   }
@@ -951,7 +961,6 @@ class FileManager implements FileManagerInterface
 
     // Move successful
     $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_'.$method.'_CATEGORY', \basename($src_path)));
-    $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_').$method.'_CATEGORY', \basename($src_path), 'error', 'jerror');
 
     return true;
   }
@@ -1005,14 +1014,13 @@ class FileManager implements FileManagerInterface
     {
       // Renaming failed
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_CATEGORY', \basename($folder_orig)));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_CATEGORY'), \basename($folder_orig), 'error', 'jerror');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_RENAME_CATEGORY', \basename($folder_orig)), 'error', 'jerror');
 
       return false;
     }
 
     // Renaming successful
     $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_CATEGORY', \basename($folder_orig)));
-    $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_RENAME_CATEGORY'), \basename($folder_orig), 'error', 'jerror');
 
     return true;
   }
