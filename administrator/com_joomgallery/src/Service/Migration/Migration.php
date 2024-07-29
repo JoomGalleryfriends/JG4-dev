@@ -816,8 +816,9 @@ abstract class Migration implements MigrationInterface
         if(!$this->migrateables[$req] || !$this->migrateables[$req]->completed || $this->migrateables[$req]->failed->count() > 0)
         {
           $this->continue = false;
-          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('dependent_on'))));
-          $this->component->addLog(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('dependent_on'))), 'error', 'jerror');
+          $this->component->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PREREQUIREMENT_ERROR', $req));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PREREQUIREMENT_ERROR', $req), 'error', 'migration');
+          $this->component->addLog('Fix the error and try the migration again.', 'error', 'migration');
 
           return false;
         }
