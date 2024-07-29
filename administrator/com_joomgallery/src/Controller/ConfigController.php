@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
@@ -64,6 +65,8 @@ class ConfigController extends JoomFormController
 		{
 			// Unable to import into a new record
 			$this->setMessage(Text::_('COM_JOOMGALLERY_INFO_IMPORT_EXPORT'), 'error');
+
+			$this->component->addLog(Text::_('COM_JOOMGALLERY_INFO_IMPORT_EXPORT'), 'error', 'jerror');
 
 			$this->setRedirect(
 				Route::_(
@@ -130,6 +133,8 @@ class ConfigController extends JoomFormController
 		{
 			// Unable to import into a new record
 			$this->setMessage(Text::_('COM_JOOMGALLERY_INFO_IMPORT_EXPORT'), 'error');
+
+			$this->component->addLog(Text::_('COM_JOOMGALLERY_INFO_IMPORT_EXPORT'), 'error', 'jerror');
 
 			$this->setRedirect(
 				Route::_(
@@ -206,6 +211,8 @@ class ConfigController extends JoomFormController
 			// Unable to import into a new record
 			$this->setMessage(Text::_('COM_JOOMGALLERY_INFO_IMPORT_EXPORT'), 'error');
 
+			$this->component->addLog(Text::_('COM_JOOMGALLERY_INFO_IMPORT_EXPORT'), 'warning', 'jerror');
+
 			$this->setRedirect(
 				Route::_(
 					'index.php?option=' . $this->option . '&view=' . $this->view_item
@@ -227,6 +234,8 @@ class ConfigController extends JoomFormController
 		if(!$file_data)
 		{
 			$this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_IMPORT_FAILED', $model->getError()), 'error');
+
+			$this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_IMPORT_FAILED', $model->getError()), 'error', 'jerror');
 
 			$this->setRedirect(
 				Route::_(
@@ -261,6 +270,8 @@ class ConfigController extends JoomFormController
 		$this->task ='apply';
 
 		Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_IMPORT', $file['name']), 'success');
+
+		$this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SUCCESS_IMPORT', $file['name']), 'info', 'jerror');
 
 		// Perform save task
     	parent::save($key, $urlVar);

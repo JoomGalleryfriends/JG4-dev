@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
 
@@ -417,6 +418,7 @@ class TagsModel extends JoomListModel
     catch(\RuntimeException $e)
     {
       $this->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'jerror');
 
       return false;
     }
@@ -457,6 +459,8 @@ class TagsModel extends JoomListModel
         if(!$tag_model->save($data))
         {
           $this->setError($tag_model->getError());
+          $this->component->addLog($tag_model->getError(), 'error', 'jerror');
+
           return false;
         }
         else
@@ -499,6 +503,7 @@ class TagsModel extends JoomListModel
         if(!$tag_model->addMapping($tag_id, $img_id))
         {
           $this->setError($tag_model->getError());
+          $this->component->addLog($tag_model->getError(), 'error', 'jerror');
           $success = false;
         }
       }
@@ -512,6 +517,7 @@ class TagsModel extends JoomListModel
         if(!$tag_model->removeMapping($tag_id, $img_id))
         {
           $this->setError($tag_model->getError());
+          $this->component->addLog($tag_model->getError(), 'error', 'jerror');
           $success = false;
         }
       }

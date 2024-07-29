@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Utilities\ArrayHelper;
 
@@ -44,6 +45,8 @@ class ConfigsController extends JoomAdminController
 		{
 			if(empty($pks))
 			{
+				$this->component->addLog(Text::_('JERROR_NO_ITEMS_SELECTED'), 'warning', 'jerror');
+
 				throw new \Exception(Text::_('JERROR_NO_ITEMS_SELECTED'));
 			}
 
@@ -63,6 +66,7 @@ class ConfigsController extends JoomAdminController
 		catch(\Exception $e)
 		{
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
+			$this->component->addLog($e->getMessage(), 'error', 'jerror');
 		}
 
 		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=configs');
@@ -140,6 +144,8 @@ class ConfigsController extends JoomAdminController
       $this->input->set('cid', $cid);
 
       $this->setMessage(Text::_('COM_JOOMGALLERY_ERROR_DELETE_GLOBCONFIG'), 'warning');
+
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_DELETE_GLOBCONFIG'), 'error', 'jerror');
     }
 
     return parent::delete();

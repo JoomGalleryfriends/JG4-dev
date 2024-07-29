@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 use Exception;
 use Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use Psr\Http\Message\ResponseInterface;
 
 use Joomgallery\Component\Joomgallery\Administrator\Extension\ResponseTrait;
@@ -184,6 +185,7 @@ class Server implements ServerInterface
                 case 'POST':
                     if (!$this->checkTusVersion())
                     {
+                      $this->component->addLog('The requested protocol version is not supported 405', 'error', 'jerror');
                       throw new Request('The requested protocol version is not supported', 405);
                     }
                     $this->buildUuid();
@@ -193,6 +195,7 @@ class Server implements ServerInterface
                 case 'HEAD':
                     if (!$this->checkTusVersion())
                     {
+                      $this->component->addLog('The requested protocol version is not supported 405', 'error', 'jerror');
                       throw new Request('The requested protocol version is not supported', 405);
                     }
                     $this->getUserUuid();
@@ -202,6 +205,7 @@ class Server implements ServerInterface
                 case 'PATCH':
                     if (!$this->checkTusVersion())
                     {
+                      $this->component->addLog('The requested protocol version is not supported 405', 'error', 'jerror');
                       throw new Request('The requested protocol version is not supported', 405);
                     }
                     $this->getUserUuid();
@@ -224,6 +228,7 @@ class Server implements ServerInterface
                   break;
 
                 default:
+                    $this->component->addLog('The requested method ' . $method . ' is not allowed 405', 'error', 'jerror');
                     throw new Request('The requested method ' . $method . ' is not allowed', 405);
             }
 
@@ -327,6 +332,7 @@ class Server implements ServerInterface
     {
         if($this->existsInMetaData('id') === true)
         {
+            $this->component->addLog('The UUID already exists', 'error', 'jerror');
             throw new \RuntimeException('The UUID already exists');
         }
 
@@ -334,6 +340,7 @@ class Server implements ServerInterface
 
         if(is_numeric($headers['Upload-Length']) === false || $headers['Upload-Length'] < 0)
         {
+            $this->component->addLog('Upload-Length must be a positive integer', 'error', 'jerror');
             throw new BadHeader('Upload-Length must be a positive integer');
         }
 
@@ -341,6 +348,7 @@ class Server implements ServerInterface
 
         if($finalLength > $this->allowMaxSize)
         {
+          $this->component->addLog('Request Entity Too Large 413', 'error', 'jerror');
           throw new Request('Request Entity Too Large', 413);
         }
 
@@ -351,11 +359,13 @@ class Server implements ServerInterface
 
         if(file_exists($file) === true)
         {
+            $this->component->addLog('File already exists : ' . $file . ' 500', 'error', 'jerror');
             throw new File('File already exists : ' . $file, 500);
         }
 
         if (touch($file) === false)
         {
+            $this->component->addLog('Impossible to touch ' . $file . ' 500', 'error', 'jerror');
             throw new File('Impossible to touch ' . $file, 500);
         }
 
@@ -431,6 +441,7 @@ class Server implements ServerInterface
         // Check the uuid
         if($this->existsInMetaData('id') === false)
         {
+            $this->component->addLog('The UUID doesn\'t exists', 'error', 'jerror');
             throw new \RuntimeException('The UUID doesn\'t exists');
         }
 
@@ -439,16 +450,19 @@ class Server implements ServerInterface
 
         if(is_numeric($headers['Upload-Offset']) === false || $headers['Upload-Offset'] < 0)
         {
+            $this->component->addLog('Upload-Offset must be a positive integer', 'error', 'jerror');
             throw new BadHeader('Upload-Offset must be a positive integer');
         }
 
         if(isset($headers['Content-Length']) && (is_numeric($headers['Content-Length']) === false || $headers['Content-Length'] < 0))
         {
+            $this->component->addLog('Content-Length must be a positive integer', 'error', 'jerror');
             throw new BadHeader('Content-Length must be a positive integer');
         }
 
         if(is_string($headers['Content-Type']) === false || $headers['Content-Type'] !== 'application/offset+octet-stream')
         {
+            $this->component->addLog('Content-Type must be "application/offset+octet-stream"', 'error', 'jerror');
             throw new BadHeader('Content-Type must be "application/offset+octet-stream"');
         }
 
@@ -484,6 +498,7 @@ class Server implements ServerInterface
         $handleInput = fopen('php://input', 'rb');
         if($handleInput === false)
         {
+            $this->component->addLog('Impossible to open php://input', 'error', 'jerror');
             throw new File('Impossible to open php://input');
         }
 
@@ -491,11 +506,13 @@ class Server implements ServerInterface
         $handleOutput = fopen($file, 'ab');
         if ($handleOutput === false)
         {
+            $this->component->addLog('Impossible to open file to write into', 'error', 'jerror');
             throw new File('Impossible to open file to write into');
         }
 
         if (fseek($handleOutput, $offsetSession) === false)
         {
+            $this->component->addLog('Impossible to move pointer in the good position', 'error', 'jerror');
             throw new File('Impossible to move pointer in the good position');
         }
 
@@ -525,12 +542,14 @@ class Server implements ServerInterface
 
                 if(connection_status() !== CONNECTION_NORMAL)
                 {
+                    $this->component->addLog('User abort connexion', 'error', 'jerror');
                     throw new Abort('User abort connexion');
                 }
 
                 $data = fread($handleInput, 8192);
                 if($data === false)
                 {
+                    $this->component->addLog('Impossible to read the datas', 'error', 'jerror');
                     throw new File('Impossible to read the datas');
                 }
 
@@ -541,6 +560,7 @@ class Server implements ServerInterface
                 {
                     if($contentLength !== null && $totalWrite < $contentLength)
                     {
+                        $this->component->addLog('tream unexpectedly ended. Maybe user aborted?', 'error', 'jerror');
                         throw new Abort('Stream unexpectedly ended. Maybe user aborted?');
                     }
 
@@ -551,12 +571,14 @@ class Server implements ServerInterface
                 // If user sent more datas than expected (by POST Final-Length), abort
                 if($contentLength !== null && ($sizeRead + $currentSize > $lengthSession))
                 {
+                    $this->component->addLog('Size sent is greather than max length expected', 'error', 'jerror');
                     throw new Max('Size sent is greather than max length expected');
                 }
 
                 // If user sent more datas than expected (by PATCH Content-Length), abort
                 if($contentLength !== null && ($sizeRead + $totalWrite > $contentLength))
                 {
+                    $this->component->addLog('Size sent is greather than max length expected', 'error', 'jerror');
                     throw new Max('Size sent is greather than max length expected');
                 }
 
@@ -564,6 +586,7 @@ class Server implements ServerInterface
                 $sizeWrite = fwrite($handleOutput, $data);
                 if($sizeWrite === false)
                 {
+                    $this->component->addLog('Unable to write data', 'error', 'jerror');
                     throw new File('Unable to write data');
                 }
 
@@ -636,22 +659,26 @@ class Server implements ServerInterface
     {
         if (!$this->allowGetMethod)
         {
+            $this->component->addLog('The requested method Get is not allowed 405', 'error', 'jerror');
             throw new Request('The requested method Get is not allowed', 405);
         }
 
         $file = $this->directory . $this->getFilename();
         if(!file_exists($file))
         {
+            $this->component->addLog('The file ' . $this->uuid . ' doesn\'t exist 404', 'error', 'jerror');
             throw new Request('The file ' . $this->uuid . ' doesn\'t exist', 404);
         }
 
         if(!is_readable($file))
         {
+            $this->component->addLog('The file ' . $this->uuid . ' is unaccessible 403', 'error', 'jerror');
             throw new Request('The file ' . $this->uuid . ' is unaccessible', 403);
         }
 
         if(!file_exists($file . '.info') || !is_readable($file . '.info'))
         {
+            $this->component->addLog('The file ' . $this->uuid . ' has no metadata 500', 'error', 'jerror');
             throw new Request('The file ' . $this->uuid . ' has no metadata', 500);
         }
 
@@ -795,6 +822,7 @@ class Server implements ServerInterface
             }
             else
             {
+                $this->component->addLog('The uuid cannot be empty.', 'error', 'jerror');
                 throw new \InvalidArgumentException('The uuid cannot be empty.');
             }
         }
@@ -864,6 +892,7 @@ class Server implements ServerInterface
 
         if($throw)
         {
+          $this->component->addLog($key . ' is not defined in medatada', 'error', 'jerror');
           throw new \RuntimeException($key . ' is not defined in medatada');
         }
         else
@@ -1082,6 +1111,7 @@ class Server implements ServerInterface
     {
         if($this->uuid === null)
         {
+            $this->component->addLog('Uuid can\'t be null when call ' . __METHOD__, 'error', 'jerror');
             throw new \DomainException('Uuid can\'t be null when call ' . __METHOD__);
         }
 
@@ -1110,6 +1140,7 @@ class Server implements ServerInterface
           // Delete file with uuid in its name
           if(!\unlink($file))
           {
+            $this->component->addLog('File with name "' . $file . '" can not be deleted. 500', 'error', 'jerror');
             throw new File('File with name "' . $file . '" can not be deleted.', 500);
           }
         }
@@ -1129,6 +1160,7 @@ class Server implements ServerInterface
     {
         if(is_array($headers) === false)
         {
+            $this->component->addLog('Headers must be an array', 'error', 'jerror');
             throw new \InvalidArgumentException('Headers must be an array');
         }
 
@@ -1186,6 +1218,7 @@ class Server implements ServerInterface
             $this->allowMaxSize = $value;
         }
         else {
+            $this->component->addLog('given $value must be integer, greater them 0', 'error', 'jerror');
             throw new \BadMethodCallException('given $value must be integer, greater them 0');
         }
 
@@ -1206,6 +1239,7 @@ class Server implements ServerInterface
     {
         if(is_dir($directory) === false || is_writable($directory) === false)
         {
+            $this->component->addLog($directory . ' doesn\'t exist or isn\'t writable', 'error', 'jerror');
             throw new File($directory . ' doesn\'t exist or isn\'t writable');
         }
 
@@ -1260,7 +1294,8 @@ class Server implements ServerInterface
       if(\strpos($location, 'http') !== false || \strpos($location, '://') !== false || \strpos($location, 'www.') !== false)
       {
         // looks like $location contains the domain
-        throw new \Exception('Location should not contain the domain. Please provide the domain seperately using setDomain() method.', 1);        
+        $this->component->addLog('Location should not contain the domain. Please provide the domain seperately using setDomain() method.', 'error', 'jerror');
+        throw new \Exception('Location should not contain the domain. Please provide the domain seperately using setDomain() method.', 1);
       }
 
       if(\substr($location, 0, 1) != '/')

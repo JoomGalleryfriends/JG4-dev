@@ -13,6 +13,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
+
 /**
  * Create an animated GIF from multiple images
  *
@@ -96,6 +98,7 @@ class GifCreator
   {
     if(!is_array($dst_frames))
     {
+      $this->component->addLog($this->version.': '.$this->errors['ERR00']), 'error', 'jerror');
       throw new \Exception($this->version.': '.$this->errors['ERR00']);
     }
 
@@ -142,6 +145,7 @@ class GifCreator
       else
       {
         // Fail
+        $this->component->addLog($this->version.': '.$this->errors['ERR02'].' ('.$mode.')', 'error', 'jerror');
         throw new \Exception($this->version.': '.$this->errors['ERR02'].' ('.$mode.')');
       }
 
@@ -152,6 +156,7 @@ class GifCreator
 
       if(substr($this->frameSources[$i], 0, 6) != 'GIF87a' && substr($this->frameSources[$i], 0, 6) != 'GIF89a')
       {
+        $this->component->addLog($this->version.': '.$i.' '.$this->errors['ERR01'], 'error', 'jerror');
         throw new \Exception($this->version.': '.$i.' '.$this->errors['ERR01']);
       }
 
@@ -161,6 +166,7 @@ class GifCreator
           case '!':
             if((substr($this->frameSources[$i], ($j + 3), 8)) == 'NETSCAPE')
             {
+              $this->component->addLog($this->version.': '.$this->errors['ERR03'].' ('.($i + 1).' source).', 'error', 'jerror');
               throw new \Exception($this->version.': '.$this->errors['ERR03'].' ('.($i + 1).' source).');
             }
             break;

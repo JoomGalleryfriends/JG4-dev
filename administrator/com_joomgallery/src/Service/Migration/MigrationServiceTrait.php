@@ -12,6 +12,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Folder;
@@ -52,6 +53,7 @@ trait MigrationServiceTrait
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_MIGRATION_SCRIPT_NOT_EXIST'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_MIGRATION_SCRIPT_NOT_EXIST'), 1);
     }
 

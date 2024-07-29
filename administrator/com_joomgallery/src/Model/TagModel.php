@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
@@ -109,6 +110,8 @@ class TagModel extends JoomAdminModel
     catch(\Exception $e)
     {
       $this->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
       return false;
     }
 
@@ -132,6 +135,8 @@ class TagModel extends JoomAdminModel
       if(!$pk = $this->getItemID($pk))
       {
         $this->setError(Text::_('COM_JOOMGALLERY_ERROR_INVALID_ALIAS'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_ALIAS'), 'error', 'jerror');
+
         return false;
       }
     }
@@ -163,6 +168,7 @@ class TagModel extends JoomAdminModel
 		// Access checks.
 		if(!$this->user->authorise('core.create', _JOOM_OPTION))
 		{
+			$this->component->addLog(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'), 'error', 'jerror');
 			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
 		}
 
@@ -182,6 +188,7 @@ class TagModel extends JoomAdminModel
 
         if(!$table->check())
         {
+          $this->component->addLog($table->getError(), 'error', 'jerror');
           throw new \Exception($table->getError());
         }        
 
@@ -190,6 +197,7 @@ class TagModel extends JoomAdminModel
 
         if(in_array(false, $result, true) || !$table->store())
         {
+          $this->component->addLog($table->getError(), 'error', 'jerror');
           throw new \Exception($table->getError());
         }
 
@@ -198,6 +206,7 @@ class TagModel extends JoomAdminModel
       }
       else
       {
+        $this->component->addLog($table->getError(), 'error', 'jerror');
         throw new \Exception($table->getError());
       }			
 		}
@@ -259,6 +268,8 @@ class TagModel extends JoomAdminModel
     catch(\Exception $e)
     {
       $this->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
       return false;
     }
 
@@ -303,6 +314,8 @@ class TagModel extends JoomAdminModel
     catch(\Exception $e)
     {
       $this->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
       return false;
     }
 

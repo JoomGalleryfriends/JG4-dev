@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 //use Laminas\I18n\Filter\NumberFormat;
 //use NumberFormatter;
+use \Joomla\CMS\Log\Log;
 use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\FileNotFoundException;
 
 /**
@@ -53,9 +54,11 @@ class FileToolsService
     public static function downloadFile($filePath, $fileName, $mime = '', $size = -1, $openMode = self::OPEN_MODE_ATTACHMENT)
     {
         if (!file_exists($filePath)) {
+            $this->component->addLog('File not found: ' . $filePath), 'error', 'jerror');
             throw new FileNotFoundException(null, 0, null, $filePath);
         }
         if (!is_readable($filePath)) {
+            $this->component->addLog(sprintf('File %s is not readable', $filePath), 'error', 'jerror');
             throw new FileNotFoundException(sprintf('File %s is not readable', $filePath), 0, null, $filePath);
         }
 

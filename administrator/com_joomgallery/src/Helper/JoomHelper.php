@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
@@ -106,6 +107,7 @@ class JoomHelper
           $com_obj->{$createService}();
           break;
         default:
+          $this->component->addLog('Too many arguments passed to getService()', 'error', 'jerror');
           throw new \Exception('Too many arguments passed to getService()');
           break;
       }
@@ -113,6 +115,7 @@ class JoomHelper
     catch (\Exception $e)
     {
       echo 'Creation of the service failed. Error: ',  $e->getMessage(), "\n";
+      $this->component->addLog('Creation of the service failed. Error: ' . $e->getMessage(), 'error', 'jerror');
     }
 
     // get the service
@@ -166,6 +169,7 @@ class JoomHelper
 
       if(\is_null($model))
       {
+        $this->component->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
         throw new \Exception('Record-Type '.$name.' does not exist.');
       }
 
@@ -177,6 +181,7 @@ class JoomHelper
     // We got nothing to work with
     else
     {
+      $this->component->addLog('Please provide a valid record ID, alias or filename.', 'error', 'jerror');
       throw new \Exception('Please provide a valid record ID, alias or filename.');
 
       return false;
@@ -250,6 +255,7 @@ class JoomHelper
   {
     if(!\in_array($name, array('image', 'category')))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
 
@@ -295,6 +301,7 @@ class JoomHelper
 
     if(!\in_array($name, $availables))
     {
+      $this->component->addLog('Please provide an available name of the record type.', 'error', 'jerror');
       throw new \Exception('Please provide an available name of the record type.');
 
       return false;
@@ -310,6 +317,7 @@ class JoomHelper
 
     if(\is_null($model))
     {
+      $this->component->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
       throw new \Exception('Record-Type '.$name.' does not exist.');
     }
 
@@ -395,6 +403,7 @@ class JoomHelper
 
     if($imagetype === false)
     {
+      $this->component->addLog('Imagetype not found.', 'error', 'jerror');
       throw new \Exception("Imagetype not found.");
 
       return false;
@@ -636,6 +645,7 @@ class JoomHelper
     // Does imagetype support alias
     if(!\array_key_exists($record, $tables))
     {
+      $this->component->addLog('Record does not support alias.', 'error', 'jerror');
       throw new \Exception('Record does not support alias.');
 
       return false;
@@ -703,6 +713,7 @@ class JoomHelper
   {
     if(!\in_array($name, \array_keys(self::$content_types)))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
   }

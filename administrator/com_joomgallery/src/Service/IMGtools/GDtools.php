@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Text;
@@ -150,6 +151,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     else
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GD_NOTFOUND'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GD_NOTFOUND'), 'info', 'jerror');
 
       return;
     }
@@ -190,6 +192,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->analyse($file, $is_stream) == false)
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_INVALID_IMAGE_FILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_INVALID_IMAGE_FILE'), 'error', 'jerror');
 
       return false;
     }
@@ -206,6 +209,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!\function_exists('imagecreate'))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_GD_NOT_INSTALLED'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_GD_NOT_INSTALLED'), 'error', 'jerror');
       $this->rollback($file, '', true);
 
       return false;
@@ -215,6 +219,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!\in_array($this->src_type, $this->supported_types))
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)), 'error', 'jerror');
 
       return false;
     }
@@ -241,6 +246,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->res_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_READING_ERROR'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_READING_ERROR'), 'error', 'jerror');
       $this->rollback($file, '', true);
 
       return false;
@@ -269,6 +275,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
        empty($this->res_frames[0]['image']) || !$this->isImage_GD($this->res_frames[0]['image']))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
@@ -293,6 +300,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       {
         // unsupported file type
         $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)), 'error', 'jerror');
 
         return false;
       }
@@ -399,6 +407,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       if(!$success)
       {
         $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPYING_FILE', $file));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPYING_FILE', $file), 'error', 'jerror');
 
         return false;
       }
@@ -431,6 +440,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         if(!$meta_success)
         {
           $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_COPY_METADATA'));
+          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_COPY_METADATA'), 'error', 'jerror');
           $this->rollback('', $file);
 
           return false;
@@ -461,6 +471,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         if(!$meta_success)
         {
           $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_COPY_METADATA'));
+          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_COPY_METADATA'), 'error', 'jerror');
           $this->rollback($this->src_file, $file);
 
           return false;
@@ -472,6 +483,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$success || !$this->checkValidImage($file))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'), 'error', 'jerror');
       $this->rollback($this->src_file, $file);
 
       return false;
@@ -506,6 +518,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
        empty($this->res_frames[0]['image']) || !$this->isImage_GD($this->res_frames[0]['image']))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
@@ -520,6 +533,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       {
         // unsupported file type
         $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)), 'error', 'jerror');
 
         return false;
       }
@@ -564,6 +578,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->res_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_OUTPUT_IMAGE'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -636,6 +651,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
        empty($this->res_frames[0]['image']) || !$this->isImage_GD($this->res_frames[0]['image']))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
@@ -657,6 +673,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -670,6 +687,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$memory['success'])
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -721,6 +739,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_RESIZE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_RESIZE'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -743,6 +762,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_RESIZE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_RESIZE'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -760,6 +780,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
       {
         $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_RESIZE'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_RESIZE'), 'error', 'jerror');
         $this->rollback('', '');
 
         return false;
@@ -798,6 +819,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
        empty($this->res_frames[0]['image']) || !$this->isImage_GD($this->res_frames[0]['image']))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
@@ -831,6 +853,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$memory['success'])
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'), 'error', 'jerror');
 
       return false;
     }
@@ -861,6 +884,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ROTATE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ROTATE'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -882,6 +906,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ROTATE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ROTATE'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -919,6 +944,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
        empty($this->res_frames[0]['image']) || !$this->isImage_GD($this->res_frames[0]['image']))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
@@ -971,6 +997,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$memory['success'])
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'), 'error', 'jerror');
 
       return false;
     }
@@ -1001,6 +1028,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FLIP'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FLIP'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -1021,6 +1049,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FLIP'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FLIP'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -1056,6 +1085,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
        empty($this->res_frames[0]['image']) || !$this->isImage_GD($this->res_frames[0]['image']))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
@@ -1063,6 +1093,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     {
       // Nothing to do
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_ONLY_JPG'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_AUTOORIENT_ONLY_JPG'), 'info', 'jerror');
       $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
       return true;
@@ -1109,6 +1140,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ORIENT'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ORIENT'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -1155,6 +1187,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ORIENT'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_ORIENT'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -1198,6 +1231,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(empty($this->res_imginfo['width']) || empty($this->res_imginfo['height']) ||
        empty($this->res_frames[0]['image']) || !$this->isImage_GD($this->res_frames[0]['image']))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_WORKSPACE_MISSING'));
     }
 
@@ -1214,6 +1248,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!\file_exists($wtm_file))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARK_NOT_EXIST'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARK_NOT_EXIST'), 'error', 'jerror');
 
       return false;
     }
@@ -1228,6 +1263,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!($this->src_imginfo = $this->analyse($wtm_file)))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_INVALID_IMAGE_FILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_INVALID_IMAGE_FILE'), 'error', 'jerror');
 
       return false;
     }
@@ -1249,6 +1285,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if(!$memory['success'])
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MEMORY_EXCEED', $memory['needed'].' MByte, Serverlimit: '.$memory['limit'].' MByte'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -1269,6 +1306,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -1297,6 +1335,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames) || $this->checkError($this->dst_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;
@@ -1330,6 +1369,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($this->checkError($this->src_frames))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_WATERMARKING'), 'error', 'jerror');
       $this->rollback('', '');
 
       return false;

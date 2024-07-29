@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
@@ -74,6 +75,7 @@ class SingleUploader extends BaseUploader implements UploaderInterface
       if($image['error'] == 4)
       {
         $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_UPLOADED'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_UPLOADED'), 'error', 'jerror');
 
         return false;
       }
@@ -106,6 +108,7 @@ class SingleUploader extends BaseUploader implements UploaderInterface
     if(!$allowed_imgtools || !$allowed_filesystem || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'), 'error', 'jerror');
       $this->error  = true;
 
       return false;
@@ -126,6 +129,7 @@ class SingleUploader extends BaseUploader implements UploaderInterface
     if(!$return)
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVING_FILE', $this->src_file));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVING_FILE', $this->src_file), 'error', 'jerror');
       $this->rollback();
       $this->error = true;
 
@@ -169,6 +173,7 @@ class SingleUploader extends BaseUploader implements UploaderInterface
     // Check if filename was set
     if(!isset($data_row->filename) || empty($data_row->filename))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_UPLOAD_CHECK_FILENAME'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_UPLOAD_CHECK_FILENAME'));
     }    
     
@@ -217,10 +222,12 @@ class SingleUploader extends BaseUploader implements UploaderInterface
 
     if(in_array($uploaderror, $uploadErrors))
     {
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', $uploadErrors[$uploaderror]), 'error', 'jerror');
       return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', $uploadErrors[$uploaderror]);
     }
     else
     {
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN')), 'error', 'jerror');
       return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN'));
     }
   }

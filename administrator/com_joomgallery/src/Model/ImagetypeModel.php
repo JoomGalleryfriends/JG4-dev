@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\Registry\Registry;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Object\CMSObject;
@@ -81,6 +82,7 @@ class ImagetypeModel extends JoomAdminModel
 				else
 				{
 					$this->setError($table->getError());
+					$this->component->addLog($table->getError(), 'error', 'jerror');
 
           return false;
 				}

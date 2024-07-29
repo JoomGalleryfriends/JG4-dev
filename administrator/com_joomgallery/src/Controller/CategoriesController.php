@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
@@ -54,17 +55,23 @@ class CategoriesController extends JoomAdminController
       
       if(\count($pks) > 1)
       {
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'), 'info', 'jerror');
+
         $this->setMessage(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'));
       }
       else
       {
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ITEM_SUCCESS_DUPLICATED'), 'info', 'jerror');
+
         $this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SUCCESS_DUPLICATED'));
       }
-		}
-		catch (Exception $e)
-		{
-			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
-		}
+    }
+    catch (Exception $e)
+    {
+      $this->component->addLog($e->getMessage(), 'warning', 'jerror');
+
+      Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
+    }
 
 		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=categories');
 	}
@@ -96,15 +103,20 @@ class CategoriesController extends JoomAdminController
 		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=categories', false));
 		$model = $this->getModel();
 
-		if($model->rebuild())
-		{
-			$this->setMessage(Text::_('COM_JOOMGALLERY_CATEGORIES_REBUILD_SUCCESS'));
+    if($model->rebuild())
+    {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_CATEGORIES_REBUILD_SUCCESS'), 'info', 'jerror');
 
-			return true;
-		}
+      $this->setMessage(Text::_('COM_JOOMGALLERY_CATEGORIES_REBUILD_SUCCESS'));
 
-		$this->setMessage(Text::_('COM_JOOMGALLERY_CATEGORIES_REBUILD_FAILURE'));
-    
+      return true;
+    }
+
+    $this->component->addLog(Text::_('COM_JOOMGALLERY_CATEGORIES_REBUILD_FAILURE'), 'error', 'jerror');
+
+    $this->setMessage(Text::_('COM_JOOMGALLERY_CATEGORIES_REBUILD_FAILURE'));
+
+
 		return false;
 	}
 }

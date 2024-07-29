@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\CMS\Mail\MailTemplate;
@@ -46,6 +47,7 @@ class PmMessenger extends Messenger implements MessengerInterface
     if(empty($template))
     {
       $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_MSG_INVALID_TEMPLATE', $this->template_id));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_MSG_INVALID_TEMPLATE', $this->template_id), 'error', 'jerror');
 
       return false;
     }
@@ -72,6 +74,7 @@ class PmMessenger extends Messenger implements MessengerInterface
       if(!$recipient instanceof \Joomla\CMS\User\User)
       {
         $this->component->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_USER_NOT_FOUND'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_MSG_USER_NOT_FOUND'), 'error', 'jerror');
         continue;
       }
 
@@ -99,6 +102,7 @@ class PmMessenger extends Messenger implements MessengerInterface
         if(!$modelMessage->save($message))
         {
           $this->component->setError(Text::_('COM_JOOMGALLERY_ERROR_MSG_FAILED'));
+          $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_MSG_FAILED'), 'error', 'jerror');
           continue;
         }
 

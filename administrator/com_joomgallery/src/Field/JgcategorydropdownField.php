@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\Utilities\ArrayHelper;
@@ -261,6 +262,7 @@ class JgcategorydropdownField extends ListField
 		catch (\RuntimeException $e)
 		{
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			$this->component->addLog($e->getMessage(), 'error', 'jerror');
 		}
 
 		// Pad the option text with spaces using depth level as a multiplier.
