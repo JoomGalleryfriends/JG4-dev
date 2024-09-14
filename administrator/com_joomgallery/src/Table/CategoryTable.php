@@ -31,9 +31,13 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoryTable extends Table implements VersionableTableInterface
+class CategoryTable extends MultipleAssetsTable implements VersionableTableInterface
 { 
-  use JoomTableTrait;
+  use JoomTableTrait, MultipleAssetsTableTrait {
+    MultipleAssetsTableTrait::_getAssetName insteadof JoomTableTrait;
+    MultipleAssetsTableTrait::_getAssetParentId insteadof JoomTableTrait;
+    MultipleAssetsTableTrait::_getAssetTitle insteadof JoomTableTrait;
+  }
   use MigrationTableTrait;
   
   /**
@@ -68,6 +72,14 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public $rm_pw = false;
 
+  /**
+   * The default itemtype
+   *
+   * @var    string  The name of the itemtype
+   * @since  4.0.0
+   */
+  public $def_itemtype = 'category';
+
 	/**
 	 * Constructor
 	 *
@@ -94,47 +106,6 @@ class CategoryTable extends Table implements VersionableTableInterface
   {
     self::$root_id = 0;
   }
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-    $assetTable = new Asset($this->getDbo());
-
-		if($this->parent_id && \intval($this->parent_id) >= 1)
-		{
-			// The item has a category as asset-parent
-			$parent_id = \intval($this->parent_id);
-			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$parent_id);
-		}
-		else
-		{
-			// The item has the component as asset-parent
-			$assetTable->loadByName(_JOOM_OPTION);
-		}
-
-		// Return the found asset-parent-id
-		if($assetTable->id)
-		{
-			$assetParentId = $assetTable->id;
-		}
-		else
-		{
-			// If no asset-parent can be found we take the global asset
-			$assetParentId = $assetTable->getRootId();
-		}
-
-		return $assetParentId;
-	}
 
   /**
    * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
@@ -268,12 +239,27 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-		// Bind the rules for ACL where supported.
-		if(isset($array['rules']))
-		{
-      $rules = new Rules($array['rules']);
-			$this->setRules($rules);
-		}
+    // Support for multiple rules
+    foreach ($array as $key => $value)
+    {
+      if(\strpos($key, 'rules') !== false)
+      {
+        // We found a rules entry in the data
+        if($key === 'rules')
+        {
+          $itemtype = 'category';
+        }
+        else
+        {
+          $itemtype = \str_replace('rules-', '', $key);
+        }
+
+        // Bind the rules for ACL where supported.
+        $rules = new Rules($value);
+        $this->setRules($rules, $itemtype);
+      }
+    }
+		
 
 		return parent::bind($array, $ignore);
 	}

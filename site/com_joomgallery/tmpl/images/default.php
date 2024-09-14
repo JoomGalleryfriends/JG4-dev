@@ -29,10 +29,10 @@ $wa->useStyle('com_joomgallery.list')
 // Access check
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canEdit   = $this->getAcl()->checkACL('edit', 'com_joomgallery.image');
+$canEdit   = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', 1, true);
 $canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 1, true);
-$canDelete = $this->getAcl()->checkACL('delete', 'com_joomgallery.image');
-$canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image');
+$canDelete = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', 1, true);
+$canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', 1, true);
 $saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 $returnURL = base64_encode(JoomHelper::getListRoute('categories', null, $this->getLayout()));
 
@@ -117,9 +117,9 @@ if($saveOrder && !empty($this->items))
             <tbody <?php if($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php endif; ?>>
               <?php foreach ($this->items as $i => $item) :
                   $ordering   = ($listOrder == 'a.ordering');
-                  $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $item->id);
-                  $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', $item->id);
-                  $canChange  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', $item->id);
+                  $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $item->catid, true);
+                  $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', $item->catid, true);
+                  $canChange  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', $item->catid, true);
                   $canCheckin = $canChange || $item->checked_out == Factory::getUser()->id;
                   $disabled   = ($item->checked_out > 0) ? 'disabled' : '';
                 ?>

@@ -593,6 +593,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data = array();
     $data["id"] = null;
     $data["asset_id"] = null;
+    $data["asset_id_image"] = null;
     $data["parent_id"] = 1;
     $data["level"] = 1;
     $data["path"] = "uncategorised";

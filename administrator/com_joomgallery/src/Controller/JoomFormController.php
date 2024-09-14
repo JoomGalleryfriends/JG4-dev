@@ -188,7 +188,22 @@ class JoomFormController extends BaseFormController
    */
   protected function allowEdit($data = [], $key = 'id')
   {
-    return $this->getAcl()->checkACL('edit', $this->context, $data['id']);
+    $id        = $data['id'];
+    $parent_id = false;
+    $assetname = $this->context;
+
+    foreach($this->getAcl()->get('parent_dependent_types') as $type)
+    {
+      if(\strpos($this->context, $type) !== false)
+      {
+        $id        = $data['catid'];
+        $parent_id = true;
+        $assetname = $type;
+      }
+    }
+    
+
+    return $this->getAcl()->checkACL('edit', $assetname, $id, $parent_id);
   }
 
   /**

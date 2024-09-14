@@ -30,10 +30,10 @@ $lang->load('com_joomgallery', JPATH_SITE);
 $lang->load('com_joomgallery', JPATH_ADMINISTRATOR);
 $lang->load('joomla', JPATH_ADMINISTRATOR);
 
-if($this->item->id)
+if($this->item->catid)
 {
   // ID given -> edit
-  $canEdit  = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $this->item->id);
+  $canEdit  = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $this->item->catid, true);
 }
 else
 {

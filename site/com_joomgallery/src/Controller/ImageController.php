@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
@@ -57,7 +58,8 @@ class ImageController extends JoomBaseController
 		}
 
     // Access check
-		if(!$this->acl->checkACL('edit', 'image', $editId))
+		$parent_id = JoomHelper::getParent('image', $editId);
+		if(!$this->acl->checkACL('edit', 'image', $parent_id, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));

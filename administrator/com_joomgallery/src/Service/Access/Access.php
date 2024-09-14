@@ -55,14 +55,22 @@ class Access implements AccessInterface
   protected $parents = array('image' => 'category', 'category' => 'category');
 
   /**
-   * List of content types with appended media (categorized, containing upload rules)
+   * List of content types with appended media (categorised, containing upload rules)
    *
    * @var array
    */
   protected $media_types = array('image');
 
   /**
-   * Component specific prefix for rules.
+   * List of content types wich do not have their own assets but uses assets
+   * of its parent content types.
+   *
+   * @var array
+   */
+  protected $parent_dependent_types = array('image');
+
+  /**
+   * Component specific prefix for its rules.
    *
    * @var string
    */
@@ -90,7 +98,7 @@ class Access implements AccessInterface
   public $allowed = array('default' => null, 'own' => null, 'upload' => null, 'upload-own' => null);
 
   /**
-   * Storage containing all acl checks with a mark to check for that
+   * Containing all acl checks with a mark if we are going to check for that
    *
    * @var array
    */
@@ -150,27 +158,13 @@ class Access implements AccessInterface
     }
 
     // Prepare asset
-    $asset = $this->prepareAsset($asset, $pk, $parent_pk);
-
-    // Explode asset
-    $asset_array  = \explode('.', $asset);
+    list($asset, $asset_array, $asset_type) = $this->prepareAsset($asset, $pk, $parent_pk);
     $asset_lenght = \count($asset_array);
 
-    // Get pk from asset
     if($asset_lenght >= 3 && $pk == 0)
     {
       $pk = \intval($asset_array[2]);
-    }
-
-    // Get imagetype from asset
-    if($asset_lenght > 1)
-    {
-      $asset_type = $asset_array[1];
-    }
-    else
-    {
-      $asset_type = false;
-    }
+    }    
 
     if(!empty($this->aclMap))
     {
@@ -378,12 +372,12 @@ class Access implements AccessInterface
    * @param   int      $pk         Primary key of the asset (optional).
    * @param   bool     $parent_pk  True if given pk is key of parent asset.
    *
-   * @return  string   The prepared asset.
+   * @return  array    The prepared asset list.
    *
    * @since   4.0.0
    * @throws  \Exception
    */
-  protected function prepareAsset(string $asset, int $pk=0, bool $parent_pk=false): string
+  protected function prepareAsset(string $asset, int $pk=0, bool $parent_pk=false): array
   {
     // Do we have a global asset?
     $global = false;
@@ -405,14 +399,53 @@ class Access implements AccessInterface
       $asset = $this->option . '.' . $asset;
     }
 
-    // Last position has to be the primary key
-    if(!$global && !$parent_pk && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
+    // Get type from asset
+    $asset_array  = \explode('.', $asset);
+    if(\count($asset_array) > 1)
     {
+      $asset_type = $asset_array[1];
+    }
+    else
+    {
+      $asset_type = false;
+    }
+
+    // Check for parent_pk to be given
+    if($asset_type && \count($asset_array) > 2 && \in_array($asset_type, $this->parent_dependent_types) && !$parent_pk)
+    {
+      throw new \Exception('For parent-dependent content types, the parent_id must be given!', 1);
+    }
+
+    // Last position has to be the primary key
+    if(!$global && $parent_pk && \in_array($asset_type, $this->parent_dependent_types))
+    {
+      // We have an asset which is permissioned by its parent itemtype
+      if(\count($asset_array) > 2)
+      {
+        // pk already given, exchange it
+        $asset = $asset_array[0] . '.' . $asset_array[1] .'.' . \strval($pk);
+      }
+      else
+      {
+        $asset = $asset . '.' . \strval($pk);
+      }
+    }
+    elseif(!$global && !$parent_pk && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
+    {
+      // We have a standard asset
       $asset = $asset . '.' . \strval($pk);
     }
 
-    // Explode asset
+    // Update type from asset
     $asset_array  = \explode('.', $asset);
+    if(\count($asset_array) > 1)
+    {
+      $asset_type = $asset_array[1];
+    }
+    else
+    {
+      $asset_type = false;
+    }
 
     // Check asset
     if($asset_array[0] != $this->option || (\count($asset_array) > 1 && !\in_array($asset_array[1], $this->types)))
@@ -420,7 +453,7 @@ class Access implements AccessInterface
       throw new \Exception('Invalid asset provided for ACL access check', 1);
     }
 
-    return $asset;
+    return [$asset, $asset_array, $asset_type];
   }
 
   /**

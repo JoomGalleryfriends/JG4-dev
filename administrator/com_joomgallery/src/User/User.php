@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\User;
 // No direct access
 \defined('_JEXEC') or die;
 
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User as BaseUser;
 use \Joomla\CMS\Access\Access as AccessBase;
@@ -101,7 +102,18 @@ class User extends BaseUser
     if(\strpos($assetname, 'joomgallery') !== false)
     {
       // For com_joomgallery
-      return $this->getAcl()->checkACL($action, $assetname);
+      $asset_array  = \explode('.', $assetname);
+      if(\count($asset_array) > 2 && \in_array($asset_array[1], $this->getAcl()->get('parent_dependent_types')))
+      {
+        // We have a parent dependent content type, so parent_id is needed
+        $parent_id = JoomHelper::getParent($asset_array[1], $asset_array[2]);
+        
+        return $this->getAcl()->checkACL($action, $assetname, $parent_id, true);
+      }
+      else
+      {
+        return $this->getAcl()->checkACL($action, $assetname);
+      }      
     }
     else
     {
