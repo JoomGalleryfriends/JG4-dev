@@ -648,7 +648,7 @@ abstract class JoomAdminModel extends AdminModel
     $id        = $record->id;
     $parent_id = false;
 
-    if(\in_array($this->type, $this->getAcl()->get('parent_dependent_types')))
+    if(\in_array($this->type, $this->getAcl()->get('parent_dependent_types')) && isset($record->catid))
     {
       // We have a parent dependent content type, so parent_id is needed
       $id        = $record->catid;
@@ -672,10 +672,10 @@ abstract class JoomAdminModel extends AdminModel
     $id        = $record->id;
     $parent_id = false;
 
-    if(\in_array($this->type, $this->getAcl()->get('parent_dependent_types')))
+    if(\in_array($this->type, $this->getAcl()->get('parent_dependent_types')) && $record->id > 0)
     {
       // We have a parent dependent content type, so parent_id is needed
-      $id        = $record->catid;
+      $id        = isset($record->catid) ? $record->catid : JoomHelper::getParent($this->type, $record->id);
       $parent_id = true;
     }
 

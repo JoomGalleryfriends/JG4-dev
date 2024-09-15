@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\Input\Input;
 use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomla\CMS\Application\CMSApplication;
@@ -194,9 +195,9 @@ class JoomFormController extends BaseFormController
 
     foreach($this->getAcl()->get('parent_dependent_types') as $type)
     {
-      if(\strpos($this->context, $type) !== false)
+      if(\strpos($this->context, $type) !== false && $data['id'] > 0)
       {
-        $id        = $data['catid'];
+        $id        = isset($data['catid']) ? $data['catid'] : JoomHelper::getParent($type, $data['id']);
         $parent_id = true;
         $assetname = $type;
       }

@@ -411,13 +411,13 @@ class Access implements AccessInterface
     }
 
     // Check for parent_pk to be given
-    if($asset_type && \count($asset_array) > 2 && \in_array($asset_type, $this->parent_dependent_types) && !$parent_pk)
+    if($asset_type && \count($asset_array) > 1 && $pk > 0 && \in_array($asset_type, $this->parent_dependent_types) && !$parent_pk)
     {
       throw new \Exception('For parent-dependent content types, the parent_id must be given!', 1);
     }
 
     // Last position has to be the primary key
-    if(!$global && $parent_pk && \in_array($asset_type, $this->parent_dependent_types))
+    if(!$global && $parent_pk && $pk > 0 && \in_array($asset_type, $this->parent_dependent_types))
     {
       // We have an asset which is permissioned by its parent itemtype
       if(\count($asset_array) > 2)
