@@ -106,7 +106,7 @@ class MigrationModel extends JoomAdminModel
   /**
 	 * Method to get the migration parameters from the userstate or from the database.
 	 *
-	 * @return  array  $params  The migration parameters entered in the migration form
+	 * @return  Registry[]  $params  The migration parameters entered in the migration form
 	 *
 	 * @since   4.0.0
 	 */
@@ -140,11 +140,11 @@ class MigrationModel extends JoomAdminModel
       if($params_db && !empty($params_db))
       {
         // Override params from user state with the one from db
-        $params = \json_decode($params_db, true);
+        $params = new Registry($params_db);
       }
     }    
     
-    return $params;
+    return array('migration' => $params);
   }
 
   /**
@@ -163,7 +163,7 @@ class MigrationModel extends JoomAdminModel
 
     if(\is_null($params))
     {
-      $params = $this->getParams();
+      $params = $this->getParams()['migration'];
     }
 
     if(\is_null($params))
@@ -172,7 +172,15 @@ class MigrationModel extends JoomAdminModel
     }
 
     // Set the migration parameters
-    $this->params = new Registry($params);
+    if($params instanceof Registry)
+    {
+      $this->params = $params;
+    }
+    else
+    {
+      $this->params = new Registry($params);
+    }
+    
     $this->component->getMigration()->set('params', $this->params);
   }
 
@@ -1078,7 +1086,13 @@ class MigrationModel extends JoomAdminModel
 		$data = $this->app->getUserState($name.'.step2.data', array());
 
     // Check the session for validated migration parameters
-    $params = $this->getParams();
+    $params = $this->getParams()['migration'];
+
+    if($params instanceof Registry)
+    {
+      // Convert Registry to associative array
+      $params = $params->toArray();
+    }
 
 		return (empty($params)) ? $data : $params;
 	}
@@ -1353,5 +1367,33 @@ class MigrationModel extends JoomAdminModel
     {
       return $key;
     }
+  }
+
+  /**
+   * Method to test whether a record can be deleted.
+   *
+   * @param   object  $record  A record object.
+   *
+   * @return  boolean  True if allowed to delete the record. Defaults to the permission for the component.
+   *
+   * @since   4.0.0
+   */
+  protected function canDelete($record)
+  {
+    return $this->getAcl()->checkACL('admin', 'com_joomgallery');
+  }
+
+  /**
+   * Method to test whether a record can have its state changed.
+   *
+   * @param   object  $record  A record object.
+   *
+   * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
+   *
+   * @since   4.0.0
+   */
+  protected function canEditState($record)
+  {
+    return $this->getAcl()->checkACL('admin', 'com_joomgallery');
   }
 }
