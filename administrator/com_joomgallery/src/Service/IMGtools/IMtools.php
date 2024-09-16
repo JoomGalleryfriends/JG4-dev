@@ -457,9 +457,21 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $tmp_src_file = $tmp_folder.'/tmp_src_img_'.$this->rndNumber.'.'.\strtolower($this->src_type);    
     if(\is_resource($this->src_file))
     {
+      // We are dealing with a streamed resource
       \rewind($this->src_file);
-    }    
-    \file_put_contents($tmp_src_file, $this->src_file);
+    }
+    if(\file_exists($this->src_file))
+    {
+      // We are dealing with a file path - copy it.
+      File::copy($this->src_file, $tmp_src_file);
+    }
+    else
+    {
+      // We are dealing with a file content in a string - write it.
+      \file_put_contents($tmp_src_file, $this->src_file);
+    }
+    
+    // Redefine scr_file variable
     $this->src_file = $tmp_src_file;
 
     if(!$this->write($tmp_dst_file, $quality))
@@ -473,11 +485,11 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $stream = \file_get_contents($tmp_dst_file);
 
     // Delete temporary image files
-    if(File::exists($tmp_dst_file))
+    if(\file_exists($tmp_dst_file))
     {
       File::delete($tmp_dst_file);
     }
-    if(File::exists($tmp_src_file))
+    if(\file_exists($tmp_src_file))
     {
       File::delete($tmp_src_file);
     }
