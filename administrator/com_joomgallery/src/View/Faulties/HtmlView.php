@@ -46,7 +46,9 @@ class HtmlView extends JoomGalleryView
 	{
     $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_YET_AVAILABLE'), 'warning');
 
-		JoomHelper::getActions();
+		// Dvelopment code for Metadata Service
+		$this->component->createMetadata();
+		echo $this->component->getMetadata()->hello();
 
     return;
 

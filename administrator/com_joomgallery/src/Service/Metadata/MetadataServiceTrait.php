@@ -1,0 +1,56 @@
+<?php
+/**
+******************************************************************************************
+**   @version    4.0.0-dev                                                                  **
+**   @package    com_joomgallery                                                        **
+**   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
+**   @copyright  2008 - 2024  JoomGallery::ProjectTeam                                  **
+**   @license    GNU General Public License version 3 or later                          **
+*****************************************************************************************/
+
+namespace Joomgallery\Component\Joomgallery\Administrator\Service\Metadata;
+
+\defined('_JEXEC') or die;
+
+/**
+* Trait to implement MetadataServiceInterface
+*
+* @since  4.0.0
+*/
+trait MetadataServiceTrait
+{
+  /**
+	 * Storage for the metadata service class.
+	 *
+	 * @var MetadataInterface
+	 *
+	 * @since  4.0.0
+	 */
+	private $metadata = null;
+
+  /**
+	 * Returns the metadata service class.
+	 *
+	 * @return  MetadataInterface
+	 *
+	 * @since  4.0.0
+	 */
+	public function getMetadata(): MetadataInterface
+	{
+		return $this->metadata;
+	}
+
+  /**
+	 * Creates the metadata service class
+	 *
+   * @return  void
+   *
+	 * @since  4.0.0
+	 */
+	public function createMetadata()
+	{
+    $this->metadata = new Metadata();
+
+    return;
+	}
+}

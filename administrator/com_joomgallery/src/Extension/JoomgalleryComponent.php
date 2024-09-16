@@ -34,6 +34,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsSe
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerServiceTraitInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Messenger\MessengerServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Metadata\MetadataServiceInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Metadata\MetadataServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\RefresherServiceInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\RefresherServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\TusServiceInterface;
@@ -72,6 +74,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   use FilesystemServiceTrait;
   use IMGtoolsServiceTrait;
   use MessengerServiceTrait;
+  use MetadataServiceTrait;
   use RefresherServiceTrait;
   use TusServiceTrait;
   use UploaderServiceTrait;
