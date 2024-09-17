@@ -623,6 +623,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["language"] = "*";
     $data["metadesc"] = "";
     $data["metakey"] = "";
+    $data["rules"] = "{}";
+    $data["rules-image"] = "{}";
 
     if (!$table->bind($data))
     {
