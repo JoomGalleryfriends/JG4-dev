@@ -558,7 +558,9 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultCategory()
 	{
-    $db = Factory::getContainer()->get(DatabaseInterface::class);
+    // Since the joomgallery namespace is not yet loaded, we have to
+    // manually add all involved classes and traits to initialize
+    // the CategoryTable class
 
     // Load JoomTableTrait
     $joomtabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
@@ -572,6 +574,18 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     require_once $migrationtabletrait_path;
 
+    // Load MultipleAssetsTableTrait
+    $multipleassetstabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'MultipleAssetsTableTrait.php';
+    $multipleassetstabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\MultipleAssetsTableTrait';
+
+    require_once $multipleassetstabletrait_path;
+
+    // Load MultipleAssetsTable
+    $multipleassetstable_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'MultipleAssetsTable.php';
+    $multipleassetstableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\MultipleAssetsTable';
+
+    require_once $multipleassetstable_path;
+
     // Load CategoryTable
     $class_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'CategoryTable.php';
     $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable';
@@ -580,6 +594,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if(class_exists($tableClass))
     {
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+      
       $tableClass::resetRootId();
       $table = new $tableClass($db);
     }

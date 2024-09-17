@@ -20,7 +20,6 @@ use \Joomla\CMS\User\UserHelper;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\Table\Nested as Table;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
