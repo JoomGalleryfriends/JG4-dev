@@ -114,6 +114,8 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
           $fieldname = 'cmsuser';
         }
 
+        // The constructor could be called from within an installer script
+        // Make sure missing namespacing does not mess up installation process
         $helperClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Helper\\JoomHelper';
         if(!\class_exists($helperClass))
         {
