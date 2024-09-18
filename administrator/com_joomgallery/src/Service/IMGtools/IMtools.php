@@ -460,7 +460,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       // We are dealing with a streamed resource
       \rewind($this->src_file);
     }
-    if(\file_exists($this->src_file))
+    if(\is_string($this->src_file) && \file_exists($this->src_file))
     {
       // We are dealing with a file path - copy it.
       File::copy($this->src_file, $tmp_src_file);
