@@ -224,6 +224,7 @@
 
     <field name="rules"
            type="rules"
+           asset_field="asset_id"
            label="JFIELD_RULES_LABEL"
            translate_label="false"
            filter="rules"
@@ -239,6 +240,7 @@
 
     <field name="rules-image"
            type="rules"
+           asset_field="asset_id_image"
            label="JFIELD_RULES_LABEL"
            translate_label="false"
            filter="rules"
