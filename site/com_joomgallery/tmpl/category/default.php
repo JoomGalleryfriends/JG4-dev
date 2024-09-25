@@ -24,7 +24,7 @@ $subcategory_class          = $this->params['configs']->get('jg_category_view_su
 $subcategory_num_columns    = $this->params['configs']->get('jg_category_view_subcategory_num_columns', 3, 'INT');
 $subcategory_image_class    = $this->params['configs']->get('jg_category_view_subcategory_image_class', 0, 'INT');
 $numb_subcategories         = $this->params['configs']->get('jg_category_view_numb_subcategories', 12, 'INT');
-$subcategories_pagination   = $this->params['configs']->get('jg_category_view_subcategories_pagination', 'pagination', 'STRING');
+$subcategories_pagination   = $this->params['configs']->get('jg_category_view_subcategories_pagination', 0, 'INT');
 $subcategories_random_image = $this->params['configs']->get('jg_category_view_subcategories_random_image', 0, 'INT');
 
 // image params

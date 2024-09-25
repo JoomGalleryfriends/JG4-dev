@@ -739,7 +739,6 @@
         <field
             name="jg_category_view_numb_subcategories"
             type="number"
-            class="unused"
             default="12"
             min="1"
             max="999"
@@ -757,9 +756,9 @@
             default="pagination"
             validate="options"
             >
-            <option value="pagination">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
-            <option value="loadmore">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
-            <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
+            <option value="0">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
+            <option value="1">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
+            <option value="2">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
         </field>
         <field
             name="jg_category_view_subcategories_random_image"
@@ -848,7 +847,6 @@
         <field
             name="jg_category_view_numb_images"
             type="number"
-            class="unused"
             default="16"
             min="1"
             max="9999"

@@ -394,10 +394,16 @@ class CategoryModel extends JoomItemModel
     }
 
     // Override number of images beeing loaded
-    if(!$params['configs']->get('jg_category_view_pagination', 0, 'int'));
+    if($params['configs']->get('jg_category_view_pagination', 0, 'int') > 1)
     {
       // Load all images for infinity scroll
       $listModel->setState('list.limit', '0');
+    }
+    else
+    {
+      // Load the number of images defined in the configuration
+      // for pagination and load more btn
+      $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 16, 'int'));
     }
 
     // Disable behavior of remembering pagination position
@@ -419,7 +425,8 @@ class CategoryModel extends JoomItemModel
   protected function setChildrenModelState(ListModel &$listModel, array $fields = array())
   {
     // Get current user
-    $user = $this->app->getIdentity();
+    $user   = $this->app->getIdentity();
+    $params = $this->getParams();
 
     // Apply selection
     if(\count($fields) > 0)
@@ -436,14 +443,27 @@ class CategoryModel extends JoomItemModel
     $listModel->setState('filter.showhidden', 0);
     $listModel->setState('filter.showempty', 1);
 
-    // Disable behavior of remembering pagination position
-    // if it is not explicitely given in the request
-    $listModel->setState('list.start', $this->app->getInput()->get('limitstart', 0, 'uint'));
-
     if(Multilanguage::isEnabled())
     {
       $listModel->setState('filter.language', $this->item->language);
     }
+
+    // Override number of images beeing loaded
+    if($params['configs']->get('jg_category_view_subcategories_pagination', 0, 'int') > 1)
+    {
+      // Load all subcategories for infinity scroll
+      $listModel->setState('list.limit', '0');
+    }
+    else
+    {
+      // Load the number of images defined in the configuration
+      // for pagination and load more btn
+      $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_subcategories', 12, 'int'));
+    }
+
+    // Disable behavior of remembering pagination position
+    // if it is not explicitely given in the request
+    $listModel->setState('list.start', $this->app->getInput()->get('limitstart', 0, 'uint'));
 
     // Apply ordering
     $listModel->setState('list.fullordering', 'a.lft ASC');
