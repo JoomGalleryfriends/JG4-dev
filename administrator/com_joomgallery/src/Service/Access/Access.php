@@ -184,8 +184,6 @@ class Access implements AccessInterface
     {
       $acl_rule = $action;
     }
-    
-    $acl_rule_array = \explode('.', $acl_rule);
 
     // Check that parent_pk flag is set to yes if adding into a nested asset
     if($action == 'add' && \in_array($asset_type, \array_keys($this->parents)) && !$parent_pk)
@@ -209,14 +207,19 @@ class Access implements AccessInterface
       if(\in_array($asset_type, $this->media_types) && $action == 'add')
       {
         // Special acl rule for media upload
-        $acl_rule = $this->prefix.'.upload';
+        $acl_rule       = $this->prefix.'.upload';
       }
 
       // Get asset for parent checks
-      $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
-      $asset        = $asset_array[0].'.'.$parent_type.'.'.$pk;
-      $asset_lenght = \count(\explode('.', $asset));
+      if(!\in_array($asset_type, $this->parent_dependent_types))
+      {
+        $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
+        $asset        = $asset_array[0].'.'.$parent_type.'.'.$pk;
+        $asset_lenght = \count(\explode('.', $asset));
+      }      
     }
+
+    $acl_rule_array = \explode('.', $acl_rule);
 
     // 1. Default permission checks based on asset table
     // (Global Configuration -> Recursive assets)
@@ -292,7 +295,7 @@ class Access implements AccessInterface
     }
 
     // Advanced: Apply media items result
-    if($this->tocheck['upload'] === true)
+    if($allowedRes !== false && $this->tocheck['upload'] === true)
     {
       if($this->allowed['upload'] !== null)
       {
