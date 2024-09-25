@@ -394,11 +394,15 @@ class CategoryModel extends JoomItemModel
     }
 
     // Override number of images beeing loaded
-    if(!$params['menu']->get('jg_category_view_pagination', 0, 'int'));
+    if(!$params['configs']->get('jg_category_view_pagination', 0, 'int'));
     {
       // Load all images for infinity scroll
       $listModel->setState('list.limit', '0');
     }
+
+    // Disable behavior of remembering pagination position
+    // if it is not explicitely given in the request
+    $listModel->setState('list.start', $this->app->getInput()->get('img-limitstart', 0, 'uint'));
 
     // Apply ordering
     $listModel->setState('list.fullordering', 'a.id ASC');
@@ -431,6 +435,10 @@ class CategoryModel extends JoomItemModel
     $listModel->setState('filter.published', 1);
     $listModel->setState('filter.showhidden', 0);
     $listModel->setState('filter.showempty', 1);
+
+    // Disable behavior of remembering pagination position
+    // if it is not explicitely given in the request
+    $listModel->setState('list.start', $this->app->getInput()->get('limitstart', 0, 'uint'));
 
     if(Multilanguage::isEnabled())
     {
