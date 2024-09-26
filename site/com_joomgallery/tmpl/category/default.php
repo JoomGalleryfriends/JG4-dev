@@ -25,7 +25,7 @@ $subcategory_num_columns    = $this->params['configs']->get('jg_category_view_su
 $subcategory_image_class    = $this->params['configs']->get('jg_category_view_subcategory_image_class', 0, 'INT');
 $numb_subcategories         = $this->params['configs']->get('jg_category_view_numb_subcategories', 12, 'INT');
 $subcategories_pagination   = $this->params['configs']->get('jg_category_view_subcategories_pagination', 0, 'INT');
-$subcategories_random_image = $this->params['configs']->get('jg_category_view_subcategories_random_image', 0, 'INT');
+$subcategories_random_image = $this->params['configs']->get('jg_category_view_subcategories_random_image', 1, 'INT');
 
 // image params
 $category_class   = $this->params['configs']->get('jg_category_view_class', 'masonry', 'STRING');
@@ -156,7 +156,15 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
         <div class="jg-image">
           <div class="jg-image-thumbnail<?php if($subcategory_image_class && $subcategory_class != 'justified') : ?><?php echo ' boxed'; ?><?php endif; ?>">
             <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
-              <img src="<?php echo JoomHelper::getImg($subcat->thumbnail, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $this->escape($subcat->title); ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $subcategory_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
+              <?php
+                $thumb_type = 'thumbnail';
+                if($subcat->thumbnail == 0 && $subcategories_random_image)
+                {
+                  $subcat->thumbnail = $subcat->id;
+                  $thumb_type = 'rnd_cat:thumbnail';
+                }
+              ?>
+              <img src="<?php echo JoomHelper::getImg($subcat->thumbnail, $thumb_type); ?>" class="jg-image-thumb" alt="<?php echo $this->escape($subcat->title); ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $subcategory_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
 
               <?php if($subcategory_class == 'justified') : ?>
               <div class="jg-image-caption-hover <?php echo $caption_align; ?>">

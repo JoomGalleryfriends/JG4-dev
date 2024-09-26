@@ -388,7 +388,7 @@ class JoomHelper
    * Returns the URL or the path to an image
    *
    * @param   string/object/int $img     Filename, database object, ID or URL of the image
-   * @param   string            $type    The image type
+   * @param   string            $type    The image type or rnd_cat:<type> to load a random image
    * @param   bool              $url     True to return an image URL, false for a system path (default: true)
    * @param   bool              $root    True to add the system root to path. Only if $url=false. (default: true)
    *
@@ -398,6 +398,17 @@ class JoomHelper
    */
   public static function getImg($img, $type, $url=true, $root=true)
   {
+    // Create file config service based on current user
+		$config = self::getService('Config');
+
+    if(\strpos($type, 'rnd_cat:') !== false && $config->get('jg_category_view_subcategories_random_image', 1))
+    {
+      // we want to get a random image from a category
+      $type_array = explode(':', $type, 2);
+      $type       = $type_array[1];
+      $img        = self::getRndImageID($img, $config->get('jg_category_view_subcategories_random_subimages', 0, 'int'));
+    }
+
     // get imagetypes
     $imagetype = self::getRecord('imagetype', array('typename' => $type));
 
@@ -461,9 +472,6 @@ class JoomHelper
     // Check whether the image shall be output through the PHP script or with its real path
     if($url)
     {
-      // Create file config service based on current user
-			$config = self::getService('Config');
-
       if($config->get('jg_use_real_paths', 0) == 0)
       {
         // Joomgallery internal URL
@@ -516,30 +524,25 @@ class JoomHelper
    */
   public static function getCatImg($cat, $type, $url=true, $root=true)
   {
-    if(!\is_object($cat))
+    if (!\is_object($cat))
     {
-      if(\is_numeric($cat))
+      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
       {
-        if($cat == 0)
-        {
-          // ID = 0 given
-          return self::getImgZero($type, $url, $root);          
-        }
-        else
-        {
-          // get category based on ID
-          $cat = self::getRecord('category', $cat);
-        }
+        // no actual category given
+        return self::getImgZero($type, $url, $root);
       }
-      elseif(\is_string($cat))
+  
+      $cat = self::getRecord('category', $cat);
+    }
+
+    if($cat->thumbnail == 0)
+    {
+      // Create file config service based on current user
+      $config = self::getService('Config');
+
+      if($config->get('jg_category_view_subcategories_random_image', 1, 'int'))
       {
-        // get category id based on alias
-        $cat = self::getRecord('category', $cat);
-      }
-      else
-      {
-        // no category given
-        return self::getImgZero($type, $url, $root); 
+        return self::getImg($cat, 'rnd_cat:'.$type, $url, $root);
       }
     }
 
@@ -558,6 +561,71 @@ class JoomHelper
   public static function getTableName(string $type)
   {
     return self::$content_types[$type];
+  }
+
+  /**
+   * Returns the ID of a random image ID in a category
+   *
+   * @param   string/object/int   $cat          Alias, database object or ID of the category
+   * @param   bool                $inc_subcats  True to include subcategories in the search
+   *
+   * @return  int                        Image ID on success, 0 otherwise
+   *
+   * @since   4.0.0
+   */
+  public static function getRndImageID($cat, $inc_subcats=false)
+  {
+    $id = 0;
+
+    if (!\is_object($cat))
+    {
+      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
+      {
+        // no actual category given
+        return $id;
+      }
+  
+      $cat = self::getRecord('category', $cat);
+    }    
+
+    try {
+      if($inc_subcats)
+      {
+        // Create the category table
+        $com_obj = self::getComponent();
+        if(!$table = $com_obj->getMVCFactory()->createTable('category', 'administrator'))
+        {
+          return $id;
+        }
+
+        // Load subcategories
+        $table->load($cat->id);
+        $categories = $table->getNodeTree('children', true);
+      }
+      else
+      {
+        $categories = array($cat->id);
+      }
+
+      // Load the random image id
+      $db    = Factory::getContainer()->get(DatabaseInterface::class);
+      $query = $db->getQuery(true);
+
+      $query->select('id')
+            ->from($db->quoteName(_JOOM_TABLE_IMAGES))
+            ->where($db->quoteName('catid') . ' IN (' . implode(',', $categories) .')')
+            ->order('RAND()')
+            ->setLimit(1);
+      $db->setQuery($query);
+
+      $res = $db->loadResult();
+      $id = \is_null($res) ? 0 : (int) $res;
+    }
+    catch (\Exception $e) {
+      return $id;
+    }
+
+    return $id;
   }
 
   /**

@@ -750,7 +750,6 @@
         <field
             name="jg_category_view_subcategories_pagination"
             type="list"
-            class="unused"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION_DESC"
             default="pagination"
@@ -763,7 +762,6 @@
         <field
             name="jg_category_view_subcategories_random_image"
             type="radio"
-            class="unused"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES_DESC"
             default="1"
@@ -773,7 +771,19 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-
+        <field
+            name="jg_category_view_subcategories_random_subimages"
+            type="radio"
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES"
+            description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES_DESC"
+            default="0"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            showon="jg_category_view_subcategories_random_image:1"
+            >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
         <field
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_IMAGES"
             type="spacer"
