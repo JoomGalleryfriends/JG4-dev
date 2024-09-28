@@ -18,6 +18,7 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\Model\ListModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomla\CMS\User\UserHelper;
 
 /**
  * Model to get a category record.
@@ -127,6 +128,67 @@ class CategoryModel extends JoomItemModel
 
 		return $this->item;
 	}
+
+  /**
+   * Method to unlock a password protected category
+   *
+   * @param   int     $catid    ID of the category to unlock
+   * @param   string  $password Password of the category to check
+   * 
+   * @return  boolean True on success, false otherwise
+   * @since   4.0.0
+   * 
+   * @throws \Exception
+   */
+  public function unlock($catid, $password)
+  {
+    if($catid < 1)
+    {
+      throw new \Exception('No category provided.');
+    }
+
+    if(empty($password))
+    {
+      throw new \Exception('No password provided.');
+    }
+
+    // Create a new query object.
+		$db    = $this->getDatabase();
+		$query = $db->getQuery(true);
+
+    $query->select('id, password')
+          ->from($db->quoteName(_JOOM_TABLE_CATEGORIES))
+          ->where('id = '.(int) $catid);
+    $db->setQuery($query);
+
+    if(!$category = $db->loadObject())
+    {
+      throw new \Exception($db->getErrorMsg());
+    }
+
+    if(!$category)
+    {
+      throw new \Exception('Provided category not found.');
+    }
+
+    if(!$category->password)
+    {
+      throw new \Exception('Category is not protected.');
+    }
+
+    if(!UserHelper::verifyPassword($password, $category->password))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_CATEGORY_PASSWORD_INCORRECT'));
+    }
+
+    $categories = $this->app->getUserState(_JOOM_OPTION.'unlockedCategories', array(0));
+    $categories = \array_unique(\array_merge($categories, array($catid)));
+    $this->app->setUserState(_JOOM_OPTION.'unlockedCategories', $categories);
+
+    $this->app->triggerEvent('onJoomAfterUnlockCat', array($catid));
+
+    return true;
+  }
 
   /**
 	 * Method to get the parent category item object.
