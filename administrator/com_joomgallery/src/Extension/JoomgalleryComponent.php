@@ -14,14 +14,18 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Menu\AbstractMenu;
 use \Psr\Container\ContainerInterface;
 use \Joomla\CMS\Extension\MVCComponent;
 use \Joomla\CMS\HTML\HTMLRegistryAwareTrait;
+use \Joomla\CMS\Component\Router\RouterInterface;
+use \Joomla\CMS\Application\CMSApplicationInterface;
 use \Joomla\CMS\Association\AssociationServiceInterface;
 use \Joomla\CMS\Association\AssociationServiceTrait;
 use \Joomla\CMS\Component\Router\RouterServiceInterface;
 use \Joomla\CMS\Component\Router\RouterServiceTrait;
 use \Joomla\CMS\Extension\BootableExtensionInterface;
+use \Joomgallery\Component\Joomgallery\Site\Service\JG3Router;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessServiceInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigServiceInterface;
@@ -53,8 +57,8 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
 {
   use MessageTrait;
 	use AssociationServiceTrait;
-	use RouterServiceTrait;
 	use HTMLRegistryAwareTrait;
+  use RouterServiceTrait { RouterServiceTrait::createRouter as traitCreateRouter;}
 
   /**
    * JoomGallery services
@@ -135,6 +139,43 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
     if(!$this->version)
     {
       $this->version = (string) $this->xml->version;
+    }
+  }
+
+  /**
+   * Returns the router.
+   *
+   * @param   CMSApplicationInterface  $application  The application object
+   * @param   AbstractMenu             $menu         The menu object to work with
+   *
+   * @return  RouterInterface
+   *
+   * @since  4.0.0
+   */
+  public function createRouter(CMSApplicationInterface $application, AbstractMenu $menu): RouterInterface
+  {
+    $modern     = true;
+    $requestURI = \pathinfo(\Joomla\CMS\Uri\Uri::getInstance()->getPath());
+    
+    if($modern)
+    {
+      return $this->traitCreateRouter($application, $menu);
+
+      // if($requestURI['extension'] == 'raw' || $application->input->get('format', '') == 'raw')
+      // {
+      //   // Use the traditional router for raw format
+
+      // }
+      // else
+      // {
+      //   // Use the default modern router
+      //   return $this->traitCreateRouter($application, $menu);
+      // }      
+    }
+    else
+    {
+      // Use the old JG3 router for compatibility reasons
+      return new JG3Router($application, $menu);
     }
   }
 }
