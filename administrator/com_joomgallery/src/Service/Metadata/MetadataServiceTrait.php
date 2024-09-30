@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2024  JoomGallery::ProjectTeam                                  **
@@ -42,14 +42,25 @@ trait MetadataServiceTrait
 
   /**
 	 * Creates the metadata service class
+   * 
+   * @param   string  $processor  Name of the metadata processor to be used
 	 *
    * @return  void
    *
 	 * @since  4.0.0
 	 */
-	public function createMetadata()
+	public function createMetadata(string $processor)
 	{
-    $this->metadata = new Metadata();
+    switch ($processor)
+    {
+      case 'exiftools':
+        $this->metadata = new MetadataExifTool();
+        break;
+
+      default:
+        $this->metadata = new MetadataPHP();
+        break;
+    }
 
     return;
 	}

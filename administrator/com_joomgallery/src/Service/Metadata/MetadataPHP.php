@@ -10,15 +10,24 @@
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Service\Metadata;
 
+// No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Metadata\Metadata as BaseMetadata;
+
 /**
-* Interface for the metadata class
-*
-* @since  4.0.0
-*/
-interface MetadataInterface
+ * PHP implementation of Metadata Class
+ *
+ * @package JoomGallery
+ * @since   4.0.0
+ */
+class MetadataPHP extends BaseMetadata implements MetadataInterface
 {
+  use ServiceTrait;
+
   /**
    * First method
    *
@@ -26,5 +35,8 @@ interface MetadataInterface
    *
    * @since   4.0.0
    */
-  public function hello(): string;
+  public function hello(): string
+  {
+    return 'Hello from the <b>PHP</b> version of the Metadata-Service...';
+  }
 }
