@@ -856,7 +856,7 @@ class CategoryTable extends Table implements VersionableTableInterface
    * @param   bool     $root        True to include root node (default: false)
    * @param   string   $prop_name   The property name
    * 
-   * @return   array  List of path segments.
+   * @return   array  List of path slugs (slug = id:alias).
    * @throws  \UnexpectedValueException
    */
   public function getRoutePath($root = false, $prop_name = 'route_path')
@@ -874,7 +874,7 @@ class CategoryTable extends Table implements VersionableTableInterface
       $this->{$prop_name} = array();
       foreach ($parents as $key => $node)
       {
-        $this->{$prop_name}[$node['id']] = $node['alias'];
+        $this->{$prop_name}[$node['id']] = $node['id'] . ':' . $node['alias'];
       }
     }
 

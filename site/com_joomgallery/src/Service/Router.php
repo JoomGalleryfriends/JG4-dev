@@ -13,14 +13,12 @@ namespace Joomgallery\Component\Joomgallery\Site\Service;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
 use \Joomla\CMS\Menu\AbstractMenu;
 use \Joomla\Database\ParameterType;
 use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\Component\Router\RouterView;
 use \Joomla\CMS\Component\Router\RouterViewConfiguration;
 use \Joomla\CMS\Application\SiteApplication;
-use \Joomla\CMS\Categories\CategoryInterface;
 use \Joomla\CMS\Categories\CategoryFactoryInterface;
 use \Joomla\CMS\Component\Router\Rules\MenuRules;
 use \Joomla\CMS\Component\Router\Rules\NomenuRules;
@@ -158,7 +156,8 @@ class Router extends RouterView
    * Method to get the segment(s) for an category
    *
    * @param   string  $id     ID of the category to retrieve the segments for
-   * @param   array   $query  The request that is built right now, array(0: alias, 1: alias_parentcat)
+   * @param   array   $query  The request that is built right now
+   *                          array(id = id:alias, parentid: parentid:parentalias)
    *
    * @return  array|string  The segments of this item
    */
@@ -276,6 +275,13 @@ class Router extends RouterView
    */
   public function getCategoryId($segment, $query)
   {
+    if($query['id'] === 0 || $query['id'] === '0')
+    {
+      // Root element of nestable content in core must have the id=0
+      // But JoomGallery category root has id=1
+      $query['id'] = 1;
+    }
+
     if(isset($query['id']))
     {
       $category = $this->getCategory((int) $query['id'], 'children', true);
