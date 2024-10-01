@@ -102,6 +102,14 @@
       }
     },
     {
+      "name": "com_joomgallery.lg-thumbnail",
+      "type": "script",
+      "uri": "com_joomgallery/lg-thumbnail.min.js",
+      "attributes": {
+        "defer": false
+      }
+    },
+    {
       "name": "com_joomgallery.masonry",
       "type": "script",
       "uri": "com_joomgallery/masonry.min.js",
