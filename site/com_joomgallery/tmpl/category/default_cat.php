@@ -203,7 +203,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <h3>Images</h3>
   <?php if(!empty($this->item->images->filterForm) && $use_pagination == '0') : ?>
     <?php // Show image filters ?>
-    <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.$this->item->id.'&Itemid='.$this->menu->id.'&limitstart=0'); ?>" method="post" name="adminForm" id="adminForm">
+    <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.$this->item->id.'&Itemid='.$this->menu->id); ?>" method="post" name="adminForm" id="adminForm">
       <?php
         {
           echo LayoutHelper::render('joomla.searchtools.default', array(
@@ -212,6 +212,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           ));
         }
       ?>
+      <input type="hidden" name="list[type]" value="image"/>
       <input type="hidden" name="task" value=""/>
       <input type="hidden" name="filter_order" value=""/>
       <input type="hidden" name="filter_order_Dir" value=""/>

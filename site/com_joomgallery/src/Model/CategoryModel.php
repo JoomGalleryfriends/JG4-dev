@@ -455,17 +455,25 @@ class CategoryModel extends JoomItemModel
       $listModel->setState('filter.language', $this->item->language);
     }
 
+    // List parameters sent by the images form
+    $form_list = $this->app->input->get('list', array());
+
     // Override number of images beeing loaded
-    if($params['configs']->get('jg_category_view_pagination', 0, 'int') > 1)
+    if($params['configs']->get('jg_category_view_pagination', 0, 'int') > 0)
     {
-      // Load all images for infinity scroll
+      // Load all images when not pagination active
       $listModel->setState('list.limit', '0');
     }
     else
     {
       // Load the number of images defined in the configuration
-      // for pagination and load more btn
       $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 16, 'int'));
+
+      // Apply number of images to be loaded from list in the view
+      if(isset($imgform_list['limit']) && $imgform_list['limit'] > 0)
+      {
+        $listModel->setState('list.limit', $imgform_list['limit']);
+      }
     }
 
     // Disable behavior of remembering pagination position
@@ -511,15 +519,14 @@ class CategoryModel extends JoomItemModel
     }
 
     // Override number of images beeing loaded
-    if($params['configs']->get('jg_category_view_subcategories_pagination', 0, 'int') > 1)
+    if($params['configs']->get('jg_category_view_subcategories_pagination', 0, 'int') > 0)
     {
-      // Load all subcategories for infinity scroll
+      // Load all images when not pagination active
       $listModel->setState('list.limit', '0');
     }
     else
     {
       // Load the number of images defined in the configuration
-      // for pagination and load more btn
       $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_subcategories', 12, 'int'));
     }
 
