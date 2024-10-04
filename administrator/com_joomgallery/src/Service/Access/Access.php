@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\CMS\Access\Access as AccessBase;
@@ -180,6 +181,7 @@ class Access implements AccessInterface
         )
       {
         // Action not available for this asset.
+        $this->component->addLog('Action not available for this asset. Access can not be checked. Please provide reasonable inputs.', 'error', 'jerror');
         throw new \Exception("Action not available for this asset. Access can not be checked. Please provide reasonable inputs.", 1);
       }
 
@@ -197,6 +199,7 @@ class Access implements AccessInterface
     if($action == 'add' && \in_array($asset_type, \array_keys($this->parents)) && !$parent_pk)
     {
       // Flag parent_pk has to be set to yes
+      $this->component->addLog("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 'error', 'jerror');
       throw new \Exception("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
     }
 
@@ -417,6 +420,7 @@ class Access implements AccessInterface
     // Check asset
     if($asset_array[0] != $this->option || (\count($asset_array) > 1 && !\in_array($asset_array[1], $this->types)))
     {
+      $this->component->addLog('Invalid asset provided for ACL access check', 'error', 'jerror');
       throw new \Exception('Invalid asset provided for ACL access check', 1);
     }
 
@@ -464,6 +468,7 @@ class Access implements AccessInterface
     // Get the correct action from composition array
     if(!$res = $this->arrayRecursiveSearch($action, $composition))
     {
+      $this->component->addLog('Invalid asset provided for ACL access check', 'error', 'jerror');
       throw new \Exception('Invalid action provided for ACL access check', 1);
     }
 

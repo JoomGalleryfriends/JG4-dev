@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 
 /**
@@ -99,6 +100,7 @@ class Checks
     else
     {
       // You try to add a category already existing
+      $this->component->addLog('You try to add a category that already exists. If you want to modify it, use "modCategory()" instead.', 'error', 'jerror');
       throw new \Exception('You try to add a category that already exists. If you want to modify it, use "modCategory()" instead.', 1);
     }
   }
@@ -123,6 +125,7 @@ class Checks
     if(!\in_array($name, \array_keys($this->assets)))
     {
       // You try to modify a category which does not exist
+      $this->component->addLog('You try to modify a category which does not exists. Please add the category first.', 'error', 'jerror');
       throw new \Exception('You try to modify a category which does not exists. Please add the category first.', 1);
     }
     else
@@ -168,6 +171,7 @@ class Checks
     // Check if category exists
     if(!\in_array($category, \array_keys($this->assets)))
     {
+      $this->component->addLog('You try to add a check to a category which is not existing. Please add the category first.', 'error', 'jerror');
       throw new \Exception('You try to add a check to a category which is not existing. Please add the category first.', 1);
     }
 
@@ -214,6 +218,7 @@ class Checks
     else
     {
       // You try to add a check already existing
+      $this->component->addLog('You try to add a check that already exists. If you want to modify it, use "modCheck()" instead.', 'error', 'jerror');
       throw new \Exception('You try to add a check that already exists. If you want to modify it, use "modCheck()" instead.', 2);
     }
   }
@@ -244,6 +249,7 @@ class Checks
     // Check if category exists
     if(!\in_array($category, \array_keys($this->assets)))
     {
+      $this->component->addLog('You try to modify a check in a category which is not existing. Please add the category first.', 'error', 'jerror');
       throw new \Exception('You try to modify a check in a category which is not existing. Please add the category first.', 1);
     }
 
@@ -251,6 +257,7 @@ class Checks
     if(!\in_array($asset, \array_keys($this->assets)))
     {
       // You try to modify a check which does not exist
+      $this->component->addLog('You try to modify a check which does not exists. Please add the check first.', 'error', 'jerror');
       throw new \Exception('You try to modify a check which does not exists. Please add the check first.', 2);
     }
     else

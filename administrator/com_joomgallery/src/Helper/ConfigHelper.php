@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\Uri\Uri;
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
@@ -61,6 +62,7 @@ class ConfigHelper
       }
       else
       {
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'), 'error', 'jerror');
         throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
       }
 
@@ -100,6 +102,7 @@ class ConfigHelper
     }
     else
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
     }
   }
@@ -146,6 +149,7 @@ class ConfigHelper
     }
     else
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
     }
   }

@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
@@ -135,6 +136,7 @@ class MigrationModel extends JoomAdminModel
       catch (\RuntimeException $e)
       {
         $this->component->setError($e->getMessage());
+        $this->component->addLog($e->getMessage(), 'error', 'migration');
       }
 
       if($params_db && !empty($params_db))
@@ -168,6 +170,7 @@ class MigrationModel extends JoomAdminModel
 
     if(\is_null($params))
     {
+      $this->component->addLog('No migration params found. Please provide some migration params.', 'error', 'migration');
       throw new \Exception('No migration params found. Please provide some migration params.', 1);
     }
 
@@ -207,6 +210,7 @@ class MigrationModel extends JoomAdminModel
 	 */
   public function getScript()
   {
+
     // Retreive script variable
     $name = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
 
@@ -265,6 +269,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -432,6 +437,7 @@ class MigrationModel extends JoomAdminModel
     catch (\RuntimeException $e)
     {
       $this->component->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'migration');
 
       return array();
     }
@@ -469,6 +475,7 @@ class MigrationModel extends JoomAdminModel
       if($item === false)
       {
         $this->component->setError($e->getMessage());
+        $this->component->addLog($e->getMessage(), 'error', 'migration');
 
         return array();
       }
@@ -513,6 +520,7 @@ class MigrationModel extends JoomAdminModel
     catch (\RuntimeException $e)
     {
       $this->component->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'migration');
 
       return array();
     }
@@ -547,6 +555,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -604,6 +613,7 @@ class MigrationModel extends JoomAdminModel
     if(!is_file($file))
     {
       $this->component->setError('Migration form XML could not be found. XML filename: ' . $script->name . '.xml');
+      $this->component->addLog('Migration form XML could not be found. XML filename: ' . $script->name . '.xml', 'error', 'migration');
       return false;
     }
 
@@ -640,6 +650,7 @@ class MigrationModel extends JoomAdminModel
       if(!\key_exists('joomla_path', $data) || !\file_exists($data['joomla_path']))
       {
         $this->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_JOOMLA_PATH', $_SERVER['DOCUMENT_ROOT'].'/your-subdomain'));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_JOOMLA_PATH', $_SERVER['DOCUMENT_ROOT'].'/your-subdomain'), 'error', 'migration');
 
         $return = false;
       }
@@ -666,12 +677,14 @@ class MigrationModel extends JoomAdminModel
 
         if(empty($result))
         {
+          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DB_PREFIX'), 'error', 'migration');
           throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DB_PREFIX'));
         }
       }
       catch (\Exception $e)
       {
         $this->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DB_CREDENTIALS', $e->getMessage()));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DB_CREDENTIALS', $e->getMessage()), 'error', 'migration');
 
         $return = false;
       }
@@ -695,6 +708,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -719,6 +733,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -746,6 +761,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -757,6 +773,14 @@ class MigrationModel extends JoomAdminModel
     // Prepare migration service and return migrateable object
     $this->setParams();
     $mig = $this->component->getMigration()->prepareMigration($type);
+
+    // Add log entry
+    $extented_log = \boolval($mig->params->get('extented_log', 0));
+
+    If($extented_log)
+    {
+      $this->component->addLog('Start migrate; type: ' . $type . '; source id: ' . \strval($pk), 'info', 'migration');
+    }
 
     // Perform the migration of the element if needed
     if($this->component->getMigration()->needsMigration($type, $pk))
@@ -774,6 +798,7 @@ class MigrationModel extends JoomAdminModel
         {
           $success = false;
           $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CONVERT_DATA');
+          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CONVERT_DATA'), 'error', 'migration');
         }
         else
         {
@@ -785,6 +810,7 @@ class MigrationModel extends JoomAdminModel
           {
             $success = false;
             $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_INSERT_RECORD');
+            $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_INSERT_RECORD'), 'error', 'migration');
           }
           else
           {
@@ -820,6 +846,8 @@ class MigrationModel extends JoomAdminModel
               $record  = $this->deleteRecord($type, $new_pk);
               $success = false;
               $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_'.$error_msg_end);
+              $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_' . $error_msg_end), 'error', 'migration');
+              $this->component->addLog('Migration of the record cancelled! ID: ' . $new_pk, 'error', 'migration');
             }
           }
         }
@@ -828,6 +856,7 @@ class MigrationModel extends JoomAdminModel
       {
         $success = false;
         $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_FETCH_DATA');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_FETCH_DATA'), 'error', 'migration');
       }
     }
 
@@ -836,6 +865,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->load($mig->id))
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return $mig;
     }
@@ -864,6 +894,7 @@ class MigrationModel extends JoomAdminModel
     if($error_msg !== '')
     {
       $this->component->setError($error_msg);
+      $this->component->addLog($error_msg, 'error', 'migration');
     }
 
     // Calculate progress and completed state
@@ -876,6 +907,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->check())
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return false;
     }
@@ -886,8 +918,16 @@ class MigrationModel extends JoomAdminModel
     if(!$table->store())
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return $mig;
+    }
+
+    // Add log entry
+    If($extented_log)
+    {
+      $this->component->addLog('End migrate; type: ' . $type . '; source id: ' . $pk, 'info', 'migration');
+      $this->component->addLog('---------------------------------------------', 'info', 'migration');
     }
 
     return $ret_table;
@@ -913,6 +953,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -925,6 +966,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->load($mig->id))
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return $mig;
     }
@@ -1010,11 +1052,13 @@ class MigrationModel extends JoomAdminModel
     if($error !== '')
     {
       $this->component->setError($error);
+      $this->component->addLog($error, 'error', 'migration');
     }
 
     if(!$removed)
     {
       $this->component->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_NOT_AVAILABLE', $src_pk));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_NOT_AVAILABLE', $src_pk), 'warning', 'migration');
     }
 
     // Calculate progress and completed state
@@ -1027,6 +1071,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->check())
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return false;
     }
@@ -1037,6 +1082,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->store())
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return $mig;
     }
@@ -1058,6 +1104,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -1111,6 +1158,7 @@ class MigrationModel extends JoomAdminModel
 
     if(!$script)
     {
+      $this->component->addLog('Migration script not found.', 'error', 'migration');
       throw new \Exception('Migration script not found.');
     }
 
@@ -1150,6 +1198,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table = $this->getMVCFactory()->createTable($recordType, 'administrator'))
     {
       $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type), 'error', 'migration');
 
       return false;
     }
@@ -1182,6 +1231,7 @@ class MigrationModel extends JoomAdminModel
       if(!$table->load($data[$key]))
       {
         $this->component->setError($table->getError());
+        $this->component->addLog($table->getError(), 'error', 'migration');
 
         return false;
       }
@@ -1207,6 +1257,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->bind($data))
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return false;
     }
@@ -1218,6 +1269,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->check())
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return false;
     }
@@ -1231,6 +1283,7 @@ class MigrationModel extends JoomAdminModel
     if(\in_array(false, $results, true) || !$table->store())
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return false;
     }
@@ -1261,6 +1314,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table = $this->getMVCFactory()->createTable($type, 'administrator'))
     {
       $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_IMGTYPE_TABLE_NOT_EXISTING', $type), 'error', 'migration');
 
       return false;
     }
@@ -1271,7 +1325,7 @@ class MigrationModel extends JoomAdminModel
     if($type === 'image')
     {
       // Delete corresponding imagetypes
-      $manager = JoomHelper::getService('FileManager', $table->catid);
+      $manager = JoomHelper::getService('FileManager', array($table->catid));
 
       if(!$manager->deleteImages($table))
       {
@@ -1284,6 +1338,7 @@ class MigrationModel extends JoomAdminModel
     if(!$table->delete($pk))
     {
       $this->component->setError($table->getError());
+      $this->component->addLog($table->getError(), 'error', 'migration');
 
       return false;
     }
@@ -1360,6 +1415,7 @@ class MigrationModel extends JoomAdminModel
     if(!$db->insertObject(JoomHelper::$content_types[$type], $record))
     {
       $this->component->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DUMMY_RECORD', $type, $key));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DUMMY_RECORD', $type, $key), 'error', 'migration');
 
       return false;
     }

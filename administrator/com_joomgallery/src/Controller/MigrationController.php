@@ -129,6 +129,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
       throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
@@ -137,6 +138,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -202,6 +204,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
       throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
@@ -210,6 +213,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start', 'error'));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -226,6 +230,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if($id < 1)
     {
       $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME', 'error'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -236,6 +241,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$item || $item->script != $script)
     {
       $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME', 'error'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -247,6 +253,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // You are not allowed to resume the migration, since it is checked out by another user
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CHECKED_OUT_BY_ANOTHER_USER', $user->get('name')), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CHECKED_OUT_BY_ANOTHER_USER', $user->get('name')), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -283,6 +290,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
       throw new \Exception('Requested migration script does not exist.', 1);      
     }
 
@@ -291,6 +299,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -315,6 +324,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       if(!$item || $item->script != $script)
       {
         $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME', 'error'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_MIGRATION_RESUME'), 'error', 'jerror');
         $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
         return false;
@@ -326,6 +336,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       {
         // You are not allowed to resume the migration, since it is checked out by another user
         $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CHECKED_OUT_BY_ANOTHER_USER', $user->get('name')), 'error');
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CHECKED_OUT_BY_ANOTHER_USER', $user->get('name')), 'error', 'jerror');
         $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
         return false;
@@ -335,10 +346,12 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       if($model->delete($cid))
       {
         $this->app->enqueueMessage(Text::plural($this->text_prefix . '_N_ITEMS_DELETED', \count($cid)));
+        $this->component->addLog(Text::plural($this->text_prefix . '_N_ITEMS_DELETED', \count($cid)), 'info', 'jerror');
       }
       else
       {
         $this->app->enqueueMessage($model->getError(), 'error');
+        $this->component->addLog($model->getError(), 'error', 'jerror');
       }
     }
 
@@ -367,7 +380,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new \Exception('Requested migration script does not exist.', 1);      
+      throw new \Exception('Requested migration script does not exist.', 1);  
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
     }
 
     // Access check.
@@ -375,6 +389,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -384,6 +399,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$model->getSourceDeletion())
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.removesource'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.removesource'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step4', false));
 
       return false;
@@ -397,6 +413,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       // Post-checks not successful. Show error message.
       $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED');
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP4', $msg), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP4', $msg), 'error', 'jerror');
       // Redirect to the step 4 screen
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step4', false));
     }
@@ -413,10 +430,12 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       if($model->deleteSource($cid))
       {
         $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_DATA_DELETE_SUCCESSFUL'), 'message');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_DATA_DELETE_SUCCESSFUL'), 'info', 'jerror');
       }
       else
       {
         $this->app->enqueueMessage($model->getError(), 'error');
+        $this->component->addLog($model->getError(), 'error', 'jerror');
       }
     }
 
@@ -456,7 +475,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new \Exception('Requested migration script does not exist.', 1);      
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
+      throw new \Exception('Requested migration script does not exist.', 1);
     }
 
     $data    = $this->input->post->get('jform_'.$script, [], 'array');
@@ -468,6 +488,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -498,10 +519,12 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
             if($errors[$i] instanceof \Exception)
             {
               $this->app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+              $this->component->addLog($errors[$i]->getMessage(), 'error', 'jerror');
             }
             else
             {
               $this->app->enqueueMessage($errors[$i], 'warning');
+              $this->component->addLog($errors[$i], 'error', 'jerror');
             }
         }
 
@@ -531,16 +554,19 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Pre-checks not successful. Show error message.
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $msg), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $msg), 'error', 'jerror');
     }
     else
     {
       // Pre-checks successful. Show success message.
       $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SUCCESS_MIGRATION_STEP2'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SUCCESS_MIGRATION_STEP2'), 'info', 'jerror');
 
       if(!empty($msg))
       {
         // Warnings appeared. Show warning message.
         $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_WARNING_MIGRATION_STEP2', $msg), 'warning');
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_WARNING_MIGRATION_STEP2', $msg), 'error', 'jerror');
       }
     }
 
@@ -573,6 +599,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -586,7 +613,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new \Exception('Requested migration script does not exist.', 1);      
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
+      throw new \Exception('Requested migration script does not exist.', 1);   
     }
 
     $precheck = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', false);
@@ -597,6 +625,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       // Pre-checks not successful. Show error message.
       $msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED');
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $msg), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP2', $msg), 'error', 'jerror');
       // Redirect to the step 2 screen
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
     }
@@ -624,6 +653,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -637,7 +667,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new \Exception('Requested migration script does not exist.', 1);      
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
+      throw new \Exception('Requested migration script does not exist.', 1);
     }
 
     $context = _JOOM_OPTION.'.migration.'.$script.'.step4';
@@ -649,16 +680,19 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Post-checks not successful. Show error message.
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP4', $msg), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_STEP4', $msg), 'error', 'jerror');
     }
     else
     {
       // Pre-checks successful. Show success message.
       $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SUCCESS_MIGRATION_STEP4'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SUCCESS_MIGRATION_STEP4'), 'info', 'jerror');
 
       if(!empty($msg))
       {
         // Warnings appeared. Show warning message.
         $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_WARNING_MIGRATION_STEP4', $msg), 'warning');
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_WARNING_MIGRATION_STEP4', $msg), 'warning', 'jerror');
       }
     }
 
@@ -693,6 +727,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $response = $this->createRespond(null, false, Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.start'), 'error', 'jerror');
       $this->ajaxRespond($response, $format);
 
       return false;
@@ -707,6 +742,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Requested script does not exists
       $response = $this->createRespond(null, false, 'Requested migration script does not exist.');
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
       $this->ajaxRespond($response, $format);
 
       return false;
@@ -718,6 +754,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Pre-checks not successful. Show error message.
       $response = $this->createRespond(null, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED'), 'error', 'jerror');
       $this->ajaxRespond($response, $format);
 
       return false;
@@ -733,6 +770,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // No record id given. Show error message.
       $response = $this->createRespond(null, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_RECORD_ID_MISSING'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_RECORD_ID_MISSING'), 'error', 'jerror');
       $this->ajaxRespond($response, $format);
 
       return false;
@@ -751,6 +789,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       if(!$model->save($json))
       {
         $this->component->setError($model->getError());
+        $this->component->addLog($model->getError(), 'error', 'jerror');
 
         return false;
       }
@@ -811,6 +850,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$acl->checkACL('admin', 'com_joomgallery'))
     {
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.applyState'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_TASK_NOT_PERMITTED', 'migration.applyState'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration', false));
 
       return false;
@@ -824,7 +864,8 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!\in_array($script, \array_keys($scripts)))
     {
       // Requested script does not exists
-      throw new \Exception('Requested migration script does not exist.', 1);      
+      $this->component->addLog('Requested migration script does not exist.', 'error', 'jerror');
+      throw new \Exception('Requested migration script does not exist.', 1);
     }
 
     // Check if no errors detected in precheck (step 2)
@@ -833,6 +874,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     {
       // Pre-checks not successful. Show error message.
       $this->setMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED'), 'error');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_MIGRATION_CHECKS_FAILED'), 'error', 'jerror');
       $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&view=migration&layout=step2', false));
 
       return false;
@@ -850,6 +892,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     if(!$cofirm || empty($src_pk) || ($new_state === 1 && empty($dest_pk)))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_FORMCHECK'), 'warning');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_FORMCHECK'), 'warning', 'jerror');
     }
     else
     {
@@ -882,6 +925,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
       $model->applyState($type, $new_state, $src_pk, $dest_pk, $error_msg);
 
       $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_SUCCESSFUL_'.$new_state, $type, $src_pk), 'message');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_APPLYSTATE_SUCCESSFUL_'.$new_state, $type, $src_pk), 'info', 'jerror');
     }
 
     // Redirect to the list screen.
@@ -982,7 +1026,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
         if($results instanceof \Exception)
         {
           // Log an error
-          $this->component->addLog($results->getMessage(), Log::ERROR);
+          $this->component->addLog($results->getMessage(), 'error', 'jerror');
 
           // Set status header code
           $this->app->setHeader('status', $results->getCode(), true);

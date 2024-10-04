@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\Input\Input;
 use \Joomla\CMS\Router\Route;
@@ -119,14 +120,18 @@ class ImagesController extends JoomAdminController
       if(\count($pks) > 1)
       {
         $this->setMessage(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ITEMS_SUCCESS_DUPLICATED'), 'info', 'jerror');
       }
       else
       {
         $this->setMessage(Text::_('COM_JOOMGALLERY_ITEM_SUCCESS_DUPLICATED'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ITEM_SUCCESS_DUPLICATED'), 'info', 'jerror');
       }
 		}
 		catch (Exception $e)
 		{
+			$this->component->addLog($e->getMessage(), 'warning', 'jerror');
+
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
 		}
 
@@ -159,6 +164,7 @@ class ImagesController extends JoomAdminController
     {
       if($count > 0 && empty($pks))
       {
+        $this->component->addLog(Text::_('JERROR_NO_ITEMS_SELECTED'), 'warning', 'jerror');
         throw new \Exception(Text::_('JERROR_NO_ITEMS_SELECTED'));
       }
 
@@ -222,6 +228,7 @@ class ImagesController extends JoomAdminController
     if(\count($error) > 0)
     {
       $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_IMAGES_RECREATED_ERROR', \implode(', ', $error)), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_IMAGES_RECREATED_ERROR', \implode(', ', $error)), 'error', 'jerror');
     }
 
     $this->app->setUserState('joom.recreate.cid', array());
@@ -325,6 +332,7 @@ class ImagesController extends JoomAdminController
 		if(empty($cid))
 		{
 			$this->app->getLogger()->warning(Text::_($this->text_prefix . '_NO_ITEM_SELECTED'), array('image' => 'jerror'));
+			$this->component->addLog(Text::_($this->text_prefix . '_NO_ITEM_SELECTED' . array('image' => 'jerror')), 'warning', 'jerror');
 		}
 		else
 		{
@@ -346,6 +354,7 @@ class ImagesController extends JoomAdminController
 					if ($errors)
 					{
 						$this->app->enqueueMessage(Text::plural($this->text_prefix . '_N_ITEMS_FAILED_'.$msgs[0], \count($cid)), 'error');
+						$this->component->addLog(Text::plural($this->text_prefix . '_N_ITEMS_FAILED_'.$msgs[0], \count($cid)), 'error', 'jerror');
 					}
 					else
 					{
@@ -372,6 +381,7 @@ class ImagesController extends JoomAdminController
 			}
 			catch (\Exception $e)
 			{
+				$this->component->addLog($e->getMessage(), 'warning', 'jerror');
 				$this->setMessage($e->getMessage(), 'error');
 			}
 		}

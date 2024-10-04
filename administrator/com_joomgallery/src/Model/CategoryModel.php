@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Plugin\PluginHelper;
@@ -195,7 +196,7 @@ class CategoryModel extends JoomAdminModel
 	}
 
   /**
-	 * Method to delete one or more images.
+	 * Method to delete one or more categories.
 	 *
 	 * @param   array  &$pks  An array of record primary keys.
 	 *
@@ -229,6 +230,7 @@ class CategoryModel extends JoomAdminModel
 					if(\in_array(false, $result, true))
 					{
 						$this->setError($table->getError());
+						$this->component->addLog($table->getError(), 'error', 'jerror');
 
 						return false;
 					}
@@ -240,6 +242,7 @@ class CategoryModel extends JoomAdminModel
 					if(!$manager->deleteCategory($table, $force_delete))
 					{
 						$this->setError($this->component->getDebug(true));
+						$this->component->addLog($this->component->getDebug(true) . '; Category ID: ' . $pk, 'error', 'jerror');
 
 						return false;
 					}
@@ -297,6 +300,7 @@ class CategoryModel extends JoomAdminModel
 					if(!$table->delete($pk))
 					{
 						$this->setError($table->getError());
+						$this->component->addLog($table->getError(), 'error', 'jerror');
 
 						return false;
 					}
@@ -312,13 +316,13 @@ class CategoryModel extends JoomAdminModel
 
 					if($error)
 					{
-            $this->component->addLog($error, 'warning', 'jerror');
+						$this->component->addLog($error, 'warning', 'jerror');
 
 						return false;
 					}
 					else
 					{
-            $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), 'warning', 'jerror');
+						$this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), 'warning', 'jerror');
 
 						return false;
 					}
@@ -327,6 +331,7 @@ class CategoryModel extends JoomAdminModel
 			else
 			{
 				$this->setError($table->getError());
+				$this->component->addLog($table->getError(), 'error', 'jerror');
 
 				return false;
 			}
@@ -438,6 +443,7 @@ class CategoryModel extends JoomAdminModel
             {
               // We are not allowed to change the published state
               $this->component->addWarning(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
+              $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), 'warning', 'jerror');
               $data['published'] = $table->published;
             }
           }
@@ -505,6 +511,7 @@ class CategoryModel extends JoomAdminModel
         if(\in_array(false, $result, true))
         {
           $this->setError($table->getError());
+          $this->component->addLog($table->getError(), 'error', 'jerror');
 
           return false;
         }
@@ -513,6 +520,7 @@ class CategoryModel extends JoomAdminModel
         if(!$table->store())
         {
           $this->setError($table->getError());
+          $this->component->addLog($table->getError(), 'error', 'jerror');
 
           return false;
         }
@@ -578,6 +586,7 @@ class CategoryModel extends JoomAdminModel
     catch(\Exception $e)
     {
       $this->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'jerror');
 
       return false;
     }
@@ -629,6 +638,7 @@ class CategoryModel extends JoomAdminModel
 		if(!$table->rebuild())
 		{
 			$this->setError($table->getError());
+			$this->component->addLog($table->getError(), 'error', 'jerror');
 
 			return false;
 		}
@@ -658,6 +668,7 @@ class CategoryModel extends JoomAdminModel
 		if(!$table->saveorder($idArray, $lftArray))
 		{
 			$this->setError($table->getError());
+			$this->component->addLog($table->getError(), 'error', 'jerror');
 
 			return false;
 		}
@@ -756,6 +767,7 @@ class CategoryModel extends JoomAdminModel
   {
     if(\is_null($table) || empty($table->id))
     {
+      $this->component->addLog('To fix child category paths, table has to be loaded.', 'error', 'jerror');
       throw new Exception('To fix child category paths, table has to be loaded.');
     }
 
@@ -778,6 +790,7 @@ class CategoryModel extends JoomAdminModel
       if(!$child_table->store())
       {
         $this->setError('Child category (ID='.$cat['id'].') tells: ' . $child_table->getError());
+        $this->component->addLog('Child category (ID='.$cat['id'].') tells: ' . $child_table->getError(), 'error', 'jerror');
 
         return false;
       }
@@ -808,6 +821,7 @@ class CategoryModel extends JoomAdminModel
     if($table->load($pk) === false)
     {
       $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk), 'error', 'jerror');
 
       return false;
     }
@@ -825,7 +839,8 @@ class CategoryModel extends JoomAdminModel
       if($setError)
       {
         $this->setError($table->getError());
-      }      
+        $this->component->addLog($table->getError(), 'error', 'jerror');
+      }
 
       return false;
     }
@@ -856,6 +871,7 @@ class CategoryModel extends JoomAdminModel
     if($table->load($pk) === false)
     {
       $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk), 'error', 'jerror');
 
       return false;
     }
@@ -866,6 +882,7 @@ class CategoryModel extends JoomAdminModel
       if($setError)
       {
         $this->setError($table->getError());
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk), 'error', 'jerror');
       }
 
       return false;
@@ -897,6 +914,7 @@ class CategoryModel extends JoomAdminModel
     if($table->load($pk) === false)
     {
       $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk), 'error', 'jerror');
 
       return false;
     }
@@ -907,6 +925,7 @@ class CategoryModel extends JoomAdminModel
       if($setError)
       {
         $this->setError($table->getError());
+        $this->component->addLog($table->getError(), 'error', 'jerror');
       }
 
       return false;
@@ -937,6 +956,7 @@ class CategoryModel extends JoomAdminModel
     if($table->load($pk) === false)
     {
       $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk), 'error', 'jerror');
 
       return false;
     }
@@ -948,6 +968,7 @@ class CategoryModel extends JoomAdminModel
       if($setError)
       {
         $this->setError($table->getError());
+        $this->component->addLog($table->getError(), 'error', 'jerror');
       }
 
       return false;
@@ -981,6 +1002,7 @@ class CategoryModel extends JoomAdminModel
     if($table->load($pk) === false)
     {
       $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk), 'error', 'jerror');
 
       return false;
     }
@@ -995,6 +1017,7 @@ class CategoryModel extends JoomAdminModel
     if($ptable->load($parent_id) === false)
     {
       $this->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $parent_id));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CATEGORY_NOT_EXIST', $pk), 'error', 'jerror');
 
       return false;
     }
@@ -1006,6 +1029,7 @@ class CategoryModel extends JoomAdminModel
       if($setError)
       {
         $this->setError($table->getError());
+        $this->component->addLog($table->getError(), 'error', 'jerror');
       }
 
       return false;
