@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
@@ -611,6 +612,7 @@ abstract class Migration implements MigrationInterface
   {
     if(!in_array($target, array('source', 'destination')))
     {
+      $this->component->addLog('Taget has to be eighter "source" or "destination". Given: ' . $target, 'error', 'jerror');
       throw new \Exception('Taget has to be eighter "source" or "destination". Given: ' . $target, 1);
     }
 
@@ -689,6 +691,7 @@ abstract class Migration implements MigrationInterface
     {
       if(\is_null($this->params))
       {
+        $this->component->addLog('Migration parameters need to be set in order to load types.', 'error', 'jerror');
         throw new \Exception('Migration parameters need to be set in order to load types.', 1);
       }
 
@@ -765,6 +768,7 @@ abstract class Migration implements MigrationInterface
   {
     if(\is_null($this->params))
     {
+      $this->component->addLog('Migration parameters need to be set in order to load types.', 'error', 'jerror');
       throw new \Exception('Migration parameters need to be set in order to load types.', 1);
     }
 
@@ -812,7 +816,9 @@ abstract class Migration implements MigrationInterface
         if(!$this->migrateables[$req] || !$this->migrateables[$req]->completed || $this->migrateables[$req]->failed->count() > 0)
         {
           $this->continue = false;
-          $this->component->setError(Text::sprintf('FILES_JOOMGALLERY_MIGRATION_PREREQUIREMENT_ERROR', \implode(', ', $this->types[$type]->get('dependent_on'))));
+          $this->component->setError(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PREREQUIREMENT_ERROR', $req));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PREREQUIREMENT_ERROR', $req), 'error', 'migration');
+          $this->component->addLog('Fix the error and try the migration again.', 'error', 'migration');
 
           return false;
         }
@@ -858,6 +864,7 @@ abstract class Migration implements MigrationInterface
         else
         {
           $checks->addCheck($category, 'log_file', false, false, Text::_('COM_JOOMGALLERY_LOGFILE'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LOGFILE_ERROR', $log_file));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LOGFILE_ERROR', $log_file), 'error', 'jerror');
         }
       }
       else
@@ -869,12 +876,14 @@ abstract class Migration implements MigrationInterface
         else
         {
           $checks->addCheck($category, 'log_dir', false, false, Text::_('COM_JOOMGALLERY_LOGDIRECTORY'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LOGDIR_ERROR', $log_dir));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LOGDIR_ERROR', $log_dir), 'error', 'jerror');
         }
       }
     }
     else
     {
       $checks->addCheck($category, 'log_dir', false, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_LOG_DIR_LABEL'), Text::_('Logging directory not existent.'));
+      $this->component->addLog(Text::_('Logging directory not existent.'), 'error', 'jerror');
     }
     
   }
@@ -897,6 +906,7 @@ abstract class Migration implements MigrationInterface
     {
       // Source XML not found
       $checks->addCheck($category, 'src_xml', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_XML', $src_xml));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_XML', $src_xml), 'error', 'jerror');
       return;
     }
 
@@ -904,16 +914,19 @@ abstract class Migration implements MigrationInterface
     {
       // PHP version not supported
       $checks->addCheck($category, 'src_extension', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $src_info->get('php_min')));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $src_info->get('php_min')), 'error', 'jerror');
     }
     elseif(\strval($src_xml->name) !== $src_info->get('extension'))
     {
       // Wrong source extension
       $checks->addCheck($category, 'src_extension', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', \strval($src_xml->name)));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', \strval($src_xml->name)), 'error', 'jerror');
     }
     elseif(\version_compare($src_xml->version, $src_info->get('min'), '<') || \version_compare($src_xml->version, $src_info->get('max'), '>'))
     {
       // Version not correct
       $checks->addCheck($category, 'src_extension', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $src_xml->version, $src_info->get('min') . ' - ' . $src_info->get('max')));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $src_xml->version, $src_info->get('min') . ' - ' . $src_info->get('max')), 'error', 'jerror');
     } 
     else
     {
@@ -941,16 +954,19 @@ abstract class Migration implements MigrationInterface
     {
       // PHP version not supported
       $checks->addCheck($category, 'dest_extension', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $dest_info->get('php_min')));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_PHP_WRONG_VERSION', PHP_VERSION, $dest_info->get('php_min')), 'error', 'jerror');
     }
     elseif(\strval($this->component->xml->name) !== $dest_info->get('extension'))
     {
       // Wrong destination extension
       $checks->addCheck($category, 'dest_extension', false, false, Text::_('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', \strval($this->component->xml->name)));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_NOT_SUPPORTED', \strval($this->component->xml->name)), 'error', 'jerror');
     }
     elseif(\version_compare($version, $dest_info->get('min'), '<') || \version_compare($version, $dest_info->get('max'), '>'))
     {
       // Version not correct
       $checks->addCheck($category, 'dest_extension', false, false, Text::_('COM_JOOMGALLERY_FIELDS_DEST_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $this->component->version, $dest_info->get('min') . ' - ' . $dest_info->get('max')));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $this->component->version, $dest_info->get('min') . ' - ' . $dest_info->get('max')), 'error', 'jerror');
     }
     else
     {
@@ -974,6 +990,7 @@ abstract class Migration implements MigrationInterface
     if($this->app->get('offline'))
     {
       $checks->addCheck($category, 'offline', true, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_SUCCESS'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_SUCCESS'), 'error', 'jerror');
     }
     else
     {
@@ -1017,6 +1034,7 @@ abstract class Migration implements MigrationInterface
       {
         // Path is not a directory
         $checks->addCheck($category, $check_name, false, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $dir, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'), 'error', 'jerror');
       }
       else
       {
@@ -1068,12 +1086,14 @@ abstract class Migration implements MigrationInterface
       { 
         // Path doesn't exist
         $checks->addCheck($category, $check_name, false, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::_('COM_JOOMGALLERY_ERROR_PATH_NOT_EXISTING'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_PATH_NOT_EXISTING'), 'error', 'jerror');
         $error = true;
       }
       catch(\Exception $msg)
       {
         // Error in filesystem
         $checks->addCheck($category, $check_name, false, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $msg));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $msg), 'error', 'jerror');
         $error = true;
       }
 
@@ -1083,6 +1103,7 @@ abstract class Migration implements MigrationInterface
         {
           // Path is not a directory
           $checks->addCheck($category, $check_name, false, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'));
+          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_A_DIRECTORY'), 'error', 'jerror');
         }
         else
         {
@@ -1114,6 +1135,7 @@ abstract class Migration implements MigrationInterface
     catch (\Exception $msg)
     {
       $checks->addCheck($category, 'src_table_connect', true, Text::_('JLIB_FORM_VALUE_SESSION_DATABASE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_TABLE_CONN_ERROR'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_TABLE_CONN_ERROR'), 'error', 'jerror');
       return;
     }
 
@@ -1139,6 +1161,7 @@ abstract class Migration implements MigrationInterface
       if(!\in_array(\str_replace('#__', $dbPrefix, $tablename), $tableList))
       {
         $checks->addCheck($category, $check_name, false, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_ERROR_TABLE_NOT_EXISTING'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_TABLE_NOT_EXISTING'), 'error', 'jerror');
         continue;
       }
 
@@ -1154,10 +1177,12 @@ abstract class Migration implements MigrationInterface
       if($count == 0)
       {
         $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'), 'info', 'jerror');
       }
       else
       {
         $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES'), 'info', 'jerror');
       }
     }
   }
@@ -1192,11 +1217,13 @@ abstract class Migration implements MigrationInterface
     if($db->loadResult())
     {
       $checks->addCheck($category, 'dest_root_cat', true, false, Text::_('COM_JOOMGALLERY_ROOT_CATEGORY'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_SUCCESS'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_SUCCESS'), 'info', 'jerror');
       $rootCat = true;
     }
     else
     {
       $checks->addCheck($category, 'dest_root_cat', false, false, Text::_('COM_JOOMGALLERY_ROOT_CATEGORY'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ERROR'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ERROR'), 'error', 'jerror');
     }
 
     // Check whether root asset exists
@@ -1210,10 +1237,12 @@ abstract class Migration implements MigrationInterface
     if($rootAssetID = $db->loadResult())
     {
       $checks->addCheck($category, 'dest_root_asset', true, false, Text::_('COM_JOOMGALLERY_ROOT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_ASSET_SUCCESS'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_ASSET_SUCCESS'), 'info', 'jerror');
     }
     else
     {
       $checks->addCheck($category, 'dest_root_asset', false, false, Text::_('COM_JOOMGALLERY_ROOT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_ASSET_ERROR'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_ASSET_ERROR'), 'warning', 'jerror');
     }
 
     // Check whether root category asset exists
@@ -1227,10 +1256,12 @@ abstract class Migration implements MigrationInterface
     if($db->loadResult())
     {
       $checks->addCheck($category, 'dest_root_cat_asset', true, false, Text::_('COM_JOOMGALLERY_ROOT_CAT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ASSET_SUCCESS'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ASSET_SUCCESS'), 'info', 'jerror');
     }
     else
     {
       $checks->addCheck($category, 'dest_root_cat_asset', false, false, Text::_('COM_JOOMGALLERY_ROOT_CAT_ASSET'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ASSET_ERROR'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ROOT_CAT_ASSET_ERROR'), 'warning', 'jerror');
     }
 
     // Check required tables
@@ -1254,6 +1285,7 @@ abstract class Migration implements MigrationInterface
       if(!\in_array( \str_replace('#__', $dbPrefix, $tablename), $tableList))
       {
         $checks->addCheck($category, $check_name, false, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_ERROR_TABLE_NOT_EXISTING'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_TABLE_NOT_EXISTING'), 'error', 'jerror');
         continue;
       }
 
@@ -1430,6 +1462,7 @@ abstract class Migration implements MigrationInterface
     if(\count((array)$mapping) != \count($dest_imagetypes))
     {
       $checks->addCheck($category, 'mapping_count', false, false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MAPPING_ERROR'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MAPPING_ERROR'), 'error', 'jerror');
       return;
     }
 
@@ -1461,6 +1494,7 @@ abstract class Migration implements MigrationInterface
       {
         // Destination imagetype in mapping does not exist
         $checks->addCheck($category, 'mapping_dest_types_'.$mapVal->destination, false, false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_DEST_IMAGETYPE_NOT_EXIST', Text::_('COM_JOOMGALLERY_' . \strtoupper($mapVal->destination))));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_DEST_IMAGETYPE_NOT_EXIST', Text::_('COM_JOOMGALLERY_' . \strtoupper($mapVal->destination))), 'error', 'jerror');
         return;
       }
 
@@ -1468,6 +1502,7 @@ abstract class Migration implements MigrationInterface
       {
         // Source imagetype in mapping does not exist
         $checks->addCheck($category, 'mapping_src_types_'.$mapVal->source, false, false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_IMAGETYPE_NOT_EXIST', Text::_('COM_JOOMGALLERY_' . \strtoupper($mapVal->source))));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_IMAGETYPE_NOT_EXIST', Text::_('COM_JOOMGALLERY_' . \strtoupper($mapVal->source))), 'error', 'jerror');
         return;
       }
     }
@@ -1476,6 +1511,7 @@ abstract class Migration implements MigrationInterface
     {
       // Destination imagetype not used in the mapping
       $checks->addCheck($category, 'mapping_dest_types', false, false, Text::_('COM_JOOMGALLERY_FIELDS_IMAGEMAPPING_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_IMAGETYPE_NOT_USED', \implode(', ', $tmp_dest_imagetypes)));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MAPPING_IMAGETYPE_NOT_USED', \implode(', ', $tmp_dest_imagetypes)), 'warning', 'jerror');
     }
   }
 
@@ -1498,6 +1534,7 @@ abstract class Migration implements MigrationInterface
     if(\count(\array_diff($types, \array_keys($migrateables))) > 0)
     {
       $checks->addCheck($category, 'types_migrated', false, false, Text::_('COM_JOOMGALLERY_MIGRATIONS'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MIGRATIONS_ERROR'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MIGRATIONS_ERROR'), 'error', 'jerror');
       return;
     }
 
@@ -1508,6 +1545,7 @@ abstract class Migration implements MigrationInterface
       if(\count($mig->queue) > 0)
       {
         $checks->addCheck($category, 'queue_' . $mig->type, false, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_QUEUE'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MIGRATIONS_ERROR', $mig->type));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_MIGRATIONS_ERROR', $mig->type), 'error', 'jerror');
         $empty = false;
       }
     }
@@ -1541,6 +1579,7 @@ abstract class Migration implements MigrationInterface
         foreach($mig->failed->toArray()as $id => $error)
         {
           $checks->addCheck($category, 'error_' . $mig->type . '_' . $id, false, false, Text::_('ERROR') . ': ' . $mig->type, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERRORS_ERROR', $mig->type, $id, $error));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERRORS_ERROR', $mig->type, $id, $error), 'error', 'jerror');
           $errors = true;
         }
       }

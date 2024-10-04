@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Registry\Registry;
@@ -202,6 +203,7 @@ abstract class JoomAdminModel extends AdminModel
         {
           // We are not allowed to change the published state
           $this->component->addWarning(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
+          $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), 'error', 'jerror');
           $data['published'] = $table->published;
         }
       }
@@ -250,6 +252,7 @@ abstract class JoomAdminModel extends AdminModel
         else
         {
           $this->component->setError($table->getError());
+          $this->component->addLog($table->getError(), 'error', 'jerror');
 
           return false;
         }
@@ -280,6 +283,7 @@ abstract class JoomAdminModel extends AdminModel
       if(!$table->load($pk))
       {
         $this->setError($table->getError());
+        $this->component->addLog($table->getError(), 'error', 'jerror');
 
         return false;
       }
@@ -298,6 +302,7 @@ abstract class JoomAdminModel extends AdminModel
         )
       {
         $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'));
+        $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_CHECKIN_USER_MISMATCH'), 'error', 'jerror');
 
         return false;
       }
@@ -306,6 +311,7 @@ abstract class JoomAdminModel extends AdminModel
       if(!$table->checkIn($pk))
       {
         $this->component->setError($table->getError());
+        $this->component->addLog($table->getError(), 'error', 'jerror');
 
         return false;
       }
@@ -352,12 +358,14 @@ abstract class JoomAdminModel extends AdminModel
         {
           // Fatal error
           $this->component->setError($error);
+          $this->component->addLog($error, 'error', 'jerror');
 
           return false;
         }
         else
         {
           $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'));
+          $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'), 'error', 'jerror');
 
           return false;
         }
@@ -367,6 +375,7 @@ abstract class JoomAdminModel extends AdminModel
     if(empty($categoryId))
     {
       $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'));
+      $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_BATCH_MOVE_CATEGORY_NOT_FOUND'), 'error', 'jerror');
 
       return false;
     }
@@ -375,6 +384,7 @@ abstract class JoomAdminModel extends AdminModel
     if(!$this->getAcl()->checkacl('create', 'category', 0, $categoryId, true))
     {
       $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_CREATE'));
+      $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_CREATE'), 'error', 'jerror');
 
       return false;
     }
@@ -541,6 +551,7 @@ abstract class JoomAdminModel extends AdminModel
     if($associations && $table->language === '*')
     {
       Factory::getApplication()->enqueueMessage(Text::_(strtoupper($this->option) . '_ERROR_ALL_LANGUAGE_ASSOCIATED'),	'warning');
+      $this->component->addLog(Text::_(strtoupper($this->option) . '_ERROR_ALL_LANGUAGE_ASSOCIATED'), 'warning', 'jerror');
     }
 
     // Get associationskey for edited item

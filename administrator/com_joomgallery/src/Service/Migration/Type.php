@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 
 /**
@@ -154,6 +155,7 @@ class Type
 
     if(\count($list) < 4)
     {
+      $this->component->addLog('Type object needs a list of at least 4 entries as the second argument.', 'error', 'jerror');
       throw new \Exception('Type object needs a list of at least 4 entries as the second argument.', 1);
     }
 

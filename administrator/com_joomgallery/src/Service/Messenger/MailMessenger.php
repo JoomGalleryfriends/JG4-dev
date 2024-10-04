@@ -47,6 +47,7 @@ class MailMessenger extends Messenger implements MessengerInterface
     if(empty(MailTemplate::getTemplate($this->template_id, $this->language->getTag())))
     {
       $this->component->setError(Text::sprintf('COM_JOOMGALLERY_ERROR_MAIL_INVALID_TEMPLATE', $this->template_id));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_MAIL_INVALID_TEMPLATE', $this->template_id), 'error', 'jerror');
 
       return false;
     }
@@ -72,6 +73,7 @@ class MailMessenger extends Messenger implements MessengerInterface
       catch(\RuntimeException $exception)
       {
         $this->component->addWarning(Text::_('COM_JOOMGALLERY_ERROR_MAIL_FAILED'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_MAIL_FAILED'), 'error', 'jerror');
 
         return false;
       }

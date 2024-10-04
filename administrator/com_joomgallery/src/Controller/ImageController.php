@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Response\JsonResponse;
@@ -68,6 +69,7 @@ class ImageController extends JoomFormController
     if (!$this->allowAdd()) {
         // Set the internal error and also the redirect error.
         $this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
+        $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error', 'jerror');
 
         $this->setRedirect(
             Route::_(
@@ -152,6 +154,7 @@ class ImageController extends JoomFormController
     if (!$this->allowSave($data, $id))
     {
       $this->setMessage(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
+      $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error', 'jerror');
 
       $this->setRedirect(
         Route::_('index.php?option=' . _JOOM_OPTION . '&view=' . $this->view_list . $this->getRedirectToListAppend(),false)
@@ -212,6 +215,7 @@ class ImageController extends JoomFormController
 
       // Redirect back to the replace screen.
       $this->setMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype']), $model->getError()), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype']), $model->getError()), 'error', 'jerror');
 
       $this->setRedirect(
           Route::_('index.php?option=' . _JOOM_OPTION . '&view=image&layout=replace&id=' . $id, false)
@@ -222,6 +226,7 @@ class ImageController extends JoomFormController
 
     // Set message
     $this->setMessage(Text::sprintf('COM_JOOMGALLERY_SUCCESS_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype'])));
+    $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SUCCESS_REPLACE_IMAGETYPE', \ucfirst($validData['replacetype'])), 'error', 'jerror');
 
     // Clear the data from the session.
     $app->setUserState($context . '.data', null);
