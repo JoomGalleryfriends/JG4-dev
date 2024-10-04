@@ -117,9 +117,9 @@ if($saveOrder && !empty($this->items))
             <tbody <?php if($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" <?php endif; ?>>
               <?php foreach ($this->items as $i => $item) :
                   $ordering   = ($listOrder == 'a.ordering');
-                  $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $item->catid, true);
-                  $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', $item->catid, true);
-                  $canChange  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', $item->catid, true);
+                  $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $item->id, $item->catid, true);
+                  $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', $item->id, $item->catid, true);
+                  $canChange  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', $item->id, $item->catid, true);
                   $canCheckin = $canChange || $item->checked_out == Factory::getUser()->id;
                   $disabled   = ($item->checked_out > 0) ? 'disabled' : '';
                 ?>

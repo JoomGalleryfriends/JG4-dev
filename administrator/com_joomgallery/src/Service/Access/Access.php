@@ -135,6 +135,9 @@ class Access implements AccessInterface
       require $mapPath;
       $this->aclMap = $rules_map_array;
     }
+
+    // Fill AccessOwn properties
+    AccessOwn::$parent_dependent_types = $this->parent_dependent_types;
   }
 
   /**

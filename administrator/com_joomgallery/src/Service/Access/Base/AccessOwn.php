@@ -33,14 +33,6 @@ class AccessOwn extends Access
   public static $parent_dependent_types = array();
 
   /**
-   * List of parent content types
-   * --> Gets filled by the access service class
-   *
-   * @var array
-   */
-  public static $parents = array();
-
-  /**
    * Method to check against own access.
    *
    * @param   integer         $userId    Id of the user for which to check authorisation.
