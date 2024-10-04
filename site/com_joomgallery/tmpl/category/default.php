@@ -75,8 +75,8 @@ if (!empty($use_pagination)) {
 }
 
 $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $this->item->id);
-$canAdd     = $this->getAcl()->checkACL('add', 'com_joomgallery.category', $this->item->id, true);
-$canAddImg  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', $this->item->id, true);
+$canAdd     = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 0, $this->item->id, true);
+$canAddImg  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 0, $this->item->id, true);
 $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.category', $this->item->id);
 $canCheckin = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));

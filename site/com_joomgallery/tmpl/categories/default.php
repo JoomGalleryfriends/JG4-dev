@@ -30,7 +30,7 @@ $wa->useStyle('com_joomgallery.list')
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
 $canEdit   = $this->getAcl()->checkACL('edit', 'com_joomgallery.category');
-$canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 1, true);
+$canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 0, 1, true);
 $canDelete = $this->getAcl()->checkACL('delete', 'com_joomgallery.category');
 $canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category');
 $saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');

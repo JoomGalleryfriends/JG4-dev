@@ -106,9 +106,10 @@ class User extends BaseUser
       if(\count($asset_array) > 2 && \in_array($asset_array[1], $this->getAcl()->get('parent_dependent_types')))
       {
         // We have a parent dependent content type, so parent_id is needed
+        $item_id   = $asset_array[2];
         $parent_id = JoomHelper::getParent($asset_array[1], $asset_array[2]);
         
-        return $this->getAcl()->checkACL($action, $assetname, $parent_id, true);
+        return $this->getAcl()->checkACL($action, $assetname, $item_id, $parent_id, true);
       }
       else
       {

@@ -110,7 +110,7 @@ class CategoryController extends JoomBaseController
 		$addCatId   = (int) $this->input->getInt('catid', 0);
 
 		// Access check
-		if(!$this->acl->checkACL('add', 'category', $addCatId, true))
+		if(!$this->acl->checkACL('add', 'category', $editId, $addCatId, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));

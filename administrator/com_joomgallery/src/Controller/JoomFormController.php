@@ -155,7 +155,8 @@ class JoomFormController extends BaseFormController
         }
 
         $parent_id = $data['parent_id'] ?: 1;
-        return $this->getAcl()->checkACL('add','category', $parent_id, true);
+        $cat_id    = $data['id'] ?: 0;
+        return $this->getAcl()->checkACL('add','category', $cat_id, $parent_id, true);
         break;
 
       case 'image':
@@ -166,7 +167,8 @@ class JoomFormController extends BaseFormController
         }
 
         $catid = $data['catid'] ?: 1;
-        return $this->getAcl()->checkACL('add','image', $catid, true);
+        $imgid = $data['id'] ?: 0;
+        return $this->getAcl()->checkACL('add','image', $imgid, $catid, true);
         break;
       
       default:
@@ -189,22 +191,23 @@ class JoomFormController extends BaseFormController
    */
   protected function allowEdit($data = [], $key = 'id')
   {
-    $id        = $data['id'];
-    $parent_id = false;
-    $assetname = $this->context;
+    $id         = $data['id'];
+    $use_parent = false;
+    $parent_id  = 0;
+    $assetname  = $this->context;
 
     foreach($this->getAcl()->get('parent_dependent_types') as $type)
     {
       if(\strpos($this->context, $type) !== false && $data['id'] > 0)
       {
-        $id        = isset($data['catid']) ? $data['catid'] : JoomHelper::getParent($type, $data['id']);
-        $parent_id = true;
-        $assetname = $type;
+        $parent_id  = isset($data['catid']) ? $data['catid'] : JoomHelper::getParent($type, $data['id']);
+        $use_parent = true;
+        $assetname  = $type;
       }
     }
     
 
-    return $this->getAcl()->checkACL('edit', $assetname, $id, $parent_id);
+    return $this->getAcl()->checkACL('edit', $assetname, $id, $parent_id, $use_parent);
   }
 
   /**

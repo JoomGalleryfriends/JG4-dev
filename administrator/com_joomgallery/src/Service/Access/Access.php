@@ -143,13 +143,14 @@ class Access implements AccessInterface
    * @param   string   $action     The name of the action to check for permission.
    * @param   string   $asset      The name of the asset on which to perform the action.
    * @param   integer  $pk         The primary key of the item.
-   * @param   bool     $parent_pk  True to show that the given primary key is its parent key.
+   * @param   integer  $parent_pk  The primary key of the parent item.
+   * @param   bool     $use_parent True to show that the given primary key is its parent key.
    *
    * @return  void
    *
    * @since   4.0.0
    */
-  public function checkACL(string $action, string $asset='', int $pk=0, bool $parent_pk=false): bool
+  public function checkACL(string $action, string $asset='', int $pk=0, int $parent_pk=0, bool $use_parent=false): bool
   {
     // Prepare action
     if(!empty($this->aclMap))
@@ -157,8 +158,8 @@ class Access implements AccessInterface
       $action = $this->prepareAction($action);
     }
 
-    // Prepare asset
-    list($asset, $asset_array, $asset_type) = $this->prepareAsset($asset, $pk, $parent_pk);
+    // Prepare asset & pk's
+    list($asset, $asset_array, $asset_type, $parent_pk) = $this->prepareAsset($asset, $pk, $parent_pk, $use_parent);
     $asset_lenght = \count($asset_array);
 
     if($asset_lenght >= 3 && $pk == 0)
@@ -185,11 +186,11 @@ class Access implements AccessInterface
       $acl_rule = $action;
     }
 
-    // Check that parent_pk flag is set to yes if adding into a nested asset
-    if($action == 'add' && \in_array($asset_type, \array_keys($this->parents)) && !$parent_pk)
+    // Check that use_parent flag is set to yes if adding into a nested asset
+    if($action == 'add' && \in_array($asset_type, \array_keys($this->parents)) && !$use_parent)
     {
-      // Flag parent_pk has to be set to yes
-      throw new \Exception("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
+      // Flag use_parent has to be set to yes
+      throw new \Exception("Error in your input command: use_parent (5th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set use_parent to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
     }
 
     // Apply the acl check
@@ -202,7 +203,7 @@ class Access implements AccessInterface
     }
 
     // Adjust asset for further checks when only parent given
-    if($action == 'add' && $parent_pk)
+    if($action == 'add' && $use_parent)
     {
       if(\in_array($asset_type, $this->media_types) && $action == 'add')
       {
@@ -214,9 +215,9 @@ class Access implements AccessInterface
       if(!\in_array($asset_type, $this->parent_dependent_types))
       {
         $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
-        $asset        = $asset_array[0].'.'.$parent_type.'.'.$pk;
+        $asset        = $asset_array[0].'.'.$parent_type.'.'.$parent_pk;
         $asset_lenght = \count(\explode('.', $asset));
-      }      
+      }
     }
 
     $acl_rule_array = \explode('.', $acl_rule);
@@ -249,16 +250,15 @@ class Access implements AccessInterface
       // We are checking for a specific item, based on pk      
       if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0 && \in_array('.'.$asset_type, $this->aclMap[$action]['own-assets']))
       {
-       
         $this->tocheck['own'] = true;
-        $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset);
+        $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset, true, $pk);
       }
 
       // 3. Permission check if adding assets with media items
       if(\in_array($asset_type, $this->media_types) && $action == 'add')
       {
         // Get parent/category info
-        $parent_id     = $parent_pk ? $pk : JoomHelper::getParent($asset_array[1], $pk);
+        $parent_id     = $use_parent ? $parent_pk : JoomHelper::getParent($asset_array[1], $pk);
         $parent_type   = $asset_type ? $this->parents[$asset_type] : 'category';
         $parent_asset  = $this->option.'.'.$parent_type.'.'.$parent_id;
         $parent_action = $this->prefix.'.upload';
@@ -269,7 +269,7 @@ class Access implements AccessInterface
 
         // Check also against parent ownership
         $this->tocheck['upload-own'] = true;
-        $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action.'.'.$this->aclMap[$action]['own'], $parent_asset);
+        $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action.'.'.$this->aclMap[$action]['own'], $parent_asset, true, $pk);
       }
     }
     else
@@ -372,7 +372,7 @@ class Access implements AccessInterface
    * Prepare the entered asset to make it conform with $user->authorize method.
    *
    * @param   string   $asset      The given asset.
-   * @param   int      $pk         Primary key of the asset (optional).
+   * @param   int      $pk         Primary key of the asset.
    * @param   bool     $parent_pk  True if given pk is key of parent asset.
    *
    * @return  array    The prepared asset list.
@@ -380,7 +380,7 @@ class Access implements AccessInterface
    * @since   4.0.0
    * @throws  \Exception
    */
-  protected function prepareAsset(string $asset, int $pk=0, bool $parent_pk=false): array
+  protected function prepareAsset(string $asset, int $pk=0, int $parent_pk=0, bool $use_parent=false): array
   {
     // Do we have a global asset?
     $global = false;
@@ -413,27 +413,33 @@ class Access implements AccessInterface
       $asset_type = false;
     }
 
-    // Check for parent_pk to be given
-    if($asset_type && \count($asset_array) > 1 && $pk > 0 && \in_array($asset_type, $this->parent_dependent_types) && !$parent_pk)
+    // Get parent pk if needed but not provided
+    if($use_parent && !$parent_pk && $pk)
     {
-      throw new \Exception('For parent-dependent content types, the parent_id must be given!', 1);
+      $parent_pk = JoomHelper::getParent($asset_array[1], $pk);
+    }
+
+    // Check for parent_pk to be given
+    if($asset_type && \count($asset_array) > 1 && $use_parent && \in_array($asset_type, $this->parent_dependent_types) && !$parent_pk)
+    {
+      throw new \Exception('For parent-dependent content types, the parent_pk must be given!', 1);
     }
 
     // Last position has to be the primary key
-    if(!$global && $parent_pk && $pk > 0 && \in_array($asset_type, $this->parent_dependent_types))
+    if(!$global && $use_parent && $parent_pk > 0 && \in_array($asset_type, $this->parent_dependent_types))
     {
       // We have an asset which is permissioned by its parent itemtype
       if(\count($asset_array) > 2)
       {
-        // pk already given, exchange it
-        $asset = $asset_array[0] . '.' . $asset_array[1] .'.' . \strval($pk);
+        // parent_pk already given, exchange it
+        $asset = $asset_array[0] . '.' . $asset_array[1] .'.' . \strval($parent_pk);
       }
       else
       {
-        $asset = $asset . '.' . \strval($pk);
+        $asset = $asset . '.' . \strval($parent_pk);
       }
     }
-    elseif(!$global && !$parent_pk && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
+    elseif(!$global && !$use_parent && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
     {
       // We have a standard asset
       $asset = $asset . '.' . \strval($pk);
@@ -456,7 +462,7 @@ class Access implements AccessInterface
       throw new \Exception('Invalid asset provided for ACL access check', 1);
     }
 
-    return [$asset, $asset_array, $asset_type];
+    return [$asset, $asset_array, $asset_type, $parent_pk];
   }
 
   /**
