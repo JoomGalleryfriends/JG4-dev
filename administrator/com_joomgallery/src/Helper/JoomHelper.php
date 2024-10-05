@@ -602,6 +602,7 @@ class JoomHelper
         $table->load($cat->id);
         $nodes = $table->getNodeTree('children', true);
 
+        // Rearrange it into a list of category ids
         $categories = array();
         foreach ($nodes as $node)
         {
