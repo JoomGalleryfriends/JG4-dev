@@ -600,7 +600,13 @@ class JoomHelper
 
         // Load subcategories
         $table->load($cat->id);
-        $categories = $table->getNodeTree('children', true);
+        $nodes = $table->getNodeTree('children', true);
+
+        $categories = array();
+        foreach ($nodes as $node)
+        {
+          \array_push($categories, $node['id']);
+        }
       }
       else
       {
