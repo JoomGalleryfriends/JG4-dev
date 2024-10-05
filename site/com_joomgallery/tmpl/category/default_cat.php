@@ -212,7 +212,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           ));
         }
       ?>
-      <input type="hidden" name="list[type]" value="image"/>
+      <input type="hidden" name="contenttype" value="image"/>
       <input type="hidden" name="task" value=""/>
       <input type="hidden" name="filter_order" value=""/>
       <input type="hidden" name="filter_order_Dir" value=""/>
