@@ -488,7 +488,7 @@ class CategoryModel extends JoomItemModel
       $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 16, 'int'));
 
       // Apply number of images to be loaded from list in the view
-      if(isset($imgform_list['limit']) && $imgform_list['limit'] > 0)
+      if(isset($imgform_list['limit']))
       {
         $listModel->setState('list.limit', $imgform_list['limit']);
       }
@@ -557,7 +557,7 @@ class CategoryModel extends JoomItemModel
       $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_subcategories', 12, 'int'));
 
       // Apply number of subcategories to be loaded from list in the view
-      if(isset($catform_list['limit']) && $catform_list['limit'] > 0)
+      if(isset($catform_list['limit']))
       {
         $listModel->setState('list.limit', $catform_list['limit']);
       }
