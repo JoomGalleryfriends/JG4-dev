@@ -29,9 +29,7 @@ $wa->useStyle('com_joomgallery.list')
 // Access check
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canEdit   = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', 0, 1, true);
 $canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 0, 1, true);
-$canDelete = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', 0, 1, true);
 $canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', 0, 1, true);
 $saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 $returnURL = base64_encode(JoomHelper::getListRoute('categories', null, $this->getLayout()));
@@ -96,11 +94,9 @@ if($saveOrder && !empty($this->items))
                     <?php echo HTMLHelper::_('grid.sort',  'JCATEGORY', 'a.catid', $listDirn, $listOrder); ?>
                   </th>
 
-                  <?php if($canEdit || $canDelete): ?>
-                    <th scope="col" class="w-3 d-none d-lg-table-cell text-center">
-                      <?php echo Text::_('COM_JOOMGALLERY_ACTIONS'); ?>
-                    </th>
-                  <?php endif; ?>
+                  <th scope="col" class="w-3 d-none d-lg-table-cell text-center">
+                    <?php echo Text::_('COM_JOOMGALLERY_ACTIONS'); ?>
+                  </th>
 
                   <th scope="col" class="w-3 d-none d-lg-table-cell text-center">
                     <?php echo HTMLHelper::_('grid.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
@@ -181,20 +177,20 @@ if($saveOrder && !empty($this->items))
                     <?php echo $this->escape($item->cattitle); ?>
                   </td>
 
+                  <td class="d-none d-lg-table-cell text-center">
                   <?php if($canEdit || $canDelete): ?>
-                    <td class="d-none d-lg-table-cell text-center">
-                      <?php if($canEdit): ?>
-                        <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="image.edit" <?php echo $disabled; ?>>
-                          <span class="icon-edit" aria-hidden="true"></span>
-                        </button>
-                      <?php endif; ?>
-                      <?php if ($canDelete): ?>
-                        <button class="js-grid-item-delete tbody-icon <?php echo $disabled; ?>" data-item-confirm="<?php echo Text::_('JGLOBAL_CONFIRM_DELETE'); ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="imageform.remove" <?php echo $disabled; ?>>
-                          <span class="icon-trash" aria-hidden="true"></span>
-                        </button>
-                      <?php endif; ?>
-                    </td>
+                    <?php if($canEdit): ?>
+                      <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="image.edit" <?php echo $disabled; ?>>
+                        <span class="icon-edit" aria-hidden="true"></span>
+                      </button>
+                    <?php endif; ?>
+                    <?php if ($canDelete): ?>
+                      <button class="js-grid-item-delete tbody-icon <?php echo $disabled; ?>" data-item-confirm="<?php echo Text::_('JGLOBAL_CONFIRM_DELETE'); ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="imageform.remove" <?php echo $disabled; ?>>
+                        <span class="icon-trash" aria-hidden="true"></span>
+                      </button>
+                    <?php endif; ?>
                   <?php endif; ?>
+                  </td>
                   
                   <td class="d-none d-lg-table-cell text-center">
                     <?php if($canChange): ?>

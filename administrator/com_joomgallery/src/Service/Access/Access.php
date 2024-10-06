@@ -226,21 +226,23 @@ class Access implements AccessInterface
       }
     }
 
-    $acl_rule_array = \explode('.', $acl_rule);
-
-    // 1. Default permission checks based on asset table
-    // (Global Configuration -> Recursive assets)
-    // (Recursive assets for image: global -> component -> grand-parent -> parent -> type)
+    // More preparations
+    $acl_rule_array = \explode('.', $acl_rule);    
     $appuser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->user->get('id'));
-    $this->allowed['default'] = $appuser->authorise($acl_rule, $asset);
-
+    
+    // Special case: super user
     if($appuser->get('isRoot') === true)
     {
       // If it is the super user
       return true;
     }
+    
+    // 1. Default permission checks based on asset table
+    // (Global Configuration -> Recursive assets)
+    // (Recursive assets for image: global -> component -> grand-parent -> parent -> type)
+    $this->allowed['default'] = $appuser->authorise($acl_rule, $asset);    
 
-    // 2. Permission checks based on asset table and owner
+    // 2. Permission checks based on asset table and ownership
     // Adjust acl rule for the own check
     if($acl_rule_array[1] === 'edit')
     {
@@ -253,14 +255,23 @@ class Access implements AccessInterface
 
     if($asset_lenght >= 3)
     {
-      // We are checking for a specific item, based on pk      
-      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && $pk > 0 && \in_array('.'.$asset_type, $this->aclMap[$action]['own-assets']))
+      // We are checking for a specific item, based on pk or parent pk     
+      if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && \in_array('.'.$asset_type, $this->aclMap[$action]['own-assets']) && ($pk > 0 || $use_parent))
       {
         $this->tocheck['own'] = true;
-        $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset, true, $pk);
+
+        // Switch pk based on use_parent variable
+        $own_pk = $pk;
+        if($use_parent)
+        {
+          $own_pk = $parent_pk;
+        }
+
+        // Only do the check, if it the pk is known
+        $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset, true, $own_pk);       
       }
 
-      // 3. Permission check if adding assets with media items
+      // 3. Permission check if adding assets with media items (uploads)
       if(\in_array($asset_type, $this->media_types) && $action == 'add')
       {
         // Get parent/category info
