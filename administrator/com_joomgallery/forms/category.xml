@@ -224,6 +224,7 @@
 
     <field name="rules"
            type="rules"
+           asset_field="asset_id"
            label="JFIELD_RULES_LABEL"
            translate_label="false"
            filter="rules"
@@ -231,5 +232,21 @@
            class="inputbox"
            component="com_joomgallery"
            section="category" />
+  </fieldset>
+  <fieldset name="accesscontrol-image">
+    <field name="asset_id_image"
+           type="hidden"
+           filter="unset" />
+
+    <field name="rules-image"
+           type="rules"
+           asset_field="asset_id_image"
+           label="JFIELD_RULES_LABEL"
+           translate_label="false"
+           filter="rules"
+           validate="rules"
+           class="inputbox"
+           component="com_joomgallery"
+           section="image" />
   </fieldset>
 </form>

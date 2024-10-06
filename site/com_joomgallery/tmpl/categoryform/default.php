@@ -38,7 +38,7 @@ if($this->item->id)
 else
 {
   // ID = null -> add
-  $canEdit  = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 1, true);
+  $canEdit  = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 0, 1, true);
 }
 $canAdmin = $this->getAcl()->checkACL('admin', 'com_joomgallery');
 ?>

@@ -87,6 +87,25 @@ class ImageTable extends Table implements VersionableTableInterface
 		return $assetParentId;
 	}
 
+	/**
+	 * Method to compute the default name of the asset.
+	 *
+	 * @return  string
+	 *
+	 * @since   4.0.0
+	 */
+	protected function _getAssetName()
+	{
+		$catId = '';
+		if($this->catid)
+		{
+			// The image has a category as asset-parent
+			$catId = '.'.(int) $this->catid;
+		}
+
+		return _JOOM_OPTION.'.image'.$catId;
+	}
+
   /**
    * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
    *
@@ -247,34 +266,6 @@ class ImageTable extends Table implements VersionableTableInterface
 		{
 			$registry = new Registry($array['metadata']);
 			$array['metadata'] = (string) $registry;
-		}
-
-    // // Get access service
-    // JoomHelper::getComponent()->createAccess();
-    // $acl = JoomHelper::getComponent()->getAccess();
-
-		// if(!$acl->checkACL('core.admin'))
-		// {
-		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='image']/");
-		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.image.' . $array['id'])->getData();
-		// 	$array_jaccess   = array();
-
-		// 	foreach($actions as $action)
-		// 	{
-		// 		if(\key_exists($action->name, $default_actions))
-		// 		{
-		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
-		// 		}
-		// 	}
-
-		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		// }
-
-		// Bind the rules for ACL where supported.
-		if(isset($array['rules']))
-		{
-      $rules = new Rules($array['rules']);
-			$this->setRules($rules);
 		}
 
     // Support for tags

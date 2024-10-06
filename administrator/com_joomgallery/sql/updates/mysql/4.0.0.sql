@@ -7,7 +7,6 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
 `catid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
 `title` VARCHAR(255) NOT NULL DEFAULT "",
@@ -56,6 +55,7 @@ KEY `idx_language` (`language`)
 CREATE TABLE IF NOT EXISTS `#__joomgallery_categories` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
+`asset_id_image` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
 `parent_id` INT(11) NOT NULL DEFAULT 0,
 `lft` INT(11) NOT NULL DEFAULT 0,
 `rgt` INT(11) NOT NULL DEFAULT 0,

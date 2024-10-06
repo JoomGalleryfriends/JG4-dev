@@ -29,9 +29,7 @@ $wa->useStyle('com_joomgallery.list')
 // Access check
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canEdit   = $this->getAcl()->checkACL('edit', 'com_joomgallery.category');
-$canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 1, true);
-$canDelete = $this->getAcl()->checkACL('delete', 'com_joomgallery.category');
+$canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 0, 1, true);
 $canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category');
 $saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
 $returnURL = base64_encode(JoomHelper::getListRoute('categories', null, $this->getLayout()));
@@ -90,11 +88,9 @@ if($saveOrder && !empty($this->items))
 										<?php echo HTMLHelper::_('grid.sort',  'COM_JOOMGALLERY_PARENT_CATEGORY', 'a.parent_title', $listDirn, $listOrder); ?>
 									</th>
 
-									<?php if($canEdit || $canDelete): ?>
-										<th scope="col" class="w-3 d-none d-lg-table-cell text-center">
-											<?php echo Text::_('COM_JOOMGALLERY_ACTIONS'); ?>
-										</th>
-									<?php endif; ?>
+									<th scope="col" class="w-3 d-none d-lg-table-cell text-center">
+										<?php echo Text::_('COM_JOOMGALLERY_ACTIONS'); ?>
+									</th>
 
 									<th scope="col" class="w-3 d-none d-lg-table-cell text-center">
 										<?php echo HTMLHelper::_('grid.sort',  'JPUBLISHED', 'a.published', $listDirn, $listOrder); ?>
@@ -195,8 +191,8 @@ if($saveOrder && !empty($this->items))
 										<?php echo ($item->parent_title == 'Root') ? '--' : $this->escape($item->parent_title); ?>
 									</td>
 
-									<?php if($canEdit || $canDelete): ?>
-										<td class="d-none d-lg-table-cell text-center">
+									<td class="d-none d-lg-table-cell text-center">
+										<?php if($canEdit || $canDelete): ?>
 											<?php if($canEdit): ?>
                         <button class="js-grid-item-action tbody-icon <?php echo $disabled; ?>" data-item-id="cb<?php echo $i; ?>" data-item-task="category.edit" <?php echo $disabled; ?>>
                           <span class="icon-edit" aria-hidden="true"></span>
@@ -207,8 +203,8 @@ if($saveOrder && !empty($this->items))
                           <span class="icon-trash" aria-hidden="true"></span>
                         </button>
 											<?php endif; ?>
-										</td>
-									<?php endif; ?>
+										<?php endif; ?>
+									</td>
 
 									<td class="d-none d-lg-table-cell text-center">
                     <?php if($canChange): ?>

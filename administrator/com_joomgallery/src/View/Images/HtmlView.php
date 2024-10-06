@@ -161,7 +161,7 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    if($this->getAcl()->checkACL('delete', 'image'))
+    if($this->getAcl()->checkACL('delete', 'image', 1, true))
     {
       $toolbar->delete('images.delete')
         ->text('JTOOLBAR_DELETE')

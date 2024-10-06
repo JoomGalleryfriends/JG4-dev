@@ -30,15 +30,15 @@ $lang->load('com_joomgallery', JPATH_SITE);
 $lang->load('com_joomgallery', JPATH_ADMINISTRATOR);
 $lang->load('joomla', JPATH_ADMINISTRATOR);
 
-if($this->item->id)
+if($this->item->catid)
 {
   // ID given -> edit
-  $canEdit  = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $this->item->id);
+  $canEdit  = $this->getAcl()->checkACL('edit', 'com_joomgallery.image', $this->item->id, $this->item->catid, true);
 }
 else
 {
   // ID = null -> add
-  $canEdit  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 1, true);
+  $canEdit  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 0, 1, true);
 }
 $canAdmin = $this->getAcl()->checkACL('admin', 'com_joomgallery');
 ?>

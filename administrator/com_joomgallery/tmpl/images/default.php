@@ -126,10 +126,10 @@ if($saveOrder && !empty($this->items))
             <tbody <?php if ($saveOrder) :?> class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo \strtolower($listDirn); ?>" <?php endif; ?>>
               <?php foreach ($this->items as $i => $item) :
                 $ordering   = ($listOrder == 'a.ordering');
-                $canEdit    = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.image.'.$item->id);
+                $canEdit    = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.image', $item->id, $item->catid, true);
                 $canEditCat = $this->getAcl()->checkACL('edit', _JOOM_OPTION.'.category.'.$item->catid);
                 $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
-                $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.image.'.$item->id) && $canCheckin;
+                $canChange  = $this->getAcl()->checkACL('editstate', _JOOM_OPTION.'.image', $item->id, $item->catid, true) && $canCheckin;
                 ?>
 
               <tr class="row<?php echo $i % 2; ?>">
