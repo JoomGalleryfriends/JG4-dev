@@ -19,10 +19,11 @@ use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
-use stdClass;
+use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * JoomGallery Helper for the Backend
@@ -618,9 +619,17 @@ class JoomHelper
       $db    = Factory::getContainer()->get(DatabaseInterface::class);
       $query = $db->getQuery(true);
 
+      // Get view levels of current user
+      $user = Factory::getContainer()->get(UserFactoryInterface::class);
+      $allowedViewLevels = Access::getAuthorisedViewLevels($user->id);
+
       $query->select('id')
             ->from($db->quoteName(_JOOM_TABLE_IMAGES))
             ->where($db->quoteName('catid') . ' IN (' . implode(',', $categories) .')')
+            ->where($db->quoteName('published') . '= 1')
+            ->where($db->quoteName('approved') . '= 1')
+            ->where($db->quoteName('hidden') . '= 0')
+            ->where($db->quoteName('access') . ' IN (' . implode(',', $allowedViewLevels) . ')')
             ->order('RAND()')
             ->setLimit(1);
       $db->setQuery($query);
