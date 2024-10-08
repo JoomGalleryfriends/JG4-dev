@@ -620,7 +620,7 @@ class JoomHelper
       $query = $db->getQuery(true);
 
       // Get view levels of current user
-      $user = Factory::getContainer()->get(UserFactoryInterface::class);
+      $user = Factory::getApplication()->getIdentity();
       $allowedViewLevels = Access::getAuthorisedViewLevels($user->id);
 
       $query->select('id')
