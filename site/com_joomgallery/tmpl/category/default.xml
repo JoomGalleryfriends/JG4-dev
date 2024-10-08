@@ -116,14 +116,14 @@
             </field>
             <field
                 name="jg_category_view_subcategories_random_subimages"
-                type="radio"
+                type="jgradio"
                 useglobal="true"
                 parentclass="span-3"
                 class="btn-group btn-group-yesno"
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES"
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES_DESC"
                 validate="options"
-                showon="jg_category_view_subcategories_random_image:1"
+                showon="jg_category_view_subcategories_random_image!:0"
                 >
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
