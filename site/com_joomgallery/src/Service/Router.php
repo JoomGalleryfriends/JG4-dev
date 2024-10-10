@@ -81,8 +81,11 @@ class Router extends RouterView
 		$this->registerView($images);
 
     $image = new RouterViewConfiguration('image');
-    $image->setKey('id')->setParent($category, 'catid');
     $this->registerView($image);
+
+    $detail = new RouterViewConfiguration('detail');
+    $detail->setKey('id')->setParent($category, 'catid');
+    $this->registerView($detail);
 
     $imageform = new RouterViewConfiguration('imageform');
     $imageform->setKey('id');
@@ -92,9 +95,9 @@ class Router extends RouterView
 		$this->attachRule(new StandardRules($this));
 		$this->attachRule(new NomenuRules($this));
 	}
-	
+
   /**
-   * Method to get the segment for an image
+   * Method to get the segment for an image raw view
    *
    * @param   string  $id     ID of the image to retrieve the segments for
    * @param   array   $query  The request that is built right now
@@ -102,6 +105,29 @@ class Router extends RouterView
    * @return  array|string  The segments of this item
    */
   public function getImageSegment($id, $query)
+  {
+    $dbquery = $this->db->getQuery(true);
+
+    $dbquery->select($this->db->quoteName('alias'))
+      ->from($this->db->quoteName(_JOOM_TABLE_IMAGES))
+      ->where($this->db->quoteName('id') . ' = :id')
+      ->bind(':id', $id, ParameterType::INTEGER);
+    $this->db->setQuery($dbquery);
+
+    $alias = $this->db->loadResult();
+
+    return array((int) $id => 'image/'.$query['type'].'/'.$alias);
+  }
+	
+  /**
+   * Method to get the segment for an detail view
+   *
+   * @param   string  $id     ID of the image to retrieve the segments for
+   * @param   array   $query  The request that is built right now
+   *
+   * @return  array|string  The segments of this item
+   */
+  public function getDetailSegment($id, $query)
   {
     if(!\strpos($id, ':'))
     {
@@ -136,7 +162,7 @@ class Router extends RouterView
    */
   public function getImageformSegment($id, $query)
   {
-    return $this->getImageSegment($id, $query);
+    return $this->getDetailSegment($id, $query);
   }
 
   /**
@@ -149,7 +175,7 @@ class Router extends RouterView
    */
   public function getImagesSegment($id, $query)
   {
-    return $this->getImageSegment($id, $query);
+    return $this->getDetailSegment($id, $query);
   }
 
   /**
@@ -208,14 +234,14 @@ class Router extends RouterView
   }
 	
   /**
-   * Method to get the segment for an image
+   * Method to get the segment for a detail view
    *
    * @param   string  $segment  Segment of the image to retrieve the ID for
    * @param   array   $query    The request that is parsed right now
    *
    * @return  mixed   The id of this item or false
    */
-  public function getImageId($segment, $query)
+  public function getDetailId($segment, $query)
   {
     if($this->noIDs)
     {
@@ -249,7 +275,7 @@ class Router extends RouterView
    */
   public function getImageformId($segment, $query)
   {
-    return $this->getImageId($segment, $query);
+    return $this->getDetailId($segment, $query);
   }
 
   /**
@@ -262,7 +288,7 @@ class Router extends RouterView
    */
   public function getImagesId($segment, $query)
   {
-    return $this->getImageId($segment, $query);
+    return $this->getDetailId($segment, $query);
   }
 
   /**
