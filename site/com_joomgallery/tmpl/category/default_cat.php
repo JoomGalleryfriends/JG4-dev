@@ -79,6 +79,7 @@ if($image_link == 'lightgallery' || $title_link == 'lightgallery') {
 
 if($lightbox) {
   $wa->useScript('com_joomgallery.lightgallery');
+  $wa->useScript('com_joomgallery.lg-thumbnail');
   $wa->useStyle('com_joomgallery.lightgallery-bundle');
 }
 
@@ -105,10 +106,10 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->parent_id); ?>">
     <i class="jg-icon-arrow-left-alt"></i><span><?php echo Text::_('Back to: Parent Category'); ?></span>
   </a>
-  </br />
+  <br>
 <?php endif; ?>
 
-</br />
+<br>
 
 <?php if($canEdit || $canAdd || $canDelete): ?>
   <div class="mb-3">
@@ -230,7 +231,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
             <?php endif; ?>
 
             <?php if($image_link == 'lightgallery') : ?>
-              <a class="item" href="#" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+              <a class="lightgallery-item" href="" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
                 <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
                 <?php if($show_title && $category_class == 'justified') : ?>
                   <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
@@ -278,7 +279,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <?php if ($show_title) : ?>
               <?php if($title_link == 'lightgallery' && $image_link != 'lightgallery') : ?>
-                <a class="item" href="#" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+                <a class="lightgallery-item" href="" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
                   <?php echo $this->escape($image->title); ?>
                 </a>
               <?php else : ?>
@@ -343,9 +344,17 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php if ( $lightbox ) : ?>
 <script>
 const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementById('lightgallery-<?php echo $this->item->id; ?>'), {
-  selector: '.item',
+  selector: '.lightgallery-item',
+  // allowMediaOverlap: true,
+  thumbHeight: '50px',
+  thumbMargin: 5,
+  thumbWidth: 75,
+  thumbnail: true,
+  toggleThumb: true,
   speed: 500,
+  plugins: [lgThumbnail],
   loop: false,
+  counter: true,
   download: false,
   mobileSettings: {
     controls: false,
@@ -354,21 +363,23 @@ const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementB
   },
   licenseKey: '1111-1111-111-1111',
 });
-jgallery<?php echo $this->item->id; ?>.outer.on('click', (e) => {
-  const $item = jgallery<?php echo $this->item->id; ?>.outer.find('.lg-current .lg-image');
-  if (
-    e.target.classList.contains('lg-image') ||
-    $item.get().contains(e.target)
-  ) {
-    jgallery<?php echo $this->item->id; ?>.goToNextSlide();
-  }
-});
+if(document.getElementById('lightgallery-<?php echo $this->item->id; ?>')) {
+  jgallery<?php echo $this->item->id; ?>.outer.on('click', (e) => {
+    const $item = jgallery<?php echo $this->item->id; ?>.outer.find('.lg-current .lg-image');
+    if (
+      e.target.classList.contains('lg-image') ||
+      $item.get().contains(e.target)
+    ) {
+      jgallery<?php echo $this->item->id; ?>.goToNextSlide();
+    }
+  });
+}
 </script>
 <?php endif; ?>
 
 <?php if ( $category_class != 'justified') : ?>
 <script>
-let images = document.getElementsByTagName('img');
+let images = document.getElementsByClassName('jg-image-thumb');
 for (let image of images) {
   image.addEventListener('load', loadImg);
 }
@@ -496,7 +507,9 @@ loadMore.addEventListener('click', function () {
 
 <script>
 window.onload = function() {
-  const el = document.querySelector('#jg-loader');
-  el.classList.add('hidden');
+  if(document.querySelector('#jg-loader')) { 
+    const el = document.querySelector('#jg-loader');
+    el.classList.add('hidden');
+  }
 };
 </script>
