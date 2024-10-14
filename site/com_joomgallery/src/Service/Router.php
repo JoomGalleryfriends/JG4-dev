@@ -239,7 +239,7 @@ class Router extends RouterView
    */
   public function getGalleryId($segment, $query)
   {
-    return false;
+    return 0;
   }
 	
   /**
