@@ -60,7 +60,7 @@ abstract class Config extends \stdClass implements ConfigInterface
    *
    * @var array
    */
-  protected $ids = array('user' => null, 'category' => null, 'image' => null, 'menu' => null);
+  protected $ids = array('user' => null, 'gallery' => null, 'category' => null, 'image' => null, 'menu' => null);
 
   /**
    * Simple unique string for this parameter combination
@@ -133,6 +133,11 @@ abstract class Config extends \stdClass implements ConfigInterface
         case 'user':
           $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $id);
           $this->ids['user'] = (int) $id;
+          break;
+        
+        case 'gallery':
+          $this->ids['user']     = $user->id;
+          $this->ids['category'] = 1;
           break;
 
         case 'category':

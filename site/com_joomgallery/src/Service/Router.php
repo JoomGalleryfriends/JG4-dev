@@ -66,11 +66,14 @@ class Router extends RouterView
     $this->db    = $db;
 		$this->noIDs = (bool) $params->get('sef_ids');
 
+    $gallery = new RouterViewConfiguration('gallery');
+    $this->registerView($gallery);
+
     $categories = new RouterViewConfiguration('categories');
     $this->registerView($categories);
 
     $category = new RouterViewConfiguration('category');
-    $category->setKey('id')->setNestable();
+    $category->setKey('id')->setNestable()->setParent($gallery);
     $this->registerView($category);
 
     $categoryform = new RouterViewConfiguration('categoryform');
@@ -81,11 +84,8 @@ class Router extends RouterView
 		$this->registerView($images);
 
     $image = new RouterViewConfiguration('image');
+    $image->setKey('id')->setParent($gallery);
     $this->registerView($image);
-
-    $detail = new RouterViewConfiguration('detail');
-    $detail->setKey('id')->setParent($category, 'catid');
-    $this->registerView($detail);
 
     $imageform = new RouterViewConfiguration('imageform');
     $imageform->setKey('id');
@@ -97,7 +97,20 @@ class Router extends RouterView
 	}
 
   /**
-   * Method to get the segment for an image raw view
+   * Method to get the segment for a gallery view
+   *
+   * @param   string  $id     ID of the image to retrieve the segments for
+   * @param   array   $query  The request that is built right now
+   *
+   * @return  array|string  The segments of this item
+   */
+  public function getGallerySegment($id, $query)
+  {
+    return array();
+  }
+	
+  /**
+   * Method to get the segment for an image view
    *
    * @param   string  $id     ID of the image to retrieve the segments for
    * @param   array   $query  The request that is built right now
@@ -105,29 +118,6 @@ class Router extends RouterView
    * @return  array|string  The segments of this item
    */
   public function getImageSegment($id, $query)
-  {
-    $dbquery = $this->db->getQuery(true);
-
-    $dbquery->select($this->db->quoteName('alias'))
-      ->from($this->db->quoteName(_JOOM_TABLE_IMAGES))
-      ->where($this->db->quoteName('id') . ' = :id')
-      ->bind(':id', $id, ParameterType::INTEGER);
-    $this->db->setQuery($dbquery);
-
-    $alias = $this->db->loadResult();
-
-    return array((int) $id => 'image/'.$query['type'].'/'.$alias);
-  }
-	
-  /**
-   * Method to get the segment for an detail view
-   *
-   * @param   string  $id     ID of the image to retrieve the segments for
-   * @param   array   $query  The request that is built right now
-   *
-   * @return  array|string  The segments of this item
-   */
-  public function getDetailSegment($id, $query)
   {
     if(!\strpos($id, ':'))
     {
@@ -162,7 +152,7 @@ class Router extends RouterView
    */
   public function getImageformSegment($id, $query)
   {
-    return $this->getDetailSegment($id, $query);
+    return $this->getImageSegment($id, $query);
   }
 
   /**
@@ -175,7 +165,7 @@ class Router extends RouterView
    */
   public function getImagesSegment($id, $query)
   {
-    return $this->getDetailSegment($id, $query);
+    return $this->getImageSegment($id, $query);
   }
 
   /**
@@ -193,11 +183,17 @@ class Router extends RouterView
 
     if($category)
     {
+      // Replace root with categories
+      if($root_key = \key(\preg_grep('/\broot\b/i', $category->route_path)))
+      {
+        $category->route_path[$root_key] = \str_replace('root', 'categories', $category->route_path[$root_key]);
+      }
+
       if($this->noIDs)
       {
         foreach($category->route_path as &$segment)
         {
-          list($id, $segment) = explode(':', $segment, 2);
+          list($id, $segment) = \explode(':', $segment, 2);
         }
       }
 
@@ -232,16 +228,29 @@ class Router extends RouterView
   {
     return $this->getCategorySegment($id, $query);
   }
-	
+
   /**
-   * Method to get the segment for a detail view
+   * Method to get the segment for a gallery view
    *
    * @param   string  $segment  Segment of the image to retrieve the ID for
    * @param   array   $query    The request that is parsed right now
    *
    * @return  mixed   The id of this item or false
    */
-  public function getDetailId($segment, $query)
+  public function getGalleryId($segment, $query)
+  {
+    return false;
+  }
+	
+  /**
+   * Method to get the segment for an image view
+   *
+   * @param   string  $segment  Segment of the image to retrieve the ID for
+   * @param   array   $query    The request that is parsed right now
+   *
+   * @return  mixed   The id of this item or false
+   */
+  public function getImageId($segment, $query)
   {
     if($this->noIDs)
     {
@@ -275,7 +284,7 @@ class Router extends RouterView
    */
   public function getImageformId($segment, $query)
   {
-    return $this->getDetailId($segment, $query);
+    return $this->getImageId($segment, $query);
   }
 
   /**
@@ -288,7 +297,7 @@ class Router extends RouterView
    */
   public function getImagesId($segment, $query)
   {
-    return $this->getDetailId($segment, $query);
+    return $this->getImageId($segment, $query);
   }
 
   /**
@@ -306,6 +315,12 @@ class Router extends RouterView
       // Root element of nestable content in core must have the id=0
       // But JoomGallery category root has id=1
       $query['id'] = 1;
+    }
+
+    if(\strpos($segment, 'categories'))
+    {
+      // If 'categories' is in the segment, means that we are looking for the root category
+      $segment = \str_replace('categories', 'root', $segment);
     }
 
     if(isset($query['id']))
