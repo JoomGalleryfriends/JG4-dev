@@ -758,7 +758,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $gallerydata['link'] = 'index.php?option=com_joomgallery&view=gallery';
     $gallerydata['type'] = 'component';
     $gallerydata['published'] = 1;
-    //$gallerydata['level'] = 1;
+    $gallerydata['level'] = 1;
     $gallerydata['component_id'] = $com_id;
     $gallerydata['access'] = 1;
     $gallerydata['params'] = '{"menu_show":1}';
@@ -786,6 +786,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     //---------------------
     $table->reset();
+    $table->id = null;
 
     // Category menuitem
     $catdata = array();
@@ -797,7 +798,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $catdata['link'] = 'index.php?option=com_joomgallery&view=category&id=1';
     $catdata['type'] = 'component';
     $catdata['published'] = 1;
-    //$catdata['level'] = 2;
+    $catdata['parent_id'] = $gallery_menu_id;
+    $catdata['level'] = 2;
     $catdata['component_id'] = $com_id;
     $catdata['access'] = 1;
     $catdata['params'] = '{"menu_show":0}';
@@ -822,6 +824,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     //---------------------
     $table->reset();
+    $table->id = null;
 
     // Images menuitem
     $imgsdata = array();
@@ -833,7 +836,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $imgsdata['link'] = 'index.php?option=com_joomgallery&view=images';
     $imgsdata['type'] = 'component';
     $imgsdata['published'] = 1;
-    //$imgsdata['level'] = 2;
+    $imgsdata['parent_id'] = $gallery_menu_id;
+    $imgsdata['level'] = 2;
     $imgsdata['component_id'] = $com_id;
     $imgsdata['access'] = 1;
     $imgsdata['params'] = '{"menu_show":0}';
