@@ -262,10 +262,10 @@ class Access implements AccessInterface
 
         // Switch pk based on use_parent variable
         $own_pk = $pk;
-        if($use_parent)
-        {
-          $own_pk = $parent_pk;
-        }
+        // if($use_parent)
+        // {
+        //   $own_pk = $parent_pk;
+        // }
 
         // Only do the check, if it the pk is known
         $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset, true, $own_pk);       
@@ -286,7 +286,7 @@ class Access implements AccessInterface
 
         // Check also against parent ownership
         $this->tocheck['upload-own'] = true;
-        $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action.'.'.$this->aclMap[$action]['own'], $parent_asset, true, $pk);
+        $this->allowed['upload-own'] = AccessOwn::checkOwn($this->user->get('id'), $parent_action.'.'.$this->aclMap[$action]['own'], $parent_asset, true, $parent_pk);
       }
     }
     else
@@ -312,7 +312,7 @@ class Access implements AccessInterface
     }
 
     // Advanced: Apply media items result
-    if($allowedRes !== false && $this->tocheck['upload'] === true)
+    if($this->tocheck['upload'] === true)
     {
       if($this->allowed['upload'] !== null)
       {
