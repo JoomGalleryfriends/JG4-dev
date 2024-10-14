@@ -448,7 +448,10 @@ class com_joomgalleryInstallerScript extends InstallerScript
         {
           File::copy($tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml', $xml_path.'joomgallery_old.xml');
         }
-      }      
+      }
+
+      // Get joomgallery record in #__extensions table
+      $jg = $this->getDBextension();
 
       // Create default Category
       if(!$this->addDefaultCategory())
@@ -486,6 +489,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
       {
         $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
         $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG'), 'error', 'jerror');
+      }
+
+      // Create default menu items
+      if(!$this->addDefaultMenuitems($jg->extension_id))
+      {
+        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_MENU', 'error'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_MENU'), 'error', 'jerror');
       }
 
       // Create default mail templates
@@ -709,6 +719,138 @@ class com_joomgalleryInstallerScript extends InstallerScript
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error store category'), 'error');
       $this->component->addLog(Text::_('Error store category'), 'error', 'jerror');
+
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+	 * Add the default menu items to the ´#__menu´ table
+   * 
+   * @param   int   $com_id  Component ID (FK in #__extensions)
+   *
+	 * @return  bool  true on success
+	 */
+	public function addDefaultMenuitems($com_id)
+	{
+    // Create the model
+    $com_menu = Factory::getApplication()->bootComponent('com_menus');
+    $table    = $com_menu->getMVCFactory()->createTable('menu', 'administrator');
+
+    if(!$table)
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error load menu table class'), 'error');
+      $this->component->addLog(Text::_('Error load menu table class'), 'error', 'jerror');
+
+      return false;
+    }
+
+    // Gallery menuitem
+    $gallerydata = array();
+    $gallerydata['id'] = null;
+    $gallerydata['menutype'] = 'mainmenu';
+    $gallerydata['title'] = 'JoomGallery';
+    $gallerydata['alias'] = 'gallery';
+    $gallerydata['language'] = '*';
+    $gallerydata['link'] = 'index.php?option=com_joomgallery&view=gallery';
+    $gallerydata['type'] = 'component';
+    $gallerydata['published'] = 1;
+    //$gallerydata['level'] = 1;
+    $gallerydata['component_id'] = $com_id;
+    $gallerydata['access'] = 1;
+    $gallerydata['params'] = '{"menu_show":1}';
+
+    if (!$table->bind($gallerydata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default menuitem: gallery view'), 'error');
+      $this->component->addLog(Text::_('Error bind default menuitem: gallery view'), 'error', 'jerror');
+
+      return false;
+    }
+
+    $table->setLocation(1, 'last-child');
+
+    if (!$table->store($gallerydata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: gallery view'), 'error');
+      $this->component->addLog(Text::_('Error store default menuitem: gallery view'), 'error', 'jerror');
+
+      return false;
+    }
+
+    // Store the id of the gallery menuitem
+    $gallery_menu_id = $table->id;
+
+    //---------------------
+    $table->reset();
+
+    // Category menuitem
+    $catdata = array();
+    $catdata['id'] = null;
+    $catdata['menutype'] = 'mainmenu';
+    $catdata['title'] = 'Categories';
+    $catdata['alias'] = 'categories';
+    $catdata['language'] = '*';
+    $catdata['link'] = 'index.php?option=com_joomgallery&view=category&id=1';
+    $catdata['type'] = 'component';
+    $catdata['published'] = 1;
+    //$catdata['level'] = 2;
+    $catdata['component_id'] = $com_id;
+    $catdata['access'] = 1;
+    $catdata['params'] = '{"menu_show":0}';
+
+    if (!$table->bind($catdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default menuitem: category view'), 'error');
+      $this->component->addLog(Text::_('Error bind default menuitem: category view'), 'error', 'jerror');
+
+      return false;
+    }
+
+    $table->setLocation($gallery_menu_id, 'last-child');
+
+    if (!$table->store($catdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: category view'), 'error');
+      $this->component->addLog(Text::_('Error store default menuitem: category view'), 'error', 'jerror');
+
+      return false;
+    }
+
+    //---------------------
+    $table->reset();
+
+    // Images menuitem
+    $imgsdata = array();
+    $imgsdata['id'] = null;
+    $imgsdata['menutype'] = 'mainmenu';
+    $imgsdata['title'] = 'Images';
+    $imgsdata['alias'] = 'images';
+    $imgsdata['language'] = '*';
+    $imgsdata['link'] = 'index.php?option=com_joomgallery&view=images';
+    $imgsdata['type'] = 'component';
+    $imgsdata['published'] = 1;
+    //$imgsdata['level'] = 2;
+    $imgsdata['component_id'] = $com_id;
+    $imgsdata['access'] = 1;
+    $imgsdata['params'] = '{"menu_show":0}';
+
+    if (!$table->bind($imgsdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default menuitem: images view'), 'error');
+      $this->component->addLog(Text::_('Error bind default menuitem: images view'), 'error', 'jerror');
+
+      return false;
+    }
+
+    $table->setLocation($gallery_menu_id, 'last-child');
+
+    if (!$table->store($imgsdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: images view'), 'error');
+      $this->component->addLog(Text::_('Error store default menuitem: images view'), 'error', 'jerror');
 
       return false;
     }

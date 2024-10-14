@@ -81,10 +81,11 @@ class Router extends RouterView
     $this->registerView($categoryform);
 
 		$images = new RouterViewConfiguration('images');
+    $images->setParent($gallery);
 		$this->registerView($images);
 
     $image = new RouterViewConfiguration('image');
-    $image->setKey('id')->setParent($gallery);
+    $image->setKey('id')->setParent($images);
     $this->registerView($image);
 
     $imageform = new RouterViewConfiguration('imageform');
