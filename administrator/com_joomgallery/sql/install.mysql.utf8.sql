@@ -130,6 +130,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `jg_impath` VARCHAR(100) NOT NULL DEFAULT "",
 `jg_staticprocessing` TEXT NOT NULL,
 `jg_dynamicprocessing` TEXT NOT NULL,
+`jg_dynamic_watermark` TINYINT(1) NOT NULL DEFAULT 1,
 `jg_category_view_subcategory_class` VARCHAR(100) NOT NULL DEFAULT "columns",
 `jg_category_view_subcategory_num_columns` TINYINT(1) NOT NULL DEFAULT 3,
 `jg_category_view_subcategory_image_class` TINYINT(1) NOT NULL DEFAULT 0,
