@@ -46,11 +46,11 @@ class HtmlView extends JoomGalleryView
 	public function display($tpl = null)
 	{
     $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_NOT_YET_AVAILABLE'), 'warning');
-    $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_NOT_YET_AVAILABLE'), 'error', 'jerror');
 
-		JoomHelper::getActions();
-
-    return;
+		if(!$this->app->input->get('preview', 0))
+		{
+			return;
+		}
 
     $this->state         = $this->get('State');
     $this->items         = $this->get('Items');
