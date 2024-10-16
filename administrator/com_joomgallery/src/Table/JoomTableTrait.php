@@ -65,8 +65,11 @@ trait JoomTableTrait
 			$this->ordering = self::getNextOrder();
 		}
 
+    if($this->_checkAliasUniqueness)
 		// Check if alias is unique
-    if(\property_exists($this, 'alias'))
+    if(\property_exists($this, 'alias') &&
+       (\property_exists($this, '_checkAliasUniqueness') ? $this->_checkAliasUniqueness : true)
+      )
     {
       if(!$this->isUnique('alias'))
       {

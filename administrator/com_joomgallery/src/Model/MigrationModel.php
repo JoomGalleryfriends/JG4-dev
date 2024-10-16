@@ -777,7 +777,7 @@ class MigrationModel extends JoomAdminModel
     // Add log entry
     $extented_log = \boolval($mig->params->get('extented_log', 0));
 
-    If($extented_log)
+    if($extented_log)
     {
       $this->component->addLog('Start migrate; type: ' . $type . '; source id: ' . \strval($pk), 'info', 'migration');
     }
@@ -924,7 +924,7 @@ class MigrationModel extends JoomAdminModel
     }
 
     // Add log entry
-    If($extented_log)
+    if($extented_log)
     {
       $this->component->addLog('End migrate; type: ' . $type . '; source id: ' . $pk, 'info', 'migration');
       $this->component->addLog('---------------------------------------------', 'info', 'migration');
@@ -1264,6 +1264,17 @@ class MigrationModel extends JoomAdminModel
 
     // Prepare the row for saving
 		$this->prepareTable($table);
+
+    // Disable the alias check if supported
+    if(!$this->component->getMigration()->params->get('unique_alias', 1) && \property_exists($table, '_checkAliasUniqueness'))
+    {
+      $selection = $this->component->getMigration()->params->get('unique_alias_select', 'all');
+
+      if($selection == 'all' || \strpos($selection, $type))
+      {
+        $table->skipAliasCheck();
+      }
+    }
 
     // Check the data.
     if(!$table->check())

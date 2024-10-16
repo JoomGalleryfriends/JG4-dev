@@ -364,16 +364,19 @@ class CategoryTable extends Table implements VersionableTableInterface
 		}
 
 		// Check if alias is unique
-		if(!$this->isUnique('alias'))
-		{
-			$count = 2;
-			$currentAlias =  $this->alias;
-
-			while(!$this->isUnique('alias'))
+    if($this->_checkAliasUniqueness)
+    {
+      if(!$this->isUnique('alias'))
       {
-				$this->alias = $currentAlias . '-' . $count++;
-			}
-		}
+        $count = 2;
+        $currentAlias =  $this->alias;
+
+        while(!$this->isUnique('alias'))
+        {
+          $this->alias = $currentAlias . '-' . $count++;
+        }
+      }
+    }		
 
     // Check if title is unique inside this parent category
 		if(!$this->isUnique('title', $this->parent_id, 'parent_id'))

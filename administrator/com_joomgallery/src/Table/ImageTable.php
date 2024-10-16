@@ -353,14 +353,17 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
 		// Check if alias is unique
-		if(!$this->isUnique('alias'))
-		{
-			$count = 2;
-			$currentAlias =  $this->alias;
+		if($this->_checkAliasUniqueness)
+    {
+			if(!$this->isUnique('alias'))
+			{
+				$count = 2;
+				$currentAlias =  $this->alias;
 
-			while(!$this->isUnique('alias'))
-      {
-				$this->alias = $currentAlias . '-' . $count++;
+				while(!$this->isUnique('alias'))
+				{
+					$this->alias = $currentAlias . '-' . $count++;
+				}
 			}
 		}
 
