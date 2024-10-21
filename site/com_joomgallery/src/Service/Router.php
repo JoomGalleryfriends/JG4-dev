@@ -133,7 +133,7 @@ class Router extends RouterView
       $id .= ':' . $this->db->loadResult();
     }
 
-    if($this->noIDs)
+    if($this->noIDs && \strpos($id, ':') !== false)
     {
       list($void, $segment) = \explode(':', $id, 2);
 
@@ -190,7 +190,7 @@ class Router extends RouterView
         $category->route_path[$root_key] = \str_replace('root', 'categories', $category->route_path[$root_key]);
       }
 
-      if($this->noIDs)
+      if($this->noIDs && \strpos(\reset($category->route_path), ':') !== false)
       {
         foreach($category->route_path as &$segment)
         {
@@ -259,14 +259,15 @@ class Router extends RouterView
 
       $dbquery->select($this->db->quoteName('id'))
         ->from($this->db->quoteName(_JOOM_TABLE_IMAGES))
-        ->where(
-            [
-                $this->db->quoteName('alias') . ' = :alias',
-                $this->db->quoteName('catid') . ' = :catid',
-            ]
-        )
-        ->bind(':alias', $segment)
-        ->bind(':catid', $query['id'], ParameterType::INTEGER);
+        ->where($this->db->quoteName('alias') . ' = :alias')
+        ->bind(':alias', $segment);
+
+      if(\key_exists('catid', $query))
+      {
+        $dbquery->where($this->db->quoteName('catid') . ' = :catid');
+        $dbquery->bind(':catid', $query['id'], ParameterType::INTEGER);
+      }
+
       $this->db->setQuery($dbquery);
 
       return (int) $this->db->loadResult();
