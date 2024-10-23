@@ -312,7 +312,7 @@ class Router extends RouterView
    */
   public function getCategoryId($segment, $query)
   {
-    if($query['id'] === 0 || $query['id'] === '0')
+    if(isset($query['id']) && ($query['id'] === 0 || $query['id'] === '0'))
     {
       // Root element of nestable content in core must have the id=0
       // But JoomGallery category root has id=1
