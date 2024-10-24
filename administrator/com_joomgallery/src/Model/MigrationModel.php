@@ -1266,9 +1266,9 @@ class MigrationModel extends JoomAdminModel
 		$this->prepareTable($table);
 
     // Disable the alias check if supported
-    if(!$this->component->getMigration()->params->get('unique_alias', 1) && \property_exists($table, '_checkAliasUniqueness'))
+    if(!$this->component->getMigration()->get('params')->get('unique_alias', 1) && \property_exists($table, '_checkAliasUniqueness'))
     {
-      $selection = $this->component->getMigration()->params->get('unique_alias_select', 'all');
+      $selection = $this->component->getMigration()->get('params')->get('unique_alias_select', 'all');
 
       if($selection == 'all' || \strpos($selection, $type))
       {
