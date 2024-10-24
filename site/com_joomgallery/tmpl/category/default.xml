@@ -97,9 +97,9 @@
                 description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION_DESC"
                 validate="options"
                 >
-                <option value="pagination">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
-                <option value="loadmore">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
-                <option value="infinity">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
+                <option value="0">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
+                <option value="1">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
+                <option value="2">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
             </field>
             <field
                 name="jg_category_view_subcategories_random_image"
@@ -114,7 +114,20 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
-
+            <field
+                name="jg_category_view_subcategories_random_subimages"
+                type="jgradio"
+                useglobal="true"
+                parentclass="span-3"
+                class="btn-group btn-group-yesno"
+                label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES"
+                description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES_DESC"
+                validate="options"
+                showon="jg_category_view_subcategories_random_image!:0"
+                >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
             <field
                 label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_IMAGES"
                 type="spacer"

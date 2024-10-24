@@ -71,19 +71,23 @@ class HtmlView extends JoomGalleryView
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
     }
 
-    // Load parent category
-    $this->item->parent = $this->get('Parent');
+		// Load only if category is currently not protected
+		if(!$this->item->pw_protected)
+		{
+			// Load parent category
+			$this->item->parent = $this->get('Parent');
 
-    // Load subcategories
-    $this->item->children = new \stdClass();
-    $this->item->children->items = $this->get('Children');
-
-    // Load images
-    $this->item->images = new \stdClass();
-    $this->item->images->items         = $this->get('Images');
-    $this->item->images->pagination    = $this->get('ImagesPagination');
-		$this->item->images->filterForm    = $this->get('ImagesFilterForm');
-		$this->item->images->activeFilters = $this->get('ImagesActiveFilters');
+			// Load subcategories
+			$this->item->children = new \stdClass();
+			$this->item->children->items = $this->get('Children');
+	
+			// Load images
+			$this->item->images = new \stdClass();
+			$this->item->images->items         = $this->get('Images');
+			$this->item->images->pagination    = $this->get('ImagesPagination');
+			$this->item->images->filterForm    = $this->get('ImagesFilterForm');
+			$this->item->images->activeFilters = $this->get('ImagesActiveFilters');
+		}
 
     // Check for errors.
 		if(\count($errors = $this->get('Errors')))

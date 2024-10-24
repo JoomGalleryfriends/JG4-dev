@@ -125,13 +125,20 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     $user = $comp->getMVCFactory()->getIdentity();
     $comp->createAccess();
 
-    // Return password only if user is admin or owner    
-    if(isset($this->password) && !empty($this->password))
+    // Get all unlocked categories of this user from session
+    $unlockedCats = Factory::getApplication()->getUserState(_JOOM_OPTION.'unlockedCategories', array(0));
+
+    // Return password only if user is admin or owner
+    $this->pw_protected = false;
+    if(isset($this->password) && !empty($this->password) && !\in_array($keys, $unlockedCats))
     {
       if(!$comp->getAccess()->checkACL('admin') || $user->id != $this->created_by)
       {
         $this->password = '';
       }
+      
+      // Set a property showing that the category is protected
+      $this->pw_protected = true;
     }
 
     if(isset($this->path))

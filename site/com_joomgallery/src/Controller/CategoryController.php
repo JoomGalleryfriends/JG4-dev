@@ -139,6 +139,31 @@ class CategoryController extends JoomBaseController
 	}
 
 	/**
+   * Unlocks a password protected category
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  public function unlock()
+  {
+		$this->checkToken();
+
+		$cid = $this->input->getInt('id', 0);
+		
+    try
+    {
+			$model = $this->getModel('Category', 'Site');
+      $model->unlock($cid, $this->input->getString('password', ''));
+    }
+    catch(\Exception $e)
+    {
+      $this->setMessage($e->getMessage(), 'error');
+    }
+
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=category&id='.$cid, false));
+  }
+
+	/**
 	 * Remove a category
 	 *
 	 * @throws \Exception
