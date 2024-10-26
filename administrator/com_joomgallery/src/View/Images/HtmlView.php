@@ -161,18 +161,16 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    if($this->getAcl()->checkACL('delete', 'image'))
-    {
-      $toolbar->delete('images.delete')
-        ->text('JTOOLBAR_DELETE')
-        ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_IMAGES'))
-        ->listCheck(true);
-    }
+    // Show delete button
+    $toolbar->delete('images.delete')
+      ->text('JTOOLBAR_DELETE')
+      ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_IMAGES'))
+      ->listCheck(true);
 
     // Show trash and delete for components that uses the state field
     if(isset($this->items[0]->published))
     {
-      if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED && $this->getAcl()->checkACL('core.delete'))
+      if($this->state->get('filter.published') == ContentComponent::CONDITION_TRASHED)
       {
         $toolbar->delete('images.delete')
           ->text('JTOOLBAR_EMPTY_TRASH')

@@ -160,12 +160,6 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     <?php endif; ?>
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
-
-	<?php if($this->getAcl()->checkACL('core.admin','joomgallery')) : ?>
-    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
-      <?php echo $this->form->getInput('rules'); ?>
-    <?php echo HTMLHelper::_('uitab.endTab'); ?>
-  <?php endif; ?>
 	<?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
 	<input type="hidden" name="task" value=""/>

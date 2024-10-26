@@ -135,27 +135,22 @@ class HtmlView extends JoomGalleryView
       }
     }
 
-    // Delete button
-    $this->deleteBtnJS  = 'var counts = 0;';
-    if($this->getAcl()->checkACL('delete', 'category'))
+    // Get infos for confirmation message
+    $counts = new \stdClass;
+    foreach($this->items as $item)
     {
-      // Get infos for confirmation message
-      $counts = new \stdClass;
-      foreach($this->items as $item)
-      {
-        $counts->{$item->id} = new \stdClass;
-        $counts->{$item->id}->img_count = $item->img_count;
-        $counts->{$item->id}->child_count = $item->child_count;
-      }
-
-      $toolbar->delete('categories.delete')
-        ->text('JTOOLBAR_DELETE')
-        ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_CATEGORIES'))
-        ->listCheck(true);
-
-      // Add button javascript
-      $this->deleteBtnJS  = 'var counts = '. \json_encode($counts).';';
+      $counts->{$item->id} = new \stdClass;
+      $counts->{$item->id}->img_count = $item->img_count;
+      $counts->{$item->id}->child_count = $item->child_count;
     }
+
+    $toolbar->delete('categories.delete')
+      ->text('JTOOLBAR_DELETE')
+      ->message(Text::_('COM_JOOMGALLERY_CONFIRM_DELETE_CATEGORIES'))
+      ->listCheck(true);
+
+    // Add button javascript
+    $this->deleteBtnJS  = 'var counts = '. \json_encode($counts).';';
 
     if($this->getAcl()->checkACL('core.admin'))
     {
