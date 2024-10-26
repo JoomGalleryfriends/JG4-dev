@@ -330,7 +330,7 @@ abstract class JoomAdminModel extends AdminModel
    */
   public function initBatch()
   {
-    parent::iniBatch();
+    parent::initBatch();
 
     // Get current user
     $this->user = $this->component->getMVCFactory()->getIdentity();
