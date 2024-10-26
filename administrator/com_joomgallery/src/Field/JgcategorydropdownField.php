@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\Utilities\ArrayHelper;
@@ -261,6 +262,7 @@ class JgcategorydropdownField extends ListField
 		catch (\RuntimeException $e)
 		{
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			$this->component->addLog($e->getMessage(), 'error', 'jerror');
 		}
 
 		// Pad the option text with spaces using depth level as a multiplier.
@@ -302,7 +304,7 @@ class JgcategorydropdownField extends ListField
 				 */
         $assetKey = $extension . '.category.' . $option->value;
 
-				if ($option->level != 0 && !$acl->checkACL('core.create', $assetKey, $option->value, true))
+				if ($option->level != 0 && !$acl->checkACL('core.create', $assetKey, 0, $option->value, true))
 				{
 					unset($options[$i]);
 				}
@@ -338,13 +340,13 @@ class JgcategorydropdownField extends ListField
 				 */
 				$assetKey = $extension . '.category.' . $option->value;
 
-				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$acl->checkACL('core.create', $assetKey, $option->value, true))
+				if ($option->level != 0 && !isset($oldParent) && $option->value != $oldCat && !$acl->checkACL('core.create', $assetKey, 0, $option->value, true))
 				{
 					unset($options[$i]);
 					continue;
 				}
 
-				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$acl->checkACL('core.create', $assetKey, $option->value, true))
+				if ($option->level != 0	&& isset($oldParent) && $option->value != $oldParent && !$acl->checkACL('core.create', $assetKey, 0, $option->value, true))
 				{
 					unset($options[$i]);
 				}

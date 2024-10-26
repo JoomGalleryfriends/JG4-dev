@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Form\Field\ListField;
@@ -58,6 +59,7 @@ class ImgProcessorListField extends ListField
       }
       else
       {
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_PLUGIN_ERROR_RETURN_VALUE', 'onJoomImgProcessorGetName',  'array',  'value, text, desc'), 'error', 'jerror');
         throw new \Exception(Text::sprintf('COM_JOOMGALLERY_PLUGIN_ERROR_RETURN_VALUE', 'onJoomImgProcessorGetName',  'array',  'value, text, desc'));
       }
     }
@@ -122,6 +124,7 @@ class ImgProcessorListField extends ListField
       }
       else
       {
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_PLUGIN_ERROR_RETURN_VALUE', 'onJoomImgProcessorGetName',  'array',  'value, text, desc'), 'error', 'jerror');
         throw new Exception(Text::sprintf('COM_JOOMGALLERY_PLUGIN_ERROR_RETURN_VALUE', 'onJoomImgProcessorGetName',  'array',  'value, text, desc'));
       }
     }

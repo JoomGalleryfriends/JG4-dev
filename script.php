@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Router\Route;
@@ -103,6 +104,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if(version_compare(JVERSION, '4.4.0', '<'))
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 'error');
+      Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 8, 'joomgallery');
 
       return false;
     }
@@ -112,6 +114,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if(in_array($jversion[0], $this->incompatible))
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 'error');
+      Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_JOOMLA_COMPATIBILITY', '4.x', JVERSION), 8, 'joomgallery');
 
       return false;
     }
@@ -120,6 +123,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if(version_compare(PHP_VERSION, $this->minPhp, '<='))
     {
       Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.4', $this->minPhp), 'error');
+      Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.4', $this->minPhp), 8, 'joomgallery'); 
 
       return false;
     }
@@ -160,6 +164,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       else
       {
         Factory::getApplication()->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 'note');
+        Log::add(Text::_('COM_JOOMGALLERY_ERROR_READ_XML_FILE'), 8, 'joomgallery');
       }
     }
 
@@ -403,6 +408,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
     {
       $app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY', '"/images/joomgallery"'), 'error');
+      Log::add(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_CATEGORY', '"/images/joomgallery"'), 8, 'joomgallery');
     }
     ?>
 
@@ -443,12 +449,16 @@ class com_joomgalleryInstallerScript extends InstallerScript
         {
           File::copy($tmp_folder.DIRECTORY_SEPARATOR.'joomgallery_old.xml', $xml_path.'joomgallery_old.xml');
         }
-      }      
+      }
+
+      // Get joomgallery record in #__extensions table
+      $jg = $this->getDBextension();
 
       // Create default Category
       if(!$this->addDefaultCategory())
       {
         $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CATEGORY', 'error'));
+        Log::add(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CATEGORY'), 8, 'joomgallery');
       }
 
       // Create image types
@@ -463,12 +473,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
         if(!$this->addDefaultIMGtype($key, $type['alias'], $type['path']))
         {
           $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_IMAGETYPE'), 'error');
+          Log::add(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_IMAGETYPE'), 8, 'joomgallery');
         }
 
         // Create default Image types directories
         if(!Folder::create(JPATH_ROOT.$type['path'].'/uncategorised'))
         {
           $app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', 'Uncategorised'), 'error');
+          Log::add(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY'), 8, 'joomgallery');
         }
         $this->count = $this->count + 1;
       }
@@ -477,6 +489,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
       if(!$this->addDefaultConfig())
       {
         $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
+        Log::add(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG'), 8, 'joomgallery');
+      }
+
+      // Create default menu items
+      if(!$this->addDefaultMenuitems($jg->extension_id))
+      {
+        $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_MENU', 'error'));
+        Log::add(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_MENU'), 8, 'joomgallery');
       }
 
       // Create default mail templates
@@ -488,6 +508,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       if(!$suc_templates)
       {
         $app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG', 'error'));
+        Log::add(Text::_('COM_JOOMGALLERY_ERROR_CREATE_DEFAULT_CONFIG'), 8, 'joomgallery');
       }
     }
   }
@@ -512,6 +533,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if(!$table)
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error load mail template table'), 'error');
+      Log::add(Text::_('Error load mail template table'), 8, 'joomgallery');
 
       return false;
     }
@@ -538,12 +560,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if (!$table->bind($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error bind mail template'), 'error');
+      Log::add(Text::_('Error bind mail template'), 8, 'joomgallery');
 
       return false;
     }
     if (!$table->store($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error store mail template'), 'error');
+      Log::add(Text::_('Error store mail template'), 8, 'joomgallery');
 
       return false;
     }
@@ -558,7 +582,9 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	 */
 	public function addDefaultCategory()
 	{
-    $db = Factory::getContainer()->get(DatabaseInterface::class);
+    // Since the joomgallery namespace is not yet loaded, we have to
+    // manually add all involved classes and traits to initialize
+    // the CategoryTable class
 
     // Load JoomTableTrait
     $joomtabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
@@ -572,6 +598,18 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     require_once $migrationtabletrait_path;
 
+    // Load MultipleAssetsTableTrait
+    $multipleassetstabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'MultipleAssetsTableTrait.php';
+    $multipleassetstabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\MultipleAssetsTableTrait';
+
+    require_once $multipleassetstabletrait_path;
+
+    // Load MultipleAssetsTable
+    $multipleassetstable_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'MultipleAssetsTable.php';
+    $multipleassetstableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\MultipleAssetsTable';
+
+    require_once $multipleassetstable_path;
+
     // Load CategoryTable
     $class_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'CategoryTable.php';
     $tableClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\CategoryTable';
@@ -580,12 +618,15 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if(class_exists($tableClass))
     {
+      $db = Factory::getContainer()->get(DatabaseInterface::class);
+      
       $tableClass::resetRootId();
       $table = new $tableClass($db);
     }
     else
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error load category table'), 'error');
+      Log::add(Text::_('Error load category table'), 8, 'joomgallery');
 
       return false;
     }
@@ -593,6 +634,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data = array();
     $data["id"] = null;
     $data["asset_id"] = null;
+    $data["asset_id_image"] = null;
     $data["parent_id"] = 1;
     $data["level"] = 1;
     $data["path"] = "uncategorised";
@@ -606,10 +648,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $data["language"] = "*";
     $data["metadesc"] = "";
     $data["metakey"] = "";
+    $data["rules"] = "{}";
+    $data["rules-image"] = "{}";
 
     if (!$table->bind($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error bind default category'), 'error');
+      Log::add(Text::_('Error bind default category'), 8, 'joomgallery');
 
       return false;
     }
@@ -619,6 +664,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if (!$table->store($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error store default category'), 'error');
+      Log::add(Text::_('Error store default category'), 8, 'joomgallery');
 
       return false;
     }
@@ -654,6 +700,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     else
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error load configs table'), 'error');
+      Log::add(Text::_('Error load configs table'), 8, 'joomgallery');
 
       return false;
     }
@@ -684,12 +731,150 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if (!$table->bind($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error bind category'), 'error');
+      Log::add(Text::_('Error bind category'), 8, 'joomgallery');
 
       return false;
     }
     if (!$table->store($data))
     {
       Factory::getApplication()->enqueueMessage(Text::_('Error store category'), 'error');
+      Log::add(Text::_('Error store category'), 8, 'joomgallery');
+
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+	 * Add the default menu items to the ´#__menu´ table
+   * 
+   * @param   int   $com_id  Component ID (FK in #__extensions)
+   *
+	 * @return  bool  true on success
+	 */
+	public function addDefaultMenuitems($com_id)
+	{
+    // Create the model
+    $com_menu = Factory::getApplication()->bootComponent('com_menus');
+    $table    = $com_menu->getMVCFactory()->createTable('menu', 'administrator');
+
+    if(!$table)
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error load menu table class'), 'error');
+      Log::add(Text::_('Error load menu table class'), 8, 'joomgallery');
+
+      return false;
+    }
+
+    // Gallery menuitem
+    $gallerydata = array();
+    $gallerydata['id'] = null;
+    $gallerydata['menutype'] = 'mainmenu';
+    $gallerydata['title'] = 'JoomGallery';
+    $gallerydata['alias'] = 'gallery';
+    $gallerydata['language'] = '*';
+    $gallerydata['link'] = 'index.php?option=com_joomgallery&view=gallery';
+    $gallerydata['type'] = 'component';
+    $gallerydata['published'] = 1;
+    $gallerydata['level'] = 1;
+    $gallerydata['component_id'] = $com_id;
+    $gallerydata['access'] = 1;
+    $gallerydata['params'] = '{"menu_show":1}';
+
+    if (!$table->bind($gallerydata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default menuitem: gallery view'), 'error');
+      Log::add(Text::_('Error bind default menuitem: gallery view'), 8, 'joomgallery');
+
+      return false;
+    }
+
+    $table->setLocation(1, 'last-child');
+
+    if (!$table->store($gallerydata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: gallery view'), 'error');
+      Log::add(Text::_('Error store default menuitem: gallery view'), 8, 'joomgallery');
+
+      return false;
+    }
+
+    // Store the id of the gallery menuitem
+    $gallery_menu_id = $table->id;
+
+    //---------------------
+    $table->reset();
+    $table->id = null;
+
+    // Category menuitem
+    $catdata = array();
+    $catdata['id'] = null;
+    $catdata['menutype'] = 'mainmenu';
+    $catdata['title'] = 'Categories';
+    $catdata['alias'] = 'categories';
+    $catdata['language'] = '*';
+    $catdata['link'] = 'index.php?option=com_joomgallery&view=category&id=1';
+    $catdata['type'] = 'component';
+    $catdata['published'] = 1;
+    $catdata['parent_id'] = $gallery_menu_id;
+    $catdata['level'] = 2;
+    $catdata['component_id'] = $com_id;
+    $catdata['access'] = 1;
+    $catdata['params'] = '{"menu_show":0}';
+
+    if (!$table->bind($catdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default menuitem: category view'), 'error');
+      Log::add(Text::_('Error bind default menuitem: category view'), 8, 'joomgallery');
+
+      return false;
+    }
+
+    $table->setLocation($gallery_menu_id, 'last-child');
+
+    if (!$table->store($catdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: category view'), 'error');
+      Log::add(Text::_('Error store default menuitem: category view'), 8, 'joomgallery');
+
+      return false;
+    }
+
+    //---------------------
+    $table->reset();
+    $table->id = null;
+
+    // Images menuitem
+    $imgsdata = array();
+    $imgsdata['id'] = null;
+    $imgsdata['menutype'] = 'mainmenu';
+    $imgsdata['title'] = 'Images';
+    $imgsdata['alias'] = 'images';
+    $imgsdata['language'] = '*';
+    $imgsdata['link'] = 'index.php?option=com_joomgallery&view=images';
+    $imgsdata['type'] = 'component';
+    $imgsdata['published'] = 1;
+    $imgsdata['parent_id'] = $gallery_menu_id;
+    $imgsdata['level'] = 2;
+    $imgsdata['component_id'] = $com_id;
+    $imgsdata['access'] = 1;
+    $imgsdata['params'] = '{"menu_show":0}';
+
+    if (!$table->bind($imgsdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error bind default menuitem: images view'), 'error');
+      Log::add(Text::_('Error bind default menuitem: images view'), 8, 'joomgallery');
+
+      return false;
+    }
+
+    $table->setLocation($gallery_menu_id, 'last-child');
+
+    if (!$table->store($imgsdata))
+    {
+      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: images view'), 'error');
+      Log::add(Text::_('Error store default menuitem: images view'), 8, 'joomgallery');
 
       return false;
     }
@@ -815,6 +1000,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       else
       {
         $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Plugin', $pluginName), 'error');
+        Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Plugin', $pluginName), 8, 'joomgallery');
       }
 
       $query
@@ -907,6 +1093,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       else
       {
         $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Module', $moduleName), 'error');
+        Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_INSTALL_EXT', 'Module', $moduleName), 8, 'joomgallery');
       }
     }
 	}
@@ -981,6 +1168,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         else
         {
           $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Plugin', $pluginName), 'error');
+          Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Plugin', $pluginName), 8, 'joomgallery');
         }
       }
     }
@@ -1061,6 +1249,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
         else
         {
           $app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Module', $moduleName), 'error');
+          Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_UNINSTALL_EXT', 'Module', $moduleName), 8, 'joomgallery');
         }
       }
     }
@@ -1092,6 +1281,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       if(!File::copy($src.$file, $dst.$file))
       {
         Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', $file, 'Watermark'), 'error');
+        Log::add(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', $file, 'Watermark'), 8, 'joomgallery');
 
         $error = false;
       }
@@ -1375,6 +1565,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       if(!$row->store())
       {
         Factory::getApplication()->enqueueMessage(Text::_('Unable to create "'.$title.'" module!'), 'error');
+        Log::add(Text::_('Unable to create "'.$title.'" module!'), 8, 'joomgallery');
 
         return false;
       }

@@ -18,6 +18,7 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\Model\ListModel;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomla\CMS\User\UserHelper;
 
 /**
  * Model to get a category record.
@@ -129,6 +130,67 @@ class CategoryModel extends JoomItemModel
 	}
 
   /**
+   * Method to unlock a password protected category
+   *
+   * @param   int     $catid    ID of the category to unlock
+   * @param   string  $password Password of the category to check
+   * 
+   * @return  boolean True on success, false otherwise
+   * @since   4.0.0
+   * 
+   * @throws \Exception
+   */
+  public function unlock($catid, $password)
+  {
+    if($catid < 1)
+    {
+      throw new \Exception('No category provided.');
+    }
+
+    if(empty($password))
+    {
+      throw new \Exception('No password provided.');
+    }
+
+    // Create a new query object.
+		$db    = $this->getDatabase();
+		$query = $db->getQuery(true);
+
+    $query->select('id, password')
+          ->from($db->quoteName(_JOOM_TABLE_CATEGORIES))
+          ->where('id = '.(int) $catid);
+    $db->setQuery($query);
+
+    if(!$category = $db->loadObject())
+    {
+      throw new \Exception($db->getErrorMsg());
+    }
+
+    if(!$category)
+    {
+      throw new \Exception('Provided category not found.');
+    }
+
+    if(!$category->password)
+    {
+      throw new \Exception('Category is not protected.');
+    }
+
+    if(!UserHelper::verifyPassword($password, $category->password))
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_CATEGORY_PASSWORD_INCORRECT'));
+    }
+
+    $categories = $this->app->getUserState(_JOOM_OPTION.'unlockedCategories', array(0));
+    $categories = \array_unique(\array_merge($categories, array($catid)));
+    $this->app->setUserState(_JOOM_OPTION.'unlockedCategories', $categories);
+
+    $this->app->triggerEvent('onJoomAfterUnlockCat', array($catid));
+
+    return true;
+  }
+
+  /**
 	 * Method to get the parent category item object.
 	 *
 	 * @param   integer  $id   The id of the object to get.
@@ -205,6 +267,12 @@ class CategoryModel extends JoomItemModel
 
     // Apply preselected filters and fields selection for children
     $this->setChildrenModelState($listModel, $fields);
+
+    // Get pagination
+    $pagination = $listModel->getPagination();
+
+    // Set additional query parameter to pagination
+    $pagination->setAdditionalUrlParam('contenttype', 'category');
 
     return $listModel->getPagination();
   }
@@ -311,7 +379,13 @@ class CategoryModel extends JoomItemModel
     // Apply preselected filters and fields selection for images
     $this->setImagesModelState($listModel);
 
-    return $listModel->getPagination();
+    // Get pagination
+    $pagination = $listModel->getPagination();
+
+    // Set additional query parameter to pagination
+    $pagination->setAdditionalUrlParam('contenttype', 'image');
+
+    return $pagination;
   }
 
   /**
@@ -393,12 +467,36 @@ class CategoryModel extends JoomItemModel
       $listModel->setState('filter.language', $this->item->language);
     }
 
-    // Override number of images beeing loaded
-    if(!$params['menu']->get('jg_category_view_pagination', 0, 'int'));
+    $imgform_list = array();
+    $imgform_limitstart = 0;
+    if($this->app->input->get('contenttype', '') == 'image')
     {
-      // Load all images for infinity scroll
+      // Get query variables sent by the images form
+      $imgform_list = $this->app->input->get('list', array());
+      $imgform_limitstart = $this->app->getInput()->get('limitstart', 0, 'uint');
+    }
+
+    // Override number of images beeing loaded
+    if($params['configs']->get('jg_category_view_pagination', 0, 'int') > 0)
+    {
+      // Load all images when not pagination active
       $listModel->setState('list.limit', '0');
     }
+    else
+    {
+      // Load the number of images defined in the configuration
+      $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 16, 'int'));
+
+      // Apply number of images to be loaded from list in the view
+      if(isset($imgform_list['limit']))
+      {
+        $listModel->setState('list.limit', $imgform_list['limit']);
+      }
+    }
+
+    // Disable behavior of remembering pagination position
+    // if it is not explicitely given in the request
+    $listModel->setState('list.start', $imgform_limitstart);
 
     // Apply ordering
     $listModel->setState('list.fullordering', 'a.id ASC');
@@ -415,7 +513,8 @@ class CategoryModel extends JoomItemModel
   protected function setChildrenModelState(ListModel &$listModel, array $fields = array())
   {
     // Get current user
-    $user = $this->app->getIdentity();
+    $user   = $this->app->getIdentity();
+    $params = $this->getParams();
 
     // Apply selection
     if(\count($fields) > 0)
@@ -436,6 +535,37 @@ class CategoryModel extends JoomItemModel
     {
       $listModel->setState('filter.language', $this->item->language);
     }
+
+    $catform_list = array();
+    $catform_limitstart = 0;
+    if($this->app->input->get('contenttype', '') == 'category')
+    {
+      // Get query variables sent by the subcategories form
+      $catform_list = $this->app->input->get('list', array());
+      $catform_limitstart = $this->app->getInput()->get('limitstart', 0, 'uint');
+    }
+
+    // Override number of subcategories beeing loaded
+    if($params['configs']->get('jg_category_view_subcategories_pagination', 0, 'int') > 0)
+    {
+      // Load all subcategories when not pagination active
+      $listModel->setState('list.limit', '0');
+    }
+    else
+    {
+      // Load the number of subcategories defined in the configuration
+      $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_subcategories', 12, 'int'));
+
+      // Apply number of subcategories to be loaded from list in the view
+      if(isset($catform_list['limit']))
+      {
+        $listModel->setState('list.limit', $catform_list['limit']);
+      }
+    }
+
+    // Disable behavior of remembering pagination position
+    // if it is not explicitely given in the request
+    $listModel->setState('list.start', $catform_limitstart);
 
     // Apply ordering
     $listModel->setState('list.fullordering', 'a.lft ASC');

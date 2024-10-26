@@ -13,15 +13,17 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
-use stdClass;
+use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * JoomGallery Helper for the Backend
@@ -106,6 +108,7 @@ class JoomHelper
           $com_obj->{$createService}();
           break;
         default:
+          $this->component->addLog('Too many arguments passed to getService()', 'error', 'jerror');
           throw new \Exception('Too many arguments passed to getService()');
           break;
       }
@@ -113,6 +116,7 @@ class JoomHelper
     catch (\Exception $e)
     {
       echo 'Creation of the service failed. Error: ',  $e->getMessage(), "\n";
+      $this->component->addLog('Creation of the service failed. Error: ' . $e->getMessage(), 'error', 'jerror');
     }
 
     // get the service
@@ -166,6 +170,7 @@ class JoomHelper
 
       if(\is_null($model))
       {
+        $this->component->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
         throw new \Exception('Record-Type '.$name.' does not exist.');
       }
 
@@ -177,6 +182,7 @@ class JoomHelper
     // We got nothing to work with
     else
     {
+      $this->component->addLog('Please provide a valid record ID, alias or filename.', 'error', 'jerror');
       throw new \Exception('Please provide a valid record ID, alias or filename.');
 
       return false;
@@ -250,6 +256,7 @@ class JoomHelper
   {
     if(!\in_array($name, array('image', 'category')))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
 
@@ -295,6 +302,7 @@ class JoomHelper
 
     if(!\in_array($name, $availables))
     {
+      $this->component->addLog('Please provide an available name of the record type.', 'error', 'jerror');
       throw new \Exception('Please provide an available name of the record type.');
 
       return false;
@@ -310,6 +318,7 @@ class JoomHelper
 
     if(\is_null($model))
     {
+      $this->component->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
       throw new \Exception('Record-Type '.$name.' does not exist.');
     }
 
@@ -380,7 +389,7 @@ class JoomHelper
    * Returns the URL or the path to an image
    *
    * @param   string/object/int $img     Filename, database object, ID or URL of the image
-   * @param   string            $type    The image type
+   * @param   string            $type    The image type or rnd_cat:<type> to load a random image
    * @param   bool              $url     True to return an image URL, false for a system path (default: true)
    * @param   bool              $root    True to add the system root to path. Only if $url=false. (default: true)
    *
@@ -390,11 +399,23 @@ class JoomHelper
    */
   public static function getImg($img, $type, $url=true, $root=true)
   {
+    // Create file config service based on current user
+		$config = self::getService('Config');
+
+    if(\strpos($type, 'rnd_cat:') !== false && $config->get('jg_category_view_subcategories_random_image', 1))
+    {
+      // we want to get a random image from a category
+      $type_array = explode(':', $type, 2);
+      $type       = $type_array[1];
+      $img        = self::getRndImageID($img, $config->get('jg_category_view_subcategories_random_subimages', 0, 'int'));
+    }
+
     // get imagetypes
     $imagetype = self::getRecord('imagetype', array('typename' => $type));
 
     if($imagetype === false)
     {
+      $this->component->addLog('Imagetype not found.', 'error', 'jerror');
       throw new \Exception("Imagetype not found.");
 
       return false;
@@ -452,19 +473,16 @@ class JoomHelper
     // Check whether the image shall be output through the PHP script or with its real path
     if($url)
     {
-      // Create file config service based on current user
-			$config = self::getService('Config');
-
       if($config->get('jg_use_real_paths', 0) == 0)
       {
         // Joomgallery internal URL
-        // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3
-        return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
+        // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3&catid=1
+        return Route::_('index.php?option=com_joomgallery&view=image&format=raw&type='.$type.'&id='.$img->id.'&catid='.$img->catid);
       }
       else
       {
         // Create file manager service
-			  $manager    = self::getService('FileManager');
+			  $manager    = self::getService('FileManager', array($img->catid));
         // Create file manager service
 			  $filesystem = self::getService('Filesystem');
         
@@ -476,7 +494,7 @@ class JoomHelper
     else
     {
       // Create file manager service
-			$manager = self::getService('FileManager');
+			$manager = self::getService('FileManager', array($img->catid));
 
       if($root)
       {
@@ -507,30 +525,25 @@ class JoomHelper
    */
   public static function getCatImg($cat, $type, $url=true, $root=true)
   {
-    if(!\is_object($cat))
+    if (!\is_object($cat))
     {
-      if(\is_numeric($cat))
+      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
       {
-        if($cat == 0)
-        {
-          // ID = 0 given
-          return self::getImgZero($type, $url, $root);          
-        }
-        else
-        {
-          // get category based on ID
-          $cat = self::getRecord('category', $cat);
-        }
+        // no actual category given
+        return self::getImgZero($type, $url, $root);
       }
-      elseif(\is_string($cat))
+  
+      $cat = self::getRecord('category', $cat);
+    }
+
+    if($cat->thumbnail == 0)
+    {
+      // Create file config service based on current user
+      $config = self::getService('Config');
+
+      if($config->get('jg_category_view_subcategories_random_image', 1, 'int'))
       {
-        // get category id based on alias
-        $cat = self::getRecord('category', $cat);
-      }
-      else
-      {
-        // no category given
-        return self::getImgZero($type, $url, $root); 
+        return self::getImg($cat, 'rnd_cat:'.$type, $url, $root);
       }
     }
 
@@ -549,6 +562,86 @@ class JoomHelper
   public static function getTableName(string $type)
   {
     return self::$content_types[$type];
+  }
+
+  /**
+   * Returns the ID of a random image ID in a category
+   *
+   * @param   string/object/int   $cat          Alias, database object or ID of the category
+   * @param   bool                $inc_subcats  True to include subcategories in the search
+   *
+   * @return  int                        Image ID on success, 0 otherwise
+   *
+   * @since   4.0.0
+   */
+  public static function getRndImageID($cat, $inc_subcats=false)
+  {
+    $id = 0;
+
+    if (!\is_object($cat))
+    {
+      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
+      {
+        // no actual category given
+        return $id;
+      }
+  
+      $cat = self::getRecord('category', $cat);
+    }    
+
+    try {
+      if($inc_subcats)
+      {
+        // Create the category table
+        $com_obj = self::getComponent();
+        if(!$table = $com_obj->getMVCFactory()->createTable('category', 'administrator'))
+        {
+          return $id;
+        }
+
+        // Load subcategories
+        $table->load($cat->id);
+        $nodes = $table->getNodeTree('children', true);
+
+        // Rearrange it into a list of category ids
+        $categories = array();
+        foreach ($nodes as $node)
+        {
+          \array_push($categories, $node['id']);
+        }
+      }
+      else
+      {
+        $categories = array($cat->id);
+      }
+
+      // Load the random image id
+      $db    = Factory::getContainer()->get(DatabaseInterface::class);
+      $query = $db->getQuery(true);
+
+      // Get view levels of current user
+      $user = Factory::getApplication()->getIdentity();
+      $allowedViewLevels = Access::getAuthorisedViewLevels($user->id);
+
+      $query->select('id')
+            ->from($db->quoteName(_JOOM_TABLE_IMAGES))
+            ->where($db->quoteName('catid') . ' IN (' . implode(',', $categories) .')')
+            ->where($db->quoteName('published') . '= 1')
+            ->where($db->quoteName('approved') . '= 1')
+            ->where($db->quoteName('hidden') . '= 0')
+            ->where($db->quoteName('access') . ' IN (' . implode(',', $allowedViewLevels) . ')')
+            ->order('RAND()')
+            ->setLimit(1);
+      $db->setQuery($query);
+
+      $res = $db->loadResult();
+      $id = \is_null($res) ? 0 : (int) $res;
+    }
+    catch (\Exception $e) {
+      return $id;
+    }
+
+    return $id;
   }
 
   /**
@@ -636,6 +729,7 @@ class JoomHelper
     // Does imagetype support alias
     if(!\array_key_exists($record, $tables))
     {
+      $this->component->addLog('Record does not support alias.', 'error', 'jerror');
       throw new \Exception('Record does not support alias.');
 
       return false;
@@ -703,6 +797,7 @@ class JoomHelper
   {
     if(!\in_array($name, \array_keys(self::$content_types)))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
   }
@@ -727,7 +822,7 @@ class JoomHelper
     else
     {
       // Create file manager service
-			$manager = self::getService('FileManager');
+			$manager = self::getService('FileManager', array(1));
 
       return $manager->getImgPath(0, $type, false, false, $root);
     }

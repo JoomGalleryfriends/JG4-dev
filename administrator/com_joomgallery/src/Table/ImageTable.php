@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Access\Rules;
@@ -84,6 +85,25 @@ class ImageTable extends Table implements VersionableTableInterface
 		}
 
 		return $assetParentId;
+	}
+
+	/**
+	 * Method to compute the default name of the asset.
+	 *
+	 * @return  string
+	 *
+	 * @since   4.0.0
+	 */
+	protected function _getAssetName()
+	{
+		$catId = '';
+		if($this->catid)
+		{
+			// The image has a category as asset-parent
+			$catId = '.'.(int) $this->catid;
+		}
+
+		return _JOOM_OPTION.'.image'.$catId;
 	}
 
   /**
@@ -248,34 +268,6 @@ class ImageTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-    // // Get access service
-    // JoomHelper::getComponent()->createAccess();
-    // $acl = JoomHelper::getComponent()->getAccess();
-
-		// if(!$acl->checkACL('core.admin'))
-		// {
-		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml', "/access/section[@name='image']/");
-		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.image.' . $array['id'])->getData();
-		// 	$array_jaccess   = array();
-
-		// 	foreach($actions as $action)
-		// 	{
-		// 		if(\key_exists($action->name, $default_actions))
-		// 		{
-		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
-		// 		}
-		// 	}
-
-		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		// }
-
-		// Bind the rules for ACL where supported.
-		if(isset($array['rules']))
-		{
-      $rules = new Rules($array['rules']);
-			$this->setRules($rules);
-		}
-
     // Support for tags
     if(!isset($this->tags))
     {
@@ -308,6 +300,8 @@ class ImageTable extends Table implements VersionableTableInterface
     
     $success = parent::store($updateNulls);
 
+// notwendig ?? $component = Factory::getApplication()->bootComponent('com_joomgallery');
+
     if($success)
     {
       // Record successfully stored
@@ -320,6 +314,7 @@ class ImageTable extends Table implements VersionableTableInterface
       if($this->tags === false)
       {
         $this->setError('Tags Model reports '.$tags_model->getError());
+        $this->component->addLog('Tags Model reports ', 'error', 'jerror');
         $success = false;
       }
 
@@ -327,6 +322,7 @@ class ImageTable extends Table implements VersionableTableInterface
       if(!$tags_model->updateMapping($this->tags, $this->id))
       {
         $this->setError('Tags Model reports '.$tags_model->getError());
+        $this->component->addLog('Tags Model reports ', 'error', 'jerror');
         $success = false;
       }
     }
@@ -433,6 +429,7 @@ class ImageTable extends Table implements VersionableTableInterface
         if(!$tag_model->removeMapping($tag->id, $this->id))
         {
           $this->setError($tag_model->getError());
+          $this->component->addLog($tag_model->getError(), 'error', 'jerror');
           $success = false;
         }
       }
@@ -504,6 +501,7 @@ class ImageTable extends Table implements VersionableTableInterface
 				else
 				{
 					$this->setError(Text::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
+					$this->component->addLog(Text::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'), 'jerror');
 
 					return false;
 				}
@@ -572,6 +570,7 @@ class ImageTable extends Table implements VersionableTableInterface
 			catch (\RuntimeException $e)
 			{
 				$this->setError($e->getMessage());
+				$this->component->addLog($e->getMessage(), 'error', 'jerror');
 
 				return false;
 			}

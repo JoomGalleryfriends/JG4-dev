@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File;
 use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
@@ -317,6 +318,7 @@ abstract class IMGtools implements IMGtoolsInterface
         if($this->res_imginfo['animation'] == true)
         {
           $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_UPLOAD_ANIMATED_WEBP'));
+          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_UPLOAD_ANIMATED_WEBP'), 'warning', 'jerror');
 
           return false;
         }
@@ -495,6 +497,7 @@ abstract class IMGtools implements IMGtoolsInterface
     if(!(File::exists($img)))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'), 'error', 'jerror');
 
       return false;
     }
@@ -1707,6 +1710,7 @@ abstract class IMGtools implements IMGtoolsInterface
       // to return multiple values instead of a single value
 
       echo "<p>Error - ASCII Strings should not be processed in get_IFD_Data_Type</p>\n";
+      $this->component->addLog('Error - ASCII Strings should not be processed in get_IFD_Data_Type', 'error', 'jerror');
 
       return "Error Should never get here"; //explode( "\x00", $input_data );
     }

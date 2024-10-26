@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
@@ -152,6 +153,7 @@ abstract class Uploader implements UploaderInterface
     if(!$allowed_imgtools || !$allowed_filesystem || strlen($this->src_tmp) == 0 || $this->src_tmp == 'none')
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_IMAGEFILE_TYPE'), 'error', 'jerror');
       $this->error  = true;
 
       return false;
@@ -163,6 +165,7 @@ abstract class Uploader implements UploaderInterface
     if($this->app->isClient('site') && $this->src_size > $this->component->getConfig()->get('jg_maxfilesize'))
     {
       $this->component->addDebug(Text::sprintf('JGLOBAL_MAXIMUM_UPLOAD_SIZE_LIMIT', $this->component->getConfig()->get('jg_maxfilesize')));
+      $this->component->addLog(Text::sprintf('JGLOBAL_MAXIMUM_UPLOAD_SIZE_LIMIT', $this->component->getConfig()->get('jg_maxfilesize')), 'error', 'jerror');
       $this->error  = true;
 
       return false;
@@ -194,7 +197,7 @@ abstract class Uploader implements UploaderInterface
       }
 
       // Generate image filename
-      $this->component->createFileManager();
+      $this->component->createFileManager($data['catid']);
       $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
 
       // Make an alias proposition if not given
@@ -233,6 +236,7 @@ abstract class Uploader implements UploaderInterface
     {
       // Check for the right file-format, else throw warning
       $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_READ_METADATA'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_READ_METADATA'), 'warning', 'jerror');
 
       return true;
     }
@@ -303,10 +307,12 @@ abstract class Uploader implements UploaderInterface
               if($source_attribute == 'DateTimeOriginal')
               {
                 $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_DATE', Text::_($source_name)));
+                $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA_DATE', Text::_($source_name)), 'warning', 'jerror');
               }
               else
               {
                 $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
+                $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)), 'warning', 'jerror');
               }
             }           
 
@@ -326,6 +332,7 @@ abstract class Uploader implements UploaderInterface
             if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_('COM_JOOMGALLERY_COMMENT')));
+              $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_('COM_JOOMGALLERY_COMMENT')), 'warning', 'jerror');
             }
 
             continue 2;
@@ -361,6 +368,7 @@ abstract class Uploader implements UploaderInterface
             if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
+              $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)), 'warning', 'jerror');
             }
 
             continue 2;
@@ -377,6 +385,7 @@ abstract class Uploader implements UploaderInterface
       if($this->component->getConfig()->get('jg_replaceshowwarning') == 2)
       {
         $this->component->addWarning(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_METAHINT'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_UPLOAD_OUTPUT_UPLOAD_REPLACE_METAHINT'), 'warning', 'jerror');
       }
 
       // Replace target with metadata value
@@ -388,6 +397,7 @@ abstract class Uploader implements UploaderInterface
       {
         $data[$replaceinfo->target] = $filter->clean($source_value, 'string');
         $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_' . \strtoupper($replaceinfo->target)));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_' . \strtoupper($replaceinfo->target)), 'warning', 'jerror');
       }
     }
 
@@ -413,11 +423,12 @@ abstract class Uploader implements UploaderInterface
     // Check if filename was set
     if(!isset($data_row->filename) || empty($data_row->filename))
     {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_UPLOAD_CHECK_FILENAME'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_SERVICE_UPLOAD_CHECK_FILENAME'));
     }
 
     // Create file manager service
-    $this->component->createFileManager();    
+    $this->component->createFileManager($data_row->catid);
     
     // Create image types
     if(!$this->component->getFileManager()->createImages($this->src_file, $data_row->filename, $data_row->catid))
@@ -488,7 +499,7 @@ abstract class Uploader implements UploaderInterface
     if($data_row)
     {
       // Create file manager service
-      $this->component->createFileManager();
+      $this->component->createFileManager($data_row->catid);
 
       // Delete just created images
       $this->component->getFileManager()->deleteImages($data_row);
@@ -623,6 +634,7 @@ abstract class Uploader implements UploaderInterface
   {
     if(!\key_exists('catid', $data) || !empty($data['catid']) || !\key_exists('filename', $data) || !empty($data['filename']))
     {
+      $this->component->addLog('Form data must have at least catid and filename', 'error', 'jerror');
       throw new \Exception('Form data must have at least catid and filename');
     }
 

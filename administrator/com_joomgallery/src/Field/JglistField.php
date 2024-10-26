@@ -143,7 +143,7 @@ class JglistField extends ListField
 
       if((string) $option['showon'])
       {
-        $encodedConditions = \json_encode( FormHelper::parseShowOnConditions((string) $option['showon'], $this->formControl, $this->group) );
+        $encodedConditions = \json_encode(FormHelper::parseShowOnConditions((string) $option['showon'], $this->formControl, $this->group));
         $tmp['optionattr'] = " data-showon='" . $encodedConditions . "'";
       }
 
@@ -154,7 +154,7 @@ class JglistField extends ListField
     if($this->element['useglobal'])
     {
       // Add global option if not already available
-      if(\strpos($options[0]->text, '%s') === false)
+      if(empty($options) || \strpos($options[0]->text, '%s') === false)
       {
         $tmp        = new \stdClass();
         $tmp_def    = (string) $this->element['default'];

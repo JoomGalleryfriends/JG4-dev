@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
@@ -76,6 +77,7 @@ class TUSUploader extends BaseUploader implements UploaderInterface
     if(\array_key_exists('error', $data) && $data['error'] > 0)
     {
       $this->component->addDebug($this->checkError($data['error']));
+      $this->component->addLog($this->checkError($data['error']), 'error', 'jerror');
       $this->error = true;
 
       return false;
@@ -112,6 +114,7 @@ class TUSUploader extends BaseUploader implements UploaderInterface
     if(!JFile::move($this->src_tmp, $this->src_file))
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVING_FILE', $this->src_file));
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVING_FILE', $this->src_file), 'error', 'jerror');
       $this->rollback();
       $this->error = true;
 
@@ -196,10 +199,12 @@ class TUSUploader extends BaseUploader implements UploaderInterface
 
     if(in_array($uploaderror, $uploadErrors))
     {
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', $uploadErrors[$uploaderror]), 'error', 'jerror');
       return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', $uploadErrors[$uploaderror]);
     }
     else
     {
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN')), 'error', 'jerror');
       return Text::sprintf('COM_JOOMGALLERY_ERROR_CODE', Text::_('COM_JOOMGALLERY_ERROR_UNKNOWN'));
     }
   }

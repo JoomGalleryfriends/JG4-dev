@@ -24,18 +24,28 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class AccessOwn extends Access
 {
   /**
+   * List of content types wich do not have their own assets but uses assets
+   * of its parent content types.
+   * --> Gets filled by the access service class
+   *
+   * @var array
+   */
+  public static $parent_dependent_types = array();
+
+  /**
    * Method to check against own access.
    *
    * @param   integer         $userId    Id of the user for which to check authorisation.
    * @param   string          $action    The name of the action to authorise.
    * @param   integer|string  $assetKey  The asset key (asset id or asset name). null fallback to root asset.
    * @param   boolean         $preload   Indicates whether preloading should be used.
+   * @param   integer         $key       The item key (in order to check ownership)
    *
    * @return  bool   True if permission allowed, false if denied
    *
    * @since   4.0.0
    */
-  public static function checkOwn($userId, $action, $assetKey = null, $preload = true)
+  public static function checkOwn($userId, $action, $assetKey = null, $preload = true, $key = 0)
   {
     // Sanitise inputs.
     $userId  = (int) $userId;
@@ -96,6 +106,13 @@ class AccessOwn extends Access
       $ancArray = \explode('.', $collected[$i]->name);
       if(\count($ancArray) >= 3)
       {
+        // check if it is a parent dependent type
+        if(\in_array($ancArray[1], self::$parent_dependent_types))
+        {
+          // here we do not trust the asset key. We use the provided item key instead.
+          $ancArray[2] = $key;
+        }
+
         $collected[$i]->owner = JoomHelper::getCreator($ancArray[1], $ancArray[2]);
       }
       else

@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User;
 use \Joomla\CMS\Language\Text;
@@ -59,7 +60,7 @@ abstract class Config extends \stdClass implements ConfigInterface
    *
    * @var array
    */
-  protected $ids = array('user' => null, 'category' => null, 'image' => null, 'menu' => null);
+  protected $ids = array('user' => null, 'gallery' => null, 'category' => null, 'image' => null, 'menu' => null);
 
   /**
    * Simple unique string for this parameter combination
@@ -105,6 +106,7 @@ abstract class Config extends \stdClass implements ConfigInterface
       )
     {
       $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_CONFIG_INVALID_CONTEXT', $context), 'error', 'jerror');
 
       $this->context = false;
     }
@@ -132,6 +134,11 @@ abstract class Config extends \stdClass implements ConfigInterface
           $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $id);
           $this->ids['user'] = (int) $id;
           break;
+        
+        case 'gallery':
+          $this->ids['user']     = $user->id;
+          $this->ids['category'] = 1;
+          break;
 
         case 'category':
           $this->ids['user']     = $user->id;
@@ -150,7 +157,7 @@ abstract class Config extends \stdClass implements ConfigInterface
           $this->ids['user'] = $user->id;
           $this->ids['menu'] = (int) $id;
           // TBD
-          // Depending on frontend views and router 
+          // Depending on frontend views and router
           break;
         
         default:
@@ -343,7 +350,7 @@ abstract class Config extends \stdClass implements ConfigInterface
           // set param to class property
           if(!isset($this->$key) || $value !== $this->$key)
           {
-            if($value == '-1')
+            if($value == '-1' || $value == '')
             {
               continue;
             }

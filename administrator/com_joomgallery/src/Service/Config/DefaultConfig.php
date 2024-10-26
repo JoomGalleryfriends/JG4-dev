@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Config;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\Config;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Config\ConfigInterface;
@@ -70,6 +71,7 @@ class DefaultConfig extends Config implements ConfigInterface
     if($glob_params == false || empty($glob_params))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error', 'jerror');
 
       return;
     }
@@ -100,11 +102,13 @@ class DefaultConfig extends Config implements ConfigInterface
     {
       // Load parent categories
       $cat_model = $this->component->getMVCFactory()->createModel('Category', 'administrator');
-      $parents   = $cat_model->getParents($this->ids['category'], true);
+      $parents   = $cat_model->getParents($this->ids['category'], true, false, true);
 
       if($parents === false && empty($parents))
       {
         $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error', 'jerror');
+
         return;
       }
 
@@ -133,6 +137,8 @@ class DefaultConfig extends Config implements ConfigInterface
       if($image === false && empty($image))
       {
         $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error', 'jerror');
+
         return;
       }
 
@@ -158,6 +164,8 @@ class DefaultConfig extends Config implements ConfigInterface
       if($menu === false && empty($menu))
       {
         $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_LOAD_CONFIG'), 'error', 'jerror');
+
         return;
       }
       

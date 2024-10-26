@@ -110,7 +110,7 @@ class CategoryController extends JoomBaseController
 		$addCatId   = (int) $this->input->getInt('catid', 0);
 
 		// Access check
-		if(!$this->acl->checkACL('add', 'category', $addCatId, true))
+		if(!$this->acl->checkACL('add', 'category', $editId, $addCatId, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
@@ -137,6 +137,31 @@ class CategoryController extends JoomBaseController
 		// Redirect to the form screen.
 		$this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=categoryform&'.$this->getItemAppend(0, $addCatId), false));
 	}
+
+	/**
+   * Unlocks a password protected category
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  public function unlock()
+  {
+		$this->checkToken();
+
+		$cid = $this->input->getInt('id', 0);
+		
+    try
+    {
+			$model = $this->getModel('Category', 'Site');
+      $model->unlock($cid, $this->input->getString('password', ''));
+    }
+    catch(\Exception $e)
+    {
+      $this->setMessage($e->getMessage(), 'error');
+    }
+
+    $this->setRedirect(Route::_('index.php?option='._JOOM_OPTION.'&view=category&id='.$cid, false));
+  }
 
 	/**
 	 * Remove a category
