@@ -656,10 +656,15 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canDelete($record)
   {
-    $id                  = $record->id;
-    $parent_id           = 0;
-    $use_parent          = false;
-    list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    $id         = $record->id;
+    $parent_id  = 0;
+    $use_parent = false;
+    $type       = $this->type;
+
+    if(\is_object($this->type))
+    {
+      list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    }
 
     if(\in_array($type, $this->getAcl()->get('parent_dependent_types')) && isset($record->catid))
     {
@@ -682,10 +687,15 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canEditState($record)
   {
-    $id                  = $record->id;
-    $parent_id           = 0;
-    $use_parent          = false;
-    list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    $id         = $record->id;
+    $parent_id  = 0;
+    $use_parent = false;
+    $type       = $this->type;
+
+    if(\is_object($this->type))
+    {
+      list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    }      
 
     if(\in_array($type, $this->getAcl()->get('parent_dependent_types')) && $record->id > 0)
     {
