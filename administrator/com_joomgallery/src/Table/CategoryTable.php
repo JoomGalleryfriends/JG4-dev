@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -587,9 +587,9 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
   /**
    * Get a node tree based on current category (children, parents, complete)
    *
-   * @param    string   $type     Which kind of nde tree (default: cpl)
-   * @param    bool     $self     Include current node id (default: false)
-   * @param    bool     $root     Include root node (default: false)
+   * @param    string   $type        Which kind of nde tree (default: cpl)
+   * @param    bool     $self        Include current node id (default: false)
+   * @param    bool     $root        Include root node (default: false)
    * 
    * @return   array  List tree node node ids ordered by level ascending.
    * @throws  \UnexpectedValueException
@@ -627,7 +627,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
 		$query = $db->getQuery(true);
 
     // Select the required fields from the table.
-		$query->select(array('id', 'level', 'title'));
+		$query->select(array('id', 'level', 'alias', 'title'));
     $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
 
     if($type === 'children')
@@ -833,5 +833,36 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     }
 
     return $siblings;
+  }
+
+  /**
+   * Get an array of path segments (needed for routing)
+   * 
+   * @param   bool     $root        True to include root node (default: false)
+   * @param   string   $prop_name   The property name
+   * 
+   * @return   array  List of path slugs (slug = id:alias).
+   * @throws  \UnexpectedValueException
+   */
+  public function getRoutePath($root = false, $prop_name = 'route_path')
+  {
+    // Check if object is loaded
+    if(!$this->id)
+    {
+      throw new \UnexpectedValueException('Table not loaded. Load table first.');
+    }
+
+    if(!isset($this->{$prop_name}))
+    {
+      $parents = \array_reverse($this->getNodeTree('parents', true, $root));
+
+      $this->{$prop_name} = array();
+      foreach ($parents as $key => $node)
+      {
+        $this->{$prop_name}[$node['id']] = $node['id'] . ':' . $node['alias'];
+      }
+    }
+
+    return $this->{$prop_name};
   }
 }
