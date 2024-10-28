@@ -28,6 +28,14 @@ trait MigrationTableTrait
   protected $_insertID = false;
 
   /**
+   * True to skip the check for a unique alias
+   * This speeds up the creation of a new record. Recommended for the migration of many records (> 10'000)
+   *
+   * @var bool
+  */
+  protected $_checkAliasUniqueness = true;
+
+  /**
    * Validate that the primary key has been set.
    *
    * @return  boolean  True if the primary key(s) have been set.
@@ -56,5 +64,17 @@ trait MigrationTableTrait
   public function insertID()
   {
     $this->_insertID = true;
+  }
+
+  /**
+   * Method to set flag to skip the check of the alias for uniqueness.
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function skipAliasCheck()
+  {
+    $this->_checkAliasUniqueness = false;
   }
 }
