@@ -47,9 +47,20 @@ if($group == 'jg_staticprocessing0' || $group == 'jg_staticprocessing1' || $grou
 {
   $form->setFieldAttribute('jg_imgtypename','readonly',true);
 }
+
+$imagetype = '';
+foreach ($form->getGroup('') as $k => $field)
+{
+  if($field->fieldname == 'jg_imgtypename')
+  {
+    $imagetype = ' '.$field->value;
+
+    break;
+  }
+}
 ?>
 
-<tr class="subform-repeatable-group" data-base-name="<?php echo $basegroup; ?>" data-group="<?php echo $group; ?>">
+<tr class="subform-repeatable-group <?php echo $basegroup.$imagetype;?>" data-base-name="<?php echo $basegroup; ?>" data-group="<?php echo $group; ?>">
 	<?php
   $i = 0;
   foreach ($form->getGroup('') as $k => $field) : ?>
