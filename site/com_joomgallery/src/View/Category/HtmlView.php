@@ -154,20 +154,39 @@ class HtmlView extends JoomGalleryView
 			$this->document->setMetadata('robots', $this->params['menu']->get('robots'));
 		}
 
-    // Add Breadcrumbs
-    $pathway = $this->app->getPathway();
-    $breadcrumbList = Text::_('COM_JOOMGALLERY_CATEGORIES');
-
-    if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
+    // Get ID of the category from active menu item
+    if($this->menu && $this->menu->component == _JOOM_OPTION && isset($this->menu->query['view']) && in_array($this->menu->query['view'], ['categories', 'category']))
     {
-      $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=categories");
+      $id = $this->menu->query['id'];
+    }
+    else
+    {
+      $id = 1;
     }
 
-    $breadcrumbTitle = Text::_('JCATEGORY');
-
-    if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
+    // Add Breadcrumbs
+    if($this->item->id > 1)
     {
-      $pathway->addItem($breadcrumbTitle);
+      $path = [['title' => $this->item->title, 'link' => '']];
+    }
+    else
+    {
+      $path = [];
+    }
+    
+    $category = $this->item->parent;
+    
+    while($category !== null && $category->id !== 1 && $category->id != $id)
+    {
+      $path[]   = ['title' => $category->title, 'link' => JoomHelper::getViewRoute('category', $category->id, 0, $category->language)];
+      $category = $this->getModel()->getParent($category->parent_id);
+    }
+
+    $path = \array_reverse($path);
+
+    foreach($path as $item)
+    {
+      $this->app->getPathway()->addItem($item['title'], $item['link']);
     }
 	}
 }

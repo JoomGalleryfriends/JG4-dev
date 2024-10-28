@@ -138,14 +138,14 @@ class HtmlView extends JoomGalleryView
 
     if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
     {
-      $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=images");
+      $pathway->addItem($breadcrumbList, 'index.php?option=com_joomgallery&view=gallery');
     }
 
-    $breadcrumbTitle = Text::_('COM_JOOMGALLERY_IMAGES');
+    $breadcrumbTitle = $this->item->title;
 
     if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
     {
-      $pathway->addItem($breadcrumbTitle);
+      $pathway->addItem($breadcrumbTitle, '');
     }
 	}
 }

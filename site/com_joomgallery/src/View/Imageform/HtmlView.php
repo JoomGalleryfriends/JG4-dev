@@ -164,14 +164,14 @@ class HtmlView extends JoomGalleryView
 
     if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
     {
-      $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=images");
+      $pathway->addItem($breadcrumbList, 'index.php?option=com_joomgallery&view=images');
     }
 
-    $breadcrumbTitle = isset($this->item->id) ? Text::_("JGLOBAL_EDIT") : Text::_("JGLOBAL_FIELD_ADD");
+    $breadcrumbTitle = isset($this->item->id) ? Text::_('JGLOBAL_EDIT') : Text::_('JGLOBAL_FIELD_ADD');
 
     if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
     {
-      $pathway->addItem($breadcrumbTitle);
+      $pathway->addItem($breadcrumbTitle, '');
     }
 	}
 }

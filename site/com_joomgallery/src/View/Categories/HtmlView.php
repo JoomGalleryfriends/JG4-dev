@@ -62,6 +62,15 @@ class HtmlView extends JoomGalleryView
 			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
 
+    // Check if is userspace is enabled
+    // Check access permission (ACL)
+    if($this->params['configs']->get('jg_userspace', 1, 'int') == 0 || !$this->getAcl()->checkACL('manage', 'com_joomgallery'))
+    {
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+      
+      return false;
+    }
+
 		// Preprocess the list of items to find ordering divisions.
 		foreach($this->items as &$item)
 		{
@@ -136,7 +145,7 @@ class HtmlView extends JoomGalleryView
 
     if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
     {
-      $pathway->addItem($breadcrumbTitle);
+      $pathway->addItem($breadcrumbTitle, '');
     }
 	}
 }
