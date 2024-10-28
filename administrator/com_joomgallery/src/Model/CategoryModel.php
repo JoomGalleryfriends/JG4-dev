@@ -504,6 +504,14 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
+        // Check that there are rules set for new categories
+        // It can happen for users without 'core.admin' permission that there are no rules in the request
+        if($isNew && empty($table->getRules('all')))
+        {
+          $form = $this->getForm();
+          $table->setEmptyRules($form);
+        }
+
         // Trigger the before save event.
         $result = $app->triggerEvent($this->event_before_save, array($context, $table, $isNew, $data));
 

@@ -24,8 +24,8 @@
 	</section>
 
   <section name="category">
-		<action name="joom.upload" title="COM_JOOMGALLERY_UPLOAD" description="COM_JOOMGALLERY_ACTION_CATEGORY_UPLOAD_DESC" />
-		<action name="joom.upload.inown" title="COM_JOOMGALLERY_ACTION_UPLOAD_INOWN" description="COM_JOOMGALLERY_ACTION_CATEGORY_UPLOAD_INOWN_DESC" />
+    <action name="joom.upload" title="COM_JOOMGALLERY_UPLOAD" description="COM_JOOMGALLERY_ACTION_CATEGORY_UPLOAD_DESC" />
+    <action name="joom.upload.inown" title="COM_JOOMGALLERY_ACTION_UPLOAD_INOWN" description="COM_JOOMGALLERY_ACTION_CATEGORY_UPLOAD_INOWN_DESC" />
 		<action name="core.create" title="JACTION_CREATE" description="COM_JOOMGALLERY_ACTION_CATEGORY_CREATE_DESC" />
 		<action name="joom.create.inown" title="COM_JOOMGALLERY_ACTION_CREATE_INOWN" description="COM_JOOMGALLERY_ACTION_CATEGORY_CREATE_INOWN_DESC" />
 		<action name="core.delete" title="JACTION_DELETE" description="COM_JOOMGALLERY_ACTION_CATEGORY_DELETE_DESC" />

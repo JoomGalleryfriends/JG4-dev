@@ -61,11 +61,11 @@ interface IMGtoolsInterface
   /**
    * Read image from file or image string (stream)
    *
-   * @param   string  $file        Path to source file or image string
-   * @param   bool    $is_stream   True if $src is image string (stream) (default: false)
-   * @param   bool    $base64      True if input string is base64 decoded (default: false)
+   * @param   string|resource  $file        Path to source file or image string or resource
+   * @param   bool             $is_stream   True if $src is image string (stream) (default: false)
+   * @param   bool             $base64      True if input string is base64 decoded (default: false)
    *
-   * @return  bool    True on success, false otherwise
+   * @return  bool             True on success, false otherwise
    *
    * @since   4.0.0
    */

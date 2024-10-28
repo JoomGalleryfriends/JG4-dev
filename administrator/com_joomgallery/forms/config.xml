@@ -265,6 +265,17 @@
              label="COM_JOOMGALLERY_CONFIG_IP_STATIC" 
              description="COM_JOOMGALLERY_CONFIG_IP_STATIC_DESC" />
 
+      <field name="jg_dynamic_watermark"
+             type="radio"
+             default="1"
+             class="btn-group"
+             layout="joomla.form.field.radio.switcher"
+             label="COM_JOOMGALLERY_CONFIG_DYNAMIC_WATERMARK"
+             description="COM_JOOMGALLERY_CONFIG_DYNAMIC_WATERMARK_LONG">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
+
       <field name="jg_dynamicprocessing"
              type="subform"
              min="0"

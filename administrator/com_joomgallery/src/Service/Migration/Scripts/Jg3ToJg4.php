@@ -18,6 +18,7 @@ use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Filesystem\File;
+use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
@@ -189,15 +190,15 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * @param   bool   $names_only  True to load type names only. No migration parameters required.
    * @param   Type   $type        Type object to set optional definitions
    * 
-   * @return  array   The source types info, array(tablename, primarykey, isNested, isCategorized)
+   * @return  array   The source types info, array(tablename, primarykey, titlename, isNested, isCategorized, isFromSourceDB)
    * 
    * @since   4.0.0
    */
   public function defineTypes($names_only=false, &$type=null): array
   {
-    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false, true),
-                    'image' =>    array('#__joomgallery', 'id', false, true, true),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', false, false, false)
+    $types = array( 'category' => array('#__joomgallery_catg', 'cid', 'name', true, false, true),
+                    'image' =>    array('#__joomgallery', 'id', 'imgtitle', false, true, true),
+                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', 'name', false, false, false)
                   );
 
     if($this->params->get('source_ids', 0) == 1)
@@ -221,7 +222,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     foreach($types as $key => $value)
     {
-      if(\count($value) < 5 || (\count($value) > 4 && $value[4]))
+      if(\count($value) < 6 || (\count($value) > 5 && $value[5]))
       {
         // tablename is from source db and has to be checked
         $types[$key][0] = $value[0] . $source_db_suffix;
@@ -972,6 +973,65 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           // Move/Copy/Recreate is not possible since source and destination folders are identical
           $checks->addCheck($category, 'copy_identical_folders', false, false, Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR'), Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR'));
           $this->component->addLog(Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR'), 'error', 'migration');
+        }
+      }
+
+      //------------------------
+
+      // Check use case: Deactive alias uniqueness check during insertion
+      if($this->params->get('unique_alias', 1) == 0)
+      {
+        $selection = $this->params->get('unique_alias_select', 'all');
+
+        foreach($this->types as $name => $type)
+        {
+          if($type->get('insertRecord') && ($selection == 'all' || strpos($selection, $name) !== false))
+          {
+            // Alias uniqueness check is disabled for this content type
+            // Alias will be created out of the title. Therefore title has to be unique such that aliases will become unique
+            $query = $db->getQuery(true)
+              ->select($db->quoteName(array($type->get('pk'), $type->get('title'))))
+              ->from($db->quoteName($type->get('tablename')));
+            $db->setQuery($query);
+
+            // Load list of titles
+            $titles = $db->loadAssocList($type->get('pk'), $type->get('title'));
+
+            // Transform titles to possible aliases & look for doubles
+            $unique = array();
+            foreach($titles as $id => $title)
+            {
+            
+              if(Factory::getConfig()->get('unicodeslugs') == 1)
+              {
+                $titles[$id] = OutputFilter::stringURLUnicodeSlug(trim($title));
+              }
+              else
+              {
+                $titles[$id] = OutputFilter::stringURLSafe(trim($title));
+              }
+              
+              $uniqueKey = \array_search($titles[$id], $unique);
+              if($uniqueKey === false)
+              {
+                // Looks like this is a unique alias. Move to unique array
+                $unique[$id] = $titles[$id];
+                unset($titles[$id]);
+              }
+              else
+              {
+                // This alias is already in unique array, but it shouldnt. Move it back
+                $titles[$uniqueKey] = $unique[$uniqueKey];
+                unset($unique[$uniqueKey]);
+              }
+            }
+
+            // Add check result
+            if(!empty($titles))
+            {
+              $checks->addCheck($category, 'alias_uniqueness_' . $name, true, true, Text::_('FILES_JOOMGALLERY_SERVICE_MIGRATION_ALIAS_UNIQUE'), Text::sprintf('FILES_JOOMGALLERY_SERVICE_MIGRATION_ALIAS_UNIQUE_ERROR', $type->get('recordName'), $type->get('tablename'), \implode(', ', \array_keys($titles))));
+            }
+          }
         }
       }
     }

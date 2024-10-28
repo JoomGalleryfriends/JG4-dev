@@ -64,6 +64,15 @@ class Type
   protected $pk = 'id';
 
   /**
+   * Name of the title field
+   *
+   * @var  string
+   *
+   * @since  4.0.0
+   */
+  protected $title = 'title';
+
+  /**
    * Name of the owner field
    *
    * @var  string
@@ -153,17 +162,18 @@ class Type
     $this->name       = $name;
     $this->recordName = $name;
 
-    if(\count($list) < 4)
+    if(\count($list) < 5)
     {
-      $this->component->addLog('Type object needs a list of at least 4 entries as the second argument.', 'error', 'jerror');
-      throw new \Exception('Type object needs a list of at least 4 entries as the second argument.', 1);
+      $this->component->addLog('Invalid migration skript. Type object needs a list of at least 5 entries as the second argument.', 'error', 'jerror');
+      throw new \Exception('Invalid migration skript. Type object needs a list of at least 5 entries as the second argument.', 1);
     }
 
     $this->tablename      = $list[0];
     $this->queueTablename = $list[0];
     $this->pk             = $list[1];
-    $this->nested         = $list[2];
-    $this->categorized    = $list[3];
+    $this->title          = $list[2];
+    $this->nested         = $list[3];
+    $this->categorized    = $list[4];
   }
 
   /**

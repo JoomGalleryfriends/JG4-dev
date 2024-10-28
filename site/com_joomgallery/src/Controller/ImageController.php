@@ -15,6 +15,7 @@ namespace Joomgallery\Component\Joomgallery\Site\Controller;
 
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Image controller class.
@@ -57,7 +58,8 @@ class ImageController extends JoomBaseController
 		}
 
     // Access check
-		if(!$this->acl->checkACL('edit', 'image', $editId))
+		$parent_id = JoomHelper::getParent('image', $editId);
+		if(!$this->acl->checkACL('edit', 'image', $editId, $parent_id, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));
@@ -107,7 +109,7 @@ class ImageController extends JoomBaseController
 		$addCatId   = (int) $this->input->getInt('catid', 0);
 
 		// Access check
-		if(!$this->acl->checkACL('add', 'image', $addCatId, true))
+		if(!$this->acl->checkACL('add', 'image', $editId, $addCatId, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_CREATE_RECORD_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($editId),false));

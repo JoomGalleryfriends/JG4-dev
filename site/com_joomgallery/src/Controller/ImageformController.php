@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\Controller\FormController;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Image class.
@@ -101,7 +102,8 @@ class ImageformController extends FormController
 		}
 
     // Access check
-		if(!$this->acl->checkACL('edit', 'image', $recordId))
+		$parent_id = JoomHelper::getParent('image', $recordId);
+		if(!$this->acl->checkACL('edit', 'image', $recordId, $parent_id, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($recordId),false));
@@ -262,7 +264,8 @@ class ImageformController extends FormController
 		}
 
 		// Access check
-		if(!$this->acl->checkACL('delete', 'image', $removeId))
+		$parent_id = JoomHelper::getParent('image', $removeId);
+		if(!$this->acl->checkACL('delete', 'image', $removeId, $parent_id, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage().'&'.$this->getItemAppend($removeId),false));
@@ -347,7 +350,8 @@ class ImageformController extends FormController
 		}
 
     // Access check
-		if(!$this->acl->checkACL('editstate', 'image', $id))
+		$parent_id = JoomHelper::getParent('image', $id);
+		if(!$this->acl->checkACL('editstate', 'image', $id, $parent_id, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage('images').'&'.$this->getItemAppend($id),false));
@@ -413,7 +417,8 @@ class ImageformController extends FormController
 		}
 
     // Access check
-		if(!$this->acl->checkACL('editstate', 'image', $id))
+		$parent_id = JoomHelper::getParent('image', $id);
+		if(!$this->acl->checkACL('editstate', 'image', $id, $parent_id, true))
 		{
 			$this->setMessage(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
 			$this->setRedirect(Route::_($this->getReturnPage('images').'&'.$this->getItemAppend($id),false));
