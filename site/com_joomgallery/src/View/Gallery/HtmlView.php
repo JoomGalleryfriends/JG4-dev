@@ -15,7 +15,6 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Gallery;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
