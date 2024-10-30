@@ -29,7 +29,6 @@ $wa->useStyle('com_joomgallery.list')
 // Access check
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
-$canAdd    = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 0, 1, true);
 $canOrder  = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', 0, 1, true);
 $saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
 $returnURL = base64_encode(JoomHelper::getListRoute('categories', null, $this->getLayout()));
@@ -217,15 +216,6 @@ if($saveOrder && !empty($this->items))
       <input type="hidden" name="filter_order" value=""/>
       <input type="hidden" name="filter_order_Dir" value=""/>
       <?php echo HTMLHelper::_('form.token'); ?>
-
-      <?php /*if($canAdd) : ?>
-        <div class="mb-2">
-          <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.add', false, 0); ?>" class="btn btn-success btn-small">
-            <i class="icon-plus"></i>
-            <?php echo Text::_('COM_JOOMGALLERY_IMG_UPLOAD_IMAGE'); ?>
-          </a>
-        </div>
-      <?php endif; */?>
     </div>
   </div>
 </form>
