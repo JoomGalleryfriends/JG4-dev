@@ -199,7 +199,7 @@ abstract class JoomAdminModel extends AdminModel
       // Check if the state was changed
       if($table->published != $data['published'])
       {
-        if(!$this->getAcl()->checkACL('core.edit.state', _JOOM_OPTION.'.image.'.$table->id))
+        if(!$this->getAcl()->checkACL('core.edit.state', $this->type, $table->id))
         {
           // We are not allowed to change the published state
           $this->component->addWarning(Text::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
@@ -330,7 +330,7 @@ abstract class JoomAdminModel extends AdminModel
    */
   public function initBatch()
   {
-    parent::iniBatch();
+    parent::initBatch();
 
     // Get current user
     $this->user = $this->component->getMVCFactory()->getIdentity();
@@ -381,7 +381,7 @@ abstract class JoomAdminModel extends AdminModel
     }
 
     // Check that the user has create permission for the component
-    if(!$this->getAcl()->checkacl('create', 'category', $categoryId, true))
+    if(!$this->getAcl()->checkacl('create', 'category', 0, $categoryId, true))
     {
       $this->component->setError(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_CREATE'));
       $this->component->addLog(Text::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_CREATE'), 'error', 'jerror');
@@ -656,7 +656,24 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canDelete($record)
   {
-    return $this->getAcl()->checkACL('delete', $this->type, $record->id);
+    $id         = $record->id;
+    $parent_id  = 0;
+    $use_parent = false;
+    $type       = $this->type;
+
+    if(\is_object($this->type))
+    {
+      list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    }
+
+    if(\in_array($type, $this->getAcl()->get('parent_dependent_types')) && isset($record->catid))
+    {
+      // We have a parent dependent content type, so parent_id is needed
+      $parent_id = $record->catid;
+      $use_parent = true;
+    }
+
+    return $this->getAcl()->checkACL('delete', $type, $id, $parent_id, $use_parent);
   }
 
   /**
@@ -670,7 +687,24 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canEditState($record)
   {
-    return $this->getAcl()->checkACL('editstate', $this->type, $record->id);
+    $id         = $record->id;
+    $parent_id  = 0;
+    $use_parent = false;
+    $type       = $this->type;
+
+    if(\is_object($this->type))
+    {
+      list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    }      
+
+    if(\in_array($type, $this->getAcl()->get('parent_dependent_types')) && $record->id > 0)
+    {
+      // We have a parent dependent content type, so parent_id is needed
+      $parent_id  = isset($record->catid) ? $record->catid : JoomHelper::getParent($type, $record->id);
+      $use_parent = true;
+    }
+
+    return $this->getAcl()->checkACL('editstate', $type, $id, $parent_id, $use_parent);
   }
 
   /**

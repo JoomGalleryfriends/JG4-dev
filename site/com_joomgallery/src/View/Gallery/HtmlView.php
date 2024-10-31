@@ -1,4 +1,5 @@
 <?php
+
 /**
 ******************************************************************************************
 **   @version    4.0.0-dev                                                                  **
@@ -8,18 +9,17 @@
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Site\View\Image;
+namespace Joomgallery\Component\Joomgallery\Site\View\Gallery;
 
 // No direct access
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
- * View class for a detail view of Joomgallery.
+ * View class for a gallery view of Joomgallery.
  * 
  * @package JoomGallery
  * @since   4.0.0
@@ -32,8 +32,8 @@ class HtmlView extends JoomGalleryView
 	 * @var  \stdClass
 	 */
 	protected $item;
-
-	/**
+	
+  /**
 	 * The page parameters
 	 *
 	 * @var    array
@@ -42,7 +42,7 @@ class HtmlView extends JoomGalleryView
 	 */
 	protected $params = array();
 
-	/**
+  /**
 	 * Display the view
 	 *
 	 * @param   string  $tpl  Template name
@@ -53,29 +53,22 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-		$this->state        = $this->get('State');
-		$this->params       = $this->get('Params');
-		$this->item         = $this->get('Item');
-		$this->item->rating = JoomHelper::getRating($this->item->id);
+		$this->state  = $this->get('State');
+		$this->params = $this->get('Params');
+		$this->item   = $this->get('Item');
 
-    // Check acces view level
-		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
+    // Check for errors.
+    if(\count($errors = $this->get('Errors')))
     {
-      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+      throw new GenericDataException(\implode("\n", $errors), 500);
     }
 
-		// Check for errors.
-		if(\count($errors = $this->get('Errors')))
-		{
-			throw new GenericDataException(\implode("\n", $errors), 500);
-		}
+    $this->_prepareDocument();
 
-		$this->_prepareDocument();
+    parent::display($tpl);
+  }
 
-		parent::display($tpl);
-	}
-
-	/**
+  /**
 	 * Prepares the document
 	 *
 	 * @return void
@@ -133,19 +126,19 @@ class HtmlView extends JoomGalleryView
 		}
 
     // Add Breadcrumbs
-    $pathway = $this->app->getPathway();
-    $breadcrumbList = Text::_('COM_JOOMGALLERY_IMAGES');
+    // $pathway = $this->app->getPathway();
+    // $breadcrumbList = Text::_('COM_JOOMGALLERY_IMAGES');
 
-    if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
-    {
-      $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=images");
-    }
+    // if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
+    // {
+    //   $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=images");
+    // }
 
-    $breadcrumbTitle = Text::_('COM_JOOMGALLERY_IMAGES');
+    // $breadcrumbTitle = Text::_('COM_JOOMGALLERY_IMAGES');
 
-    if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
-    {
-      $pathway->addItem($breadcrumbTitle);
-    }
+    // if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
+    // {
+    //   $pathway->addItem($breadcrumbTitle);
+    // }
 	}
 }

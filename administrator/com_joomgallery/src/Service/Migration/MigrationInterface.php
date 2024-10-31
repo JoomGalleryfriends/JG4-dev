@@ -89,7 +89,7 @@ interface MigrationInterface
    * @param   bool   $names_only  True to load type names only. No migration parameters required.
    * @param   Type   $type        Type object to set optional definitions
    * 
-   * @return  array   The source types info, array(tablename, primarykey, isNested, isCategorized)
+   * @return  array   The source types info, array(tablename, primarykey, titlename, isNested, isCategorized)
    * 
    * @since   4.0.0
    */

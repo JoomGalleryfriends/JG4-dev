@@ -186,15 +186,15 @@ abstract class Migration implements MigrationInterface
    * @param   bool   $names_only  True to load type names only. No migration parameters required.
    * @param   Type   $type        Type object to set optional definitions
    * 
-   * @return  array   The source types info, array(tablename, primarykey, isNested, isCategorized)
+   * @return  array   The source types info, array(tablename, primarykey, isNested, isCategorized, , isFromSourceDB)
    * 
    * @since   4.0.0
    */
   public function defineTypes($names_only=false, &$type=null): array
   {
     /* Example:
-    $types = array( 'category' => array('#__joomgallery_catg', 'cid', true, false),
-                    'image' =>    array('#__joomgallery', 'id', false, true)
+    $types = array( 'category' => array('#__joomgallery_catg', 'cid', 'name', true, false, true),
+                    'image' =>    array('#__joomgallery', 'id', 'imgtitle', false, true, true)
                   );
     */
 

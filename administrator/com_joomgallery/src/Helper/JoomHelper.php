@@ -402,6 +402,28 @@ class JoomHelper
     // Create file config service based on current user
 		$config = self::getService('Config');
 
+    // Adjust type when in compatibility mode
+    if($config->get('jg_compatibility_mode', 0))
+    {
+      switch($type)
+      {
+        case 'thumb':
+          $type = 'thumbnail';
+          break;
+        
+        case 'img':
+          $type = 'detail';
+          break;
+
+        case 'orig':
+          $type = 'original';
+          break;
+        
+        default:
+          break;
+      }
+    }
+
     if(\strpos($type, 'rnd_cat:') !== false && $config->get('jg_category_view_subcategories_random_image', 1))
     {
       // we want to get a random image from a category
@@ -476,8 +498,8 @@ class JoomHelper
       if($config->get('jg_use_real_paths', 0) == 0)
       {
         // Joomgallery internal URL
-        // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3
-        return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id='.$img->id);
+        // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3&catid=1
+        return Route::_('index.php?option=com_joomgallery&view=image&format=raw&type='.$type.'&id='.$img->id.'&catid='.$img->catid);
       }
       else
       {

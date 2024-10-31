@@ -65,8 +65,11 @@ trait JoomTableTrait
 			$this->ordering = self::getNextOrder();
 		}
 
+    if($this->_checkAliasUniqueness)
 		// Check if alias is unique
-    if(\property_exists($this, 'alias'))
+    if(\property_exists($this, 'alias') &&
+       (\property_exists($this, '_checkAliasUniqueness') ? $this->_checkAliasUniqueness : true)
+      )
     {
       if(!$this->isUnique('alias'))
       {
@@ -238,9 +241,10 @@ trait JoomTableTrait
 	 *
 	 * @return string The asset name
 	 *
-	 * @see Table::_getAssetName
+   * @since 4.0.0
+	 * @see Joomla\CMS\Table\Table::_getAssetName
 	 */
-	protected function _getAssetName()
+	protected function _getAssetName($itemtype = null)
 	{
 		$k = $this->_tbl_key;
 
@@ -252,9 +256,10 @@ trait JoomTableTrait
 	 *
 	 * @return  string
 	 *
-	 * @since   1.6
+   * @since 4.0.0
+	 * @see Joomla\CMS\Table\Table::_getAssetTitle
 	 */
-	protected function _getAssetTitle()
+	protected function _getAssetTitle($itemtype = null)
 	{
 		return $this->title;
 	}
@@ -265,11 +270,12 @@ trait JoomTableTrait
 	 * @param   Table    $table  Table name
 	 * @param   integer  $id     Id
 	 *
-	 * @see Table::_getAssetParentId
-	 *
 	 * @return mixed The id on success, false on failure.
+   * 
+   * @since 4.0.0
+   * @see Joomla\CMS\Table\Table::_getAssetParentId
 	 */
-	protected function _getAssetParentId($table = null, $id = null)
+	protected function _getAssetParentId($table = null, $id = null, $itemtype = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
 		$assetTable = new Asset($this->getDbo());

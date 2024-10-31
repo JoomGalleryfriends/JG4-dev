@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -21,7 +21,6 @@ use \Joomla\CMS\User\UserHelper;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\Table\Nested as Table;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -32,9 +31,13 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  * @package JoomGallery
  * @since   4.0.0
  */
-class CategoryTable extends Table implements VersionableTableInterface
+class CategoryTable extends MultipleAssetsTable implements VersionableTableInterface
 { 
-  use JoomTableTrait;
+  use JoomTableTrait, MultipleAssetsTableTrait {
+    MultipleAssetsTableTrait::_getAssetName insteadof JoomTableTrait;
+    MultipleAssetsTableTrait::_getAssetParentId insteadof JoomTableTrait;
+    MultipleAssetsTableTrait::_getAssetTitle insteadof JoomTableTrait;
+  }
   use MigrationTableTrait;
   
   /**
@@ -69,6 +72,14 @@ class CategoryTable extends Table implements VersionableTableInterface
    */
   public $rm_pw = false;
 
+  /**
+   * The default itemtype
+   *
+   * @var    string  The name of the itemtype
+   * @since  4.0.0
+   */
+  public $def_itemtype = 'category';
+
 	/**
 	 * Constructor
 	 *
@@ -95,47 +106,6 @@ class CategoryTable extends Table implements VersionableTableInterface
   {
     self::$root_id = 0;
   }
-
-	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table   $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @see Table::_getAssetParentId
-	 *
-	 * @return mixed The id on success, false on failure.
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-    $assetTable = new Asset($this->getDbo());
-
-		if($this->parent_id && \intval($this->parent_id) >= 1)
-		{
-			// The item has a category as asset-parent
-			$parent_id = \intval($this->parent_id);
-			$assetTable->loadByName(_JOOM_OPTION.'.category.'.$parent_id);
-		}
-		else
-		{
-			// The item has the component as asset-parent
-			$assetTable->loadByName(_JOOM_OPTION);
-		}
-
-		// Return the found asset-parent-id
-		if($assetTable->id)
-		{
-			$assetParentId = $assetTable->id;
-		}
-		else
-		{
-			// If no asset-parent can be found we take the global asset
-			$assetParentId = $assetTable->getRootId();
-		}
-
-		return $assetParentId;
-	}
 
   /**
    * Method to load a row from the database by primary key and bind the fields to the Table instance properties.
@@ -276,12 +246,27 @@ class CategoryTable extends Table implements VersionableTableInterface
 			$array['metadata'] = (string) $registry;
 		}
 
-		// Bind the rules for ACL where supported.
-		if(isset($array['rules']))
-		{
-      $rules = new Rules($array['rules']);
-			$this->setRules($rules);
-		}
+    // Support for multiple rules
+    foreach ($array as $key => $value)
+    {
+      if(\strpos($key, 'rules') !== false)
+      {
+        // We found a rules entry in the data
+        if($key === 'rules')
+        {
+          $itemtype = 'category';
+        }
+        else
+        {
+          $itemtype = \str_replace('rules-', '', $key);
+        }
+
+        // Bind the rules for ACL where supported.
+        $rules = new Rules($value);
+        $this->setRules($rules, $itemtype);
+      }
+    }
+		
 
 		return parent::bind($array, $ignore);
 	}
@@ -364,16 +349,19 @@ class CategoryTable extends Table implements VersionableTableInterface
 		}
 
 		// Check if alias is unique
-		if(!$this->isUnique('alias'))
-		{
-			$count = 2;
-			$currentAlias =  $this->alias;
-
-			while(!$this->isUnique('alias'))
+    if($this->_checkAliasUniqueness)
+    {
+      if(!$this->isUnique('alias'))
       {
-				$this->alias = $currentAlias . '-' . $count++;
-			}
-		}
+        $count = 2;
+        $currentAlias =  $this->alias;
+
+        while(!$this->isUnique('alias'))
+        {
+          $this->alias = $currentAlias . '-' . $count++;
+        }
+      }
+    }		
 
     // Check if title is unique inside this parent category
 		if(!$this->isUnique('title', $this->parent_id, 'parent_id'))
@@ -390,7 +378,7 @@ class CategoryTable extends Table implements VersionableTableInterface
     // Create new path based on alias and parent category
     $manager    = JoomHelper::getService('FileManager', array($this->id));
     $filesystem = JoomHelper::getService('Filesystem');
-    $this->path = $manager->getCatPath($this->id, false, $this->parent_id, $this->alias, false, false);
+    $this->path = $manager->getCatPath(0, false, $this->parent_id, $this->alias, false, false);
     $this->path = $filesystem->cleanPath($this->path, '/');
 
     // Support for subform field params
@@ -602,9 +590,9 @@ class CategoryTable extends Table implements VersionableTableInterface
   /**
    * Get a node tree based on current category (children, parents, complete)
    *
-   * @param    string   $type     Which kind of nde tree (default: cpl)
-   * @param    bool     $self     Include current node id (default: false)
-   * @param    bool     $root     Include root node (default: false)
+   * @param    string   $type        Which kind of nde tree (default: cpl)
+   * @param    bool     $self        Include current node id (default: false)
+   * @param    bool     $root        Include root node (default: false)
    * 
    * @return   array  List tree node node ids ordered by level ascending.
    * @throws  \UnexpectedValueException
@@ -642,7 +630,7 @@ class CategoryTable extends Table implements VersionableTableInterface
 		$query = $db->getQuery(true);
 
     // Select the required fields from the table.
-		$query->select(array('id', 'level', 'title'));
+		$query->select(array('id', 'level', 'alias', 'title'));
     $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
 
     if($type === 'children')
@@ -848,5 +836,36 @@ class CategoryTable extends Table implements VersionableTableInterface
     }
 
     return $siblings;
+  }
+
+  /**
+   * Get an array of path segments (needed for routing)
+   * 
+   * @param   bool     $root        True to include root node (default: false)
+   * @param   string   $prop_name   The property name
+   * 
+   * @return   array  List of path slugs (slug = id:alias).
+   * @throws  \UnexpectedValueException
+   */
+  public function getRoutePath($root = false, $prop_name = 'route_path')
+  {
+    // Check if object is loaded
+    if(!$this->id)
+    {
+      throw new \UnexpectedValueException('Table not loaded. Load table first.');
+    }
+
+    if(!isset($this->{$prop_name}))
+    {
+      $parents = \array_reverse($this->getNodeTree('parents', true, $root));
+
+      $this->{$prop_name} = array();
+      foreach ($parents as $key => $node)
+      {
+        $this->{$prop_name}[$node['id']] = $node['id'] . ':' . $node['alias'];
+      }
+    }
+
+    return $this->{$prop_name};
   }
 }
