@@ -330,7 +330,7 @@ abstract class JoomAdminModel extends AdminModel
    */
   public function initBatch()
   {
-    parent::iniBatch();
+    parent::initBatch();
 
     // Get current user
     $this->user = $this->component->getMVCFactory()->getIdentity();
@@ -656,18 +656,24 @@ abstract class JoomAdminModel extends AdminModel
    */
   protected function canDelete($record)
   {
-    $id        = $record->id;
-    $parent_id = 0;
+    $id         = $record->id;
+    $parent_id  = 0;
     $use_parent = false;
+    $type       = $this->type;
 
-    if(\in_array($this->type, $this->getAcl()->get('parent_dependent_types')) && isset($record->catid))
+    if(\is_object($this->type))
+    {
+      list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    }
+
+    if(\in_array($type, $this->getAcl()->get('parent_dependent_types')) && isset($record->catid))
     {
       // We have a parent dependent content type, so parent_id is needed
       $parent_id = $record->catid;
       $use_parent = true;
     }
 
-    return $this->getAcl()->checkACL('delete', $this->type, $id, $parent_id, $use_parent);
+    return $this->getAcl()->checkACL('delete', $type, $id, $parent_id, $use_parent);
   }
 
   /**
@@ -684,15 +690,21 @@ abstract class JoomAdminModel extends AdminModel
     $id         = $record->id;
     $parent_id  = 0;
     $use_parent = false;
+    $type       = $this->type;
 
-    if(\in_array($this->type, $this->getAcl()->get('parent_dependent_types')) && $record->id > 0)
+    if(\is_object($this->type))
+    {
+      list($option, $type) = \explode('.', $this->type->type_alias, 2);
+    }      
+
+    if(\in_array($type, $this->getAcl()->get('parent_dependent_types')) && $record->id > 0)
     {
       // We have a parent dependent content type, so parent_id is needed
-      $parent_id  = isset($record->catid) ? $record->catid : JoomHelper::getParent($this->type, $record->id);
+      $parent_id  = isset($record->catid) ? $record->catid : JoomHelper::getParent($type, $record->id);
       $use_parent = true;
     }
 
-    return $this->getAcl()->checkACL('editstate', $this->type, $id, $parent_id, $use_parent);
+    return $this->getAcl()->checkACL('editstate', $type, $id, $parent_id, $use_parent);
   }
 
   /**
