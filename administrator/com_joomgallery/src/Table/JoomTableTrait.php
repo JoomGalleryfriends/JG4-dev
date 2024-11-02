@@ -82,21 +82,6 @@ trait JoomTableTrait
       }
     }
 
-    // Check if title is unique
-    // if(\property_exists($this, 'title'))
-    // {
-    //   if(!$this->isUnique('title'))
-    //   {
-    //     $count = 2;
-    //     $currentTitle =  $this->title;
-
-    //     while(!$this->isUnique('title'))
-    //     {
-    //       $this->title = $currentTitle . ' (' . $count++ . ')';
-    //     }
-    //   }
-    // }
-
     // Support for field description
     if(\property_exists($this, 'description'))
     {

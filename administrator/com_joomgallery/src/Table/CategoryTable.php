@@ -361,19 +361,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
           $this->alias = $currentAlias . '-' . $count++;
         }
       }
-    }		
-
-    // Check if title is unique inside this parent category
-		// if(!$this->isUnique('title', $this->parent_id, 'parent_id'))
-		// {
-		// 	$count = 2;
-		// 	$currentTitle =  $this->title;
-
-		// 	while(!$this->isUnique('title', $this->parent_id, 'parent_id'))
-    //   {
-		// 		$this->title = $currentTitle . ' (' . $count++ . ')';
-		// 	}
-		// }
+    }
 
     // Create new path based on alias and parent category
     $manager    = JoomHelper::getService('FileManager', array($this->id));
