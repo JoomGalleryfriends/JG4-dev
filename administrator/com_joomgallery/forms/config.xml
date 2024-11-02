@@ -948,6 +948,18 @@
             <option value="defaultview">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_DETAILVIEW</option>
             <option value="lightgallery">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_LIGHTGALLERY</option>
         </field>
+        <field
+            name="jg_category_view_lightbox_image"
+            type="list"
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_LIGHTBOX_IMAGE"
+            description="COM_JOOMGALLERY_CONFIG_CATEGORY_LIGHTBOX_IMAGE_DESC"
+            default="0"
+            validate="options"
+            showon="jg_category_view_image_link:lightgallery[OR]jg_category_view_title_link:lightgallery"
+            >
+            <option value="0">COM_JOOMGALLERY_DETAIL</option>
+            <option value="1">COM_JOOMGALLERY_ORIGINAL</option>
+        </field>
 
         <field
             label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
