@@ -265,7 +265,7 @@ class Router extends RouterView
       if(\key_exists('catid', $query))
       {
         $dbquery->where($this->db->quoteName('catid') . ' = :catid');
-        $dbquery->bind(':catid', $query['id'], ParameterType::INTEGER);
+        $dbquery->bind(':catid', $query['catid'], ParameterType::INTEGER);
       }
 
       $this->db->setQuery($dbquery);
