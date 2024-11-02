@@ -348,15 +348,15 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
 			$this->ordering = self::getNextOrder();
 		}
 
-		// Check if alias is unique
+		// Check if alias is unique inside this parent category
     if($this->_checkAliasUniqueness)
     {
-      if(!$this->isUnique('alias'))
+      if(!$this->isUnique('alias', $this->parent_id, 'parent_id'))
       {
         $count = 2;
         $currentAlias =  $this->alias;
 
-        while(!$this->isUnique('alias'))
+        while(!$this->isUnique('alias', $this->parent_id, 'parent_id'))
         {
           $this->alias = $currentAlias . '-' . $count++;
         }
@@ -364,16 +364,16 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     }		
 
     // Check if title is unique inside this parent category
-		if(!$this->isUnique('title', $this->parent_id, 'parent_id'))
-		{
-			$count = 2;
-			$currentTitle =  $this->title;
+		// if(!$this->isUnique('title', $this->parent_id, 'parent_id'))
+		// {
+		// 	$count = 2;
+		// 	$currentTitle =  $this->title;
 
-			while(!$this->isUnique('title', $this->parent_id, 'parent_id'))
-      {
-				$this->title = $currentTitle . ' (' . $count++ . ')';
-			}
-		}
+		// 	while(!$this->isUnique('title', $this->parent_id, 'parent_id'))
+    //   {
+		// 		$this->title = $currentTitle . ' (' . $count++ . ')';
+		// 	}
+		// }
 
     // Create new path based on alias and parent category
     $manager    = JoomHelper::getService('FileManager', array($this->id));
