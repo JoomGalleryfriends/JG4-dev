@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Images;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
@@ -67,7 +68,13 @@ class HtmlView extends JoomGalleryView
     // Check access permission (ACL)
     if($this->params['configs']->get('jg_userspace', 1, 'int') == 0 || !$this->getAcl()->checkACL('manage', 'com_joomgallery'))
     {
-      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+      if($this->params['configs']->get('jg_userspace', 1, 'int') == 0)
+      {
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_IMAGES_VIEW_NO_ACCESS'), 'message');
+      }
+
+      // Redirect to gallery view
+      $this->app->redirect(Route::_('index.php?option='._JOOM_OPTION.'&view=gallery'));
       
       return false;
     }
