@@ -358,18 +358,6 @@ class ImageTable extends Table implements VersionableTableInterface
 			}
 		}
 
-    // Check if title is unique inside this category
-		if(!$this->isUnique('title', $this->catid, 'catid'))
-		{
-			$count = 2;
-			$currentTitle =  $this->title;
-
-			while(!$this->isUnique('title', $this->catid, 'catid'))
-      {
-				$this->title = $currentTitle . ' (' . $count++ . ')';
-			}
-		}
-
 		// Support for subform field params
     if(empty($this->params))
     {

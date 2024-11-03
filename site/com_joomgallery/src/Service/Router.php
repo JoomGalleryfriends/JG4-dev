@@ -107,7 +107,7 @@ class Router extends RouterView
    */
   public function getGallerySegment($id, $query)
   {
-    return array();
+    return array('');
   }
 	
   /**
@@ -153,6 +153,12 @@ class Router extends RouterView
    */
   public function getImageformSegment($id, $query)
   {
+    if(!$id)
+    {
+      // Load empty form view
+      return array('');
+    }
+
     return $this->getImageSegment($id, $query);
   }
 
@@ -166,6 +172,11 @@ class Router extends RouterView
    */
   public function getImagesSegment($id, $query)
   {
+    if(!$id)
+    {
+      return array('');
+    }
+
     return $this->getImageSegment($id, $query);
   }
 
@@ -214,6 +225,12 @@ class Router extends RouterView
    */
   public function getCategoryformSegment($id, $query)
   {
+    if(!$id)
+    {
+      // Load empty form view
+      return array('');
+    }
+
     return $this->getCategorySegment($id, $query);
   }
 
@@ -227,6 +244,11 @@ class Router extends RouterView
    */
   public function getCategoriesSegment($id, $query)
   {
+    if(!$id)
+    {
+      return array('');
+    }
+
     return $this->getCategorySegment($id, $query);
   }
 
@@ -262,8 +284,16 @@ class Router extends RouterView
         ->where($this->db->quoteName('alias') . ' = :alias')
         ->bind(':alias', $segment);
 
-      if(\key_exists('catid', $query))
+      if($cat = $this->app->input->get('catid', 0, 'int'))
       {
+        // We can identify the image via a request query variable of type catid
+        $dbquery->where($this->db->quoteName('catid') . ' = :catid');
+        $dbquery->bind(':catid', $cat, ParameterType::INTEGER);
+      }
+
+      if(\key_exists('view', $query) && $query['view'] == 'category' && \key_exists('id', $query))
+      {
+        // We can identify the image via menu item of type category
         $dbquery->where($this->db->quoteName('catid') . ' = :catid');
         $dbquery->bind(':catid', $query['id'], ParameterType::INTEGER);
       }
