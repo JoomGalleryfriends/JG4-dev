@@ -107,7 +107,7 @@ class Router extends RouterView
    */
   public function getGallerySegment($id, $query)
   {
-    return array();
+    return array('');
   }
 	
   /**
@@ -153,6 +153,12 @@ class Router extends RouterView
    */
   public function getImageformSegment($id, $query)
   {
+    if(!$id)
+    {
+      // Load empty form view
+      return array('');
+    }
+
     return $this->getImageSegment($id, $query);
   }
 
@@ -166,6 +172,11 @@ class Router extends RouterView
    */
   public function getImagesSegment($id, $query)
   {
+    if(!$id)
+    {
+      return array('');
+    }
+
     return $this->getImageSegment($id, $query);
   }
 
@@ -214,6 +225,12 @@ class Router extends RouterView
    */
   public function getCategoryformSegment($id, $query)
   {
+    if(!$id)
+    {
+      // Load empty form view
+      return array('');
+    }
+
     return $this->getCategorySegment($id, $query);
   }
 
@@ -227,6 +244,11 @@ class Router extends RouterView
    */
   public function getCategoriesSegment($id, $query)
   {
+    if(!$id)
+    {
+      return array('');
+    }
+
     return $this->getCategorySegment($id, $query);
   }
 
