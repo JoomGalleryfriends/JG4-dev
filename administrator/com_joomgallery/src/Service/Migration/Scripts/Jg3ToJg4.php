@@ -196,9 +196,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    */
   public function defineTypes($names_only=false, &$type=null): array
   {
-    $types = array( 'category' => array('#__joomgallery_catg', 'cid', 'name', true, false, true),
-                    'image' =>    array('#__joomgallery', 'id', 'imgtitle', false, true, true),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', 'name', false, false, false)
+    $types = array( 'category'  => array('#__joomgallery_catg', 'cid', 'name', true, false, true),
+                    'image'     => array('#__joomgallery', 'id', 'imgtitle', false, true, true),
+                    'catimage'  => array(_JOOM_TABLE_CATEGORIES, 'cid', 'name', false, false, false),
+                    'user'      => array('#__joomgallery_users', 'uid', '', false, false, true),
+                    'favourite' => array('#__joomgallery_users', 'uid', '', false, false, false),
+                    'vote'      => array('#__joomgallery_votes', 'voteid', '', false, false, true),
+                    'comment'   => array('#__joomgallery_comments', 'cmtid', 'cmtname', false, false, true)
                   );
 
     if($this->params->get('source_ids', 0) == 1)
@@ -255,7 +259,24 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         $type->set('queueTablename', '#__joomgallery_catg' . $source_db_suffix);
         $type->set('recordName', 'category');
         break;
+
+      case 'user':
+        $type->set('ownerFieldname', 'cmsuser');
+        break;
       
+      case 'vote':
+        $type->set('dependent_on', array('image'));
+        break;
+
+      case 'comment':
+        $type->set('dependent_on', array('image'));
+        break;
+      
+      case 'favourite':
+        $type->set('dependent_on', array('user', 'image'));
+        $type->set('counterNeeded', true);
+        break;
+
       default:
         // No optional type infos needed
         break;
@@ -357,6 +378,66 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
         break;
       
+      case 'user':
+        // Apply mapping for users table
+        $mapping  = array('uid' => $id, 'uuserid' => $owner, 'piclist' => false, 'time' => 'created_time');
+
+        break;
+      
+      case 'vote':
+        // Apply mapping for votes table
+        $mapping  = array( 'voteid' => $id, 'picid' => 'imgid', 'datevoted' => 'created_time',
+                           'userip' => false, 'vote' => 'score', 'userid' => $owner
+                          );
+
+        // Adjust imgid with new created images
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+        }
+
+        break;
+
+      case 'comment':
+        // Apply mapping for comments table
+        $mapping  = array( 'cmtid' => $id, 'cmtpic' => 'imgid', 'cmtdate' => 'created_time', 'cmtip' => false,
+                           'cmtname' => 'title', 'cmttext' => 'description', 'userid' => $owner
+                          );
+
+        // Adjust imgid with new created images
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+        }
+
+        break;
+
+      case 'favourite':
+        // Apply mapping for favourites table
+        $mapping  = array( 'uid' => false, 'uuserid' => $owner, 'piclist' => 'imgid', 'layout' => false,
+                           'time' => false, 'zipname' => false
+                          );
+
+        // Get number of already migrated favorites from current uid
+        $counter = (int) $this->migrateables['favourite']->counter->get($data['uid']);
+        
+        // Get source image id from piclist based on the counter of current uid
+        $img_id  = \explode(',', $data['piclist'])[$counter];
+
+        // Adjust piclist with image id
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          // Get new created destination image id
+          $data['piclist'] = $this->migrateables['image']->successful->get($img_id);          
+        }
+        else
+        {
+          // Use source image id
+          $data['piclist'] = $img_id;
+        }
+
+        break;
+      
       default:
         // The table structure is the same
         $mapping = array('id' => $id, 'owner' => $owner);
@@ -408,9 +489,18 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Initialize query object
 		$query = $db->getQuery(true);
 
+    // Create selection
+    $selection = array($db->quoteName($primarykey));
+
+    // Add piclist to selection for favourite
+    if($type == 'favourite')
+    {
+      \array_push($selection, $db->quoteName('piclist'));
+    }
+
     // Create the query
-    $query->select($db->quoteName($primarykey))
-          ->from($db->quoteName($tablename));
+    $query->select($selection);
+    $query->from($db->quoteName($tablename));
 
     // Apply additional where clauses for specific content types
     if($type == 'catimage')
@@ -450,7 +540,14 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $queue = array();
     try
     {
-      $queue = $db->loadColumn();
+      if($type == 'favourite')
+      {
+        $queue = $db->loadObjectList();
+      }
+      else
+      {
+        $queue = $db->loadColumn();
+      }      
     }
     catch(\Exception $e)
     {
@@ -459,7 +556,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
 
     // Postprocessing the queue
-    $needs_postprocessing = array('catimage');
+    $needs_postprocessing = array('catimage', 'favourite');
     if(!empty($queue) && \in_array($type, $needs_postprocessing))
     {
       if($type == 'catimage' && !\boolval($this->params->get('source_ids', 0)))
@@ -472,6 +569,21 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           foreach($queue as $key => $old_id)
           {
             $queue[$key] = $mig_cat->successful->get($old_id);
+          }
+        }
+      }
+      elseif($type == 'favourite')
+      {
+        // Initialize
+        $tmp_queue = $queue;
+        $queue     = array();
+
+        // Fill queue with as many entries as total amount of IDs in all piclists
+        foreach($tmp_queue as $key => $userobj)
+        {
+          foreach(\explode(',', $userobj->piclist) as $key => $image_id)
+          {
+            \array_push($queue, $userobj->{$primarykey});
           }
         }
       }

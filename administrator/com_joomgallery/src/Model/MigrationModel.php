@@ -317,6 +317,12 @@ class MigrationModel extends JoomAdminModel
       $item->failed = new Registry($item->failed);
     }
 
+    // Support for counter field
+    if(isset($item->counter))
+    {
+      $item->counter = new Registry($item->counter);
+    }
+
     // Support for params field
     if(isset($item->params))
     {
@@ -883,6 +889,13 @@ class MigrationModel extends JoomAdminModel
     {
       // Add migrated primary key to successful object
       $table->successful->set($pk, $new_pk);
+
+      // Adjust counter if needed
+      if($this->component->getMigration()->needsCounter($type))
+      {
+        $old_counter = (int) $table->counter->get($pk, 0);
+        $table->counter->set($pk, $old_counter + 1);
+      }      
     }
     else
     {

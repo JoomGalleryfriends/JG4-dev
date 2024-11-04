@@ -310,12 +310,12 @@ PRIMARY KEY (`id`)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__joomgallery_galleries`
+-- Table structure for table `#__joomgallery_collections`
 --
 
-CREATE TABLE IF NOT EXISTS `#__joomgallery_galleries` (
+CREATE TABLE IF NOT EXISTS `#__joomgallery_collections` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
+`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
 `title` VARCHAR(255) NOT NULL DEFAULT "",
 `description` TEXT NOT NULL,
@@ -334,7 +334,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_galleries` (
 `metakey` TEXT NOT NULL,
 `robots` VARCHAR(255) NOT NULL DEFAULT "0",
 PRIMARY KEY (`id`),
-KEY `galery_idx` (`published`,`access`),
+KEY `collection_idx` (`published`,`access`),
 KEY `idx_access` (`access`),
 KEY `idx_createdby` (`created_by`),
 KEY `idx_checkout` (`checked_out`),
@@ -344,12 +344,12 @@ KEY `idx_language` (`language`)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__joomgallery_galleries_ref`
+-- Table structure for table `#__joomgallery_collections_ref`
 --
 
-CREATE TABLE IF NOT EXISTS `#__joomgallery_galleries_ref` (
+CREATE TABLE IF NOT EXISTS `#__joomgallery_collections_ref` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`galleryid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`collectionid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
@@ -415,6 +415,24 @@ KEY `idx_createdby` (`created_by`)
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `#__joomgallery_favourites`
+--
+
+CREATE TABLE IF NOT EXISTS `#__joomgallery_favourites` (
+`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`created_time` datetime NOT NULL,
+`created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+PRIMARY KEY (`id`),
+KEY `idx_createdby` (`created_by`),
+KEY `idx_imgid` (`imgid`),
+KEY `idx_userid` (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `#__joomgallery_migration`
 --
 
@@ -429,6 +447,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_migration` (
 `queue` LONGTEXT NOT NULL,
 `successful` LONGTEXT NOT NULL,
 `failed` LONGTEXT NOT NULL,
+`counter` LONGTEXT NOT NULL,
 `last` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `params` TEXT NOT NULL,
 `created_time` DATETIME NOT NULL,

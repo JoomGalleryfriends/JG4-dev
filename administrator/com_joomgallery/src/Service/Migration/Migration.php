@@ -838,6 +838,28 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
+   * True if the given type needs the database counter
+   * (counter row in #__joomgallery_migration)
+   *
+   * @param   string   $type   Name of the content type
+   * 
+   * @return  bool     True if counter needed, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function needsCounter(string $type): bool
+  {
+    $this->loadTypes();
+
+    if(!empty($this->types[$type]))
+    {
+      return $this->types[$type]->get('dependent_on');
+    }
+
+    return false;
+  }
+
+  /**
    * Precheck: Check logfile and add check to checks array.
    * 
    * @param  Checks   $checks     The checks object

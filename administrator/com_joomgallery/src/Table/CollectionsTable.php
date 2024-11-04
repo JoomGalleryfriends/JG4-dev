@@ -17,12 +17,12 @@ use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
 
 /**
- * Galleries table
+ * Collections table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class GalleriesTable extends Table
+class CollectionsTable extends Table
 {
   use JoomTableTrait;
 
@@ -33,9 +33,9 @@ class GalleriesTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.galleries';
+		$this->typeAlias = _JOOM_OPTION.'.Collections';
 
-		parent::__construct(_JOOM_TABLE_GALLERIES, 'id', $db);
+		parent::__construct(_JOOM_TABLE_COLLECTIONS, 'id', $db);
 	}
 
   /**
