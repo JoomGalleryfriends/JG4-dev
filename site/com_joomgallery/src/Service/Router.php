@@ -41,6 +41,15 @@ class Router extends RouterView
 	private $noIDs;
 
   /**
+	 * Param on where to add ids in URLs
+	 *
+	 * @var    bool
+	 *
+	 * @since  4.0.0
+	 */
+	private $endIDs = false;
+
+  /**
 	 * Databse object
 	 *
 	 * @var    DatabaseInterface
@@ -64,7 +73,7 @@ class Router extends RouterView
     $params = $this->app->getParams('com_joomgallery');
     
     $this->db    = $db;
-		$this->noIDs = (bool) $params->get('sef_ids');
+		$this->noIDs = (bool) $params->get('sef_ids', 0);
 
     $gallery = new RouterViewConfiguration('gallery');
     $this->registerView($gallery);
@@ -130,7 +139,16 @@ class Router extends RouterView
         ->bind(':id', $id, ParameterType::INTEGER);
       $this->db->setQuery($dbquery);
 
-      $id .= ':' . $this->db->loadResult();
+      if($this->endIDs)
+      {
+        // To create a segment in the form: alias-id
+        $id = $this->db->loadResult() . ':' . $id;
+      }
+      else
+      {
+        // To create a segment in the form: id-alias
+        $id .= ':' . $this->db->loadResult();
+      }
     }
 
     return array((int) $id => $id);
@@ -269,12 +287,18 @@ class Router extends RouterView
   public function getImageId($segment, $query)
   {
     $img_id = 0;
-    if(\is_numeric(\explode('-', $segment, 2)[0]))
+    if($this->endIDs && \is_numeric(\end(\explode('-', $segment))))
     {
+      // For a segment in the form: alias-id
+      $img_id = (int) \end(\explode('-', $segment));
+    }
+    elseif(\is_numeric(\explode('-', $segment, 2)[0]))
+    {
+      // For a segment in the form: id-alias
       $img_id = (int) \explode('-', $segment, 2)[0];
     }
 
-    if($this->noIDs || $img_id < 1)
+    if($img_id < 1)
     {
       $dbquery = $this->db->getQuery(true);
 
