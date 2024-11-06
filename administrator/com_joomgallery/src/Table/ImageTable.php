@@ -343,15 +343,15 @@ class ImageTable extends Table implements VersionableTableInterface
 			$this->ordering = self::getNextOrder();
 		}
 
-		// Check if alias is unique
+		// Check if alias is unique inside this category
 		if($this->_checkAliasUniqueness)
     {
-			if(!$this->isUnique('alias'))
+			if(!$this->isUnique('alias', $this->catid, 'catid'))
 			{
 				$count = 2;
 				$currentAlias =  $this->alias;
 
-				while(!$this->isUnique('alias'))
+				while(!$this->isUnique('alias', $this->catid, 'catid'))
 				{
 					$this->alias = $currentAlias . '-' . $count++;
 				}
