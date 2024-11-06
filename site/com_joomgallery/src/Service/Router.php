@@ -133,13 +133,6 @@ class Router extends RouterView
       $id .= ':' . $this->db->loadResult();
     }
 
-    if($this->noIDs && \strpos($id, ':') !== false)
-    {
-      list($void, $segment) = \explode(':', $id, 2);
-
-      return array($void => $segment);
-    }
-
     return array((int) $id => $id);
   }
 
@@ -275,7 +268,13 @@ class Router extends RouterView
    */
   public function getImageId($segment, $query)
   {
-    if($this->noIDs)
+    $img_id = 0;
+    if(\is_numeric(\explode('-', $segment, 2)[0]))
+    {
+      $img_id = (int) \explode('-', $segment, 2)[0];
+    }
+
+    if($this->noIDs || $img_id < 1)
     {
       $dbquery = $this->db->getQuery(true);
 
@@ -303,7 +302,7 @@ class Router extends RouterView
       return (int) $this->db->loadResult();
     }
 
-    return (int) $segment;
+    return $img_id;
   }
 
   /**
