@@ -165,29 +165,32 @@ class HtmlView extends JoomGalleryView
       $id = 1;
     }
 
-    // Add Breadcrumbs
-    if($this->item->id > 1)
-    {
-      $path = [['title' => $this->item->title, 'link' => '']];
-    }
-    else
-    {
-      $path = [];
-    }
-    
-    $category = $this->item->parent;
-    
-    while($category && $category->id !== 1 && $category->id != $id)
-    {
-      $path[]   = ['title' => $category->title, 'link' => JoomHelper::getViewRoute('category', $category->id, 0, $category->language)];
-      $category = $this->getModel()->getParent($category->parent_id);
-    }
+		if(!$this->isMenuCurrentView($this->menu))
+		{
+			// Add Breadcrumbs
+			if($this->item->id > 1)
+			{
+				$path = [['title' => $this->item->title, 'link' => '']];
+			}
+			else
+			{
+				$path = [];
+			}
+			
+			$category = $this->item->parent;
+			
+			while($category && $category->id !== 1 && $category->id != $id)
+			{
+				$path[]   = ['title' => $category->title, 'link' => JoomHelper::getViewRoute('category', $category->id, 0, $category->language)];
+				$category = $this->getModel()->getParent($category->parent_id);
+			}
 
-    $path = \array_reverse($path);
+			$path = \array_reverse($path);
 
-    foreach($path as $item)
-    {
-      $this->app->getPathway()->addItem($item['title'], $item['link']);
-    }
+			foreach($path as $item)
+			{
+				$this->app->getPathway()->addItem($item['title'], $item['link']);
+			}
+		}
 	}
 }

@@ -13,7 +13,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\View;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\Uri\Uri;
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Menu\MenuItem;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
@@ -126,4 +128,36 @@ class JoomGalleryView extends BaseHtmlView
 	{
 		return isset($this->state->{$state}) ? $this->state->{$state} : false;
 	}
+
+  
+  /**
+	 * Checks if the active menuitem corresponds to the view
+	 *
+	 * @param    MenuItem  $menu  The active menu item
+	 *
+	 * @return   bool      True if the active manuitem corresponds to the view
+	 */
+  protected function isMenuCurrentView($menu = null)
+  {
+    if(\is_null($menu))
+    {
+      $menu = $this->app->getMenu()->getActive();
+    }
+
+    $menu_link = new Uri($menu->link);
+
+    if( $menu_link->getVar('option') == _JOOM_OPTION &&
+        $menu_link->getVar('view') == $this->getName()
+      )
+    {
+      if($menu_link->getVar('id', 0) && \property_exists($this->item, 'id'))
+      {
+        return $menu_link->getVar('id', 0) == $this->item->id;
+      }
+
+      return true;
+    }
+
+    return false;
+  }
 }
