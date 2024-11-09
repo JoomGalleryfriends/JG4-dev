@@ -59,15 +59,6 @@ class DefaultRouter extends RouterView
 	private $noIDs;
 
   /**
-	 * Param on where to add ids in URLs
-	 *
-	 * @var    bool
-	 *
-	 * @since  4.0.0
-	 */
-	private $endIDs = false;
-
-  /**
 	 * Databse object
 	 *
 	 * @var    DatabaseInterface

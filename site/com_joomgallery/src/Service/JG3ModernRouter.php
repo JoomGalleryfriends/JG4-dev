@@ -57,15 +57,6 @@ class JG3ModernRouter extends DefaultRouter
 	private $noIDs;
 
   /**
-	 * Param on where to add ids in URLs
-	 *
-	 * @var    bool
-	 *
-	 * @since  4.0.0
-	 */
-	private $endIDs = false;
-
-  /**
 	 * Databse object
 	 *
 	 * @var    DatabaseInterface
@@ -161,10 +152,11 @@ class JG3ModernRouter extends DefaultRouter
   public function getImageId($segment, $query)
   {
     $img_id = 0;
-    if(\is_numeric(\end(\explode('-', $segment))))
+    $parts = explode('-', $segment);
+    if(\is_numeric(\end($parts)))
     {
       // For a segment in the form: alias-id
-      $img_id = (int) \end(\explode('-', $segment));
+      $img_id = (int) \end($parts);
     }
 
     if($img_id < 1)
