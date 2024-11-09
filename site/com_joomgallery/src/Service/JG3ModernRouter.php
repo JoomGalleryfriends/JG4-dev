@@ -102,7 +102,7 @@ class JG3ModernRouter extends DefaultRouter
 		$this->registerView($images);
 
     $image = new RouterViewConfiguration('image');
-    $image->setKey('id')->setParent($category);
+    $image->setKey('id')->setParent($category, 'catid');
     $this->registerView($image);
 
     $imageform = new RouterViewConfiguration('imageform');
