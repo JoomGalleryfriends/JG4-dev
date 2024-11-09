@@ -19,6 +19,7 @@ use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
+use \Joomla\CMS\Filesystem\Folder;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
@@ -111,9 +112,9 @@ class ConfigHelper
 	 * Get a list of options for the jg_filesystem form field
    *
    * @param   Form    $form    Form object containing jg_filesystem form field
-	 *
-	 * @return  array   List of options
-   * @return  bool    True to return a list of array, false for a list of objects
+   * @param   bool    True to return a list of array, false for a list of objects
+   * 
+   * @return  array   List of options
 	 *
 	 * @since   4.0.0
    * @throws  \Exception
@@ -152,6 +153,50 @@ class ConfigHelper
       $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
     }
+  }
+
+  /**
+   * Get a list of options for the jg_replaceinfo->source form field
+   * based on its attributes
+   *
+   * @param   Form    $form    Form object containing jg_router form field
+	 *
+	 * @return  array   List of options
+	 *
+	 * @since   4.0.0
+   * @throws  \Exception
+	 */
+  public static function getRouterOptions($form)
+  {
+    // Check if we got a valid form
+    if(\is_object($form) && $form instanceof Form)
+    {
+      $options = array();
+
+      // Get a list of all available routers (folder: /site/src/Service)
+      $files = Folder::files(JPATH_SITE.'/components/'._JOOM_OPTION.'/src/Service', '.php$', false, true);
+
+      // Gather info from routers
+      foreach($files as $path)
+      {
+        $name = \ucfirst(\basename($path, '.php'));
+
+        // Only look at files containing "Router"        
+        if(\strpos($name, 'Router') !== false)
+        {
+          $router = 'Joomgallery\\Component\\Joomgallery\\Site\\Service\\' . \ucfirst($name);
+
+          array_push($options, array('text' => Text::_($router::$displayName), 'value'=>$name));
+        }
+      }
+    }
+    else
+    {
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'), 'error', 'jerror');
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_FORM_OBJECT'));
+    }
+
+    return $options;
   }
 
   /**
