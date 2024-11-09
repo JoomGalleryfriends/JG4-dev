@@ -477,7 +477,7 @@ class JoomHelper
       {
         // Joomgallery internal URL
         // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3&catid=1
-        return Route::_('index.php?option=com_joomgallery&view=image&format=raw&type='.$type.'&id='.$img->id.'&catid='.$img->catid);
+        return Route::_(self::getViewRoute('image', $img->id, $img->catid, 'raw', $type));        
       }
       else
       {
@@ -657,7 +657,7 @@ class JoomHelper
    *
    * @since   4.0.0
    */
-  public static function getViewRoute($view, $id, $catid = 0, $language = 0, $layout = null)
+  public static function getViewRoute($view, $id, $catid = 0, $format = null, $type = null, $language = null, $layout = null)
   {
     if(\is_object($id))
     {
@@ -673,7 +673,23 @@ class JoomHelper
 
     if((int) $catid > 0)
     {
-      $link .= '&catid=' . $catid;
+      $config = self::getService('config');
+      $router = 'Joomgallery\\Component\\Joomgallery\\Site\\Service\\' . \ucfirst($config->get('jg_router', 'DefaultRouter'));
+
+      if($view == 'image' && !empty($router::$image_parentID))
+      {
+        $link .= '&' . $router::$image_parentID . '=' . $catid;
+      }
+    }
+
+    if($format)
+    {
+      $link .= '&format=' . $format;
+    }
+
+    if($type)
+    {
+      $link .= '&type=' . $type;
     }
 
     if($language && $language !== '*' && Multilanguage::isEnabled())
@@ -826,7 +842,7 @@ class JoomHelper
   {
     if($url)
     {
-      return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id=0');
+      return Route::_(self::getViewRoute('image', 0, 1, 'raw', $type));
     }
     else
     {

@@ -46,6 +46,15 @@ class JG3ModernRouter extends DefaultRouter
 	 * @since  4.0.0
 	 */
 	public static $type = 'modern';
+  
+  /**
+	 * ID of the parent of the image view. Empty if none.
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $image_parentID = 'catid';
 
   /**
 	 * Param to use ids in URLs
@@ -77,9 +86,9 @@ class JG3ModernRouter extends DefaultRouter
 	public function __construct(SiteApplication $app, AbstractMenu $menu, ?CategoryFactoryInterface $categoryFactory, DatabaseInterface $db)
 	{
     parent::__construct($app, $menu, $categoryFactory, $db, true);
-    
+
     // Get router config value
-    $this->noIDs = (bool) $app->bootComponent('com_joomgallery')->getConfig()->get('jg_router_ids', '0');    
+    $this->noIDs = (bool) $app->bootComponent('com_joomgallery')->getConfig()->get('jg_router_ids', '0');
     $this->db    = $db;
 
     $gallery = new RouterViewConfiguration('gallery');

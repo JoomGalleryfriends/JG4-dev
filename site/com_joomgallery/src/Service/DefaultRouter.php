@@ -50,6 +50,15 @@ class DefaultRouter extends RouterView
 	public static $type = 'modern';
 
   /**
+	 * ID of the parent of the image view. Empty if none.
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $image_parentID = '';
+
+  /**
 	 * Param to use ids in URLs
 	 *
 	 * @var    bool
@@ -80,14 +89,14 @@ class DefaultRouter extends RouterView
 	{
     parent::__construct($app, $menu);
 
+    // Get router config value
+    $this->noIDs = (bool) $app->bootComponent('com_joomgallery')->getConfig()->get('jg_router_ids', '0');
+    $this->db    = $db;
+
     if($skipSelf)
     {
       return;
     }
-
-    // Get router config value
-    $this->noIDs = (bool) $app->bootComponent('com_joomgallery')->getConfig()->get('jg_router_ids', '0');   
-    $this->db    = $db;
 
     $gallery = new RouterViewConfiguration('gallery');
     $this->registerView($gallery);
