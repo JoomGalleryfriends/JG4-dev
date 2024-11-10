@@ -314,7 +314,7 @@ class CategoriesModel extends JoomListModel
 
     if(!$showempty)
 		{
-      $query->having('COUNT(`img`.id) > 0');
+      $query->having('img_count > 0');
 		}
 
     // Filter by categories and by level
