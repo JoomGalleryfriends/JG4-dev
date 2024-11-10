@@ -380,14 +380,14 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       
       case 'user':
         // Apply mapping for users table
-        $mapping  = array('uid' => $id, 'uuserid' => $owner, 'piclist' => false, 'time' => 'created_time');
+        $mapping  = array('uid' => $id, 'uuserid' => $owner, 'piclist' => false, 'time' => 'created_time', 'zipname' => false);
 
         break;
       
       case 'vote':
         // Apply mapping for votes table
-        $mapping  = array( 'voteid' => $id, 'picid' => 'imgid', 'datevoted' => 'created_time',
-                           'userip' => false, 'vote' => 'score', 'userid' => $owner
+        $mapping  = array( 'voteid' => $id, 'picid' => 'imgid', 'userid' => $owner,
+                           'userip' => 'identication', 'datevoted' => 'created_time', 'vote' => 'score',
                           );
 
         // Adjust imgid with new created images
@@ -400,8 +400,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
       case 'comment':
         // Apply mapping for comments table
-        $mapping  = array( 'cmtid' => $id, 'cmtpic' => 'imgid', 'cmtdate' => 'created_time', 'cmtip' => false,
-                           'cmtname' => 'title', 'cmttext' => 'description', 'userid' => $owner
+        $mapping  = array( 'cmtid' => $id, 'cmtpic' => 'imgid', 'cmtip' => false, 'userid' => $owner,
+                           'cmtname' => 'title', 'cmttext' => 'description', 'cmtdate' => 'created_time',
                           );
 
         // Adjust imgid with new created images
@@ -414,7 +414,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
       case 'favourite':
         // Apply mapping for favourites table
-        $mapping  = array( 'uid' => false, 'uuserid' => $owner, 'piclist' => 'imgid', 'layout' => false,
+        $mapping  = array( 'uid' => false, 'uuserid' => 'userid', 'piclist' => 'imgid', 'layout' => false,
                            'time' => false, 'zipname' => false
                           );
 
@@ -434,6 +434,12 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           // Use source image id
           $data['piclist'] = $img_id;
+        }
+
+        // Adjust uuserid with new created users
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          $data['uuserid'] = $this->migrateables['user']->successful->get($data['uuserid']);
         }
 
         break;
