@@ -200,7 +200,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
                     'image'     => array('#__joomgallery', 'id', 'imgtitle', false, true, true),
                     'catimage'  => array(_JOOM_TABLE_CATEGORIES, 'cid', 'name', false, false, false),
                     'user'      => array('#__joomgallery_users', 'uid', '', false, false, true),
-                    'favourite' => array('#__joomgallery_users', 'uid', '', false, false, false),
+                    'favourite' => array('#__joomgallery_users', 'uid', '', false, false, true),
                     'vote'      => array('#__joomgallery_votes', 'voteid', '', false, false, true),
                     'comment'   => array('#__joomgallery_comments', 'cmtid', 'cmtname', false, false, true)
                   );
@@ -587,10 +587,16 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Fill queue with as many entries as total amount of IDs in all piclists
         foreach($tmp_queue as $key => $userobj)
         {
-          foreach(\explode(',', $userobj->piclist) as $key => $image_id)
+          if(!empty($userobj->piclist))
           {
-            \array_push($queue, $userobj->{$primarykey});
-          }
+            foreach(\explode(',', $userobj->piclist) as $key => $image_id)
+            {
+              if(!\in_array($image_id, $queue))
+              {
+                \array_push($queue, (int) $image_id);
+              }
+            }
+          }          
         }
       }
     }

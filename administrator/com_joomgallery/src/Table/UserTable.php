@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -13,16 +13,19 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
+use \Joomla\CMS\Access\Rules;
+use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
 
 /**
- * Users table
+ * User table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class UsersTable extends Table
+class UserTable extends Table
 {
   use JoomTableTrait, MultipleAssetsTableTrait {
     MultipleAssetsTableTrait::_getAssetName insteadof JoomTableTrait;
@@ -46,7 +49,7 @@ class UsersTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.users';
+		$this->typeAlias = _JOOM_OPTION.'.user';
 
 		parent::__construct(_JOOM_TABLE_USERS, 'id', $db);
 	}

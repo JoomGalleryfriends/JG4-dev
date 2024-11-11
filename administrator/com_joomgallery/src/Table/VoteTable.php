@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -13,16 +13,17 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
 
 /**
- * Faulties table
+ * Vote table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class FaultiesTable extends Table
+class VoteTable extends Table
 {
   use JoomTableTrait;
 
@@ -33,9 +34,9 @@ class FaultiesTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.faulties';
+		$this->typeAlias = _JOOM_OPTION.'.vote';
 
-		parent::__construct(_JOOM_TABLE_FAULTIES, 'id', $db);
+		parent::__construct(_JOOM_TABLE_VOTES, 'id', $db);
 	}
 
   /**
@@ -57,6 +58,11 @@ class FaultiesTable extends Table
 		if($array['id'] == 0)
 		{
 			$array['created_time'] = $date->toSql();
+		}
+
+    if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
+		{
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
 		return parent::bind($array, $ignore);

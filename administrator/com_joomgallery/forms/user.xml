@@ -31,6 +31,14 @@
            label="COM_JOOMGALLERY_FIELDS_USER_IMAGE"
            description="COM_JOOMGALLERY_FIELDS_USER_IMAGE_DESC" />
 
+    <field name="params"
+           type="text"
+           label="COM_JOOMGALLERY_PARAMETERS" />
+
+    <field name="files"
+           type="text"
+           label="COM_JOOMGALLERY_FILES" />
+
     <field name="created_time"
            type="calendar"
            translateformat="true"

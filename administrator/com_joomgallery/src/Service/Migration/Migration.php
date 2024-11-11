@@ -853,7 +853,7 @@ abstract class Migration implements MigrationInterface
 
     if(!empty($this->types[$type]))
     {
-      return $this->types[$type]->get('dependent_on');
+      return $this->types[$type]->get('counterNeeded');
     }
 
     return false;

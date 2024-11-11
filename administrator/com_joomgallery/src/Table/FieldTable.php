@@ -13,16 +13,17 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
 
 /**
- * Favourites table
+ * Field table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class FavouritesTable extends Table
+class FieldTable extends Table
 {
   use JoomTableTrait;
 
@@ -33,9 +34,9 @@ class FavouritesTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.favourites';
+		$this->typeAlias = _JOOM_OPTION.'.field';
 
-		parent::__construct(_JOOM_TABLE_FAVOURITES, 'id', $db);
+		parent::__construct(_JOOM_TABLE_FIELDS, 'id', $db);
 	}
 
   /**
@@ -59,7 +60,7 @@ class FavouritesTable extends Table
 			$array['created_time'] = $date->toSql();
 		}
 
-    if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
+		if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
 		{
 			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -13,16 +13,17 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
 
 /**
- * Collections table
+ * Comment table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class CollectionsTable extends Table
+class CommentTable extends Table
 {
   use JoomTableTrait;
 
@@ -33,9 +34,9 @@ class CollectionsTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.Collections';
+		$this->typeAlias = _JOOM_OPTION.'.comment';
 
-		parent::__construct(_JOOM_TABLE_COLLECTIONS, 'id', $db);
+		parent::__construct(_JOOM_TABLE_COMMENTS, 'id', $db);
 	}
 
   /**
@@ -52,8 +53,8 @@ class CollectionsTable extends Table
 	 */
 	public function bind($array, $ignore = '')
 	{
-		$date      = Factory::getDate();
-		$task      = Factory::getApplication()->input->get('task', '', 'cmd');
+		$date = Factory::getDate();
+		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
     // Support for title field: title
     if(\array_key_exists('title', $array))
@@ -62,37 +63,6 @@ class CollectionsTable extends Table
       if(empty($array['title']))
       {
         $array['title'] = 'Unknown';
-      }
-    }
-
-		// Support for alias field: alias
-		if(empty($array['alias']))
-		{
-			if(empty($array['title']))
-			{
-				$array['alias'] = OutputFilter::stringURLSafe(date('Y-m-d H:i:s'));
-			}
-			else
-			{
-				if(Factory::getConfig()->get('unicodeslugs') == 1)
-				{
-					$array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['title']));
-				}
-				else
-				{
-					$array['alias'] = OutputFilter::stringURLSafe(trim($array['title']));
-				}
-			}
-		}
-    else
-    {
-      if(Factory::getConfig()->get('unicodeslugs') == 1)
-      {
-        $array['alias'] = OutputFilter::stringURLUnicodeSlug(trim($array['alias']));
-      }
-      else
-      {
-        $array['alias'] = OutputFilter::stringURLSafe(trim($array['alias']));
       }
     }
 
@@ -111,7 +81,7 @@ class CollectionsTable extends Table
 			$array['modified_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && (!\key_exists('modified_by', $array) ||empty($array['modified_by'])))
+		if($array['id'] == 0 && empty($array['modified_by']))
 		{
 			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
@@ -121,12 +91,6 @@ class CollectionsTable extends Table
 			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
-    // Support for images
-    if(!isset($this->images))
-    {
-      $this->images = array();
-    }
-
-    return parent::bind($array, $ignore);
+		return parent::bind($array, $ignore);
 	}
 }

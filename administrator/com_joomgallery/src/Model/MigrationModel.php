@@ -1396,7 +1396,7 @@ class MigrationModel extends JoomAdminModel
       $record->rgt = 2147483645;
     }
 
-    $needed = array('image', 'category', 'comment', 'gallery', 'tag');
+    $needed = array('image', 'category', 'user', 'comment', 'collection', 'tag');
     if(\in_array($type, $needed))
     {
       $record->description = '';
@@ -1409,6 +1409,12 @@ class MigrationModel extends JoomAdminModel
       $record->imgmetadata = '';
       $record->filename = '';
     }
+
+    $needed = array('user');
+    if(\in_array($type, $needed))
+    {
+      $record->files = '';
+    }
     
     $needed = array('image', 'category', 'imagetype', 'user');
     if(\in_array($type, $needed))
@@ -1416,20 +1422,20 @@ class MigrationModel extends JoomAdminModel
       $record->params = '';
     }
 
-    $needed = array('image', 'category', 'gallery');
+    $needed = array('image', 'category', 'collection');
     if(\in_array($type, $needed))
     {
       $record->metadesc = '';
       $record->metakey = '';
     }
     
-    $needed = array('image', 'category', 'field', 'tag', 'gallery', 'user', 'vote', 'comment');
+    $needed = array('image', 'category', 'field', 'tag', 'collection', 'user', 'vote', 'comment');
     if(\in_array($type, $needed))
     {
       $record->created_time = $date->toSql();
     }
 
-    $needed = array('image', 'category', 'tag', 'gallery', 'comment');
+    $needed = array('image', 'category', 'tag', 'collection', 'comment');
     if(\in_array($type, $needed))
     {
       $record->modified_time = $date->toSql();
