@@ -380,7 +380,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       
       case 'user':
         // Apply mapping for users table
-        $mapping  = array('uid' => $id, 'uuserid' => $owner, 'piclist' => false, 'time' => 'created_time', 'zipname' => false);
+        $mapping  = array( 'uid' => $id, 'uuserid' => $owner, 'piclist' => false, 'time' => 'created_time',
+                           'zipname' => array('params', false, false), 'layout' => array('params', false, false)
+                          );
 
         break;
       

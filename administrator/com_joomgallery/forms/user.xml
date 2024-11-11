@@ -48,13 +48,13 @@
            label="JGLOBAL_FIELD_CREATED_LABEL" />
   </fieldset>
   <fieldset name="accesscontrol">
-    <field name="asset_id_item"
+    <field name="asset_id"
            type="hidden"
            filter="unset" />
 
-    <field name="rules-useritems"
+    <field name="rules"
            type="rules"
-           asset_field="asset_id_item"
+           asset_field="asset_id"
            label="JFIELD_RULES_LABEL"
            translate_label="false"
            filter="rules"

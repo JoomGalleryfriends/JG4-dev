@@ -362,7 +362,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery_users` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`asset_id_item` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
+`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
 `cmsuser` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__users table.",
 `description` TEXT NOT NULL,
 `avatar` VARCHAR(255) NULL DEFAULT "",

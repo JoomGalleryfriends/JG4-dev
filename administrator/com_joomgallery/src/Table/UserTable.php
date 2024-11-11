@@ -15,9 +15,9 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\Access\Rules;
 use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
+use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * User table
@@ -27,20 +27,8 @@ use \Joomla\Database\DatabaseDriver;
  */
 class UserTable extends Table
 {
-  use JoomTableTrait, MultipleAssetsTableTrait {
-    MultipleAssetsTableTrait::_getAssetName insteadof JoomTableTrait;
-    MultipleAssetsTableTrait::_getAssetParentId insteadof JoomTableTrait;
-    MultipleAssetsTableTrait::_getAssetTitle insteadof JoomTableTrait;
-  }
-  use MigrationTableTrait;
-
-  /**
-   * The default itemtype of assets
-   *
-   * @var    string  The name of the itemtype
-   * @since  4.0.0
-   */
-  public $def_itemtype = 'useritems';
+  use JoomTableTrait;
+	use MigrationTableTrait;
 
 	/**
 	 * Constructor
@@ -104,27 +92,6 @@ class UserTable extends Table
     if(!isset($this->favourites))
     {
       $this->favourites = array();
-    }
-
-    // Support for special rules
-    foreach($array as $key => $value)
-    {
-      if(\strpos($key, 'rules') !== false)
-      {
-        // We found a rules entry in the data
-        if($key === 'rules')
-        {
-          $itemtype = $this->def_itemtype;
-        }
-        else
-        {
-          $itemtype = \str_replace('rules-', '', $key);
-        }
-
-        // Bind the rules for ACL where supported.
-        $rules = new Rules($value);
-        $this->setRules($rules, $itemtype);
-      }
     }
 
     return parent::bind($array, $ignore);
@@ -196,4 +163,19 @@ class UserTable extends Table
 
     return parent::store($updateNulls);
   }
+
+  /**
+	 * Method to return the title to use for the asset table.
+	 *
+	 * @return  string
+	 *
+   * @since 4.0.0
+	 * @see Joomla\CMS\Table\Table::_getAssetTitle
+	 */
+	protected function _getAssetTitle($itemtype = null)
+	{
+    $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->cmsuser);
+
+		return $user->name;
+	}
 }
