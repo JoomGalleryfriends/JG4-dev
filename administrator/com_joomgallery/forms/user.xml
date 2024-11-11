@@ -46,6 +46,12 @@
            size="22"
            filter="user_utc"
            label="JGLOBAL_FIELD_CREATED_LABEL" />
+
+    <field name="created_by"
+           type="user"
+           label="COM_JOOMGALLERY_OWNER"
+           description="JGLOBAL_FIELD_CREATED_BY_DESC"
+           validate="UserId" />
   </fieldset>
   <fieldset name="accesscontrol">
     <field name="asset_id"

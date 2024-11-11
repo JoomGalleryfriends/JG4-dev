@@ -63,6 +63,11 @@ class UserTable extends Table
 			$array['created_time'] = $date->toSql();
 		}
 
+    if(!\key_exists('created_by', $array) || empty($array['created_by']))
+		{
+			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
+		}
+
     if(!\key_exists('cmsuser', $array) || empty($array['cmsuser']))
 		{
 			$array['cmsuser'] = Factory::getApplication()->getIdentity()->id;
