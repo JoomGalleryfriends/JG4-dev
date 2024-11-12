@@ -370,7 +370,6 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_users` (
 `files` TEXT NOT NULL,
 `params` TEXT NOT NULL,
 `created_time` DATETIME NOT NULL,
-`created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`),
 KEY `idx_user` (`cmsuser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;

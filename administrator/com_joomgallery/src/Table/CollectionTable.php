@@ -38,6 +38,8 @@ class CollectionTable extends Table
 		$this->typeAlias = _JOOM_OPTION.'.collection';
 
 		parent::__construct(_JOOM_TABLE_COLLECTIONS, 'id', $db);
+
+    $this->setColumnAlias('published', 'published');
 	}
 
   /**
@@ -54,8 +56,8 @@ class CollectionTable extends Table
 	 */
 	public function bind($array, $ignore = '')
 	{
-		$date      = Factory::getDate();
-		$task      = Factory::getApplication()->input->get('task', '', 'cmd');
+		$date = Factory::getDate();
+		$task = Factory::getApplication()->input->get('task', '', 'cmd');
 
     // Support for title field: title
     if(\array_key_exists('title', $array))
@@ -123,12 +125,208 @@ class CollectionTable extends Table
 			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
-    // Support for images
-    if(!isset($this->images))
-    {
-      $this->images = array();
-    }
+    // Support for list of images to be mapped
+    if(isset($array['images']) && !\is_array($array['images']))
+		{
+			// Try to convert from json string
+      $decoded = json_decode($array['images'], true);
+
+      if(\json_last_error() === JSON_ERROR_NONE)
+      {
+        $array['images'] = $decoded;
+      }
+      else
+      {
+        $array['images'] = \explode(',', $array['images']);
+      }
+		}
 
     return parent::bind($array, $ignore);
 	}
+
+  /**
+	 * Overloaded check function
+	 *
+	 * @return bool
+	 */
+	public function check()
+	{
+		// Check if alias is unique inside this user
+    if(!$this->isUnique('alias', $this->userid, 'userid'))
+    {
+      $count = 2;
+      $currentAlias =  $this->alias;
+
+      while(!$this->isUnique('alias', $this->userid, 'userid'))
+      {
+        $this->alias = $currentAlias . '-' . $count++;
+      }
+    }
+
+		// Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
+    }
+
+    // Support for field metadesc
+    if(empty($this->metadesc))
+    {
+      $this->metadesc = $this->loadDefaultField('metadesc');
+    }
+
+    // Support for field metakey
+    if(empty($this->metakey))
+    {
+      $this->metakey = $this->loadDefaultField('metakey');
+    }
+
+		return parent::check();
+	}
+
+  /**
+	 * Method to store a row in the database from the Table instance properties.
+	 *
+	 * @param   boolean  $updateNulls  True to update fields even if they are null.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   4.0.0
+	 */
+	public function store($updateNulls = true)
+	{
+    if($success = parent::store($updateNulls))
+    {
+      if(\property_exists($this, 'images') && !empty($this->images))
+      {
+        // Do the mapping
+        $this->addMapping($this->images);
+      }
+    }
+
+    return $success;
+  }
+
+  /**
+   * Delete a record by id
+   *
+   * @param   mixed  $pk  Primary key value to delete. Optional
+   *
+   * @return bool
+   */
+  public function delete($pk = null)
+  {
+    if($success = parent::delete($pk))
+    {
+      // Delete mappings if existent
+      $this->removeMapping();
+    }
+
+    return $success;
+  }
+  
+  /**
+   * Map one or multiple images to the currently loaded tag.
+   *
+   * @param   int|array  $img_id  IDs of the images to be mapped.
+   *
+   * @return  boolean    True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function addMapping($img_id)
+  {
+    if(\empty($this->getId()))
+    {
+      $this->setError('Load table first.');
+
+      return false;
+    }
+
+    // Prepare image ids
+    if(!\is_array($img_id))
+    {
+      $img_id = array($img_id);
+    }
+
+    // Load db driver
+    $db = $this->getDbo();
+
+    foreach($img_id as $key => $iid)
+    {
+      $mapping = new \stdClass();
+      $mapping->imgid        = (int) $iid;
+      $mapping->collectionid = (int) $this->getId();
+
+      try
+      {
+        $db->insertObject(_JOOM_TABLE_COLLECTIONS_REF, $mapping);
+      }
+      catch(\Exception $e)
+      {
+        $this->setError($e->getMessage());
+        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Remove specific or all mappings of currently loaded tag
+   *
+   * @param   int|array  $img_id   IDs of the images to be removed. (0: remove all)
+   *
+   * @return  boolean  True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function removeMapping($img_id = 0)
+  {
+    if(\empty($this->getId()))
+    {
+      $this->setError('Load table first.');
+
+      return false;
+    }
+
+    // Prepare image ids
+    if(!\is_array($img_id) && $img_id != 0)
+    {
+      $img_id = array($img_id);
+    }
+
+    // Load db driver
+    $db    = $this->getDbo();
+    $query = $db->getQuery(true);
+
+    // Create where conditions
+    $query->where($db->quoteName('collectionid') . ' = ' . $db->quote((int) $this->getId()));
+    if(\is_array($img_id))
+    {
+      // Delete mapping only for a specified images
+      $query->where($db->quoteName('imgid') . ' IN (' . \implode(',', $img_id) . ')');
+    }
+
+    // Create the query
+    $query->delete($db->quoteName(_JOOM_TABLE_COLLECTIONS_REF));
+    $db->setQuery($query);
+
+    try
+    {
+      // Execute the query
+      $db->execute();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
+      return false;
+    }
+
+    return true;
+  }
 }

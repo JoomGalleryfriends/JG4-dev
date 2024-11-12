@@ -209,8 +209,6 @@ class MigrationTable extends Table
       {
         $this->queue = ArrayHelper::fromObject($this->queue);
       }
-
-      $this->queue = ArrayHelper::toInteger($this->queue);
     }
 
     // Support for successful field

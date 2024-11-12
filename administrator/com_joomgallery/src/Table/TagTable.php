@@ -142,26 +142,21 @@ class TagTable extends Table
 			$array['metadata'] = (string) $registry;
 		}
 
-    // // Get access service
-    // JoomHelper::getComponent()->createAccess();
-    // $acl = JoomHelper::getComponent()->getAccess();
+    // Support for list of images to be mapped
+    if(isset($array['images']) && !\is_array($array['images']))
+		{
+			// Try to convert from json string
+      $decoded = json_decode($array['images'], true);
 
-		// if(!$acl->checkACL('core.admin'))
-		// {
-		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml',	"/access/section[@name='tag']/");
-		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.tag.'.$array['id'])->getData();
-		// 	$array_jaccess   = array();
-
-		// 	foreach($actions as $action)
-		// 	{
-		// 		if(key_exists($action->name, $default_actions))
-		// 		{
-		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
-		// 		}
-		// 	}
-
-		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		// }
+      if(\json_last_error() === JSON_ERROR_NONE)
+      {
+        $array['images'] = $decoded;
+      }
+      else
+      {
+        $array['images'] = \explode(',', $array['images']);
+      }
+		}
 
 		// Bind the rules for ACL where supported.
 		if(isset($array['rules']))
@@ -172,4 +167,150 @@ class TagTable extends Table
 
 		return parent::bind($array, $ignore);
 	}
+
+  /**
+	 * Method to store a row in the database from the Table instance properties.
+	 *
+	 * @param   boolean  $updateNulls  True to update fields even if they are null.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   4.0.0
+	 */
+	public function store($updateNulls = true)
+	{
+    if($success = parent::store($updateNulls))
+    {
+      if(\property_exists($this, 'images') && !empty($this->images))
+      {
+        // Do the mapping
+        $this->addMapping($this->images);
+      }
+    }
+
+    return $success;
+  }
+
+  /**
+   * Delete a record by id
+   *
+   * @param   mixed  $pk  Primary key value to delete. Optional
+   *
+   * @return bool
+   */
+  public function delete($pk = null)
+  {
+    if($success = parent::delete($pk))
+    {
+      // Delete mappings if existent
+      $this->removeMapping();
+    }
+
+    return $success;
+  }
+
+  /**
+   * Map one or multiple images to the currently loaded tag.
+   *
+   * @param   int|array  $img_id  IDs of the images to be mapped.
+   *
+   * @return  boolean    True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function addMapping($img_id)
+  {
+    if(\empty($this->getId()))
+    {
+      $this->setError('Load table first.');
+
+      return false;
+    }
+
+    // Prepare image ids
+    if(!\is_array($img_id))
+    {
+      $img_id = array($img_id);
+    }
+
+    // Load db driver
+    $db = $this->getDbo();
+
+    foreach($img_id as $key => $iid)
+    {
+      $mapping = new \stdClass();
+      $mapping->imgid = (int) $iid;
+      $mapping->tagid = (int) $this->getId();
+
+      try
+      {
+        $db->insertObject(_JOOM_TABLE_TAGS_REF, $mapping);
+      }
+      catch(\Exception $e)
+      {
+        $this->setError($e->getMessage());
+        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Remove specific or all mappings of currently loaded tag
+   *
+   * @param   int|array  $img_id   IDs of the images to be removed. (0: remove all)
+   *
+   * @return  boolean  True on success, False on error.
+   *
+   * @since   4.0.0
+   */
+  public function removeMapping($img_id = 0)
+  {
+    if(\empty($this->getId()))
+    {
+      $this->setError('Load table first.');
+
+      return false;
+    }
+
+    // Prepare image ids
+    if(!\is_array($img_id) && $img_id != 0)
+    {
+      $img_id = array($img_id);
+    }
+
+    // Load db driver
+    $db    = $this->getDbo();
+    $query = $db->getQuery(true);
+
+    // Create where conditions
+    $query->where($db->quoteName('tagid') . ' = ' . $db->quote((int) $this->getId()));
+    if(\is_array($img_id))
+    {
+      // Delete mapping only for a specified images
+      $query->where($db->quoteName('imgid') . ' IN (' . \implode(',', $img_id) . ')');
+    }
+
+    // Create the query
+    $query->delete($db->quoteName(_JOOM_TABLE_TAGS_REF));
+    $db->setQuery($query);
+
+    try
+    {
+      // Execute the query
+      $db->execute();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
+      return false;
+    }
+
+    return true;
+  }
 }

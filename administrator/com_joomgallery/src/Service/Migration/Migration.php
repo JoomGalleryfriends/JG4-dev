@@ -218,12 +218,13 @@ abstract class Migration implements MigrationInterface
    * 
    * @param   string  $type   Name of the content type
    * @param   array   $data   Source data received from getData()
+   * @param   mixed   $pk     The primary key of the content type
    * 
    * @return  array   Converted data to save into JoomGallery
    * 
    * @since   4.0.0
    */
-  public function convertData(string $type, array $data): array
+  public function convertData(string $type, array $data, $pk): array
   {
     return $data;
   }
@@ -305,15 +306,16 @@ abstract class Migration implements MigrationInterface
    * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
+   * @param   mixed    $pk     The primary key of the content type
    * 
    * @return  array    Associated array of a record data
    * 
    * @since   4.0.0
    */
-  public function getData(string $type, int $pk): array
+  public function getData(string $type, $pk): array
   {
     $this->loadTypes();
+    $pk = (int) $pk;
 
     if($this->get('types')[$type]->get('insertRecord'))
     {
@@ -798,13 +800,13 @@ abstract class Migration implements MigrationInterface
    * False to skip the migration for this record
    *
    * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
+   * @param   mixed    $pk     The primary key of the content type
    * 
    * @return  bool     True to continue migration, false to skip it
    * 
    * @since   4.0.0
    */
-  public function needsMigration(string $type, int $pk): bool
+  public function needsMigration(string $type, $pk): bool
   {
     $this->loadTypes();
 

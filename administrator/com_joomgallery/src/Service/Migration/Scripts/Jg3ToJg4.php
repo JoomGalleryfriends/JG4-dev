@@ -302,12 +302,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * 
    * @param   string  $type   Name of the content type
    * @param   array   $data   Source data received from getData()
+   * @param   mixed   $pk     The primary key of the content type
    * 
    * @return  array   Converted data to save into JoomGallery
    * 
    * @since   4.0.0
    */
-  public function convertData(string $type, array $data): array
+  public function convertData(string $type, array $data, $pk): array
   {
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
@@ -421,10 +422,11 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
                           );
 
         // Get number of already migrated favorites from current uid
-        $counter = (int) $this->migrateables['favourite']->counter->get($data['uid']);
+        //$counter = (int) $this->migrateables['favourite']->counter->get($data['uid']);
         
         // Get source image id from piclist based on the counter of current uid
-        $img_id  = \explode(',', $data['piclist'])[$counter];
+        //$img_id  = \explode(',', $data['piclist'])[$counter];
+        $img_id  = \explode('-', $pk, 2)[1];
 
         // Adjust piclist with image id
         if(!\boolval($this->params->get('source_ids', 0)))
@@ -583,20 +585,17 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       elseif($type == 'favourite')
       {
         // Initialize
-        $tmp_queue = $queue;
+        $user_queue = $queue;
         $queue     = array();
 
         // Fill queue with as many entries as total amount of IDs in all piclists
-        foreach($tmp_queue as $key => $userobj)
+        foreach($user_queue as $key => $userobj)
         {
           if(!empty($userobj->piclist))
           {
             foreach(\explode(',', $userobj->piclist) as $key => $image_id)
             {
-              if(!\in_array($image_id, $queue))
-              {
-                \array_push($queue, (int) $image_id);
-              }
+              \array_push($queue, $userobj->{$primarykey} . '-' . $image_id);
             }
           }          
         }
@@ -604,6 +603,26 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
 
     return $queue;
+  }
+
+  /**
+   * Returns an associative array containing the record data from source.
+   *
+   * @param   string   $type   Name of the content type
+   * @param   mixed    $pk     The primary key of the content type
+   * 
+   * @return  array    Associated array of a record data
+   * 
+   * @since   4.0.0
+   */
+  public function getData(string $type, $pk): array
+  {
+    if($type == 'favourite')
+    {
+      $pk = \explode('-', $pk, 2)[0];
+    }
+
+    return parent::getData($type, $pk);
   }
 
   /**

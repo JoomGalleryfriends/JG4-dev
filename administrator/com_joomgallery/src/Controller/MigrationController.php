@@ -762,7 +762,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     // Get input params for migration
     $type  = $this->app->getInput()->get('type', '', 'string');
-    $id    = $this->app->getInput()->get('id', '', 'int');
+    $id    = $this->app->getInput()->get('id', '', 'cmd');
     $json  = \json_decode(\base64_decode($this->app->getInput()->get('migrateable', '', 'string')), true);
 
     // Check if a record id to be migrated is given

@@ -753,14 +753,14 @@ class MigrationModel extends JoomAdminModel
   /**
 	 * Method to perform the migration of one record.
    * 
-   * @param   string           $type   Name of the content type to migrate.
-   * @param   integer          $pk     The primary key of the source record.
+   * @param   string   $type   Name of the content type to migrate.
+   * @param   mixed    $pk     The primary key of the source record.
 	 *
 	 * @return  object   The object containing the migration results.
 	 *
 	 * @since   4.0.0
 	 */
-  public function migrate(string $type, int $pk): object
+  public function migrate(string $type, $pk): object
   {
     // Retreive script
     $script = $this->getScript();
@@ -798,7 +798,7 @@ class MigrationModel extends JoomAdminModel
         $src_data = (array) clone (object) $data;
 
         // Convert record data into structure needed for JoomGallery v4+
-        $data = $this->component->getMigration()->convertData($type, $data);
+        $data = $this->component->getMigration()->convertData($type, $data, $pk);
 
         if(!$data)
         {
@@ -895,7 +895,7 @@ class MigrationModel extends JoomAdminModel
       {
         $old_counter = (int) $table->counter->get($pk, 0);
         $table->counter->set($pk, $old_counter + 1);
-      }      
+      }
     }
     else
     {
@@ -1233,7 +1233,7 @@ class MigrationModel extends JoomAdminModel
     }
 
     // Special case: Use source IDs. Insert dummy record with JDatabase before binding data on it.
-    if($isNew && !$autoID && \in_array($key, \array_keys($data)))
+    if($isNew && !$autoID && \in_array($key, \array_keys($data)) && !\is_null($data[$key]))
     {
       if(!$this->insertDummyRecord($type, $data[$key]))
       {
