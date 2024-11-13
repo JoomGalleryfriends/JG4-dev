@@ -302,7 +302,6 @@ class MigrationModel extends JoomAdminModel
     {
       $registry    = new Registry($item->queue);
       $item->queue = $registry->toArray();
-      $item->queue = ArrayHelper::toInteger($item->queue);
     }
 
     // Support for successful field
@@ -453,7 +452,7 @@ class MigrationModel extends JoomAdminModel
     if($this->app->input->exists($table->getKeyName()))
     {
       // Remove id from the input data
-      $tmp_pk = $this->app->input->get($table->getKeyName(), 'int');
+      $tmp_pk = $this->app->input->get($table->getKeyName(), 'cmd');
       $this->app->input->set($table->getKeyName(), null);
     }
 
