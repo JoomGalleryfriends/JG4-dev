@@ -16,11 +16,9 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Access\Rules;
-use \Joomla\CMS\Access\Access;
 use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Tag table
@@ -31,6 +29,14 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class TagTable extends Table
 {
   use JoomTableTrait;
+
+  /**
+   * List of images connected to this tag
+   *
+   * @var    array
+   * @since  4.0.0
+   */
+  public $images = null;
 
 	/**
 	 * Constructor
@@ -179,12 +185,18 @@ class TagTable extends Table
 	 */
 	public function store($updateNulls = true)
 	{
+    $images = null;
+    if(\property_exists($this, 'images') && !empty($this->images))
+    {
+      $images = $this->images;
+    }
+
     if($success = parent::store($updateNulls))
     {
-      if(\property_exists($this, 'images') && !empty($this->images))
+      if(!\is_null($images) && !empty($images))
       {
         // Do the mapping
-        $this->addMapping($this->images);
+        $this->addMapping($images);
       }
     }
 
@@ -220,7 +232,7 @@ class TagTable extends Table
    */
   public function addMapping($img_id)
   {
-    if(\empty($this->getId()))
+    if(empty($this->getId()))
     {
       $this->setError('Load table first.');
 
