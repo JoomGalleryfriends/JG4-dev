@@ -418,24 +418,6 @@ KEY `idx_createdby` (`created_by`)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__joomgallery_favourites`
---
-
-CREATE TABLE IF NOT EXISTS `#__joomgallery_favourites` (
-`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-`imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-`created_time` datetime NOT NULL,
-`created_by` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-PRIMARY KEY (`id`),
-KEY `idx_createdby` (`created_by`),
-KEY `idx_imgid` (`imgid`),
-KEY `idx_userid` (`userid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `#__joomgallery_migration`
 --
 

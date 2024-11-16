@@ -28,6 +28,14 @@ class CollectionTable extends Table
 {
   use JoomTableTrait;
 
+  /**
+   * List of images connected to this collection
+   *
+   * @var    array
+   * @since  4.0.0
+   */
+  public $images = null;
+
 	/**
 	 * Constructor
 	 *
@@ -195,12 +203,18 @@ class CollectionTable extends Table
 	 */
 	public function store($updateNulls = true)
 	{
+    $images = null;
+    if(\property_exists($this, 'images') && !empty($this->images))
+    {
+      $images = $this->images;
+    }
+
     if($success = parent::store($updateNulls))
     {
-      if(\property_exists($this, 'images') && !empty($this->images))
+      if(!\is_null($images) && !empty($images))
       {
         // Do the mapping
-        $this->addMapping($this->images);
+        $this->addMapping($images);
       }
     }
 
@@ -236,7 +250,7 @@ class CollectionTable extends Table
    */
   public function addMapping($img_id)
   {
-    if(\empty($this->getId()))
+    if(empty($this->getId()))
     {
       $this->setError('Load table first.');
 
@@ -254,21 +268,24 @@ class CollectionTable extends Table
 
     foreach($img_id as $key => $iid)
     {
-      $mapping = new \stdClass();
-      $mapping->imgid        = (int) $iid;
-      $mapping->collectionid = (int) $this->getId();
-
-      try
+      if($iid > 0)
       {
-        $db->insertObject(_JOOM_TABLE_COLLECTIONS_REF, $mapping);
-      }
-      catch(\Exception $e)
-      {
-        $this->setError($e->getMessage());
-        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        $mapping = new \stdClass();
+        $mapping->imgid        = (int) $iid;
+        $mapping->collectionid = (int) $this->getId();
 
-        return false;
-      }
+        try
+        {
+          $db->insertObject(_JOOM_TABLE_COLLECTIONS_REF, $mapping);
+        }
+        catch(\Exception $e)
+        {
+          $this->setError($e->getMessage());
+          $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
+          return false;
+        }
+      }      
     }
 
     return true;

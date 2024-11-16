@@ -421,6 +421,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Convert piclist to array
         $data['piclist'] = \explode(',', $data['piclist']);
 
+        // Add title to array
+        $data['title'] = Text::_('COM_JOOMGALLERY_FAVOURITES');
+
         // Adjust piclist with image id        
         if(!\boolval($this->params->get('source_ids', 0)))
         {
