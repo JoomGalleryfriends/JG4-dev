@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
@@ -525,9 +524,9 @@ class JoomHelper
    */
   public static function getCatImg($cat, $type, $url=true, $root=true)
   {
-    if (!\is_object($cat))
+    if(!\is_object($cat))
     {
-      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
+      if((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
       {
         // no actual category given
         return self::getImgZero($type, $url, $root);
@@ -578,9 +577,9 @@ class JoomHelper
   {
     $id = 0;
 
-    if (!\is_object($cat))
+    if(!\is_object($cat))
     {
-      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
+      if((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
       {
         // no actual category given
         return $id;
@@ -589,7 +588,8 @@ class JoomHelper
       $cat = self::getRecord('category', $cat);
     }    
 
-    try {
+    try
+    {
       if($inc_subcats)
       {
         // Create the category table
@@ -637,7 +637,8 @@ class JoomHelper
       $res = $db->loadResult();
       $id = \is_null($res) ? 0 : (int) $res;
     }
-    catch (\Exception $e) {
+    catch (\Exception $e)
+    {
       return $id;
     }
 
@@ -657,7 +658,7 @@ class JoomHelper
    *
    * @since   4.0.0
    */
-  public static function getViewRoute($view, $id, $catid = 0, $format = null, $type = null, $language = null, $layout = null)
+  public static function getViewRoute($view, $id = 0, $catid = 0, $format = null, $type = null, $language = null, $layout = null)
   {
     if(\is_object($id))
     {
@@ -669,7 +670,12 @@ class JoomHelper
     }
 
     // Create the link
-    $link = 'index.php?option=com_joomgallery&view='.$view.'&id=' . $id;
+    $link = 'index.php?option=' . _JOOM_OPTION . '&view=' . $view;
+
+    if($id > 0)
+    {
+      $link .= '&id=' . $id;
+    }
 
     if((int) $catid > 0)
     {
@@ -719,7 +725,7 @@ class JoomHelper
   public static function getListRoute($view, $language = 0, $layout = null)
   {
     // Create the link
-    $link = 'index.php?option=com_joomgallery&view='.$view;
+    $link = 'index.php?option=' . _JOOM_OPTION . '&view=' . $view;
 
     if($language && $language !== '*' && Multilanguage::isEnabled())
     {
@@ -787,11 +793,11 @@ class JoomHelper
 
     if(!$filename)
     {
-      $query->where($db->quoteName($row_name) . " = " . $db->quote($name));
+      $query->where($db->quoteName($row_name) . ' = ' . $db->quote($name));
     }
     else
     {
-      $query->where($db->quoteName($row_name) . " LIKE " . $db->quote($name));
+      $query->where($db->quoteName($row_name) . ' LIKE ' . $db->quote($name));
     }
 
     // Reset the query using our newly populated query object.
@@ -871,8 +877,8 @@ class JoomHelper
     static $avgdone       = false;
 
     $maxvoting            = $config->get('jg_maxvoting');
-    $votesum           = 'votesum';
-    $votes             = 'votes';
+    $votesum              = 'votesum';
+    $votes                = 'votes';
     if($tablealias != '')
     {
       $votesum = $tablealias.'.'.$votesum;

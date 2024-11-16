@@ -181,7 +181,7 @@ class HtmlView extends JoomGalleryView
 			
 			while($category && $category->id !== 1 && $category->id != $id)
 			{
-				$path[]   = ['title' => $category->title, 'link' => JoomHelper::getViewRoute('category', $category->id, 0, $category->language)];
+				$path[]   = ['title' => $category->title, 'link' => JoomHelper::getViewRoute('category', $category->id, 0, null, null, $category->language)];
 				$category = $this->getModel()->getParent($category->parent_id);
 			}
 
