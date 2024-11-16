@@ -451,7 +451,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_migration` (
 `successful` LONGTEXT NOT NULL,
 `failed` LONGTEXT NOT NULL,
 `counter` LONGTEXT NOT NULL,
-`last` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`last` VARCHAR(25) NOT NULL DEFAULT "0",
 `params` TEXT NOT NULL,
 `created_time` DATETIME NOT NULL,
 `checked_out` INT(11) UNSIGNED NOT NULL DEFAULT 0,

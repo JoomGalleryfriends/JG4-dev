@@ -701,13 +701,14 @@ class MigrationModel extends JoomAdminModel
   /**
 	 * Method to perform the pre migration checks.
    * 
-   * @param   array  $params  The migration parameters entered in the migration form
+   * @param   array  $params   The migration parameters entered in the migration form
+   * @param   bool   $resumed  True, if the precheck is called during resuming the migration
 	 *
 	 * @return  array  An array containing the precheck results.
 	 *
 	 * @since   4.0.0
 	 */
-  public function precheck($params)
+  public function precheck($params, $resumed = false)
   {
     $script = $this->getScript();
 
@@ -721,7 +722,7 @@ class MigrationModel extends JoomAdminModel
     $this->setParams($params);
 
     // Perform the prechecks
-    return $this->component->getMigration()->precheck();
+    return $this->component->getMigration()->precheck($resumed);
   }
 
   /**

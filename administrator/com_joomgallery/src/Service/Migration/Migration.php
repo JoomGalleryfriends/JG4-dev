@@ -504,12 +504,14 @@ abstract class Migration implements MigrationInterface
   /**
    * Step 2
    * Perform pre migration checks.
+   * 
+   * @param   bool      $resumed  True, if the precheck is called during resuming the migration
    *
    * @return  object[]  An array containing the precheck results.
    * 
    * @since   4.0.0
    */
-  public function precheck(): array
+  public function precheck($resumed = false): array
   {
     // Instantiate a new checks class
     $checks = new Checks();
@@ -537,7 +539,7 @@ abstract class Migration implements MigrationInterface
     $this->checkDestDir($checks, 'destination');
 
     // Check existence and integrity of destination database tables
-    $this->checkDestTable($checks, 'destination');
+    $this->checkDestTable($checks, 'destination', $resumed);
 
     // Check image mapping
     if($this->params->get('image_usage', 0) > 1)
@@ -1216,12 +1218,13 @@ abstract class Migration implements MigrationInterface
    * 
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
+   * @param  bool     $resumed    True, if the precheck is called during resuming the migration
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  protected function checkDestTable(Checks &$checks, string $category)
+  protected function checkDestTable(Checks &$checks, string $category, bool $resumed = false)
   {
     // Get table info
     list($db, $dbPrefix) = $this->getDB('destination');
@@ -1331,7 +1334,7 @@ abstract class Migration implements MigrationInterface
       {
         $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'));
       }
-      elseif($this->params->get('source_ids', 0) > 0 && $count > 0)
+      elseif($this->params->get('source_ids', 0) > 0 && $count > 0 && !$resumed)
       {
         $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
         $this->checkDestTableIdAvailability($checks, $category, $tablename);
