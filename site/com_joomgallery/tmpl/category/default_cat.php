@@ -216,7 +216,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
         {
           echo LayoutHelper::render('joomla.searchtools.default', array(
             'view' => $this->item->images, 
-            'options' => array('showSelector' => false, 'filterButton' => false, 'showNoResults' => false, 'showSearch' => false, 'barClass' => 'flex-end')
+            'options' => array('showSelector' => false, 'filterButton' => false, 'showNoResults' => false, 'showSearch' => false, 'showList' => false, 'barClass' => 'flex-end')
           ));
         }
       ?>
