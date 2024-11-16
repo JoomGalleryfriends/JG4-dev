@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Images;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
@@ -63,7 +64,20 @@ class HtmlView extends JoomGalleryView
 			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
 
-    // Check acces view level
+    // Check if is userspace is enabled
+    // Check access permission (ACL)
+    if($this->params['configs']->get('jg_userspace', 1, 'int') == 0 || !$this->getAcl()->checkACL('manage', 'com_joomgallery'))
+    {
+      if($this->params['configs']->get('jg_userspace', 1, 'int') == 0)
+      {
+        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_IMAGES_VIEW_NO_ACCESS'), 'message');
+      }
+
+      // Redirect to gallery view
+      $this->app->redirect(Route::_('index.php?option='._JOOM_OPTION.'&view=gallery'));
+      
+      return false;
+    }
 
 		$this->_prepareDocument();
 
@@ -127,13 +141,16 @@ class HtmlView extends JoomGalleryView
 			$this->document->setMetadata('robots', $this->params['menu']->get('robots'));
 		}
 
-    // Add Breadcrumbs
-    $pathway = $this->app->getPathway();
-    $breadcrumbTitle = Text::_('COM_JOOMGALLERY_IMAGES');
+		if(!$this->isMenuCurrentView($menu))
+		{
+			// Add Breadcrumbs
+			$pathway = $this->app->getPathway();
+			$breadcrumbTitle = Text::_('COM_JOOMGALLERY_IMAGES');
 
-    if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
-    {
-      $pathway->addItem($breadcrumbTitle);
-    }
+			if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
+			{
+				$pathway->addItem($breadcrumbTitle, '');
+			}
+		}
 	}
 }

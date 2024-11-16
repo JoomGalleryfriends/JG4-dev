@@ -66,22 +66,4 @@ class FieldsTable extends Table
 
 		return parent::bind($array, $ignore);
 	}
-
-	/**
-	 * Overloaded check function
-	 *
-	 * @return bool
-	 */
-	public function check()
-	{
-		// Support for subform field value
-		if(empty($this->value))
-		{
-			$this->value = $this->loadDefaultField('value');
-		}
-		elseif(\is_array($this->value))
-		{
-			$this->value = \json_encode($this->value, JSON_UNESCAPED_UNICODE);
-		}
-	}
 }

@@ -61,22 +61,4 @@ class FaultiesTable extends Table
 
 		return parent::bind($array, $ignore);
 	}
-
-	/**
-	 * Overloaded check function
-	 *
-	 * @return bool
-	 */
-	public function check()
-	{
-		// Support for subform field paths
-		if(empty($this->paths))
-		{
-			$this->paths = $this->loadDefaultField('paths');
-		}
-		elseif(is_array($this->paths))
-		{
-			$this->paths = \json_encode($this->paths, JSON_UNESCAPED_UNICODE);
-		}
-	}
 }

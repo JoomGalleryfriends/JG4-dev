@@ -437,7 +437,7 @@
         <field name="jg_userspace"
               type="radio"
               default="1"
-              class="btn-group unused"
+              class="btn-group"
               layout="joomla.form.field.radio.switcher"
               label="COM_JOOMGALLERY_CONFIG_USERSPACE"
               description="COM_JOOMGALLERY_CONFIG_USERSPACE_LONG" >

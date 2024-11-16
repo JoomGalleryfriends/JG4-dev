@@ -954,7 +954,7 @@ class FileManager implements FileManagerInterface
     {
       // Moving failed
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_'.$method.'_CATEGORY', \basename($src_path)));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_').$method.'_CATEGORY', \basename($src_path), 'error', 'jerror');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_'.$method.'_CATEGORY', \basename($src_path)), 'error', 'jerror');
 
       return false;
     }

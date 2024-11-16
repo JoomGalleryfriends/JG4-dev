@@ -65,10 +65,9 @@ trait JoomTableTrait
 			$this->ordering = self::getNextOrder();
 		}
 
-    if($this->_checkAliasUniqueness)
 		// Check if alias is unique
-    if(\property_exists($this, 'alias') &&
-       (\property_exists($this, '_checkAliasUniqueness') ? $this->_checkAliasUniqueness : true)
+    if( \property_exists($this, 'alias') &&
+        (\property_exists($this, '_checkAliasUniqueness') ? $this->_checkAliasUniqueness : true)
       )
     {
       if(!$this->isUnique('alias'))
@@ -79,21 +78,6 @@ trait JoomTableTrait
         while(!$this->isUnique('alias'))
         {
           $this->alias = $currentAlias . '-' . $count++;
-        }
-      }
-    }
-
-    // Check if title is unique inside this category
-    if(\property_exists($this, 'title'))
-    {
-      if(!$this->isUnique('title'))
-      {
-        $count = 2;
-        $currentTitle =  $this->title;
-
-        while(!$this->isUnique('title'))
-        {
-          $this->title = $currentTitle . ' (' . $count++ . ')';
         }
       }
     }
