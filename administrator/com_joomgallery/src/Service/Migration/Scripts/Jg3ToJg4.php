@@ -14,12 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -200,7 +198,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
                     'image'     => array('#__joomgallery', 'id', 'imgtitle', false, true, true),
                     'catimage'  => array(_JOOM_TABLE_CATEGORIES, 'cid', 'name', false, false, false),
                     'user'      => array('#__joomgallery_users', 'uid', '', false, false, true),
-                    'favourite' => array('#__joomgallery_users', 'uid', '', false, false, true),
+                    'collection'=> array('#__joomgallery_users', 'uid', '', false, false, true),
                     'vote'      => array('#__joomgallery_votes', 'voteid', '', false, false, true),
                     'comment'   => array('#__joomgallery_comments', 'cmtid', 'cmtname', false, false, true)
                   );
@@ -272,9 +270,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         $type->set('dependent_on', array('image'));
         break;
       
-      case 'favourite':
+      case 'collection':
         $type->set('dependent_on', array('user', 'image'));
-        $type->set('counterNeeded', true);
         break;
 
       default:
@@ -415,29 +412,23 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
         break;
 
-      case 'favourite':
-        // Apply mapping for favourites table
-        $mapping  = array( 'uid' => false, 'uuserid' => 'userid', 'piclist' => 'imgid', 'layout' => false,
+      case 'collection':
+        // Apply mapping for collections table
+        $mapping  = array( 'uid' => false, 'uuserid' => 'userid', 'piclist' => 'images', 'layout' => false,
                            'time' => false, 'zipname' => false
                           );
 
-        // Get number of already migrated favorites from current uid
-        //$counter = (int) $this->migrateables['favourite']->counter->get($data['uid']);
-        
-        // Get source image id from piclist based on the counter of current uid
-        //$img_id  = \explode(',', $data['piclist'])[$counter];
-        $img_id  = \explode('-', $pk, 2)[1];
+        // Convert piclist to array
+        $data['piclist'] = \explode(',', $data['piclist']);
 
-        // Adjust piclist with image id
+        // Adjust piclist with image id        
         if(!\boolval($this->params->get('source_ids', 0)))
         {
           // Get new created destination image id
-          $data['piclist'] = $this->migrateables['image']->successful->get($img_id);          
-        }
-        else
-        {
-          // Use source image id
-          $data['piclist'] = $img_id;
+          foreach($data['piclist'] as $key => $img_id)
+          {
+            $data['piclist'][$key] = $this->migrateables['image']->successful->get($img_id); 
+          }                   
         }
 
         // Adjust uuserid with new created users
@@ -502,12 +493,6 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Create selection
     $selection = array($db->quoteName($primarykey));
 
-    // Add piclist to selection for favourite
-    if($type == 'favourite')
-    {
-      \array_push($selection, $db->quoteName('piclist'));
-    }
-
     // Create the query
     $query->select($selection);
     $query->from($db->quoteName($tablename));
@@ -550,14 +535,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $queue = array();
     try
     {
-      if($type == 'favourite')
-      {
-        $queue = $db->loadObjectList();
-      }
-      else
-      {
-        $queue = $db->loadColumn();
-      }      
+      $queue = $db->loadColumn();     
     }
     catch(\Exception $e)
     {
@@ -566,7 +544,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
 
     // Postprocessing the queue
-    $needs_postprocessing = array('catimage', 'favourite');
+    $needs_postprocessing = array('catimage');
     if(!empty($queue) && \in_array($type, $needs_postprocessing))
     {
       if($type == 'catimage' && !\boolval($this->params->get('source_ids', 0)))
@@ -582,47 +560,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           }
         }
       }
-      elseif($type == 'favourite')
-      {
-        // Initialize
-        $user_queue = $queue;
-        $queue     = array();
-
-        // Fill queue with as many entries as total amount of IDs in all piclists
-        foreach($user_queue as $key => $userobj)
-        {
-          if(!empty($userobj->piclist))
-          {
-            foreach(\explode(',', $userobj->piclist) as $key => $image_id)
-            {
-              \array_push($queue, $userobj->{$primarykey} . '-' . $image_id);
-            }
-          }          
-        }
-      }
     }
 
     return $queue;
-  }
-
-  /**
-   * Returns an associative array containing the record data from source.
-   *
-   * @param   string   $type   Name of the content type
-   * @param   mixed    $pk     The primary key of the content type
-   * 
-   * @return  array    Associated array of a record data
-   * 
-   * @since   4.0.0
-   */
-  public function getData(string $type, $pk): array
-  {
-    if($type == 'favourite')
-    {
-      $pk = \explode('-', $pk, 2)[0];
-    }
-
-    return parent::getData($type, $pk);
   }
 
   /**
