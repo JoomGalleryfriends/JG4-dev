@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -160,5 +160,40 @@ class RawView extends AdminRawView
     }
 
     return true;
+  }
+
+  /**
+	 * Raw view display method, outputs one image
+	 *
+	 * @param   string  $tpl  Template name
+	 *
+	 * @return void
+	 *
+	 * @throws \Exception
+	 */
+	public function display($tpl = null)
+  {
+    // Get request variables
+    $type = $this->app->input->get('type', 'thumbnail', 'word');
+    $id   = $this->app->input->get('id', 0, 'int');
+
+    if($id)
+    {
+      // Create config service
+      $this->component->createConfig('com_joomgallery.image', $id);
+
+      // Get config value
+      $jg_record_hits_select = (array) $this->component->getConfig()->get('jg_record_hits_select', array('detail'));
+
+      if( $this->component->getConfig()->get('jg_record_hits', 1) &&
+          \in_array($type, $jg_record_hits_select)
+        )
+      {
+        // The hits has to be incremented for the requested imagetype
+        $this->getModel()->hit($id);
+      }
+    }
+
+    return parent::display($tpl);
   }
 }
