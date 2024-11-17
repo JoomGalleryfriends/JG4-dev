@@ -77,7 +77,7 @@ class ImageModel extends JoomItemModel
 	/**
 	 * Method to get an object.
 	 *
-	 * @param   integer $id The id of the object to get.
+	 * @param   integer  $id The id of the object to get.
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
@@ -130,6 +130,23 @@ class ImageModel extends JoomItemModel
 
 		return $this->item;
 	}
+
+  /**
+   * Increment the hit counter for the article.
+   *
+   * @param   integer  $id  Optional primary key of the article to increment.
+   *
+   * @return  boolean  True if successful; false otherwise and internal error set.
+   */
+  public function hit($id = 0)
+  {
+    $id = (!empty($id)) ? $id : (int) $this->getState('image.id');
+
+    $table = $this->getTable();
+    $table->hit($id);
+
+    return true;
+  }
 
   /**
 	 * Method to load the title of a category

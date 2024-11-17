@@ -19,7 +19,7 @@ defined('_JEXEC') or die;
  * @package JoomGallery
  * @since   4.0.0
  */
-class JpgView extends RawView
+class WebpView extends RawView
 {
   // Use the RawView class
 }
