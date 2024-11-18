@@ -29,6 +29,28 @@ class JgimagetypeField extends ListField
 	public $type = 'jgimagetype';
 
   /**
+   * Method to get the field input markup for a generic list.
+   * Use the multiple attribute to enable multiselect.
+   *
+   * @return  string  The field input markup.
+   *
+   * @since   3.7.0
+   */
+  protected function getInput()
+  {
+    $data = $this->getLayoutData();
+
+    if(\is_object($data['value']))
+    {
+      $data['value'] = (array) $data['value'];
+    }
+
+    $data['options'] = (array) $this->getOptions();
+
+    return $this->getRenderer($this->layout)->render($data);
+  }
+
+  /**
 	 * Method to get a list of categories that respects access controls and can be used for
 	 * either category assignment or parent category assignment in edit screens.
 	 * Use the parent element to indicate that the field will be used for assigning parent categories.
