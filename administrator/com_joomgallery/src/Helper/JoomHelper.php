@@ -679,17 +679,26 @@ class JoomHelper
    *
    * @since   4.0.0
    */
-  public static function getViewRoute($view, $id, $catid = null, $language = null, $layout = null)
+  public static function getViewRoute($view, $id, $catid = 0, $language = 0, $layout = null)
   {
+    if(\is_object($id))
+    {
+      $id = (int) $id->id;
+    }
+    else
+    {
+      $id = (int) $id;
+    }
+
     // Create the link
     $link = 'index.php?option=com_joomgallery&view='.$view.'&id=' . $id;
 
-    if((int) $catid > 1)
+    if((int) $catid > 0)
     {
       $link .= '&catid=' . $catid;
     }
 
-    if(!empty($language) && $language !== '*' && Multilanguage::isEnabled())
+    if($language && $language !== '*' && Multilanguage::isEnabled())
     {
       $link .= '&lang=' . $language;
     }
@@ -713,12 +722,12 @@ class JoomHelper
    *
    * @since   4.0.0
    */
-  public static function getListRoute($view, $language = null, $layout = null)
+  public static function getListRoute($view, $language = 0, $layout = null)
   {
     // Create the link
     $link = 'index.php?option=com_joomgallery&view='.$view;
 
-    if(!empty($language) && $language !== '*' && Multilanguage::isEnabled())
+    if($language && $language !== '*' && Multilanguage::isEnabled())
     {
       $link .= '&lang=' . $language;
     }

@@ -35,7 +35,7 @@ $image_class      = $this->params['configs']->get('jg_category_view_image_class'
 $justified_height = $this->params['configs']->get('jg_category_view_justified_height', 320, 'INT');
 $justified_gap    = $this->params['configs']->get('jg_category_view_justified_gap', 5, 'INT');
 $show_title       = $this->params['configs']->get('jg_category_view_images_show_title', 0, 'INT');
-$numb_images      = $this->params['configs']->get('jg_category_view_numb_images', 16, 'INT');
+$numb_images      = $this->params['configs']->get('jg_category_view_numb_images', 12, 'INT');
 $use_pagination   = $this->params['configs']->get('jg_category_view_pagination', 0, 'INT');
 $reloaded_images  = $this->params['configs']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
 $image_link       = $this->params['configs']->get('jg_category_view_image_link', 'defaultview', 'STRING');
@@ -90,7 +90,14 @@ if (!empty($use_pagination)) {
 
 $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd     = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 0, $this->item->id, true);
-$canAddImg  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 0, $this->item->id, true);
+if($this->item->id > 1)
+{
+  $canAddImg  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 0, $this->item->id, true);
+}
+else
+{
+  $canAddImg  = true;
+}
 $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.category', $this->item->id);
 $canCheckin = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));
@@ -210,7 +217,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
         {
           echo LayoutHelper::render('joomla.searchtools.default', array(
             'view' => $this->item->images, 
-            'options' => array('showSelector' => false, 'filterButton' => false, 'showNoResults' => false, 'showSearch' => false, 'barClass' => 'flex-end')
+            'options' => array('showSelector' => false, 'filterButton' => false, 'showNoResults' => false, 'showSearch' => false, 'showList' => false, 'barClass' => 'flex-end')
           ));
         }
       ?>
