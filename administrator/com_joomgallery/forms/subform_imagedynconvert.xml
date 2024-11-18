@@ -23,7 +23,7 @@
            groupByFieldset="false"
            default="0"
            label="COM_JOOMGALLERY_RESIZING"
-           description="COM_JOOMGALLERY_FIELDS_RESIZING_DESC" >
+           description="COM_JOOMGALLERY_FIELDS_DYNAMICRESIZING_DESC" >
         <option value="0">JNO</option>
         <option value="1">COM_JOOMGALLERY_CONFIG_RESIZE_BY_HEIGHT</option>
         <option value="2">COM_JOOMGALLERY_CONFIG_RESIZE_BY_WIDTH</option>

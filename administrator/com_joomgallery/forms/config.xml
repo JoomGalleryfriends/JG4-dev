@@ -763,7 +763,7 @@
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION_DESC"
-            default="pagination"
+            default="0"
             validate="options"
             >
             <option value="0">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
@@ -868,7 +868,7 @@
         <field
             name="jg_category_view_numb_images"
             type="number"
-            default="16"
+            default="12"
             min="1"
             max="9999"
             step="1"

@@ -479,8 +479,8 @@ class ConfigModel extends JoomAdminModel
     $obj['jg_imgtypename']        = '';
     $obj['jg_imgtypepath']        = '';
     $obj['jg_imgtyperesize']      = '0';
-    $obj['jg_imgtypewidth']       = '';
-    $obj['jg_imgtypeheight']      = '';
+    $obj['jg_imgtypewidth']       = '2000';
+    $obj['jg_imgtypeheight']      = '2000';
     $obj['jg_cropposition']       = '2';
     $obj['jg_imgtypeorinet']      = '1';
     $obj['jg_imgtypeanim']        = '0';
@@ -514,7 +514,7 @@ class ConfigModel extends JoomAdminModel
         break;
       
       default:
-        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"0","jg_imgtypewidth":"","jg_imgtypeheight":"","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":"100","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"{}"}';
+        $params = '{"jg_imgtype":"1","jg_imgtyperesize":"0","jg_imgtypewidth":"2000","jg_imgtypeheight":"2000","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":"100","jg_imgtypewatermark":"0","jg_imgtypewtmsettings":"{}"}';
         break;
     }
   }
@@ -646,10 +646,13 @@ class ConfigModel extends JoomAdminModel
 		{
 			if(strpos($key, 'jg_') !== false)
 			{
-				if($key == 'jg_replaceinfo' || $key == 'jg_dynamicprocessing')
+				if($key == 'jg_replaceinfo')
 				{
-					// set default by hand
-					$default = array();
+					$default = '{"jg_replaceinfo0":{"target":"date","source":"EXIF-36867"}}';
+				}
+				else if($key == 'jg_dynamicprocessing')
+				{
+					$default = '{"jg_dynamicprocessing0":{"jg_imgtype":"0","jg_imgtypename":"original","jg_imgtyperesize":"0","jg_imgtypewidth":"2000","jg_imgtypeheight":"2000","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"1","jg_imgtypesharpen":"0","jg_imgtypequality":100,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":{"jg_watermarkpos":"9","jg_watermarkzoom":"0","jg_watermarksize":15,"jg_watermarkopacity":80}},"jg_dynamicprocessing1":{"jg_imgtype":"0","jg_imgtypename":"detail","jg_imgtyperesize":"0","jg_imgtypewidth":"1000","jg_imgtypeheight":"1000","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"0","jg_imgtypesharpen":"0","jg_imgtypequality":80,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":{"jg_watermarkpos":"9","jg_watermarkzoom":"0","jg_watermarksize":15,"jg_watermarkopacity":80}},"jg_dynamicprocessing2":{"jg_imgtype":"0","jg_imgtypename":"thumbnail","jg_imgtyperesize":"0","jg_imgtypewidth":"360","jg_imgtypeheight":"360","jg_cropposition":"2","jg_imgtypeorinet":"0","jg_imgtypeanim":"0","jg_imgtypesharpen":"0","jg_imgtypequality":60,"jg_imgtypewatermark":"0","jg_imgtypewtmsettings":{"jg_watermarkpos":"9","jg_watermarkzoom":"0","jg_watermarksize":15,"jg_watermarkopacity":80}}}';
 				}
 				else if($key == 'jg_staticprocessing')
 				{
