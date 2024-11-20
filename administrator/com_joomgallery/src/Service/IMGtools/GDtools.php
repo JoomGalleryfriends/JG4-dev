@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Text;
@@ -582,6 +581,12 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       $this->rollback('', '');
 
       return false;
+    }
+
+    // Add metadata if needed
+    if($this->keep_metadata)
+    {
+      // ToDo: $stream = $this->copyMetadata() using the new metadata service
     }
 
     if(!$base64)
