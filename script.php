@@ -404,6 +404,49 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db->setQuery($query);
     $db->execute();
 
+    // Delete frontend menuitems
+    // Delete Gallery menuitem
+    $query
+      ->clear()
+      ->delete('#__menu')
+      ->where(
+        array(
+          'menutype = ' . $db->quote('mainmenu'),
+          'link = ' . $db->quote('index.php?option=com_joomgallery&view=gallery')
+        )
+      );
+
+    $db->setQuery($query);
+    $db->execute();
+
+    // Delete Categories menuitem
+    $query
+      ->clear()
+      ->delete('#__menu')
+      ->where(
+        array(
+          'menutype = ' . $db->quote('mainmenu'),
+          'link = ' . $db->quote('index.php?option=com_joomgallery&view=category&id=1')
+        )
+      );
+
+    $db->setQuery($query);
+    $db->execute();
+
+    // Delete Images menuitem
+    $query
+      ->clear()
+      ->delete('#__menu')
+      ->where(
+        array(
+          'menutype = ' . $db->quote('mainmenu'),
+          'link = ' . $db->quote('index.php?option=com_joomgallery&view=images')
+        )
+      );
+
+    $db->setQuery($query);
+    $db->execute();
+
     // Delete directories
     if(!Folder::delete(JPATH_ROOT.'/images/joomgallery'))
     {
