@@ -76,14 +76,14 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    * 
    * @since   4.0.0
    */
-  protected $tables = array('category' => array('pl_name' => 'categories'),
-                            'comment'  => array('pl_name' => 'comments'),
-                            'config'   => array('pl_name' => 'configs'),
-                            'field'    => array('pl_name' => 'fields'),
-                            'gallery'  => array('pl_name' => 'galleries'),
-                            'image'    => array('pl_name' => 'images'),
-                            'tag'      => array('pl_name' => 'tags'),
-                            'user'     => array('pl_name' => 'users')
+  protected $tables = array('category'   => array('pl_name' => 'categories'),
+                            'collection' => array('pl_name' => 'collections'),
+                            'comment'    => array('pl_name' => 'comments'),
+                            'config'     => array('pl_name' => 'configs'),
+                            'field'      => array('pl_name' => 'fields'),
+                            'image'      => array('pl_name' => 'images'),
+                            'tag'        => array('pl_name' => 'tags'),
+                            'user'       => array('pl_name' => 'users')
                           );
 
   /**
