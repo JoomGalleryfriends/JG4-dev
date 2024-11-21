@@ -256,7 +256,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
             <?php endif; ?>
 
             <?php if($image_link == 'defaultview') : ?>
-              <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+              <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $image->id, (int) $image->catid)); ?>">                
                 <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
                 <?php if($show_title && $category_class == 'justified') : ?>
                   <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
@@ -291,7 +291,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
                 </a>
               <?php else : ?>
                 <?php if($title_link == 'defaultview') : ?>
-                  <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=image&id='.(int) $image->id); ?>">
+                  <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $image->id, (int) $image->catid)); ?>">
                     <?php echo $this->escape($image->title); ?>
                   </a>
                 <?php else : ?>
