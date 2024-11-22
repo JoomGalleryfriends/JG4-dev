@@ -120,6 +120,7 @@ abstract class IMGtools implements IMGtoolsInterface
    protected $dst_imginfo = array('width' => 0,
                                  'height' => 0,
                                  'orientation' => '',
+                                 'ratio' => 1,
                                  'offset_x' => 0,
                                  'offset_y' => 0,
                                  'angle' => 0,
@@ -240,21 +241,7 @@ abstract class IMGtools implements IMGtoolsInterface
     $this->src_type = $imagetype[$info[2]];
 
     // Get the image orientation
-    if($info[0] > $info[1])
-    {
-      $this->res_imginfo['orientation'] = 'landscape';
-    }
-    else
-    {
-      if($info[0] < $info[1])
-      {
-        $this->res_imginfo['orientation'] = 'portrait';
-      }
-      else
-      {
-        $this->res_imginfo['orientation'] = 'square';
-      }
-    }
+    $this->res_imginfo['orientation'] = $this->getOrientation($info[0], $info[1]);
 
     // Detect, if image is a special image
     if($this->src_type == 'PNG')
@@ -476,7 +463,7 @@ abstract class IMGtools implements IMGtoolsInterface
   protected function clearVariables()
   {
     $this->src_imginfo  = array('width' => 0,'height' => 0,'orientation' => '','transparency' => false,'animation' => false, 'frames' => 1);
-    $this->dst_imginfo  = array('width' => 0,'height' => 0,'type' => '','orientation' => '', 'offset_x' => 0,'offset_y' => 0,
+    $this->dst_imginfo  = array('width' => 0,'height' => 0,'type' => '', 'ratio' => 1, 'orientation' => '', 'offset_x' => 0,'offset_y' => 0,
                                'angle' => 0, 'flip' => 'none','quality' => 100,'src' => array('width' => 0,'height' => 0));
     $this->src_frames   = array(array('duration' => 0,'image' => null));
     $this->dst_frames   = array(array('duration' => 0,'image' => null));
@@ -666,7 +653,7 @@ abstract class IMGtools implements IMGtoolsInterface
     if($method != 4)
     {
       // Not cropping
-      $ratio                               = \max($ratio, 1.0);
+      $this->dst_imginfo['ratio'] = $ratio = \max($ratio, 1.0);
       $this->dst_imginfo['width']          = (int)\floor($srcWidth / $ratio);
       $this->dst_imginfo['height']         = (int)\floor($srcHeight / $ratio);
       $this->dst_imginfo['src']['width']   = (int)$srcWidth;
@@ -676,6 +663,7 @@ abstract class IMGtools implements IMGtoolsInterface
     else
     {
       // Cropping
+      $this->dst_imginfo['ratio']         = $ratio;
       $this->dst_imginfo['width']         = (int)$new_width;
       $this->dst_imginfo['height']        = (int)$new_height;
       $this->dst_imginfo['src']['width']  = (int)($this->dst_imginfo['width'] * $ratio);
@@ -781,6 +769,32 @@ abstract class IMGtools implements IMGtoolsInterface
     }
 
     return array($pos_x, $pos_y);
+  }
+
+  /**
+   * Get orientation string based on width and height value
+   *
+   * @param   int      $width    image width
+   * @param   int      $height   image height
+   *
+   * @return  string   Orientation string
+   *
+   * @since   4.0.0
+  */
+  protected function getOrientation($width, $height)
+  {
+    if($width > $height)
+    {
+      return 'landscape';
+    }
+    elseif($height < $width)
+    {
+      return 'portrait';
+    }
+    else
+    {
+      return 'square';
+    }
   }
 
   /**

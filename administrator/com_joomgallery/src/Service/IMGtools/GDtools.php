@@ -1181,8 +1181,9 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         $this->dst_frames[$key]['image'] = $this->imageRotate_GD($this->src_frames[$key]['image'], $this->src_type,
                                                                  $this->dst_imginfo['angle'], $this->src_imginfo['transparency']);
 
-        $this->dst_imginfo['width']      = imagesx($this->dst_frames[$key]['image']);
-        $this->dst_imginfo['height']     = imagesy($this->dst_frames[$key]['image']);
+        $this->dst_imginfo['width']       = imagesx($this->dst_frames[$key]['image']);
+        $this->dst_imginfo['height']      = imagesy($this->dst_frames[$key]['image']);
+        $this->dst_imginfo['orientation'] = $this->getOrientation($this->dst_imginfo['width'], $this->dst_imginfo['height']);
       }
 
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ROTATE_BY_ANGLE', $this->dst_imginfo['angle']));
