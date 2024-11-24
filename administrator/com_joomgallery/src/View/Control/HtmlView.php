@@ -48,8 +48,8 @@ class HtmlView extends JoomGalleryView
     // get gallery info data
     $this->galleryinfodata = $this->get('GalleryInfoData');
 
-    // get available extensions data
-    $this->galleryavailableextensionsdata = $this->get('AvailableExtensions');
+    // get official extensions data
+    $this->galleryofficialextensionsdata = $this->get('OfficialExtensionsData');
 
     // get installed extensions data
     $this->galleryinstalledextensionsdata = $this->get('InstalledExtensionsData');
