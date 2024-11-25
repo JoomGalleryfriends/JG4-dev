@@ -644,16 +644,16 @@ function DisplayOfficialExtensions($manifest)
                   <th class="w-20">
                     <?php echo Text::_('JGLOBAL_TITLE'); ?>
                   </th>
-                  <th class="w-15">
+                  <th class="w-12">
                     <?php echo Text::_('JVERSION'); ?>
                   </th>
                   <th>
                     <?php echo Text::_('JGLOBAL_DESCRIPTION'); ?>
                   </th>
-                  <th class="w-15">
+                  <th class="w-20">
                     <?php echo Text::_('JAUTHOR'); ?>
                   </th>
-                  <th class="w-10">
+                  <th class="w-12">
                     <?php echo Text::_('COM_JOOMGALLERY_DOWNLOAD'); ?>
                   </th>
                 </tr>
@@ -703,6 +703,9 @@ function DisplayOfficialExtensions($manifest)
       </div><!--/accordion-item-->
     </div><!--/accordion -->
   </div><!--/card -->
+  <div class="m-2 small">
+    <a href="<?php echo _JOOM_WEBSITE.'/manual/official-extensions'; ?>" target="_blank"><?php echo Text::_('COM_JOOMGALLERY_CONTROL_LIST_EXTENSION_LABEL'); ?></a>
+  </div>
 
   <?php return;
 }
