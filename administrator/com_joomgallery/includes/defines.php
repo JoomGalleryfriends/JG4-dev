@@ -22,7 +22,6 @@ define('_JOOM_TABLE_COLLECTIONS_REF','#__joomgallery_collections_ref');
 define('_JOOM_TABLE_COMMENTS',       '#__joomgallery_comments');
 define('_JOOM_TABLE_CONFIGS',        '#__joomgallery_configs');
 define('_JOOM_TABLE_FAULTIES',       '#__joomgallery_faulties');
-define('_JOOM_TABLE_FAVOURITES',     '#__joomgallery_favourites');
 define('_JOOM_TABLE_MAINTENANCE',    '#__joomgallery_faulties');
 define('_JOOM_TABLE_ORPHANS',        '#__joomgallery_faulties');
 define('_JOOM_TABLE_FIELDS',         '#__joomgallery_fields');

@@ -44,7 +44,6 @@ class JoomHelper
                                           'comment'   => _JOOM_TABLE_COMMENTS,
                                           'config'    => _JOOM_TABLE_CONFIGS,
                                           'faulty'    => _JOOM_TABLE_FAULTIES,
-                                          'favourite' => _JOOM_TABLE_FAVOURITES,
                                           'field'     => _JOOM_TABLE_FIELDS,
                                           'image'     => _JOOM_TABLE_IMAGES,
                                           'imagetype' => _JOOM_TABLE_IMG_TYPES,
