@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
@@ -21,9 +20,9 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Http\HttpFactory;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * JoomGallery Helper for the Backend
