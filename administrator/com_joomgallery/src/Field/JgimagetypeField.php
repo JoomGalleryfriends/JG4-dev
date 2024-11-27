@@ -49,7 +49,7 @@ class JgimagetypeField extends ListField
 		{
       if($imagetype->params->get('jg_imgtype', '1'))
       {
-        $options[] = HTMLHelper::_('select.option', $imagetype->typename, Text::_('COM_JOOMGALLERY_'.\strtoupper($imagetype->typename)));
+        $options[] = HTMLHelper::_('select.option', $imagetype->typename, $imagetype->typename);
       }			
 		}
 
