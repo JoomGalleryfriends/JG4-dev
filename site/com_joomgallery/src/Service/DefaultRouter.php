@@ -16,10 +16,10 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Menu\AbstractMenu;
 use \Joomla\Database\ParameterType;
 use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\Component\Router\RouterView;
-use \Joomla\CMS\Component\Router\RouterViewConfiguration;
 use \Joomla\CMS\Application\SiteApplication;
 use \Joomla\CMS\Categories\CategoryFactoryInterface;
+use \Joomla\CMS\Component\Router\RouterView;
+use \Joomla\CMS\Component\Router\RouterViewConfiguration;
 use \Joomla\CMS\Component\Router\Rules\MenuRules;
 use \Joomla\CMS\Component\Router\Rules\NomenuRules;
 use \Joomla\CMS\Component\Router\Rules\StandardRules;
@@ -29,8 +29,35 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
  * Joomgallery Router class
  *
  */
-class Router extends RouterView
+class DefaultRouter extends RouterView
 {
+  /**
+	 * Name to be displayed
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $displayName = 'COM_JOOMGALLERY_DEFAULT_ROUTER';
+
+  /**
+	 * Type of the router
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $type = 'modern';
+
+  /**
+	 * ID of the parent of the image view. Empty if none.
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $image_parentID = '';
+
   /**
 	 * Param to use ids in URLs
 	 *
@@ -39,15 +66,6 @@ class Router extends RouterView
 	 * @since  4.0.0
 	 */
 	private $noIDs;
-
-  /**
-	 * Param on where to add ids in URLs
-	 *
-	 * @var    bool
-	 *
-	 * @since  4.0.0
-	 */
-	private $endIDs = false;
 
   /**
 	 * Databse object
@@ -67,13 +85,18 @@ class Router extends RouterView
 	 */
 	private $categoryCache = [];
 
-	public function __construct(SiteApplication $app, AbstractMenu $menu, ?CategoryFactoryInterface $categoryFactory, DatabaseInterface $db)
+	public function __construct(SiteApplication $app, AbstractMenu $menu, ?CategoryFactoryInterface $categoryFactory, DatabaseInterface $db , $skipSelf = false)
 	{
     parent::__construct($app, $menu);
-    $params = $this->app->getParams('com_joomgallery');
-    
+
+    // Get router config value
+    $this->noIDs = (bool) $app->bootComponent('com_joomgallery')->getConfig()->get('jg_router_ids', '0');
     $this->db    = $db;
-		$this->noIDs = (bool) $params->get('sef_ids', 0);
+
+    if($skipSelf)
+    {
+      return;
+    }
 
     $gallery = new RouterViewConfiguration('gallery');
     $this->registerView($gallery);
@@ -139,16 +162,8 @@ class Router extends RouterView
         ->bind(':id', $id, ParameterType::INTEGER);
       $this->db->setQuery($dbquery);
 
-      if($this->endIDs)
-      {
-        // To create a segment in the form: alias-id
-        $id = $this->db->loadResult() . ':' . $id;
-      }
-      else
-      {
-        // To create a segment in the form: id-alias
-        $id .= ':' . $this->db->loadResult();
-      }
+      // To create a segment in the form: id-alias
+      $id .= ':' . $this->db->loadResult();
     }
 
     return array((int) $id => $id);
@@ -287,12 +302,7 @@ class Router extends RouterView
   public function getImageId($segment, $query)
   {
     $img_id = 0;
-    if($this->endIDs && \is_numeric(\end(\explode('-', $segment))))
-    {
-      // For a segment in the form: alias-id
-      $img_id = (int) \end(\explode('-', $segment));
-    }
-    elseif(\is_numeric(\explode('-', $segment, 2)[0]))
+    if(\is_numeric(\explode('-', $segment, 2)[0]))
     {
       // For a segment in the form: id-alias
       $img_id = (int) \explode('-', $segment, 2)[0];
