@@ -412,15 +412,13 @@ class com_joomgalleryInstallerScript extends InstallerScript
     }
     ?>
 
-    <div class="text-center">
-      <div class="alert alert-light">
-        <h3><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_UNINSTALL'); ?></h3>
-        <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_UNINSTALL_TXT'); ?></p>
+    <div class="alert alert-light">
+      <h3><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_UNINSTALL'); ?></h3>
+      <p><?php echo Text::_('COM_JOOMGALLERY_SUCCESS_UNINSTALL_TXT'); ?></p>
 
-        <?php if ($uninstall_message != '') : ?>
-          <div><?php echo $uninstall_message;?></div>
-        <?php endif; ?>
-      </div>
+      <?php if ($uninstall_message != '') : ?>
+        <div><?php echo $uninstall_message;?></div>
+      <?php endif; ?>
     </div>
 
     <?php
@@ -794,8 +792,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if (!$table->store($gallerydata))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: gallery view'), 'error');
-      Log::add(Text::_('Error store default menuitem: gallery view'), 8, 'joomgallery');
+      Factory::getApplication()->enqueueMessage(Text::_('This default menu item could not be created: gallery view'), 'notice');
+      Log::add(Text::_('This default menu item could not be created: gallery view'), 8, 'joomgallery');
 
       return false;
     }
@@ -835,8 +833,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if (!$table->store($catdata))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: category view'), 'error');
-      Log::add(Text::_('Error store default menuitem: category view'), 8, 'joomgallery');
+      Factory::getApplication()->enqueueMessage(Text::_('This default menu item could not be created: category view'), 'notice');
+      Log::add(Text::_('This default menu item could not be created: category view'), 8, 'joomgallery');
 
       return false;
     }
@@ -873,8 +871,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if (!$table->store($imgsdata))
     {
-      Factory::getApplication()->enqueueMessage(Text::_('Error store default menuitem: images view'), 'error');
-      Log::add(Text::_('Error store default menuitem: images view'), 8, 'joomgallery');
+      Factory::getApplication()->enqueueMessage(Text::_('This default menu item could not be created: images view'), 'notice');
+      Log::add(Text::_('This default menu item could not be created: images view'), 8, 'joomgallery');
 
       return false;
     }
