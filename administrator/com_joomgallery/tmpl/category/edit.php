@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 
 // Import CSS & JS
@@ -24,6 +25,8 @@ $wa->useScript('keepalive')
 HTMLHelper::_('bootstrap.tooltip');
 
 $app = Factory::getApplication();
+$form      = $this->getForm();
+$fieldSets = $form->getFieldsets();
 
 // In case of modal
 $isModal = $app->input->get('layout') === 'modal';
@@ -133,7 +136,13 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 		</div>
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
-
+    <?php foreach ($fieldSets as $name => $fieldSet) :?>
+        <?php if (strpos($name,'fields-') !== 0) continue; ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $name, Text::_($fieldSet->label)); ?>
+        <?php $this->fieldset = $name; ?>
+        <?php echo LayoutHelper::render('joomla.edit.fieldset', $this); ?>
+        <?php echo HTMLHelper::_('uitab.endTab'); ?>
+    <?php endforeach; ?>
 	<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
 	<input type="hidden" name="jform[lft]" value="<?php echo $this->item->lft; ?>" />
 	<input type="hidden" name="jform[rgt]" value="<?php echo $this->item->rgt; ?>" />
