@@ -16,10 +16,10 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Menu\AbstractMenu;
 use \Joomla\Database\ParameterType;
 use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\Component\Router\RouterView;
-use \Joomla\CMS\Component\Router\RouterViewConfiguration;
 use \Joomla\CMS\Application\SiteApplication;
 use \Joomla\CMS\Categories\CategoryFactoryInterface;
+use \Joomla\CMS\Component\Router\RouterView;
+use \Joomla\CMS\Component\Router\RouterViewConfiguration;
 use \Joomla\CMS\Component\Router\Rules\MenuRules;
 use \Joomla\CMS\Component\Router\Rules\NomenuRules;
 use \Joomla\CMS\Component\Router\Rules\StandardRules;
@@ -29,8 +29,35 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
  * Joomgallery Router class
  *
  */
-class Router extends RouterView
+class DefaultRouter extends RouterView
 {
+  /**
+	 * Name to be displayed
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $displayName = 'COM_JOOMGALLERY_DEFAULT_ROUTER';
+
+  /**
+	 * Type of the router
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $type = 'modern';
+
+  /**
+	 * ID of the parent of the image view. Empty if none.
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $image_parentID = '';
+
   /**
 	 * Param to use ids in URLs
 	 *
@@ -58,13 +85,18 @@ class Router extends RouterView
 	 */
 	private $categoryCache = [];
 
-	public function __construct(SiteApplication $app, AbstractMenu $menu, ?CategoryFactoryInterface $categoryFactory, DatabaseInterface $db)
+	public function __construct(SiteApplication $app, AbstractMenu $menu, ?CategoryFactoryInterface $categoryFactory, DatabaseInterface $db , $skipSelf = false)
 	{
     parent::__construct($app, $menu);
-    $params = $this->app->getParams('com_joomgallery');
-    
+
+    // Get router config value
+    $this->noIDs = (bool) $app->bootComponent('com_joomgallery')->getConfig()->get('jg_router_ids', '0');
     $this->db    = $db;
-		$this->noIDs = (bool) $params->get('sef_ids');
+
+    if($skipSelf)
+    {
+      return;
+    }
 
     $gallery = new RouterViewConfiguration('gallery');
     $this->registerView($gallery);
@@ -107,7 +139,7 @@ class Router extends RouterView
    */
   public function getGallerySegment($id, $query)
   {
-    return array();
+    return array('');
   }
 	
   /**
@@ -130,14 +162,8 @@ class Router extends RouterView
         ->bind(':id', $id, ParameterType::INTEGER);
       $this->db->setQuery($dbquery);
 
+      // To create a segment in the form: id-alias
       $id .= ':' . $this->db->loadResult();
-    }
-
-    if($this->noIDs && \strpos($id, ':') !== false)
-    {
-      list($void, $segment) = \explode(':', $id, 2);
-
-      return array($void => $segment);
     }
 
     return array((int) $id => $id);
@@ -153,6 +179,12 @@ class Router extends RouterView
    */
   public function getImageformSegment($id, $query)
   {
+    if(!$id)
+    {
+      // Load empty form view
+      return array('');
+    }
+
     return $this->getImageSegment($id, $query);
   }
 
@@ -166,6 +198,11 @@ class Router extends RouterView
    */
   public function getImagesSegment($id, $query)
   {
+    if(!$id)
+    {
+      return array('');
+    }
+
     return $this->getImageSegment($id, $query);
   }
 
@@ -214,6 +251,12 @@ class Router extends RouterView
    */
   public function getCategoryformSegment($id, $query)
   {
+    if(!$id)
+    {
+      // Load empty form view
+      return array('');
+    }
+
     return $this->getCategorySegment($id, $query);
   }
 
@@ -227,6 +270,11 @@ class Router extends RouterView
    */
   public function getCategoriesSegment($id, $query)
   {
+    if(!$id)
+    {
+      return array('');
+    }
+
     return $this->getCategorySegment($id, $query);
   }
 
@@ -253,7 +301,14 @@ class Router extends RouterView
    */
   public function getImageId($segment, $query)
   {
-    if($this->noIDs)
+    $img_id = 0;
+    if(\is_numeric(\explode('-', $segment, 2)[0]))
+    {
+      // For a segment in the form: id-alias
+      $img_id = (int) \explode('-', $segment, 2)[0];
+    }
+
+    if($img_id < 1)
     {
       $dbquery = $this->db->getQuery(true);
 
@@ -262,8 +317,16 @@ class Router extends RouterView
         ->where($this->db->quoteName('alias') . ' = :alias')
         ->bind(':alias', $segment);
 
-      if(\key_exists('catid', $query))
+      if($cat = $this->app->input->get('catid', 0, 'int'))
       {
+        // We can identify the image via a request query variable of type catid
+        $dbquery->where($this->db->quoteName('catid') . ' = :catid');
+        $dbquery->bind(':catid', $cat, ParameterType::INTEGER);
+      }
+
+      if(\key_exists('view', $query) && $query['view'] == 'category' && \key_exists('id', $query))
+      {
+        // We can identify the image via menu item of type category
         $dbquery->where($this->db->quoteName('catid') . ' = :catid');
         $dbquery->bind(':catid', $query['id'], ParameterType::INTEGER);
       }
@@ -273,7 +336,7 @@ class Router extends RouterView
       return (int) $this->db->loadResult();
     }
 
-    return (int) $segment;
+    return $img_id;
   }
 
   /**

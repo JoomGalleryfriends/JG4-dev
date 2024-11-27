@@ -228,18 +228,6 @@ class ConfigTable extends Table
 			$this->ordering = self::getNextOrder();
 		}
 
-    // Check if title is unique inside this category
-		if(!$this->isUnique('title'))
-		{
-			$count = 2;
-			$currentTitle =  $this->title;
-
-			while(!$this->isUnique('title'))
-      {
-				$this->title = $currentTitle . ' (' . $count++ . ')';
-			}
-		}
-
 		// Support for subform field jg_replaceinfo
 		if(\is_array($this->jg_replaceinfo))
 		{

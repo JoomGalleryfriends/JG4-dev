@@ -58,7 +58,8 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
   use MessageTrait;
 	use AssociationServiceTrait;
 	use HTMLRegistryAwareTrait;
-  use RouterServiceTrait { RouterServiceTrait::createRouter as traitCreateRouter;}
+  // use RouterServiceTrait;
+  use RouterServiceTrait {RouterServiceTrait::createRouter as traitCreateRouter;}
 
   /**
    * JoomGallery services
@@ -154,28 +155,22 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
    */
   public function createRouter(CMSApplicationInterface $application, AbstractMenu $menu): RouterInterface
   {
-    $modern     = true;
-    $requestURI = \pathinfo(\Joomla\CMS\Uri\Uri::getInstance()->getPath());
+    // Get router config value
+    $this->createConfig();
+    $routerName = $this->getConfig()->get('jg_router', 'DefaultRouter');
+
+    // Get router
+    $router = 'Joomgallery\\Component\\Joomgallery\\Site\\Service\\' . \ucfirst($routerName);
     
-    if($modern)
+    if($router::$type == 'modern')
     {
+      // Use a modern router (RouterView)
       return $this->traitCreateRouter($application, $menu);
-
-      // if($requestURI['extension'] == 'raw' || $application->input->get('format', '') == 'raw')
-      // {
-      //   // Use the traditional router for raw format
-
-      // }
-      // else
-      // {
-      //   // Use the default modern router
-      //   return $this->traitCreateRouter($application, $menu);
-      // }      
     }
     else
     {
-      // Use the old JG3 router for compatibility reasons
-      return new JG3Router($application, $menu);
+      // Use a legacy router
+      return new $router($application, $menu);
     }
   }
 }

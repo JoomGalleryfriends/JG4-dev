@@ -25,8 +25,26 @@ use \Joomla\CMS\Component\Router\RouterInterface;
  *
  * @see https://github.com/robbiejackson/Joomla-4-MVC-Tutorial/blob/main/joomla4-mvc/site/src/Service/TraditionalRouter.php
  */
-class JG3Router implements RouterInterface
+class JG3LegacyRouter implements RouterInterface
 {
+  /**
+	 * Name to be displayed
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $displayName = 'JG3 Router';
+
+  /**
+	 * Type of the router
+	 *
+	 * @var    string
+	 *
+	 * @since  4.0.0
+	 */
+	public static $type = 'legacy';
+
 	private $application;
     
   private $menu;

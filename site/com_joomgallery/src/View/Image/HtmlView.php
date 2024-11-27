@@ -132,20 +132,23 @@ class HtmlView extends JoomGalleryView
 			$this->document->setMetadata('robots', $this->params['menu']->get('robots'));
 		}
 
-    // Add Breadcrumbs
-    $pathway = $this->app->getPathway();
-    $breadcrumbList = Text::_('COM_JOOMGALLERY_IMAGES');
-
-    if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
-    {
-      $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=images");
-    }
-
-    $breadcrumbTitle = Text::_('COM_JOOMGALLERY_IMAGES');
-
-    if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
-    {
-      $pathway->addItem($breadcrumbTitle);
-    }
+		if(!$this->isMenuCurrentView($menu))
+		{
+			// Add Breadcrumbs
+			$pathway = $this->app->getPathway();
+			$breadcrumbList = Text::_('COM_JOOMGALLERY_IMAGES');
+	
+			if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
+			{
+				$pathway->addItem($breadcrumbList, JoomHelper::getViewRoute('images'));
+			}
+	
+			$breadcrumbTitle = $this->item->title;
+	
+			if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
+			{
+				$pathway->addItem($breadcrumbTitle, '');
+			}
+		}
 	}
 }

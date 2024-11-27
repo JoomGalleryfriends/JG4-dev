@@ -38,7 +38,7 @@ if($this->item->catid)
 else
 {
   // ID = null -> add
-  $canEdit  = $this->getAcl()->checkACL('add', 'com_joomgallery.image', 0, 1, true);
+  $canEdit  = true;
 }
 $canAdmin = $this->getAcl()->checkACL('admin', 'com_joomgallery');
 ?>

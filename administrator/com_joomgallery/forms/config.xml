@@ -115,6 +115,26 @@
           <option value="0">JNO</option>
           <option value="1">JYES</option>
       </field>
+      
+      <field name="jg_router"
+             type="jgdynamiclist"
+             default="DefaultRouter"
+             global_only="true"
+             script="getRouterOptions"
+             label="COM_JOOMGALLERY_CONFIG_ROUTER"
+             description="COM_JOOMGALLERY_CONFIG_ROUTER_LONG" >
+      </field>
+
+      <field name="jg_router_ids"
+              type="radio"
+              default="0"
+              class="btn-group"
+              layout="joomla.form.field.radio.switcher"
+              label="JGLOBAL_SEF_NOIDS_LABEL"
+              description="JGLOBAL_SEF_NOIDS_DESC" >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+      </field>
 
       <field name="jg_compatibility_mode"
              type="list"
@@ -437,7 +457,7 @@
         <field name="jg_userspace"
               type="radio"
               default="1"
-              class="btn-group unused"
+              class="btn-group"
               layout="joomla.form.field.radio.switcher"
               label="COM_JOOMGALLERY_CONFIG_USERSPACE"
               description="COM_JOOMGALLERY_CONFIG_USERSPACE_LONG" >
@@ -763,7 +783,7 @@
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION_DESC"
-            default="pagination"
+            default="0"
             validate="options"
             >
             <option value="0">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_PAGINATION</option>
@@ -868,7 +888,7 @@
         <field
             name="jg_category_view_numb_images"
             type="number"
-            default="16"
+            default="12"
             min="1"
             max="9999"
             step="1"

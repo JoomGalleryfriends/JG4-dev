@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\View\GenericDataException;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
@@ -84,17 +85,17 @@ class HtmlView extends JoomGalleryView
     // Get return page
     $this->return_page = $this->get('ReturnPage');
 
-    // Check acces view level
-		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
-    {
-      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
-    }
-
 		// Check for errors.
 		if(\count($errors = $this->get('Errors')))
 		{
 			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
+
+    // Check acces view level
+		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
+    {
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+    }
 
 		$this->_prepareDocument();
 
@@ -158,20 +159,23 @@ class HtmlView extends JoomGalleryView
 			$this->document->setMetadata('robots', $this->params['menu']->get('robots'));
 		}
 
-    // Add Breadcrumbs
-    $pathway = $this->app->getPathway();
-    $breadcrumbList = Text::_('COM_JOOMGALLERY_CATEGORIES');
+		if(!$this->isMenuCurrentView($menu))
+		{
+			// Add Breadcrumbs
+			$pathway = $this->app->getPathway();
+			$breadcrumbList = Text::_('COM_JOOMGALLERY_CATEGORIES');
 
-    if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
-    {
-      $pathway->addItem($breadcrumbList, "index.php?option=com_joomgallery&view=categories");
-    }
+			if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
+			{
+				$pathway->addItem($breadcrumbList, JoomHelper::getViewRoute('categories'));
+			}
 
-    $breadcrumbTitle = isset($this->item->id) ? Text::_("JGLOBAL_EDIT") : Text::_("JGLOBAL_FIELD_ADD");
+			$breadcrumbTitle = isset($this->item->id) ? Text::_("JGLOBAL_EDIT") : Text::_("JGLOBAL_FIELD_ADD");
 
-    if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
-    {
-      $pathway->addItem($breadcrumbTitle);
-    }
+			if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
+			{
+				$pathway->addItem($breadcrumbTitle, '');
+			}
+		}
 	}
 }

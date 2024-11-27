@@ -193,7 +193,7 @@ class CategoryModel extends JoomItemModel
   /**
 	 * Method to get the parent category item object.
 	 *
-	 * @param   integer  $id   The id of the object to get.
+	 * @param   integer  $id   The id of the parent item to get.
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
@@ -201,7 +201,7 @@ class CategoryModel extends JoomItemModel
 	 */
   public function getParent($id = null)
   {
-    if($this->item === null)
+    if($id === null && $this->item === null)
 		{
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
@@ -209,6 +209,11 @@ class CategoryModel extends JoomItemModel
     // Load parent category model
     $parentModel = $this->component->getMVCFactory()->createModel('category', 'site');
     $parentModel->getState();
+
+    if($id)
+    {
+      return $parentModel->getItem($id);
+    }
 
     return $parentModel->getItem($this->item->parent_id);
   }
@@ -485,7 +490,7 @@ class CategoryModel extends JoomItemModel
     else
     {
       // Load the number of images defined in the configuration
-      $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 16, 'int'));
+      $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 12, 'int'));
 
       // Apply number of images to be loaded from list in the view
       if(isset($imgform_list['limit']))
