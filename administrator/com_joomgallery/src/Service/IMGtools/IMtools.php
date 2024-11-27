@@ -878,6 +878,11 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
 
     $this->auto_orient = true;
 
+    if(isset($this->metadata['exif']['IFD0']['Orientation']))
+    {
+      $this->autoOrient($this->metadata['exif']['IFD0']['Orientation']);
+    }
+
     return true;
   }
 
