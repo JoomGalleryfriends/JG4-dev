@@ -38,7 +38,7 @@ $show_title       = $this->params['configs']->get('jg_category_view_images_show_
 $numb_images      = $this->params['configs']->get('jg_category_view_numb_images', 12, 'INT');
 $use_pagination   = $this->params['configs']->get('jg_category_view_pagination', 0, 'INT');
 $reloaded_images  = $this->params['configs']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
-$image_link       = $this->params['configs']->get('jg_category_view_image_link', 'defaultview', 'STRING');
+$image_link       = $this->params['configs']->get('jg_category_view_image_link', 'detailview', 'STRING');
 $title_link       = $this->params['configs']->get('jg_category_view_title_link', 'defaultview', 'STRING');
 $show_description = $this->params['configs']->get('jg_category_view_show_description', 0, 'INT');
 $show_imgdate     = $this->params['configs']->get('jg_category_view_show_imgdate', 0, 'INT');
@@ -238,7 +238,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
             <?php endif; ?>
 
             <?php if($image_link == 'lightgallery') : ?>
-              <a class="lightgallery-item" href="" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+              <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
                 <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
                 <?php if($show_title && $category_class == 'justified') : ?>
                   <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
@@ -256,7 +256,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
             <?php endif; ?>
 
             <?php if($image_link == 'defaultview') : ?>
-              <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $image->id, (int) $image->catid)); ?>">                
+              <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $image->id, (int) $image->catid)); ?>">
                 <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
                 <?php if($show_title && $category_class == 'justified') : ?>
                   <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
@@ -286,7 +286,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <?php if ($show_title) : ?>
               <?php if($title_link == 'lightgallery' && $image_link != 'lightgallery') : ?>
-                <a class="lightgallery-item" href="" data-src="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
+                <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($image, 'detail'); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
                   <?php echo $this->escape($image->title); ?>
                 </a>
               <?php else : ?>
@@ -360,6 +360,7 @@ const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementB
   toggleThumb: true,
   speed: 500,
   plugins: [lgThumbnail],
+  preload: 1,
   loop: false,
   counter: true,
   download: false,
@@ -435,9 +436,9 @@ window.addEventListener('load', function () {
 const category = document.querySelector('.jg-category');
 const items = Array.from(category.querySelectorAll('.jg-image'));
 
-maxImages = <?php echo $num_columns * 2; ?>;
-loadImages = <?php echo $num_columns * 3; ?>;
-hiddenClass = 'hidden-jg-image';
+maxImages    = <?php echo $num_columns * 2; ?>;
+loadImages   = <?php echo $num_columns * 3; ?>;
+hiddenClass  = 'hidden-jg-image';
 hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
 items.forEach(function (item, index) {
@@ -481,12 +482,12 @@ fadeElms.forEach(el => observer.observe(el));
 <?php if ( $use_pagination == '2') : ?>
 <script>
 const category = document.querySelector('.jg-category');
-const items = Array.from(category.querySelectorAll('.jg-image'));
+const items    = Array.from(category.querySelectorAll('.jg-image'));
 const loadMore = document.getElementById('loadMore');
 
-maxImages = <?php echo $num_columns * 2; ?>;
-loadImages = <?php echo $reloaded_images; ?>;
-hiddenClass = 'hidden-jg-image';
+maxImages    = <?php echo $num_columns * 2; ?>;
+loadImages   = <?php echo $reloaded_images; ?>;
+hiddenClass  = 'hidden-jg-image';
 hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
 items.forEach(function (item, index) {
