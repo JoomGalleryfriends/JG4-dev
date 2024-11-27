@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -9,29 +9,27 @@
 *****************************************************************************************/
 
 namespace Joomgallery\Component\Joomgallery\Administrator\Table;
- 
+
 // No direct access
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\Access\Rules;
-use \Joomla\Registry\Registry;
-use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
+use \Joomla\Database\DatabaseDriver;
 
 /**
- * Tag table
+ * Collection table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class TagTable extends Table
+class CollectionTable extends Table
 {
   use JoomTableTrait;
 
   /**
-   * List of images connected to this tag
+   * List of images connected to this collection
    *
    * @var    array
    * @since  4.0.0
@@ -45,15 +43,14 @@ class TagTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.tag';
+		$this->typeAlias = _JOOM_OPTION.'.collection';
 
-		parent::__construct(_JOOM_TABLE_TAGS, 'id', $db);
+		parent::__construct(_JOOM_TABLE_COLLECTIONS, 'id', $db);
 
-		$this->setColumnAlias('published', 'published');
-
+    $this->setColumnAlias('published', 'published');
 	}
 
-	/**
+  /**
 	 * Overloaded bind function to pre-process the params.
 	 *
 	 * @param   array  $array   Named array
@@ -80,7 +77,7 @@ class TagTable extends Table
       }
     }
 
-    // Support for alias field: alias
+		// Support for alias field: alias
 		if(empty($array['alias']))
 		{
 			if(empty($array['title']))
@@ -126,7 +123,7 @@ class TagTable extends Table
 			$array['modified_time'] = $date->toSql();
 		}
 
-		if($array['id'] == 0 && empty($array['modified_by']))
+		if($array['id'] == 0 && (!\key_exists('modified_by', $array) ||empty($array['modified_by'])))
 		{
 			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
 		}
@@ -134,18 +131,6 @@ class TagTable extends Table
 		if($task == 'apply' || \strpos($task, 'save') !== false)
 		{
 			$array['modified_by'] = Factory::getApplication()->getIdentity()->id;
-		}
-
-		if(isset($array['params']) && \is_array($array['params']))
-		{
-			$registry = new Registry($array['params']);
-			$array['params'] = (string) $registry;
-		}
-
-		if(isset($array['metadata']) && \is_array($array['metadata']))
-		{
-			$registry = new Registry($array['metadata']);
-			$array['metadata'] = (string) $registry;
 		}
 
     // Support for list of images to be mapped
@@ -164,14 +149,47 @@ class TagTable extends Table
       }
 		}
 
-		// Bind the rules for ACL where supported.
-		if(isset($array['rules']))
-		{
-      $rules = new Rules($array['rules']);
-			$this->setRules($rules);
-		}
+    return parent::bind($array, $ignore);
+	}
 
-		return parent::bind($array, $ignore);
+  /**
+	 * Overloaded check function
+	 *
+	 * @return bool
+	 */
+	public function check()
+	{
+		// Check if alias is unique inside this user
+    if(!$this->isUnique('alias', $this->userid, 'userid'))
+    {
+      $count = 2;
+      $currentAlias =  $this->alias;
+
+      while(!$this->isUnique('alias', $this->userid, 'userid'))
+      {
+        $this->alias = $currentAlias . '-' . $count++;
+      }
+    }
+
+		// Support for field description
+    if(empty($this->description))
+    {
+      $this->description = $this->loadDefaultField('description');
+    }
+
+    // Support for field metadesc
+    if(empty($this->metadesc))
+    {
+      $this->metadesc = $this->loadDefaultField('metadesc');
+    }
+
+    // Support for field metakey
+    if(empty($this->metakey))
+    {
+      $this->metakey = $this->loadDefaultField('metakey');
+    }
+
+		return parent::check();
 	}
 
   /**
@@ -220,7 +238,7 @@ class TagTable extends Table
 
     return $success;
   }
-
+  
   /**
    * Map one or multiple images to the currently loaded tag.
    *
@@ -250,21 +268,24 @@ class TagTable extends Table
 
     foreach($img_id as $key => $iid)
     {
-      $mapping = new \stdClass();
-      $mapping->imgid = (int) $iid;
-      $mapping->tagid = (int) $this->getId();
-
-      try
+      if($iid > 0)
       {
-        $db->insertObject(_JOOM_TABLE_TAGS_REF, $mapping);
-      }
-      catch(\Exception $e)
-      {
-        $this->setError($e->getMessage());
-        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        $mapping = new \stdClass();
+        $mapping->imgid        = (int) $iid;
+        $mapping->collectionid = (int) $this->getId();
 
-        return false;
-      }
+        try
+        {
+          $db->insertObject(_JOOM_TABLE_COLLECTIONS_REF, $mapping);
+        }
+        catch(\Exception $e)
+        {
+          $this->setError($e->getMessage());
+          $this->component->addLog($e->getMessage(), 'error', 'jerror');
+
+          return false;
+        }
+      }      
     }
 
     return true;
@@ -299,7 +320,7 @@ class TagTable extends Table
     $query = $db->getQuery(true);
 
     // Create where conditions
-    $query->where($db->quoteName('tagid') . ' = ' . $db->quote((int) $this->getId()));
+    $query->where($db->quoteName('collectionid') . ' = ' . $db->quote((int) $this->getId()));
     if(\is_array($img_id))
     {
       // Delete mapping only for a specified images
@@ -307,7 +328,7 @@ class TagTable extends Table
     }
 
     // Create the query
-    $query->delete($db->quoteName(_JOOM_TABLE_TAGS_REF));
+    $query->delete($db->quoteName(_JOOM_TABLE_COLLECTIONS_REF));
     $db->setQuery($query);
 
     try

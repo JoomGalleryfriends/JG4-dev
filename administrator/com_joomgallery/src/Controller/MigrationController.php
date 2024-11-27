@@ -171,6 +171,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->app->setUserState(_JOOM_OPTION.'.migration.script', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.noToken', null);
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.resumed', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.data', null);    
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.results', null);
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.step2.success', null);
@@ -265,7 +266,10 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     // Set no token check to user state
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.noToken', true);
 
-    // Redirect to the from screen (step 2).
+    // Set resumed to user state
+    $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.resumed', true);
+
+    // Redirect to the form screen (step 2).
     $this->setRedirect(Route::_('index.php?option=' . _JOOM_OPTION . '&task=migration.precheck&isNew=0', false));
 
     return true;
@@ -549,7 +553,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
     $this->app->setUserState(_JOOM_OPTION.'.migration.'.$script.'.params', $validData);
 
     // Perform the pre migration checks
-    list($success, $res, $msg) = $model->precheck($validData);
+    list($success, $res, $msg) = $model->precheck($validData, $this->app->getUserState(_JOOM_OPTION.'.migration.'.$script.'.resumed', false));
     if(!$success)
     {
       // Pre-checks not successful. Show error message.
@@ -762,7 +766,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 
     // Get input params for migration
     $type  = $this->app->getInput()->get('type', '', 'string');
-    $id    = $this->app->getInput()->get('id', '', 'int');
+    $id    = $this->app->getInput()->get('id', '', 'cmd');
     $json  = \json_decode(\base64_decode($this->app->getInput()->get('migrateable', '', 'string')), true);
 
     // Check if a record id to be migrated is given

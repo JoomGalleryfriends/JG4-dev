@@ -446,10 +446,10 @@ trait JoomTableTrait
   /**
 	 * Mthod to load the default value of a field in a xml form
 	 *
+   * @param   string  $field  The name of the field to get the default value from.
 	 * @param   string  $form   The filename of the xml form.
-   * @param   string  $field  The name of the field to get the default from.
 	 *
-	 * @return  array
+	 * @return  string
 	 */
   protected function loadDefaultField($field, $form=null)
   {
