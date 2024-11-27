@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -26,6 +27,8 @@ $wa->useScript('keepalive')
 HTMLHelper::_('bootstrap.tooltip');
 
 $app = Factory::getApplication();
+$form      = $this->getForm();
+$fieldSets = $form->getFieldsets();
 
 // In case of modal
 $isModal = $app->input->get('layout') === 'modal';
@@ -160,7 +163,15 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
     <?php endif; ?>
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
-	<?php echo HTMLHelper::_('uitab.endTabSet'); ?>
+    <?php foreach ($fieldSets as $name => $fieldSet) :?>
+        <?php if (strpos($name,'fields-') !== 0) continue; ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $name, Text::_($fieldSet->label)); ?>
+        <?php $this->fieldset = $name; ?>
+        <?php echo LayoutHelper::render('joomla.edit.fieldset', $this); ?>
+        <?php echo HTMLHelper::_('uitab.endTab'); ?>
+    <?php endforeach; ?>
+
+    <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
 	<input type="hidden" name="task" value=""/>
   <input type="hidden" name="jform[uploader]" value="html" />
