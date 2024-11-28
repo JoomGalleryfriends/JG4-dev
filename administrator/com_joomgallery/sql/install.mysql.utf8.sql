@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `jg_gallery_view_image_class` TINYINT(1) NOT NULL DEFAULT 0,
 `jg_gallery_view_justified_height` INT NOT NULL DEFAULT 200,
 `jg_gallery_view_justified_gap` TINYINT(1) NOT NULL DEFAULT 5,
-`jg_gallery_view_numb_images` INT NOT NULL DEFAULT 16,
+`jg_gallery_view_numb_images` INT NOT NULL DEFAULT 15,
 `jg_gallery_view_ordering` VARCHAR(25) NOT NULL DEFAULT "a.hits DESC",
 `jg_category_view_subcategory_class` VARCHAR(25) NOT NULL DEFAULT "columns",
 `jg_category_view_subcategory_num_columns` TINYINT(1) NOT NULL DEFAULT 3,
