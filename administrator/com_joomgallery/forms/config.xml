@@ -746,15 +746,108 @@
            label="COM_JOOMGALLERY_CONFIG_RECORD_HITS_SELECT_LABEL"
            description="COM_JOOMGALLERY_CONFIG_RECORD_HITS_SELECT_LONG" />
     </fieldset>
+
+    <fieldset type="tab" name="frontend-galleryview" label="COM_JOOMGALLERY_CONFIG_TAB_GALLERY_VIEW">
+        <field name="jg_gallery_view_numb_images"
+               type="number"
+               default="16"
+               min="1"
+               max="9999"
+               step="1"
+               label="COM_JOOMGALLERY_CONFIG_NUMB_IMAGES"
+               description="COM_JOOMGALLERY_CONFIG_NUMB_IMAGES_DESC"
+               filter="int" />
+        <field name="jg_gallery_view_ordering"
+               type="list" 
+               label="JGLOBAL_SORTED_BY"
+               default="a.hits DESC"
+               validate="options">
+            <option value="a.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
+            <option value="a.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
+            <option value="a.date ASC">JDATE_ASC</option>
+            <option value="a.date DESC">JDATE_DESC</option>
+            <option value="a.hits ASC">JGLOBAL_HITS_ASC</option>
+            <option value="a.hits DESC">JGLOBAL_HITS_DESC</option>
+            <option value="a.downloads ASC">COM_JOOMGALLERY_DOWNLOADS_ASC</option>
+            <option value="a.downloads DESC">COM_JOOMGALLERY_DOWNLOADS_DESC</option>
+        </field>
+        <field name="jg_gallery_view_class"
+               type="list"
+               label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_IMAGES_CLASS"
+               description="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_IMAGES_CLASS_DESC"
+               default="columns"
+               validate="options"
+               class="unused" >
+            <option value="columns">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_GRID</option>
+            <option value="masonry">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_MASONRY</option>
+            <option value="justified">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_JUSTIFIED</option>
+        </field>
+        <field name="jg_gallery_view_num_columns"
+               type="list"
+               label="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_LABEL"
+               description="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_DESC"
+               default="3"
+               validate="options"
+               class="unused"
+               showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry" >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </field>
+        <field name="jg_gallery_view_image_class"
+               type="radio"
+               label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
+               default="0"
+               layout="joomla.form.field.radio.switcher"
+               validate="options"
+               class="unused"
+               showon="jg_gallery_view_class:columns[OR]jg_gallery_view_class:masonry" >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="jg_gallery_view_justified_height"
+               type="number"
+               default="200"
+               min="1"
+               max="9999"
+               step="1"
+               label="COM_JOOMGALLERY_CONFIG_JUSTIFIED_HEIGHT"
+               description="COM_JOOMGALLERY_CONFIG_JUSTIFIED_HEIGHT_NOTE_DESC"
+               filter="int"
+               class="unused"
+               showon="jg_gallery_view_class:justified" />
+        <field name="jg_gallery_view_justified_gap"
+               type="number"
+               default="5"
+               min="0"
+               max="999"
+               step="1"
+               label="COM_JOOMGALLERY_CONFIG_JUSTIFIED_GAP"
+               description="COM_JOOMGALLERY_CONFIG_JUSTIFIED_GAP_NOTE_DESC"
+               filter="int"
+               class="unused"
+               showon="jg_gallery_view_class:justified" />
+    </fieldset>
     
     <fieldset type="tab" name="frontend-categoryview" label="COM_JOOMGALLERY_CONFIG_TAB_CATEGORY_VIEW">
-        <field
-            label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_SUBCATEGORIES"
-            type="spacer"
-            name="spacer1"
-            hr="false"
-            >
+        <field name="spacer1"
+               label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_SUBCATEGORIES"
+               type="spacer"
+               hr="false" >
         </field>
+        <field name="jg_category_view_numb_subcategories"
+            type="number"
+            default="12"
+            min="1"
+            max="999"
+            step="1"
+            label="COM_JOOMGALLERY_CONFIG_NUMB_SUBCATEGORIES"
+            description="COM_JOOMGALLERY_CONFIG_NUMB_SUBCATEGORIES_DESC"
+            filter="int"
+        />
         <field name="jg_category_view_subcategory_class"
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_CLASS"
@@ -765,23 +858,20 @@
             <option value="columns">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_GRID</option>
             <option value="masonry">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_MASONRY</option>
         </field>
-        <field
-            name="jg_category_view_subcategory_num_columns"
-            type="list"
-            label="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_LABEL"
-            description="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_DESC"
-            default="3"
-            validate="options"
-            >
+        <field name="jg_category_view_subcategory_num_columns"
+               type="list"
+               label="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_LABEL"
+               description="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_DESC"
+               default="3"
+               validate="options" >
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
-        </field>
-        <field
-            name="jg_category_view_subcategory_image_class"
+        </field>        
+        <field name="jg_category_view_subcategory_image_class"
             type="radio"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
             default="0"
@@ -790,20 +880,8 @@
             >
             <option value="0">JNO</option>
             <option value="1">JYES</option>
-        </field>
-        <field
-            name="jg_category_view_numb_subcategories"
-            type="number"
-            default="12"
-            min="1"
-            max="999"
-            step="1"
-            label="COM_JOOMGALLERY_CONFIG_NUMB_SUBCATEGORIES"
-            description="COM_JOOMGALLERY_CONFIG_NUMB_SUBCATEGORIES_DESC"
-            filter="int"
-        />
-        <field
-            name="jg_category_view_subcategories_pagination"
+        </field>        
+        <field name="jg_category_view_subcategories_pagination"
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_PAGINATION_DESC"
@@ -814,8 +892,7 @@
             <option value="1">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LOADMORE</option>
             <option value="2">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_INFINITY</option>
         </field>
-        <field
-            name="jg_category_view_subcategories_random_image"
+        <field name="jg_category_view_subcategories_random_image"
             type="radio"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_IMAGES_DESC"
@@ -826,8 +903,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field
-            name="jg_category_view_subcategories_random_subimages"
+        <field name="jg_category_view_subcategories_random_subimages"
             type="radio"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_SUBCATEGORIES_RANDOM_SUBIMAGES_DESC"
@@ -839,12 +915,36 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field
+        <field name="spacer2"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_IMAGES"
-            type="spacer"
-            name="spacer2"
-            hr="false"
-            >
+            type="spacer"            
+            hr="false" >
+        </field>
+        <field name="jg_category_view_numb_images"
+            type="number"
+            default="16"
+            min="1"
+            max="9999"
+            step="1"
+            label="COM_JOOMGALLERY_CONFIG_NUMB_IMAGES"
+            description="COM_JOOMGALLERY_CONFIG_NUMB_IMAGES_DESC"
+            filter="int"
+        />
+        <field name="jg_category_view_ordering"
+               type="list" 
+               label="JGLOBAL_SORTED_BY"
+               default="a.date DESC"
+               validate="options">
+            <option value="a.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
+            <option value="a.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
+            <option value="a.date ASC">JDATE_ASC</option>
+            <option value="a.date DESC">JDATE_DESC</option>
+            <option value="a.author ASC">JAUTHOR_ASC</option>
+            <option value="a.author DESC">JAUTHOR_DESC</option>
+            <option value="a.hits ASC">JGLOBAL_HITS_ASC</option>
+            <option value="a.hits DESC">JGLOBAL_HITS_DESC</option>
+            <option value="a.downloads ASC">COM_JOOMGALLERY_DOWNLOADS_ASC</option>
+            <option value="a.downloads DESC">COM_JOOMGALLERY_DOWNLOADS_DESC</option>
         </field>
         <field name="jg_category_view_class"
             type="list"
@@ -857,24 +957,21 @@
             <option value="masonry">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_MASONRY</option>
             <option value="justified">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_JUSTIFIED</option>
         </field>
-        <field
-            name="jg_category_view_num_columns"
+        <field name="jg_category_view_num_columns"
             type="list"
             label="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_LABEL"
             description="COM_JOOMGALLERY_CONFIG_NUM_COLUMNS_DESC"
             default="3"
             validate="options"
-            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry"
-            >
+            showon="jg_category_view_class:columns[OR]jg_category_view_class:masonry" >
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
-        </field>
-        <field
-            name="jg_category_view_image_class"
+        </field>       
+        <field name="jg_category_view_image_class"
             type="radio"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGE_CLASS"
             default="0"
@@ -885,8 +982,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field
-            name="jg_category_view_justified_height"
+        <field name="jg_category_view_justified_height"
             type="number"
             default="200"
             min="1"
@@ -897,8 +993,7 @@
             filter="int"
             showon="jg_category_view_class:justified"
         />
-        <field
-            name="jg_category_view_justified_gap"
+        <field name="jg_category_view_justified_gap"
             type="number"
             default="5"
             min="0"
@@ -932,8 +1027,7 @@
             <option value="1">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT1</option>
             <option value="2">COM_JOOMGALLERY_MENU_CATEGORY_VIEW_PAGINATION_OPT2</option>
         </field>
-        <field
-            name="jg_category_view_number_of_reloaded_images"
+        <field name="jg_category_view_number_of_reloaded_images"
             type="number"
             min="1"
             max="9999"
@@ -944,8 +1038,7 @@
             default="3"
             showon="jg_category_view_pagination:2"
         />
-        <field
-            name="jg_category_view_image_link"
+        <field name="jg_category_view_image_link"
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_LINK"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_IMAGES_LINK_DESC"
@@ -956,8 +1049,7 @@
             <option value="defaultview">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_DETAILVIEW</option>
             <option value="lightgallery">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_LIGHTGALLERY</option>
         </field>
-        <field
-            name="jg_category_view_caption_align"
+        <field name="jg_category_view_caption_align"
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_ALIGNMENT_NOTE_DESC"
@@ -968,8 +1060,7 @@
             <option value="center">JGLOBAL_CENTER</option>
             <option value="right">JGLOBAL_RIGHT</option>
         </field>
-        <field
-            name="jg_category_view_images_show_title"
+        <field name="jg_category_view_images_show_title"
             type="radio"
             label="JGLOBAL_TITLE"
             default="1"
@@ -979,8 +1070,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field
-            name="jg_category_view_title_link"
+        <field name="jg_category_view_title_link"
             type="list"
             label="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK"
             description="COM_JOOMGALLERY_CONFIG_CATEGORY_TITLE_LINK_DESC"
@@ -992,16 +1082,13 @@
             <option value="defaultview">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_DETAILVIEW</option>
             <option value="lightgallery">COM_JOOMGALLERY_CONFIG_CATEGORY_VIEW_LINK_LIGHTGALLERY</option>
         </field>
-
-        <field
+        <field name="spacer3"
             label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
             type="spacer"
-            name="spacer3"
             hr="false"
             >
         </field>
-        <field
-            name="jg_category_view_show_description"
+        <field name="jg_category_view_show_description"
             type="radio"
             label="JGLOBAL_DESCRIPTION"
             default="0"
@@ -1011,8 +1098,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field
-            name="jg_category_view_show_imgdate"
+        <field name="jg_category_view_show_imgdate"
             type="radio"
             label="COM_JOOMGALLERY_DATE"
             description="COM_JOOMGALLERY_DATE_DESC"
@@ -1023,8 +1109,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field
-            name="jg_category_view_show_imgauthor"
+        <field name="jg_category_view_show_imgauthor"
             type="radio"
             label="JAUTHOR"
             description="COM_JOOMGALLERY_FIELDS_AUTHOR_DESC"
@@ -1035,8 +1120,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field
-            name="jg_category_view_show_tags"
+        <field name="jg_category_view_show_tags"
             type="radio"
             label="COM_JOOMGALLERY_TAGS"
             default="0"
@@ -1047,7 +1131,6 @@
             <option value="1">JYES</option>
         </field>
     </fieldset>
-
     <fieldset type="tab" name="frontend-detailview" label="COM_JOOMGALLERY_MENU_SINGLE_IMAGE_VIEW_OPTIONS">
         <field
             label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
