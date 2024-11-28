@@ -750,7 +750,7 @@
     <fieldset type="tab" name="frontend-galleryview" label="COM_JOOMGALLERY_CONFIG_TAB_GALLERY_VIEW">
         <field name="jg_gallery_view_numb_images"
                type="number"
-               default="16"
+               default="15"
                min="1"
                max="9999"
                step="1"
