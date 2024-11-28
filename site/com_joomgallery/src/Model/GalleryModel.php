@@ -197,25 +197,24 @@ class GalleryModel extends JoomItemModel
     {
       // Get query variables sent by the images form
       $imgform_list = $this->app->input->get('list', array());
-      $imgform_limitstart = $this->app->getInput()->get('limitstart', 0, 'uint');
+      $imgform_limitstart = $this->app->getInput()->get('limitstart', 0, 'int');
     }
+
+    // Load the number of images defined in the configuration
+    $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 16, 'int'));
 
     // Apply number of images to be loaded from list in the view
     if(isset($imgform_list['limit']))
     {
       $listModel->setState('list.limit', $imgform_list['limit']);
     }
-    else
-    {
-      $listModel->setState('list.limit', '24');
-    }
 
     // Disable behavior of remembering pagination position
     // if it is not explicitely given in the request
     $listModel->setState('list.start', $imgform_limitstart);
 
-    // Apply ordering: Images with most hits first
-    $listModel->setState('list.fullordering', 'a.hits DESC');
+    // Apply ordering
+    $listModel->setState('list.fullordering', $params['configs']->get('jg_gallery_view_ordering', 'a.hits DESC'));
   }
 
   /**
