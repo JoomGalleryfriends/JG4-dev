@@ -499,6 +499,70 @@ class MigrationModel extends JoomAdminModel
   }
 
   /**
+    * Method to get a list of dependencies
+    *
+    * @return  array  An array of dependencies
+    *                 from: Types I am depending from / of: Types that depend on me
+    *
+    * @since   4.0.0
+    */
+  public function getDependencies(): array
+  {
+    $dependencies = ['from' => [], 'of' => []];
+
+    // Get dependencies that depend on me from migration service
+    foreach($this->getMigrateables() as $key => $value)
+    {
+      $dependencies['of'][$key] = $this->component->getMigration()->getType($key)->get('dependent_of');
+    }
+
+    // Create dependencies I am depending from
+    foreach($dependencies['of'] as $key => $dependent_of)
+    {
+      // Add migrateable key if not existent
+      $dependencies['from'][$key] = $dependencies['from'][$key] ?? [];
+
+      // Add dependent types
+      foreach($dependent_of as $type)
+      {
+        $dependencies['from'][$type]   = $dependencies['from'][$type] ?? [];
+        $dependencies['from'][$type][] = $key;
+      }
+    }
+
+    return $dependencies;
+  }
+
+  /**
+    * Method to get a list of all completed migration records
+    *
+    * @return  array  An array of completed migration records
+    *
+    * @since   4.0.0
+    */
+  public function getCompleted(): array
+  {
+    $migrateables = $this->getMigrateables();
+
+    // If no migrateables exist, return an empty array
+    if(empty($migrateables))
+    {
+      return [];
+    }
+
+    $completed = [];
+    foreach($migrateables as $key => $migrateable)
+    {
+      if($migrateable->completed)
+      {
+        \array_push($completed, $key);
+      }
+    }
+
+    return $completed;
+  }
+
+  /**
     * Method to get a list of available migration IDs based on current script.
     * Select from #__joomgallery_migration only.
     *
