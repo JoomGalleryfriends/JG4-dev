@@ -176,10 +176,25 @@ Text::script('SUCCESS');
   echo HTMLHelper::_('bootstrap.renderModal', 'repair-modal-box', $options, $body);
   ?>
 
+  <?php
+  // Add sleeping mode info modal box
+  $options = array('modal-dialog-scrollable' => true,
+                    'title'  => Text::_('JFIELD_NOTE_LABEL'),
+                    'footer' => '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.Text::_('COM_JOOMGALLERY_CONFIRM').'</button>',
+                  );
+  $body  = Text::_('COM_JOOMGALLERY_MIGRATION_INFO_MODAL_TEXT');
+
+  echo HTMLHelper::_('bootstrap.renderModal', 'info-modal-box', $options, $body);
+  ?>
+
   <script>
     var callback = function(){
       // document ready function;
       Migrator.updateMigrateablesList();
+
+      // Show info modal
+      let bsmodal = new bootstrap.Modal(document.getElementById('info-modal-box'), {keyboard: false});
+      bsmodal.show();
     }; //end callback
     
     if(document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll))
