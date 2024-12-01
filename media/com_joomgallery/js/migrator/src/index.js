@@ -1,10 +1,11 @@
-// Selectors used by this script
+// Selectors and settings used by this script
 let typeSelector = 'data-type';
 let formIdTmpl   = 'migrationForm';
 let buttonTmpl   = 'migrationBtn';
 let condTmpl     = 'startCond';
 let step4Btn     = 'step4Btn';
 let tryLimit     = 3;
+let refresh      = false;
 
 /**
  * Storage for migrateables
@@ -32,6 +33,23 @@ var continueState = true;
 var forceStop = false;
 
 /**
+ * State. Set this state to true if one migration is active.
+ * @var {Boolean}  migrationActive
+ */
+var migrationActive = false;
+
+/**
+ * Log error messages from the session storage
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  let errorMessage = sessionStorage.getItem('migrationError');
+  if (errorMessage) {
+    console.error(errorMessage);
+    sessionStorage.removeItem('migrationError');
+  }
+});
+
+/**
  * Adds all completed migrateables to list
  * 
  * @param {Object}  event     Event object
@@ -44,6 +62,12 @@ export let updateMigrateablesList = function() {
   Object.keys(types).forEach(type => {
     let formId = formIdTmpl + '-' + type;
     let form   = document.getElementById(formId);
+
+    if(!form) {
+      sessionStorage.setItem('migrationError', `(updateMigrateablesList) Migration form not found for type: ${type}`);
+      location.reload();
+      return;
+    }
 
     let migrateable = atob(form.querySelector('[name="migrateable"]').value);
     migrateable = JSON.parse(migrateable);
@@ -68,6 +92,15 @@ export let submitTask = function(event, element) {
   let type   = element.getAttribute(typeSelector);
   let formId = formIdTmpl + '-' + type;
   let task   = element.parentNode.querySelector('[name="task"]').value;
+
+  if(tryCounter == 0 && refresh && migrationActive) {
+    // There is already a migration running
+    addLog(Joomla.JText._('COM_JOOMGALLERY_MIGRATION_ALREADY_RUNNING'), type, 'info');
+    return;
+  }
+
+  // Set the migration state to true
+  migrationActive = true;
 
   if(tryCounter == 0) {
     startTask(type, element);
@@ -98,6 +131,9 @@ export let submitTask = function(event, element) {
     .catch(error => {
       // Handle any errors here
       addLog(error, type, 'error');
+
+      // Set the migration state to ture
+      migrationActive = false;
     });
 };
 
@@ -114,6 +150,18 @@ export let stopTask = function(event, element) {
   let bar      = document.getElementById('progress-'+type);
   let startBtn = document.getElementById('migrationBtn-'+type);
   let stopBtn  = element;
+
+  if(!bar) {
+    sessionStorage.setItem('migrationError', `(stopTask) Progress bar not found for type: ${type}`);
+    location.reload();
+    return;
+  }
+
+  if(!startBtn) {
+    sessionStorage.setItem('migrationError', `(stopTask) Start button not found for type: ${type}`);
+    location.reload();
+    return;
+  }
 
   // Force automatic execution to stop
   forceStop = true;
@@ -163,6 +211,12 @@ export let repairTask = function(event, element) {
 let getTypes = function() {
   let types_inputs = document.getElementsByName('type');
   let types = {};
+
+  if(!types_inputs) {
+    sessionStorage.setItem('migrationError', `(getTypes) Type elements not found.`);
+    location.reload();
+    return;
+  }
 
   // Add all available migrateables to types object
   types_inputs.forEach((type) => {
@@ -254,6 +308,12 @@ let ajax = async function(formId, task) {
 let getNextMigrationID = function(formId) {
   let type = formId.replace(formIdTmpl + '-', '');
   let form = document.getElementById(formId);
+
+  if(!form) {
+    sessionStorage.setItem('migrationError', `(getNextMigrationID) Form not found with id: ${formId}`);
+    location.reload();
+    return;
+  }
 
   // Get migrateables from form
   let migrateable = atob(form.querySelector('[name="migrateable"]').value);
@@ -518,9 +578,21 @@ let updateMigrateables = function(type, res) {
  * @returns void
  */
 let startTask = function(type, button) {
-  let bar      = document.getElementById('progress-'+type);
   let startBtn = button;
+  let bar      = document.getElementById('progress-'+type);  
   let stopBtn  = document.getElementById('stopBtn-'+type);
+
+  if(!bar) {
+    sessionStorage.setItem('migrationError', `(startTask) Progress bar not found for type: ${type}`);
+    location.reload();
+    return;
+  }
+
+  if(!stopBtn) {
+    sessionStorage.setItem('migrationError', `(startTask) Stop button not found for type: ${type}`);
+    location.reload();
+    return;
+  }
 
   // Update progress bar
   bar.classList.add('progress-bar-striped');
@@ -535,9 +607,9 @@ let startTask = function(type, button) {
   stopBtn.removeAttribute('disabled');
 
   // Reinitialize variables
-  tryCounter = 0;
+  tryCounter    = 0;
   continueState = true;
-  forceStop = false;
+  forceStop     = false;
 }
 
 /**
@@ -550,10 +622,25 @@ let startTask = function(type, button) {
  * @returns void
  */
 let finishTask = function(type, button, formId) {
-  let bar        = document.getElementById('progress-'+type);
+  // Set the migration state to ture
+  migrationActive = false;
+  
+  // Get elements
   let startBtn   = button;
+  let bar        = document.getElementById('progress-'+type);  
   let stopBtn    = document.getElementById('stopBtn-'+type);
-  let dependency = document.getElementById('dependent_of-'+type);
+
+  if(!bar) {
+    sessionStorage.setItem('migrationError', `(finishTask) Progress bar not found for type: ${type}`);
+    location.reload();
+    return;
+  }
+
+  if(!stopBtn) {
+    sessionStorage.setItem('migrationError', `(finishTask) Stop button not found for type: ${type}`);
+    location.reload();
+    return;
+  }
 
   // Update migrateablesList
   getNextMigrationID(formId);
@@ -561,24 +648,10 @@ let finishTask = function(type, button, formId) {
   // Update progress bar
   bar.classList.remove('progress-bar-striped');
   bar.classList.remove('progress-bar-animated');
-  
-  // Enable start button
-  if(!migrateablesList[type]['completed']) {
-    // Only enable start button if migration is not finished
-    startBtn.classList.remove('disabled');
-    startBtn.removeAttribute('disabled');
-  }
-
-  // Disable stop button
-  stopBtn.classList.add('disabled');
-  stopBtn.setAttribute('disabled', 'true');
 
   // If migration is completed
-  if(migrateablesList[type]['completed']) {
-    dependency = JSON.parse(dependency.innerHTML);
-    if(dependency.length > 0) {
-      // There exist migration types which exist on the completed migration
-      // Reload page to refresh the migration form
+  if(migrateablesList[type] && migrateablesList[type]['completed']) {
+    if(refresh) {
       location.reload();
     } else {
       // Update start buttons
@@ -589,6 +662,17 @@ let finishTask = function(type, button, formId) {
       updateStep4Btn();
     }
   }
+
+  // Enable start button
+  if(!migrateablesList[type] || !migrateablesList[type]['completed']) {
+    // Only enable start button if migration is not finished
+    startBtn.classList.remove('disabled');
+    startBtn.removeAttribute('disabled');
+  }
+
+  // Disable stop button
+  stopBtn.classList.add('disabled');
+  stopBtn.setAttribute('disabled', 'true');
 }
 
 /**
@@ -597,19 +681,32 @@ let finishTask = function(type, button, formId) {
  * @returns void
  */
 let updateConditionTxt = function() {
-  let types = getTypes();
+  let types  = getTypes();
+  let errors = [];
 
   // Loop through all migrateables
   Object.keys(types).forEach(type => {
-    let dependencies = document.getElementById('is_dependent-' + type);
-    dependencies     = JSON.parse(dependencies.innerHTML);
+    let dependenciesElement = document.getElementById('is_dependent-' + type);
+    if (!dependenciesElement) {
+      errors.push(`(updateConditionTxt) Dependencies element not found for type: ${type}`);
+    }
+
+    let dependencies;
+    try {
+      dependencies = JSON.parse(dependenciesElement.innerHTML);
+    } catch (e) {
+      errors.push(`(updateConditionTxt) Invalid JSON in dependencies for type: ${type}`);
+    }
 
     // Check if all dependencies are migrated
-    Object.keys(dependencies).forEach(dependency => {
+    Object.values(dependencies).forEach(dependency => {
       // Get condition html element
       let condition  = document.getElementById(condTmpl + '-' + type).querySelectorAll('[data-type="' + dependency + '"]')[0];
+      if (!condition) {
+        errors.push(`(updateConditionTxt) Condition element not found for type '${type}' and dependency '${dependency}'`);
+      }
 
-      if(migrateablesList[dependency]['completed']) {
+      if(migrateablesList[dependency] && migrateablesList[dependency]['completed']) {
         // fulfilled
         condition.classList.remove('pending');
         condition.classList.add('fulfilled');
@@ -620,6 +717,12 @@ let updateConditionTxt = function() {
       }
     });
   });
+
+  // Handle errors after loop
+  if (errors.length > 0) {
+    sessionStorage.setItem('migrationErrors', JSON.stringify(errors));
+    location.reload();
+  }
 }
 
 /**
@@ -628,25 +731,38 @@ let updateConditionTxt = function() {
  * @returns void
  */
 let updateStartBtns = function() {
-  let types = getTypes();
+  let types  = getTypes();
+  let errors = [];
 
   // Loop through all migrateables
   Object.keys(types).forEach(type => {
-    let dependencies = document.getElementById('is_dependent-' + type);
-    dependencies     = JSON.parse(dependencies.innerHTML);
+    let dependenciesElement = document.getElementById('is_dependent-' + type);
+    if (!dependenciesElement) {
+      errors.push(`(updateStartBtns) Dependencies element not found for type: ${type}`);
+    }
+
+    let dependencies;
+    try {
+      dependencies = JSON.parse(dependenciesElement.innerHTML);
+    } catch (e) {
+      errors.push(`(updateStartBtns) Invalid JSON in dependencies for type: ${type}`);
+    }
 
     // Check if all dependencies are migrated
-    dependencies_migrated = true;
-    Object.keys(dependencies).forEach(dependency => {
-      if(!migrateablesList[dependency]['completed']) {
-        dependencies_migrated = false;
+    let dependenciesMigrated = true;
+    Object.values(dependencies).forEach(dependency => {
+      if (!migrateablesList[dependency] || !migrateablesList[dependency]['completed']) {
+        dependenciesMigrated = false;
       }
     });
 
     // Get button
     let btn = document.getElementById(buttonTmpl + '-' + type);
+    if (!btn) {
+      errors.push(`(updateStartBtns) Start button not found for type: ${type}`);
+    }
 
-    if(dependencies_migrated) {
+    if(dependenciesMigrated && (!migrateablesList[type] || !migrateablesList[type]['completed'])) {
       // Enable button
       btn.classList.remove('disabled');
       btn.removeAttribute('disabled');
@@ -656,6 +772,12 @@ let updateStartBtns = function() {
       btn.setAttribute('disabled', 'true');
     }
   });
+
+  // Handle errors after loop
+  if (errors.length > 0) {
+    sessionStorage.setItem('migrationErrors', JSON.stringify(errors));
+    location.reload();
+  }
 }
 
 /**
@@ -667,25 +789,33 @@ let updateStep4Btn = function() {
   let types = getTypes();
 
   // Check if all migrateables are available and completed
-  let tot_complete = true;
+  let totComplete = true;
   Object.keys(types).forEach(type => {
     if(Boolean(migrateablesList[type])) {
       if(!migrateablesList[type]['completed'])
       {
         // Migrateable not yet completed
-        tot_complete = false;
+        totComplete = false;
       }
     }
     else
     {
       // Migrateable does not yet exist. Thus not completed
-      tot_complete = false;
+      totComplete = false;
     }
   });
 
-  if(tot_complete) {
+  if(totComplete) {
+    // Get button
+    let btn = document.getElementById(step4Btn);
+    if (!btn) {
+      sessionStorage.setItem('migrationError', `(updateStep4Btn) End Button not found`);
+      location.reload();
+      return;
+    }
+
     // Enable step 4 button
-    document.getElementById(step4Btn).classList.remove('disabled');
-    document.getElementById(step4Btn).removeAttribute('disabled');
+    btn.classList.remove('disabled');
+    btn.removeAttribute('disabled');
   }
 }

@@ -25,6 +25,7 @@ $wa->useStyle('com_joomgallery.admin')
    ->useScript('com_joomgallery.migrator');
 
 // Add language strings to JavaScript
+Text::script('COM_JOOMGALLERY_MIGRATION_ALREADY_RUNNING');
 Text::script('COM_JOOMGALLERY_ERROR_NETWORK_PROBLEM');
 Text::script('ERROR');
 Text::script('WARNING');
@@ -93,9 +94,9 @@ Text::script('SUCCESS');
                   <?php if(empty($this->dependencies['from'][$key])) : ?>
                     <span><?php echo Text::_('JFIELD_OPTION_NONE'); ?></span>
                   <?php else : ?>
-                    <?php foreach ($this->dependencies['from'][$key] as $key => $dependency) : ?>
+                    <?php foreach ($this->dependencies['from'][$key] as $i => $dependency) : ?>
                       <?php
-                        if($key > 0) echo ',';
+                        if($i > 0) echo ',';
 
                         $dep_class = 'pending';
                         if($this->migrateables[$dependency]->completed)
