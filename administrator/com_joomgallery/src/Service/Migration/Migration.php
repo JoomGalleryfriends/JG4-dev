@@ -1013,6 +1013,7 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkSiteState(Checks &$checks, string $category)
   {
+    // Check that site is offline
     if($this->app->get('offline'))
     {
       $checks->addCheck($category, 'offline', true, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_SUCCESS'));
@@ -1020,7 +1021,21 @@ abstract class Migration implements MigrationInterface
     }
     else
     {
-      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+    }
+
+    // Put check about session lifetime
+    if($this->app->get('lifetime') < 180)
+    {
+      $time_min = $this->app->get('lifetime');
+      $time_hr  = \round($time_min / 60, 1);
+      $checks->addCheck($category, 'lifetime', false, false, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
+    }
+    elseif($this->app->get('lifetime') < 1500)
+    {
+      $time_min = $this->app->get('lifetime');
+      $time_hr  = \round($time_min / 60, 1);
+      $checks->addCheck($category, 'lifetime', true, true, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
     }
   }
 
