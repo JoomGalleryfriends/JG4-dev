@@ -35,4 +35,4 @@ define('_JOOM_TABLE_VOTES',          '#__joomgallery_votes');
 define('_JOOM_WEBSITE',              'https://www.joomgalleryfriends.net');
 define('_JOOM_WEBSITE_DE',           'https://www.joomgalleryfriends.net/de');
 define('_JOOM_WEBSITE_EN',           'https://www.joomgalleryfriends.net/en');
-define('_JOOM_WEBSITE_EXT_XML',      'https://www.joomgalleryfriends.net/components/com_newversion');
+define('_JOOM_WEBSITE_EXT_XML',      'https://www.joomgalleryfriends.net/updates');
