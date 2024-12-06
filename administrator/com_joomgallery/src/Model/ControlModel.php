@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Feed\FeedFactory;
 use \Joomla\Database\DatabaseInterface;
 use \Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * Control model.
@@ -33,6 +34,14 @@ class ControlModel extends BaseDatabaseModel
    * @var     string
    */
   protected $type = 'control';
+
+  /**
+   * List of officials extensions
+   *
+   * @access  protected
+   * @var     array
+   */
+  static protected $extensions = array();
 
   /**
    * Method to get the statistic data
@@ -121,105 +130,67 @@ class ControlModel extends BaseDatabaseModel
   }
 
   /**
-   * Returns all downloadable extensions developed by JoomGallery::ProjectTeam
+   * Returns all official extensions accepted by JoomGallery::ProjectTeam
    * with some additional information like the current version number or a
    * short description of the extension
    *
-   * @return  array Two-dimensional array with extension information
-   * @since   1.5.0
+   * @return  array  Array with extensions data
+   * 
+   * @since   4.0.0
    */
-  public function getAvailableExtensions()
+  public function getOfficialExtensionsData()
   {
-    static $extensions;
-
-    if(isset($extensions))
+    if(!empty(self::$extensions))
     {
-      return $extensions;
-    }
-
-    // Check whether the german or the english RSS file should be loaded
-    $subdomain = '';
-    $language = Factory::getApplication()->getLanguage();
-    if(\strpos($language->getTag(), 'de-') === false)
-    {
-      $subdomain = 'en.';
-    }
-
-    $site   = 'https://www.'.$subdomain.'joomgalleryfriends.net';
-    $site2  = 'https://'.$subdomain.'joomgalleryfriends.net';
-    $rssurl = $site.'/components/com_newversion/rss/extensions4.rss';
-
-    // Get RSS parsed object
-    $rssDoc = false;
-    try
-    {
-      $feed = new FeedFactory;
-      $rssDoc = $feed->getFeed($rssurl);
-    }
-    catch(\InvalidArgumentException $e)
-    {
-    }
-    catch(\RunTimeException $e)
-    {
+      return self::$extensions;
     }
 
     $extensions = array();
-    if($rssDoc != false)
+
+    // Get url of joomgallery extensions xml
+    $url    = _JOOM_WEBSITE_EXT_XML . '/extensions4.xml';
+    $server = (array) JoomHelper::getComponent()->xml->updateservers->server;
+    foreach($server as $key => $value)
     {
-      for($i = 0; isset($rssDoc[$i]); $i++)
+      if(!\is_array($value) && \strpos(\basename((string) $value), 'extensions') !== false)
       {
-        $item = $rssDoc[$i];
-        $name = $item->title;
-
-        // The data type is delivered as the name of the first category
-        $categories = $item->categories;
-        $type = \key($categories);
-        switch($type)
-        {
-          case 'general':
-            $description  = $item->content;
-            $link         = $item->uri;
-            if(!\is_null($description) && $description != '')
-            {
-              $extensions[$name]['description']   = $description;
-            }
-            if(!\is_null($link) && $link != $site && $link != $site2)
-            {
-              $extensions[$name]['downloadlink']  = $link;
-            }
-            break;
-          case 'version':
-            $version  = $item->content;
-            $link     = $item->uri;
-            if(!\is_null($version) && $version != '')
-            {
-              $extensions[$name]['version']       = $version;
-            }
-            if(!\is_null($link) && $link != $site && $link != $site2)
-            {
-              $extensions[$name]['releaselink']   = $link;
-            }
-            break;
-          case 'autoupdate':
-            $xml  = $item->content;
-            $link = $item->uri;
-            if(!\is_null($xml) && $xml != '')
-            {
-              $extensions[$name]['xml']           = $xml;
-            }
-            if(!\is_null($link) && $link != $site && $link != $site2)
-            {
-              $extensions[$name]['updatelink']    = $link;
-            }
-            break;
-          default:
-            break;
-        }
+        $extensions_url = (string) $server[$key];
       }
-
-      // Sort the extensions in alphabetical order
-      ksort($extensions);
     }
+
+    // Get an array of all available extensions
+    $extensionsArray = [];
+    try
+    {
+      foreach(JoomHelper::fetchXML($extensions_url)->extension as $extension)
+      {
+        $extensionsArray[] = $extension;
+      }
+    }
+    catch (\Exception $e)
+    {
+      JoomHelper::getComponent()->setWarning('Error fetching list of extensions: ' . $e);
+    }    
+
+    // Get the list of extensions
+    foreach($extensionsArray as $key => $xml_extension)
+    {
+      $url  = (string) $xml_extension->attributes()->detailsurl;
+      $name = (string) $xml_extension->attributes()->name;
+
+      try
+      {
+        $info_extension    = $this->getBestUpdate(JoomHelper::fetchXML($url));
+        $extensions[$name] = \json_decode(\json_encode($info_extension), true);
+      }
+      catch (\Exception $e)
+      {
+        JoomHelper::getComponent()->setWarning('Error fetching extension info ('.(string) $xml_extension->attributes()->name.'): ' . $e);
+      }
+    }
+
+    self::$extensions = $extensions;
+
     return $extensions;
   }
 
@@ -228,7 +199,7 @@ class ControlModel extends BaseDatabaseModel
    *
    * @return   array   Array with extensions data
    *
-   * @since 4.0.0
+   * @since    4.0.0
    */
   public function getInstalledExtensionsData()
   {
@@ -248,5 +219,55 @@ class ControlModel extends BaseDatabaseModel
     $InstalledExtensionsData = $db->loadRowList();
 
     return $InstalledExtensionsData;
+  }
+
+  /**
+   * Finds the most suitable update element based on Joomla version, PHP version, and the newest available version.
+   *
+   * @param  SimpleXMLElement        $xml   The SimpleXMLElement containing the updates.
+   *
+   * @return SimpleXMLElement|false  The most suitable <update> element or false if none found.
+   */
+  protected function getBestUpdate($xml)
+  {
+    if(!isset($xml->update))
+    {
+      throw new \InvalidArgumentException('No <update> elements found in the provided XML.');
+    }
+
+    $bestUpdate  = false;
+    $bestVersion = null;
+
+    foreach($xml->update as $update)
+    {
+      // Parse the target platform and PHP minimum requirements
+      $phpMinimum          = (string) $update->php_minimum;
+      $targetPlatformRegex = (string) $update->targetplatform->attributes()->version;
+
+      // Extract the major and minor version for comparison
+      $majorMinorVersion = \implode('.', \array_slice(\explode('.', JVERSION), 0, 2));
+
+      // Check Joomla version compatibility (regex matching)
+      if(!empty($targetPlatformRegex) && !\preg_match('/' . $targetPlatformRegex . '/', $majorMinorVersion))
+      {
+        continue;
+      }
+
+      // Check PHP version compatibility
+      if(!empty($phpMinimum) && \version_compare(PHP_VERSION, $phpMinimum, '<='))
+      {
+        continue;
+      }
+
+      // Check and compare versions to find the newest one
+      $currentVersion = (string) $update->version;
+      if($bestVersion === null || \version_compare($currentVersion, $bestVersion, '>'))
+      {
+        $bestUpdate = $update;
+        $bestVersion = $currentVersion;
+      }
+    }
+
+    return $bestUpdate;
   }
 }
