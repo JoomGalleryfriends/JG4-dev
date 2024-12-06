@@ -128,7 +128,7 @@ table.itemList th.sort-cell .form-check-input {
   visibility: visible;
   animation: fadein 1.5s;
 }
-@keyframes fadein { 
+@keyframes fadein {
 	from {
 		opacity:0;
 	}
@@ -243,6 +243,13 @@ a.jg-link:not(.btn):hover, a.jg-link:not(.btn):focus {
 /* lightgallery view */
 html.lg-on {
   overflow: hidden;
+}
+/* Gallery view */
+.view-gallery .jg-gallery:not(.justified) .jg-category .jg-image {
+  visibility: visible;
+}
+.view-gallery nav.pagination__wrapper {
+  display: none;
 }
 /* Single image view */
 #jg-loader {

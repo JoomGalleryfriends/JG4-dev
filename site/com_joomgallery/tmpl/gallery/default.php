@@ -28,12 +28,25 @@ $title_link       = $this->params['configs']->get('jg_category_view_title_link',
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
+$wa->useScript('com_joomgallery.infinite-scroll');
+$wa->useScript('com_joomgallery.advanced-filter-system');
 $wa->useStyle('com_joomgallery.site');
 $wa->useStyle('com_joomgallery.jg-icon-font');
 ?>
 
 <?php // Gallery ?>
 <?php if(count($this->item->images->items) > 0) : ?>
+
+    <!-- Counter -->
+    <div class="filter-counter"></div>
+
+    <!-- Search -->
+    <input type="text" class="filter-search" placeholder="Search...">
+
+    <!-- Hits Filter -->
+    <div id="hits-range"></div>
+
+
   <div class="jg-gallery<?php echo ' ' . $category_class; ?>" itemscope="" itemtype="https://schema.org/ImageGallery">
 
   <?php if ($this->params['menu']->get('show_page_heading')) : ?>
@@ -47,7 +60,7 @@ $wa->useStyle('com_joomgallery.jg-icon-font');
 
   <?php foreach ($this->item->images->items as $key => $item) : ?>
 
-        <div class="jg-image">
+        <div class="jg-image" data-hits="<?php echo $this->escape($item->hits); ?>">
           <div class="jg-image-thumbnail boxed">
 
             <?php // if($image_link == 'defaultview') : ?>
@@ -72,10 +85,17 @@ $wa->useStyle('com_joomgallery.jg-icon-font');
 
     </div>
 
+    <?php echo $this->item->images->pagination->getListFooter(); ?>
+
+    <div class="load-more-container">
+      <div id="noMore" class="btn btn-outline-primary no-more-images hidden"><?php echo Text::_('COM_JOOMGALLERY_NO_MORE_IMAGES') ?></div>
+    </div>
+
 </div>
 
 <?php endif; ?>
 
+<?php // fadein images; ?>
 <script>
 let images = document.getElementsByClassName('jg-image-thumb');
 for (let image of images) {
@@ -85,3 +105,67 @@ function loadImg () {
   this.closest('.jg-image').classList.add('loaded');
 }
 </script>
+
+<?php // infinite scroll; ?>
+<script>
+const infiniteScroll = new InfiniteScroll.default({
+  element       : '.jg-images',
+  next          : '.page-link.next',
+  item          : '.jg-image',
+  disabledClass : 'disabled',
+  hiddenClass   : 'hidden',
+  responseType  : 'text/html',
+  requestMethod: 'GET',
+  viewportTriggerPoint: window.innerHeight - 100,
+  debounceTime: 500,
+  onComplete(container, html) {
+    console.log('scroll');
+    // Here you query the link to the next page
+    const next = html.querySelector('a.page-link.next');
+    console.log(next);
+    // If the link does not exist
+    if (!next) {
+        // Here you show your "No more posts are available" message 
+        document.querySelector('.no-more-images').classList.remove('hidden');
+        console.log('no more');
+    }
+  }
+});
+document.addEventListener('click', function (event) {
+    if (!event.target.matches('.loadMore')) return;
+    infiniteScroll.loadMore();
+}, false);
+</script>
+
+<?php // advanced filter system; ?>
+    <script>
+
+        const afs = new AFS({
+            containerSelector: '.jg-images',
+            itemSelector: '.jg-image',
+            searchInputSelector: '.filter-search',
+            // filterButtonSelector: '.btn-filter',
+            // sortButtonSelector: '.btn-sort',
+            counterSelector: '.filter-counter',
+            debug: true,
+            responsive: true,
+            preserveState: true,
+            animation: {
+                type: 'fade',
+                duration: 300
+            },
+            pagination: {
+                enabled: false,
+                itemsPerPage: 10
+            }
+        });
+
+        // Add range filter
+        afs.rangeFilter.addRangeSlider({
+            key: 'hits',
+            container: document.querySelector('#hits-range'),
+            min: 0,
+            max: 1000,
+            step: 10
+        });
+    </script>
