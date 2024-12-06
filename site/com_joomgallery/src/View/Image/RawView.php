@@ -26,6 +26,13 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\Image\RawView as Admin
 class RawView extends AdminRawView
 {
   /**
+	 * The media object
+	 *
+	 * @var  \stdClass
+	 */
+	protected $item;
+
+  /**
 	 * Postprocessing the image after retrieving the image ressource
 	 *
 	 * @param   \stdClass  $file_info    Object with file information
@@ -160,5 +167,46 @@ class RawView extends AdminRawView
     }
 
     return true;
+  }
+
+  /**
+	 * Check access to this image
+	 *
+	 * @param   int  $id    Iamge id
+	 *
+	 * @return   bool    True on success, false otherwise
+	 */
+  protected function access($id)
+  {
+    $loaded = true;
+    $access = true;
+
+		try {
+			$this->item = $this->get('Item');
+		}
+		catch (\Exception $e)
+		{
+			$loaded = false;
+		}
+
+    // Check if category is protected?
+		if($loaded && $this->get('CategoryProtected'))
+		{
+      $access = false;
+		}
+
+    // Check published state
+		if(!$loaded || !$this->get('CategoryPublished') ||$this->item->published !== 1 || $this->item->approved !== 1)
+		{
+			$access = false;
+		}
+
+    // Check acces view level
+		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
+    {
+      $access = false;
+    }
+
+    return $access;
   }
 }

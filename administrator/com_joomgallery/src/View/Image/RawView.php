@@ -40,6 +40,12 @@ class RawView extends JoomGalleryView
     $type = $this->app->input->get('type', 'thumbnail', 'word');
     $id   = $this->app->input->get('id', 0, 'int');
 
+    // Check access
+    if(!$this->access($id))
+    {
+      $this->app->redirect(Route::_('index.php', false), 403);
+    } 
+
     // Get image path
     $img_path = JoomHelper::getImg($id, $type, false, false);
 
@@ -95,6 +101,18 @@ class RawView extends JoomGalleryView
 	 * @return  bool       True on success, false otherwise
 	 */
   public function ppImage(&$file_info, &$resource, $imagetype)
+  {
+    return true;
+  }
+
+  /**
+	 * Check access to this image
+	 *
+	 * @param   int  $id    Iamge id
+	 *
+	 * @return   bool    True on success, false otherwise
+	 */
+  protected function access($id)
   {
     return true;
   }
