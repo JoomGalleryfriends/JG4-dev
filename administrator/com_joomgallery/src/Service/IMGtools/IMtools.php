@@ -333,7 +333,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // assemble the shell command
     $convert = $this->assemble($file);
 
-    // strip [0] from src_file
+    /// Remove '[0]' from src_file
     $this->src_file = \str_replace('[0]','',$this->src_file);
 
     $return_var = null;
@@ -420,7 +420,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     $this->clearVariables();
 
     return true;
-  } 
+  }
 
   /**
    * Output the image as string (stream)
@@ -454,6 +454,14 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       $this->dst_type = $this->src_type;
     }
 
+    // Temporary remove '[0]' from src_file
+    $first_frame_only = false;
+    if(\strpos($this->src_file, '[0]') !== false)
+    {
+      $this->src_file = \str_replace('[0]','',$this->src_file);
+      $first_frame_only = true;
+    }    
+
     // Define temporary image file to be created
     $tmp_folder   = $this->app->get('tmp_path');
     $tmp_dst_file = $tmp_folder.'/tmp_dst_img_'.$this->rndNumber.'.'.\strtolower($this->dst_type);
@@ -478,6 +486,13 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     
     // Redefine scr_file variable
     $this->src_file = $tmp_src_file;
+
+    // Select only first frame if to not keep animation
+    if($first_frame_only)
+    {
+      // If resizing an animation but not preserving the animation, consider only first frame
+      $this->onlyFirstFrame();
+    }
 
     if(!$this->write($tmp_dst_file, $quality))
     {
