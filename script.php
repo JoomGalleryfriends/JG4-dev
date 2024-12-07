@@ -122,8 +122,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     // Only proceed if PHP version is correct
     if(version_compare(PHP_VERSION, $this->minPhp, '<='))
     {
-      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.4', $this->minPhp), 'error');
-      Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', '7.4', $this->minPhp), 8, 'joomgallery'); 
+      Factory::getApplication()->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', $this->minPhp, PHP_VERSION), 'error');
+      Log::add(Text::sprintf('COM_JOOMGALLERY_ERROR_PHP_COMPATIBILITY', '4.x', $this->minPhp, PHP_VERSION), 8, 'joomgallery'); 
 
       return false;
     }
@@ -180,7 +180,11 @@ class com_joomgalleryInstallerScript extends InstallerScript
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         foreach($jgtables as $oldTable)
         {
-          $db->renameTable($oldTable, $oldTable.'_old');
+          if(strpos($oldTable, '_old') === false)
+          {
+            // Add '_old' to table names if not already there
+            $db->renameTable($oldTable, $oldTable.'_old');
+          }          
         }
       }
 
@@ -958,7 +962,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 		$app                 = Factory::getApplication();
 
 		/* @var $plugins SimpleXMLElement */
-		if (method_exists($parent, 'getManifest'))
+		if(method_exists($parent, 'getManifest'))
 		{
 			$plugins = $parent->getManifest()->plugins;
 		}
@@ -1110,7 +1114,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
     if(is_array($parent))
     {
       // We got an array of module names
-      $modules = $parent;
+      $plugins = $parent;
     }
     else
     {
@@ -1254,7 +1258,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 	}
 
   /**
-	 * Copies watermark files to /images/joomgallery/..
+	 * Copies important image files to /images/joomgallery/..
 	 *
 	 * @return   bool  True on success, false otherwise
 	 */
