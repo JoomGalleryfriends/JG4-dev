@@ -13,6 +13,7 @@
 		<action name="core.edit" title="JACTION_EDIT" description="COM_JOOMGALLERY_ACTION_COMPONENT_EDIT_DESC" />
 		<action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_JOOMGALLERY_ACTION_COMPONENT_EDITSTATE_DESC" />
 		<action name="core.edit.own" title="JACTION_EDITOWN" description="COM_JOOMGALLERY_ACTION_COMPONENT_EDITOWN_DESC" />
+		<action name="core.edit.value" title="JACTION_EDITVALUE" description="JACTION_EDITVALUE_COMPONENT_DESC" />
 	</section>
 
   <section name="image">
