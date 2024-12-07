@@ -115,6 +115,14 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 	</div>
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
+  <?php foreach ($fieldSets as $name => $fieldSet) :?>
+    <?php if (strpos($name,'fields-') !== 0) continue; ?>
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $name, Text::_($fieldSet->label)); ?>
+    <?php $this->fieldset = $name; ?>
+    <?php echo LayoutHelper::render('joomla.edit.fieldset', $this); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+  <?php endforeach; ?>
+
 	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'Publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING', true)); ?>
 	<div class="row">
     <div class="col-12 col-lg-6">
@@ -161,17 +169,9 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
         </fieldset>
 		  </div>
     <?php endif; ?>
-	</div>
+	</div>  
 	<?php echo HTMLHelper::_('uitab.endTab'); ?>
-    <?php foreach ($fieldSets as $name => $fieldSet) :?>
-        <?php if (strpos($name,'fields-') !== 0) continue; ?>
-        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', $name, Text::_($fieldSet->label)); ?>
-        <?php $this->fieldset = $name; ?>
-        <?php echo LayoutHelper::render('joomla.edit.fieldset', $this); ?>
-        <?php echo HTMLHelper::_('uitab.endTab'); ?>
-    <?php endforeach; ?>
-
-    <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
+  <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
 
 	<input type="hidden" name="task" value=""/>
   <input type="hidden" name="jform[uploader]" value="html" />
