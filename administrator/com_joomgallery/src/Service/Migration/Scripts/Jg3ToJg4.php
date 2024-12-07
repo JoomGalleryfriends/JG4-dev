@@ -14,12 +14,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -196,9 +194,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    */
   public function defineTypes($names_only=false, &$type=null): array
   {
-    $types = array( 'category' => array('#__joomgallery_catg', 'cid', 'name', true, false, true),
-                    'image' =>    array('#__joomgallery', 'id', 'imgtitle', false, true, true),
-                    'catimage' => array(_JOOM_TABLE_CATEGORIES, 'cid', 'name', false, false, false)
+    $types = array( 'category'  => array('#__joomgallery_catg', 'cid', 'name', true, false, true),
+                    'image'     => array('#__joomgallery', 'id', 'imgtitle', false, true, true),
+                    'catimage'  => array(_JOOM_TABLE_CATEGORIES, 'cid', 'name', false, false, false),
+                    'user'      => array('#__joomgallery_users', 'uid', '', false, false, true),
+                    'collection'=> array('#__joomgallery_users', 'uid', '', false, false, true),
+                    'vote'      => array('#__joomgallery_votes', 'voteid', '', false, false, true),
+                    'comment'   => array('#__joomgallery_comments', 'cmtid', 'cmtname', false, false, true)
                   );
 
     if($this->params->get('source_ids', 0) == 1)
@@ -255,7 +257,23 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         $type->set('queueTablename', '#__joomgallery_catg' . $source_db_suffix);
         $type->set('recordName', 'category');
         break;
+
+      case 'user':
+        $type->set('ownerFieldname', 'cmsuser');
+        break;
       
+      case 'vote':
+        $type->set('dependent_on', array('image'));
+        break;
+
+      case 'comment':
+        $type->set('dependent_on', array('image'));
+        break;
+      
+      case 'collection':
+        $type->set('dependent_on', array('user', 'image'));
+        break;
+
       default:
         // No optional type infos needed
         break;
@@ -281,12 +299,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * 
    * @param   string  $type   Name of the content type
    * @param   array   $data   Source data received from getData()
+   * @param   mixed   $pk     The primary key of the content type
    * 
    * @return  array   Converted data to save into JoomGallery
    * 
    * @since   4.0.0
    */
-  public function convertData(string $type, array $data): array
+  public function convertData(string $type, array $data, $pk): array
   {
     // Parameter dependet mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
@@ -357,6 +376,72 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
         break;
       
+      case 'user':
+        // Apply mapping for users table
+        $mapping  = array( 'uid' => $id, 'uuserid' => $owner, 'piclist' => false, 'time' => 'created_time',
+                           'zipname' => array('params', false, false), 'layout' => array('params', false, false)
+                          );
+
+        break;
+      
+      case 'vote':
+        // Apply mapping for votes table
+        $mapping  = array( 'voteid' => $id, 'picid' => 'imgid', 'userid' => $owner,
+                           'userip' => 'identication', 'datevoted' => 'created_time', 'vote' => 'score',
+                          );
+
+        // Adjust imgid with new created images
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+        }
+
+        break;
+
+      case 'comment':
+        // Apply mapping for comments table
+        $mapping  = array( 'cmtid' => $id, 'cmtpic' => 'imgid', 'cmtip' => false, 'userid' => $owner,
+                           'cmtname' => 'title', 'cmttext' => 'description', 'cmtdate' => 'created_time',
+                          );
+
+        // Adjust imgid with new created images
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+        }
+
+        break;
+
+      case 'collection':
+        // Apply mapping for collections table
+        $mapping  = array( 'uid' => false, 'uuserid' => 'userid', 'piclist' => 'images', 'layout' => false,
+                           'time' => false, 'zipname' => false
+                          );
+
+        // Convert piclist to array
+        $data['piclist'] = \explode(',', $data['piclist']);
+
+        // Add title to array
+        $data['title'] = Text::_('COM_JOOMGALLERY_FAVOURITES');
+
+        // Adjust piclist with image id        
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          // Get new created destination image id
+          foreach($data['piclist'] as $key => $img_id)
+          {
+            $data['piclist'][$key] = $this->migrateables['image']->successful->get($img_id); 
+          }                   
+        }
+
+        // Adjust uuserid with new created users
+        if(!\boolval($this->params->get('source_ids', 0)))
+        {
+          $data['uuserid'] = $this->migrateables['user']->successful->get($data['uuserid']);
+        }
+
+        break;
+      
       default:
         // The table structure is the same
         $mapping = array('id' => $id, 'owner' => $owner);
@@ -408,9 +493,12 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Initialize query object
 		$query = $db->getQuery(true);
 
+    // Create selection
+    $selection = array($db->quoteName($primarykey));
+
     // Create the query
-    $query->select($db->quoteName($primarykey))
-          ->from($db->quoteName($tablename));
+    $query->select($selection);
+    $query->from($db->quoteName($tablename));
 
     // Apply additional where clauses for specific content types
     if($type == 'catimage')
@@ -450,7 +538,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $queue = array();
     try
     {
-      $queue = $db->loadColumn();
+      $queue = $db->loadColumn();     
     }
     catch(\Exception $e)
     {
