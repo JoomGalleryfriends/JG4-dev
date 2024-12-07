@@ -98,7 +98,7 @@ class GifCreator
   {
     if(!is_array($dst_frames))
     {
-      $this->component->addLog($this->version.': '.$this->errors['ERR00']), 'error', 'jerror');
+      $this->component->addLog($this->version.': '.$this->errors['ERR00'], 'error', 'jerror');
       throw new \Exception($this->version.': '.$this->errors['ERR00']);
     }
 

@@ -99,6 +99,13 @@ abstract class IMGtools implements IMGtoolsInterface
   protected $metadata = array('exif' => array(),'iptc' => array(),'comment' => array());
 
   /**
+   * Keeps a copy of the initial imginfo arrays
+   *
+   * @var array
+   */
+  protected $ini_imginfo;
+
+  /**
    * Holds all image information of the source image, which are relevant for
    * image processing and metadata handling
    *
@@ -109,6 +116,7 @@ abstract class IMGtools implements IMGtoolsInterface
                                  'orientation' => '',
                                  'transparency' => false,
                                  'animation' => false,
+                                 'truecolor' => true,
                                  'frames' => 1);
 
   /**
@@ -120,6 +128,8 @@ abstract class IMGtools implements IMGtoolsInterface
    protected $dst_imginfo = array('width' => 0,
                                  'height' => 0,
                                  'orientation' => '',
+                                 'truecolor' => true,
+                                 'ratio' => 1,
                                  'offset_x' => 0,
                                  'offset_y' => 0,
                                  'angle' => 0,
@@ -137,6 +147,7 @@ abstract class IMGtools implements IMGtoolsInterface
                                  'orientation' => '',
                                  'transparency' => false,
                                  'animation' => false,
+                                 'truecolor' => true,
                                  'frames' => 1);
   
   /**
@@ -157,10 +168,12 @@ abstract class IMGtools implements IMGtoolsInterface
     // Load component
     $this->getComponent();
 
-    $this->keep_metadata = $keep_metadata;
-    $this->keep_anim     = $keep_anim;
-
+    $this->keep_metadata   = $keep_metadata;
+    $this->keep_anim       = $keep_anim;
     $this->supported_types = $this->getTypes();
+
+    // Backup the imginfo arrays
+    $this->ini_imginfo = array('src' => $this->src_imginfo, 'dst' => $this->dst_imginfo, 'res' => $this->res_imginfo);
   }
 
   /**
@@ -208,7 +221,7 @@ abstract class IMGtools implements IMGtoolsInterface
         $string_stream = $img;
       }
       
-      $info       = \getimagesizefromstring($string_stream);
+      $info = \getimagesizefromstring($string_stream);
     }
     else
     {
@@ -240,25 +253,18 @@ abstract class IMGtools implements IMGtoolsInterface
     $this->src_type = $imagetype[$info[2]];
 
     // Get the image orientation
-    if($info[0] > $info[1])
-    {
-      $this->res_imginfo['orientation'] = 'landscape';
-    }
-    else
-    {
-      if($info[0] < $info[1])
-      {
-        $this->res_imginfo['orientation'] = 'portrait';
-      }
-      else
-      {
-        $this->res_imginfo['orientation'] = 'square';
-      }
-    }
+    $this->res_imginfo['orientation'] = $this->getOrientation($info[0], $info[1]);
 
     // Detect, if image is a special image
     if($this->src_type == 'PNG')
     {
+      // Detect if png is based on palettes
+      $included = \strpos(\file_get_contents($img), "PLTE");
+      if($included !== false)
+      {
+        $this->res_imginfo['truecolor'] = false;
+      }
+
       // Detect, if png has transparency
       if($is_stream)
       {
@@ -286,15 +292,25 @@ abstract class IMGtools implements IMGtoolsInterface
       else
       {
         $webptype = \file_get_contents($img);
+
+        // Detect if webp is based on palettes
+        $included = \strpos($webptype, "VP8L");
+        if($included !== false)
+        {
+          // The VP8L signature which indicates lossless WebP that might use a palette
+          $this->res_imginfo['truecolor'] = false;
+        }
+
+        // Detect if webp is transparent
         $included = \strpos($webptype, "ALPH");
-        if($included !== FALSE)
+        if($included !== false)
         {
           $this->res_imginfo['transparency'] = true;
         }
         else
         {
           $included = \strpos($webptype, "VP8L");
-          if($included !== FALSE)
+          if($included !== false)
           {
             $this->res_imginfo['transparency'] = true;
           }
@@ -302,14 +318,14 @@ abstract class IMGtools implements IMGtoolsInterface
 
         // Detect, if webp has animation
         $included = \strpos($webptype, "ANIM");
-        if($included !== FALSE)
+        if($included !== false)
         {
           $this->res_imginfo['animation'] = true;
         }
         else
         {
           $included = \strpos($webptype, "ANMF");
-          if($included !== FALSE)
+          if($included !== false)
           {
             $this->res_imginfo['animation'] = true;
           }
@@ -327,6 +343,9 @@ abstract class IMGtools implements IMGtoolsInterface
 
     if($this->src_type == 'GIF')
     {
+      // GIF is never truecolor
+      $this->res_imginfo['truecolor'] = false;
+
       // Detect, if gif is animated
       $count = 0;
       if(!$is_stream)
@@ -469,17 +488,41 @@ abstract class IMGtools implements IMGtoolsInterface
   /**
    * Clears the class variables and bring it back to default
    *
-   * @return  boolean   true on success, false otherwise
+   * @return  void
    *
    * @since   3.5.0
   */
   protected function clearVariables()
   {
-    $this->src_imginfo  = array('width' => 0,'height' => 0,'orientation' => '','transparency' => false,'animation' => false, 'frames' => 1);
-    $this->dst_imginfo  = array('width' => 0,'height' => 0,'type' => '','orientation' => '', 'offset_x' => 0,'offset_y' => 0,
-                               'angle' => 0, 'flip' => 'none','quality' => 100,'src' => array('width' => 0,'height' => 0));
+    // Clear the imginfo arrays
+    $this->clearImginfo(\array_keys($this->ini_imginfo));
+
+    // Clear the frames
     $this->src_frames   = array(array('duration' => 0,'image' => null));
     $this->dst_frames   = array(array('duration' => 0,'image' => null));
+  }
+
+  /**
+   * Clears the class variables and bring it back to default
+   * 
+   * @param   string|array  $key  The name of the imginfo array to be cleared
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+  */
+  protected function clearImginfo($key)
+  {
+    if(!\is_array($key))
+    {
+      $key = array($key);
+    }
+
+    foreach ($key as $kval)
+    {
+      $name = $kval . '_imginfo';
+      $this->{$name} = $this->ini_imginfo[$kval];
+    }    
   }
 
   /**
@@ -666,7 +709,7 @@ abstract class IMGtools implements IMGtoolsInterface
     if($method != 4)
     {
       // Not cropping
-      $ratio                               = \max($ratio, 1.0);
+      $this->dst_imginfo['ratio'] = $ratio = \max($ratio, 1.0);
       $this->dst_imginfo['width']          = (int)\floor($srcWidth / $ratio);
       $this->dst_imginfo['height']         = (int)\floor($srcHeight / $ratio);
       $this->dst_imginfo['src']['width']   = (int)$srcWidth;
@@ -676,11 +719,15 @@ abstract class IMGtools implements IMGtoolsInterface
     else
     {
       // Cropping
+      $this->dst_imginfo['ratio']         = $ratio;
       $this->dst_imginfo['width']         = (int)$new_width;
       $this->dst_imginfo['height']        = (int)$new_height;
       $this->dst_imginfo['src']['width']  = (int)($this->dst_imginfo['width'] * $ratio);
       $this->dst_imginfo['src']['height'] = (int)($this->dst_imginfo['height'] * $ratio);
     }
+
+    // Preserve information about truecolor
+    $this->dst_imginfo['truecolor'] = $this->src_imginfo['truecolor'];
 
     return true;
   }
@@ -780,7 +827,36 @@ abstract class IMGtools implements IMGtoolsInterface
         break;
     }
 
+    // Preserve information about truecolor
+    $this->dst_imginfo['truecolor'] = $this->src_imginfo['truecolor'];
+
     return array($pos_x, $pos_y);
+  }
+
+  /**
+   * Get orientation string based on width and height value
+   *
+   * @param   int      $width    image width
+   * @param   int      $height   image height
+   *
+   * @return  string   Orientation string
+   *
+   * @since   4.0.0
+  */
+  protected function getOrientation($width, $height)
+  {
+    if($width > $height)
+    {
+      return 'landscape';
+    }
+    elseif($height < $width)
+    {
+      return 'portrait';
+    }
+    else
+    {
+      return 'square';
+    }
   }
 
   /**

@@ -12,13 +12,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
-
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerInterface;
-
 use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
 use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 use \Joomla\Component\Media\Administrator\Exception\InvalidPathException;
@@ -133,6 +130,18 @@ class FileManager implements FileManagerInterface
 
       // Debug info
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
+
+      // For original images: check if processing is really needed
+      if( $imagetype->typename == 'original' && $processing &&
+          $imagetype->params->get('jg_imgtypeanim', 0) == 1 &&
+          $imagetype->params->get('jg_imgtypeorinet', 0) == 0 &&
+          $imagetype->params->get('jg_imgtyperesize', 0) == 0 &&
+          $imagetype->params->get('jg_imgtypewatermark', 0) == 0
+        )
+      {
+        $processing = false;
+      }
+
 
       // Process image
       if($processing)
