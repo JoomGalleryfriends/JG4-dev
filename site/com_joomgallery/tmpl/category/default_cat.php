@@ -19,7 +19,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
-// subcategory params
+// Subcategory params
 $subcategory_class          = $this->params['configs']->get('jg_category_view_subcategory_class', 'masonry', 'STRING');
 $subcategory_num_columns    = $this->params['configs']->get('jg_category_view_subcategory_num_columns', 3, 'INT');
 $subcategory_image_class    = $this->params['configs']->get('jg_category_view_subcategory_image_class', 0, 'INT');
@@ -27,7 +27,7 @@ $numb_subcategories         = $this->params['configs']->get('jg_category_view_nu
 $subcategories_pagination   = $this->params['configs']->get('jg_category_view_subcategories_pagination', 0, 'INT');
 $subcategories_random_image = $this->params['configs']->get('jg_category_view_subcategories_random_image', 1, 'INT');
 
-// image params
+// Image params
 $category_class   = $this->params['configs']->get('jg_category_view_class', 'masonry', 'STRING');
 $num_columns      = $this->params['configs']->get('jg_category_view_num_columns', 6, 'INT');
 $caption_align    = $this->params['configs']->get('jg_category_view_caption_align', 'right', 'STRING');
@@ -53,7 +53,7 @@ $wa->useStyle('com_joomgallery.jg-icon-font');
 
 ?>
 
-<?php //Password protected category form ?>
+<?php // Password protected category form ?>
 <?php if($this->item->pw_protected): ?>
   <form action="<?php echo Route::_('index.php?task=category.unlock&catid='.$this->item->id);?>" method="post" class="form-inline" autocomplete="off">
     <h3><?php echo Text::_('COM_JOOMGALLERY_CATEGORY_PASSWORD_PROTECTED'); ?></h3>
@@ -62,33 +62,37 @@ $wa->useStyle('com_joomgallery.jg-icon-font');
     <button type="submit" class="btn btn-primary" id="jg_unlock_button"><?php echo Text::_('COM_JOOMGALLERY_CATEGORY_BUTTON_UNLOCK'); ?></button>
     <?php echo HTMLHelper::_('form.token'); ?>
   </form>
+  <?php return; ?>
 <?php endif; ?>
 
-<?php
-if ($subcategory_class == 'masonry' || $category_class == 'masonry') {
+<?php // Import CSS & JS
+if($subcategory_class == 'masonry' || $category_class == 'masonry')
+{
   $wa->useScript('com_joomgallery.masonry');
 }
 
-if ($category_class == 'justified') {
+if($category_class == 'justified')
+{
   $wa->useScript('com_joomgallery.justified');
   $wa->addInlineStyle('.jg-images[class*=" justified-"] .jg-image-caption-hover { right: ' . $justified_gap . 'px; }');
 }
 
 $lightbox = false;
-if($image_link == 'lightgallery' || $title_link == 'lightgallery') {
+if($image_link == 'lightgallery' || $title_link == 'lightgallery')
+{
   $lightbox = true;
-}
 
-if($lightbox) {
   $wa->useScript('com_joomgallery.lightgallery');
   $wa->useScript('com_joomgallery.lg-thumbnail');
   $wa->useStyle('com_joomgallery.lightgallery-bundle');
 }
 
-if (!empty($use_pagination)) {
+if(!empty($use_pagination))
+{
   // $wa->useScript('com_joomgallery.infinite-scroll');
 }
 
+// Permission checks
 $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd     = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 0, $this->item->id, true);
 if($this->item->id > 1)
@@ -102,15 +106,16 @@ else
 $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.category', $this->item->id);
 $canCheckin = $this->getAcl()->checkACL('editstate', 'com_joomgallery.category', $this->item->id) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id, $this->item->parent_id, $this->item->language, $this->getLayout()));
-
 ?>
 
+<?php // Category title ?>
 <?php if($this->item->parent_id > 0) : ?>
   <h2><?php echo Text::_('JCATEGORY').': '.$this->escape($this->item->title); ?></h2>
 <?php else : ?>
   <h2><?php echo Text::_('COM_JOOMGALLERY') ?></h2>
 <?php endif; ?>
 
+<?php // Back to parent category ?>
 <?php if($this->item->parent_id > 0) : ?>
   <a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->parent_id); ?>">
     <i class="jg-icon-arrow-left-alt"></i><span><?php echo Text::_('Back to: Parent Category'); ?></span>
@@ -120,6 +125,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
 <br>
 
+<?php // Edit buttons ?>
 <?php if($canEdit || $canAdd || $canDelete): ?>
   <div class="mb-3">
     <?php if($canEdit): ?>
@@ -156,8 +162,10 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </div>
 <?php endif; ?>
 
+<?php // Category text ?>
 <p><?php echo $this->item->description; ?></p>
 
+<?php // Hint for no items ?>
 <?php if(count($this->item->children->items) == 0 && count($this->item->images->items) == 0) : ?>
   <p><?php echo Text::_('No elements in this category...') ?></p>
 <?php endif; ?>
@@ -169,48 +177,20 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <?php else : ?>
     <h3><?php echo Text::_('COM_JOOMGALLERY_CATEGORIES') ?></h3>
   <?php endif; ?>
-  <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
-    <?php if(!($this->item->parent_id > 0)) : ?>
-      <div id="jg-loader"></div>
-    <?php endif; ?>
-    <div class="jg-images <?php echo $subcategory_class; ?>-<?php echo $subcategory_num_columns; ?> jg-subcategories" data-masonry="{ pollDuration: 175 }">
-      <?php foreach($this->item->children->items as $key => $subcat) : ?>
-        <div class="jg-image">
-          <div class="jg-image-thumbnail<?php if($subcategory_image_class && $subcategory_class != 'justified') : ?><?php echo ' boxed'; ?><?php endif; ?>">
-            <a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
-              <?php
-                $thumb_type = 'thumbnail';
-                if($subcat->thumbnail == 0 && $subcategories_random_image)
-                {
-                  $subcat->thumbnail = $subcat->id;
-                  $thumb_type = 'rnd_cat:thumbnail';
-                }
-              ?>
-              <img src="<?php echo JoomHelper::getImg($subcat->thumbnail, $thumb_type); ?>" class="jg-image-thumb" alt="<?php echo $this->escape($subcat->title); ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $subcategory_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
 
-              <?php if($subcategory_class == 'justified') : ?>
-              <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
-              <?php echo $this->escape($subcat->title); ?>
-              </div>
-              <?php endif; ?>
-            </a>
-          </div>
-          <?php if($subcategory_class != 'justified') : ?>
-          <div class="jg-image-caption <?php echo $caption_align; ?>">
-            <a class="jg-link" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $subcat->id); ?>">
-              <?php echo $this->escape($subcat->title); ?>
-            </a>
-          </div>
-          <?php endif; ?>
-        </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
+  <?php // Display data array for layout
+    $subcatData = [ 'layout' => $subcategory_class, 'items' => $this->item->children->items, 'num_columns' => (int) $subcategory_num_columns,
+                    'image_class' => $subcategory_image_class, 'random_image' => (bool) $subcategories_random_image
+                  ];
+  ?>
+
+  <?php // Subcategories grid ?>
+  <?php echo LayoutHelper::render('joomgallery.grids.subcategories', $subcatData); ?>
 <?php endif; ?>
 
 <?php // Category ?>
 <?php if(count($this->item->images->items) > 0) : ?>
-  <h3>Images</h3>
+  <h3><?php echo Text::_('COM_JOOMGALLERY_IMAGES') ?></h3>
   <?php if(!empty($this->item->images->filterForm) && $use_pagination == '0') : ?>
     <?php // Show image filters ?>
     <form action="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.$this->item->id.'&Itemid='.$this->menu->id); ?>" method="post" name="adminForm" id="adminForm">
@@ -229,118 +209,35 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
       <?php echo HTMLHelper::_('form.token'); ?>
     </form>
   <?php endif; ?>
-  <div class="jg-gallery<?php echo ' ' . $category_class; ?>" itemscope="" itemtype="https://schema.org/ImageGallery">
-    <div id="jg-loader"></div>
-    <div id="lightgallery-<?php echo $this->item->id; ?>" class="jg-images <?php echo $category_class; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
-      <?php foreach($this->item->images->items as $key => $image) : ?>
-        <div class="jg-image">
-          <div class="jg-image-thumbnail<?php if($image_class && $category_class != 'justified') : ?><?php echo ' boxed'; ?><?php endif; ?>">
-            <?php if($category_class != 'justified') : ?>
-              <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
-            <?php endif; ?>
 
-            <?php if($image_link == 'lightgallery') : ?>
-              <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($image, $lightbox_image); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
-                <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
-                <?php if($show_title && $category_class == 'justified') : ?>
-                  <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
-                    <?php echo $this->escape($image->title); ?>
-                  </div>
-                <?php endif; ?>
-                <?php if($show_title) : ?>
-                  <div id="jg-image-caption-<?php echo $image->id; ?>" style="display: none">
-                    <div class="jg-image-caption <?php echo $caption_align; ?>">
-                      <?php echo $this->escape($image->title); ?>
-                    </div>
-                  </div>
-                <?php endif; ?>
-              </a>
-            <?php endif; ?>
+  <?php // Display data array for layout
+    $imgsData = [ 'id' => (int) $this->item->id, 'layout' => $category_class, 'items' => $this->item->images->items, 'num_columns' => (int) $num_columns,
+                  'caption_align' => $caption_align, 'image_class' => $image_class, 'image_type' => $lightbox_image, 'image_link' => $image_link,
+                  'image_title' => (bool) $show_title, 'title_link' => $title_link, 'image_desc' => (bool) $show_description, 'image_date' => (bool) $show_imgdate,
+                  'image_author' => (bool) $show_imgauthor, 'image_tags' => (bool) $show_tags
+                ];
+  ?>
 
-            <?php if($image_link == 'defaultview') : ?>
-              <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $image->id, (int) $image->catid)); ?>">
-                <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
-                <?php if($show_title && $category_class == 'justified') : ?>
-                  <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
-                    <?php echo $this->escape($image->title); ?>
-                  </div>
-                <?php endif; ?>
-              </a>
-            <?php endif; ?>
+  <?php // Images grid ?>
+  <?php echo LayoutHelper::render('joomgallery.grids.images', $imgsData); ?>
 
-            <?php if($image_link == 'none') : ?>
-              <img src="<?php echo JoomHelper::getImg($image, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $image->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if ( $category_class != 'justified') : ?> loading="lazy"<?php endif; ?>>
-            <?php endif; ?>
-
-            <?php if($category_class != 'justified') : ?>
-              </div>
-            <?php endif; ?>
-
-            <?php if($category_class == 'justified') : ?>
-              <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
-                <?php echo $this->escape($image->title); ?>
-              </div>
-            <?php endif; ?>
-
-          </div>
-
-          <?php if($category_class != 'justified') : ?>
-          <div class="jg-image-caption <?php echo $caption_align; ?>">
-            <?php if ($show_title) : ?>
-              <?php if($title_link == 'lightgallery' && $image_link != 'lightgallery') : ?>
-                <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($image, $lightbox_image); ?>" data-sub-html="#jg-image-caption-<?php echo $image->id; ?>">
-                  <?php echo $this->escape($image->title); ?>
-                </a>
-              <?php else : ?>
-                <?php if($title_link == 'defaultview') : ?>
-                  <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $image->id, (int) $image->catid)); ?>">
-                    <?php echo $this->escape($image->title); ?>
-                  </a>
-                <?php else : ?>
-                  <?php echo $this->escape($image->title); ?>
-                <?php endif; ?>
-              <?php endif; ?>
-            <?php endif; ?>
-
-            <?php if($show_description) : ?>
-              <div><?php echo Text::_('JGLOBAL_DESCRIPTION') . ': ' . $image->description; ?></div>
-            <?php endif; ?>
-            <?php if($show_imgdate) : ?>
-              <div><?php echo Text::_('COM_JOOMGALLERY_DATE') . ': ' . HTMLHelper::_('date', $image->date, Text::_('DATE_FORMAT_LC4')); ?></div>
-            <?php endif; ?>
-            <?php if($show_imgauthor) : ?>
-              <div><?php echo Text::_('JAUTHOR') . ': ' . $this->escape($image->author); ?></div>
-            <?php endif; ?>
-            <?php if($show_tags) : ?>
-              <div><?php echo Text::_('COM_JOOMGALLERY_TAGS') . ': '; ?></div>
-            <?php endif; ?>
-          </div>
-          <?php endif; ?>
-        </div>
-      <?php endforeach; ?>
-    </div>
+  <?php // Pagination ?>
+  <?php if($use_pagination == 1) : ?>
+  <div class="load-more-container">
+    <div class="infinite-scroll"></div>
+    <div id="noMore" class="btn btn-outline-primary no-more-images hidden"><?php echo Text::_('COM_JOOMGALLERY_NO_MORE_IMAGES') ?></div>
   </div>
-
-  <?php if ( $use_pagination == '0' ) : ?>
-    <?php echo $this->item->images->pagination->getListFooter(); ?>
-  <?php endif; ?>
-
-  <?php if ( $use_pagination == '1' ) : ?>
-    <div class="load-more-container">
-      <div class="infinite-scroll"></div>
-      <div id="noMore" class="btn btn-outline-primary no-more-images hidden"><?php echo Text::_('COM_JOOMGALLERY_NO_MORE_IMAGES') ?></div>
-    </div>
-  <?php endif; ?>
-
-  <?php if ( $use_pagination == '2') : ?>
+  <?php elseif($use_pagination == 2) : ?>
     <div class="load-more-container">
       <div id="loadMore" class="btn btn-outline-primary load-more"><span><?php echo Text::_('COM_JOOMGALLERY_LOAD_MORE') ?></span><i class="jg-icon-expand-more"></i></div>
       <div id="noMore" class="btn btn-outline-primary no-more-images hidden"><?php echo Text::_('COM_JOOMGALLERY_NO_MORE_IMAGES') ?></div>
     </div>
+  <?php else : ?>
+    <?php echo $this->item->images->pagination->getListFooter(); ?>
   <?php endif; ?>
-
 <?php endif; ?>
 
+<?php // Add image button ?>
 <?php /*if($canAddImg) : ?>
   <div class="mb-2">
     <a href="<?php echo Route::_('index.php?option=com_joomgallery&task=image.add&id=0&catid='.$this->item->id.'&return='.$returnURL, false, 0); ?>" class="btn btn-success btn-small">
@@ -350,114 +247,150 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </div>
 <?php endif; */?>
 
-<?php if ( $lightbox ) : ?>
-<script>
-const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementById('lightgallery-<?php echo $this->item->id; ?>'), {
-  selector: '.lightgallery-item',
-  // allowMediaOverlap: true,
-  thumbHeight: '50px',
-  thumbMargin: 5,
-  thumbWidth: 75,
-  thumbnail: true,
-  toggleThumb: true,
-  speed: 500,
-  plugins: [lgThumbnail],
-  preload: 1,
-  loop: false,
-  counter: true,
-  download: false,
-  mobileSettings: {
-    controls: false,
-    showCloseIcon: true,
-    download: false,
-  },
-  licenseKey: '1111-1111-111-1111',
-});
-if(document.getElementById('lightgallery-<?php echo $this->item->id; ?>')) {
-  jgallery<?php echo $this->item->id; ?>.outer.on('click', (e) => {
-    const $item = jgallery<?php echo $this->item->id; ?>.outer.find('.lg-current .lg-image');
-    if (
-      e.target.classList.contains('lg-image') ||
-      $item.get().contains(e.target)
-    ) {
-      jgallery<?php echo $this->item->id; ?>.goToNextSlide();
+<?php if($lightbox) : ?>
+  <script>
+    const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementById('lightgallery-<?php echo $this->item->id; ?>'), {
+      selector: '.lightgallery-item',
+      // allowMediaOverlap: true,
+      thumbHeight: '50px',
+      thumbMargin: 5,
+      thumbWidth: 75,
+      thumbnail: true,
+      toggleThumb: true,
+      speed: 500,
+      plugins: [lgThumbnail],
+      preload: 1,
+      loop: false,
+      counter: true,
+      download: false,
+      mobileSettings: {
+        controls: false,
+        showCloseIcon: true,
+        download: false,
+      },
+      licenseKey: '1111-1111-111-1111',
+    });
+    if(document.getElementById('lightgallery-<?php echo $this->item->id; ?>')) {
+      jgallery<?php echo $this->item->id; ?>.outer.on('click', (e) => {
+        const $item = jgallery<?php echo $this->item->id; ?>.outer.find('.lg-current .lg-image');
+        if (
+          e.target.classList.contains('lg-image') ||
+          $item.get().contains(e.target)
+        ) {
+          jgallery<?php echo $this->item->id; ?>.goToNextSlide();
+        }
+      });
     }
+  </script>
+<?php endif; ?>
+
+<?php if($category_class == 'justified') : ?>
+  <script>
+    window.addEventListener('load', function () {
+      const container = document.querySelector('.jg-category');
+      const imgs = document.querySelectorAll('.jg-category img');
+      const options = {
+        idealHeight: <?php echo $justified_height; ?>,
+        maxRowImgs: 32,
+        rowGap: <?php echo $justified_gap; ?>,
+        columnGap: <?php echo $justified_gap; ?>,
+      };
+      const imgjust = new ImgJust(container, imgs, options);
+    });
+  </script>
+<?php else: ?>
+  <script>
+    let images = document.getElementsByClassName('jg-image-thumb');
+    for (let image of images) {
+      image.addEventListener('load', loadImg);
+    }
+    function loadImg () {
+      this.closest('.jg-image').classList.add('loaded');
+    }
+  </script>
+<?php endif; ?>
+
+<?php /*if(count($this->item->children->items) > 0 && $category_class == 'justified') : ?>
+  <?php // zerstört subcategory layout ?>
+  <script>
+  window.addEventListener('load', function () {
+    const container = document.querySelector('.jg-subcategories');
+    const imgs = document.querySelectorAll('.jg-subcategories img');
+    const options = {
+      idealHeight: <?php echo $justified_height; ?>,
+      maxRowImgs: 32,
+      rowGap: <?php echo $justified_gap; ?>,
+      columnGap: <?php echo $justified_gap; ?>,
+    };
+    const imgjust = new ImgJust(container, imgs, options);
   });
-}
-</script>
+  </script>
+<?php endif; */?>
+
+<?php if($use_pagination == '1') : ?>
+  <script>
+    const category = document.querySelector('.jg-category');
+    const items = Array.from(category.querySelectorAll('.jg-image'));
+
+    maxImages    = <?php echo $num_columns * 2; ?>;
+    loadImages   = <?php echo $num_columns * 3; ?>;
+    hiddenClass  = 'hidden-jg-image';
+    hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
+
+    items.forEach(function (item, index) {
+      if (index > maxImages - 1) {
+        item.classList.add(hiddenClass);
+      }
+    });
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '200px',
+      threshold: 0
+    };
+
+    function observerCallback(entries, observer) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          [].forEach.call(document.querySelectorAll('.' + hiddenClass), function (
+            item,
+            index
+          ) {
+            if (index < loadImages) {
+              item.classList.remove(hiddenClass);
+            }
+            if (document.querySelectorAll('.' + hiddenClass).length === 0) {
+              noMore.classList.remove('hidden');
+            }
+          });
+          // console.log('enter');
+        }
+      });
+    }
+    const fadeElms = document.querySelectorAll('.infinite-scroll');
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    fadeElms.forEach(el => observer.observe(el));
+  </script>
 <?php endif; ?>
 
-<?php if ( $category_class != 'justified') : ?>
-<script>
-let images = document.getElementsByClassName('jg-image-thumb');
-for (let image of images) {
-  image.addEventListener('load', loadImg);
-}
-function loadImg () {
-  this.closest('.jg-image').classList.add('loaded');
-}
-</script>
-<?php endif; ?>
+<?php if($use_pagination == '2') : ?>
+  <script>
+    const category = document.querySelector('.jg-category');
+    const items    = Array.from(category.querySelectorAll('.jg-image'));
+    const loadMore = document.getElementById('loadMore');
 
-<?php if(count($this->item->children->items) > 0 && $category_class == 'justified') : ?>
-<?php /* zerstört subcategory layout
-<script>
-window.addEventListener('load', function () {
-  const container = document.querySelector('.jg-subcategories');
-  const imgs = document.querySelectorAll('.jg-subcategories img');
-  const options = {
-    idealHeight: <?php echo $justified_height; ?>,
-    maxRowImgs: 32,
-    rowGap: <?php echo $justified_gap; ?>,
-    columnGap: <?php echo $justified_gap; ?>,
-  };
-  const imgjust = new ImgJust(container, imgs, options);
-});
-</script>
-*/ ?>
-<?php endif; ?>
+    maxImages    = <?php echo $num_columns * 2; ?>;
+    loadImages   = <?php echo $reloaded_images; ?>;
+    hiddenClass  = 'hidden-jg-image';
+    hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
 
-<?php if ( $category_class == 'justified') : ?>
-<script>
-window.addEventListener('load', function () {
-  const container = document.querySelector('.jg-category');
-  const imgs = document.querySelectorAll('.jg-category img');
-  const options = {
-    idealHeight: <?php echo $justified_height; ?>,
-    maxRowImgs: 32,
-    rowGap: <?php echo $justified_gap; ?>,
-    columnGap: <?php echo $justified_gap; ?>,
-  };
-  const imgjust = new ImgJust(container, imgs, options);
-});
-</script>
-<?php endif; ?>
+    items.forEach(function (item, index) {
+      if (index > maxImages - 1) {
+        item.classList.add(hiddenClass);
+      }
+    });
 
-<?php if ( $use_pagination == '1') : ?>
-<script>
-const category = document.querySelector('.jg-category');
-const items = Array.from(category.querySelectorAll('.jg-image'));
-
-maxImages    = <?php echo $num_columns * 2; ?>;
-loadImages   = <?php echo $num_columns * 3; ?>;
-hiddenClass  = 'hidden-jg-image';
-hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
-
-items.forEach(function (item, index) {
-  if (index > maxImages - 1) {
-    item.classList.add(hiddenClass);
-  }
-});
-
-const observerOptions = {
-  root: null,
-  rootMargin: '200px',
-  threshold: 0
-};
-
-function observerCallback(entries, observer) {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
+    loadMore.addEventListener('click', function () {
       [].forEach.call(document.querySelectorAll('.' + hiddenClass), function (
         item,
         index
@@ -466,60 +399,20 @@ function observerCallback(entries, observer) {
           item.classList.remove(hiddenClass);
         }
         if (document.querySelectorAll('.' + hiddenClass).length === 0) {
+          loadMore.style.display = 'none';
           noMore.classList.remove('hidden');
         }
       });
-      // console.log('enter');
-    }
-  });
-}
-
-const fadeElms = document.querySelectorAll('.infinite-scroll');
-const observer = new IntersectionObserver(observerCallback, observerOptions);
-fadeElms.forEach(el => observer.observe(el));
-
-</script>
+    });
+  </script>
 <?php endif; ?>
 
-<?php if ( $use_pagination == '2') : ?>
+<?php // Hide loader when page is loaded ?>
 <script>
-const category = document.querySelector('.jg-category');
-const items    = Array.from(category.querySelectorAll('.jg-image'));
-const loadMore = document.getElementById('loadMore');
-
-maxImages    = <?php echo $num_columns * 2; ?>;
-loadImages   = <?php echo $reloaded_images; ?>;
-hiddenClass  = 'hidden-jg-image';
-hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
-
-items.forEach(function (item, index) {
-  if (index > maxImages - 1) {
-    item.classList.add(hiddenClass);
-  }
-});
-
-loadMore.addEventListener('click', function () {
-  [].forEach.call(document.querySelectorAll('.' + hiddenClass), function (
-    item,
-    index
-  ) {
-    if (index < loadImages) {
-      item.classList.remove(hiddenClass);
+  window.onload = function() {
+    if(document.querySelector('#jg-loader')) { 
+      const el = document.querySelector('#jg-loader');
+      el.classList.add('hidden');
     }
-    if (document.querySelectorAll('.' + hiddenClass).length === 0) {
-      loadMore.style.display = 'none';
-      noMore.classList.remove('hidden');
-    }
-  });
-});
-</script>
-<?php endif; ?>
-
-<script>
-window.onload = function() {
-  if(document.querySelector('#jg-loader')) { 
-    const el = document.querySelector('#jg-loader');
-    el.classList.add('hidden');
-  }
-};
+  };
 </script>
