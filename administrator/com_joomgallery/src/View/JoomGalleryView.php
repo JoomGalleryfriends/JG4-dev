@@ -24,7 +24,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterf
  * Parent HTML View Class for JoomGallery
  *
  * @package JoomGallery
- * @since   1.5.5
+ * @since   4.0.0
  */
 class JoomGalleryView extends BaseHtmlView
 {
@@ -81,7 +81,7 @@ class JoomGalleryView extends BaseHtmlView
    *
    * @access  protected
    * @return  void
-   * @since   1.5.5
+   * @since   4.0.0
    */
   function __construct($config = array())
   {
@@ -92,9 +92,13 @@ class JoomGalleryView extends BaseHtmlView
     $this->user      = $this->component->getMVCFactory()->getIdentity();
     $this->document  = $this->app->getDocument();
 
-    if(\strpos($this->component->version, 'dev'))
+    if( \stripos($this->component->version, 'dev') ||
+        \stripos($this->component->version, 'alpha') ||
+        \stripos($this->component->version, 'beta') ||
+        \stripos($this->component->version, 'rc')
+     )
     {
-      // We are dealing with a development version (alpha or beta)
+      // We are dealing with a development version (alpha, beta, rc)
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_NOTE_DEVELOPMENT_VERSION'), 'warning');
     }
   }
