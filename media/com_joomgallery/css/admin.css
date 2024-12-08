@@ -254,3 +254,9 @@ joomla-field-image .jg_minithumb {
 .log-area .color-warning {
   color: var(--warning)
 }
+.dependency {
+  color: var(--body-color)
+}
+.dependency.pending {
+  color: var(--warning)
+}

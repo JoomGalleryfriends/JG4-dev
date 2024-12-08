@@ -1,7 +1,7 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-dev                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
@@ -13,16 +13,17 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
 
 /**
- * Users table
+ * Vote table
  *
  * @package JoomGallery
  * @since   4.0.0
  */
-class UsersTable extends Table
+class VoteTable extends Table
 {
   use JoomTableTrait;
 
@@ -33,9 +34,9 @@ class UsersTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->typeAlias = _JOOM_OPTION.'.users';
+		$this->typeAlias = _JOOM_OPTION.'.vote';
 
-		parent::__construct(_JOOM_TABLE_USERS, 'id', $db);
+		parent::__construct(_JOOM_TABLE_VOTES, 'id', $db);
 	}
 
   /**
@@ -59,29 +60,11 @@ class UsersTable extends Table
 			$array['created_time'] = $date->toSql();
 		}
 
-    if(!\key_exists('created_by', $array) || empty($array['created_by']))
+    if($array['id'] == 0 && (!\key_exists('created_by', $array) || empty($array['created_by'])))
 		{
 			$array['created_by'] = Factory::getApplication()->getIdentity()->id;
 		}
 
-    // Support for galleries
-    if(!isset($this->galleries))
-    {
-      $this->galleries = array();
-    }
-
-    // Support for votes
-    if(!isset($this->votes))
-    {
-      $this->votes = array();
-    }
-
-    // Support for votes
-    if(!isset($this->comments))
-    {
-      $this->comments = array();
-    }
-
-    return parent::bind($array, $ignore);
+		return parent::bind($array, $ignore);
 	}
 }
