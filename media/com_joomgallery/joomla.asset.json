@@ -94,14 +94,6 @@
       }
     },
     {
-      "name": "com_joomgallery.advanced-filter-system",
-      "type": "script",
-      "uri": "com_joomgallery/AFS.esm.js",
-      "attributes": {
-        "type": "module"
-      }
-    },
-    {
       "name": "com_joomgallery.infinite-scroll",
       "type": "script",
       "uri": "com_joomgallery/infinite-scroll.min.js",

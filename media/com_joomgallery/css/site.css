@@ -207,13 +207,13 @@ table.itemList th.sort-cell .form-check-input {
 .jg-image > .jg-image-caption {
   padding: 0.5em 0;
 }
-.jg-image > .jg-image-caption.left, .jg-image-caption-hover.left, .lg-sub-html > .jg-image-caption.left {
+.jg-image > .jg-image-caption.left, .jg-image-thumbnail > .jg-image-caption.left, .jg-image-caption-hover.left, .lg-sub-html > .jg-image-caption.left {
   text-align: left;
 }
-.jg-image > .jg-image-caption.center, .jg-image-caption-hover.center, .lg-sub-html > .jg-image-caption.center {
+.jg-image > .jg-image-caption.center, .jg-image-thumbnail > .jg-image-caption.center, .jg-image-caption-hover.center, .lg-sub-html > .jg-image-caption.center {
   text-align: center;
 }
-.jg-image > .jg-image-caption.right, .jg-image-caption-hover.right, .lg-sub-html > .jg-image-caption.right {
+.jg-image > .jg-image-caption.right, .jg-image-thumbnail > .jg-image-caption.right, .jg-image-caption-hover.right, .lg-sub-html > .jg-image-caption.right {
   text-align: right;
 }
 .com_joomgallery .lg-container {
