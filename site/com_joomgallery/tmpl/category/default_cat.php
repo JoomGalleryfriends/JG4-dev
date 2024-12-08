@@ -38,7 +38,7 @@ $show_title       = $this->params['configs']->get('jg_category_view_images_show_
 $numb_images      = $this->params['configs']->get('jg_category_view_numb_images', 12, 'INT');
 $use_pagination   = $this->params['configs']->get('jg_category_view_pagination', 0, 'INT');
 $reloaded_images  = $this->params['configs']->get('jg_category_view_number_of_reloaded_images', 3, 'INT');
-$image_link       = $this->params['configs']->get('jg_category_view_image_link', 'detailview', 'STRING');
+$image_link       = $this->params['configs']->get('jg_category_view_image_link', 'defaultview', 'STRING');
 $title_link       = $this->params['configs']->get('jg_category_view_title_link', 'defaultview', 'STRING');
 $lightbox_image   = $this->params['configs']->get('jg_category_view_lightbox_image', 'detail', 'STRING');
 $show_description = $this->params['configs']->get('jg_category_view_show_description', 0, 'INT');
@@ -53,6 +53,7 @@ $wa->useStyle('com_joomgallery.jg-icon-font');
 
 ?>
 
+<?php //Password protected category form ?>
 <?php if($this->item->pw_protected): ?>
   <form action="<?php echo Route::_('index.php?task=category.unlock&catid='.$this->item->id);?>" method="post" class="form-inline" autocomplete="off">
     <h3><?php echo Text::_('COM_JOOMGALLERY_CATEGORY_PASSWORD_PROTECTED'); ?></h3>
