@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Image;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\MVC\View\GenericDataException;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -53,15 +54,37 @@ class HtmlView extends JoomGalleryView
 	 */
 	public function display($tpl = null)
 	{
-		$this->state        = $this->get('State');
-		$this->params       = $this->get('Params');
-		$this->item         = $this->get('Item');
-		$this->item->rating = JoomHelper::getRating($this->item->id);
+		$this->state  = $this->get('State');
+		$this->params = $this->get('Params');
+
+		$loaded = true;
+		try {
+			$this->item = $this->get('Item');
+		}
+		catch (\Exception $e)
+		{
+			$loaded = false;
+		}
+
+		// Check if category is protected?
+		if($loaded && $this->get('CategoryProtected'))
+		{
+			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_IMAGE_CAT_PROTECTED'), 'error');
+			$this->app->redirect(Route::_('index.php?option='._JOOM_OPTION.'&view=category&id='.$this->item->catid));
+		}
+
+		// Check published state
+		if(!$loaded || !$this->get('CategoryPublished') ||$this->item->published !== 1 || $this->item->approved !== 1)
+		{
+			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_UNAVAILABLE_VIEW'), 'error');
+			return;
+		}
 
     // Check acces view level
 		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+			return;
     }
 
 		// Check for errors.
@@ -69,6 +92,9 @@ class HtmlView extends JoomGalleryView
 		{
 			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
+
+		// Load additional information
+		$this->item->rating = JoomHelper::getRating($this->item->id);
 
 		$this->_prepareDocument();
 

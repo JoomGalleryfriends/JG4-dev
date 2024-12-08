@@ -13,15 +13,13 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Image;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomgallery\Component\Joomgallery\Administrator\View\Image\RawView as AdminRawView;
-
 /**
  * Raw view class for a single Image.
  * 
  * @package JoomGallery
  * @since   4.0.0
  */
-class JpgView extends AdminRawView
+class JpgView extends RawView
 {
   // Use the RawView class from administrator application
 }
