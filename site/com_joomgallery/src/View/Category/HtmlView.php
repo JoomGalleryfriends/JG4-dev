@@ -63,13 +63,29 @@ class HtmlView extends JoomGalleryView
     // Current category item
 		$this->state  = $this->get('State');
 		$this->params = $this->get('Params');
-		$this->item   = $this->get('Item');
     $this->menu   = $this->app->getMenu()->getActive();
+
+		$loaded = true;
+		try {
+			$this->item = $this->get('Item');
+		}
+		catch (\Exception $e)
+		{
+			$loaded = false;
+		}
+
+		// Check published state
+		if($loaded && $this->item->published !== 1) 
+		{
+			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_UNAVAILABLE_VIEW'), 'error');
+			return;
+		}
 
 		// Check acces view level
 		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
+			return;
     }
 
 		// Load only if category is currently not protected
@@ -177,19 +193,22 @@ class HtmlView extends JoomGalleryView
 				$path = [];
 			}
 			
-			$category = $this->item->parent;
+			if(!$this->item->pw_protected)
+			{
+				$category = $this->item->parent;
 			
-			while($category && $category->id !== 1 && $category->id != $id)
-			{
-				$path[]   = ['title' => $category->title, 'link' => JoomHelper::getViewRoute('category', $category->id, 0, null, null, $category->language)];
-				$category = $this->getModel()->getParent($category->parent_id);
-			}
+				while($category && $category->id !== 1 && $category->id != $id)
+				{
+					$path[]   = ['title' => $category->title, 'link' => JoomHelper::getViewRoute('category', $category->id, 0, null, null, $category->language)];
+					$category = $this->getModel()->getParent($category->parent_id);
+				}
 
-			$path = \array_reverse($path);
+				$path = \array_reverse($path);
 
-			foreach($path as $item)
-			{
-				$this->app->getPathway()->addItem($item['title'], $item['link']);
+				foreach($path as $item)
+				{
+					$this->app->getPathway()->addItem($item['title'], $item['link']);
+				}
 			}
 		}
 	}

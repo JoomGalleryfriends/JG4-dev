@@ -34,6 +34,14 @@ class ImageModel extends JoomItemModel
   protected $type = 'image';
 
 	/**
+   * Category item object
+   *
+   * @access  protected
+   * @var     object
+   */
+  protected $category = null;
+
+	/**
 	 * Method to auto-populate the model state.
 	 *
 	 * Note. Calling getState in this method will result in recursion.
@@ -140,18 +148,116 @@ class ImageModel extends JoomItemModel
 	 */
   protected function getCategoryName(int $catid)
   {
-    // Create a new query object.
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		if(!$catid && $this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
 
-    // Select the required field from the table.
-		$query->select($db->quoteName('title'));
-    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES))
-          ->where($db->quoteName('id') . " = " . $db->quote($catid));
+		// Get id
+		$catid = $catid ? $catid : $this->item->catid; 
 
-    // Reset the query using our newly populated query object.
-    $db->setQuery($query);
-    
-    return $db->loadResult();
+		if(!$this->category || !$this->category->id == $catid)
+		{
+			// Create model
+			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+
+			// Load category
+			$this->category = $catModel->getItem($catid);
+		}		
+
+		return $this->category->title;
   }
+
+	/**
+	 * Method to check if any parent category is protected
+	 *
+	 * @param   int  $catid  Category id
+	 *
+	 * @return  bool  True if categories are protected, false otherwise
+	 * 
+	 * @throws \Exception
+	 */
+	public function getCategoryProtected(int $catid = 0)
+	{
+		if(!$catid && $this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+		// Get id
+		$catid = $catid ? $catid : $this->item->catid; 
+
+		if(!$this->category || !$this->category->id == $catid)
+		{
+			// Create model
+			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+
+			// Load category
+			$this->category = $catModel->getItem($catid);
+		}
+
+		return empty($catModel->getProtectedParents());
+	}
+
+	/**
+	 * Method to check if all parent categories are published
+	 *
+	 * @param   int  $catid  Category id
+	 *
+	 * @return  bool  True if all categories are published, false otherwise
+	 * 
+	 * @throws \Exception
+	 */
+	public function getCategoryPublished(int $catid = 0, bool $approved = false)
+	{
+		if(!$catid && $this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+		// Get id
+		$catid = $catid ? $catid : $this->item->catid; 
+
+		if(!$this->category || !$this->category->id == $catid)
+		{
+			// Create model
+			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+
+			// Load category
+			$this->category = $catModel->getItem($catid);
+		}
+
+		return empty($catModel->getUnpublishedParents(null, $approved));
+	}
+
+  /**
+	 * Method to check if all parent categories are accessible (view levels)
+	 *
+	 * @param   int  $catid  Category id
+	 *
+	 * @return  bool  True if all categories are accessible, false otherwise
+	 * 
+	 * @throws \Exception
+	 */
+	public function getCategoryAccess(int $catid = 0)
+	{
+		if(!$catid && $this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+		// Get id
+		$catid = $catid ? $catid : $this->item->catid; 
+
+		if(!$this->category || !$this->category->id == $catid)
+		{
+			// Create model
+			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+
+			// Load category
+			$this->category = $catModel->getItem($catid);
+		}
+
+		return empty($catModel->getAccessibleParents());
+	}
 }
