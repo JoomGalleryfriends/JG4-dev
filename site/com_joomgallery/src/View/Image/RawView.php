@@ -196,13 +196,13 @@ class RawView extends AdminRawView
 		}
 
     // Check published state
-		if(!$loaded || !$this->get('CategoryPublished') ||$this->item->published !== 1 || $this->item->approved !== 1)
+		if(!$loaded || !$this->get('CategoryPublished') || $this->item->published !== 1 || $this->item->approved !== 1)
 		{
 			$access = false;
 		}
 
     // Check acces view level
-		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
+		if(!$this->get('CategoryAccess') || !\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $access = false;
     }

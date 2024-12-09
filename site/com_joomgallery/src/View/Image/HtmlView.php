@@ -73,7 +73,7 @@ class HtmlView extends JoomGalleryView
 			$this->app->redirect(Route::_('index.php?option='._JOOM_OPTION.'&view=category&id='.$this->item->catid));
 		}
 
-		// Check published state
+		// Check published and approved state
 		if(!$loaded || !$this->get('CategoryPublished') ||$this->item->published !== 1 || $this->item->approved !== 1)
 		{
 			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_UNAVAILABLE_VIEW'), 'error');
@@ -81,7 +81,7 @@ class HtmlView extends JoomGalleryView
 		}
 
     // Check acces view level
-		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
+		if(!$this->get('CategoryAccess') || !\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
 			return;

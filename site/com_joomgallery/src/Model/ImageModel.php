@@ -169,11 +169,11 @@ class ImageModel extends JoomItemModel
   }
 
 	/**
-	 * Method to check if the category is protected
+	 * Method to check if any parent category is protected
 	 *
 	 * @param   int  $catid  Category id
 	 *
-	 * @return  bool  True if category is protected, false otherwise
+	 * @return  bool  True if categories are protected, false otherwise
 	 * 
 	 * @throws \Exception
 	 */
@@ -194,21 +194,21 @@ class ImageModel extends JoomItemModel
 
 			// Load category
 			$this->category = $catModel->getItem($catid);
-		}		
+		}
 
-		return $this->category->pw_protected;
+		return empty($catModel->getProtectedParents());
 	}
 
 	/**
-	 * Method to check if the category is published
+	 * Method to check if all parent categories are published
 	 *
 	 * @param   int  $catid  Category id
 	 *
-	 * @return  bool  True if category is protected, false otherwise
+	 * @return  bool  True if all categories are published, false otherwise
 	 * 
 	 * @throws \Exception
 	 */
-	public function getCategoryPublished(int $catid = 0)
+	public function getCategoryPublished(int $catid = 0, bool $approved = false)
 	{
 		if(!$catid && $this->item === null)
 		{
@@ -227,6 +227,37 @@ class ImageModel extends JoomItemModel
 			$this->category = $catModel->getItem($catid);
 		}
 
-		return $this->category->published == 1;
+		return empty($catModel->getUnpublishedParents(null, $approved));
+	}
+
+  /**
+	 * Method to check if all parent categories are accessible (view levels)
+	 *
+	 * @param   int  $catid  Category id
+	 *
+	 * @return  bool  True if all categories are accessible, false otherwise
+	 * 
+	 * @throws \Exception
+	 */
+	public function getCategoryAccess(int $catid = 0)
+	{
+		if(!$catid && $this->item === null)
+		{
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
+    }
+
+		// Get id
+		$catid = $catid ? $catid : $this->item->catid; 
+
+		if(!$this->category || !$this->category->id == $catid)
+		{
+			// Create model
+			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+
+			// Load category
+			$this->category = $catModel->getItem($catid);
+		}
+
+		return empty($catModel->getAccessibleParents());
 	}
 }
