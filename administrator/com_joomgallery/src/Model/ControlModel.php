@@ -148,7 +148,7 @@ class ControlModel extends BaseDatabaseModel
     $extensions = array();
 
     // Get url of joomgallery extensions xml
-    $url    = _JOOM_WEBSITE_EXT_XML . '/extensions4.xml';
+    $url    = _JOOM_WEBSITE_UPDATES_XML . '/extensions4.xml';
     $server = (array) JoomHelper::getComponent()->xml->updateservers->server;
     foreach($server as $key => $value)
     {

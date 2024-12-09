@@ -277,26 +277,26 @@ function DisplayGalleryInfo($manifest)
         </tr>
         <tr>
           <td scope="col" class="w-40">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_LINK'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_LINK'); ?>
           </td>
         </tr>
         <tr>
           <td scope="col" class="w-40">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_SUPPORT'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_SUPPORT'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_SUPPORT_LINK'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_SUPPORT_LINK'); ?>
           </td>
         </tr>
         <tr>
           <td scope="col" class="w-40">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_DOCUMENTATION'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCUMENTATION'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_DOCUMENTATION_LINK'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCUMENTATION_LINK'); ?>
           </td>
         </tr>
         <tr>
