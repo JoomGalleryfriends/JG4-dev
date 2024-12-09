@@ -175,8 +175,20 @@ class ControlModel extends BaseDatabaseModel
     // Get the list of extensions
     foreach($extensionsArray as $key => $xml_extension)
     {
-      $url  = (string) $xml_extension->attributes()->detailsurl;
-      $name = (string) $xml_extension->attributes()->name;
+      // Detect main JoomGallery component
+      $element = (string) $xml_extension->attributes()->element;
+      $type    = (string) $xml_extension->attributes()->type;
+      if( (\strtolower($type) === 'component' || \strtolower($type) === 'package') &&
+          \strpos(\strtolower($element), 'joomgallery') !== false
+        )
+      {
+        // Skip main JoomGallery component
+        continue;
+      }
+
+      // Get extension url
+      $url  =  (string) $xml_extension->attributes()->detailsurl;
+      $name =  (string) $xml_extension->attributes()->name;      
 
       try
       {
