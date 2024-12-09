@@ -99,7 +99,7 @@ $wa->useStyle('com_joomgallery.admin');
           <div class="col-md-12 jg-copyright">
             <?php echo HTMLHelper::_('image', 'com_joomgallery/logo.png', Text::_('COM_JOOMGALLERY_LOGO'), ['class' => 'joom-logo-small', 'style' => 'max-width: 40px'], true); ?>
             <p>
-              <?php echo Text::_('COM_JOOMGALLERY'); ?> <?php echo $this->galleryinfodata['version']; ?> by <a href="<?php echo _JOOM_WEBSITE; ?>" target="_blank">JoomGallery::ProjectTeam</a>
+              <?php echo Text::_('COM_JOOMGALLERY'); ?> <?php echo $this->galleryinfodata['version']; ?> by <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_URL'); ?>" target="_blank">JoomGallery::ProjectTeam</a>
               <br /><span>Copyright &copy; 2008-<?php echo date("Y"); ?>. All rights reserved.</span>
             </p>
           </div>
@@ -280,7 +280,7 @@ function DisplayGalleryInfo($manifest)
             <?php echo Text::_('COM_JOOMGALLERY_WEBSITE'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_LINK'); ?>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_URL'); ?>" target="_blank">joomgalleryfriends.net</a>
           </td>
         </tr>
         <tr>
@@ -288,15 +288,15 @@ function DisplayGalleryInfo($manifest)
             <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_SUPPORT'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_SUPPORT_LINK'); ?>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_SUPPORT_URL'); ?>" target="_blank">forum.joomgalleryfriends.net</a>
           </td>
         </tr>
         <tr>
           <td scope="col" class="w-40">
-            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCUMENTATION'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCUMENTATION_LINK'); ?>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL'); ?>" target="_blank">joomgalleryfriends.net/support</a>
           </td>
         </tr>
         <tr>
@@ -704,7 +704,7 @@ function DisplayOfficialExtensions($manifest)
     </div><!--/accordion -->
   </div><!--/card -->
   <div class="m-2 small">
-    <a href="<?php echo _JOOM_WEBSITE.'/manual/official-extensions'; ?>" target="_blank"><?php echo Text::_('COM_JOOMGALLERY_CONTROL_LIST_EXTENSION_LABEL'); ?></a>
+    <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL').'/official-extensions'; ?>" target="_blank"><?php echo Text::_('COM_JOOMGALLERY_CONTROL_LIST_EXTENSION_LABEL'); ?></a>
   </div>
 
   <?php return;
