@@ -13,11 +13,11 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
 use \Joomla\CMS\Filter\InputFilter;
+use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\CMS\Object\CMSObject;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Uploader\UploaderInterface;
@@ -184,7 +184,7 @@ abstract class Uploader implements UploaderInterface
       if($this->component->getConfig()->get('jg_useorigfilename'))
       {
         $data['title'] = $this->src_name;        
-        $newfilename      = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
+        $newfilename   = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
       }
       else
       {
@@ -392,6 +392,40 @@ abstract class Uploader implements UploaderInterface
       if($replaceinfo->target == 'tags')
       {
         //TODO: Add tags based on metadata
+      }
+      elseif($replaceinfo->target == 'title')
+      {
+        // Ttitle influences title, alias and filename
+        $data['title'] = $filter->clean($source_value, 'string');
+
+        // Recreate alias
+        if(Factory::getConfig()->get('unicodeslugs') == 1)
+        {
+          $data['alias'] = OutputFilter::stringURLUnicodeSlug(trim($data['title']));
+        }
+        else
+        {
+          $data['alias'] = OutputFilter::stringURLSafe(trim($data['title']));
+        }
+
+        // Get filecounter
+        $filecounter = null;
+        if($this->multiple && $this->component->getConfig()->get('jg_filenamenumber'))
+        {
+          $filecounter = $this->getSerial();
+        }
+
+        // Adjust filename
+        $tag              = $this->component->getFilesystem()->getExt($this->src_name);
+        $newfilename      = $this->component->getFilesystem()->cleanFilename($data['title'], 0);
+        $data['filename'] = $this->component->getFileManager()->genFilename($newfilename, $tag, $filecounter);
+
+        // Write debug info
+        $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_' . \strtoupper('title')));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_' . \strtoupper('title')), 'warning', 'jerror');
+        $this->component->addWarning(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_ALIAS_FILENAME'));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_DEBUG_REPLACE_ALIAS_FILENAME'), 'warning', 'jerror');
+
       }
       else
       {
