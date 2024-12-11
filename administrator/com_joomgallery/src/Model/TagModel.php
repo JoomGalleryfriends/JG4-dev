@@ -215,33 +215,7 @@ class TagModel extends JoomAdminModel
 		$this->cleanCache();
 
 		return true;
-	}
-
-  /**
-	 * Method to delete one or more tags.
-	 *
-	 * @param   array  &$pks  An array of record primary keys.
-	 *
-	 * @return  boolean  True if successful, false if an error occurs.
-	 *
-	 * @since   1.6
-	 */
-	public function delete(&$pks)
-	{
-    $success = parent::delete($pks);
-
-    if($success)
-    {
-      // Record successfully deleted
-      // Delete Tag mapping
-      foreach($pks as $pk)
-      {
-        $success = $this->removeMapping($pk);
-      }
-    }
-
-    return $success;
-  }  
+	} 
 
   /**
    * Method to add a mapping between tag and image.

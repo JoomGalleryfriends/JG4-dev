@@ -218,12 +218,13 @@ abstract class Migration implements MigrationInterface
    * 
    * @param   string  $type   Name of the content type
    * @param   array   $data   Source data received from getData()
+   * @param   mixed   $pk     The primary key of the content type
    * 
    * @return  array   Converted data to save into JoomGallery
    * 
    * @since   4.0.0
    */
-  public function convertData(string $type, array $data): array
+  public function convertData(string $type, array $data, $pk): array
   {
     return $data;
   }
@@ -305,15 +306,16 @@ abstract class Migration implements MigrationInterface
    * Returns an associative array containing the record data from source.
    *
    * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
+   * @param   mixed    $pk     The primary key of the content type
    * 
    * @return  array    Associated array of a record data
    * 
    * @since   4.0.0
    */
-  public function getData(string $type, int $pk): array
+  public function getData(string $type, $pk): array
   {
     $this->loadTypes();
+    $pk = (int) $pk;
 
     if($this->get('types')[$type]->get('insertRecord'))
     {
@@ -502,12 +504,14 @@ abstract class Migration implements MigrationInterface
   /**
    * Step 2
    * Perform pre migration checks.
+   * 
+   * @param   bool      $resumed  True, if the precheck is called during resuming the migration
    *
    * @return  object[]  An array containing the precheck results.
    * 
    * @since   4.0.0
    */
-  public function precheck(): array
+  public function precheck($resumed = false): array
   {
     // Instantiate a new checks class
     $checks = new Checks();
@@ -535,7 +539,7 @@ abstract class Migration implements MigrationInterface
     $this->checkDestDir($checks, 'destination');
 
     // Check existence and integrity of destination database tables
-    $this->checkDestTable($checks, 'destination');
+    $this->checkDestTable($checks, 'destination', $resumed);
 
     // Check image mapping
     if($this->params->get('image_usage', 0) > 1)
@@ -798,13 +802,13 @@ abstract class Migration implements MigrationInterface
    * False to skip the migration for this record
    *
    * @param   string   $type   Name of the content type
-   * @param   int      $pk     The primary key of the content type
+   * @param   mixed    $pk     The primary key of the content type
    * 
    * @return  bool     True to continue migration, false to skip it
    * 
    * @since   4.0.0
    */
-  public function needsMigration(string $type, int $pk): bool
+  public function needsMigration(string $type, $pk): bool
   {
     $this->loadTypes();
 
@@ -835,6 +839,28 @@ abstract class Migration implements MigrationInterface
     }
 
     return true;
+  }
+
+  /**
+   * True if the given type needs the database counter
+   * (counter row in #__joomgallery_migration)
+   *
+   * @param   string   $type   Name of the content type
+   * 
+   * @return  bool     True if counter needed, false otherwise
+   * 
+   * @since   4.0.0
+   */
+  public function needsCounter(string $type): bool
+  {
+    $this->loadTypes();
+
+    if(!empty($this->types[$type]))
+    {
+      return $this->types[$type]->get('counterNeeded');
+    }
+
+    return false;
   }
 
   /**
@@ -987,6 +1013,7 @@ abstract class Migration implements MigrationInterface
   */
   protected function checkSiteState(Checks &$checks, string $category)
   {
+    // Check that site is offline
     if($this->app->get('offline'))
     {
       $checks->addCheck($category, 'offline', true, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_SUCCESS'));
@@ -994,7 +1021,21 @@ abstract class Migration implements MigrationInterface
     }
     else
     {
-      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+    }
+
+    // Put check about session lifetime
+    if($this->app->get('lifetime') < 180)
+    {
+      $time_min = $this->app->get('lifetime');
+      $time_hr  = \round($time_min / 60, 1);
+      $checks->addCheck($category, 'lifetime', false, false, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
+    }
+    elseif($this->app->get('lifetime') < 1500)
+    {
+      $time_min = $this->app->get('lifetime');
+      $time_hr  = \round($time_min / 60, 1);
+      $checks->addCheck($category, 'lifetime', true, true, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
     }
   }
 
@@ -1192,12 +1233,13 @@ abstract class Migration implements MigrationInterface
    * 
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
+   * @param  bool     $resumed    True, if the precheck is called during resuming the migration
    *
    * @return  void
    *
    * @since   4.0.0
   */
-  protected function checkDestTable(Checks &$checks, string $category)
+  protected function checkDestTable(Checks &$checks, string $category, bool $resumed = false)
   {
     // Get table info
     list($db, $dbPrefix) = $this->getDB('destination');
@@ -1307,7 +1349,7 @@ abstract class Migration implements MigrationInterface
       {
         $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES_EMPTY'));
       }
-      elseif($this->params->get('source_ids', 0) > 0 && $count > 0)
+      elseif($this->params->get('source_ids', 0) > 0 && $count > 0 && !$resumed)
       {
         $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_TABLE') . ': ' . $tablename, Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_COUNT_TABLES', $count));
         $this->checkDestTableIdAvailability($checks, $category, $tablename);

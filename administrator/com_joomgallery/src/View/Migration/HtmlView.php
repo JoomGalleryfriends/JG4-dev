@@ -89,11 +89,8 @@ class HtmlView extends JoomGalleryView
           $this->precheck     = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step2.success', false);
           $this->migrateables = $this->get('Migrateables');
           $this->migration    = $this->app->getUserState(_JOOM_OPTION.'.migration.'.$this->script->name.'.step3.results', array());
-          $this->dependencies = array();
-          foreach ($this->migrateables as $key => $value)
-          {
-            $this->dependencies[$key] = $this->component->getMigration()->getType($key)->get('dependent_of');
-          }
+          $this->dependencies = $this->get('Dependencies');
+          $this->completed    = $this->get('Completed');
           break;
 
         case 'step4':
