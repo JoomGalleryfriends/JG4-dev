@@ -21,7 +21,6 @@ use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin');
-
 ?>
 
 <div class="d-flex flex-row">
@@ -108,8 +107,8 @@ $wa->useStyle('com_joomgallery.admin');
     </div><!-- /j-main-container -->
   </div><!-- /flex-fill -->
 </div><!-- /d-flex flex-row -->
-<?php 
 
+<?php
 /**
  * Display a small gallery statistic
  *
@@ -233,8 +232,7 @@ function DisplayGalleryStatistic($statisticdata)
     </table>
   </div>
 
-<?php return;
-
+  <?php return;
 }
 
 /**
@@ -296,7 +294,7 @@ function DisplayGalleryInfo($manifest)
             <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU'); ?>
           </td>
           <td class="w-60">
-            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL'); ?>" target="_blank">joomgalleryfriends.net/support</a>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL'); ?>" target="_blank">joomgalleryfriends.net/instructions</a>
           </td>
         </tr>
         <tr>
@@ -310,9 +308,7 @@ function DisplayGalleryInfo($manifest)
       </tbody>
     </table>
   </div>
-
-<?php return;
-
+  <?php return;
 }
 
 /**
@@ -865,16 +861,15 @@ function DisplaySystemSettings($title, $settings)
 
 }
 
-  /**
-   * Display collapsed content
-   *
-   * @param   string  $title    The displayed title of the content
-   * @param   string  $content  The content that can be collapsed
-   * @param   int     $id       Unique id
-   *
-   * @since   4.0.0
-   */
-
+/**
+ * Display collapsed content
+ *
+ * @param   string  $title    The displayed title of the content
+ * @param   string  $content  The content that can be collapsed
+ * @param   int     $id       Unique id
+ *
+ * @since   4.0.0
+ */
 function collapseContent($title, $content, $id)
 {
   $id     = 'accordion-' . $id;
