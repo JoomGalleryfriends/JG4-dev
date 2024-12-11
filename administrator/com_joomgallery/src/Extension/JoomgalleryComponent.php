@@ -13,11 +13,13 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Extension;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Menu\AbstractMenu;
 use \Psr\Container\ContainerInterface;
 use \Joomla\CMS\Extension\MVCComponent;
 use \Joomla\CMS\HTML\HTMLRegistryAwareTrait;
+use \Joomla\CMS\Fields\FieldsServiceInterface;
 use \Joomla\CMS\Component\Router\RouterInterface;
 use \Joomla\CMS\Application\CMSApplicationInterface;
 use \Joomla\CMS\Association\AssociationServiceInterface;
@@ -53,7 +55,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Migration
  * @package JoomGallery
  * @since   4.0.0
  */
-class JoomgalleryComponent extends MVCComponent implements BootableExtensionInterface, RouterServiceInterface
+class JoomgalleryComponent extends MVCComponent implements BootableExtensionInterface, RouterServiceInterface, FieldsServiceInterface
 {
   use MessageTrait;
 	use AssociationServiceTrait;
@@ -172,5 +174,57 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
       // Use a legacy router
       return new $router($application, $menu);
     }
+  }
+
+  /**
+   * Returns a valid section for the given section. If it is not valid then null is returned.
+   *
+   * @param   string       $section  The section to get the mapping for
+   * @param   object|null  $item     The content item or null
+   *
+   * @return  string|null  The new section or null
+   *
+   * @since   4.0.0
+   */
+  public function validateSection($section, $item = null)
+  {
+    if(Factory::getApplication()->isClient('site'))
+    {
+      switch($section)
+      {
+        case 'image':
+        case 'imageform':
+            return 'image';
+
+        case 'category':
+        case 'categoryform':
+          return 'category';
+      }
+    }
+
+    if($section === 'image' || $section === 'category')
+    {
+      return $section;
+    }
+
+    // We don't know other sections.
+    return null;
+  }
+
+  /**
+   * Returns valid contexts.
+   *
+   * @return  array  Associative array with contexts as keys and translated strings as values
+   *
+   * @since   4.0.0
+   */
+  public function getContexts(): array
+  {
+    $language = Factory::getApplication()->getLanguage();
+    $language->load('com_joomgallery', JPATH_ADMINISTRATOR);
+
+    return [ 'com_joomgallery.image' => $language->_('COM_JOOMGALLERY_IMAGES'),
+             'com_joomgallery.category' => $language->_('JCATEGORIES'),
+           ];
   }
 }
