@@ -108,13 +108,13 @@ class CategoryModel extends JoomItemModel
 		}
 
 		// Add created by name
-		if(isset($this->item->created_by))
+		if(isset($this->item->created_by) && !isset($this->item->created_by_name))
 		{
 			$this->item->created_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->created_by)->name;
 		}
 
 		// Add modified by name
-		if(isset($this->item->modified_by))
+		if(isset($this->item->modified_by) && !isset($this->item->modified_by_name))
 		{
 			$this->item->modified_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->modified_by)->name;
 		}
@@ -597,5 +597,191 @@ class CategoryModel extends JoomItemModel
     }
 
     return $fields;
+  }
+
+  /**
+   * Get a list of parent categories that are not published (state = 1)
+   * 
+   * @param   int    $pk         Primary key of the category
+   * @param   bool   $approved   True if the parents also have to be approved
+   *
+   * @return  array  List of all parents that are published
+   *
+   * @since   4.0.0
+   * @throws Exception
+   */
+  public function getUnpublishedParents(int $pk = null, bool $approved = false): array
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = \intval($this->item->id);
+    }
+    else
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
+    }
+
+    if(isset($this->item->unpublishedParents))
+    {
+      return $this->item->unpublishedParents;
+    }
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+    $query->select('id');
+    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+    $query->order($db->quoteName('level') . ' DESC');
+
+    // Select parents
+    $query->where($db->quoteName('lft') . ' <= ' . $this->item->lft . ' AND ' . $db->quoteName('rgt') . ' >= ' . $this->item->rgt);
+
+    // Exclude root category
+    $query->where($db->quoteName('level') . ' > 0');
+
+    if($approved)
+    {
+      // Select records which are not published or not approved
+      $query->where('(' . $db->quoteName('published') . ' != 1 OR ' . $db->quoteName('approved') . ' != 1)');
+    }
+    else
+    {
+      // Select records which are not published
+      $query->where($db->quoteName('published') . ' != 1');
+    }
+
+    try
+    {
+      $db->setQuery($query);
+      $list = $db->loadColumn();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      $this->component->addLog('Error in getAncestorIsPublished(). Error: ' . $e->getMessage(), 'error', 'jerror');
+
+      return [];
+    }
+
+    $this->item->unpublishedParents = $list ? $list : [];
+
+    return $this->item->unpublishedParents;
+  }
+
+  /**
+   * Get a list of parent categories that are are protected
+   *
+   * @return  array  List of all parents that are protected
+   *
+   * @since   4.0.0
+   */
+  public function getProtectedParents(int $pk = null): array
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = \intval($this->item->id);
+    }
+    else
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
+    }
+
+    if(isset($this->item->protectedParents))
+    {
+      return $this->item->protectedParents;
+    }
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+    $query->select('id');
+    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+    $query->order($db->quoteName('level') . ' DESC');
+
+    // Select parents
+    $query->where($db->quoteName('lft') . ' <= ' . $this->item->lft . ' AND ' . $db->quoteName('rgt') . ' >= ' . $this->item->rgt);
+
+    // Exclude root category
+    $query->where($db->quoteName('level') . ' > 0');
+
+    // Select records which are protected and not yet unlocked
+    $query->where('(' . $db->quoteName('password') . ' != ' . $db->quote('') . ' AND ' . $db->quoteName('id') . ' NOT IN (' . implode(',', $this->app->getUserState(_JOOM_OPTION.'unlockedCategories', array(0))) . '))');
+
+    try
+    {
+      $db->setQuery($query);
+      $list = $db->loadColumn();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      $this->component->addLog('Error in getAncestorIsProtected(). Error: ' . $e->getMessage(), 'error', 'jerror');
+
+      return [];
+    }
+
+    $this->item->protectedParents = $list ? $list : [];
+
+    return $this->item->protectedParents;
+  }
+
+  /**
+   * Get a list of parent categories that are not accessible (view level) by the user
+   *
+   * @return  array  List of all parents that are not accessible
+   *
+   * @since   4.0.0
+   */
+  public function getAccessibleParents(int $pk = null): array
+  {
+    if(\is_null($pk) && !\is_null($this->item) && isset($this->item->id))
+    {
+      $pk = \intval($this->item->id);
+    }
+    else
+    {
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
+    }
+
+    if(isset($this->item->accessibleParents))
+    {
+      return $this->item->accessibleParents;
+    }
+
+    // Get current user
+    $user  = $this->app->getIdentity();
+
+    // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+    $query->select('id');
+    $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+    $query->order($db->quoteName('level') . ' DESC');
+
+    // Select parents
+    $query->where($db->quoteName('lft') . ' <= ' . $this->item->lft . ' AND ' . $db->quoteName('rgt') . ' >= ' . $this->item->rgt);
+
+    // Exclude root category
+    $query->where($db->quoteName('level') . ' > 0');
+
+    // Select records which are not accessible via users view levels
+    $query->where($db->quoteName('access') . ' NOT IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')');
+
+    try
+    {
+      $db->setQuery($query);
+      $list = $db->loadColumn();
+    }
+    catch(\Exception $e)
+    {
+      $this->setError($e->getMessage());
+      $this->component->addLog('Error in getAncestorIsViewLevel(). Error: ' . $e->getMessage(), 'error', 'jerror');
+
+      return [];
+    }
+
+    $this->item->accessibleParents = $list ? $list : [];
+
+    return $this->item->accessibleParents;
   }
 }
