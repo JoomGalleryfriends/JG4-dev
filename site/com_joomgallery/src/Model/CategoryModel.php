@@ -108,13 +108,13 @@ class CategoryModel extends JoomItemModel
 		}
 
 		// Add created by name
-		if(isset($this->item->created_by))
+		if(isset($this->item->created_by) && !isset($this->item->created_by_name))
 		{
 			$this->item->created_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->created_by)->name;
 		}
 
 		// Add modified by name
-		if(isset($this->item->modified_by))
+		if(isset($this->item->modified_by) && !isset($this->item->modified_by_name))
 		{
 			$this->item->modified_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->modified_by)->name;
 		}
@@ -621,11 +621,17 @@ class CategoryModel extends JoomItemModel
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
     }
 
+    if(isset($this->item->unpublishedParents))
+    {
+      return $this->item->unpublishedParents;
+    }
+
     // Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
     $query->select('id');
     $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+    $query->order($db->quoteName('level') . ' DESC');
 
     // Select parents
     $query->where($db->quoteName('lft') . ' <= ' . $this->item->lft . ' AND ' . $db->quoteName('rgt') . ' >= ' . $this->item->rgt);
@@ -657,7 +663,9 @@ class CategoryModel extends JoomItemModel
       return [];
     }
 
-    return $list ? $list : [];
+    $this->item->unpublishedParents = $list ? $list : [];
+
+    return $this->item->unpublishedParents;
   }
 
   /**
@@ -678,11 +686,17 @@ class CategoryModel extends JoomItemModel
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
     }
 
+    if(isset($this->item->protectedParents))
+    {
+      return $this->item->protectedParents;
+    }
+
     // Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
     $query->select('id');
     $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+    $query->order($db->quoteName('level') . ' DESC');
 
     // Select parents
     $query->where($db->quoteName('lft') . ' <= ' . $this->item->lft . ' AND ' . $db->quoteName('rgt') . ' >= ' . $this->item->rgt);
@@ -706,7 +720,9 @@ class CategoryModel extends JoomItemModel
       return [];
     }
 
-    return $list ? $list : [];
+    $this->item->protectedParents = $list ? $list : [];
+
+    return $this->item->protectedParents;
   }
 
   /**
@@ -727,6 +743,11 @@ class CategoryModel extends JoomItemModel
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
     }
 
+    if(isset($this->item->accessibleParents))
+    {
+      return $this->item->accessibleParents;
+    }
+
     // Get current user
     $user  = $this->app->getIdentity();
 
@@ -735,6 +756,7 @@ class CategoryModel extends JoomItemModel
 		$query = $db->getQuery(true);
     $query->select('id');
     $query->from($db->quoteName(_JOOM_TABLE_CATEGORIES));
+    $query->order($db->quoteName('level') . ' DESC');
 
     // Select parents
     $query->where($db->quoteName('lft') . ' <= ' . $this->item->lft . ' AND ' . $db->quoteName('rgt') . ' >= ' . $this->item->rgt);
@@ -758,6 +780,8 @@ class CategoryModel extends JoomItemModel
       return [];
     }
 
-    return $list ? $list : [];
+    $this->item->accessibleParents = $list ? $list : [];
+
+    return $this->item->accessibleParents;
   }
 }

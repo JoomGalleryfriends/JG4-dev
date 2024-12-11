@@ -66,12 +66,16 @@ class HtmlView extends JoomGalleryView
 			$loaded = false;
 		}
 
+		$temp = $this->get('CategoryProtected');
+
 		// Check if category is protected?
 		if($loaded && $this->get('CategoryProtected'))
 		{
 			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_IMAGE_CAT_PROTECTED'), 'error');
-			$this->app->redirect(Route::_('index.php?option='._JOOM_OPTION.'&view=category&id='.$this->item->catid));
+			$this->app->redirect(Route::_('index.php?option='._JOOM_OPTION.'&view=category&id='.$this->item->protectedParents[0]));
 		}
+
+		$temp = $this->get('CategoryPublished');
 
 		// Check published and approved state
 		if(!$loaded || !$this->get('CategoryPublished') ||$this->item->published !== 1 || $this->item->approved !== 1)
@@ -79,6 +83,8 @@ class HtmlView extends JoomGalleryView
 			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_UNAVAILABLE_VIEW'), 'error');
 			return;
 		}
+
+		$temp = $this->get('CategoryAccess');
 
     // Check acces view level
 		if(!$this->get('CategoryAccess') || !\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))

@@ -34,7 +34,7 @@ class ImageModel extends JoomItemModel
   protected $type = 'image';
 
 	/**
-   * Category item object
+   * Category model
    *
    * @access  protected
    * @var     object
@@ -154,18 +154,18 @@ class ImageModel extends JoomItemModel
     }
 
 		// Get id
-		$catid = $catid ? $catid : $this->item->catid; 
+		$catid = $catid ? $catid : $this->item->catid;
 
-		if(!$this->category || !$this->category->id == $catid)
+		if(!$this->category)
 		{
 			// Create model
-			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+			$this->category = $this->component->getMVCFactory()->createModel('category', 'site');		
+		}
 
-			// Load category
-			$this->category = $catModel->getItem($catid);
-		}		
+		// Load category
+		$cat_item = $this->category->getItem($catid);
 
-		return $this->category->title;
+		return $cat_item->title;
   }
 
 	/**
@@ -184,19 +184,24 @@ class ImageModel extends JoomItemModel
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
 
-		// Get id
-		$catid = $catid ? $catid : $this->item->catid; 
-
-		if(!$this->category || !$this->category->id == $catid)
+		if(!isset($this->item->protectedParents))
 		{
-			// Create model
-			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+			// Get id
+			$catid = $catid ? $catid : $this->item->catid;
+
+			if(!$this->category)
+			{
+				// Create model
+				$this->category = $this->component->getMVCFactory()->createModel('category', 'site');
+			}
 
 			// Load category
-			$this->category = $catModel->getItem($catid);
+			$this->category->getItem($catid);
+			
+			$this->item->protectedParents = $this->category->getProtectedParents();
 		}
 
-		return empty($catModel->getProtectedParents());
+		return !empty($this->item->protectedParents);
 	}
 
 	/**
@@ -215,19 +220,24 @@ class ImageModel extends JoomItemModel
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
 
-		// Get id
-		$catid = $catid ? $catid : $this->item->catid; 
-
-		if(!$this->category || !$this->category->id == $catid)
+		if(!isset($this->item->unpublishedParents))
 		{
-			// Create model
-			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+			// Get id
+			$catid = $catid ? $catid : $this->item->catid;
+
+			if(!$this->category)
+			{
+				// Create model
+				$this->category = $this->component->getMVCFactory()->createModel('category', 'site');
+			}
 
 			// Load category
-			$this->category = $catModel->getItem($catid);
+			$this->category->getItem($catid);
+
+			$this->item->unpublishedParents = $this->category->getUnpublishedParents(null, $approved);
 		}
 
-		return empty($catModel->getUnpublishedParents(null, $approved));
+		return empty($this->item->unpublishedParents);
 	}
 
   /**
@@ -246,18 +256,23 @@ class ImageModel extends JoomItemModel
       throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
 
-		// Get id
-		$catid = $catid ? $catid : $this->item->catid; 
-
-		if(!$this->category || !$this->category->id == $catid)
+		if(!isset($this->item->accessibleParents))
 		{
-			// Create model
-			$catModel = $this->component->getMVCFactory()->createModel('category', 'site');		
+			// Get id
+			$catid = $catid ? $catid : $this->item->catid;
+
+			if(!$this->category)
+			{
+				// Create model
+				$this->category = $this->component->getMVCFactory()->createModel('category', 'site');
+			}
 
 			// Load category
-			$this->category = $catModel->getItem($catid);
+			$this->category->getItem($catid);
+
+			$this->item->accessibleParents = $this->category->getAccessibleParents();
 		}
 
-		return empty($catModel->getAccessibleParents());
+		return empty($this->item->accessibleParents);
 	}
 }
