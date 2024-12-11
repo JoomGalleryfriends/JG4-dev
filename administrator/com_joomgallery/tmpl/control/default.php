@@ -21,7 +21,6 @@ use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin');
-
 ?>
 
 <div class="d-flex flex-row">
@@ -75,8 +74,8 @@ $wa->useStyle('com_joomgallery.admin');
         </div>
       </div>
 
-      <?php // Display available extensions 
-      DisplayAvailableExtensions($this->galleryavailableextensionsdata); ?>
+      <?php // Display official extensions 
+      DisplayOfficialExtensions($this->galleryofficialextensionsdata); ?>
       <hr>
 
       <?php // Display installed extensions 
@@ -99,7 +98,7 @@ $wa->useStyle('com_joomgallery.admin');
           <div class="col-md-12 jg-copyright">
             <?php echo HTMLHelper::_('image', 'com_joomgallery/logo.png', Text::_('COM_JOOMGALLERY_LOGO'), ['class' => 'joom-logo-small', 'style' => 'max-width: 40px'], true); ?>
             <p>
-              <?php echo Text::_('COM_JOOMGALLERY'); ?> <?php echo $this->galleryinfodata['version']; ?> by <a href="https://www.en.joomgalleryfriends.net" target="_blank">JoomGallery::ProjectTeam</a>
+              <?php echo Text::_('COM_JOOMGALLERY'); ?> <?php echo $this->galleryinfodata['version']; ?> by <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_URL'); ?>" target="_blank">JoomGallery::ProjectTeam</a>
               <br /><span>Copyright &copy; 2008-<?php echo date("Y"); ?>. All rights reserved.</span>
             </p>
           </div>
@@ -108,8 +107,8 @@ $wa->useStyle('com_joomgallery.admin');
     </div><!-- /j-main-container -->
   </div><!-- /flex-fill -->
 </div><!-- /d-flex flex-row -->
-<?php 
 
+<?php
 /**
  * Display a small gallery statistic
  *
@@ -233,8 +232,7 @@ function DisplayGalleryStatistic($statisticdata)
     </table>
   </div>
 
-<?php return;
-
+  <?php return;
 }
 
 /**
@@ -277,26 +275,26 @@ function DisplayGalleryInfo($manifest)
         </tr>
         <tr>
           <td scope="col" class="w-40">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_LINK'); ?>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_URL'); ?>" target="_blank">joomgalleryfriends.net</a>
           </td>
         </tr>
         <tr>
           <td scope="col" class="w-40">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_SUPPORT'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_SUPPORT'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_SUPPORT_LINK'); ?>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_SUPPORT_URL'); ?>" target="_blank">forum.joomgalleryfriends.net</a>
           </td>
         </tr>
         <tr>
           <td scope="col" class="w-40">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_DOCUMENTATION'); ?>
+            <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU'); ?>
           </td>
           <td class="w-60">
-            <?php echo Text::_('COM_JOOMGALLERY_CONTROL_WEBSITE_DOCUMENTATION_LINK'); ?>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL'); ?>" target="_blank">joomgalleryfriends.net/instructions</a>
           </td>
         </tr>
         <tr>
@@ -310,9 +308,7 @@ function DisplayGalleryInfo($manifest)
       </tbody>
     </table>
   </div>
-
-<?php return;
-
+  <?php return;
 }
 
 /**
@@ -357,7 +353,7 @@ function DisplayMostViewedImages($header, $data, $id)
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($data as $value) { ?>
+              <?php foreach($data as $value) : ?>
                 <tr>
                 <td class="d-md-table-cell small">
                   <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
@@ -377,7 +373,7 @@ function DisplayMostViewedImages($header, $data, $id)
                     <?php echo $value[2]; ?>
                   </td>
                 </tr>
-                <?php } ?>
+                <?php endforeach; ?>
             </tbody>
           </table>
         </div><!--/accordion-body-->
@@ -431,7 +427,7 @@ function DisplayNewestImages($header, $data, $id)
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($data as $value) { ?>
+              <?php foreach ($data as $value) : ?>
                 <tr>
                 <td class="d-md-table-cell small">
                   <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
@@ -453,7 +449,7 @@ function DisplayNewestImages($header, $data, $id)
                     <?php echo $value[2]; ?>
                   </td>
                 </tr>
-                <?php } ?>
+              <?php endforeach; ?>
             </tbody>
           </table>
         </div><!--/accordion-body-->
@@ -507,7 +503,7 @@ function DisplayBestRatedImages($header, $data, $id)
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($data as $value) { ?>
+              <?php foreach ($data as $value) : ?>
                 <tr>
                 <td class="d-md-table-cell small">
                   <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
@@ -527,7 +523,7 @@ function DisplayBestRatedImages($header, $data, $id)
                     <?php echo $value[2]; ?>
                   </td>
                 </tr>
-                <?php } ?>
+              <?php endforeach; ?>
             </tbody>
           </table>
         </div><!--/accordion-body-->
@@ -581,7 +577,7 @@ function DisplayMostDownloadedImages($header, $data, $id)
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($data as $value) { ?>
+              <?php foreach($data as $value) : ?>
                 <tr>
                 <td class="d-md-table-cell small">
                   <img class="jg_minithumb" src="<?php echo JoomHelper::getImg($value[2], 'thumbnail'); ?>" alt="<?php echo Text::_('COM_JOOMGALLERY_THUMBNAIL'); ?>">
@@ -601,7 +597,7 @@ function DisplayMostDownloadedImages($header, $data, $id)
                     <?php echo $value[2]; ?>
                   </td>
                 </tr>
-                <?php } ?>
+              <?php endforeach; ?>
             </tbody>
           </table>
         </div><!--/accordion-body-->
@@ -614,16 +610,16 @@ function DisplayMostDownloadedImages($header, $data, $id)
 }
 
 /**
- * Display available extensions as collapsed
+ * Display official extensions as collapsed
  *
  * @param   array  $manifest  Array with hold the extensions data, $manifest[0}=extension id, $manifest[1]=state, $manifest[2]=array of data
  *
  * @since 4.0.0
  */
-function DisplayAvailableExtensions($manifest)
+function DisplayOfficialExtensions($manifest)
 {
 
-  $id     = 'availableextensions-100';
+  $id     = 'officialextensions-100';
   $itemId = $id . '-item'; ?>
 
   <div class="card">
@@ -641,26 +637,34 @@ function DisplayAvailableExtensions($manifest)
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <td class="w-25">
+                  <th class="w-20">
                     <?php echo Text::_('JGLOBAL_TITLE'); ?>
-                  </td>
-                  <td class="w-10">
+                  </th>
+                  <th class="w-12">
                     <?php echo Text::_('JVERSION'); ?>
-                  </td>
-                  <td class="w-50">
-                    <?php echo Text::_('COM_JOOMGALLERY_FILE_DESCRIPTION_HINT'); ?>
-                  </td>
-                  <td class="w-15">
+                  </th>
+                  <th>
+                    <?php echo Text::_('JGLOBAL_DESCRIPTION'); ?>
+                  </th>
+                  <th class="w-20">
+                    <?php echo Text::_('JAUTHOR'); ?>
+                  </th>
+                  <th class="w-12">
                     <?php echo Text::_('COM_JOOMGALLERY_DOWNLOAD'); ?>
-                  </td>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($manifest as $name => $extension) {
-                  // $value = json_decode($extension, true); ?>
+                <?php foreach($manifest as $name => $extension) : ?>
                   <tr>
                     <td class="d-md-table-cell">
-                      <?php echo $name; ?>
+                      <?php echo $extension['name']; ?>
+                      <div class="small break-word">
+                        <?php echo ucfirst($extension['type']); ?>
+                        <?php if(isset($extension['infourl']) && !empty($extension['infourl'])) : ?>
+                          , <a href="<?php echo $extension['infourl']; ?>" target="_blank"><?php echo Text::_('JVISIT_WEBSITE'); ?></a>
+                        <?php endif; ?>
+                      </div>
                     </td>
                     <td class="d-md-table-cell">
                       <?php echo $extension['version']; ?>
@@ -669,11 +673,25 @@ function DisplayAvailableExtensions($manifest)
                       <?php echo $extension['description']; ?>
                     </td>
                     <td class="d-md-table-cell small">
-                        <a href="<?php echo $extension['downloadlink'];?>" title="<?php echo Text::_($extension['downloadlink']); ?>" target="_blank">
-                          <?php echo Text::_('COM_JOOMGALLERY_DOWNLOAD'); ?></a>
+                      <?php if(isset($extension['maintainerurl']) && !empty($extension['maintainerurl'])) : ?>
+                        <a href="<?php echo $extension['maintainerurl']; ?>" target="_blank">
+                          <?php echo $extension['maintainer']; ?>
+                        </a>
+                      <?php else : ?>
+                        <?php echo $extension['maintainer']; ?>
+                      <?php endif; ?>
+                    </td>
+                    <td class="d-md-table-cell small">
+                      <?php if($extension['downloads']['downloadurl'] && !empty($extension['downloads']['downloadurl'])) : ?>
+                        <a href="<?php echo $extension['downloads']['downloadurl']; ?>" target="_blank">
+                          <?php echo Text::_('COM_JOOMGALLERY_DOWNLOAD'); ?>
+                        </a>
+                      <?php else : ?>
+                        <?php echo '-'; ?>
+                      <?php endif; ?>
                     </td>
                   </tr>
-                  <?php } ?>
+                <?php endforeach; ?>
               </tbody>
             </table>
           </div>
@@ -681,6 +699,9 @@ function DisplayAvailableExtensions($manifest)
       </div><!--/accordion-item-->
     </div><!--/accordion -->
   </div><!--/card -->
+  <div class="m-2 small">
+    <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL').'/official-extensions'; ?>" target="_blank"><?php echo Text::_('COM_JOOMGALLERY_CONTROL_LIST_EXTENSION_LABEL'); ?></a>
+  </div>
 
   <?php return;
 }
@@ -713,29 +734,29 @@ function DisplayInstalledExtensions($manifest)
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <td class="w-5">
+                  <th class="w-5">
                     <?php echo Text::_('Name'); ?>
-                  </td>
-                  <td class="w-10">
+                  </th>
+                  <th class="w-10">
                     <?php echo Text::_('JVERSION'); ?>
-                  </td>
-                  <td class="w-10">
+                  </th>
+                  <th class="w-10">
                     <?php echo Text::_('JDate'); ?>
-                  </td>
-                  <td class="w-10">
+                  </th>
+                  <th class="w-10">
                     <?php echo Text::_('JAUTHOR'); ?>
-                  </td>
-                  <td class="w-10">
+                  </th>
+                  <th class="w-10">
                     <?php echo Text::_('JENABLED'); ?>
-                  </td>
-                  <td class="w-10">
+                  </th>
+                  <th class="w-10">
                     <?php echo Text::_('ID'); ?>
-                  </td>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($manifest as list($extension_id, $enabled, $extension_data)) {
-                  $value = json_decode($extension_data, true); ?>
+                <?php foreach($manifest as list($extension_id, $enabled, $extension_data)) : ?>
+                  <?php $value = json_decode($extension_data, true); ?>
                   <tr>
                     <td class="d-md-table-cell">
                       <?php echo $value['name']; ?>
@@ -760,7 +781,7 @@ function DisplayInstalledExtensions($manifest)
                       <?php echo $extension_id; ?>
                     </td>
                   </tr>
-                  <?php } ?>
+                  <?php endforeach; ?>
               </tbody>
             </table>
           </div>
@@ -804,7 +825,7 @@ function DisplaySystemSettings($title, $settings)
                 </tr>
               </thead>
               <tbody>
-                <?php foreach($settings as $key => $value) { ?>
+                <?php foreach($settings as $key => $value) : ?>
                   <tr>
                     <td class="d-md-table-cell">
                       <?php echo $key; ?>
@@ -827,7 +848,7 @@ function DisplaySystemSettings($title, $settings)
                         } ?>
                     </td>
                   </tr>
-                  <?php } ?>
+                  <?php endforeach; ?>
               </tbody>
             </table>
           </div>
@@ -840,16 +861,15 @@ function DisplaySystemSettings($title, $settings)
 
 }
 
-  /**
-   * Display collapsed content
-   *
-   * @param   string  $title    The displayed title of the content
-   * @param   string  $content  The content that can be collapsed
-   * @param   int     $id       Unique id
-   *
-   * @since   4.0.0
-   */
-
+/**
+ * Display collapsed content
+ *
+ * @param   string  $title    The displayed title of the content
+ * @param   string  $content  The content that can be collapsed
+ * @param   int     $id       Unique id
+ *
+ * @since   4.0.0
+ */
 function collapseContent($title, $content, $id)
 {
   $id     = 'accordion-' . $id;
