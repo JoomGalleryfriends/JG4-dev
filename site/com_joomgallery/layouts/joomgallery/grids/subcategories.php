@@ -30,7 +30,7 @@ $img_type = 'thumbnail';
 ?>
 
 <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
-  <div id="jg-loader"></div>
+  <div class="jg-loader"></div>
   <div class="jg-images <?php echo $layout; ?>-<?php echo $num_columns; ?> jg-subcategories" data-masonry="{ pollDuration: 175 }">
     <?php foreach($items as $key => $item) : ?>
       <?php

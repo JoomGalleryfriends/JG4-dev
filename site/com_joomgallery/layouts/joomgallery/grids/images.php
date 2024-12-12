@@ -38,7 +38,7 @@ extract($displayData);
 ?>
 
 <div class="jg-gallery <?php echo $layout; ?>" itemscope="" itemtype="https://schema.org/ImageGallery">
-  <div id="jg-loader"></div>
+  <div class="jg-loader"></div>
   <div id="lightgallery-<?php echo $id; ?>" class="jg-images <?php echo $layout; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
     <?php foreach($items as $key => $item) : ?>
       

@@ -92,6 +92,19 @@ if(!empty($use_pagination))
   // $wa->useScript('com_joomgallery.infinite-scroll');
 }
 
+// Add and initialize the grid script
+$iniJS  = 'window.joomGrid = {';
+$iniJS .= '  itemid: ' . $this->item->id . ',';
+$iniJS .= '  pagination: ' . $use_pagination . ',';
+$iniJS .= '  layout: "' . $category_class . '",';
+$iniJS .= '  num_columns: ' . $num_columns . ',';
+$iniJS .= '  lightbox: ' . ($lightbox ? 'true' : 'false') . ',';
+$iniJS .= '  justified: {height: '.$justified_height.', gap: '.$justified_gap.'}';
+$iniJS .= '};';
+
+$wa->addInlineScript($iniJS, ['position' => 'before'], [], ['com_joomgallery.joomgrid']);
+$wa->useScript('com_joomgallery.joomgrid');
+
 // Permission checks
 $canEdit    = $this->getAcl()->checkACL('edit', 'com_joomgallery.category', $this->item->id);
 $canAdd     = $this->getAcl()->checkACL('add', 'com_joomgallery.category', 0, $this->item->id, true);
@@ -150,7 +163,6 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
                                     'title'  => Text::_('COM_JOOMGALLERY_COMMON_DELETE_CATEGORY_TIPCAPTION'),
                                     'height' => '50%',
                                     'width'  => '20%',
-
                                     'modalWidth'  => '50',
                                     'bodyHeight'  => '100',
                                     'footer' => '<button class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button><a href="' . Route::_('index.php?option=com_joomgallery&task=category.remove&id='. $this->item->id.'&return='.$returnURL.'&'.Session::getFormToken().'=1', false, 2) .'" class="btn btn-danger">' . Text::_('COM_JOOMGALLERY_COMMON_DELETE_CATEGORY_TIPCAPTION') .'</a>'
@@ -247,172 +259,15 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </div>
 <?php endif; */?>
 
-<?php if($lightbox) : ?>
-  <script>
-    const jgallery<?php echo $this->item->id; ?> = lightGallery(document.getElementById('lightgallery-<?php echo $this->item->id; ?>'), {
-      selector: '.lightgallery-item',
-      // allowMediaOverlap: true,
-      thumbHeight: '50px',
-      thumbMargin: 5,
-      thumbWidth: 75,
-      thumbnail: true,
-      toggleThumb: true,
-      speed: 500,
-      plugins: [lgThumbnail],
-      preload: 1,
-      loop: false,
-      counter: true,
-      download: false,
-      mobileSettings: {
-        controls: false,
-        showCloseIcon: true,
-        download: false,
-      },
-      licenseKey: '1111-1111-111-1111',
-    });
-    if(document.getElementById('lightgallery-<?php echo $this->item->id; ?>')) {
-      jgallery<?php echo $this->item->id; ?>.outer.on('click', (e) => {
-        const $item = jgallery<?php echo $this->item->id; ?>.outer.find('.lg-current .lg-image');
-        if (
-          e.target.classList.contains('lg-image') ||
-          $item.get().contains(e.target)
-        ) {
-          jgallery<?php echo $this->item->id; ?>.goToNextSlide();
-        }
-      });
-    }
-  </script>
-<?php endif; ?>
-
-<?php if($category_class == 'justified') : ?>
-  <script>
-    window.addEventListener('load', function () {
-      const container = document.querySelector('.jg-category');
-      const imgs = document.querySelectorAll('.jg-category img');
-      const options = {
-        idealHeight: <?php echo $justified_height; ?>,
-        maxRowImgs: 32,
-        rowGap: <?php echo $justified_gap; ?>,
-        columnGap: <?php echo $justified_gap; ?>,
-      };
-      const imgjust = new ImgJust(container, imgs, options);
-    });
-  </script>
-<?php else: ?>
-  <script>
-    let images = document.getElementsByClassName('jg-image-thumb');
-    for (let image of images) {
-      image.addEventListener('load', loadImg);
-    }
-    function loadImg () {
-      this.closest('.jg-image').classList.add('loaded');
-    }
-  </script>
-<?php endif; ?>
-
-<?php /*if(count($this->item->children->items) > 0 && $category_class == 'justified') : ?>
-  <?php // zerstört subcategory layout ?>
-  <script>
-  window.addEventListener('load', function () {
-    const container = document.querySelector('.jg-subcategories');
-    const imgs = document.querySelectorAll('.jg-subcategories img');
-    const options = {
-      idealHeight: <?php echo $justified_height; ?>,
-      maxRowImgs: 32,
-      rowGap: <?php echo $justified_gap; ?>,
-      columnGap: <?php echo $justified_gap; ?>,
-    };
-    const imgjust = new ImgJust(container, imgs, options);
-  });
-  </script>
-<?php endif; */?>
-
-<?php if($use_pagination == '1') : ?>
-  <script>
-    const category = document.querySelector('.jg-category');
-    const items = Array.from(category.querySelectorAll('.jg-image'));
-
-    maxImages    = <?php echo $num_columns * 2; ?>;
-    loadImages   = <?php echo $num_columns * 3; ?>;
-    hiddenClass  = 'hidden-jg-image';
-    hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
-
-    items.forEach(function (item, index) {
-      if (index > maxImages - 1) {
-        item.classList.add(hiddenClass);
-      }
-    });
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '200px',
-      threshold: 0
-    };
-
-    function observerCallback(entries, observer) {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          [].forEach.call(document.querySelectorAll('.' + hiddenClass), function (
-            item,
-            index
-          ) {
-            if (index < loadImages) {
-              item.classList.remove(hiddenClass);
-            }
-            if (document.querySelectorAll('.' + hiddenClass).length === 0) {
-              noMore.classList.remove('hidden');
-            }
-          });
-          // console.log('enter');
-        }
-      });
-    }
-    const fadeElms = document.querySelectorAll('.infinite-scroll');
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    fadeElms.forEach(el => observer.observe(el));
-  </script>
-<?php endif; ?>
-
-<?php if($use_pagination == '2') : ?>
-  <script>
-    const category = document.querySelector('.jg-category');
-    const items    = Array.from(category.querySelectorAll('.jg-image'));
-    const loadMore = document.getElementById('loadMore');
-
-    maxImages    = <?php echo $num_columns * 2; ?>;
-    loadImages   = <?php echo $reloaded_images; ?>;
-    hiddenClass  = 'hidden-jg-image';
-    hiddenImages = Array.from(document.querySelectorAll('.hidden-jg-image'));
-
-    items.forEach(function (item, index) {
-      if (index > maxImages - 1) {
-        item.classList.add(hiddenClass);
-      }
-    });
-
-    loadMore.addEventListener('click', function () {
-      [].forEach.call(document.querySelectorAll('.' + hiddenClass), function (
-        item,
-        index
-      ) {
-        if (index < loadImages) {
-          item.classList.remove(hiddenClass);
-        }
-        if (document.querySelectorAll('.' + hiddenClass).length === 0) {
-          loadMore.style.display = 'none';
-          noMore.classList.remove('hidden');
-        }
-      });
-    });
-  </script>
-<?php endif; ?>
-
-<?php // Hide loader when page is loaded ?>
 <script>
-  window.onload = function() {
-    if(document.querySelector('#jg-loader')) { 
-      const el = document.querySelector('#jg-loader');
-      el.classList.add('hidden');
+  if(window.joomGrid.layout != 'justified') {
+    var loadImg = function() {
+      this.closest('.' + window.joomGrid.imgboxclass).classList.add('loaded');
     }
-  };
+
+    let images = Array.from(document.getElementsByClassName(window.joomGrid.imgclass));
+    images.forEach(image => {
+      image.addEventListener('load', loadImg);
+    });
+  }  
 </script>

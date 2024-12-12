@@ -134,6 +134,11 @@
       }
     },
     {
+      "name": "com_joomgallery.joomgrid",
+      "type": "script",
+      "uri": "com_joomgallery/joomgrid.js"
+    },
+    {
       "name": "com_joomgallery.uppy-uploader",
       "type": "script",
       "uri": "com_joomgallery/uppy/dist/uppy-uploader.js",
