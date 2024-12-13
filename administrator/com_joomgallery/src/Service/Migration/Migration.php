@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
@@ -1017,11 +1016,10 @@ abstract class Migration implements MigrationInterface
     if($this->app->get('offline'))
     {
       $checks->addCheck($category, 'offline', true, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_SUCCESS'));
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_SUCCESS'), 'error', 'jerror');
     }
     else
     {
-      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
     }
 
     // Put check about session lifetime
@@ -1029,7 +1027,7 @@ abstract class Migration implements MigrationInterface
     {
       $time_min = $this->app->get('lifetime');
       $time_hr  = \round($time_min / 60, 1);
-      $checks->addCheck($category, 'lifetime', false, true, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
+      $checks->addCheck($category, 'lifetime', true, true, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
     }
   }
 
