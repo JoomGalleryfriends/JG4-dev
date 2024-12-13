@@ -42,13 +42,28 @@ class JsonView extends JoomGalleryJsonView
 	{
     // Current category item
 		$this->state  = $this->get('State');
-		$this->item   = $this->get('Item');
+
+    $loaded = true;
+		try {
+			$this->item = $this->get('Item');
+		}
+		catch (\Exception $e)
+		{
+			$loaded = false;
+		}
+
+    // Check published state
+		if($loaded && $this->item->published !== 1) 
+		{
+			$this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_UNAVAILABLE_VIEW'), 'error');
+			return;
+		}
 
     // Check acces view level
 		if(!\in_array($this->item->access, $this->user->getAuthorisedViewLevels()))
     {
       $this->output(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'));
-      $this->error = true;
+      return;
     }
 
     // Load parent category
