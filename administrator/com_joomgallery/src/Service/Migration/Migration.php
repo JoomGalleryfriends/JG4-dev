@@ -1025,17 +1025,11 @@ abstract class Migration implements MigrationInterface
     }
 
     // Put check about session lifetime
-    if($this->app->get('lifetime') < 180)
+    if($this->app->get('lifetime') < 30)
     {
       $time_min = $this->app->get('lifetime');
       $time_hr  = \round($time_min / 60, 1);
-      $checks->addCheck($category, 'lifetime', false, false, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
-    }
-    elseif($this->app->get('lifetime') < 1500)
-    {
-      $time_min = $this->app->get('lifetime');
-      $time_hr  = \round($time_min / 60, 1);
-      $checks->addCheck($category, 'lifetime', true, true, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
+      $checks->addCheck($category, 'lifetime', false, true, Text::_('COM_JOOMGALLERY_SITE_LIFETIME'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LIFETIME_ERROR', $time_min, $time_hr));
     }
   }
 
