@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Helper;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Router\Route;
@@ -21,9 +20,9 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Http\HttpFactory;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * JoomGallery Helper for the Backend
@@ -499,7 +498,7 @@ class JoomHelper
       {
         // Joomgallery internal URL
         // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3&catid=1
-        return Route::_('index.php?option=com_joomgallery&view=image&format=raw&type='.$type.'&id='.$img->id.'&catid='.$img->catid);
+        return Route::_(self::getViewRoute('image', $img->id, $img->catid, 'raw', $type));        
       }
       else
       {
@@ -547,9 +546,9 @@ class JoomHelper
    */
   public static function getCatImg($cat, $type, $url=true, $root=true)
   {
-    if (!\is_object($cat))
+    if(!\is_object($cat))
     {
-      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
+      if((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
       {
         // no actual category given
         return self::getImgZero($type, $url, $root);
@@ -600,9 +599,9 @@ class JoomHelper
   {
     $id = 0;
 
-    if (!\is_object($cat))
+    if(!\is_object($cat))
     {
-      if ((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
+      if((!\is_numeric($cat) && !\is_string($cat)) ||$cat == 0)
       {
         // no actual category given
         return $id;
@@ -611,7 +610,8 @@ class JoomHelper
       $cat = self::getRecord('category', $cat);
     }    
 
-    try {
+    try
+    {
       if($inc_subcats)
       {
         // Create the category table
@@ -659,7 +659,8 @@ class JoomHelper
       $res = $db->loadResult();
       $id = \is_null($res) ? 0 : (int) $res;
     }
-    catch (\Exception $e) {
+    catch (\Exception $e)
+    {
       return $id;
     }
 
@@ -679,7 +680,7 @@ class JoomHelper
    *
    * @since   4.0.0
    */
-  public static function getViewRoute($view, $id, $catid = 0, $language = 0, $layout = null)
+  public static function getViewRoute($view, $id = 0, $catid = 0, $format = null, $type = null, $language = null, $layout = null)
   {
     if(\is_object($id))
     {
@@ -691,11 +692,32 @@ class JoomHelper
     }
 
     // Create the link
-    $link = 'index.php?option=com_joomgallery&view='.$view.'&id=' . $id;
+    $link = 'index.php?option=' . _JOOM_OPTION . '&view=' . $view;
+
+    if($id > 0)
+    {
+      $link .= '&id=' . $id;
+    }
 
     if((int) $catid > 0)
     {
-      $link .= '&catid=' . $catid;
+      $config = self::getService('config');
+      $router = 'Joomgallery\\Component\\Joomgallery\\Site\\Service\\' . \ucfirst($config->get('jg_router', 'DefaultRouter'));
+
+      if($view == 'image' && !empty($router::$image_parentID))
+      {
+        $link .= '&' . $router::$image_parentID . '=' . $catid;
+      }
+    }
+
+    if($format)
+    {
+      $link .= '&format=' . $format;
+    }
+
+    if($type)
+    {
+      $link .= '&type=' . $type;
     }
 
     if($language && $language !== '*' && Multilanguage::isEnabled())
@@ -725,7 +747,7 @@ class JoomHelper
   public static function getListRoute($view, $language = 0, $layout = null)
   {
     // Create the link
-    $link = 'index.php?option=com_joomgallery&view='.$view;
+    $link = 'index.php?option=' . _JOOM_OPTION . '&view=' . $view;
 
     if($language && $language !== '*' && Multilanguage::isEnabled())
     {
@@ -793,11 +815,11 @@ class JoomHelper
 
     if(!$filename)
     {
-      $query->where($db->quoteName($row_name) . " = " . $db->quote($name));
+      $query->where($db->quoteName($row_name) . ' = ' . $db->quote($name));
     }
     else
     {
-      $query->where($db->quoteName($row_name) . " LIKE " . $db->quote($name));
+      $query->where($db->quoteName($row_name) . ' LIKE ' . $db->quote($name));
     }
 
     // Reset the query using our newly populated query object.
@@ -848,7 +870,7 @@ class JoomHelper
   {
     if($url)
     {
-      return Route::_('index.php?option=com_joomgallery&controller=images&view=image&format=raw&type='.$type.'&id=0');
+      return Route::_(self::getViewRoute('image', 0, 1, 'raw', $type));
     }
     else
     {
@@ -877,8 +899,8 @@ class JoomHelper
     static $avgdone       = false;
 
     $maxvoting            = $config->get('jg_maxvoting');
-    $votesum           = 'votesum';
-    $votes             = 'votes';
+    $votesum              = 'votesum';
+    $votes                = 'votes';
     if($tablealias != '')
     {
       $votesum = $tablealias.'.'.$votesum;
@@ -949,6 +971,84 @@ class JoomHelper
     }
 
     return $rating;
+  }
+
+  /**
+   * Method to load an XML from the web.
+   *
+   * @param   string  $uri  The URI of the feed to load. Idn uris must be passed already converted to punycode.
+   *
+   * @return  SimpleXMLElement
+   *
+   * @since   4.0.0
+   * @throws  \InvalidArgumentException
+   * @throws  \RuntimeException
+   */
+  public static function fetchXML(string $uri): \SimpleXMLElement
+  {
+    // Create the XMLReader object.
+    $reader = new \XMLReader();
+
+    // Enable internal error handling for better debugging
+    \libxml_use_internal_errors(true);
+
+    // Open the URI within the stream reader.
+    if(!$reader->open($uri, null, LIBXML_NOWARNING | LIBXML_NOERROR))
+    {
+      // Handle errors and retry using an HTTP client fallback
+      $options = new Registry();
+      $options->set('userAgent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0');
+
+      try
+      {
+        $response = HttpFactory::getHttp($options)->get($uri);
+      }
+      catch(\RuntimeException $e)
+      {
+        throw new \RuntimeException('Unable to open the feed.', $e->getCode(), $e);
+      }
+
+      if($response->code != 200)
+      {
+        throw new \RuntimeException('Unable to open the feed.');
+      }
+
+      // Set the value to the XMLReader parser
+      if(!$reader->XML($response->body, null, LIBXML_NOWARNING | LIBXML_NOERROR))
+      {
+        throw new \RuntimeException('Unable to parse the feed.');
+      }
+    }
+
+    try
+    {
+      // Skip to the first root element
+      $maxAttempts = 100;
+      $attempts    = 0;
+
+      while($reader->read())
+      {
+        if($reader->nodeType == \XMLReader::ELEMENT)
+        {
+          break;
+        }
+
+        if(++$attempts > $maxAttempts)
+        {
+          throw new \RuntimeException("Exceeded maximum attempts to find the root element.");
+        }
+      }
+
+      // Retrieve the xml string
+      $xmlString = $reader->readOuterXml();
+
+    }
+    catch(\Exception $e)
+    {
+      throw new \RuntimeException('Error reading feed.', $e->getCode(), $e);
+    }
+
+    return new \SimpleXMLElement($xmlString);
   }
 
   /**

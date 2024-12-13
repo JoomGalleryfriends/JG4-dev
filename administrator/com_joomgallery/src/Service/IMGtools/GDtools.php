@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Text;
@@ -584,6 +583,12 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       return false;
     }
 
+    // Add metadata if needed
+    if($this->keep_metadata)
+    {
+      // ToDo: $stream = $this->copyMetadata() using the new metadata service
+    }
+
     if(!$base64)
     {
       // Output plain image stream
@@ -793,11 +798,15 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->manipulated = true;
 
     // Clean up working area (frames and imginfo)
-    $this->res_frames                 = $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+    $this->res_frames = $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+
+    $this->clearImginfo('res');
     $this->res_imginfo                = $this->src_imginfo;
     $this->res_imginfo['width']       = $this->dst_imginfo['width'];
     $this->res_imginfo['height']      = $this->dst_imginfo['height'];
     $this->res_imginfo['orientation'] = $this->dst_imginfo['orientation'];
+
+    $this->clearImginfo(array('src', 'dst'));
     $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
     return true;
@@ -838,12 +847,13 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->src_imginfo = $this->res_imginfo;
 
     // Get info for destination frames
-    $this->dst_imginfo['angle']    = $angle;
-    $this->dst_imginfo['flip']     = 'none';
-    $this->dst_imginfo['width']    = $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
-    $this->dst_imginfo['height']   = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
-    $this->dst_imginfo['offset_x'] = 0;
-    $this->dst_imginfo['offset_y'] = 0;
+    $this->dst_imginfo['angle']     = $angle;
+    $this->dst_imginfo['flip']      = 'none';
+    $this->dst_imginfo['width']     = $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
+    $this->dst_imginfo['height']    = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
+    $this->dst_imginfo['offset_x']  = 0;
+    $this->dst_imginfo['offset_y']  = 0;
+    $this->dst_imginfo['truecolor'] = $this->src_imginfo['truecolor'];
 
     // Calculation for the amount of memory needed (in bytes, GD)
     $this->memory_needed = $this->calculateMemory($this->src_imginfo, $this->dst_imginfo, 'rotate');
@@ -918,11 +928,15 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->manipulated = true;
 
     // Clean up working area (frames and imginfo)
-    $this->res_frames                 = $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+    $this->res_frames = $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+
+    $this->clearImginfo('res');
     $this->res_imginfo                = $this->src_imginfo;
     $this->res_imginfo['width']       = $this->dst_imginfo['width'];
     $this->res_imginfo['height']      = $this->dst_imginfo['height'];
     $this->res_imginfo['orientation'] = $this->dst_imginfo['orientation'];
+
+    $this->clearImginfo(array('src', 'dst'));
     $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
     return true;
@@ -984,6 +998,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->dst_imginfo['width']       = $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
     $this->dst_imginfo['height']      = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
     $this->dst_imginfo['orientation'] = $this->src_imginfo['orientation'];
+    $this->dst_imginfo['truecolor']   = $this->src_imginfo['truecolor'];
     $this->dst_imginfo['offset_x']    = 0;
     $this->dst_imginfo['offset_y']    = 0;
     $this->dst_imginfo['angle']       = 0;
@@ -1061,11 +1076,15 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->manipulated = true;
 
     // Clean up working area (frames and imginfo)
-    $this->res_frames                 = $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+    $this->res_frames= $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+
+    $this->clearImginfo(array('res'));
     $this->res_imginfo                = $this->src_imginfo;
     $this->res_imginfo['width']       = $this->dst_imginfo['width'];
     $this->res_imginfo['height']      = $this->dst_imginfo['height'];
     $this->res_imginfo['orientation'] = $this->dst_imginfo['orientation'];
+
+    $this->clearImginfo(array('src', 'dst'));
     $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
     return true;
@@ -1109,10 +1128,11 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     {
       $this->autoOrient($this->metadata['exif']['IFD0']['Orientation']);
     }
-    $this->dst_imginfo['width']    = $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
-    $this->dst_imginfo['height']   = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
-    $this->dst_imginfo['offset_x'] = 0;
-    $this->dst_imginfo['offset_y'] = 0;
+    $this->dst_imginfo['width']     = $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
+    $this->dst_imginfo['height']    = $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
+    $this->dst_imginfo['offset_x']  = 0;
+    $this->dst_imginfo['offset_y']  = 0;
+    $this->dst_imginfo['truecolor'] = $this->src_imginfo['truecolor'];
 
     // Create empty destination GD-Objects of specified size
     if($this->keep_anim && $this->src_imginfo['animation'] && $this->src_type == 'GIF')
@@ -1176,8 +1196,9 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
         $this->dst_frames[$key]['image'] = $this->imageRotate_GD($this->src_frames[$key]['image'], $this->src_type,
                                                                  $this->dst_imginfo['angle'], $this->src_imginfo['transparency']);
 
-        $this->dst_imginfo['width']      = imagesx($this->dst_frames[$key]['image']);
-        $this->dst_imginfo['height']     = imagesy($this->dst_frames[$key]['image']);
+        $this->dst_imginfo['width']       = imagesx($this->dst_frames[$key]['image']);
+        $this->dst_imginfo['height']      = imagesy($this->dst_frames[$key]['image']);
+        $this->dst_imginfo['orientation'] = $this->getOrientation($this->dst_imginfo['width'], $this->dst_imginfo['height']);
       }
 
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ROTATE_BY_ANGLE', $this->dst_imginfo['angle']));
@@ -1199,11 +1220,15 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->manipulated = true;
 
     // Clean up working area (frames and imginfo)
-    $this->res_frames                 = $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+    $this->res_frames = $this->copyFrames_GD($this->dst_frames, $this->dst_imginfo, $this->src_imginfo['transparency']);
+
+    $this->clearImginfo(array('res'));
     $this->res_imginfo                = $this->src_imginfo;
     $this->res_imginfo['width']       = $this->dst_imginfo['width'];
     $this->res_imginfo['height']      = $this->dst_imginfo['height'];
     $this->res_imginfo['orientation'] = $this->dst_imginfo['orientation'];
+
+    $this->clearImginfo(array('src', 'dst'));
     $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
     return true;
@@ -1381,9 +1406,13 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->manipulated = true;
 
     // Clean up working area (frames and imginfo)
-    $this->res_frames  = $this->copyFrames_GD($this->src_frames, $this->src_imginfo, $this->src_imginfo['transparency']);
+    $this->res_frames = $this->copyFrames_GD($this->src_frames, $this->src_imginfo, $this->src_imginfo['transparency']);
+
+    $this->clearImginfo(array('res'));
     $this->res_imginfo = $this->src_imginfo;
     $this->src_type    = $bkg_type;
+
+    $this->clearImginfo(array('src', 'dst'));
     $this->deleteFrames_GD(array('src_frames', 'dst_frames'));
 
     return true;
@@ -1887,54 +1916,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     if($transparency)
     {
       // Set transparent backgraound
-      switch ($this->src_type)
-      {
-        case 'GIF':
-          if(\function_exists('imagecolorallocatealpha'))
-          {
-            // Needs at least php v4.3.2
-            $trnprt_color = \imagecolorallocatealpha($src_frame, 0, 0, 0, 127);
-            \imagefill($src_frame, 0, 0, $trnprt_color);
-            \imagecolortransparent($src_frame, $trnprt_color);
-          }
-          else
-          {
-            $trnprt_indx = \imagecolortransparent($src_frame);
-            $palletsize  = \imagecolorstotal($src_frame);
-
-            if($trnprt_indx >= 0 && $trnprt_indx < $palletsize)
-            {
-              $trnprt_color = \imagecolorsforindex($src_frame, $trnprt_indx);
-              $trnprt_indx  = \imagecolorallocate($src_frame, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-              \imagefill($src_frame, 0, 0, $trnprt_indx);
-              \imagecolortransparent($src_frame, $trnprt_indx);
-            }
-          }
-        break;
-        case 'PNG':
-          if(\function_exists('imagecolorallocatealpha'))
-          {
-            // Needs at least php v4.3.2
-            \imagealphablending($src_frame, false);
-            $trnprt_color = \imagecolorallocatealpha($src_frame, 0, 0, 0, 127);
-            \imagefill($src_frame, 0, 0, $trnprt_color);
-          }
-        break;
-        case 'WEBP':
-          if(\function_exists('imagecolorallocatealpha'))
-          {
-            // Needs at least php v4.3.2
-            \imagealphablending($src_frame, false);
-            $trnprt_color = \imagecolorallocatealpha($src_frame, 0, 0, 0, 127);
-            \imagefill($src_frame, 0, 0, $trnprt_color);
-          }
-        break;
-        default:
-          $src_frame = false;
-
-          return $src_frame;
-        break;
-      }
+      $src_frame = $this->keepTransparency_GD($src_frame, $dst_imginfo['truecolor']);
     }
     else
     {
@@ -2183,6 +2165,61 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
   }
 
   /**
+   * ake sure background is still transparent
+   *
+   * @param   object     $img_frame     GDobject of the image to rotate
+   * @param   bool       $truecolor     True if the image is a truecolor image
+   *
+   * @return  mixed      GDobject on success, false otherwise
+   *
+   * @since   4.0.0
+   */
+  protected function keepTransparency_GD($img_frame, $truecolor = true)
+  {
+    if($truecolor)
+    {
+      if(\function_exists('imagecolorallocatealpha'))
+      {
+        // Needs at least php v4.3.2
+        \imagealphablending($img_frame, false);
+        \imagesavealpha($img_frame, true);
+        $trnprt_color = \imagecolorallocatealpha($img_frame, 0, 0, 0, 127);
+        \imagefill($img_frame, 0, 0, $trnprt_color);
+      }
+      else
+      {
+        // Transparency can not be kept using GD
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_NOT_KEEP_TRANSPARENCY', $this->src_type));
+      }
+    }
+    else
+    {
+      if(\function_exists('imagecolorallocatealpha'))
+      {
+        // Needs at least php v4.3.2
+        $trnprt_color = \imagecolorallocatealpha($img_frame, 0, 0, 0, 127);
+        \imagefill($img_frame, 0, 0, $trnprt_color);
+        \imagecolortransparent($img_frame, $trnprt_color);
+      }
+      else
+      {
+        $trnprt_indx = \imagecolortransparent($img_frame);
+        $palletsize  = \imagecolorstotal($img_frame);
+
+        if($trnprt_indx >= 0 && $trnprt_indx < $palletsize)
+        {
+          $trnprt_color = \imagecolorsforindex($img_frame, $trnprt_indx);
+          $trnprt_indx  = \imagecolorallocate($img_frame, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+          \imagefill($img_frame, 0, 0, $trnprt_indx);
+          \imagecolortransparent($img_frame, $trnprt_indx);
+        }
+      }
+    }
+
+    return $img_frame;
+  }
+
+  /**
    * Watermark GD image object (copy watermark on top of image)
    *
    * @param   object     $img_frame     GDobject of the image
@@ -2203,6 +2240,12 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $tmpinfo = $imginfo;
     $tmpinfo['type'] = $this->src_type;
 
+    $tmpinfo['truecolor'] = true;
+    if($this->src_type == 'GIF')
+    {
+      $tmpinfo['truecolor'] = false;
+    }
+
     // Create empty GD-Object
     $tmp = $this->imageCreateEmpty_GD($tmp, $tmpinfo, true);
 
@@ -2217,26 +2260,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     }
 
     // make sure background is still transparent
-    if(\function_exists('imagecolorallocatealpha'))
-    {
-      // Needs at least php v4.3.2
-      $trnprt_color = \imagecolorallocatealpha($tmp, 0, 0, 0, 127);
-      \imagefill($tmp, 0, 0, $trnprt_color);
-      \imagecolortransparent($tmp, $trnprt_color);
-    }
-    else
-    {
-      $trnprt_indx = \imagecolortransparent($tmp);
-      $palletsize  = \imagecolorstotal($tmp);
-
-      if($trnprt_indx >= 0 && $trnprt_indx < $palletsize)
-      {
-        $trnprt_color = \imagecolorsforindex($tmp, $trnprt_indx);
-        $trnprt_indx  = \imagecolorallocate($tmp, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-        \imagefill($tmp, 0, 0, $trnprt_indx);
-        \imagecolortransparent($tmp, $trnprt_indx);
-      }
-    }
+    $tmp = $this->keepTransparency_GD($tmp, $wtminfo['truecolor']);
 
     // copy resized watermark on image
     $this->imageCopyMergeAlpha_GD($img_frame, $tmp, 0, 0, 0, 0, $imginfo['width'], $imginfo['height'], $opacity);
@@ -2334,7 +2358,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     return $dst_frame;
   }
 
-    /**
+  /**
    * Same as PHP's imagecopymerge, but works with transparent images. Used internally for overlay.
    * Source: https://github.com/claviska/SimpleImage/blob/93b6df27e1d844a90d52d21a200d91b16371af0f/src/claviska/SimpleImage.php#L482
    *

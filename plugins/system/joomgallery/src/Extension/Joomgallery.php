@@ -12,7 +12,6 @@ namespace Joomgallery\Plugin\System\Joomgallery\Extension;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\Event\Event;
 use Joomla\CMS\Form\Form;
 use Joomla\Event\Priority;
@@ -20,6 +19,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Event\Model\AfterCleanCacheEvent;
 use Joomla\CMS\Event\Result\ResultAwareInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -129,17 +129,17 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onContentCleanCache(Event $event)
   {
-    $arguments = $event->getArguments();
-    if(empty($arguments) || !key_exists('defaultgroup', $arguments))
+    if(\version_compare(JVERSION, '5.0.0', '<'))
     {
-      // Joomla 5
-      extract($event->getArguments());
-      $defaultgroup = $event->getDefaultGroup();
+      // Joomla 4
+      $arguments    = $event->getArguments();
+      $defaultgroup = $arguments['defaultgroup'];
     }
     else
     {
-      // Joomla 4
-      $defaultgroup = $arguments['defaultgroup'];
+      // Joomla 5 or newer
+      extract($event->getArguments());
+      $defaultgroup = $event->getDefaultGroup();
     }
 
     if(\strpos($defaultgroup, 'com_joomgallery') !== 0 && \strpos($defaultgroup, 'com_users') !== 0 && \strpos($defaultgroup, 'com_menus') !== 0)
@@ -214,14 +214,14 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onContentPrepareForm(Event $event)
   {
-    try
+    if(\version_compare(JVERSION, '5.0.0', '<'))
     {
+      // Joomla 4
       [$form, $data] = $event->getArguments();
-    } catch (\Throwable $th) { }
-    
-    if(!$form)
+    }
+    else
     {
-      // Joomla 5
+      // Joomla 5 or newer
       extract($event->getArguments());
       $form = $event->getForm();
     }
@@ -264,14 +264,14 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onContentPrepareData(Event $event)
   {
-    try
+    if(\version_compare(JVERSION, '5.0.0', '<'))
     {
+      // Joomla 4
       [$context, $data] = $event->getArguments();
-    } catch (\Throwable $th) { }
-    
-    if(!$context)
+    }
+    else
     {
-      // Joomla 5
+      // Joomla 5 or newer
       extract($event->getArguments());
       $context = $event->getContext();
       $data    = $event->getData();
@@ -329,40 +329,50 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onUserAfterSave(Event $event)
   { 
-    try
+    if(\version_compare(JVERSION, '5.0.0', '<'))
     {
+      // Joomla 4
       [$data, $isNew, $result, $error] = $event->getArguments();
-    } catch (\Throwable $th) { }
-    
-    if(!$data)
+    }
+    else
     {
-      // Joomla 5
+      // Joomla 5 or newer
       extract($event->getArguments());
       $data    = $event->getUser();
       $result  = $event->getSavingResult();
     }
 
-    // Save the extra input into the database 
+    // Save the extra input into the database
     $userId = isset($data['id']) ? (int) $data['id'] : 0;
 
     if($userId && $result && isset($data['joomgallery']) && (count($data['joomgallery'])))
     {
-      // Create the onContentCleanCache event object
       $options = [
         'defaultgroup' => 'com_users.user.'.$userId,
         'cachebase'    => $this->app->get('cache_path', JPATH_CACHE),
         'result'       => true,
       ];
-      $cacheEvent = new Event('onContentCleanCache', $options);
 
-      // Perform the onContentCleanCach event
-      $this->onContentCleanCache($cacheEvent);
-      if($cacheEvent->getArgument('error', false))
+      if(\version_compare(JVERSION, '5.0.0', '<'))
       {
-        $this->setError($event, $cacheEvent->getArgument('error', ''));
-        $this->setResult($event, true);
+        // Joomla 4
+        $cacheEvent = new Event('onContentCleanCache', $options);
 
-        return;
+        // Perform the onContentCleanCach event
+        $this->onContentCleanCache($cacheEvent);
+        if($cacheEvent->getArgument('error', false))
+        {
+          $this->setError($event, $cacheEvent->getArgument('error', ''));
+          $this->setResult($event, true);
+
+          return;
+        }
+      }
+      else
+      {
+        // Joomla 5
+        $cacheEvent = new AfterCleanCacheEvent('onContentCleanCache', $options);
+        $this->getDispatcher()->dispatch('onContentCleanCache', $cacheEvent);
       }
 
       // Update user fields
@@ -401,14 +411,14 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    */
   public function onUserAfterDelete(Event $event)
   { 
-    try
+    if(\version_compare(JVERSION, '5.0.0', '<'))
     {
+      // Joomla 4
       [$data, $result, $error] = $event->getArguments();
-    } catch (\Throwable $th) { }
-    
-    if(!$data)
+    }
+    else
     {
-      // Joomla 5
+      // Joomla 5 or newer
       extract($event->getArguments());
       $data    = $event->getUser();
       $result  = $event->getDeletingResult();
@@ -555,7 +565,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     if($array)
     {
       $result   = $event->getArgument('result', []) ?: [];
-		  $result   = is_array($result) ? $result : [];
+		  $result   = \is_array($result) ? $result : [];
 		  $result[] = $value;
     }
     else
