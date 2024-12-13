@@ -20,9 +20,9 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Http\HttpFactory;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * JoomGallery Helper for the Backend
@@ -971,6 +971,84 @@ class JoomHelper
     }
 
     return $rating;
+  }
+
+  /**
+   * Method to load an XML from the web.
+   *
+   * @param   string  $uri  The URI of the feed to load. Idn uris must be passed already converted to punycode.
+   *
+   * @return  SimpleXMLElement
+   *
+   * @since   4.0.0
+   * @throws  \InvalidArgumentException
+   * @throws  \RuntimeException
+   */
+  public static function fetchXML(string $uri): \SimpleXMLElement
+  {
+    // Create the XMLReader object.
+    $reader = new \XMLReader();
+
+    // Enable internal error handling for better debugging
+    \libxml_use_internal_errors(true);
+
+    // Open the URI within the stream reader.
+    if(!$reader->open($uri, null, LIBXML_NOWARNING | LIBXML_NOERROR))
+    {
+      // Handle errors and retry using an HTTP client fallback
+      $options = new Registry();
+      $options->set('userAgent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0');
+
+      try
+      {
+        $response = HttpFactory::getHttp($options)->get($uri);
+      }
+      catch(\RuntimeException $e)
+      {
+        throw new \RuntimeException('Unable to open the feed.', $e->getCode(), $e);
+      }
+
+      if($response->code != 200)
+      {
+        throw new \RuntimeException('Unable to open the feed.');
+      }
+
+      // Set the value to the XMLReader parser
+      if(!$reader->XML($response->body, null, LIBXML_NOWARNING | LIBXML_NOERROR))
+      {
+        throw new \RuntimeException('Unable to parse the feed.');
+      }
+    }
+
+    try
+    {
+      // Skip to the first root element
+      $maxAttempts = 100;
+      $attempts    = 0;
+
+      while($reader->read())
+      {
+        if($reader->nodeType == \XMLReader::ELEMENT)
+        {
+          break;
+        }
+
+        if(++$attempts > $maxAttempts)
+        {
+          throw new \RuntimeException("Exceeded maximum attempts to find the root element.");
+        }
+      }
+
+      // Retrieve the xml string
+      $xmlString = $reader->readOuterXml();
+
+    }
+    catch(\Exception $e)
+    {
+      throw new \RuntimeException('Error reading feed.', $e->getCode(), $e);
+    }
+
+    return new \SimpleXMLElement($xmlString);
   }
 
   /**
