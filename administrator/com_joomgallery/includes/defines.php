@@ -17,14 +17,14 @@ define('_JOOM_PATH_ADMIN',           JPATH_ADMINISTRATOR.'/components/com_joomga
 define('_JOOM_PATH_SITE',            JPATH_SITE.'/components/com_joomgallery');
 define('_JOOM_TABLE_IMAGES',         '#__joomgallery');
 define('_JOOM_TABLE_CATEGORIES',     '#__joomgallery_categories');
+define('_JOOM_TABLE_COLLECTIONS',    '#__joomgallery_collections');
+define('_JOOM_TABLE_COLLECTIONS_REF','#__joomgallery_collections_ref');
 define('_JOOM_TABLE_COMMENTS',       '#__joomgallery_comments');
 define('_JOOM_TABLE_CONFIGS',        '#__joomgallery_configs');
 define('_JOOM_TABLE_FAULTIES',       '#__joomgallery_faulties');
 define('_JOOM_TABLE_MAINTENANCE',    '#__joomgallery_faulties');
 define('_JOOM_TABLE_ORPHANS',        '#__joomgallery_faulties');
 define('_JOOM_TABLE_FIELDS',         '#__joomgallery_fields');
-define('_JOOM_TABLE_GALLERIES',      '#__joomgallery_galleries');
-define('_JOOM_TABLE_GALLERIES_REF',  '#__joomgallery_galleries_ref');
 define('_JOOM_TABLE_IMG_TYPES',      '#__joomgallery_img_types');
 define('_JOOM_TABLE_TYPES',          '#__joomgallery_img_types');
 define('_JOOM_TABLE_MIGRATION',      '#__joomgallery_migration');

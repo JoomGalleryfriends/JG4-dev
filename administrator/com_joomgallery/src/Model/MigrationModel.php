@@ -302,7 +302,6 @@ class MigrationModel extends JoomAdminModel
     {
       $registry    = new Registry($item->queue);
       $item->queue = $registry->toArray();
-      $item->queue = ArrayHelper::toInteger($item->queue);
     }
 
     // Support for successful field
@@ -315,6 +314,12 @@ class MigrationModel extends JoomAdminModel
     if(isset($item->failed))
     {
       $item->failed = new Registry($item->failed);
+    }
+
+    // Support for counter field
+    if(isset($item->counter))
+    {
+      $item->counter = new Registry($item->counter);
     }
 
     // Support for params field
@@ -447,7 +452,7 @@ class MigrationModel extends JoomAdminModel
     if($this->app->input->exists($table->getKeyName()))
     {
       // Remove id from the input data
-      $tmp_pk = $this->app->input->get($table->getKeyName(), 'int');
+      $tmp_pk = $this->app->input->get($table->getKeyName(), 'cmd');
       $this->app->input->set($table->getKeyName(), null);
     }
 
@@ -491,6 +496,70 @@ class MigrationModel extends JoomAdminModel
     }    
 
     return $items;
+  }
+
+  /**
+    * Method to get a list of dependencies
+    *
+    * @return  array  An array of dependencies
+    *                 from: Types I am depending from / of: Types that depend on me
+    *
+    * @since   4.0.0
+    */
+  public function getDependencies(): array
+  {
+    $dependencies = ['from' => [], 'of' => []];
+
+    // Get dependencies that depend on me from migration service
+    foreach($this->getMigrateables() as $key => $value)
+    {
+      $dependencies['of'][$key] = $this->component->getMigration()->getType($key)->get('dependent_of');
+    }
+
+    // Create dependencies I am depending from
+    foreach($dependencies['of'] as $key => $dependent_of)
+    {
+      // Add migrateable key if not existent
+      $dependencies['from'][$key] = $dependencies['from'][$key] ?? [];
+
+      // Add dependent types
+      foreach($dependent_of as $type)
+      {
+        $dependencies['from'][$type]   = $dependencies['from'][$type] ?? [];
+        $dependencies['from'][$type][] = $key;
+      }
+    }
+
+    return $dependencies;
+  }
+
+  /**
+    * Method to get a list of all completed migration records
+    *
+    * @return  array  An array of completed migration records
+    *
+    * @since   4.0.0
+    */
+  public function getCompleted(): array
+  {
+    $migrateables = $this->getMigrateables();
+
+    // If no migrateables exist, return an empty array
+    if(empty($migrateables))
+    {
+      return [];
+    }
+
+    $completed = [];
+    foreach($migrateables as $key => $migrateable)
+    {
+      if($migrateable->completed)
+      {
+        \array_push($completed, $key);
+      }
+    }
+
+    return $completed;
   }
 
   /**
@@ -696,13 +765,14 @@ class MigrationModel extends JoomAdminModel
   /**
 	 * Method to perform the pre migration checks.
    * 
-   * @param   array  $params  The migration parameters entered in the migration form
+   * @param   array  $params   The migration parameters entered in the migration form
+   * @param   bool   $resumed  True, if the precheck is called during resuming the migration
 	 *
 	 * @return  array  An array containing the precheck results.
 	 *
 	 * @since   4.0.0
 	 */
-  public function precheck($params)
+  public function precheck($params, $resumed = false)
   {
     $script = $this->getScript();
 
@@ -716,7 +786,7 @@ class MigrationModel extends JoomAdminModel
     $this->setParams($params);
 
     // Perform the prechecks
-    return $this->component->getMigration()->precheck();
+    return $this->component->getMigration()->precheck($resumed);
   }
 
   /**
@@ -747,14 +817,14 @@ class MigrationModel extends JoomAdminModel
   /**
 	 * Method to perform the migration of one record.
    * 
-   * @param   string           $type   Name of the content type to migrate.
-   * @param   integer          $pk     The primary key of the source record.
+   * @param   string   $type   Name of the content type to migrate.
+   * @param   mixed    $pk     The primary key of the source record.
 	 *
 	 * @return  object   The object containing the migration results.
 	 *
 	 * @since   4.0.0
 	 */
-  public function migrate(string $type, int $pk): object
+  public function migrate(string $type, $pk): object
   {
     // Retreive script
     $script = $this->getScript();
@@ -792,7 +862,7 @@ class MigrationModel extends JoomAdminModel
         $src_data = (array) clone (object) $data;
 
         // Convert record data into structure needed for JoomGallery v4+
-        $data = $this->component->getMigration()->convertData($type, $data);
+        $data = $this->component->getMigration()->convertData($type, $data, $pk);
 
         if(!$data)
         {
@@ -883,6 +953,13 @@ class MigrationModel extends JoomAdminModel
     {
       // Add migrated primary key to successful object
       $table->successful->set($pk, $new_pk);
+
+      // Adjust counter if needed
+      if($this->component->getMigration()->needsCounter($type))
+      {
+        $old_counter = (int) $table->counter->get($pk, 0);
+        $table->counter->set($pk, $old_counter + 1);
+      }
     }
     else
     {
@@ -1220,7 +1297,7 @@ class MigrationModel extends JoomAdminModel
     }
 
     // Special case: Use source IDs. Insert dummy record with JDatabase before binding data on it.
-    if($isNew && !$autoID && \in_array($key, \array_keys($data)))
+    if($isNew && !$autoID && \in_array($key, \array_keys($data)) && !\is_null($data[$key]))
     {
       if(!$this->insertDummyRecord($type, $data[$key]))
       {
@@ -1383,7 +1460,7 @@ class MigrationModel extends JoomAdminModel
       $record->rgt = 2147483645;
     }
 
-    $needed = array('image', 'category', 'comment', 'gallery', 'tag');
+    $needed = array('image', 'category', 'user', 'comment', 'collection', 'tag');
     if(\in_array($type, $needed))
     {
       $record->description = '';
@@ -1396,6 +1473,12 @@ class MigrationModel extends JoomAdminModel
       $record->imgmetadata = '';
       $record->filename = '';
     }
+
+    $needed = array('user');
+    if(\in_array($type, $needed))
+    {
+      $record->files = '';
+    }
     
     $needed = array('image', 'category', 'imagetype', 'user');
     if(\in_array($type, $needed))
@@ -1403,20 +1486,20 @@ class MigrationModel extends JoomAdminModel
       $record->params = '';
     }
 
-    $needed = array('image', 'category', 'gallery');
+    $needed = array('image', 'category', 'collection');
     if(\in_array($type, $needed))
     {
       $record->metadesc = '';
       $record->metakey = '';
     }
     
-    $needed = array('image', 'category', 'field', 'tag', 'gallery', 'user', 'vote', 'comment');
+    $needed = array('image', 'category', 'field', 'tag', 'collection', 'user', 'vote', 'comment');
     if(\in_array($type, $needed))
     {
       $record->created_time = $date->toSql();
     }
 
-    $needed = array('image', 'category', 'tag', 'gallery', 'comment');
+    $needed = array('image', 'category', 'tag', 'collection', 'comment');
     if(\in_array($type, $needed))
     {
       $record->modified_time = $date->toSql();
