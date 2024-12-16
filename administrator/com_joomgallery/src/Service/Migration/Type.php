@@ -148,6 +148,16 @@ class Type
   protected $insertRecord = true;
 
   /**
+   * Do we need a db counter to be able to migrate this type?
+   * $counter = {pk = counter_value}
+   *
+   * @var  boolean
+   *
+   * @since  4.0.0
+   */
+  protected $counterNeeded = false;
+
+  /**
    * Constructor
    * 
    * @param  string  $name  Name of this content type

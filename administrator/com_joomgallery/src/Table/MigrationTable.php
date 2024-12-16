@@ -61,6 +61,7 @@ class MigrationTable extends Table
 		$this->queue      = array();
 		$this->successful = new Registry();
 		$this->failed     = new Registry();
+    $this->counter    = new Registry();
 	}
 
 	/**
@@ -109,6 +110,13 @@ class MigrationTable extends Table
 			$this->failed = (string) $registry;
 		}
 
+    // Support for counter field
+    if(isset($this->counter) && !\is_string($this->counter))
+		{
+			$registry = new Registry($this->counter);
+			$this->counter = (string) $registry;
+		}
+
     // Support for params field
     if(isset($this->params) && !\is_string($this->params))
 		{
@@ -155,6 +163,14 @@ class MigrationTable extends Table
 			$array['failed'] = (string) $registry;
 		}
 
+    // Support for counter field
+    if(isset($array['counter']) && \is_array($array['counter']))
+		{
+			$registry = new Registry;
+			$registry->loadArray($array['counter']);
+			$array['counter'] = (string) $registry;
+		}
+
     // Support for params field
     if(isset($array['params']) && \is_array($array['params']))
 		{
@@ -193,8 +209,6 @@ class MigrationTable extends Table
       {
         $this->queue = ArrayHelper::fromObject($this->queue);
       }
-
-      $this->queue = ArrayHelper::toInteger($this->queue);
     }
 
     // Support for successful field
@@ -226,6 +240,12 @@ class MigrationTable extends Table
     if(isset($this->failed))
     {
       $this->failed = new Registry($this->failed);
+    }
+
+    // Support for counter field
+    if(isset($this->counter))
+    {
+      $this->counter = new Registry($this->counter);
     }
 
     // Support for params field

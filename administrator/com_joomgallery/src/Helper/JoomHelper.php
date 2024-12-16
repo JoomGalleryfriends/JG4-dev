@@ -20,9 +20,9 @@ use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
+use \Joomla\CMS\Http\HttpFactory;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
-use \Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * JoomGallery Helper for the Backend
@@ -39,11 +39,11 @@ class JoomHelper
    * @var array
    */
   public static $content_types = array(   'category'  => _JOOM_TABLE_CATEGORIES,
+                                          'collection'=> _JOOM_TABLE_COLLECTIONS,
                                           'comment'   => _JOOM_TABLE_COMMENTS,
                                           'config'    => _JOOM_TABLE_CONFIGS,
                                           'faulty'    => _JOOM_TABLE_FAULTIES,
                                           'field'     => _JOOM_TABLE_FIELDS,
-                                          'gallery'   => _JOOM_TABLE_GALLERIES,
                                           'image'     => _JOOM_TABLE_IMAGES,
                                           'imagetype' => _JOOM_TABLE_IMG_TYPES,
                                           'tag'       => _JOOM_TABLE_TAGS,
@@ -107,7 +107,7 @@ class JoomHelper
           $com_obj->{$createService}();
           break;
         default:
-          $this->component->addLog('Too many arguments passed to getService()', 'error', 'jerror');
+          self::getComponent()->addLog('Too many arguments passed to getService()', 'error', 'jerror');
           throw new \Exception('Too many arguments passed to getService()');
           break;
       }
@@ -115,7 +115,7 @@ class JoomHelper
     catch (\Exception $e)
     {
       echo 'Creation of the service failed. Error: ',  $e->getMessage(), "\n";
-      $this->component->addLog('Creation of the service failed. Error: ' . $e->getMessage(), 'error', 'jerror');
+      self::getComponent()->addLog('Creation of the service failed. Error: ' . $e->getMessage(), 'error', 'jerror');
     }
 
     // get the service
@@ -169,7 +169,7 @@ class JoomHelper
 
       if(\is_null($model))
       {
-        $this->component->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
+        self::getComponent()->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
         throw new \Exception('Record-Type '.$name.' does not exist.');
       }
 
@@ -181,7 +181,7 @@ class JoomHelper
     // We got nothing to work with
     else
     {
-      $this->component->addLog('Please provide a valid record ID, alias or filename.', 'error', 'jerror');
+      self::getComponent()->addLog('Please provide a valid record ID, alias or filename.', 'error', 'jerror');
       throw new \Exception('Please provide a valid record ID, alias or filename.');
 
       return false;
@@ -255,7 +255,7 @@ class JoomHelper
   {
     if(!\in_array($name, array('image', 'category')))
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
+      self::getComponent()->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
 
@@ -301,7 +301,7 @@ class JoomHelper
 
     if(!\in_array($name, $availables))
     {
-      $this->component->addLog('Please provide an available name of the record type.', 'error', 'jerror');
+      self::getComponent()->addLog('Please provide an available name of the record type.', 'error', 'jerror');
       throw new \Exception('Please provide an available name of the record type.');
 
       return false;
@@ -317,7 +317,7 @@ class JoomHelper
 
     if(\is_null($model))
     {
-      $this->component->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
+      self::getComponent()->addLog('Record-Type '.$name.' does not exist.', 'error', 'jerror');
       throw new \Exception('Record-Type '.$name.' does not exist.');
     }
 
@@ -436,7 +436,7 @@ class JoomHelper
 
     if($imagetype === false)
     {
-      $this->component->addLog('Imagetype not found.', 'error', 'jerror');
+      self::getComponent()->addLog('Imagetype not found.', 'error', 'jerror');
       throw new \Exception("Imagetype not found.");
 
       return false;
@@ -782,7 +782,7 @@ class JoomHelper
     // Does imagetype support alias
     if(!\array_key_exists($record, $tables))
     {
-      $this->component->addLog('Record does not support alias.', 'error', 'jerror');
+      self::getComponent()->addLog('Record does not support alias.', 'error', 'jerror');
       throw new \Exception('Record does not support alias.');
 
       return false;
@@ -850,7 +850,7 @@ class JoomHelper
   {
     if(!\in_array($name, \array_keys(self::$content_types)))
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
+      self::getComponent()->addLog(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'), 'error', 'jerror');
       throw new \Exception(Text::_('COM_JOOMGALLERY_ERROR_INVALID_CONTENT_TYPE'));
     }
   }
@@ -971,6 +971,84 @@ class JoomHelper
     }
 
     return $rating;
+  }
+
+  /**
+   * Method to load an XML from the web.
+   *
+   * @param   string  $uri  The URI of the feed to load. Idn uris must be passed already converted to punycode.
+   *
+   * @return  SimpleXMLElement
+   *
+   * @since   4.0.0
+   * @throws  \InvalidArgumentException
+   * @throws  \RuntimeException
+   */
+  public static function fetchXML(string $uri): \SimpleXMLElement
+  {
+    // Create the XMLReader object.
+    $reader = new \XMLReader();
+
+    // Enable internal error handling for better debugging
+    \libxml_use_internal_errors(true);
+
+    // Open the URI within the stream reader.
+    if(!$reader->open($uri, null, LIBXML_NOWARNING | LIBXML_NOERROR))
+    {
+      // Handle errors and retry using an HTTP client fallback
+      $options = new Registry();
+      $options->set('userAgent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0');
+
+      try
+      {
+        $response = HttpFactory::getHttp($options)->get($uri);
+      }
+      catch(\RuntimeException $e)
+      {
+        throw new \RuntimeException('Unable to open the feed.', $e->getCode(), $e);
+      }
+
+      if($response->code != 200)
+      {
+        throw new \RuntimeException('Unable to open the feed.');
+      }
+
+      // Set the value to the XMLReader parser
+      if(!$reader->XML($response->body, null, LIBXML_NOWARNING | LIBXML_NOERROR))
+      {
+        throw new \RuntimeException('Unable to parse the feed.');
+      }
+    }
+
+    try
+    {
+      // Skip to the first root element
+      $maxAttempts = 100;
+      $attempts    = 0;
+
+      while($reader->read())
+      {
+        if($reader->nodeType == \XMLReader::ELEMENT)
+        {
+          break;
+        }
+
+        if(++$attempts > $maxAttempts)
+        {
+          throw new \RuntimeException("Exceeded maximum attempts to find the root element.");
+        }
+      }
+
+      // Retrieve the xml string
+      $xmlString = $reader->readOuterXml();
+
+    }
+    catch(\Exception $e)
+    {
+      throw new \RuntimeException('Error reading feed.', $e->getCode(), $e);
+    }
+
+    return new \SimpleXMLElement($xmlString);
   }
 
   /**
