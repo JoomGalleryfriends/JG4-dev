@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
+use \Joomla\CMS\Event\Model;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Path;
@@ -1363,9 +1364,24 @@ class MigrationModel extends JoomAdminModel
     }
 
     // Trigger the onMigrationBeforeSave event
-    $event = new \Joomla\Event\Event('onMigrationBeforeSave', ['com_joomgallery.'.$recordType, $table]);
-    $this->getDispatcher()->dispatch($event->getName(), $event);
-    $results = $event->getArgument('result', []);
+    if(\version_compare(JVERSION, '5.0.0', '<'))
+    {
+      // Joomla 4
+      $event = new \Joomla\Event\Event('onMigrationBeforeSave', ['com_joomgallery.'.$recordType, $table]);
+      $this->getDispatcher()->dispatch($event->getName(), $event);
+      $results = $event->getArgument('result', []);
+    }
+    else
+    {
+      // Joomla 5
+      $options = ['context' => 'com_joomgallery.'.$recordType,
+                  'subject' => $table,
+                  'isNew'   => $isNew,
+                  'data'    => $data,
+                 ];
+      $event = new Model\BeforeSaveEvent('onMigrationBeforeSave', $options);
+      $results = $this->getDispatcher()->dispatch($event->getName(), $event)->getArgument('result', []);
+    }
 
     // Store the data.
     if(\in_array(false, $results, true) || !$table->store())
