@@ -50,7 +50,7 @@ class HtmlView extends JoomGalleryView
     {
       $this->app->input->set('hidemainmenu', true);
       ToolbarHelper::cancel('migration.cancel', 'COM_JOOMGALLERY_MIGRATION_INERRUPT_MIGRATION');
-      ToolbarHelper::help('', false, Text::_('COM_JOOMGALLERY_WEBSITE_HELP_URL').'migration/'. \strtolower($this->script->name) . '?tmpl=component');
+      ToolbarHelper::help('', false, Text::_('COM_JOOMGALLERY_WEBSITE_HELP_URL').'/migration/'. \strtolower($this->script->name) . '?tmpl=component');
 
       // Check if requested script exists
       if(!\in_array($this->script->name, \array_keys($this->scripts)))
