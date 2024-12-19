@@ -1,10 +1,10 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
@@ -262,16 +262,16 @@ class com_joomgalleryInstallerScript extends InstallerScript
     }
 
     // Create news feed module
-    $subdomain = '';
+    $subdomain = 'de';
     $language = $app->getLanguage();
     if(strpos($language->getTag(), 'de-') === false)
     {
-      $subdomain = 'en.';
+      $subdomain = 'en';
     }
     $feed_params = array('cache'=>1,
                          'cache_time'=>15,
                          'moduleclass_sfx'=>'',
-                         'rssurl'=>'https://www.'.$subdomain.'joomgalleryfriends.net/?format=feed&amp;type=rss',
+                         'rssurl'=>'https://www.joomgalleryfriends.net/'.$subdomain.'/?format=feed&amp;type=rss',
                          'rssrtl'=>0,
                          'rssdate'=>0,
                          'rssdesc'=>0,
