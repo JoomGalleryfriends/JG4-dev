@@ -155,13 +155,14 @@ class Checks
    * @param   string   $title      Optional: Title of the check
    * @param   string   $desc       Optional: Description of the check
    * @param   string   $help       Optional: URL to a help-site or help-text
+   * @param   bool     $isURL      Optional: True, if $help is an URL
    *
    * @return  void
    *
    * @since  4.0.0
    * @throws \Exception
    */
-  public function addCheck(string $category, string $name, bool $result, bool $warning = false, string $title = '', string $desc = '', string $help = '')
+  public function addCheck(string $category, string $name, bool $result, bool $warning = false, string $title = '', string $desc = '', string $help = '', bool $isURL = true)
   {
     // Make category and check name lowercase
     $category = \strtolower(\trim($category));
@@ -189,6 +190,17 @@ class Checks
       $check->title   = $title;
       $check->desc    = $desc;
       $check->help    = $help;
+
+      if($help && $isURL && \strpos($help, 'joomgalleryfriends.net') === false)
+      {
+        // Remove leading slashes
+        if(\substr($help, 0, 1) === '/')
+        {
+          $help = \substr($help, 1);
+        }
+
+        $check->help = Text::_('COM_JOOMGALLERY_WEBSITE_HELP_URL') . '/migration/' . $help;
+      }      
 
       // Add check to check-objects array
       $key = $this->array_push($this->objects[$catKey]->checks, $check);

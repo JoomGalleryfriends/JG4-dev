@@ -1019,7 +1019,7 @@ abstract class Migration implements MigrationInterface
     }
     else
     {
-      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'), 'prechecks/offline');
     }
 
     // Put check about session lifetime
