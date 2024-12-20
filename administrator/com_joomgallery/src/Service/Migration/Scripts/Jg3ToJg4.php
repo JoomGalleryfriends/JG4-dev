@@ -92,7 +92,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     elseif($type === 'destination')
     {
       $info->set('extension','com_joomgallery');
-      $info->set('min', '4.0.0');
+      $info->set('min', '4.0.0-beta1'); // Todo: change back to 4.0.0
       $info->set('max', '5.99.99');
       $info->set('php_min', '7.4.0');
     }
