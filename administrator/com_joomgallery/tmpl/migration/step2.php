@@ -1,10 +1,10 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                              **
+**   @version    4.0.0-beta1                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
@@ -148,6 +148,37 @@ $wa->useStyle('com_joomgallery.admin')
 </div>
 
 <script>
+  /**
+   * Checks if a given string is a valid URL.
+   *
+   * @param   {string}   string -  The string to check.
+   * @return  {boolean}            Returns true if the string is a valid URL, false otherwise.
+   */
+  function isValidURL(string) {
+    try {
+      new URL(string);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * Adds the query variable 'tmpl=component' to a given URL.
+   *
+   * @param   {string}  url - The original URL.
+   * @return  {string}      - The updated URL with 'tmpl=component' added.
+   */
+  function addQueryVariable(url) {
+    try {
+      let urlObject = new URL(url);
+      urlObject.searchParams.set('tmpl', 'component');
+      return urlObject.toString();
+    } catch (error) {
+      return url;
+    }
+  }
+
   function openModal(event, element)
   {
     event.preventDefault();
@@ -155,10 +186,15 @@ $wa->useStyle('com_joomgallery.admin')
     let modalTitle = modal.querySelector('.modal-title');
     let modalBody  = modal.querySelector('.modal-body');
 
-    let helpForum  = '<br/><br/><div class="alert alert-primary" role="alert"><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COMMON_CHECK_HELP'); ?></div>'
+    let helpForum  = '<br/><br/><div class="alert alert-primary" role="alert"><?php echo Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_COMMON_CHECK_HELP'); ?></div>';
+    let dataText   = element.getAttribute('data-text');
+
+    if(isValidURL(dataText)) {
+      dataText = '<iframe src="' + addQueryVariable(dataText) + '" style="height: 50vh;"></iframe>';
+    }
 
     modalTitle.innerHTML = element.getAttribute('data-title');
-    modalBody.innerHTML  = element.getAttribute('data-text')+helpForum;
+    modalBody.innerHTML  = dataText+helpForum;
 
     let bsmodal = new bootstrap.Modal(modal, {keyboard: false});
     bsmodal.show();

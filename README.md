@@ -3,7 +3,7 @@
 Development repository of the JoomGallery component for Joomla! 4.
 
 **Project-Website:**
-https://www.en.joomgalleryfriends.net/
+https://www.joomgalleryfriends.net/
 
 **Support-Forum:**
 https://www.forum.joomgalleryfriends.net

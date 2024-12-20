@@ -32,9 +32,10 @@
     <field name="jg_showcomments"
            groupByFieldset="false"
            default="-1"
-           type="radio"
+           type="jgradio"
            class="btn-group btn-group-yesno"
            layout="joomla.form.field.radio.configbtns"
+           useglobal="true"
            label="COM_JOOMGALLERY_CONFIG_COMMENT"
            description="COM_JOOMGALLERY_CONFIG_COMMENT_CAT_LONG">
       <option value="-1">JGLOBAL_USE_GLOBAL_VALUE</option>
