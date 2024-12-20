@@ -71,38 +71,6 @@ class HtmlView extends JoomGalleryView
 
     $this->addToolbar();
 
-  /*
-  if($this->_config->get('jg_checkupdate'))
-  {
-    $this->available_extensions = JoomExtensions::getAvailableExtensions();
-    $this->params->set('url_fopen_allowed', @ini_get('allow_url_fopen'));
-    $this->params->set('curl_loaded', extension_loaded('curl'));
-
-    // If there weren't any available extensions found
-    // loading the RSS feed wasn't successful
-    if(count($this->available_extensions))
-    {
-      $this->installed_extensions = JoomExtensions::getInstalledExtensions();
-      $this->params->set('show_available_extensions', 1);
-
-      $this->dated_extensions = JoomExtensions::checkUpdate();
-      if(count($this->dated_extensions))
-      {
-        $this->params->set('dated_extensions', 1);
-      }
-      else
-      {
-        $this->params->set('dated_extensions', 0);
-        $this->params->set('show_update_info_text', 1);
-      }
-    }
-  }
-  else
-  {
-    $this->params->set('dated_extensions', 0);
-  }
-  */
-
     parent::display($tpl);
   }
 
