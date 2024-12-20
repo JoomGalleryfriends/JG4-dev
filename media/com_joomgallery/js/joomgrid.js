@@ -32,7 +32,7 @@ var callback = function() {
 
   // Initialize lightGallery
   if(window.joomGrid.lightbox) {
-    const lightbox = document.getElementById('lightgallery-' + window.joomGrid.id);
+    const lightbox = document.getElementById('lightgallery-' + window.joomGrid.itemid);
 
     window.joomGrid.lightboxes[window.joomGrid.itemid] = lightGallery(lightbox, {
       selector: '.lightgallery-item',
