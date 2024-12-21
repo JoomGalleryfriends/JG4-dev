@@ -25,6 +25,7 @@ use \Joomla\Database\DatabaseDriver;
 class ImagetypeTable extends Table
 {
   use JoomTableTrait;
+  use GlobalAssetTableTrait;
 
 	/**
 	 * Constructor
@@ -37,4 +38,18 @@ class ImagetypeTable extends Table
 
 		parent::__construct(_JOOM_TABLE_IMG_TYPES, 'id', $db);
 	}
+
+  /**
+   * Delete a record by id
+   *
+   * @param   mixed  $pk  Primary key value to delete. Optional
+   *
+   * @return bool
+   */
+  public function delete($pk = null)
+  {
+    $this->_trackAssets = false;
+    
+    return parent::delete($pk);
+  }
 }

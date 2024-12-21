@@ -244,6 +244,8 @@ class CollectionTable extends Table
    */
   public function delete($pk = null)
   {
+    $this->_trackAssets = false;
+    
     if($success = parent::delete($pk))
     {
       // Delete mappings if existent
