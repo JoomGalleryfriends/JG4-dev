@@ -8,7 +8,7 @@
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Table;
+namespace Joomgallery\Component\Joomgallery\Administrator\Table\Asset;
 
 // No direct access
 defined('_JEXEC') or die;

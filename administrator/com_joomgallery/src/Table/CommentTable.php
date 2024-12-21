@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\GlobalAssetTableTrait;
 
 /**
  * Comment table
@@ -25,8 +26,11 @@ use \Joomla\Database\DatabaseDriver;
  */
 class CommentTable extends Table
 {
-  use JoomTableTrait;
-  use GlobalAssetTableTrait;
+  use JoomTableTrait, GlobalAssetTableTrait {
+    GlobalAssetTableTrait::_getAssetName insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetParentId insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetTitle insteadof JoomTableTrait;
+  }
 
 	/**
 	 * Constructor

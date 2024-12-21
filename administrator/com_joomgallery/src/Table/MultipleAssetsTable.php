@@ -18,6 +18,7 @@ use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Nested as Table;
 use \Joomla\CMS\Access\Rules;
 use \Joomla\String\StringHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\MultipleAssetsTableTrait;
 
 /**
  * Category table for records with multiple assets

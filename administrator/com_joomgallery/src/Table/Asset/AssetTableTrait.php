@@ -8,7 +8,7 @@
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Table;
+namespace Joomgallery\Component\Joomgallery\Administrator\Table\Asset;
 
 // No direct access
 defined('_JEXEC') or die;
@@ -17,11 +17,11 @@ use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
 
 /**
-* Trait for Table methods with multiple assets
+* Trait for Tables with default assets
 *
 * @since  4.0.0
 */
-trait MultipleAssetsTableTrait
+trait AssetTableTrait
 {
   /**
 	 * Define a namespaced asset name for inclusion in the #__assets table
@@ -32,23 +32,27 @@ trait MultipleAssetsTableTrait
 	 * @see Joomla\CMS\Table\Table::_getAssetName
 	 */
 	protected function _getAssetName($itemtype = null)
-  {
-    $keys = [];
+	{
+		$k = $this->_tbl_key;
 
-    if(\is_null($itemtype))
-    {
-      $itemtype = $this->def_itemtype;
-    }
-
-    foreach ($this->_tbl_keys as $k) {
-        $keys[] = (int) $this->$k;
-    }
-
-    return _JOOM_OPTION . '.' . $itemtype . '.' . implode('.', $keys);
-  }
+		return $this->typeAlias . '.' . (int) $this->$k;
+	}
 
   /**
-	 * Returns the parent asset's id.
+	 * Method to return the title to use for the asset table.
+	 *
+	 * @return  string
+	 *
+   * @since 4.0.0
+	 * @see Joomla\CMS\Table\Table::_getAssetTitle
+	 */
+	protected function _getAssetTitle($itemtype = null)
+	{
+		return $this->title;
+	}
+
+  /**
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
 	 *
 	 * @param   Table    $table  Table name
 	 * @param   integer  $id     Id
@@ -61,25 +65,10 @@ trait MultipleAssetsTableTrait
 	protected function _getAssetParentId($table = null, $id = null, $itemtype = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
-    $assetTable = new Asset($this->getDbo());
+		$assetTable = new Asset($this->getDbo());
 
-    if(!is_null($itemtype) && $itemtype != $this->def_itemtype)
-    {
-      // The item is a child of the current item
-      $parent_id = \intval($this->id);
-			$assetTable->loadByName(_JOOM_OPTION.'.'.$this->def_itemtype.'.'.$parent_id);
-    }
-		elseif($this->parent_id && \intval($this->parent_id) >= 1)
-		{
-			// The item has a category as asset-parent
-			$parent_id = \intval($this->parent_id);
-			$assetTable->loadByName(_JOOM_OPTION.'.'.$this->def_itemtype.'.'.$parent_id);
-		}
-		else
-		{
-			// The item has the component as asset-parent
-			$assetTable->loadByName(_JOOM_OPTION);
-		}
+		// The item has the component as asset-parent
+		$assetTable->loadByName(_JOOM_OPTION);
 
 		// Return the found asset-parent-id
 		if($assetTable->id)
@@ -93,25 +82,5 @@ trait MultipleAssetsTableTrait
 		}
 
 		return $assetParentId;
-	}
-
-  /**
-	 * Method to return the title to use for the asset table.
-	 *
-	 * @return  string
-	 *
-   * @since 4.0.0
-	 * @see Joomla\CMS\Table\Table::_getAssetTitle
-	 */
-	protected function _getAssetTitle($itemtype = null)
-	{
-    if(!is_null($itemtype) && $itemtype != $this->def_itemtype)
-    {
-      return $this->title.' ('.$itemtype.')';
-    }
-    else
-    {
-      return $this->title;
-    }		
 	}
 }
