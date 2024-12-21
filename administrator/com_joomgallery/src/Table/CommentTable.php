@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\GlobalAssetTableTrait;
 
 /**
  * Comment table
@@ -25,7 +26,11 @@ use \Joomla\Database\DatabaseDriver;
  */
 class CommentTable extends Table
 {
-  use JoomTableTrait;
+  use JoomTableTrait, GlobalAssetTableTrait {
+    GlobalAssetTableTrait::_getAssetName insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetParentId insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetTitle insteadof JoomTableTrait;
+  }
 
 	/**
 	 * Constructor
@@ -93,4 +98,18 @@ class CommentTable extends Table
 
 		return parent::bind($array, $ignore);
 	}
+
+  /**
+   * Delete a record by id
+   *
+   * @param   mixed  $pk  Primary key value to delete. Optional
+   *
+   * @return bool
+   */
+  public function delete($pk = null)
+  {
+    $this->_trackAssets = false;
+    
+    return parent::delete($pk);
+  }
 }

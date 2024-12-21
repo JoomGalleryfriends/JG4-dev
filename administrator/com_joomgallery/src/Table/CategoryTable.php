@@ -24,6 +24,7 @@ use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\MultipleAssetsTableTrait;
 
 /**
  * Category table

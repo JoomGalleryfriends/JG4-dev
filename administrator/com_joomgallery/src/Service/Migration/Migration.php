@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Table\Table;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
@@ -498,6 +499,22 @@ abstract class Migration implements MigrationInterface
     }
 
     return $this->migrateables[$migrateableKey];
+  }
+
+  /**
+   * onBeforeSave event.
+   * Last possibility to change anything on the data before storing into destination database.
+   *
+   * @param   string   $type    Name of the content type
+   * @param   Table    $table   Table object to be inserted into destination
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function onBeforeSave(string $type, Table &$table): void
+  {
+    return;
   }
 
   /**

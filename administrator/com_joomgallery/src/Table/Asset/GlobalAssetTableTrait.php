@@ -8,20 +8,21 @@
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
-namespace Joomgallery\Component\Joomgallery\Administrator\Table;
+namespace Joomgallery\Component\Joomgallery\Administrator\Table\Asset;
 
 // No direct access
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
-* Trait for Table methods with multiple assets
+* Trait for Tables with only one global asset
 *
 * @since  4.0.0
 */
-trait MultipleAssetsTableTrait
+trait GlobalAssetTableTrait
 {
   /**
 	 * Define a namespaced asset name for inclusion in the #__assets table
@@ -33,53 +34,26 @@ trait MultipleAssetsTableTrait
 	 */
 	protected function _getAssetName($itemtype = null)
   {
-    $keys = [];
-
-    if(\is_null($itemtype))
-    {
-      $itemtype = $this->def_itemtype;
-    }
-
-    foreach ($this->_tbl_keys as $k) {
-        $keys[] = (int) $this->$k;
-    }
-
-    return _JOOM_OPTION . '.' . $itemtype . '.' . implode('.', $keys);
+    return $this->typeAlias . '.0';
   }
 
   /**
-	 * Returns the parent asset's id.
+	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
 	 *
-	 * @param   Table    $table  Table name
+	 * @param   Table   $table  Table name
 	 * @param   integer  $id     Id
 	 *
+	 * @see Table::_getAssetParentId
+	 *
 	 * @return mixed The id on success, false on failure.
-   * 
-   * @since 4.0.0
-   * @see Joomla\CMS\Table\Table::_getAssetParentId
 	 */
-	protected function _getAssetParentId($table = null, $id = null, $itemtype = null)
+	protected function _getAssetParentId($table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
-    $assetTable = new Asset($this->getDbo());
+		$assetTable = new Asset($this->getDbo());
 
-    if(!is_null($itemtype) && $itemtype != $this->def_itemtype)
-    {
-      // The item is a child of the current item
-      $parent_id = \intval($this->id);
-			$assetTable->loadByName(_JOOM_OPTION.'.'.$this->def_itemtype.'.'.$parent_id);
-    }
-		elseif($this->parent_id && \intval($this->parent_id) >= 1)
-		{
-			// The item has a category as asset-parent
-			$parent_id = \intval($this->parent_id);
-			$assetTable->loadByName(_JOOM_OPTION.'.'.$this->def_itemtype.'.'.$parent_id);
-		}
-		else
-		{
-			// The item has the component as asset-parent
-			$assetTable->loadByName(_JOOM_OPTION);
-		}
+    // Load the JoomGallery global asset
+    $assetTable->loadByName(_JOOM_OPTION);
 
 		// Return the found asset-parent-id
 		if($assetTable->id)
@@ -105,13 +79,11 @@ trait MultipleAssetsTableTrait
 	 */
 	protected function _getAssetTitle($itemtype = null)
 	{
-    if(!is_null($itemtype) && $itemtype != $this->def_itemtype)
+    if(!$itemtype)
     {
-      return $this->title.' ('.$itemtype.')';
+      $itemtype = \explode('.', $this->typeAlias, 2)[1];
     }
-    else
-    {
-      return $this->title;
-    }		
+
+		return 'Global ' . \ucfirst(JoomHelper::pluralize($itemtype));
 	}
 }
