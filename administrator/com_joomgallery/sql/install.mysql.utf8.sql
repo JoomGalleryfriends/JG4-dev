@@ -325,6 +325,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_collections` (
 `description` TEXT NOT NULL,
 `access` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `published` TINYINT(1) NOT NULL DEFAULT 1,
+`hidden` TINYINT(1) NOT NULL DEFAULT 0,
 `ordering` INT(11) NOT NULL DEFAULT 0,
 `language` CHAR(7) NOT NULL DEFAULT "*" COMMENT "The language code.",
 `created_time` DATETIME NOT NULL,
@@ -353,6 +354,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_collections_ref` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `collectionid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+`approved` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 

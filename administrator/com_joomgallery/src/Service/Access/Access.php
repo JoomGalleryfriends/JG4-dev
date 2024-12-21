@@ -46,7 +46,7 @@ class Access implements AccessInterface
    *
    * @var array
    */
-  protected $types = array('image', 'category', 'tag', 'config');
+  protected $types = array('image', 'category', 'tag', 'config', 'collection');
 
   /**
    * List of parent content types

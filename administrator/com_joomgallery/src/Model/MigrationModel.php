@@ -1363,6 +1363,9 @@ class MigrationModel extends JoomAdminModel
       return false;
     }
 
+    // Perform the onBeforeSave migration method
+    $this->component->getMigration()->onBeforeSave($recordType, $table);
+
     // Trigger the onMigrationBeforeSave event
     if(\version_compare(JVERSION, '5.0.0', '<'))
     {

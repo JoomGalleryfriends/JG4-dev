@@ -115,6 +115,6 @@
            validate="rules"
            class="inputbox"
            component="com_joomgallery"
-           section="user" />
+           section="collection" />
   </fieldset>
 </form>
