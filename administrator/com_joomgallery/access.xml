@@ -6,6 +6,8 @@
 		<action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC" />
 		<action name="joom.upload" title="COM_JOOMGALLERY_UPLOAD" description="COM_JOOMGALLERY_ACTION_COMPONENT_UPLOAD_DESC" />
 		<action name="joom.upload.inown" title="COM_JOOMGALLERY_ACTION_UPLOAD_INOWN" description="COM_JOOMGALLERY_ACTION_COMPONENT_UPLOAD_INOWN_DESC" />
+		<action name="joom.connect" title="COM_JOOMGALLERY_ACTION_CONNECT" description="COM_JOOMGALLERY_ACTION_CONNECT_DESC" />
+		<action name="joom.connect.inown" title="COM_JOOMGALLERY_ACTION_CONNECT_INOWN" description="COM_JOOMGALLERY_ACTION_CONNECT_INOWN_DESC" />
 		<action name="core.create" title="JACTION_CREATE" description="COM_JOOMGALLERY_ACTION_COMPONENT_CREATE_DESC" />
 		<action name="joom.create.inown" title="COM_JOOMGALLERY_ACTION_CREATE_INOWN" description="COM_JOOMGALLERY_ACTION_COMPONENT_CREATE_INOWN_DESC" />
 		<action name="core.delete" title="JACTION_DELETE" description="COM_JOOMGALLERY_ACTION_COMPONENT_DELETE_DESC" />
@@ -48,6 +50,15 @@
 		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT" />
 		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE" />
 	</section>
+
+  <section name="collection">
+		<action name="joom.connect" title="COM_JOOMGALLERY_ACTION_CONNECT" description="COM_JOOMGALLERY_ACTION_CONNECT_DESC" />
+		<action name="joom.connect.inown" title="COM_JOOMGALLERY_ACTION_CONNECT_INOWN" description="COM_JOOMGALLERY_ACTION_CONNECT_INOWN_DESC" />
+		<action name="core.create" title="JACTION_CREATE" description="COM_JOOMGALLERY_ACTION_COLLECTION_CREATE_DESC" />
+		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE" />
+		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT" />
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE" />
+  </section>
 
   <section name="fieldgroup">
 		<action name="core.create" title="JACTION_CREATE" description="COM_FIELDS_GROUP_PERMISSION_CREATE_DESC" />

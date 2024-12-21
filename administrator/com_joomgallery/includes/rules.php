@@ -26,7 +26,8 @@ $rules_map_array = array
                                               '.image', 
                                               '.category',
                                               '.config',
-                                              '.tag'
+                                              '.tag',
+                                              '.collection'
                                             ),
                           'own'    => 'inown',
                           'own-assets' => array( '.', 
@@ -42,6 +43,17 @@ $rules_map_array = array
                           'own'    => false,
                           'own-assets' => array()
                       ),
+  
+  'connect'   => array(   'name'   => 'connect',
+                          'rule'   => 'joom.connect',
+                          'assets' => array(  '.',
+                                              '.collection'
+                                            ),
+                          'own'    => 'inown',
+                          'own-assets' => array( '.', 
+                                                 '.collection',
+                                                )
+                      ),
 
   'delete'    => array(   'name'   => 'delete', 
                           'rule'   => 'core.delete',
@@ -49,7 +61,8 @@ $rules_map_array = array
                                               '.image', 
                                               '.category',
                                               '.config',
-                                              '.tag'
+                                              '.tag',
+                                              '.collection'
                                             ),
                           'own'    => 'own',
                           'own-assets' => array( '.', 
@@ -64,7 +77,8 @@ $rules_map_array = array
                                               '.image',
                                               '.category',
                                               '.config',
-                                              '.tag'
+                                              '.tag',
+                                              '.collection'
                                             ),
                           'own'    => 'own',
                           'own-assets' => array(  '.',
@@ -81,7 +95,8 @@ $rules_map_array = array
                                               '.image',
                                               '.category',
                                               '.config',
-                                              '.tag'
+                                              '.tag',
+                                              '.collection'
                                             ),
                           'own'    => false,
                           'own-assets' => array()

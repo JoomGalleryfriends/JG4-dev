@@ -36,6 +36,14 @@ class CollectionTable extends Table
    */
   public $images = null;
 
+  /**
+   * True if new mapped images should be automatically approved 
+   *
+   * @var    bool
+   * @since  4.0.0
+   */
+  public $approveImages = false;
+
 	/**
 	 * Constructor
 	 *
@@ -213,8 +221,14 @@ class CollectionTable extends Table
     {
       if(!\is_null($images) && !empty($images))
       {
+        $approved = false;
+        if($this->created_by == Factory::getApplication()->getIdentity()->id || $this->approveImages)
+        {
+          $approved = true;
+        }
+
         // Do the mapping
-        $this->addMapping($images);
+        $this->addMapping($images, $approved);
       }
     }
 
@@ -240,15 +254,16 @@ class CollectionTable extends Table
   }
   
   /**
-   * Map one or multiple images to the currently loaded tag.
+   * Map one or multiple images to the currently loaded collection.
    *
-   * @param   int|array  $img_id  IDs of the images to be mapped.
+   * @param   int|array  $img_id   IDs of the images to be mapped.
+   * @param   bool       $approve  True if new mappings are approved.
    *
    * @return  boolean    True on success, False on error.
    *
    * @since   4.0.0
    */
-  public function addMapping($img_id)
+  public function addMapping($img_id, $approve = false)
   {
     if(empty($this->getId()))
     {
@@ -274,6 +289,11 @@ class CollectionTable extends Table
         $mapping->imgid        = (int) $iid;
         $mapping->collectionid = (int) $this->getId();
 
+        if($approve === true)
+        {
+          $mapping->approved = 1;
+        }        
+
         try
         {
           $db->insertObject(_JOOM_TABLE_COLLECTIONS_REF, $mapping);
@@ -292,7 +312,7 @@ class CollectionTable extends Table
   }
 
   /**
-   * Remove specific or all mappings of currently loaded tag
+   * Remove specific or all mappings of currently loaded collection
    *
    * @param   int|array  $img_id   IDs of the images to be removed. (0: remove all)
    *
