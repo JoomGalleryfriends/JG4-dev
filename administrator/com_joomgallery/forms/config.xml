@@ -226,11 +226,8 @@
       <field name="jg_uploadorder"
              type="list"
              default="2"
-             class="unused"
              label="COM_JOOMGALLERY_CONFIG_UPLOAD_ORDER"
-             description="COM_JOOMGALLERY_CONFIG_UPLOAD_ORDER_LONG"
-             showon="jg_useorigfilename:0[AND]jg_filenamenumber:1" >
-        <option value="0">JDEFAULT</option>
+             description="COM_JOOMGALLERY_CONFIG_UPLOAD_ORDER_LONG" >
         <option value="1">JGLOBAL_ORDER_DESCENDING</option>
         <option value="2">JGLOBAL_ORDER_ASCENDING</option>
       </field>

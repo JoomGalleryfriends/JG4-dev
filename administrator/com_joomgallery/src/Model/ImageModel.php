@@ -1124,6 +1124,33 @@ class ImageModel extends JoomAdminModel
   }
 
   /**
+	 * Prepare and sanitise the table prior to saving.
+	 *
+	 * @param   Table  $table  Table Object
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function prepareTable($table)
+	{
+    // Apply the ordering
+    if(\property_exists($table, 'ordering') && $table->id == 0)
+    {
+      switch($this->component->getConfig()->get('jg_uploadorder', 2))
+      {
+        case 1:
+          $table->ordering = $table->getPreviousOrder('catid = '.$table->catid);
+          break;
+        case 2:
+        default;
+          $table->ordering = $table->getNextOrder('catid = '.$table->catid);
+          break;
+      }
+    }    
+	}
+
+  /**
    * Method to test whether a record can be recreated.
    *
    * @param   object  $record  A record object.

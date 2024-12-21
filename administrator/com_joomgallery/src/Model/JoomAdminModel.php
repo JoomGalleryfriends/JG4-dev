@@ -423,7 +423,7 @@ abstract class JoomAdminModel extends AdminModel
 		$this->setState('parameters.configs', $configs);
   }
 
-   /**
+  /**
 	 * Prepare and sanitise the table prior to saving.
 	 *
 	 * @param   Table  $table  Table Object
@@ -434,20 +434,7 @@ abstract class JoomAdminModel extends AdminModel
 	 */
 	protected function prepareTable($table)
 	{
-		if(empty($table->id))
-		{
-			// Set ordering to the last item if not set
-			if(@$table->ordering === '')
-			{
-        $tablename = JoomHelper::getTableName($this->type);
-
-				$db = Factory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM '.$tablename);
-        
-				$max             = $db->loadResult();
-				$table->ordering = $max + 1;
-			}
-		}
+		return;
 	}
 
   /**
