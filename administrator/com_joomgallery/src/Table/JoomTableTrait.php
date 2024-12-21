@@ -15,13 +15,12 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
-use \Joomla\CMS\Table\Asset;
-use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Access\Rules;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filter\OutputFilter;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait;
 
 /**
 * Trait for Table methods
@@ -30,6 +29,8 @@ use \Joomla\CMS\Filter\OutputFilter;
 */
 trait JoomTableTrait
 {
+  use AssetTableTrait;
+
   /**
    * Form element to the table
    *
@@ -218,102 +219,6 @@ trait JoomTableTrait
 	public function getTypeAlias()
 	{
 		return $this->typeAlias;
-	}
-
-  /**
-   * Method to get the last ordering value for a group of rows defined by an SQL WHERE clause.
-   * This is useful for placing a new item first in a group of items in the table.
-   *
-   * @param   string    $where  query WHERE clause for selecting MAX(ordering).
-   * 
-   * @return  integer   The ordring number
-   * 
-   * @since   4.0.0
-   * @throws  \UnexpectedValueException
-   */
-  public function getPreviousOrder($where = '')
-  {
-    // Check if there is an ordering field set
-    if(!$this->hasField('ordering'))
-    {
-      throw new \UnexpectedValueException(sprintf('%s does not support ordering.', \get_class($this)));
-    }
-
-    // Get the largest ordering value for a given where clause.
-    $query = $this->_db->getQuery(true)
-      ->select('MIN(' . $this->_db->quoteName($this->getColumnAlias('ordering')) . ')')
-      ->from($this->_db->quoteName($this->_tbl));
-
-    if($where)
-    {
-      $query->where($where);
-    }
-
-    $this->_db->setQuery($query);
-    $max = (int) $this->_db->loadResult();
-
-    return $max - 1;
-  }
-
-  /**
-	 * Define a namespaced asset name for inclusion in the #__assets table
-	 *
-	 * @return string The asset name
-	 *
-   * @since 4.0.0
-	 * @see Joomla\CMS\Table\Table::_getAssetName
-	 */
-	protected function _getAssetName($itemtype = null)
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-  /**
-	 * Method to return the title to use for the asset table.
-	 *
-	 * @return  string
-	 *
-   * @since 4.0.0
-	 * @see Joomla\CMS\Table\Table::_getAssetTitle
-	 */
-	protected function _getAssetTitle($itemtype = null)
-	{
-		return $this->title;
-	}
-
-  /**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-	 *
-	 * @param   Table    $table  Table name
-	 * @param   integer  $id     Id
-	 *
-	 * @return mixed The id on success, false on failure.
-   * 
-   * @since 4.0.0
-   * @see Joomla\CMS\Table\Table::_getAssetParentId
-	 */
-	protected function _getAssetParentId($table = null, $id = null, $itemtype = null)
-	{
-		// We will retrieve the parent-asset from the Asset-table
-		$assetTable = new Asset($this->getDbo());
-
-		// The item has the component as asset-parent
-		$assetTable->loadByName(_JOOM_OPTION);
-
-		// Return the found asset-parent-id
-		if($assetTable->id)
-		{
-			$assetParentId = $assetTable->id;
-		}
-		else
-		{
-			// If no asset-parent can be found we take the global asset
-			$assetParentId = $assetTable->getRootId();
-		}
-
-		return $assetParentId;
 	}
 
   /**

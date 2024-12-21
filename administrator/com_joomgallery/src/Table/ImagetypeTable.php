@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\GlobalAssetTableTrait;
 
 /**
  * Imagetype table
@@ -24,8 +25,11 @@ use \Joomla\Database\DatabaseDriver;
  */
 class ImagetypeTable extends Table
 {
-  use JoomTableTrait;
-  use GlobalAssetTableTrait;
+  use JoomTableTrait, GlobalAssetTableTrait {
+    GlobalAssetTableTrait::_getAssetName insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetParentId insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetTitle insteadof JoomTableTrait;
+  }
 
 	/**
 	 * Constructor

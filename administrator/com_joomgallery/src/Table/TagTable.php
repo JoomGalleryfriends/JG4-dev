@@ -19,6 +19,7 @@ use \Joomla\CMS\Access\Rules;
 use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\GlobalAssetTableTrait;
 
 /**
  * Tag table
@@ -28,8 +29,11 @@ use \Joomla\CMS\Filter\OutputFilter;
  */
 class TagTable extends Table
 {
-  use JoomTableTrait;
-  use GlobalAssetTableTrait;
+  use JoomTableTrait, GlobalAssetTableTrait {
+    GlobalAssetTableTrait::_getAssetName insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetParentId insteadof JoomTableTrait;
+    GlobalAssetTableTrait::_getAssetTitle insteadof JoomTableTrait;
+  }
 
   /**
    * List of images connected to this tag
