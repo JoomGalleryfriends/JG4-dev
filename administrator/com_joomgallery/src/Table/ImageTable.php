@@ -338,7 +338,7 @@ class ImageTable extends Table implements VersionableTableInterface
 	public function check()
 	{
 		// If there is an ordering column and this is a new row then get the next ordering value
-		if(property_exists($this, 'ordering') && $this->id == 0)
+		if(property_exists($this, 'ordering') && $this->id == 0 && \is_null($this->ordering))
 		{
 			$this->ordering = self::getNextOrder();
 		}
