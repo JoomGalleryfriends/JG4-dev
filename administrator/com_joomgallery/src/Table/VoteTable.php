@@ -26,6 +26,7 @@ use \Joomla\Database\DatabaseDriver;
 class VoteTable extends Table
 {
   use JoomTableTrait;
+  use GlobalAssetTableTrait;
 
 	/**
 	 * Constructor
@@ -67,4 +68,18 @@ class VoteTable extends Table
 
 		return parent::bind($array, $ignore);
 	}
+
+  /**
+   * Delete a record by id
+   *
+   * @param   mixed  $pk  Primary key value to delete. Optional
+   *
+   * @return bool
+   */
+  public function delete($pk = null)
+  {
+    $this->_trackAssets = false;
+    
+    return parent::delete($pk);
+  }
 }

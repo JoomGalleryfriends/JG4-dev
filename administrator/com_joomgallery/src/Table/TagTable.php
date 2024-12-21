@@ -29,6 +29,7 @@ use \Joomla\CMS\Filter\OutputFilter;
 class TagTable extends Table
 {
   use JoomTableTrait;
+  use GlobalAssetTableTrait;
 
   /**
    * List of images connected to this tag
@@ -212,6 +213,8 @@ class TagTable extends Table
    */
   public function delete($pk = null)
   {
+    $this->_trackAssets = false;
+    
     if($success = parent::delete($pk))
     {
       // Delete mappings if existent
