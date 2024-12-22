@@ -90,8 +90,8 @@
         <plugin group="webservices" plugin="joomgallery"/> -->
     </plugins>
 
-    <updateservers>
+    <!-- <updateservers>
       <server type="collection">https://www.joomgalleryfriends.net/updates/extensions4.xml</server>
       <server type="extension" priority="2" name="JoomGallery Update Service">https://www.joomgalleryfriends.net/updates/joomgallery4/joomgallery.xml</server>
-    </updateservers>
+    </updateservers> -->
 </extension>
