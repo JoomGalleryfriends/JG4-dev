@@ -1,10 +1,10 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                                  **
+**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
@@ -147,15 +147,21 @@ class ControlModel extends BaseDatabaseModel
 
     $extensions = array();
 
-    // Get url of joomgallery extensions xml
-    $url    = _JOOM_WEBSITE_UPDATES_XML . '/extensions4.xml';
+    // Get url of joomgallery extensions xml    
     $server = (array) JoomHelper::getComponent()->xml->updateservers->server;
-    foreach($server as $key => $value)
+    if(!empty($server))
     {
-      if(!\is_array($value) && \strpos(\basename((string) $value), 'extensions') !== false)
+      foreach($server as $key => $value)
       {
-        $extensions_url = (string) $server[$key];
+        if(!\is_array($value) && \strpos(\basename((string) $value), 'extensions') !== false)
+        {
+          $extensions_url = (string) $server[$key];
+        }
       }
+    }
+    else
+    {
+      $extensions_url = _JOOM_WEBSITE_UPDATES_XML . '/extensions4.xml';
     }
 
     // Get an array of all available extensions

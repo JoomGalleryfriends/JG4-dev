@@ -1,10 +1,10 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                              **
+**   @version    4.0.0-beta1                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
@@ -92,7 +92,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     elseif($type === 'destination')
     {
       $info->set('extension','com_joomgallery');
-      $info->set('min', '4.0.0');
+      $info->set('min', '4.0.0-beta1'); // Todo: change back to 4.0.0
       $info->set('max', '5.99.99');
       $info->set('php_min', '7.4.0');
     }

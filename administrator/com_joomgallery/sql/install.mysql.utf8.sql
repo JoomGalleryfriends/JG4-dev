@@ -123,7 +123,6 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `jg_router` VARCHAR(100) NOT NULL DEFAULT "DefaultRouter",
 `jg_router_ids` TINYINT(1) NOT NULL DEFAULT 0,
 `jg_compatibility_mode` TINYINT(1) NOT NULL DEFAULT 0,
-`jg_checkupdate` TINYINT(1) NOT NULL DEFAULT 1,
 `jg_replaceinfo` TEXT NOT NULL,
 `jg_replaceshowwarning` TINYINT(1) NOT NULL DEFAULT 0,
 `jg_useorigfilename` TINYINT(1) NOT NULL DEFAULT 0,

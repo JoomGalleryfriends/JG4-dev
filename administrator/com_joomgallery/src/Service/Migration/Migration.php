@@ -1,10 +1,10 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-dev                                                              **
+**   @version    4.0.0-beta1                                                              **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
-**   @copyright  2008 - 2023  JoomGallery::ProjectTeam                                  **
+**   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
 **   @license    GNU General Public License version 3 or later                          **
 *****************************************************************************************/
 
@@ -1019,7 +1019,7 @@ abstract class Migration implements MigrationInterface
     }
     else
     {
-      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'));
+      $checks->addCheck($category, 'offline', false, false, Text::_('COM_JOOMGALLERY_SITE_OFFLINE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_OFFLINE_ERROR'), 'prechecks/offline');
     }
 
     // Put check about session lifetime
