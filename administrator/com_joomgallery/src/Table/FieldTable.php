@@ -16,6 +16,7 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait;
 
 /**
  * Field table
@@ -26,6 +27,7 @@ use \Joomla\Database\DatabaseDriver;
 class FieldTable extends Table
 {
   use JoomTableTrait;
+  use AssetTableTrait
 
 	/**
 	 * Constructor

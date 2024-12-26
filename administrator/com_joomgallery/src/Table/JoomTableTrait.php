@@ -20,7 +20,6 @@ use \Joomla\Registry\Registry;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filter\OutputFilter;
-use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait;
 
 /**
 * Trait for Table methods
@@ -29,8 +28,6 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait
 */
 trait JoomTableTrait
 {
-  use AssetTableTrait;
-
   /**
    * Form element to the table
    *
@@ -353,35 +350,6 @@ trait JoomTableTrait
       \array_push($this->_jsonEncode, $fieldName);
     }
   }
-
-  /**
-	 * This function convert an array of Access objects into an rules array.
-	 *
-	 * @param   array  $jaccessrules  An array of Access objects.
-	 *
-	 * @return  array
-	 */
-	protected function JAccessRulestoArray($jaccessrules)
-	{
-		$rules = array();
-
-		foreach($jaccessrules as $action => $jaccess)
-		{
-			$actions = array();
-
-			if($jaccess)
-			{
-				foreach($jaccess->getData() as $group => $allow)
-				{
-					$actions[$group] = ((bool)$allow);
-				}
-			}
-
-			$rules[$action] = $actions;
-		}
-
-		return $rules;
-	}
 
   /**
 	 * Mthod to load the default value of a field in a xml form

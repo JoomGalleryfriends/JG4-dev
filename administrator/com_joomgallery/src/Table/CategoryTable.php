@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Access\Rules;
 use \Joomla\CMS\User\UserHelper;
@@ -34,11 +33,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\MultipleAssetsT
  */
 class CategoryTable extends MultipleAssetsTable implements VersionableTableInterface
 { 
-  use JoomTableTrait, MultipleAssetsTableTrait {
-    MultipleAssetsTableTrait::_getAssetName insteadof JoomTableTrait;
-    MultipleAssetsTableTrait::_getAssetParentId insteadof JoomTableTrait;
-    MultipleAssetsTableTrait::_getAssetTitle insteadof JoomTableTrait;
-  }
+  use JoomTableTrait;
+  use MultipleAssetsTableTrait;
   use MigrationTableTrait;
   
   /**

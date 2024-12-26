@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Database\DatabaseDriver;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait;
 
 /**
  * Collection table
@@ -27,6 +28,7 @@ use \Joomla\Database\DatabaseDriver;
 class CollectionTable extends Table
 {
   use JoomTableTrait;
+  use AssetTableTrait;
 
   /**
    * List of images connected to this collection
@@ -324,7 +326,7 @@ class CollectionTable extends Table
    */
   public function removeMapping($img_id = 0)
   {
-    if(\empty($this->getId()))
+    if(empty($this->getId()))
     {
       $this->setError('Load table first.');
 

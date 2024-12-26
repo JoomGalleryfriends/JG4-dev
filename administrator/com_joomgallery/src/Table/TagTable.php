@@ -29,11 +29,8 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\GlobalAssetTabl
  */
 class TagTable extends Table
 {
-  use JoomTableTrait, GlobalAssetTableTrait {
-    GlobalAssetTableTrait::_getAssetName insteadof JoomTableTrait;
-    GlobalAssetTableTrait::_getAssetParentId insteadof JoomTableTrait;
-    GlobalAssetTableTrait::_getAssetTitle insteadof JoomTableTrait;
-  }
+  use JoomTableTrait;
+  use GlobalAssetTableTrait;
 
   /**
    * List of images connected to this tag
@@ -288,7 +285,7 @@ class TagTable extends Table
    */
   public function removeMapping($img_id = 0)
   {
-    if(\empty($this->getId()))
+    if(empty($this->getId()))
     {
       $this->setError('Load table first.');
 
