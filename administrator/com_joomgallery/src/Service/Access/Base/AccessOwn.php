@@ -33,6 +33,14 @@ class AccessOwn extends Access
   public static $parent_dependent_types = array();
 
   /**
+   * ist of content types wich have only one global asset
+   * --> Gets filled by the access service class
+   *
+   * @var array
+   */
+  public static $global_types = array();
+
+  /**
    * Method to check against own access.
    *
    * @param   integer         $userId    Id of the user for which to check authorisation.

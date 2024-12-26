@@ -34,7 +34,7 @@ trait GlobalAssetTableTrait
 	 */
 	protected function _getAssetName($itemtype = null)
   {
-    return $this->typeAlias . '.0';
+    return $this->typeAlias . '.1';
   }
 
   /**

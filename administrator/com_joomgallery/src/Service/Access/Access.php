@@ -46,7 +46,7 @@ class Access implements AccessInterface
    *
    * @var array
    */
-  protected $types = array('image', 'category', 'tag', 'config', 'collection');
+  protected $types = array('category', 'collection', 'comment', 'config', 'image', 'imagetype', 'tag', 'user', 'vote');
 
   /**
    * List of parent content types
@@ -69,6 +69,13 @@ class Access implements AccessInterface
    * @var array
    */
   protected $parent_dependent_types = array('image');
+
+  /**
+   * List of content types wich have only one global asset
+   *
+   * @var array
+   */
+  protected $asset_global_types = array('tag', 'comment', 'imagetype', 'vote');
 
   /**
    * Component specific prefix for its rules.
@@ -139,6 +146,7 @@ class Access implements AccessInterface
 
     // Fill AccessOwn properties
     AccessOwn::$parent_dependent_types = $this->parent_dependent_types;
+    AccessOwn::$global_types           = $this->asset_global_types;
   }
 
   /**
@@ -455,6 +463,11 @@ class Access implements AccessInterface
       {
         $asset = $asset . '.' . \strval($parent_pk);
       }
+    }
+    elseif(!$global && !$use_parent && \in_array($asset_type, $this->asset_global_types))
+    {
+      // We have a global only asset
+      $asset = $asset_array[0] . '.' . $asset_array[1] .'.1';
     }
     elseif(!$global && !$use_parent && $pk > 0 && \substr($asset, -\strlen($pk)) !== $pk)
     {
