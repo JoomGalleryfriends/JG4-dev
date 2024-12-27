@@ -53,7 +53,7 @@ $tus_specs_array = array
                                 'Value'       => null
                               ),
     'Upload-Offset'   => array( 'Name'        => 'HTTP_UPLOAD_OFFSET',
-                                'Description' => 'Number of successfully transfered bytes of the upload',
+                                'Description' => 'Number of successfully transferred bytes of the upload',
                                 'Request'     => array('HEAD','PATCH'),
                                 'Type'        => 'integer',
                                 'Required'    => false,

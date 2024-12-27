@@ -88,7 +88,7 @@ interface IMGtoolsInterface
    * Supported image-types: ??
    *
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
-   * @param   bool    $base64   String encoded with base64 (defaul: false)
+   * @param   bool    $base64   String encoded with base64 (default: false)
    * @param   bool    $html     Return html string for direct output (default: false)
    * @param   string  $type     Set image type to write (default: same as source)
    *

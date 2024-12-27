@@ -51,7 +51,7 @@ abstract class Migration implements MigrationInterface
    * Storage for the source database driver object.
    *
    * @var    DatabaseInterface
-   * 
+   *
    * @since  4.0.0
    */
   protected $src_db = null;
@@ -78,7 +78,7 @@ abstract class Migration implements MigrationInterface
    * True to offer the task migration.removesource for this script
    *
    * @var    boolean
-   * 
+   *
    * @since  4.0.0
    */
   protected $sourceDeletion = false;
@@ -87,7 +87,7 @@ abstract class Migration implements MigrationInterface
    * Is the migration performed from the command line
    *
    * @var    boolean
-   * 
+   *
    * @since  4.0.0
    */
   protected $isCli = false;
@@ -97,7 +97,7 @@ abstract class Migration implements MigrationInterface
    * Use the singular form of the content type (e.g image, not images)
    *
    * @var    Types[]
-   * 
+   *
    * @since  4.0.0
    */
   protected $types = array();
@@ -106,7 +106,7 @@ abstract class Migration implements MigrationInterface
    * List of migrateables processed/migrated with this script
    *
    * @var    MigrationTable[]
-   * 
+   *
    * @since  4.0.0
    */
   protected $migrateables = array();
@@ -116,7 +116,7 @@ abstract class Migration implements MigrationInterface
    * False to stop the automatic migration process.
    *
    * @var    boolean
-   * 
+   *
    * @since  4.0.0
    */
   protected $continue = true;
@@ -132,7 +132,7 @@ abstract class Migration implements MigrationInterface
   {
     // Load application
     $this->getApp();
-    
+
     // Load component
     $this->getComponent();
 
@@ -165,28 +165,28 @@ abstract class Migration implements MigrationInterface
   /**
    * A list of content type definitions depending on migration source
    * (Required in migration scripts. The order of the content types must correspond to its migration order)
-   * 
+   *
    * ------
    * This method is multiple times, when the migration types are loaded. The first time it is called without
    * the $type param, just to retrieve the array of source types info. The next times it is called with a
    * $type param to load the optional type infos like ownerFieldname.
-   * 
+   *
    * Needed: tablename, primarykey, isNested, isCategorized
    * Optional: ownerFieldname, dependent_on, pkstoskip, insertRecord, queueTablename, recordName
-   * 
+   *
    * Assumption for insertrecord:
    * If insertrecord == true assumes, that type is a migration; Means reading data from source db and write it to destination db (default)
    * If insertrecord == false assumes, that type is an adjustment; Means reading data from destination db adjust it and write it back to destination db
-   * 
+   *
    * Attention:
    * Order of the content types must correspond to the migration order
    * Pay attention to the dependent_on when ordering here !!!
-   * 
+   *
    * @param   bool   $names_only  True to load type names only. No migration parameters required.
    * @param   Type   $type        Type object to set optional definitions
-   * 
+   *
    * @return  array   The source types info, array(tablename, primarykey, isNested, isCategorized, , isFromSourceDB)
-   * 
+   *
    * @since   4.0.0
    */
   public function defineTypes($names_only=false, &$type=null): array
@@ -203,24 +203,24 @@ abstract class Migration implements MigrationInterface
   /**
    * Converts data from source into the structure needed for JoomGallery.
    * (Optional in migration scripts, but highly recommended.)
-   * 
+   *
    * ------
    * How mappings work:
    * - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
    * - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
    * - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
-   * - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
+   * - 'old key' => array(string, string, bool):  Field will be merged into another field of type json.
    *                                              1. ('destination field name'): Name of the field to be merged into.
    *                                              2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
    *                                              3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
    *
-   * 
+   *
    * @param   string  $type   Name of the content type
    * @param   array   $data   Source data received from getData()
    * @param   mixed   $pk     The primary key of the content type
-   * 
+   *
    * @return  array   Converted data to save into JoomGallery
-   * 
+   *
    * @since   4.0.0
    */
   public function convertData(string $type, array $data, $pk): array
@@ -231,7 +231,7 @@ abstract class Migration implements MigrationInterface
   /**
    * - Load a queue of ids from a specific migrateable object
    * - Reload/Reorder the queue if migrateable object already has queue
-   * 
+   *
    * @param   string     $type         Content type
    * @param   object     $migrateable  Mibrateable object
    *
@@ -306,9 +306,9 @@ abstract class Migration implements MigrationInterface
    *
    * @param   string   $type   Name of the content type
    * @param   mixed    $pk     The primary key of the content type
-   * 
+   *
    * @return  array    Associated array of a record data
-   * 
+   *
    * @since   4.0.0
    */
   public function getData(string $type, $pk): array
@@ -333,7 +333,7 @@ abstract class Migration implements MigrationInterface
       // Get db object
       list($db, $prefix) = $this->getDB('destination');
     }
-    
+
     // Initialize query object
     $query = $db->getQuery(true);
 
@@ -359,13 +359,13 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
-   * Performs the neccessary steps to migrate an image in the filesystem
+   * Performs the necessary steps to migrate an image in the filesystem
    *
    * @param   ImageTable   $img    ImageTable object, already stored
    * @param   array        $data   Source data received from getData()
-   * 
+   *
    * @return  bool         True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function migrateFiles(ImageTable $img, array $data): bool
@@ -385,13 +385,13 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
-   * Performs the neccessary steps to migrate a category in the filesystem
+   * Performs the necessary steps to migrate a category in the filesystem
    *
    * @param   CategoryTable   $cat    CategoryTable object, already stored
    * @param   array           $data   Source data received from getData()
-   * 
+   *
    * @return  bool            True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function migrateFolder(CategoryTable $cat, array $data): bool
@@ -405,7 +405,7 @@ abstract class Migration implements MigrationInterface
    * Returns a list of content types which can be migrated.
    *
    * @return  Migrationtable[]  List of content types
-   * 
+   *
    * @since   4.0.0
    */
   public function getMigrateables(): array
@@ -427,9 +427,9 @@ abstract class Migration implements MigrationInterface
    *
    * @param   string               $type       Name of the content type
    * @param   string               $withQueue  True to load the queue if not available
-   * 
+   *
    * @return  Migrationtable|bool  Object of the content types on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function getMigrateable(string $type, bool $withQueue = true)
@@ -464,7 +464,7 @@ abstract class Migration implements MigrationInterface
           return $this->migrateables[$type];
         }
       }
-           
+
     }
 
     return false;
@@ -474,9 +474,9 @@ abstract class Migration implements MigrationInterface
    * Prepare the migration.
    *
    * @param   string   $type   Name of the content type
-   * 
+   *
    * @return  MigrationTable  The currently processed migrateable
-   * 
+   *
    * @since   4.0.0
    */
   public function prepareMigration(string $type): object
@@ -503,11 +503,11 @@ abstract class Migration implements MigrationInterface
   /**
    * Step 2
    * Perform pre migration checks.
-   * 
+   *
    * @param   bool      $resumed  True, if the precheck is called during resuming the migration
    *
    * @return  object[]  An array containing the precheck results.
-   * 
+   *
    * @since   4.0.0
    */
   public function precheck($resumed = false): array
@@ -524,7 +524,7 @@ abstract class Migration implements MigrationInterface
     $checks->addCategory('source', Text::_('COM_JOOMGALLERY_SOURCE'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_PRECHECK_DESC'));
     $this->checkSourceExtension($checks, 'source');
 
-    // Check existance and writeability of source directories
+    // Check existence and writeability of source directories
     $this->checkSourceDir($checks, 'source');
 
     // Check existence and integrity of source database tables
@@ -534,7 +534,7 @@ abstract class Migration implements MigrationInterface
     $checks->addCategory('destination', Text::_('COM_JOOMGALLERY_DESTINATION'), Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DESTINATION_PRECHECK_DESC'));
     $this->checkDestExtension($checks, 'destination');
 
-    // Check existance and writeability of destination directories
+    // Check existence and writeability of destination directories
     $this->checkDestDir($checks, 'destination');
 
     // Check existence and integrity of destination database tables
@@ -557,7 +557,7 @@ abstract class Migration implements MigrationInterface
    * Perform post migration checks.
    *
    * @return  object[]  An array containing the postcheck results.
-   * 
+   *
    * @since   4.0.0
    */
   public function postcheck()
@@ -593,7 +593,7 @@ abstract class Migration implements MigrationInterface
    * It's recommended to use delete source data by uninstalling source extension if possible.
    *
    * @return  boolean  True if successful, false if an error occurs.
-   * 
+   *
    * @since   4.0.0
    */
   public function deleteSource()
@@ -603,7 +603,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Get a database object
-   * 
+   *
    * @param   string   $target   The target (source or destination)
    *
    * @return  array    list($db, $dbPrefix)
@@ -615,8 +615,8 @@ abstract class Migration implements MigrationInterface
   {
     if(!in_array($target, array('source', 'destination')))
     {
-      $this->component->addLog('Taget has to be eighter "source" or "destination". Given: ' . $target, 'error', 'jerror');
-      throw new \Exception('Taget has to be eighter "source" or "destination". Given: ' . $target, 1);
+      $this->component->addLog('Target has to be either "source" or "destination". Given: ' . $target, 'error', 'jerror');
+      throw new \Exception('Target has to be either "source" or "destination". Given: ' . $target, 1);
     }
 
     if($target === 'destination' || $this->params->get('same_db', 1))
@@ -644,7 +644,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Set params to object
-   * 
+   *
    * @param   mixed   $params   Array or object of params
    *
    * @since   4.0.0
@@ -658,7 +658,7 @@ abstract class Migration implements MigrationInterface
    * Returns the Joomla root path of the source.
    *
    * @return  string    Source Joomla root path
-   * 
+   *
    * @since   4.0.0
    */
   protected function getSourceRootPath(): string
@@ -685,7 +685,7 @@ abstract class Migration implements MigrationInterface
    * Gets available with the function defineTypes() from migration script.
    *
    * @return  void
-   * 
+   *
    * @since   4.0.0
    */
   protected function loadTypes()
@@ -705,7 +705,7 @@ abstract class Migration implements MigrationInterface
       foreach($types as $key => $list)
       {
         $type = new Type($key, $list);
-        
+
         // Pass $type by reference
         // Next calls of defineTypes(): Define optional type infos
         $this->defineTypes(false, $type);
@@ -726,7 +726,7 @@ abstract class Migration implements MigrationInterface
    *
    * @return  array    List of table names (Joomla style, e.g #__joomgallery)
    *                   array('image' => '#__joomgallery', ...)
-   * 
+   *
    * @since   4.0.0
    */
   public function getSourceTables(): array
@@ -746,10 +746,10 @@ abstract class Migration implements MigrationInterface
    * Returns tablename and primarykey name of the source table
    *
    * @param   string   $type    The content type name
-   * 
+   *
    * @return  array   The corresponding source table info
    *                  list(tablename, primarykey)
-   * 
+   *
    * @since   4.0.0
    */
   public function getSourceTableInfo(string $type): array
@@ -764,7 +764,7 @@ abstract class Migration implements MigrationInterface
    *
    * @return  Type[]   List of type names
    *                   array('image', 'category', ...)
-   * 
+   *
    * @since   4.0.0
    */
   public function getTypeNames(): array
@@ -782,11 +782,11 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Returns a type object based on type name.
-   * 
+   *
    * @param   string   $type   The content type name
    *
    * @return  Type     Type object
-   * 
+   *
    * @since   4.0.0
    */
   public function getType(string $name): Type
@@ -802,16 +802,16 @@ abstract class Migration implements MigrationInterface
    *
    * @param   string   $type   Name of the content type
    * @param   mixed    $pk     The primary key of the content type
-   * 
+   *
    * @return  bool     True to continue migration, false to skip it
-   * 
+   *
    * @since   4.0.0
    */
   public function needsMigration(string $type, $pk): bool
   {
     $this->loadTypes();
 
-    // Content types that require another type beeing migrated completely
+    // Content types that require another type being migrated completely
     if(!empty($this->types[$type]))
     {
       foreach($this->types[$type]->get('dependent_on') as $key => $req)
@@ -828,9 +828,9 @@ abstract class Migration implements MigrationInterface
       }
     }
 
-    // Specific record primary keys which can be skiped
+    // Specific record primary keys which can be skipped
     foreach($this->types[$type]->get('pkstoskip') as $skip)
-    {   
+    {
       if($pk == $skip)
       {
         return false;
@@ -845,9 +845,9 @@ abstract class Migration implements MigrationInterface
    * (counter row in #__joomgallery_migration)
    *
    * @param   string   $type   Name of the content type
-   * 
+   *
    * @return  bool     True if counter needed, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function needsCounter(string $type): bool
@@ -864,7 +864,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check logfile and add check to checks array.
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -910,12 +910,12 @@ abstract class Migration implements MigrationInterface
       $checks->addCheck($category, 'log_dir', false, false, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_LOG_DIR_LABEL'), Text::_('Logging directory not existent.'));
       $this->component->addLog(Text::_('Logging directory not existent.'), 'error', 'jerror');
     }
-    
+
   }
 
   /**
    * Precheck: Check the source extension to be the correct one for this migration script
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -952,7 +952,7 @@ abstract class Migration implements MigrationInterface
       // Version not correct
       $checks->addCheck($category, 'src_extension', false, false, Text::_('COM_JOOMGALLERY_FIELDS_SRC_EXTENSION_LABEL'), Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $src_xml->version, $src_info->get('min') . ' - ' . $src_info->get('max')));
       $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_EXTENSION_WRONG_VERSION', $src_xml->version, $src_info->get('min') . ' - ' . $src_info->get('max')), 'error', 'jerror');
-    } 
+    }
     else
     {
       // Check successful
@@ -962,7 +962,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check the destination extension to be the correct one for this migration script
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1002,7 +1002,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check site state and add check to checks array.
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1033,7 +1033,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check directories of the source to be existent
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1078,7 +1078,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check directories of the destination to be existent and writeable
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1116,7 +1116,7 @@ abstract class Migration implements MigrationInterface
         $dir_info = $this->component->getFilesystem()->getFile($imagetype->path);
       }
       catch(FileNotFoundException $msg)
-      { 
+      {
         // Path doesn't exist
         $checks->addCheck($category, $check_name, false, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::_('COM_JOOMGALLERY_ERROR_PATH_NOT_EXISTING'));
         $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_PATH_NOT_EXISTING'), 'error', 'jerror');
@@ -1142,13 +1142,13 @@ abstract class Migration implements MigrationInterface
         {
           $checks->addCheck($category, $check_name, true, false, Text::_('COM_JOOMGALLERY_DIRECTORY') . ': ' . $imagetype->path, Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_DIRECTORY_SUCCESS'));
         }
-      }      
+      }
     }
   }
 
   /**
    * Precheck: Check db and tables of the source
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1222,7 +1222,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check db and tables of the destination
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    * @param  bool     $resumed    True, if the precheck is called during resuming the migration
@@ -1239,7 +1239,7 @@ abstract class Migration implements MigrationInterface
     $tableList           = $db->getTableList();
 
     // Check whether root category exists
-    $rootCat = false;    
+    $rootCat = false;
     $query   = $db->getQuery(true)
           ->select('COUNT(*)')
           ->from($db->quoteName(_JOOM_TABLE_CATEGORIES))
@@ -1355,7 +1355,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check destination tables for already existing ids
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    * @param  string   $tablename  The table to be checked
@@ -1393,7 +1393,7 @@ abstract class Migration implements MigrationInterface
 
     if(!$migrateable)
     {
-      // Table does not correspont to a migrateable. Exit method.
+      // Table does not correspond to a migrateable. Exit method.
       return;
     }
 
@@ -1408,7 +1408,7 @@ abstract class Migration implements MigrationInterface
 
     if($this->params->get('same_db', 1))
     {
-      // Get list of used ids from source databse
+      // Get list of used ids from source database
       $srcQuery = $db->getQuery(true);
       $srcQuery->select($db->quoteName($migrateable->get('src_pk'), 'id'))
           ->from($db->quoteName($migrateable->get('src_table')));
@@ -1478,7 +1478,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Precheck: Check the configured image mapping
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1551,7 +1551,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Postcheck: Check if all queues are completed
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1592,7 +1592,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Postcheck: Check if all migrateables are error free
-   * 
+   *
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
    *
@@ -1627,7 +1627,7 @@ abstract class Migration implements MigrationInterface
 
   /**
    * Perform script specific checks at the end of pre and postcheck.
-   * 
+   *
    * @param  string   $type       Type of checks (pre or post)
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
@@ -1647,9 +1647,9 @@ abstract class Migration implements MigrationInterface
    * @param   array   $data     Data received from getData() method.
    * @param   array   $mapping  Mapping array telling how to convert data.
    * @param   string  $pk_name  Name of the destination primary key. (default: 'id')
-   * 
+   *
    * @return  array   Converted data array
-   * 
+   *
    * @since   4.0.0
    */
   protected function applyConvertData(array $data, array $mapping, string $pk_name = 'id'): array
@@ -1712,7 +1712,7 @@ abstract class Migration implements MigrationInterface
         $newKey = $key;
         if(\count($mapping[$key]) > 1 && !empty($mapping[$key][1]))
         {
-          $newKey = $mapping[$key][1];        
+          $newKey = $mapping[$key][1];
         }
 
         // Prepare srcField
@@ -1780,7 +1780,7 @@ abstract class Migration implements MigrationInterface
 
         // Apply merge
         $data[$destFieldName]->merge($value);
-        
+
         if($key != $destFieldName)
         {
           unset($data[$key]);

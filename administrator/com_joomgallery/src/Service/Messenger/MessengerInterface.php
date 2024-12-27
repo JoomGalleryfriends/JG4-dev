@@ -27,7 +27,7 @@ interface MessengerInterface
   /**
    * Method to send a message
    *
-   * @param   mixed   $recipients   List of users or email adresses receiving the message
+   * @param   mixed   $recipients   List of users or email addresses receiving the message
    * 
    * @return  bool    True on success, false otherwise
    * 

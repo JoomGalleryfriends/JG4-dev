@@ -49,7 +49,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * True to offer the task migration.removesource for this script
    *
    * @var    boolean
-   * 
+   *
    * @since  4.0.0
    */
   protected $sourceDeletion = true;
@@ -68,11 +68,11 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
   /**
    * Returns an object with compatibility info for this migration script.
-   * 
+   *
    * @param   string       $type    Select if you get source or destination info
    *
    * @return  Targetinfo   Compatibility info object
-   * 
+   *
    * @since   4.0.0
    */
   public function getTargetinfo(string $type = 'source'): Targetinfo
@@ -98,8 +98,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
     else
     {
-      $this->component->addLog('Type must be eighter "source" or "destination", but "'.$type.'" given.', 'error', 'migration');
-      throw new \Exception('Type must be eighter "source" or "destination", but "'.$type.'" given.', 1);
+      $this->component->addLog('Type must be either "source" or "destination", but "'.$type.'" given.', 'error', 'migration');
+      throw new \Exception('Type must be either "source" or "destination", but "'.$type.'" given.', 1);
     }
 
     return $info;
@@ -109,7 +109,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * Returns the XML object of the source extension
    *
    * @return  \SimpleXMLElement|string   Extension XML object or XML path on failure
-   * 
+   *
    * @since   4.0.0
    */
   public function getSourceXML()
@@ -118,7 +118,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     {
       $path = Path::clean(JPATH_ADMINISTRATOR . '/components/com_joomgallery/joomgallery_old.xml');
       $xml  = \simplexml_load_file($path);
-      
+
       if($xml){return $xml;}else{return $path;}
     }
     else
@@ -152,7 +152,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * Returns a list of involved source directories.
    *
    * @return  array    List of paths
-   * 
+   *
    * @since   4.0.0
    */
   public function getSourceDirs(): array
@@ -168,28 +168,28 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   /**
    * A list of content type definitions depending on migration source
    * (Required in migration scripts. The order of the content types must correspond to its migration order)
-   * 
+   *
    * ------
    * This method is multiple times, when the migration types are loaded. The first time it is called without
    * the $type param, just to retrieve the array of source types info. The next times it is called with a
    * $type param to load the optional type infos like ownerFieldname.
-   * 
+   *
    * Needed: tablename, primarykey, isNested, isCategorized
    * Optional: ownerFieldname, dependent_on, pkstoskip, insertRecord, queueTablename, recordName
-   * 
+   *
    * Assumption for insertrecord:
    * If insertrecord == true assumes, that type is a migration; Means reading data from source db and write it to destination db (default)
    * If insertrecord == false assumes, that type is an adjustment; Means reading data from destination db adjust it and write it back to destination db
-   * 
+   *
    * Attention:
    * Order of the content types must correspond to the migration order
    * Pay attention to the dependent_on when ordering here !!!
-   * 
+   *
    * @param   bool   $names_only  True to load type names only. No migration parameters required.
    * @param   Type   $type        Type object to set optional definitions
-   * 
+   *
    * @return  array   The source types info, array(tablename, primarykey, titlename, isNested, isCategorized, isFromSourceDB)
-   * 
+   *
    * @since   4.0.0
    */
   public function defineTypes($names_only=false, &$type=null): array
@@ -261,7 +261,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       case 'user':
         $type->set('ownerFieldname', 'cmsuser');
         break;
-      
+
       case 'vote':
         $type->set('dependent_on', array('image'));
         break;
@@ -269,7 +269,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       case 'comment':
         $type->set('dependent_on', array('image'));
         break;
-      
+
       case 'collection':
         $type->set('dependent_on', array('user', 'image'));
         break;
@@ -285,29 +285,29 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   /**
    * Converts data from source into the structure needed for JoomGallery.
    * (Optional in migration scripts, but highly recommended.)
-   * 
+   *
    * ------
    * How mappings work:
    * - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
    * - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
    * - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
-   * - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
+   * - 'old key' => array(string, string, bool):  Field will be merged into another field of type json.
    *                                              1. ('destination field name'): Name of the field to be merged into.
    *                                              2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
    *                                              3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
    *
-   * 
+   *
    * @param   string  $type   Name of the content type
    * @param   array   $data   Source data received from getData()
    * @param   mixed   $pk     The primary key of the content type
-   * 
+   *
    * @return  array   Converted data to save into JoomGallery
-   * 
+   *
    * @since   4.0.0
    */
   public function convertData(string $type, array $data, $pk): array
   {
-    // Parameter dependet mapping fields
+    // Parameter dependent mapping fields
     $id    = \boolval($this->params->get('source_ids', 0)) ? 'id' : false;
     $owner = \boolval($this->params->get('check_owner', 1)) ? $this->types[$type]->get('ownerFieldname') : false;
 
@@ -317,7 +317,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       case 'category':
         // Apply mapping for category table
         $mapping  = array( 'cid' => $id, 'asset_id' => false, 'name' => 'title', 'alias' => false, 'lft' => false, 'rgt' => false, 'level' => false,
-                           'owner' => $owner, 'img_position' => false, 'catpath' => 'static_path', 'params' => array('params', false, false), 
+                           'owner' => $owner, 'img_position' => false, 'catpath' => 'static_path', 'params' => array('params', false, false),
                            'allow_download' => array('params', 'jg_download', false), 'allow_comment' => array('params', 'jg_showcomment', false),
                            'allow_rating' => array('params', 'jg_showrating', false), 'allow_watermark' => array('params', 'jg_dynamic_watermark', false),
                            'allow_watermark_download' => array('params', 'jg_downloadwithwatermark', false)
@@ -328,7 +328,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           $data['parent_id'] = $this->migrateables['category']->successful->get($data['parent_id']);
         }
-        
+
         break;
 
       case 'image':
@@ -354,7 +354,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         }
 
         break;
-      
+
       case 'catimage':
         // Dont change the record data
         $mapping = array();
@@ -371,11 +371,11 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           {
             // Migrated image id not available, set id to 0
             $data['thumbnail'] = 0;
-          }          
+          }
         }
 
         break;
-      
+
       case 'user':
         // Apply mapping for users table
         $mapping  = array( 'uid' => $id, 'uuserid' => $owner, 'piclist' => false, 'time' => 'created_time',
@@ -383,7 +383,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
                           );
 
         break;
-      
+
       case 'vote':
         // Apply mapping for votes table
         $mapping  = array( 'voteid' => $id, 'picid' => 'imgid', 'userid' => $owner,
@@ -424,14 +424,14 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Add title to array
         $data['title'] = Text::_('COM_JOOMGALLERY_FAVOURITES');
 
-        // Adjust piclist with image id        
+        // Adjust piclist with image id
         if(!\boolval($this->params->get('source_ids', 0)))
         {
           // Get new created destination image id
           foreach($data['piclist'] as $key => $img_id)
           {
-            $data['piclist'][$key] = $this->migrateables['image']->successful->get($img_id); 
-          }                   
+            $data['piclist'][$key] = $this->migrateables['image']->successful->get($img_id);
+          }
         }
 
         // Adjust uuserid with new created users
@@ -441,7 +441,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         }
 
         break;
-      
+
       default:
         // The table structure is the same
         $mapping = array('id' => $id, 'owner' => $owner);
@@ -463,7 +463,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   /**
    * - Load a queue of ids from a specific migrateable object
    * - Reload/Reorder the queue if migrateable object already has queue
-   * 
+   *
    * @param   string     $type         Content type
    * @param   object     $migrateable  Mibrateable object
    *
@@ -538,7 +538,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $queue = array();
     try
     {
-      $queue = $db->loadColumn();     
+      $queue = $db->loadColumn();
     }
     catch(\Exception $e)
     {
@@ -569,13 +569,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Performs the neccessary steps to migrate an image in the filesystem
+   * Performs the necessary steps to migrate an image in the filesystem
    *
    * @param   ImageTable   $img    ImageTable object, already stored
    * @param   array        $data   Source data received from getData()
-   * 
+   *
    * @return  bool         True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function migrateFiles(ImageTable $img, array $data): bool
@@ -612,13 +612,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Performs the neccessary steps to migrate a category in the filesystem
+   * Performs the necessary steps to migrate a category in the filesystem
    *
    * @param   CategoryTable   $cat    CategoryTable object, already stored
    * @param   array           $data   Source data received from getData()
-   * 
+   *
    * @return  bool            True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function migrateFolder(CategoryTable $cat, array $data): bool
@@ -634,7 +634,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Direct usage from other source is impossible
         $this->component->setError('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR');
         $this->component->addLog('FILES_JOOMGALLERY_SERVICE_MIGRATION_DIRECT_USAGE_ERROR', 'error', 'migration');
-        
+
         return false;
       }
 
@@ -654,7 +654,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
         // Rename existing folders
         return $this->component->getFileManager()->renameCategory($tmp_cat, $newName);
-      }      
+      }
     }
     else
     {
@@ -674,7 +674,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           // Recreate, copy or move within the same filesystem by keeping the old folder structure is impossible
           $this->component->setError('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR');
           $this->component->addLog('FILES_JOOMGALLERY_SERVICE_MIGRATION_MCR_ERROR', 'error', 'migration');
-          
+
           return false;
         }
 
@@ -690,11 +690,11 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * for the current image.
    *
    * @param   array   $data   Source record data received from getData() - before convertData()
-   * 
+   *
    * @return  array   List of images from sources used to create the new imagetypes
    *                  1. If imagetypes get recreated:    array('image/source/path')
    *                  2. If imagetypes get copied/moved: array('original' => 'image/source/path1', 'detail' => 'image/source/path2', ...)
-   * 
+   *
    * @since   4.0.0
    */
   public function getImageSource(array $data): array
@@ -747,7 +747,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
         return $paths;
         break;
-      
+
       // Direct usage
       default:
         return array();
@@ -761,9 +761,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    *
    * @param   ImageTable     $img        ImageTable object, already stored
    * @param   string         $source     Source file with which the imagetypes shall be created
-   * 
+   *
    * @return  bool           True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   protected function createImages(ImageTable $img, string $source): bool
@@ -784,11 +784,11 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
    * Source files has to be given for each imagetype with a full system path.
    *
    * @param   ImageTable   $img        ImageTable object, already stored
-   * @param   array        $sources    List of source images for each imagetype availabe in JG4
+   * @param   array        $sources    List of source images for each imagetype available in JG4
    * @param   bool         $copy       True: copy, False: move
-   *  
+   *
    * @return  bool         True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    * @throws  \Exception
    */
@@ -850,10 +850,10 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       {
         if($this->component->getFilesystem()->get('filesystem') == 'local-images')
         {
-          // Sorce and destination on the local filesystem
+          // Suorce and destination on the local filesystem
           if($img_src == Path::clean(JPATH_ROOT . '/' . $img_dst))
           {
-            // Sorce and destination are identical. Do nothing.
+            // Source and destination are identical. Do nothing.
             continue;
           }
 
@@ -907,13 +907,13 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           $this->component->addLog('Jg3ToJg4 - ' . 'Action move: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
           $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
         }
-        
+
         $error = true;
 
         continue;
       }
     }
-    
+
     if($error)
     {
       return false;
@@ -926,7 +926,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
   /**
    * Perform script specific checks at the end of pre and postcheck.
-   * 
+   *
    * @param  string   $type       Type of checks (pre or post)
    * @param  Checks   $checks     The checks object
    * @param  string   $category   The checks-category into which to add the new check
@@ -968,7 +968,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       if($this->params->get('new_dirs', 1) == 1)
       {
         // We want to use the new folder structure style
-        // Check catpath of JG3 category table if they are consistent and convertable
+        // Check catpath of JG3 category table if they are consistent and convertible
         $query = $db->getQuery(true)
                 ->select($db->quoteName(array('cid', 'alias', 'parent_id', 'catpath')))
                 ->from($db->quoteName($cattablename))
@@ -1066,7 +1066,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
       //------------------------
 
-      // Check use case: Deactive alias uniqueness check during insertion
+      // Check use case: Deactivate alias uniqueness check during insertion
       if($this->params->get('unique_alias', 1) == 0)
       {
         $selection = $this->params->get('unique_alias_select', 'all');
@@ -1089,7 +1089,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
             $unique = array();
             foreach($titles as $id => $title)
             {
-            
+
               if(Factory::getConfig()->get('unicodeslugs') == 1)
               {
                 $titles[$id] = OutputFilter::stringURLUnicodeSlug(trim($title));
@@ -1098,7 +1098,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
               {
                 $titles[$id] = OutputFilter::stringURLSafe(trim($title));
               }
-              
+
               $uniqueKey = \array_search($titles[$id], $unique);
               if($uniqueKey === false)
               {
@@ -1127,14 +1127,14 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     if($type == 'post')
     {
 
-    }    
+    }
 
     return;
   }
 
   /**
    * Check if catpath is correct due to scheme 'parent-path/alias_cid'.
-   * 
+   *
    * @param   \stdClass   $cat   Category object
    *
    * @return  bool        True if catpath is correct, false otherwise

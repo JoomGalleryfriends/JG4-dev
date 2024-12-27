@@ -50,7 +50,7 @@ class Server implements ServerInterface
 
     /**
      * Array containing all relevant tus headers
-     * 
+     *
      * @var array
      */
     private $specs;
@@ -58,7 +58,7 @@ class Server implements ServerInterface
     /**
      * Unique upload identifier
      * Identification of the upload
-     * 
+     *
      * @var string
      */
     private $uuid;
@@ -66,7 +66,7 @@ class Server implements ServerInterface
     /**
      * Directory to use for save the file
      * Info: With slash (/) at the end
-     * 
+     *
      * @var string
      */
     private $directory = '';
@@ -75,7 +75,7 @@ class Server implements ServerInterface
      * Location of the TUS server - URI to reach the TUS server without domain
      * Info: With slash (/) in the beginning
      * Example: /index.php?target=tus
-     * 
+     *
      * @var string
      */
     private $location = '/';
@@ -84,15 +84,15 @@ class Server implements ServerInterface
      * Name of the domain, on which the file upload is provided
      * Info: Without slash (/) at the end
      * Example: http://example.org
-     * 
-     * @var string 
+     *
+     * @var string
      */
     private $domain = '';
 
     /**
      * Access-Control-Allow-Origin header value
      * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-     * 
+     *
      * @var string
      */
     private $allowAccess = '*';
@@ -100,7 +100,7 @@ class Server implements ServerInterface
     /**
      * Switch GET method.
      * GET method needed to download uploaded files.
-     * 
+     *
      * @var bool
      */
     private $allowGetMethod = true;
@@ -114,14 +114,14 @@ class Server implements ServerInterface
 
     /**
      * Storage to collect upload meta data
-     * 
+     *
      * @var array
      */
     private $metaData;
 
     /**
      * Switches debug mode.
-     * In this mode downloading info files is allowed (usefull for testing)
+     * In this mode downloading info files is allowed (useful for testing)
      *
      * @var bool
      */
@@ -129,14 +129,14 @@ class Server implements ServerInterface
 
     /**
      * Filetype of the uploaded file
-     * 
+     *
      * @var string
      */
     private $fileType  = '';
 
     /**
      * Name of the uploaded file
-     * 
+     *
      * @var string
      */
     private $realFileName = '';
@@ -155,7 +155,7 @@ class Server implements ServerInterface
     {
         $this->setDirectory($directory);
         $this->setLocation($location);
-        
+
         $this->app = Factory::getApplication();
         $this->debugMode = $debug;
 
@@ -169,7 +169,7 @@ class Server implements ServerInterface
      * @param   bool             $send    True to send the response, false to return the response
      *
      * @return  void|Response    void if send = true else Response object
-     * 
+     *
      * @throws Exception\Request If the method isn't available
      * @throws BadHeader
      */
@@ -295,7 +295,7 @@ class Server implements ServerInterface
      * Loads an upload into the object
      *
      * @param   string  $uuid  The uuid of the upload to load
-     * 
+     *
      * @return  bool    True on success, false otherwise
      */
     public function loadUpload(string $uuid=null): bool
@@ -318,14 +318,14 @@ class Server implements ServerInterface
 
     /**
      * Process the POST request
-     * 
+     *
      * @link https://tus.io/protocols/resumable-upload.html#post
      *
      * @throws  \Exception    If the uuid already exists
      * @throws  BadHeader     If the final length header isn't a positive integer
      * @throws  File          If the file already exists in the filesystem
      * @throws  File          If the creation of file failed
-     * 
+     *
      * @return void
      */
     private function processPost(): void
@@ -382,14 +382,14 @@ class Server implements ServerInterface
         unset($path);
     }
 
-    
+
     /**
      * Process the HEAD request
      *
      * @link http://tus.io/protocols/resumable-upload.html#head
      *
      * @throws \Exception If the uuid isn't know
-     * 
+     *
      * @return void
      */
     private function processHead(): void
@@ -422,7 +422,7 @@ class Server implements ServerInterface
 
     /**
      * Process the PATCH request
-     * 
+     *
      * @link http://tus.io/protocols/resumable-upload.html#patch
      *
      * @throws \Exception If the uuid isn't know
@@ -433,7 +433,7 @@ class Server implements ServerInterface
      * @throws File If it's impossible to open php://input
      * @throws File If it's impossible to open the destination file
      * @throws File If it's impossible to set the position in the destination file
-     * 
+     *
      * @return void
      */
     private function processPatch()
@@ -535,7 +535,7 @@ class Server implements ServerInterface
                 // according to comments on PHP Manual page (http://php.net/manual/en/function.connection-aborted.php)
                 // this method doesn't work, but we cannot send 0 to browser, because it's not compatible with TUS.
                 // But maybe some day (some PHP version) it starts working. Thath's why I leave it here.
-                
+
                 // echo "\n";
                 // ob_flush();
                 // flush();
@@ -549,8 +549,8 @@ class Server implements ServerInterface
                 $data = fread($handleInput, 8192);
                 if($data === false)
                 {
-                    $this->component->addLog('Impossible to read the datas', 'error', 'jerror');
-                    throw new File('Impossible to read the datas');
+                    $this->component->addLog('Impossible to read the data', 'error', 'jerror');
+                    throw new File('Impossible to read the data');
                 }
 
                 $sizeRead = strlen($data);
@@ -568,21 +568,21 @@ class Server implements ServerInterface
                     break;
                 }
 
-                // If user sent more datas than expected (by POST Final-Length), abort
+                // If user sent more data than expected (by POST Final-Length), abort
                 if($contentLength !== null && ($sizeRead + $currentSize > $lengthSession))
                 {
-                    $this->component->addLog('Size sent is greather than max length expected', 'error', 'jerror');
-                    throw new Max('Size sent is greather than max length expected');
+                    $this->component->addLog('Size sent is greater than max length expected', 'error', 'jerror');
+                    throw new Max('Size sent is greater than max length expected');
                 }
 
-                // If user sent more datas than expected (by PATCH Content-Length), abort
+                // If user sent more data than expected (by PATCH Content-Length), abort
                 if($contentLength !== null && ($sizeRead + $totalWrite > $contentLength))
                 {
-                    $this->component->addLog('Size sent is greather than max length expected', 'error', 'jerror');
-                    throw new Max('Size sent is greather than max length expected');
+                    $this->component->addLog('Size sent is greater than max length expected', 'error', 'jerror');
+                    throw new Max('Size sent is greater than max length expected');
                 }
 
-                // Write datas
+                // Write data
                 $sizeWrite = fwrite($handleOutput, $data);
                 if($sizeWrite === false)
                 {
@@ -638,7 +638,7 @@ class Server implements ServerInterface
 
     /**
      * Process the OPTIONS request
-     * 
+     *
      * @link http://tus.io/protocols/resumable-upload.html#options
      *
      * @return void
@@ -708,7 +708,7 @@ class Server implements ServerInterface
 
     /**
      * Process the DELETE request
-     * 
+     *
      * @link http://tus.io/protocols/resumable-upload.html#delete
      *
      * @return void
@@ -807,7 +807,7 @@ class Server implements ServerInterface
      * Get the UUID of the request (use for HEAD and PATCH request)
      *
      * @return  string  The UUID of the request
-     * 
+     *
      * @throws \InvalidArgumentException If the UUID is empty
      */
     private function getUserUuid(): string
@@ -833,7 +833,7 @@ class Server implements ServerInterface
     /**
      * Get metaData from property
      * Reads metaData from file if property is empty
-     * 
+     *
      * @return array
      */
     private function getMetaData(): array
@@ -848,10 +848,10 @@ class Server implements ServerInterface
 
     /**
      * Set metaData array to property
-     * 
+     *
      * @param  array  $metadata  The metadata array
-     * @param  bool   $replace   True to replace, false to append 
-     * 
+     * @param  bool   $replace   True to replace, false to append
+     *
      * @return void
      */
     private function setMetaData($metadata, $replace=true)
@@ -875,11 +875,11 @@ class Server implements ServerInterface
     /**
      * Get a metaData value from property
      *
-     * @param string $key    The key for wich you want value
+     * @param string $key    The key for which you want value
      * @param bool   $throw  True if exception should be thrown
      *
      * @return mixed The value for the id-key, false on failure
-     * 
+     *
      * @throws \Exception key is not defined in medatada
      */
     public function getMetaDataValue($key, $throw=false)
@@ -898,13 +898,13 @@ class Server implements ServerInterface
         else
         {
           return false;
-        }        
+        }
     }
 
     /**
      * Set a metaData value in the property
      *
-     * @param  string  $key    The key for wich you want set the value
+     * @param  string  $key    The key for which you want set the value
      * @param  mixed   $value  The value for the id-key to save
      *
      * @return void
@@ -925,7 +925,7 @@ class Server implements ServerInterface
         {
           $data[$key] = $value;
         }
-        
+
         $this->metaData = $data;
     }
 
@@ -974,7 +974,7 @@ class Server implements ServerInterface
     /**
      * Reads or initialize metaData from file.
      *
-     * @param  string  $filename  The filname of the file
+     * @param  string  $filename  The filename of the file
      *
      * @return array
      */
@@ -1053,9 +1053,9 @@ class Server implements ServerInterface
     }
 
     /**
-     * Delets a metaData file
+     * Deletes a metaData file
      *
-     * @param  string  $filename  The filname of the file
+     * @param  string  $filename  The filename of the file
      *
      * @return bool    True on success, false otherwise
      */
@@ -1091,7 +1091,7 @@ class Server implements ServerInterface
     }
 
     /**
-     * Get real name of transfered file
+     * Get real name of transferred file
      *
      * @return string  Real name of file
      */
@@ -1104,7 +1104,7 @@ class Server implements ServerInterface
      * Get the filename to use when save the uploaded file
      *
      * @return  string  The filename to use
-     * 
+     *
      * @throws \DomainException If the uuid isn't define
      */
     private function getFilename(): string
@@ -1120,11 +1120,11 @@ class Server implements ServerInterface
 
     /**
      * Get the filename to use when save the uploaded file
-     * 
+     *
      * @param   string  $uuid   UUID of the upload to delete
      *
      * @return  void
-     * 
+     *
      * @throws File If one or multiple files are not deletable
      */
     private function deleteUpload($uuid)
@@ -1153,7 +1153,7 @@ class Server implements ServerInterface
      * @param   array  $headers   A list of header name to extract
      *
      * @return  array  A list if header ([header name => header value])
-     * 
+     *
      * @throws BadHeader
      */
     private function extractHeaders($headers): array
@@ -1168,13 +1168,13 @@ class Server implements ServerInterface
         foreach ($headers as $headerName)
         {
             $value = $this->app->input->server->get($this->specs['Headers'][$headerName]['Name'], $this->specs['Headers'][$headerName]['Default'], $this->specs['Headers'][$headerName]['Type']);
-            
+
             if($this->specs['Headers'][$headerName]['Type'] == 'string' && trim($value) === '')
             {
                 throw new BadHeader($headerName . ' can\'t be empty');
             }
 
-            $headersValues[$headerName] = $value;                
+            $headersValues[$headerName] = $value;
         }
 
         return $headersValues;
@@ -1191,7 +1191,7 @@ class Server implements ServerInterface
     }
 
     /**
-     * Allows GET method (it means allow download uploded files)
+     * Allows GET method (it means allow download uploaded files)
      *
      * @param bool $allow
      *
@@ -1231,7 +1231,7 @@ class Server implements ServerInterface
      * @param   string   $directory   The directory where the file are stored
      *
      * @return  Server
-     * 
+     *
      * @throws File
      * @throws \InvalidArgumentException
      */
@@ -1250,7 +1250,7 @@ class Server implements ServerInterface
 
     /**
      * Get the directory where the file is stored
-     * 
+     *
      * @return string
      */
     public function getDirectory(): string
@@ -1266,7 +1266,7 @@ class Server implements ServerInterface
 
     /**
      * Get the location (uri) of the TUS server
-     * 
+     *
      * @return string
      */
     public function getLocation(): string
@@ -1282,11 +1282,11 @@ class Server implements ServerInterface
 
     /**
      * Sets the location (uri) of the TUS server
-     * 
+     *
      * @param string $location
      *
      * @return void
-     * 
+     *
      * @throws \Exception
      */
     private function setLocation(string $location)
@@ -1294,8 +1294,8 @@ class Server implements ServerInterface
       if(\strpos($location, 'http') !== false || \strpos($location, '://') !== false || \strpos($location, 'www.') !== false)
       {
         // looks like $location contains the domain
-        $this->component->addLog('Location should not contain the domain. Please provide the domain seperately using setDomain() method.', 'error', 'jerror');
-        throw new \Exception('Location should not contain the domain. Please provide the domain seperately using setDomain() method.', 1);
+        $this->component->addLog('Location should not contain the domain. Please provide the domain separately using setDomain() method.', 'error', 'jerror');
+        throw new \Exception('Location should not contain the domain. Please provide the domain separately using setDomain() method.', 1);
       }
 
       if(\substr($location, 0, 1) != '/')
@@ -1311,7 +1311,7 @@ class Server implements ServerInterface
 
     /**
      * Get the domain of the server
-     * 
+     *
      * @return string
      */
     public function getDomain(): string
@@ -1321,13 +1321,13 @@ class Server implements ServerInterface
         // domain should never ends with a slash (/)
         return \substr($this->domain, 0, -1);
       }
-      
+
       return $this->domain;
     }
 
     /**
      * Sets the domain of the server
-     * 
+     *
      * @param string $domain
      *
      * @return void
@@ -1347,7 +1347,7 @@ class Server implements ServerInterface
 
     /**
      * Sets the Access-Control-Allow-Origin header (CORS)
-     * 
+     *
      * @param  string  $domain  Domain to allow access from
      *
      * @return void

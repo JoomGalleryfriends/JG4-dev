@@ -1,4 +1,4 @@
-// Scripts for activating sensitive buttons in froms
+// Scripts for activating sensitive buttons in forms
 
 var enableEditing = function(event, element) {
   event.preventDefault();

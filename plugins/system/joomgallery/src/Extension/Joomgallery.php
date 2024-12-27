@@ -25,7 +25,7 @@ use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
  * System plugin integrating JoomGallery into the CMS core
- * 
+ *
  * @package JoomGallery
  * @since   4.0.0
  */
@@ -35,7 +35,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * Global database object
    *
    * @var    \JDatabaseDriver
-   * 
+   *
    * @since  1.0.0
    */
   protected $db = null;
@@ -44,7 +44,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * Global application object
    *
    * @var     CMSApplication
-   * 
+   *
    * @since   4.0.0
    */
   protected $app = null;
@@ -53,7 +53,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * True if JoomGallery component is installed
    *
    * @var     int|bool
-   * 
+   *
    * @since   4.0.0
    */
   protected static $jg_exists = null;
@@ -62,7 +62,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * Load the language file on instantiation.
    *
    * @var    boolean
-   * 
+   *
    * @since  4.0.0
    */
   protected $autoloadLanguage = true;
@@ -71,14 +71,14 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * List of allowed form context
    *
    * @var    array
-   * 
+   *
    * @since  4.0.0
    */
   protected $allowedFormContext = array('com_users.profile', 'com_users.user', 'com_users.registration', 'com_admin.profile');
 
   /**
    * Constructor
-   * 
+   *
    * @param   DispatcherInterface  $dispatcher  The event dispatcher
    * @param   array                $config      An optional associative array of configuration settings.
    *
@@ -114,7 +114,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     else
     {
       return array();
-    }    
+    }
   }
 
   /**
@@ -192,7 +192,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
         JoomHelper::getComponent()->createConfig();
         JoomHelper::getComponent()->getConfig()->emptyCache('menu.'.$itemid);
         break;
-      
+
       default:
         // Do nothing
         break;
@@ -234,7 +234,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
       return;
     }
 
-    $context = $form->getName(); 
+    $context = $form->getName();
     if(!\in_array($context, $this->allowedFormContext))
     {
       // Modify only forms that have the correct context
@@ -246,12 +246,12 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     // Load extra input fields to the form
     Form::addFormPath(JPATH_PLUGINS . '/system/joomgallery/forms');
     $form->loadFile('form', false);
- 
+
     $this->setResult($event, true);
 
     return;
   }
- 
+
   /**
    * Event triggered when populating a form.
    * Used to populating a form with extra data.
@@ -284,16 +284,16 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
 
       return;
     }
-    
-    if(\is_object($data)) 
-    { 
-      $userId = isset($data->id) ? $data->id : 0; 
-  
-      if(!isset($data->joomgallery) and $userId > 0) 
+
+    if(\is_object($data))
+    {
+      $userId = isset($data->id) ? $data->id : 0;
+
+      if(!isset($data->joomgallery) and $userId > 0)
       {
         try
         {
-          $fields = $this->getFields($userId); 
+          $fields = $this->getFields($userId);
         }
         catch(\Exception $e)
         {
@@ -304,11 +304,11 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
         }
 
         $data->joomgallery = array();
-        foreach($fields as $field) 
-        { 
+        foreach($fields as $field)
+        {
           $fieldName = str_replace('joomgallery.', '', $field[0]);
           $data->joomgallery[$fieldName] = json_decode($field[1], true);
-      
+
           if($data->joomgallery[$fieldName] === null)
           {
             $data->joomgallery[$fieldName] = $field[1];
@@ -317,7 +317,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
       }
     }
   }
- 
+
   /**
    * Event triggered after saving a user form.
    *
@@ -328,7 +328,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * @since   4.0.0
    */
   public function onUserAfterSave(Event $event)
-  { 
+  {
     if(\version_compare(JVERSION, '5.0.0', '<'))
     {
       // Joomla 4
@@ -358,7 +358,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
         // Joomla 4
         $cacheEvent = new Event('onContentCleanCache', $options);
 
-        // Perform the onContentCleanCach event
+        // Perform the onContentCleanCache event
         $this->onContentCleanCache($cacheEvent);
         if($cacheEvent->getArgument('error', false))
         {
@@ -388,8 +388,8 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
         {
           $this->insertField($userId, $fName, $fValue, $ordering);
           $ordering++;
-        } 
-      } 
+        }
+      }
       catch (\Exception $e)
       {
         $this->setError($event, $e->getMessage());
@@ -399,9 +399,9 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
       }
     }
   }
- 
+
   /**
-   * Event triggered after deleteing a user.
+   * Event triggered after deleting a user.
    *
    * @param   Event   $event
    *
@@ -410,7 +410,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * @since   4.0.0
    */
   public function onUserAfterDelete(Event $event)
-  { 
+  {
     if(\version_compare(JVERSION, '5.0.0', '<'))
     {
       // Joomla 4
@@ -425,7 +425,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
     }
 
     if(!$result)
-    { 
+    {
       $this->setResult($event, true);
 
       return;
@@ -447,7 +447,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
         return;
       }
     }
-    
+
     return true;
   }
 
@@ -469,7 +469,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
             ->where( array( 'type LIKE ' . $this->db->quote('component'),
                             'element LIKE ' . $this->db->quote('com_joomgallery')
                           ));
-        
+
       $this->db->setQuery($query);
 
       if(!$res = $this->db->loadResult())
@@ -489,7 +489,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    * @param   string        $string  Context like string
    * @param   bool          $id      Return id (second value)
    *
-   * @return  string|false  Guessed type on success, false otherwise   
+   * @return  string|false  Guessed type on success, false otherwise
    *
    * @since   4.0.0
    */
@@ -536,7 +536,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
       else
       {
         return \strtolower($pieces[1]);
-      }      
+      }
     }
 
     return false;
@@ -547,7 +547,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    *
    * @param   Event  $event  The event object
    * @param   mixed  $value  The value to be added to the result
-   * @param   bool   $array  True, if the reuslt has to be added/set to the result array. False to override the boolean result value.
+   * @param   bool   $array  True, if the result has to be added/set to the result array. False to override the boolean result value.
    *
    * @return  void
    *
@@ -558,7 +558,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
 		if($event instanceof ResultAwareInterface)
     {
 			$event->addResult($value);
-			
+
 			return;
 		}
 
@@ -573,7 +573,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
       $result   = $event->getArgument('result', true) ?: true;
       $result   = ($result == false) ? false : $value;
     }
-		
+
 		$event->setArgument('result', $result);
 	}
 
@@ -594,10 +594,10 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
 
       $event->setArgument('error', $message);
       $event->setArgument('errorMessage', $message);
-			
+
 			return;
 		}
-	} 
+	}
 
   /**
    * Delete user fields in DB
@@ -608,14 +608,14 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    *
    * @since   4.0.0
    */
-  protected function deleteFields($userId) 
+  protected function deleteFields($userId)
   {
-    $query = $this->db->getQuery(true) 
-        ->delete($this->db->quoteName('#__user_profiles')) 
-        ->where($this->db->quoteName('user_id') . '=' . (int) $userId) 
-        ->where($this->db->quoteName('profile_key') . ' LIKE ' . $this->db->quote('joomgallery.%')); 
+    $query = $this->db->getQuery(true)
+        ->delete($this->db->quoteName('#__user_profiles'))
+        ->where($this->db->quoteName('user_id') . '=' . (int) $userId)
+        ->where($this->db->quoteName('profile_key') . ' LIKE ' . $this->db->quote('joomgallery.%'));
 
-    $this->db->setQuery($query); 
+    $this->db->setQuery($query);
     $this->db->execute();
   }
 
@@ -631,8 +631,8 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    *
    * @since   4.0.0
    */
-  protected function insertField($userId, $name, $value, $ordering) 
-  { 
+  protected function insertField($userId, $name, $value, $ordering)
+  {
     $columns = array('user_id', 'profile_key', 'profile_value', 'ordering');
     $values  = array( $userId, $this->db->quote('joomgallery.' . $name), $this->db->quote($value), $ordering);
 
@@ -654,7 +654,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    *
    * @since   4.0.0
    */
-  protected function getFields($userId) 
+  protected function getFields($userId)
   {
     $columns = array('profile_key', 'profile_value');
 

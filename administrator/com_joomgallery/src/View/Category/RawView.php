@@ -53,7 +53,7 @@ class RawView extends JoomGalleryView
     }
     $this->component->createFilesystem($adapter);
 
-    // Get image ressource
+    // Get image resource
     try
     {
       list($file_info, $ressource) = $this->component->getFilesystem()->getResource($img_path);

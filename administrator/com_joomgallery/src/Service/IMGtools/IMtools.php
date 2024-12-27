@@ -427,7 +427,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    * Supported image-types: ??
    *
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
-   * @param   bool    $base64   String encoded with base64 (defaul: false)
+   * @param   bool    $base64   String encoded with base64 (default: false)
    * @param   bool    $html     Return html string for direct output (default: false)
    * @param   string  $type     Set image type to write (default: same as source)
    *
@@ -618,7 +618,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       return true;
     }
 
-    // Generate informations about type, dimension and origin of resized image
+    // Generate information about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
@@ -661,7 +661,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
       }
     }
 
-    // Crop the source image before resiszing if offsets setted before
+    // Crop the source image before resiszing if offsets set before
     // example of crop: convert input -crop destwidthxdestheight+offsetx+offsety +repage output
     // +repage needed to delete the canvas
     if($method == 4)
@@ -1175,7 +1175,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
     // Prepare working area (imginfo)
     $this->src_imginfo = $this->wtm_imginfo['imginfo'];
 
-    // Generate informations about type, dimension and origin of watermark
+    // Generate information about type, dimension and origin of watermark
     $position = $this->getWatermarkingInfo($this->res_imginfo, $this->wtm_imginfo['wtm_pos'], $this->wtm_imginfo['wtm_resize'], $this->wtm_imginfo['wtm_newSize']);
 
     // If we are manipulating a animated image and watermaks needs resize

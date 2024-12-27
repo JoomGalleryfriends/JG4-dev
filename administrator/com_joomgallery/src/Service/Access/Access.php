@@ -63,7 +63,7 @@ class Access implements AccessInterface
   protected $media_types = array('image');
 
   /**
-   * List of content types wich do not have their own assets but uses assets
+   * List of content types which do not have their own assets but uses assets
    * of its parent content types.
    *
    * @var array
@@ -195,8 +195,8 @@ class Access implements AccessInterface
     if($action == 'add' && \in_array($asset_type, \array_keys($this->parents)) && !$use_parent)
     {
       // Flag parent_pk has to be set to yes
-      $this->component->addLog("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 'error', 'jerror');
-      throw new \Exception("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
+      $this->component->addLog("Error in your input command: parent_pk (4th argument) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 'error', 'jerror');
+      throw new \Exception("Error in your input command: parent_pk (4th argument) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
     }
 
     // Apply the acl check
@@ -332,7 +332,7 @@ class Access implements AccessInterface
 
   /**
    * Change the component related properties of the class.
-   * Needed if you want to use this sercive for another component.
+   * Needed if you want to use this service for another component.
    *
    * @param   string   $option    The new option.
    * @param   array    $types     The new list of available content types.
@@ -535,7 +535,7 @@ class Access implements AccessInterface
    * Search for a value in a nested array and return first value of
    * current array level.
    *
-   * @param   string   $needle    The serached value.
+   * @param   string   $needle    The searched value.
    * @param   array    $array     The array.
    *
    * @return  string   First value in the array where needle was found.
@@ -553,7 +553,7 @@ class Access implements AccessInterface
       }
       elseif(is_array($value))
       {
-        // perfom recursive search
+        // perform recursive search
         $callback = $this->arrayRecursiveSearch($needle, $value);
         
         if($callback)

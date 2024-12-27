@@ -66,7 +66,7 @@ class JG3ModernRouter extends DefaultRouter
 	private $noIDs;
 
   /**
-	 * Databse object
+	 * Database object
 	 *
 	 * @var    DatabaseInterface
 	 *
