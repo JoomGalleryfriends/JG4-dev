@@ -98,7 +98,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     else
     {
       // Define filesystem adapter based on configuration 'jg_filesystem'
-      $this->component->getConfig()->get('jg_filesystem','local-images');
+      $this->filesystem = $this->component->getConfig()->get('jg_filesystem','local-images');
     }
 
     // Load language of com_media
@@ -310,10 +310,17 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     catch (\Exception $e)
     {
       $msg = $e->getMessage();
-      if(\strpos($e->getMessage(), 'account') !== false || \strpos($e->getMessage(), 'Account') !== false)
+      if(\strpos(\strtolower($e->getMessage()), 'account'))
       {
         $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND'), 'error', 'jerror');
         throw new \Exception(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
+      }
+      elseif(\strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+      {
+        $this->component->addLog('FileNotFoundException in function getFile in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'jerror');
+        $this->component->addLog('$adapter: ' . $adapter, 'warning', 'jerror');
+        $this->component->addLog('$path: ' . $path, 'warning', 'jerror');
+        throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
       }
       else
       {
