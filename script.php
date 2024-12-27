@@ -601,8 +601,8 @@ class com_joomgalleryInstallerScript extends InstallerScript
     require_once $migrationtabletrait_path;
 
     // Load MultipleAssetsTableTrait
-    $multipleassetstabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'MultipleAssetsTableTrait.php';
-    $multipleassetstabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\MultipleAssetsTableTrait';
+    $multipleassetstabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'Asset'.DIRECTORY_SEPARATOR.'MultipleAssetsTableTrait.php';
+    $multipleassetstabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\Asset\\MultipleAssetsTableTrait';
 
     require_once $multipleassetstabletrait_path;
 
@@ -684,10 +684,16 @@ class com_joomgalleryInstallerScript extends InstallerScript
     $db = Factory::getContainer()->get(DatabaseInterface::class);
 
     // Load JoomTableTrait
-    $trait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
-    $traitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\JoomTableTrait';
+    $joomtabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'JoomTableTrait.php';
+    $joomtabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\JoomTableTrait';
 
-    require_once $trait_path;
+    require_once $joomtabletrait_path;
+
+    // Load AssetsTableTrait
+    $assetstabletrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'Asset'.DIRECTORY_SEPARATOR.'AssetTableTrait.php';
+    $assetstabletraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Table\\Asset\\AssetTableTrait';
+
+    require_once $assetstabletrait_path;
 
     // Load ConfigTable
     $class_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Table'.DIRECTORY_SEPARATOR.'ConfigTable.php';
