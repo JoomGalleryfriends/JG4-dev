@@ -170,10 +170,14 @@ class FileManager implements FileManagerInterface
 
         // Grap resource if needed
         $isStream = false;
-        if(!$local_source && \strpos($this->component->getFilesystem()->getFilesystem(), 'local') === false)
+        if(\is_resource($source))
         {
-          // The source is located in the external filesystem
-          $source   = $this->component->getFilesystem()->getResource($source);
+          $isStream = true;
+        }
+        elseif(\is_string($source) && !$local_source && \strpos($this->component->getFilesystem()->getFilesystem(), 'local') === false)
+        {
+          // The path is pointing to an external filesystem
+          list($file_info, $source) = $this->component->getFilesystem()->getResource($source);
           $isStream = true;
         }
         

@@ -343,7 +343,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     if(isset($options['content']) && $options['content'] && $file->type == 'file')
     {
-        $resource = $this->getAdapter($adapter)->getResource($file->path);
+      list($file_info, $resource) = $this->getAdapter($adapter)->getResource($file->path);
 
         if($resource)
         {
@@ -410,7 +410,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
       if(isset($options['content']) && $options['content'] && $file->type == 'file')
       {
-        $resource = $this->getAdapter($adapter)->getResource($file->path);
+        list($file_info, $resource) = $this->getAdapter($adapter)->getResource($file->path);
 
         if($resource)
         {
