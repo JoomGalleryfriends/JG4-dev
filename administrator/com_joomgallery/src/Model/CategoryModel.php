@@ -188,7 +188,7 @@ class CategoryModel extends JoomAdminModel
           $this->item->params = json_encode($this->item->params);
         }
         
-        // Do any procesing on fields here if needed
+        // Do any processing on fields here if needed
       }
     }
 
@@ -448,7 +448,7 @@ class CategoryModel extends JoomAdminModel
             }
           }
           
-          // Check if category has subcategories (childs)
+          // Check if category has subcategories (children)
           if(!$this->getChildren($pk))
           {
             $hasChildren = true;
@@ -542,7 +542,7 @@ class CategoryModel extends JoomAdminModel
             return false;
           }
 
-          // Get path back from old location temporarely
+          // Get path back from old location temporarily
           $table->setPathWithLocation(true);
 
           // Move folder (including files and subfolders)
@@ -560,7 +560,7 @@ class CategoryModel extends JoomAdminModel
             return false;
           }
 
-          // Get path back from old location temporarely
+          // Get path back from old location temporarily
           $table->setPathWithLocation(true);
 
           // Rename folder
@@ -812,7 +812,7 @@ class CategoryModel extends JoomAdminModel
    * 
    * @param   integer  $pk        The id of the primary key.
    * @param   bool     $self      Include current node id (default: false)
-   * @param   bool     $setError  True to set an Error if no childern found (default: false)
+   * @param   bool     $setError  True to set an Error if no children found (default: false)
    *
    * @return  mixed    An array of categories or false if an error occurs.
    *
@@ -1005,7 +1005,7 @@ class CategoryModel extends JoomAdminModel
       $parent_id = intval($this->item->parent_id);
     }
 
-    // Load catgory table
+    // Load category table
     $table = $this->getTable();
     if($table->load($pk) === false)
     {

@@ -41,7 +41,7 @@ class RawView extends AdminRawView
 			return;
 		}
 
-    // Check acces view level
+    // Check access view level
 		if(!\in_array($this->item->access, $this->user->getAuthorisedViewLevels()))
     {
       $this->output(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'));

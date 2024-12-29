@@ -22,7 +22,7 @@ use \Joomla\CMS\User\UserHelper;
 
 /**
  * Model to get a category record.
- * 
+ *
  * @package JoomGallery
  * @since   4.0.0
  */
@@ -119,7 +119,7 @@ class CategoryModel extends JoomItemModel
 			$this->item->modified_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->modified_by)->name;
 		}
 
-		// Delete unnessecary properties
+		// Delete unnecessary properties
 		$toDelete = array('asset_id', 'password', 'params');
 		foreach($toDelete as $property)
 		{
@@ -134,10 +134,10 @@ class CategoryModel extends JoomItemModel
    *
    * @param   int     $catid    ID of the category to unlock
    * @param   string  $password Password of the category to check
-   * 
+   *
    * @return  boolean True on success, false otherwise
    * @since   4.0.0
-   * 
+   *
    * @throws \Exception
    */
   public function unlock($catid, $password)
@@ -235,7 +235,7 @@ class CategoryModel extends JoomItemModel
     // Load categories list model
     $listModel = $this->component->getMVCFactory()->createModel('categories', 'site');
     $listModel->getState();
-    
+
     // Select fields to load
     $fields = array('id', 'alias', 'title', 'description', 'thumbnail');
     $fields = $this->addColumnPrefix('a', $fields);
@@ -442,7 +442,7 @@ class CategoryModel extends JoomItemModel
 
   /**
    * Function to set the image list model state for the pre defined filter and fields selection
-   * 
+   *
    * @param   ListModel   $listModel    Images list model
    * @param   array       $fields       List of field names to be loaded (default: array())
    *
@@ -481,7 +481,7 @@ class CategoryModel extends JoomItemModel
       $imgform_limitstart = $this->app->getInput()->get('limitstart', 0, 'uint');
     }
 
-    // Override number of images beeing loaded
+    // Override number of images being loaded
     if($params['configs']->get('jg_category_view_pagination', 0, 'int') > 0)
     {
       // Load all images when not pagination active
@@ -500,7 +500,7 @@ class CategoryModel extends JoomItemModel
     }
 
     // Disable behavior of remembering pagination position
-    // if it is not explicitely given in the request
+    // if it is not explicitly given in the request
     $listModel->setState('list.start', $imgform_limitstart);
 
     // Apply ordering
@@ -509,7 +509,7 @@ class CategoryModel extends JoomItemModel
 
   /**
    * Function to set the subcategory list model state for the pre defined filter and fields selection
-   * 
+   *
    * @param   ListModel   $listModel    Category list model
    * @param   array       $fields       List of field names to be loaded (default: array())
    *
@@ -550,7 +550,7 @@ class CategoryModel extends JoomItemModel
       $catform_limitstart = $this->app->getInput()->get('limitstart', 0, 'uint');
     }
 
-    // Override number of subcategories beeing loaded
+    // Override number of subcategories being loaded
     if($params['configs']->get('jg_category_view_subcategories_pagination', 0, 'int') > 0)
     {
       // Load all subcategories when not pagination active
@@ -569,7 +569,7 @@ class CategoryModel extends JoomItemModel
     }
 
     // Disable behavior of remembering pagination position
-    // if it is not explicitely given in the request
+    // if it is not explicitly given in the request
     $listModel->setState('list.start', $catform_limitstart);
 
     // Apply ordering
@@ -601,7 +601,7 @@ class CategoryModel extends JoomItemModel
 
   /**
    * Get a list of parent categories that are not published (state = 1)
-   * 
+   *
    * @param   int    $pk         Primary key of the category
    * @param   bool   $approved   True if the parents also have to be approved
    *
@@ -618,7 +618,7 @@ class CategoryModel extends JoomItemModel
     }
     else
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
 
     if(isset($this->item->unpublishedParents))
@@ -683,7 +683,7 @@ class CategoryModel extends JoomItemModel
     }
     else
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
 
     if(isset($this->item->protectedParents))
@@ -740,7 +740,7 @@ class CategoryModel extends JoomItemModel
     }
     else
     {
-      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);      
+      throw new \Exception(Text::_('COM_JOOMGALLERY_ITEM_NOT_LOADED'), 1);
     }
 
     if(isset($this->item->accessibleParents))

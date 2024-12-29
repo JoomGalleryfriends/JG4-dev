@@ -46,7 +46,7 @@ interface UploaderInterface
    * (check upload, check user upload limit, create filename, onJoomBeforeUpload)
 	 *
    * @param   array    $data      Form data (as reference)
-   * @param   bool     $filename    True, if the filename has to be created (defaut: True)
+   * @param   bool     $filename    True, if the filename has to be created (default: True)
    *
 	 * @return  bool     True on success, false otherwise
 	 *

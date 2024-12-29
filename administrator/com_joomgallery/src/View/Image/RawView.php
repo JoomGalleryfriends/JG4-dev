@@ -58,7 +58,7 @@ class RawView extends JoomGalleryView
     }
     $this->component->createFilesystem($adapter);
 
-    // Get image ressource
+    // Get image resource
     try
     {
       list($file_info, $resource) = $this->component->getFilesystem()->getResource($img_path);
@@ -92,7 +92,7 @@ class RawView extends JoomGalleryView
   }
 
   /**
-	 * Postprocessing the image after retrieving the image ressource
+	 * Postprocessing the image after retrieving the image resource
 	 *
 	 * @param   \stdClass  $file_info    Object with file information
    * @param   resource   $resource     Image resource
@@ -108,7 +108,7 @@ class RawView extends JoomGalleryView
   /**
 	 * Check access to this image
 	 *
-	 * @param   int  $id    Iamge id
+	 * @param   int  $id    Image id
 	 *
 	 * @return   bool    True on success, false otherwise
 	 */

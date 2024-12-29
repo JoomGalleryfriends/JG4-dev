@@ -62,7 +62,7 @@ abstract class JoomAdminModel extends AdminModel
   protected $user;
 
   /**
-   * JoomGallery extension calss
+   * JoomGallery extension class
    *
    * @access  protected
    * @var     Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent

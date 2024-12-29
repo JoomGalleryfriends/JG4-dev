@@ -30,7 +30,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 
 /**
  * Migration model.
- * 
+ *
  * @package JoomGallery
  * @since   4.0.0
  */
@@ -145,14 +145,14 @@ class MigrationModel extends JoomAdminModel
         // Override params from user state with the one from db
         $params = new Registry($params_db);
       }
-    }    
-    
+    }
+
     return array('migration' => $params);
   }
 
   /**
 	 * Method to set the migration parameters in the model and the migration script.
-   * 
+   *
    * @param   array  $params  The migration parameters entered in the migration form
 	 *
 	 * @return  void
@@ -184,7 +184,7 @@ class MigrationModel extends JoomAdminModel
     {
       $this->params = new Registry($params);
     }
-    
+
     $this->component->getMigration()->set('params', $this->params);
   }
 
@@ -212,7 +212,7 @@ class MigrationModel extends JoomAdminModel
   public function getScript()
   {
 
-    // Retreive script variable
+    // Retrieve script variable
     $name = $this->app->getUserStateFromRequest(_JOOM_OPTION.'.migration.script', 'script', '', 'cmd');
 
     if(!$name || \strlen($name) < 2 || \strlen($name) > 30)
@@ -220,12 +220,12 @@ class MigrationModel extends JoomAdminModel
       $tmp        = new \stdClass;
       $tmp->name  = '';
       $this->scriptName = '';
-      
+
       return $tmp;
     }
 
     $this->scriptName = $name;
-    
+
     if(!$this->component->getMigration())
     {
       $this->component->createMigration($name);
@@ -265,7 +265,7 @@ class MigrationModel extends JoomAdminModel
 	 */
 	public function getMigrateables()
 	{
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -347,7 +347,7 @@ class MigrationModel extends JoomAdminModel
 
     // Add type if empty
     if(empty($item->type))
-    {      
+    {
       $item->type = $type;
     }
 
@@ -360,7 +360,7 @@ class MigrationModel extends JoomAdminModel
       }
       elseif($this->params && !empty($this->params))
       {
-        // We have a migrateable record whos name does not correspond to the record name
+        // We have a migrateable record whose name does not correspond to the record name
         $type_obj = $this->component->getMigration()->getType($type);
 
         $item->dst_table = JoomHelper::$content_types[$type_obj->get('recordName')];
@@ -435,7 +435,7 @@ class MigrationModel extends JoomAdminModel
       {
         $query = $db->getQuery(true)->setQuery($query);
       }
-      
+
       $db->setQuery($query);
 
       $tables = $db->loadObjectList('type');
@@ -494,7 +494,7 @@ class MigrationModel extends JoomAdminModel
     if(!\is_null($tmp_pk))
     {
       $this->app->input->set($table->getKeyName(), $tmp_pk);
-    }    
+    }
 
     return $items;
   }
@@ -620,7 +620,7 @@ class MigrationModel extends JoomAdminModel
     */
   public function getSourceDeletion(): bool
   {
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -636,7 +636,7 @@ class MigrationModel extends JoomAdminModel
 
   /**
    * Load the current queue of ids from table
-   * 
+   *
    * @param   string     $type   Content type
    * @param   object     $table  Object containing migration item properties
    *
@@ -661,7 +661,7 @@ class MigrationModel extends JoomAdminModel
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -679,7 +679,7 @@ class MigrationModel extends JoomAdminModel
     {
       $file = Path::find(Form::addFormPath(), $script->name . '.xml');
     }
-    
+
     if(!is_file($file))
     {
       $this->component->setError('Migration form XML could not be found. XML filename: ' . $script->name . '.xml');
@@ -695,7 +695,7 @@ class MigrationModel extends JoomAdminModel
 		{
 			return false;
 		}
-    
+
     return $form;
 	}
 
@@ -765,7 +765,7 @@ class MigrationModel extends JoomAdminModel
 
   /**
 	 * Method to perform the pre migration checks.
-   * 
+   *
    * @param   array  $params   The migration parameters entered in the migration form
    * @param   bool   $resumed  True, if the precheck is called during resuming the migration
 	 *
@@ -799,7 +799,7 @@ class MigrationModel extends JoomAdminModel
 	 */
   public function postcheck()
   {
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -817,7 +817,7 @@ class MigrationModel extends JoomAdminModel
 
   /**
 	 * Method to perform the migration of one record.
-   * 
+   *
    * @param   string   $type   Name of the content type to migrate.
    * @param   mixed    $pk     The primary key of the source record.
 	 *
@@ -827,7 +827,7 @@ class MigrationModel extends JoomAdminModel
 	 */
   public function migrate(string $type, $pk): object
   {
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -906,7 +906,7 @@ class MigrationModel extends JoomAdminModel
                   $this->component->getMigration()->set('continue', false);
                 }
                 break;
-              
+
               default:
                 $res = true;
                 break;
@@ -1013,7 +1013,7 @@ class MigrationModel extends JoomAdminModel
 
   /**
 	 * Method to manually apply a state for one record of one migrateable.
-   * 
+   *
    * @param   string    $type     Name of the content type.
    * @param   integer   $state    The new state to be applied. (0: failed, 1:success, 2:pending)
    * @param   integer   $src_pk   The primary key of the source record.
@@ -1026,7 +1026,7 @@ class MigrationModel extends JoomAdminModel
 	 */
   public function applyState(string $type, int $state, int $src_pk, int $dest_pk = 0, string $error = ''): object
   {
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -1072,7 +1072,7 @@ class MigrationModel extends JoomAdminModel
         if($removed)
         {
           $table->successful->set($src_pk, $dest_pk);
-        }        
+        }
         break;
 
       // apply pending state
@@ -1117,7 +1117,7 @@ class MigrationModel extends JoomAdminModel
           $table->successful->remove($src_pk);
           $removed = true;
         }
-        
+
         // Add migrated primary key to failed object
         if($removed)
         {
@@ -1177,7 +1177,7 @@ class MigrationModel extends JoomAdminModel
    */
   public function deleteSource()
   {
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -1231,7 +1231,7 @@ class MigrationModel extends JoomAdminModel
 	 */
 	protected function getListQuery()
 	{
-    // Retreive script
+    // Retrieve script
     $script = $this->getScript();
 
     if(!$script)
@@ -1481,7 +1481,7 @@ class MigrationModel extends JoomAdminModel
     {
       $record->description = '';
     }
-    
+
     $needed = array('image');
     if(\in_array($type, $needed))
     {
@@ -1495,7 +1495,7 @@ class MigrationModel extends JoomAdminModel
     {
       $record->files = '';
     }
-    
+
     $needed = array('image', 'category', 'imagetype', 'user');
     if(\in_array($type, $needed))
     {
@@ -1508,7 +1508,7 @@ class MigrationModel extends JoomAdminModel
       $record->metadesc = '';
       $record->metakey = '';
     }
-    
+
     $needed = array('image', 'category', 'field', 'tag', 'collection', 'user', 'vote', 'comment');
     if(\in_array($type, $needed))
     {

@@ -174,7 +174,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
           $filename = $filename.'.'. \strtolower($def_ext);
         }
         break;
-      
+
       default:
         if($ext)
         {
@@ -190,9 +190,9 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * Copies an index.html file into a specified folder
    *
    * @param   string   $path    The path where the index.html should be created
-   * 
+   *
    * @return  string
-   * 
+   *
    * @since   4.0.0
    * @throws  \Exception
    */
@@ -280,7 +280,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
   /**
    * Returns the requested file or folder information. More information
    * can be found in AdapterInterface::getFile().
-   * 
+   *
    * @param   string     $path     The path to the file or folder
    * @param   array      $options  The options
    *
@@ -747,7 +747,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    *
    * @param   string  $path  The path
    *
-   * @return  array   array(info, ressource)
+   * @return  array   array(info, resource)
    *
    * @since   4.0.0
    * @throws  \Exception
@@ -884,7 +884,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
   /**
    * Get the filesystem property.
-   * 
+   *
    * @return string  The filesystem
    *
    * @since   4.0.0
@@ -896,9 +896,9 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
   /**
    * Adjusting the path if needed.
-   * 
+   *
    * @param  string  The path to be adjusted
-   * 
+   *
    * @return string  The adjusted path
    *
    * @since   4.0.0

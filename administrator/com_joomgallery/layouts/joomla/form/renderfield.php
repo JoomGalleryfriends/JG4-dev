@@ -81,7 +81,7 @@ $sensitiveBtn = '';
 $sensitiveLbl = '';
 if($sensitive)
 {
-  // disbled input field
+  // disabled input field
   $tmp_input = explode(' ', trim($input));
   $tmp_input = array_merge(array($tmp_input[0]), array('disabled'), array_slice($tmp_input, 1));
   $input     = implode(' ', $tmp_input);

@@ -268,7 +268,7 @@
 
     <field name="filename"
            type="hidden"
-           filter="stirng" />
+           filter="string" />
 
     <field name="replacetype"
            type="jgimagetype"

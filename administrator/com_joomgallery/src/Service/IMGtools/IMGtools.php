@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
 ******************************************************************************************
 **   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
@@ -64,7 +64,7 @@ abstract class IMGtools implements IMGtoolsInterface
   protected $jg;
 
   /**
-   * List of all supportet image types (in uppercase)
+   * List of all supported image types (in uppercase)
    *
    * @var array
    */
@@ -124,7 +124,7 @@ abstract class IMGtools implements IMGtoolsInterface
    * image processing and metadata handling
    *
    * @var array
-   */  
+   */
    protected $dst_imginfo = array('width' => 0,
                                  'height' => 0,
                                  'orientation' => '',
@@ -141,7 +141,7 @@ abstract class IMGtools implements IMGtoolsInterface
    * Holds all image information of finished processed file
    *
    * @var array
-   */  
+   */
    protected $res_imginfo = array('width' => 0,
                                  'height' => 0,
                                  'orientation' => '',
@@ -149,7 +149,7 @@ abstract class IMGtools implements IMGtoolsInterface
                                  'animation' => false,
                                  'truecolor' => true,
                                  'frames' => 1);
-  
+
   /**
    * Constructor
    *
@@ -164,7 +164,7 @@ abstract class IMGtools implements IMGtoolsInterface
   {
     // Load application
     $this->getApp();
-    
+
     // Load component
     $this->getComponent();
 
@@ -200,7 +200,7 @@ abstract class IMGtools implements IMGtoolsInterface
    * @return  mixed    Imageinfo on success, false otherwise
    *
    * @since   3.5.0
-   */ 
+   */
   public function analyse($img, $is_stream = false)
   {
     // Check, if file exists and is a valid image
@@ -220,7 +220,7 @@ abstract class IMGtools implements IMGtoolsInterface
       {
         $string_stream = $img;
       }
-      
+
       $info = \getimagesizefromstring($string_stream);
     }
     else
@@ -504,7 +504,7 @@ abstract class IMGtools implements IMGtoolsInterface
 
   /**
    * Clears the class variables and bring it back to default
-   * 
+   *
    * @param   string|array  $key  The name of the imginfo array to be cleared
    *
    * @return  void
@@ -522,7 +522,7 @@ abstract class IMGtools implements IMGtoolsInterface
     {
       $name = $kval . '_imginfo';
       $this->{$name} = $this->ini_imginfo[$kval];
-    }    
+    }
   }
 
   /**
@@ -584,7 +584,7 @@ abstract class IMGtools implements IMGtoolsInterface
   }
 
   /**
-   * Collect informations for the resize (informations: dimensions, type, origin)
+   * Collect information for the resize (information: dimensions, type, origin)
    *
    * Cropping function adapted from
    * 'Resize Image with Different Aspect Ratio'
@@ -692,7 +692,7 @@ abstract class IMGtools implements IMGtoolsInterface
       $ratio     = ($srcHeight / $new_height);
       $testwidth = ($srcWidth / $ratio);
 
-      // If new width exceeds setted max. width
+      // If new width exceeds set max. width
       if($testwidth > $new_width)
       {
         // calculate ratio by width
@@ -733,10 +733,10 @@ abstract class IMGtools implements IMGtoolsInterface
   }
 
   /**
-   * Collect informations for the watermarking
-   * (informations: dimensions, type, position)
+   * Collect information for the watermarking
+   * (information: dimensions, type, position)
    *
-   * @param   array   $imginfo        array with image informations of the background image
+   * @param   array   $imginfo        array with image information of the background image
    * @param   int     $position       Positioning of the watermark
    * @param   int     $resize         resize watermark (0:no,1:by height,2:by width)
    * @param   float   $new_size       new size of the resized watermark in percent related to the file (1-100)
@@ -794,12 +794,12 @@ abstract class IMGtools implements IMGtoolsInterface
     $this->dst_imginfo['width']  = (int) \round($newwidth_watermark);
     $this->dst_imginfo['height'] = (int) \round($newheight_watermark);
 
-    // Other informations of the resized watermark image
+    // Other information of the resized watermark image
     $this->dst_imginfo['orientation']   = $this->src_imginfo['orientation'];
     $this->dst_imginfo['src']['width']  = $this->src_imginfo['width'];
     $this->dst_imginfo['src']['height'] = $this->src_imginfo['height'];
 
-    // Generate informations about position of the watermark inside the src image
+    // Generate information about position of the watermark inside the src image
     // Position x
     switch(($position - 1) % 3)
     {
@@ -1405,7 +1405,7 @@ abstract class IMGtools implements IMGtoolsInterface
    * Replaces the actual exif orientation tag in
    * a given exifdata string
    *
-   * @param   string  $exifdata    binary APP1-Segement of image header (TIFF or JFIF)
+   * @param   string  $exifdata    binary APP1-Segment of image header (TIFF or JFIF)
    *                               ( usually received by getimagesize($file, $imginfo); $imginfo['APP1'] )
    * @param   int     $newVal      numeric value for the new orientation
    *
@@ -1798,13 +1798,13 @@ abstract class IMGtools implements IMGtoolsInterface
       // Check the byte alignment to see if the bytes need to be reversed
       if($Byte_Align == "MM")
       {
-        // Motorola MSB first byte aligment
+        // Motorola MSB first byte alignment
         // Unpack the Numerator and denominator and return them
         return \unpack('NNumerator/NDenominator', $input_data);
       }
       else
       {
-        // Intel LSB first byte aligment
+        // Intel LSB first byte alignment
         // Unpack the Numerator and denominator and return them
         return \unpack('VNumerator/VDenominator', $input_data);
       }
@@ -1866,13 +1866,13 @@ abstract class IMGtools implements IMGtoolsInterface
       // Check the byte alignment to see if the bytes need to be reversed
       if($Byte_Align == "MM")
       {
-        // Motorola MSB first byte aligment
+        // Motorola MSB first byte alignment
         // Unpack the Numerator and denominator
         $value = \unpack('NNumerator/NDenominator', $input_data);
       }
       else
       {
-        // Intel LSB first byte aligment
+        // Intel LSB first byte alignment
         // Unpack the Numerator and denominator
         $value = \unpack('VNumerator/VDenominator', $input_data);
       }

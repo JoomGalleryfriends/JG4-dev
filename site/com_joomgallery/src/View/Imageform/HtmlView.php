@@ -21,7 +21,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
  * View class for a list of Joomgallery.
- * 
+ *
  * @package JoomGallery
  * @since   4.0.0
  */
@@ -54,7 +54,7 @@ class HtmlView extends JoomGalleryView
    * The page to return to after the article is submitted
    *
    * @var  string
-   * 
+   *
    * @since  4.0.0
    */
   protected $return_page = '';
@@ -76,7 +76,7 @@ class HtmlView extends JoomGalleryView
 		{
 			return;
 		}
-		
+
 		$this->state  = $this->get('State');
 		$this->params = $this->get('Params');
 		$this->item   = $this->get('Item');
@@ -91,7 +91,7 @@ class HtmlView extends JoomGalleryView
 			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
 
-    // Check acces view level
+    // Check access view level
 		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');
@@ -164,14 +164,14 @@ class HtmlView extends JoomGalleryView
 			// Add Breadcrumbs
 			$pathway = $this->app->getPathway();
 			$breadcrumbList = Text::_('COM_JOOMGALLERY_IMAGES');
-	
+
 			if(!\in_array($breadcrumbList, $pathway->getPathwayNames()))
 			{
 				$pathway->addItem($breadcrumbList, JoomHelper::getViewRoute('images'));
 			}
-	
+
 			$breadcrumbTitle = isset($this->item->id) ? Text::_('JGLOBAL_EDIT') : Text::_('JGLOBAL_FIELD_ADD');
-	
+
 			if(!\in_array($breadcrumbTitle, $pathway->getPathwayNames()))
 			{
 				$pathway->addItem($breadcrumbTitle, '');

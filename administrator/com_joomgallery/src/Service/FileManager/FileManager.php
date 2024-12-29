@@ -59,7 +59,7 @@ class FileManager implements FileManagerInterface
   /**
    * Constructor
    * 
-   * @param   int          $catid       Id of the category for wich the filsystem is chosen
+   * @param   int          $catid       Id of the category for which the filesystem is chosen
    * @param   array|bool   $selection   List of imagetypes to consider or false to consider all (default: False)
    *
    * @return  void
@@ -98,7 +98,7 @@ class FileManager implements FileManagerInterface
    * @param   string               $source        Source file with which the image types shall be created
    * @param   string               $filename      Name for the files to be created
    * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
-   * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
+   * @param   bool                 $processing    True to create imagetypes by processing source (default: True)
    * 
    * @return  bool                 True on success, false otherwise
    * 
@@ -1260,7 +1260,7 @@ class FileManager implements FileManagerInterface
    *
    * @param   string    $filename     Original upload name without extension
    * @param   string    $tag          File extension e.g. 'jpg'
-   * @param   int       $filecounter  Optinally a filecounter
+   * @param   int       $filecounter  Optionally a filecounter
    *
    * @return  string    The generated filename
    *
@@ -1322,8 +1322,8 @@ class FileManager implements FileManagerInterface
     }
     else
     {
-      $this->component->addLog('Invalide filename received. Please make sure filename has the correct form.', 'error', 'jerror');
-      throw new \Exception('Invalide filename received. Please make sure filename has the correct form.');
+      $this->component->addLog('Invalid filename received. Please make sure filename has the correct form.', 'error', 'jerror');
+      throw new \Exception('Invalid filename received. Please make sure filename has the correct form.');
     }
     list($rnd, $tag) = \explode('.', $end);
 

@@ -133,7 +133,7 @@ class JgcategoryField extends FormField
 				$cat = JoomHelper::getRecord('category', $this->value);
 			}
 
-			// Interprete root category
+			// Interpret root category
 			if($this->value == 1)
 			{
 				$cat->title = Text::_('JGLOBAL_ROOT_PARENT');

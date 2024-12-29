@@ -28,15 +28,15 @@ interface FileManagerInterface
   /**
    * Creation of image types based on source file.
    * Source file has to be given with a full system path.
-   * 
+   *
    *
    * @param   string               $source        Source file with which the image types shall be created
    * @param   string               $filename      Name for the files to be created
    * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
-   * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
-   * 
+   * @param   bool                 $processing    True to create imagetypes by processing source (default: True)
+   *
    * @return  bool                 True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function createImages($source, $filename, $cat=2, $processing=True): bool;
@@ -45,9 +45,9 @@ interface FileManagerInterface
    * Deletion of image types
    *
    * @param   object|int|string    $img    Image object, image ID or image alias
-   * 
+   *
    * @return  bool                 True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function deleteImages($img): bool;
@@ -56,9 +56,9 @@ interface FileManagerInterface
    * Checks image types for existence, validity and size
    *
    * @param   object|int|string    $img    Image object, image ID or image alias
-   * 
+   *
    * @return  array                List of filetype info
-   * 
+   *
    * @since   4.0.0
    */
   public function checkImages($img): array;
@@ -107,9 +107,9 @@ interface FileManagerInterface
    *
    * @param   string              $foldername   Name of the folder to be created
    * @param   object|int|string   $parent       Object, ID or alias of the parent category (default: 1)
-   * 
+   *
    * @return  bool                True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function createCategory($foldername, $parent=1): bool;
@@ -119,9 +119,9 @@ interface FileManagerInterface
    *
    * @param   object|int|string   $cat          Object, ID or alias of the category to be deleted
    * @param   bool                $del_images   True, if you want to delete even if there are still images in it (default: false)
-   * 
+   *
    * @return  bool                True on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function deleteCategory($cat, $del_images=false): bool;
@@ -130,9 +130,9 @@ interface FileManagerInterface
    * Checks a category for existence, correct images and file path
    *
    * @param   object|int|string   $cat    Object, ID or alias of the category to be checked
-   * 
+   *
    * @return  array               List of folder info
-   * 
+   *
    * @since   4.0.0
    */
   public function checkCategory($cat): array;
@@ -184,9 +184,9 @@ interface FileManagerInterface
    * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
    * @param   string|bool               $filename  The filename (default: false)
    * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
-   * 
+   *
    * @return  mixed   Path to the image on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function getImgPath($img, $type, $catid=false, $filename=false, $root=0);
@@ -199,10 +199,10 @@ interface FileManagerInterface
    * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
    * @param   string|bool              $alias     The category alias (default: false)
    * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
-   * 
-   * 
+   *
+   *
    * @return  mixed   Path to the category on success, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0);
@@ -213,7 +213,7 @@ interface FileManagerInterface
    *
    * @param   string    $filename     Original upload name without extension
    * @param   string    $tag          File extension e.g. 'jpg'
-   * @param   int       $filecounter  Optinally a filecounter
+   * @param   int       $filecounter  Optionally a filecounter
    *
    * @return  string    The generated filename
    *

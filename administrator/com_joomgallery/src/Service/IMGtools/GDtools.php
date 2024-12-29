@@ -23,7 +23,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtools a
 
 /**
  * IMGtools Class (GD)
- * 
+ *
  * Provides methods to do image processing and metadata handling
  *
  * Image processor
@@ -214,7 +214,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       return false;
     }
 
-    // Check for supportet imge files
+    // Check for supported imge files
     if(!\in_array($this->src_type, $this->supported_types))
     {
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_GD_SUPPORTED_TYPES', \implode(',', $this->supported_types)));
@@ -503,7 +503,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * Supported image-types: ??
    *
    * @param   int     $quality  Quality of the resized image (1-100, default: 100)
-   * @param   bool    $base64   String encoded with base64 (defaul: false)
+   * @param   bool    $base64   String encoded with base64 (default: false)
    * @param   bool    $html     Return html string for direct output (default: false)
    * @param   string  $type     Set image type to write (default: same as source)
    *
@@ -674,7 +674,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
     $this->src_frames  = $this->copyFrames_GD($this->res_frames, $this->res_imginfo, $this->res_imginfo['transparency']);
     $this->src_imginfo = $this->res_imginfo;
 
-    // Generate informations about type, dimension and origin of resized image
+    // Generate information about type, dimension and origin of resized image
     if(!($this->getResizeInfo($this->src_type, $method, $width, $height, $cropposition)))
     {
       $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_INVALID_IMAGEFILE'));
@@ -1299,7 +1299,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       $bkg_imginfo['frames'] = 1;
     }
 
-    // Generate informations about type, dimension and origin of resized image
+    // Generate information about type, dimension and origin of resized image
     $position = $this->getWatermarkingInfo($bkg_imginfo, $wtm_pos, $wtm_resize, $wtm_newSize);
 
     // Calculation for the amount of memory needed (in bytes, GD)
@@ -1462,8 +1462,8 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * Calculates the amaount of memory (in bytes)
    * needed for manipulating a one-frame image with GD
    *
-   * @param   array   $src_imginfo      array with source image informations
-   * @param   array   $dst_imginfo      array with destination image informations
+   * @param   array   $src_imginfo      array with source image information
+   * @param   array   $dst_imginfo      array with destination image information
    * @param   string  $method           manipulation method (resize or rotate)
    *
    * @return  int     memory needed
@@ -1805,7 +1805,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * Copy frames-array without reference
    *
    * @param   array  $src_frames  Array with source frames
-   * @param   array   $imginfo  array with destination image informations
+   * @param   array   $imginfo  array with destination image information
    * @param   boolean $transparency true = transparent background
    *
    * @return  array  Array with destination frames
@@ -1836,7 +1836,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * Supported: JPG, PNG, GIF, WEBP
    *
    * @param   string|resource  $file      Path to source file or image string or resource
-   * @param   array            $imginfo   Array with source image informations
+   * @param   array            $imginfo   Array with source image information
    *
    * @return  array            $src_frame[0: ["durtion": 0, "image": GDobject]] on success, false otherwise
    *
@@ -1856,7 +1856,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       elseif(\get_resource_type($src_file) == 'gd')
       {
         $src_frame[0]['image'] = $src_file;
-      }      
+      }
     }
     else
     {
@@ -1878,9 +1878,9 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
           return false;
           break;
       }
-    }    
+    }
 
-    // Convert pallete images to true color images
+    // Convert palette images to true color images
     if(\function_exists('imagepalettetotruecolor') && $this->src_type != 'GIF')
     {
       \imagepalettetotruecolor($src_frame[0]['image']);
@@ -1893,7 +1893,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    * Creates empty GD image object optionally with transparent background
    *
    * @param   object  $src_frame    GDobject of the source image file
-   * @param   array   $dst_imginfo  array with destination image informations
+   * @param   array   $dst_imginfo  array with destination image information
    * @param   boolean $transparency true = transparent background
    *
    * @return  object  empty GDobject on success, false otherwise
@@ -2145,7 +2145,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
       switch ($type)
       {
         case 'PNG':
-          // Special threatment for png files
+          // Special treatment for png files
           if(\function_exists('imagealphablending'))
           {
             \imagealphablending($new_img, false);
@@ -2165,7 +2165,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
   }
 
   /**
-   * ake sure background is still transparent
+   * Make sure background is still transparent
    *
    * @param   object     $img_frame     GDobject of the image to rotate
    * @param   bool       $truecolor     True if the image is a truecolor image
@@ -2224,8 +2224,8 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    *
    * @param   object     $img_frame     GDobject of the image
    * @param   object     $wtm_frame     GDobject of the watermark
-   * @param   array      $imginfo       array with image informations
-   * @param   array      $wtminfo       array with watermark informations
+   * @param   array      $imginfo       array with image information
+   * @param   array      $wtminfo       array with watermark information
    * @param   array      $position      position (in pixel) of watermark on image, array(x,y)
    * @param   integer    $opacity       opacity of the watermark in percent (0-100)
    *
@@ -2296,8 +2296,8 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    *
    * @param   object  $dst_img       GDobject of the destination image-frame
    * @param   object  $src_img       GDobject of the source image-frame
-   * @param   array   $src_imginfo   array with source image informations
-   * @param   array   $dst_imginfo   array with destination image informations
+   * @param   array   $src_imginfo   array with source image information
+   * @param   array   $dst_imginfo   array with destination image information
    * @param   bool    $fast_resize   resize with fastImageCopyResampled()
    * @param   int     $fast_quality  quality of destination (fix = 3) read instructions above
    *

@@ -146,7 +146,7 @@ class Checks
   }
 
   /**
-   * Add a new check beeing performed
+   * Add a new check being performed
    *
    * @param   string   $category   The category of the check
    * @param   string   $name       The name of the check

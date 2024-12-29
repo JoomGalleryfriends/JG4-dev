@@ -910,10 +910,10 @@ class JoomHelper
     // Standard rating clause
     $clause = 'ROUND(LEAST(IF(votes > 0, '.$votesum.'/'.$votes.', 0.0), '.(float)$maxvoting.'), 2)';
 
-    // Advanced (weigthed) rating clause (Bayes)
+    // Advanced (weighted) rating clause (Bayes)
     if($config->get('jg_ratingcalctype') == 1)
     {
-      // throw new \Exception(Text::_('Calctype ist 1'));
+      // throw new \Exception(Text::_('Calctype is 1'));
       if(!$avgdone)
       {
         // Needed values for weighted rating calculation

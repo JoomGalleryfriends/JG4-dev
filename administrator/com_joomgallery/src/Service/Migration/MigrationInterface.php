@@ -126,10 +126,10 @@ interface MigrationInterface
    * 
    * ------
    * How mappings work:
-   * - Key not in the mapping array:              Nothing changes. Field value can be magrated as it is.
+   * - Key not in the mapping array:              Nothing changes. Field value can be migrated as it is.
    * - 'old key' => 'new key':                    Field name has changed. Old values will be inserted in field with the provided new key.
    * - 'old key' => false:                        Field does not exist anymore or value has to be emptied to create new record in the new table.
-   * - 'old key' => array(string, string, bool):  Field will be merget into another field of type json.
+   * - 'old key' => array(string, string, bool):  Field will be merged into another field of type json.
    *                                              1. ('destination field name'): Name of the field to be merged into.
    *                                              2. ('new field name'): New name of the field created in the destination field. (default: false / retain field name)
    *                                              3. ('create child'): True, if a child node shall be created in the destination field containing the field values. (default: false / no child)
@@ -147,7 +147,7 @@ interface MigrationInterface
 
     /**
    * Load the a queue of ids from a specific migrateable object
-   * (Optional in migration scripts, but needed if queues have to be specially threated.)
+   * (Optional in migration scripts, but needed if queues have to be specially treated.)
    * 
    * @param   string     $type         Content type
    * @param   object     $migrateable  Mibrateable object
@@ -288,7 +288,7 @@ interface MigrationInterface
   public function needsMigration(string $type, $pk): bool;
 
   /**
-   * Performs the neccessary steps to migrate an image in the filesystem
+   * Performs the necessary steps to migrate an image in the filesystem
    * (Optional in migration scripts, can be overwritten if required.)
    *
    * @param   ImageTable   $img    ImageTable object, already stored
@@ -301,7 +301,7 @@ interface MigrationInterface
   public function migrateFiles(ImageTable $img, array $data): bool;
 
   /**
-   * Performs the neccessary steps to migrate a category in the filesystem
+   * Performs the necessary steps to migrate a category in the filesystem
    * (Optional in migration scripts, can be overwritten if required.)
    *
    * @param   CategoryTable   $cat    CategoryTable object, already stored

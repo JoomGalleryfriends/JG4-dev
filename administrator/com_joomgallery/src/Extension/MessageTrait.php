@@ -25,7 +25,7 @@ use \Joomla\CMS\Language\Text;
 trait MessageTrait
 {
   /**
-   * Set to true if a error occured
+   * Set to true if an error occurred
    *
    * @var bool
   */
@@ -620,7 +620,7 @@ trait MessageTrait
 	 *
 	 * @param   string   $selection  The storage name to select
 	 *
-	 * @return  array    The selected storge array
+	 * @return  array    The selected storage array
 	 *
 	 * @since   4.0.0 
    * @throws  Exception
