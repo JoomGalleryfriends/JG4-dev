@@ -518,7 +518,7 @@ class Server implements ServerInterface
 
         ignore_user_abort(false);
 
-        /* @var $currentSize Int Total received data lenght, including all chunks */
+        /* @var $currentSize Int Total received data length, including all chunks */
         $currentSize = $offsetSession;
         /* @var $totalWrite Int Length of saved data in current PATCH request */
         $totalWrite = 0;
