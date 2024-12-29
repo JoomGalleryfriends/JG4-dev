@@ -21,6 +21,7 @@ use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Http\HttpFactory;
+use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
 
@@ -1049,6 +1050,56 @@ class JoomHelper
     }
 
     return new \SimpleXMLElement($xmlString);
+  }
+
+  /**
+   * Method to check wether all needed filesystem plugins are available and enabled.
+   *
+   * @return  bool
+   *
+   * @since   4.0.0
+   */
+  public static function checkFilesystems()
+  {
+    // Load all used filesystems from images table
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+    $query = $db->getQuery(true)
+          ->select('DISTINCT ' .$db->quoteName('filesystem'))
+          ->from(_JOOM_TABLE_IMAGES)
+          ->where($db->quoteName('published') . ' = 1');
+
+    $db->setQuery($query);
+    $filesystems = $db->loadColumn();
+
+    // Loop throug all found filesystems
+    foreach ($filesystems as $key => $filesystem)
+    {
+      // Get correstonding plugin name
+      $plugin_name     = \explode('-', $filesystem, 2)[0];
+      $plugin_fullname = 'plg_filesystem_'.$plugin_name;
+
+      if(!PluginHelper::isEnabled('filesystem', $plugin_fullname))
+      {
+        // Plugin is not installed or not enabled. Show warning message.
+        $lang = Factory::getLanguage();
+
+        if(!$lang->getPaths($plugin_fullname))
+        {
+          // Language file is not availavle
+          $langFile  = JPATH_PLUGINS . '/filesystem/' . $plugin_name;
+
+          // Try to load plugin language file
+          $lang->load($plugin_fullname);
+          $lang->load($plugin_fullname, $langFile);
+        }
+
+        $plugins_url  = Route::_('index.php?option=com_plugins&view=plugins&filter[folder]=filesystem');
+        $plugin_title = Text::_($plugin_fullname);
+
+        self::getComponent()->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_PLUGIN_NOT_ENABLED', $plugin_title, $plugins_url));
+      }
+    }
   }
 
   /**
