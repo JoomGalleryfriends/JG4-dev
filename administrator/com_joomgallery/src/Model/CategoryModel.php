@@ -1005,7 +1005,7 @@ class CategoryModel extends JoomAdminModel
       $parent_id = intval($this->item->parent_id);
     }
 
-    // Load caegory table
+    // Load category table
     $table = $this->getTable();
     if($table->load($pk) === false)
     {
