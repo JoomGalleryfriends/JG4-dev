@@ -91,7 +91,7 @@ class HtmlView extends JoomGalleryView
 			throw new GenericDataException(\implode("\n", $errors), 500);
 		}
 
-    // Check acess view level
+    // Check access view level
 		if(!\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');

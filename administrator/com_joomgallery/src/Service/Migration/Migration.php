@@ -1738,7 +1738,7 @@ abstract class Migration implements MigrationInterface
             }
           }
 
-          // Get source lenght
+          // Get source length
           elseif(\is_array($value))
           {
             $srcLenght = \count($value);
