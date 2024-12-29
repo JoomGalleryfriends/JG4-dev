@@ -270,11 +270,12 @@ class FileManager implements FileManagerInterface
       $folder = \dirname($file);
       try
       {
-        $res = $this->component->getFilesystem()->createFolder(\basename($folder), \dirname($folder));
+        $res = $this->component->getFilesystem()->createFolder(\basename($folder), \dirname($folder), false);
       }
-      catch(\FileExistsException $e)
+      catch(FileExistsException $e)
       {
-        // Do nothing
+        // Folder already exists.
+        $res = true;
       }
       catch(\Exception $e)
       {

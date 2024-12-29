@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery` (
 `imgmetadata` TEXT NOT NULL,
 `published` TINYINT(1)  NOT NULL DEFAULT 0,
 `filename` VARCHAR(255) NOT NULL,
+`filesystem` VARCHAR(100) NOT NULL DEFAULT "local-images",
 `hits` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `downloads` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `votes` INT(11) UNSIGNED NOT NULL DEFAULT 0,
