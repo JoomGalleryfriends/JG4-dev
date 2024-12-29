@@ -1079,7 +1079,7 @@ class JoomHelper
       $plugin_name     = \explode('-', $filesystem, 2)[0];
       $plugin_fullname = 'plg_filesystem_'.$plugin_name;
 
-      if(!PluginHelper::isEnabled('filesystem', $plugin_fullname))
+      if(!PluginHelper::isEnabled('filesystem', $plugin_name))
       {
         // Plugin is not installed or not enabled. Show warning message.
         $lang = Factory::getLanguage();
