@@ -1725,7 +1725,7 @@ abstract class Migration implements MigrationInterface
         else
         {
           // Add directly
-          $srcLenght = 1;
+          $srclength = 1;
           $isJson    = false;
 
           // Detect we have a json string
@@ -1741,21 +1741,21 @@ abstract class Migration implements MigrationInterface
           // Get source length
           elseif(\is_array($value))
           {
-            $srcLenght = \count($value);
+            $srclength = \count($value);
           }
           elseif(\is_object($value))
           {
             if($value instanceof \Countable)
             {
-              $srcLenght = $value->count();
+              $srclength = $value->count();
             }
             else
             {
-              $srcLenght = \count(\get_object_vars($value));
+              $srclength = \count(\get_object_vars($value));
             }
           }
 
-          if($srcLenght > 1 || $isJson)
+          if($srclength > 1 || $isJson)
           {
             // We are trying to add a json or an object directly without adding a child
             // Here 'new field name' has no effect
