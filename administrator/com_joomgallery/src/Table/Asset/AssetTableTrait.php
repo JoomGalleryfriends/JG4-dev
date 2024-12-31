@@ -83,4 +83,34 @@ trait AssetTableTrait
 
 		return $assetParentId;
 	}
+
+	/**
+   * Method to get the rules for the record.
+   * 
+   * @param   string  $itemtype  The name to idetify the rule.
+   *
+   * @return  mixed   One or multiple Rule objects
+   *
+   * @since   4.0.0
+   */
+  public function getRules($itemtype=null)
+  {
+    return $this->_rules;
+  }
+
+	/**
+   * Method to set empty rules for the record based on a form.
+   * 
+   * @param   Form  $form  The form object where the rules gets extracted
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function setEmptyRules(Form $form)
+  {
+		// Add the rules for ACL
+		$rules = new Rules('{}');
+		$this->setRules($rules);
+  }
 }
