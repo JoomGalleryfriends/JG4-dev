@@ -5455,7 +5455,7 @@ const renderDebugBtn = props => props.file.debugBtn && (0,preact__WEBPACK_IMPORT
     class: "btn btn-"+props.file.debugBtn.type+" btn-sm "+props.file.debugBtn.style,
     type: "button",
     'data-bs-toggle': "modal",
-    'data-bs-target': "#modal"+props.file.debugBtn.uuid,
+    'data-bs-target': "#modal"+props.file.debugBtn.file_id,
   }, props.file.debugBtn.txt));
 
 const renderState = props => props.file.statetxt && (0,preact__WEBPACK_IMPORTED_MODULE_0__.h)("div", {
@@ -5510,6 +5510,7 @@ function FileInfo(props) {
     metaFields: props.metaFields
   }));
 }
+
 
 /***/ }),
 
@@ -5830,7 +5831,8 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
     this.setFileSuccess   = this.setFileSuccess.bind(this);
     this.addDebugBtn      = this.addDebugBtn.bind(this);
     this.addStateTxt      = this.addStateTxt.bind(this);
-    this.addTitle         = this.addTitle.bind(this);    
+    this.addTitle         = this.addTitle.bind(this);
+    this.idFromFilename   = this.idFromFilename.bind(this);
 
     // Define language strings
     this.defaultLocale = {
@@ -5892,6 +5894,25 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
     return '';
   }
 
+  
+  /**
+   * Create a valid html id string from filename and uuid
+   *
+   * @param    {String}   file_id     The uploaded file id.
+   * @param    {String}   uuid	      The uppy upload id.
+   * 
+   * @returns  {String}   The html id string
+   */
+  idFromFilename (file_id, uuid) {
+    // Extract the part after the last slash
+    const fileID = file_id.split('/').pop() + '_' + uuid;
+
+    // Replace invalid characters with underscores
+    const sanitized = fileID.replace(/[^a-zA-Z0-9_-]/g, "_");
+
+    return sanitized;
+  }
+
   /**
    * Set an error for a specific file
    *
@@ -5941,11 +5962,14 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
    * @param  {String}   style	    Class to add to the button. (optional)
    */
   addDebugBtn (file, type, uuid, style='') {
+    // Create file_id
+    const file_id = this.idFromFilename(file.id, uuid);
+
     // Create button element
     let btn = {
       'type' : type,
       'style' : style,
-      'uuid' : uuid,
+      'file_id' : file_id,
       'txt' : Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")
     }
     //let btn = '<button type="button" class="btn btn-'+type+' btn-sm '+style+'" data-bs-toggle="modal" data-bs-target="#modal'+file.uuid+'">'+Joomla.JText._("COM_JOOMGALLERY_DEBUG_INFORMATION")+'</button>';
@@ -6020,18 +6044,21 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
     } 
     if(Boolean(response.data) && Boolean(response.data.error)) {
       popupBody = popupBody + '<br /><br />' + response.data.error;
-    } 
+    }
+
+    // Create file_id
+    const file_id = this.idFromFilename(file.id, uuid);
 
     // Create popup
-    let html =    '<div class="joomla-modal modal fade" id="modal'+uuid+'" tabindex="-1" aria-labelledby="modal'+uuid+'Label" aria-hidden="true">';
+    let html =    '<div class="joomla-modal modal fade" id="modal'+file_id+'" tabindex="-1" aria-labelledby="modal'+file_id+'Label" aria-hidden="true">';
     html = html +   '<div class="modal-dialog modal-lg">';
     html = html +      '<div class="modal-content">';
     html = html +           '<div class="modal-header">';
-    html = html +               '<h3 class="modal-title" id="modal'+uuid+'Label">'+Joomla.JText._('COM_JOOMGALLERY_DEBUG_INFORMATION')+'</h3>';
+    html = html +               '<h3 class="modal-title" id="modal'+file_id+'Label">'+Joomla.JText._('COM_JOOMGALLERY_DEBUG_INFORMATION')+'</h3>';
     html = html +               '<button type="button" class="btn-close novalidate" data-bs-dismiss="modal" aria-label="'+Joomla.JText._('JCLOSE')+'"></button>';
     html = html +           '</div>';
     html = html +           '<div class="modal-body">';
-    html = html +               '<div id="'+uuid+'-ModalBody">'+popupBody+'</div>';
+    html = html +               '<div id="'+file_id+'-ModalBody">'+popupBody+'</div>';
     html = html +           '</div>';
     html = html +           '<div class="modal-footer">';
     html = html +               '<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="event.preventDefault()" aria-label="'+Joomla.JText._('JCLOSE')+'">'+Joomla.JText._('JCLOSE')+'</button>';
@@ -6238,7 +6265,10 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
         div.innerHTML = this.createPopup(file, this.uploadID, response);
         document.getElementById('popup-area').appendChild(div);
 
-        new bootstrap.Modal(document.getElementById('modal'+this.uploadID));
+        // Create file_id
+        const file_id = this.idFromFilename(file.id, this.uploadID);
+
+        new bootstrap.Modal(document.getElementById('modal'+file_id));
       }
 
       // Add file ID to the observed object of finished files
@@ -6271,7 +6301,10 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
     div.innerHTML = this.createPopup(file, this.uploadID, temp_resp);
     document.getElementById('popup-area').appendChild(div);
 
-    new bootstrap.Modal(document.getElementById('modal'+file.uuid));
+    // Create file_id
+    const file_id = this.idFromFilename(file.id, this.uploadID);
+
+    new bootstrap.Modal(document.getElementById('modal'+file_id));
   }
 
   /**
@@ -6357,6 +6390,7 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
     this.uppy.removePostProcessor(this.awaitSaveRequest);
   }
 }
+
 
 /***/ }),
 
