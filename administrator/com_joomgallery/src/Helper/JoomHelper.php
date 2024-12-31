@@ -1053,7 +1053,7 @@ class JoomHelper
   }
 
   /**
-   * Method to check wether all needed filesystem plugins are available and enabled.
+   * Method to check whether all needed filesystem plugins are available and enabled.
    *
    * @return  bool
    *
