@@ -1072,7 +1072,7 @@ class JoomHelper
     $db->setQuery($query);
     $filesystems = $db->loadColumn();
 
-    // Loop throug all found filesystems
+    // Loop through all found filesystems
     foreach ($filesystems as $key => $filesystem)
     {
       // Get correstonding plugin name
