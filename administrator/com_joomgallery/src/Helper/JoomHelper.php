@@ -1075,7 +1075,7 @@ class JoomHelper
     // Loop through all found filesystems
     foreach ($filesystems as $key => $filesystem)
     {
-      // Get correstonding plugin name
+      // Get corresponding plugin name
       $plugin_name     = \explode('-', $filesystem, 2)[0];
       $plugin_fullname = 'plg_filesystem_'.$plugin_name;
 
