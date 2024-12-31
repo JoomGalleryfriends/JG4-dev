@@ -5905,7 +5905,7 @@ class jgProcessor extends _uppy_core__WEBPACK_IMPORTED_MODULE_2__["default"] {
    */
   idFromFilename (file_id, uuid) {
     // Extract the part after the last slash
-    const fileID = file_id.split('/').pop() + '_' + uuid;
+    const fileID = uuid + '_' + file_id.split('/').pop();
 
     // Replace invalid characters with underscores
     const sanitized = fileID.replace(/[^a-zA-Z0-9_-]/g, "_");
@@ -20097,7 +20097,9 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Apply validity class to catid choices select field
  * 
- * @param  {Boolean}   ini      True to remove all validity classes
+ * @param   {Boolean}   ini      True to remove all validity classes
+ * 
+ * @returns {Boolean}   True if input field is not empty and valid
  */
 function catidFieldValidity (ini = false) {
   let catid = document.getElementById('jform_catid');
@@ -20105,19 +20107,25 @@ function catidFieldValidity (ini = false) {
   if(ini) {
     catid.parentElement.classList.remove('is-invalid');
     catid.parentElement.classList.remove('is-valid');
+    catid.classList.remove('is-invalid');
+    catid.classList.remove('is-valid');
 
-    return;
+    return false;
   }
 
-  if(catid.checkValidity()) {
+  if(catid.checkValidity() && catid.value != '') {
     // is-valid
-    catid.parentElement.classList.remove('is-invalid');
-    catid.parentElement.classList.add('is-valid');
+    catid.classList.remove('is-invalid');
+    catid.classList.add('is-valid');
+
+    return true;
   }
   else {
     // is-invalid
-    catid.parentElement.classList.remove('is-valid');
-    catid.parentElement.classList.add('is-invalid');
+    catid.classList.remove('is-valid');
+    catid.classList.add('is-invalid');
+
+    return false;
   }
 }
 
@@ -20183,13 +20191,12 @@ var callback = function() {
     // Check and validate the form
     let form = document.getElementById('adminForm');
     
-    if(!form.checkValidity()) {
+    if(!form.checkValidity() || !catidFieldValidity()) {
       // Form falidation failed
       // Cancel upload, render message
       Joomla.renderMessages({'error':[Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS')]});
       console.log(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED')+'. '+Joomla.JText._('COM_JOOMGALLERY_ERROR_FILL_REQUIRED_FIELDS'));
       form.classList.add('was-validated');
-      catidFieldValidity();
       window.scrollTo(0, 0);
 
       return false;
