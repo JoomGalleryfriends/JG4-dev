@@ -33,7 +33,7 @@ class AccessOwn extends Access
   public static $parent_dependent_types = array();
 
   /**
-   * ist of content types wich have only one global asset
+   * List of content types which have only one global asset
    * --> Gets filled by the access service class
    *
    * @var array
