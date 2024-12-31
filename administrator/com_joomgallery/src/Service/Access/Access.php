@@ -71,7 +71,7 @@ class Access implements AccessInterface
   protected $parent_dependent_types = array('image');
 
   /**
-   * List of content types wich have only one global asset
+   * List of content types which have only one global asset
    *
    * @var array
    */
