@@ -1086,7 +1086,7 @@ class JoomHelper
 
         if(!$lang->getPaths($plugin_fullname))
         {
-          // Language file is not availavle
+          // Language file is not available
           $langFile  = JPATH_PLUGINS . '/filesystem/' . $plugin_name;
 
           // Try to load plugin language file
