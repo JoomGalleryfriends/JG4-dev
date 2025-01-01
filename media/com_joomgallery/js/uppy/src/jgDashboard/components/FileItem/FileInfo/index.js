@@ -66,7 +66,7 @@ const renderDebugBtn = props => props.file.debugBtn && h("div", {
     class: "btn btn-"+props.file.debugBtn.type+" btn-sm "+props.file.debugBtn.style,
     type: "button",
     'data-bs-toggle': "modal",
-    'data-bs-target': "#modal"+props.file.debugBtn.uuid,
+    'data-bs-target': "#modal"+props.file.debugBtn.file_id,
   }, props.file.debugBtn.txt));
 
 const renderState = props => props.file.statetxt && h("div", {

@@ -368,7 +368,8 @@ abstract class Uploader implements UploaderInterface
             if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
-              $this->e
+              $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)), 'warning', 'jerror');
+            }
 
             continue 2;
           }
