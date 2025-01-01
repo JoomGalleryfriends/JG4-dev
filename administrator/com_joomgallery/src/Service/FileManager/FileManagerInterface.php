@@ -34,12 +34,13 @@ interface FileManagerInterface
    * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
    * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
    * @param   bool                 $local_source  True if the source is a file located in a local folder (default: True)
+   * @param   array                $skip          List of imagetypes to skip creation (default: [])
    * 
    * @return  bool                 True on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True): bool;
+  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True, $skip=[]): bool;
 
   /**
    * Deletion of image types

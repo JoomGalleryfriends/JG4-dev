@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filesystem\Path;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerInterface;
@@ -99,12 +100,13 @@ class FileManager implements FileManagerInterface
    * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
    * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
    * @param   bool                 $local_source  True if the source is a file located in a local folder (default: True)
+   * @param   array                $skip          List of imagetypes to skip creation (default: [])
    * 
    * @return  bool                 True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True): bool
+  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True, $skip=[]): bool
   {
     if(!$filename)
     {
@@ -130,6 +132,13 @@ class FileManager implements FileManagerInterface
 
       // Debug info
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
+
+      if(\in_array($imagetype->typename, $skip) || \in_array($imagetype->type_alias, $skip))
+      {
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_MANIPULATION_NOT_NEEDED'));
+
+        continue;
+      }
 
       // For original images: check if processing is really needed
       if( $imagetype->typename == 'original' && $processing &&
@@ -179,6 +188,31 @@ class FileManager implements FileManagerInterface
           // The path is pointing to an external filesystem
           list($file_info, $source) = $this->component->getFilesystem()->getResource($source);
           $isStream = true;
+        }
+        elseif(\is_string($source) && ($local_source || \strpos($this->component->getFilesystem()->getFilesystem(), 'local') !== false))
+        {
+          // The path is pointing to the local filesystem
+          $source = Path::clean($source);
+
+          if(!\file_exists($source))
+          {
+            // Add root to the path
+            $source = JPATH_ROOT.\DIRECTORY_SEPARATOR.$source;
+
+            $source = Path::clean($source);
+          }
+        }
+        else
+        {
+          // Destroy the IMGtools service
+          $this->component->delIMGtools();
+
+          // Debug info
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename), 'error', 'jerror');
+          $error = true;
+
+          continue;
         }
         
         // Read source image
