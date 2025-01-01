@@ -100,6 +100,29 @@ abstract class JoomItemModel extends ItemModel
 	}
 
   /**
+   * Method to override a parameter in the model state
+   * 
+   * @param   string  $property  The parameter name.
+   * @param   string  $value     The parameter value.
+   * @param   string  $type      The parameter type. Optional. Default='configs'
+   *
+   * @return  void
+   * @since   4.0.0
+   */
+  public function setParam(string $property, string $value, $type = 'configs')
+  {
+    // Get params
+    $params = $this->getState('parameters.' . $type);
+
+    // Set new value
+    $params->set($property, $value);
+
+    // Set params to state
+    $this->setState('parameters.' . $type, $params);
+  }
+
+
+  /**
   * Method to get the access service class.
   *
   * @return  AccessInterface   Object on success, false on failure.

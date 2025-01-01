@@ -21,12 +21,11 @@ extract($displayData);
  * @var   string   $layout          Layout selection (columns, masonry, justified)
  * @var   array    $items           List of objects that are displayed in a grid layout (properties: id, title, thumbnail)
  * @var   int      $num_columns     Number of columns of this layout
+ * @var   string   $image_type      The imagetype used for the grid
  * @var   string   $image_class     Class to be added to the image box
  * @var   string   $caption_align   Alignment class for the caption
  * @var   bool     $random_image    True, if a random inage should be loaded (only for categories)
  */
-
-$img_type = 'thumbnail';
 ?>
 
 <div class="jg-gallery" itemscope="" itemtype="https://schema.org/ImageGallery">
