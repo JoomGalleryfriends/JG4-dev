@@ -44,7 +44,7 @@ abstract class JoomListModel extends ListModel
   protected $user;
 
   /**
-   * JoomGallery extension calss
+   * JoomGallery extension class
    *
    * @access  protected
    * @var     Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent

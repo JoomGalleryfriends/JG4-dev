@@ -86,7 +86,7 @@ class HtmlView extends JoomGalleryView
 
 		$temp = $this->get('CategoryAccess');
 
-    // Check acces view level
+    // Check access view level
 		if(!$this->get('CategoryAccess') || !\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_ACCESS_VIEW'), 'error');

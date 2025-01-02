@@ -35,7 +35,7 @@ abstract class JoomItemModel extends ItemModel
   protected $app;
 
   /**
-   * JoomGallery extension calss
+   * JoomGallery extension class
    *
    * @access  protected
    * @var     Joomgallery\Component\Joomgallery\Administrator\Extension\JoomgalleryComponent

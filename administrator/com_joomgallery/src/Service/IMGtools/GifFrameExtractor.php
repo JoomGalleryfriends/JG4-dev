@@ -253,7 +253,7 @@ class GifFrameExtractor
   }
 
   /**
-   * Parse the frame informations contained in the GIF file
+   * Parse the frame information contained in the GIF file
    *
    * @param string $filename GIF filename path
    */

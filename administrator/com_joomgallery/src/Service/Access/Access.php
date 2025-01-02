@@ -63,7 +63,7 @@ class Access implements AccessInterface
   protected $media_types = array('image');
 
   /**
-   * List of content types wich do not have their own assets but uses assets
+   * List of content types which do not have their own assets but uses assets
    * of its parent content types.
    *
    * @var array
@@ -117,7 +117,7 @@ class Access implements AccessInterface
    *
    * @return  void
    *
-   * @since   4.0.0 
+   * @since   4.0.0
    */
   public function __construct(string $option='')
   {
@@ -172,17 +172,17 @@ class Access implements AccessInterface
 
     // Prepare asset & pk's
     list($asset, $asset_array, $asset_type, $parent_pk) = $this->prepareAsset($asset, $pk, $parent_pk, $use_parent);
-    $asset_lenght = \count($asset_array);
+    $asset_length = \count($asset_array);
 
-    if($asset_lenght >= 3 && $pk == 0)
+    if($asset_length >= 3 && $pk == 0)
     {
       $pk = \intval($asset_array[2]);
-    }    
+    }
 
     if(!empty($this->aclMap))
     {
       // Check if asset is available for this action
-      if( ($asset_lenght == 1 && !\in_array('.', $this->aclMap[$action]['assets'])) ||
+      if( ($asset_length == 1 && !\in_array('.', $this->aclMap[$action]['assets'])) ||
           (!\in_array('.'.$asset_type, $this->aclMap[$action]['assets']))
         )
       {
@@ -203,13 +203,13 @@ class Access implements AccessInterface
     if($action == 'add' && \in_array($asset_type, \array_keys($this->parents)) && !$use_parent)
     {
       // Flag parent_pk has to be set to yes
-      $this->component->addLog("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 'error', 'jerror');
-      throw new \Exception("Error in your input command: parent_pk (4th argumant) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
+      $this->component->addLog("Error in your input command: parent_pk (4th argument) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 'error', 'jerror');
+      throw new \Exception("Error in your input command: parent_pk (4th argument) has to be set to check permission for the action 'add' on an item within a nested group of assets. Please set parent_pk to 'true' and make sure that the specified primary key corresponds to the category you want to add to.", 1);
     }
 
     // Apply the acl check
     //---------------------
-    
+
     // Reset allowed array
     foreach($this->allowed as $key => $value)
     {
@@ -230,25 +230,25 @@ class Access implements AccessInterface
       {
         $parent_type  = $asset_type ? $this->parents[$asset_type] : 'category';
         $asset        = $asset_array[0].'.'.$parent_type.'.'.$parent_pk;
-        $asset_lenght = \count(\explode('.', $asset));
+        $asset_length = \count(\explode('.', $asset));
       }
     }
 
     // More preparations
-    $acl_rule_array = \explode('.', $acl_rule);    
+    $acl_rule_array = \explode('.', $acl_rule);
     $appuser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->user->get('id'));
-    
+
     // Special case: super user
     if($appuser->get('isRoot') === true)
     {
       // If it is the super user
       return true;
     }
-    
+
     // 1. Default permission checks based on asset table
     // (Global Configuration -> Recursive assets)
     // (Recursive assets for image: global -> component -> grand-parent -> parent -> type)
-    $this->allowed['default'] = $appuser->authorise($acl_rule, $asset);    
+    $this->allowed['default'] = $appuser->authorise($acl_rule, $asset);
 
     // 2. Permission checks based on asset table and ownership
     // Adjust acl rule for the own check
@@ -261,9 +261,9 @@ class Access implements AccessInterface
       $acl_rule = $this->prefix.'.'.$acl_rule_array[1].'.'.$this->aclMap[$action]['own'];
     }
 
-    if($asset_lenght >= 3)
+    if($asset_length >= 3)
     {
-      // We are checking for a specific item, based on pk or parent pk     
+      // We are checking for a specific item, based on pk or parent pk
       if(!empty($this->aclMap) && $this->aclMap[$action]['own'] !== false && \in_array('.'.$asset_type, $this->aclMap[$action]['own-assets']) && ($pk > 0 || $use_parent))
       {
         $this->tocheck['own'] = true;
@@ -276,7 +276,7 @@ class Access implements AccessInterface
         // }
 
         // Only do the check, if it the pk is known
-        $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset, true, $own_pk);       
+        $this->allowed['own'] = AccessOwn::checkOwn($this->user->get('id'), $acl_rule, $asset, true, $own_pk);
       }
 
       // 3. Permission check if adding assets with media items (uploads)
@@ -304,7 +304,7 @@ class Access implements AccessInterface
       {
         $this->tocheck['own'] = true;
         $this->allowed['own'] = AccessBase::check($this->user->get('id'), $acl_rule, $asset);
-      }      
+      }
     }
 
     // Apply the results
@@ -340,7 +340,7 @@ class Access implements AccessInterface
 
   /**
    * Change the component related properties of the class.
-   * Needed if you want to use this sercive for another component.
+   * Needed if you want to use this service for another component.
    *
    * @param   string   $option    The new option.
    * @param   array    $types     The new list of available content types.
@@ -385,7 +385,7 @@ class Access implements AccessInterface
         // username given
         $appuser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($user);
       }
-      
+
       if(isset($appuser->id))
       {
         $this->user = new User($appuser->id);
@@ -548,7 +548,7 @@ class Access implements AccessInterface
    * Search for a value in a nested array and return first value of
    * current array level.
    *
-   * @param   string   $needle    The serached value.
+   * @param   string   $needle    The searched value.
    * @param   array    $array     The array.
    *
    * @return  string   First value in the array where needle was found.
@@ -566,9 +566,9 @@ class Access implements AccessInterface
       }
       elseif(is_array($value))
       {
-        // perfom recursive search
+        // perform recursive search
         $callback = $this->arrayRecursiveSearch($needle, $value);
-        
+
         if($callback)
         {
           return $callback;

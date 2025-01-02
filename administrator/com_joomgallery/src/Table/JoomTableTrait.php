@@ -352,7 +352,7 @@ trait JoomTableTrait
   }
 
   /**
-	 * Mthod to load the default value of a field in a xml form
+	 * Method to load the default value of a field in a xml form
 	 *
    * @param   string  $field  The name of the field to get the default value from.
 	 * @param   string  $form   The filename of the xml form.
@@ -396,7 +396,7 @@ trait JoomTableTrait
   }
 
   /**
-	 * Mthod to load a Form object coupled to an xml form
+	 * Method to load a Form object coupled to an xml form
 	 *
 	 * @param   string  $form   The filename of the xml form.
 	 *

@@ -139,7 +139,7 @@ class FileToolsService
      * Internal method to detect the mime type of a file
      *
      * @param string $fileName File name on storage; could be a hash or anything
-     * @param string $userFileName Real name of file, understandable for users. If ommited $fileName will be used.
+     * @param string $userFileName Real name of file, understandable for users. If omitted $fileName will be used.
      * @return string Mimetype of given file
      */
     public static function detectMimeType($fileName, $userFileName = ''): string
@@ -247,13 +247,13 @@ class FileToolsService
      *
      * @param int|null $size          File size in [B] bytes
      * @param string   $locale        name of locale settings
-     * @param string   $emptyValue    waht is returned if $size is empty or zero
+     * @param string   $emptyValue    what is returned if $size is empty or zero
      *
      * @return string value and unit
      *
      * @assert (1024, 'pl_PL') == '1 kB'
      * @assert (356, 'pl_PL') == '356 B'
-     * @assert (6587, 'pl_PL') == '6,43 kB' 
+     * @assert (6587, 'pl_PL') == '6,43 kB'
      */
     public static function formatFileSize($size, string $locale, string $emptyValue = '-'): string
     {

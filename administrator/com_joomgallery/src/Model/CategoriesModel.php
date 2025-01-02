@@ -427,12 +427,12 @@ class CategoriesModel extends JoomListModel
 
       if($exclude)
       {
-        // select all categories except this category and its childs
+        // select all categories except this category and its children
         $categoryWhere = $db->quoteName('a.lft') . ' < ' . $bounded[0] . ' OR ' . $db->quoteName('a.lft') . ' > ' . $bounded[1];
       }
       else
       {
-        // select only this category and its childs
+        // select only this category and its children
         $categoryWhere = $db->quoteName('a.lft') . ' >= ' . $bounded[0] . ' AND ' . $db->quoteName('a.rgt') . ' <= ' . $bounded[1];
       }
 

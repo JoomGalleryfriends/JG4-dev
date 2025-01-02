@@ -188,7 +188,7 @@ class Refresher implements RefresherInterface
 
     // Set secure setting of the real execution time
     // Maximum time for the script will be set to 20 seconds
-    // (max_exection_time = 0 means no limit)
+    // (max_execution_time = 0 means no limit)
     if($max_execution_time < 25 && $max_execution_time != 0)
     {
       $this->_maxtime = (int) $max_execution_time * 0.8;

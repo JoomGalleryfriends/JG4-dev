@@ -82,7 +82,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
   protected $installSkipMsg = false;
 
   /**
-   * True to show that the current script is exectuted during an upgrade
+   * True to show that the current script is executed during an upgrade
    * from an old JoomGallery version (JG 1-3)
    *
    * @var  bool
@@ -520,7 +520,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
    *
    * @param  string  context_id  Name of the mail template
    * @param  array   tags        List of tags that can be used as variables in this mail template
-   * @param  string  language    Language tag to specify the language this template is used for (default='' : all langauges)
+   * @param  string  language    Language tag to specify the language this template is used for (default='' : all languages)
    * 
 	 * @return  bool  true on success
 	 */
@@ -1533,14 +1533,14 @@ class com_joomgalleryInstallerScript extends InstallerScript
    * Creates and publishes a module (extension need to be installed)
    *
    * @param   string   $title      title of the module
-   * @param   string   $position   position fo the module to be placed
+   * @param   string   $position   position of the module to be placed
    * @param   string   $module     installation name of the module extension
    * @param   integer  $ordering   number of the sort order
    * @param   integer  $access     id of the access level
    * @param   integer  $showTitle  show or hide module title (0: hide, 1: show)
    * @param   string   $params     module params (json)
    * @param   integer  $client_id  module of which client (0: client, 1: admin)
-   * @param   string   $lang       langage tag (language filter / *: all languages)
+   * @param   string   $lang       language tag (language filter / *: all languages)
    *
    * @return  boolean True on success, false otherwise
    */

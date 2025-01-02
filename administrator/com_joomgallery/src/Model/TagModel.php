@@ -148,7 +148,7 @@ class TagModel extends JoomAdminModel
         $item->params = json_encode($item->params);
       }
       
-      // Do any procesing on fields here if needed
+      // Do any processing on fields here if needed
     }
 
     return $item;		

@@ -3,7 +3,7 @@ var Migrator;
 /******/ 	"use strict";
 /******/ 	// The require scope
 /******/ 	var __webpack_require__ = {};
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
@@ -16,12 +16,12 @@ var Migrator;
 /******/ 			}
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -32,7 +32,7 @@ var Migrator;
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 /*!**********************!*\
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Adds all completed migrateables to list
- * 
+ *
  * @param {Object}  event     Event object
  * @param {Object}  element   DOM element object
  */
@@ -129,7 +129,7 @@ let updateMigrateablesList = function() {
 
 /**
  * Submit the migration task by pressing the button
- * 
+ *
  * @param {Object}  event     Event object
  * @param {Object}  element   DOM element object
  */
@@ -151,7 +151,7 @@ let submitTask = function(event, element) {
 
   if(tryCounter == 0) {
     startTask(type, element);
-  }  
+  }
 
   tryCounter = tryCounter + 1;
 
@@ -166,7 +166,7 @@ let submitTask = function(event, element) {
         // Stop automatic execution and update GUI
         forceStop = true;
       }
-      
+
       if(continueState && !forceStop) {
         // Kick off the next task
         submitTask(event, element);
@@ -186,7 +186,7 @@ let submitTask = function(event, element) {
 
 /**
  * Stop the migration task by pressing the button
- * 
+ *
  * @param {Object}  event     Event object
  * @param {Object}  element   DOM element object
  */
@@ -216,7 +216,7 @@ let stopTask = function(event, element) {
   // Update progress bar
   bar.classList.remove('progress-bar-striped');
   bar.classList.remove('progress-bar-animated');
-  
+
   // Enable start button
   startBtn.classList.remove('disabled');
   startBtn.removeAttribute('disabled');
@@ -228,7 +228,7 @@ let stopTask = function(event, element) {
 
 /**
  * Manually set one record migration to true
- * 
+ *
  * @param {Object}  event     Event object
  * @param {Object}  element   DOM element object
  */
@@ -252,7 +252,7 @@ let repairTask = function(event, element) {
 
 /**
  * Get an object with all available types
- * 
+ *
  * @returns {Object}   Types object
  */
 let getTypes = function() {
@@ -277,10 +277,10 @@ let getTypes = function() {
 
 /**
  * Perform an ajax request in json format
- * 
+ *
  * @param   {String}   formId   Id of the form element
  * @param   {String}   task     Name of the task
- * 
+ *
  * @returns {Object}   Result object
  *          {success: true, status: 200, message: '', messages: {}, data: { { {success, data, continue, error, debug, warning} }}
  */
@@ -347,9 +347,9 @@ let ajax = async function(formId, task) {
 
 /**
  * Search for the next migrateable id in the queue
- * 
+ *
  * @param   {String}   formId   Id of the form element
- * 
+ *
  * @returns {String}   Id of the database record to be migrated next
  */
 let getNextMigrationID = function(formId) {
@@ -382,10 +382,10 @@ let getNextMigrationID = function(formId) {
 
 /**
  * Handle migration response
- * 
+ *
  * @param   {Object}   response   The response object in the form of
  *          {success: true, status: 200, message: '', messages: {}, data: { {success, data, continue, error, debug, warning} }}
- * 
+ *
  * @returns void
  */
 let responseHandler = function(type, response) {
@@ -395,7 +395,7 @@ let responseHandler = function(type, response) {
     addLog(response.message, type, 'error');
     addLog(response.messages, type, 'error');
     addLog(response.data.error, type, 'error');
-    
+
     // Try again...
   }
   else  {
@@ -406,7 +406,7 @@ let responseHandler = function(type, response) {
       addLog('[Migrator.js] Migration of '+type+' with id = '+migrateablesList[type]['currentID']+' failed.', type, 'error');
       logMessages(type, response.data);
 
-      // Stop autimatic continuation if requested from backend
+      // Stop automatic continuation if requested from backend
       if(!response.data.continue || response.data.continue == null || response.data.continue == false) {
         console.log('Stop automatic continuation requested from backend');
         continueState = false;
@@ -414,7 +414,7 @@ let responseHandler = function(type, response) {
 
       // Update migrateables
       updateMigrateables(type, response.data);
-      
+
       // Reset tryCounter if we are handling a different migrateable
       if(migrateablesList[type]['currentID'] != migrateablesList[type]['last']) {
         tryCounter = 0;
@@ -426,7 +426,7 @@ let responseHandler = function(type, response) {
       logMessages(type, response.data);
       addLog('[Migrator.js] Migration of '+type+' with id = '+migrateablesList[type]['currentID']+'  successful.', type, 'success');
 
-      // Stop autimatic continuation if requested from backend
+      // Stop automatic continuation if requested from backend
       if(!response.data.continue || response.data.continue == null || response.data.continue == false) {
         console.log('Stop automatic continuation requested from backend');
         continueState = false;
@@ -443,14 +443,14 @@ let responseHandler = function(type, response) {
 
 /**
  * Add a message to the logging output and the console
- * 
+ *
  * @param   {Mixed}    msg        One or multiple messages to be added to the log
  * @param   {String}   type       The type defining the logging output to use
  * @param   {String}   msgType    The type of message (available: error, warning, success, info)
  * @param   {Boolean}  console    True to add the message also to the console
  * @param   {Boolean}  newLine    True to add the message on a new line
  * @param   {Integer}  marginTop  Number of how much margin you want on the top of the message
- * 
+ *
  * @returns void
  */
 let addLog = function(msg, type, msgType, console=false, newLine=true, marginTop=0) {
@@ -511,7 +511,7 @@ let addLog = function(msg, type, msgType, console=false, newLine=true, marginTop
 
     // Add text color
     line.classList.add('color-'+msgType);
-    
+
     // Add message to element
     let msgType_txt = msgType.toLocaleUpperCase();
     line.textContent = '['+Joomla.JText._(msgType_txt)+']  '+String(message);
@@ -525,7 +525,7 @@ let addLog = function(msg, type, msgType, console=false, newLine=true, marginTop
  * Clear the logging output
  *
  * @param  {String}   type    The type defining the logging output to clear
- * 
+ *
  * @returns void
  */
 let clearLog = function(type) {
@@ -542,7 +542,7 @@ let clearLog = function(type) {
  * @param  {String}   type   The type defining the content type to be updated
  * @param  {Object}   res    The result object in the form of
  *           {success: bool, data: mixed, continue: bool, error: string|array, debug: string|array, warning: string|array}
- * 
+ *
  * @returns void
  */
 let logMessages = function(type, res) {
@@ -565,7 +565,7 @@ let logMessages = function(type, res) {
  * @param  {String}   type   The type defining the content type to be updated
  * @param  {Object}   res    The result object in the form of
  *           {success: bool, data: mixed, continue: bool, error: string|array, debug: string|array, warning: string|array}
- * 
+ *
  * @returns void
  */
 let updateMigrateables = function(type, res) {
@@ -620,13 +620,13 @@ let updateMigrateables = function(type, res) {
  * Update GUI to start migration
  *
  * @param  {String}      type    The type defining the content type to be updated
- * @param  {DOM Element} button  The button beeing pressed to start the task
- * 
+ * @param  {DOM Element} button  The button being pressed to start the task
+ *
  * @returns void
  */
 let startTask = function(type, button) {
   let startBtn = button;
-  let bar      = document.getElementById('progress-'+type);  
+  let bar      = document.getElementById('progress-'+type);
   let stopBtn  = document.getElementById('stopBtn-'+type);
 
   if(!bar) {
@@ -644,7 +644,7 @@ let startTask = function(type, button) {
   // Update progress bar
   bar.classList.add('progress-bar-striped');
   bar.classList.add('progress-bar-animated');
-  
+
   // Disable start button
   startBtn.classList.add('disabled');
   startBtn.setAttribute('disabled', 'true');
@@ -663,18 +663,18 @@ let startTask = function(type, button) {
  * Update GUI to end migration
  *
  * @param  {String}      type    The type defining the content type to be updated
- * @param  {DOM Element} button  The button beeing pressed to start the task
+ * @param  {DOM Element} button  The button being pressed to start the task
  * @param  {String}      formId  Id of the form element
- * 
+ *
  * @returns void
  */
 let finishTask = function(type, button, formId) {
-  // Set the migration state to ture
+  // Set the migration state to true
   migrationActive = false;
-  
+
   // Get elements
   let startBtn   = button;
-  let bar        = document.getElementById('progress-'+type);  
+  let bar        = document.getElementById('progress-'+type);
   let stopBtn    = document.getElementById('stopBtn-'+type);
 
   if(!bar) {
@@ -724,7 +724,7 @@ let finishTask = function(type, button, formId) {
 
 /**
  * Update state of start conditions text color
- * 
+ *
  * @returns void
  */
 let updateConditionTxt = function() {
@@ -774,7 +774,7 @@ let updateConditionTxt = function() {
 
 /**
  * Update state of start buttons
- * 
+ *
  * @returns void
  */
 let updateStartBtns = function() {
@@ -829,7 +829,7 @@ let updateStartBtns = function() {
 
 /**
  * Update button to go to step 4
- * 
+ *
  * @returns void
  */
 let updateStep4Btn = function() {

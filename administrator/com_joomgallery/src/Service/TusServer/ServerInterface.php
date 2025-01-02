@@ -62,7 +62,7 @@ interface ServerInterface
   public function setAllowMaxSize(int $value);
 
   /**
-   * Allows GET method (it means allow download uploded files)
+   * Allows GET method (it means allow download uploaded files)
    *
    * @param bool $allow
    *
@@ -87,7 +87,7 @@ interface ServerInterface
   public function getLocation(): string;
 
   /**
-   * Get real name of transfered file
+   * Get real name of transferred file
    *
    * @return string  Real name of file
    */
@@ -96,7 +96,7 @@ interface ServerInterface
   /**
    * Get a metaData value from property
    *
-   * @param string $key    The key for wich you want value
+   * @param string $key    The key for which you want value
    * @param bool   $throw  True if exception should be thrown
    *
    * @return mixed The value for the id-key, false on failure

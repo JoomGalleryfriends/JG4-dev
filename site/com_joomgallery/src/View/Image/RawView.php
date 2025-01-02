@@ -172,7 +172,7 @@ class RawView extends AdminRawView
   /**
 	 * Check access to this image
 	 *
-	 * @param   int  $id    Iamge id
+	 * @param   int  $id    Image id
 	 *
 	 * @return   bool    True on success, false otherwise
 	 */
@@ -201,7 +201,7 @@ class RawView extends AdminRawView
 			$access = false;
 		}
 
-    // Check acces view level
+    // Check access view level
 		if(!$this->get('CategoryAccess') || !\in_array($this->item->access, $this->getCurrentUser()->getAuthorisedViewLevels()))
     {
       $access = false;

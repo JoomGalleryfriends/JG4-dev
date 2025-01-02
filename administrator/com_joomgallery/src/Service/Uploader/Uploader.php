@@ -33,7 +33,7 @@ abstract class Uploader implements UploaderInterface
   use ServiceTrait;
 
   /**
-   * Set to true if a error occured
+   * Set to true if a error occurred
    *
    * @var bool
    */
@@ -47,7 +47,7 @@ abstract class Uploader implements UploaderInterface
   protected $userStateKey = 'com_joomgallery.image.upload';
 
   /**
-   * Counter for the number of files alredy uploaded
+   * Counter for the number of files already uploaded
    *
    * @var int
    */
@@ -92,7 +92,7 @@ abstract class Uploader implements UploaderInterface
 
   /**
    * Constructor
-   * 
+   *
    * @param   bool   $multiple     True, if it is a multiple upload  (default: false)
    * @param   bool   $async        True, if it is a asynchronous upload  (default: false)
    *
@@ -104,7 +104,7 @@ abstract class Uploader implements UploaderInterface
   {
     // Load application
     $this->getApp();
-    
+
     // Load component
     $this->getComponent();
 
@@ -126,7 +126,7 @@ abstract class Uploader implements UploaderInterface
    * Method has to be extended! Do not use it in this way!
 	 *
    * @param   array    $data        Form data (as reference)
-   * @param   bool     $filename    True, if the filename has to be created (defaut: True)
+   * @param   bool     $filename    True, if the filename has to be created (default: True)
    *
 	 * @return  bool     True on success, false otherwise
 	 *
@@ -146,7 +146,7 @@ abstract class Uploader implements UploaderInterface
     $allowed_imgtools = \in_array(\strtoupper($tag), $supported_ext);
     $this->component->delIMGtools();
 
-    // Get supported formats of filesystem    
+    // Get supported formats of filesystem
     $allowed_filesystem = $this->component->getFilesystem()->isAllowedFile($this->src_name);
 
     // Check for supported image format
@@ -183,7 +183,7 @@ abstract class Uploader implements UploaderInterface
       // Create filename, title and alias
       if($this->component->getConfig()->get('jg_useorigfilename'))
       {
-        $data['title'] = $this->src_name;        
+        $data['title'] = $this->src_name;
         $newfilename   = $this->component->getFilesystem()->cleanFilename($this->src_name, 0);
       }
       else
@@ -193,7 +193,7 @@ abstract class Uploader implements UploaderInterface
           $data['title'] = $data['title'].'-'.$filecounter;
         }
 
-        $newfilename = $this->component->getFilesystem()->cleanFilename($data['title'], 0);        
+        $newfilename = $this->component->getFilesystem()->cleanFilename($data['title'], 0);
       }
 
       // Generate image filename
@@ -222,9 +222,9 @@ abstract class Uploader implements UploaderInterface
    * according to configuration. Step 2.
    *
    * @param   array   $data       The form data (as a reference)
-   * 
+   *
    * @return  bool    True on success, false otherwise
-   * 
+   *
    * @since   1.5.7
    */
   public function overrideData(&$data): bool
@@ -255,7 +255,7 @@ abstract class Uploader implements UploaderInterface
     {
       // Destroy the IMGtools service
       $this->component->delIMGtools();
-      
+
       return true;
     }
 
@@ -273,7 +273,7 @@ abstract class Uploader implements UploaderInterface
     {
       $source_array = \explode('-', $replaceinfo->source);
 
-      // Get matadata value from image
+      // Get metadata value from image
       switch ($source_array[0])
       {
         case 'IFD0':
@@ -293,7 +293,7 @@ abstract class Uploader implements UploaderInterface
           $source_attribute = $source['Attribute'];
           $source_name      = $source['Name'];
 
-          // Get matadata value
+          // Get metadata value
           if(isset($metadata['exif'][$source_array[0]]) && isset($metadata['exif'][$source_array[0]][$source_attribute])
               && !empty($metadata['exif'][$source_array[0]][$source_attribute]))
           {
@@ -301,7 +301,7 @@ abstract class Uploader implements UploaderInterface
           }
           else
           {
-            // Matadata value not available in image
+            // Metadata value not available in image
             if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               if($source_attribute == 'DateTimeOriginal')
@@ -314,10 +314,10 @@ abstract class Uploader implements UploaderInterface
                 $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
                 $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)), 'warning', 'jerror');
               }
-            }           
+            }
 
             continue 2;
-          }          
+          }
           break;
 
         case 'COMMENT':
@@ -328,7 +328,7 @@ abstract class Uploader implements UploaderInterface
           }
           else
           {
-            // Matadata value not available in image
+            // Metadata value not available in image
             if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_('COM_JOOMGALLERY_COMMENT')));
@@ -357,14 +357,14 @@ abstract class Uploader implements UploaderInterface
           // Adjust iptc source attribute
           $source_attribute = \str_replace(':', '#', $source_attribute);
 
-          // Get matadata value 
+          // Get metadata value
           if(isset($metadata['iptc'][$source_attribute]) && !empty($metadata['iptc'][$source_attribute]))
           {
             $source_value = $metadata['iptc'][$source_attribute];
           }
           else
           {
-            // Matadata value not available in image
+            // Metadata value not available in image
             if($this->component->getConfig()->get('jg_replaceshowwarning') > 0)
             {
               $this->component->addWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_WARNING_REPLACE_NO_METADATA', Text::_($source_name)));
@@ -374,7 +374,7 @@ abstract class Uploader implements UploaderInterface
             continue 2;
           }
           break;
-        
+
         default:
           // Unknown metadata source
           continue 2;
@@ -441,7 +441,7 @@ abstract class Uploader implements UploaderInterface
     return true;
   }
 
-  
+
   /**
 	 * Method to create uploaded image files. Step 3.
    * (create imagetypes, upload imagetypes to storage, onJoomAfterUpload)
@@ -463,7 +463,7 @@ abstract class Uploader implements UploaderInterface
 
     // Create file manager service
     $this->component->createFileManager($data_row->catid);
-    
+
     // Create image types
     if(!$this->component->getFileManager()->createImages($this->src_file, $data_row->filename, $data_row->catid))
     {
@@ -521,11 +521,11 @@ abstract class Uploader implements UploaderInterface
 
   /**
    * Rollback an erroneous upload
-   * 
+   *
    * @param   CMSObject   $data_row     Image object containing at least catid and filename (default: false)
-   * 
+   *
    * @return  void
-   * 
+   *
    * @since   4.0.0
    */
   public function rollback($data_row=false)
@@ -547,9 +547,9 @@ abstract class Uploader implements UploaderInterface
 
   /**
    * Delete all temporary created files which were created during upload
-   * 
+   *
    * @return  bool     True if files are deleted, false otherwise
-   * 
+   *
    * @since   4.0.0
    */
   public function deleteTmp(): bool
@@ -641,9 +641,9 @@ abstract class Uploader implements UploaderInterface
 
   /**
    * Resets user states
-   * 
+   *
    * @return  void
-   * 
+   *
    * @since   4.0.0
    */
   protected function resetUserStates()
@@ -657,11 +657,11 @@ abstract class Uploader implements UploaderInterface
 
   /**
    * Creation of a temporary image object for the rollback
-   * 
+   *
    * @param   array   $data      The form data
-   * 
+   *
    * @return  CMSObject
-   * 
+   *
    * @since   4.0.0
    */
   protected function tempImgObj($data)

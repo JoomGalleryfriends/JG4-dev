@@ -50,7 +50,7 @@ class MultipleAssetsTable extends Table
    * Method to set rules for the record.
    *
    * @param   mixed   $input     A Rules object, JSON string, or array.
-   * @param   string  $itemtype  The name to idetify the rule.
+   * @param   string  $itemtype  The name to identify the rule.
    *
    * @return  void
    *
@@ -76,7 +76,7 @@ class MultipleAssetsTable extends Table
   /**
    * Method to get the rules for the record.
    * 
-   * @param   string  $itemtype  The name to idetify the rule.
+   * @param   string  $itemtype  The name to identify the rule.
    *
    * @return  mixed   One or multiple Rule objects
    *
@@ -257,7 +257,7 @@ class MultipleAssetsTable extends Table
 
     if($trackAssets)
     {
-      // Look for assets in obejct properties
+      // Look for assets in object properties
       foreach (\get_object_vars($this) as $key => $value)
       {
         if(strpos($key, 'asset_id') !== false)

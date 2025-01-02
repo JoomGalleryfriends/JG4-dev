@@ -413,10 +413,10 @@ class JoomHelper
 #### RICHTIG
 ```php
 /**
- * Collect informations for the watermarking
- * (informations: dimensions, type, position)
+ * Collect information for the watermarking
+ * (information: dimensions, type, position)
  *
- * @param   array   $imginfo        array with image informations of the background image
+ * @param   array   $imginfo        array with image information of the background image
  * @param   int     $position       Positioning of the watermark
  * @param   int     $resize         resize watermark (0:no,1:by height,2:by width)
  * @param   float   $new_size       new size of the resized watermark in percent related to the file (1-100)

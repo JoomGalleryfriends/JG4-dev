@@ -126,7 +126,7 @@ class JoomgalleryComponent extends MVCComponent implements BootableExtensionInte
       require_once JPATH_ADMINISTRATOR . '/components/com_joomgallery/includes/defines.php';
     }
 
-    // Initialize JoomGallery chache
+    // Initialize JoomGallery cache
     if(!$this->cache)
     {
       $this->cache = new JoomCache();

@@ -35,7 +35,7 @@ class MailMessenger extends Messenger implements MessengerInterface
   /**
    * Send a template based email.
    *
-   * @param   mixed    $recipients    List of users or email adresses receiving the message
+   * @param   mixed    $recipients    List of users or email addresses receiving the message
    *
    * @return  bool     true on success, false otherwise
    *
@@ -88,7 +88,7 @@ class MailMessenger extends Messenger implements MessengerInterface
   /**
    * Method to add one ore more recipients
    *
-   * @param   array   $recipients  An array of email adresses or a single one as a string
+   * @param   array   $recipients  An array of email addresses or a single one as a string
    * 
    * @return  void
    * 

@@ -18,7 +18,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 
 /**
  * Type Class
- * Providing information about a content type beeing migrated
+ * Providing information about a content type being migrated
  *
  * @package JoomGallery
  * @since   4.0.0
@@ -159,7 +159,7 @@ class Type
 
   /**
    * Constructor
-   * 
+   *
    * @param  string  $name  Name of this content type
    * @param  array   $list  Source types info created by Migration::defineTypes()
    *
@@ -190,9 +190,9 @@ class Type
    * Pushes types to the dependent_of based on the provided list of Type objects.
    *
    * @param   Type[]   $types    List of Type objects
-   * 
+   *
    * @return  void
-   * 
+   *
    * @since   4.0.0
    */
   public function setDependentOf($types)
@@ -226,7 +226,7 @@ class Type
     {
       case 'pkstoskip':
         $previous = $this->$property ?? null;
-        
+
         if(\is_array($value))
         {
           $this->$property = \array_merge($this->$property, $value);
@@ -236,12 +236,12 @@ class Type
           \array_push($this->$property, $value);
         }
         break;
-      
+
       default:
         $previous = $this->$property ?? null;
         $this->$property = $value;
         break;
-    }		
+    }
 
 		return $previous;
 	}

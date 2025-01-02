@@ -68,7 +68,7 @@ class DefaultRouter extends RouterView
 	private $noIDs;
 
   /**
-	 * Databse object
+	 * Database object
 	 *
 	 * @var    DatabaseInterface
 	 *

@@ -17,7 +17,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Model\ImageModel as AdminIm
 
 /**
  * Model to handle an image form.
- * 
+ *
  * @package JoomGallery
  * @since   4.0.0
  */
@@ -69,7 +69,7 @@ class ImageformModel extends AdminImageModel
 	}
 
 	/**
-	 * Method to get an ojbect.
+	 * Method to get an object.
 	 *
 	 * @param   integer $id The id of the object to get.
 	 *
@@ -81,7 +81,7 @@ class ImageformModel extends AdminImageModel
 	{
 		return parent::getItem($id);
 	}
-  
+
 	/**
 	 * Method to get the profile form.
 	 *
@@ -111,7 +111,7 @@ class ImageformModel extends AdminImageModel
 	 * Method to get the data that should be injected in the form.
 	 *
 	 * @return  array  The default data is an empty array.
-   * 
+   *
 	 * @since   4.0.0
 	 */
 	protected function loadFormData()

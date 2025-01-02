@@ -30,8 +30,8 @@ interface FileManagerServiceInterface
 
   /**
 	 * Creates the file manager helper class
-   * 
-   * @param   int          $catid       Id of the category for wich the filsystem is chosen
+   *
+   * @param   int          $catid       Id of the category for which the filesystem is chosen
    * @param   array|bool   $selection   List of imagetypes to consider or false to consider all (default: False)
 	 *
    * @return  void

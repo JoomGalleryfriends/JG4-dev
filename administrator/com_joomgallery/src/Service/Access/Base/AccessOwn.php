@@ -24,7 +24,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class AccessOwn extends Access
 {
   /**
-   * List of content types wich do not have their own assets but uses assets
+   * List of content types which do not have their own assets but uses assets
    * of its parent content types.
    * --> Gets filled by the access service class
    *

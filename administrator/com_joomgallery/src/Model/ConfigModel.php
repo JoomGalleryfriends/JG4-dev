@@ -76,7 +76,7 @@ class ConfigModel extends JoomAdminModel
 		// On edit, we get ID from state, but on save, we use data from input
 		$id = (int) $this->getState('config.id', $this->app->getInput()->getInt('id', null));
 
-    // Special threatment for Global Configuration set
+    // Special treatment for Global Configuration set
     if($id === 1)
     {
       $this->form->setFieldAttribute('title', 'readonly', 'true');
@@ -427,7 +427,7 @@ class ConfigModel extends JoomAdminModel
 
     $data['jg_staticprocessing'] = '';
 
-    // Special threatment for Global Configuration set
+    // Special treatment for Global Configuration set
     if($id === 1)
     {
       $data['title']    = 'Global Configuration';
