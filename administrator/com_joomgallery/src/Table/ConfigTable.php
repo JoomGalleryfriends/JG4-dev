@@ -17,9 +17,8 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Access\Rules;
 use \Joomla\Registry\Registry;
-use \Joomla\CMS\Access\Access;
 use \Joomla\Database\DatabaseDriver;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait;
 
 /**
  * Config table
@@ -30,6 +29,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class ConfigTable extends Table
 {
   use JoomTableTrait;
+  use AssetTableTrait;
   
 	/**
 	 * Constructor
@@ -183,27 +183,6 @@ class ConfigTable extends Table
 			$registry->loadArray($array['metadata']);
 			$array['metadata'] = (string) $registry;
 		}
-
-    // // Get access service
-    // JoomHelper::getComponent()->createAccess();
-    // $acl = JoomHelper::getComponent()->getAccess();
-
-		// if(!$acl->checkACL('core.admin'))
-		// {
-		// 	$actions         = Access::getActionsFromFile(_JOOM_PATH_ADMIN.'/access.xml',	"/access/section[@name='config']/");
-		// 	$default_actions = Access::getAssetRules(_JOOM_OPTION.'.config.' . $array['id'])->getData();
-		// 	$array_jaccess   = array();
-
-		// 	foreach($actions as $action)
-		// 	{
-		// 		if(key_exists($action->name, $default_actions))
-		// 		{
-		// 			$array_jaccess[$action->name] = $default_actions[$action->name];
-		// 		}
-		// 	}
-
-		// 	$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-		// }
 
 		// Bind the rules for ACL where supported.
 		if(isset($array['rules']))

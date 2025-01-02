@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Table\Table;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\CategoryTable;
 
@@ -145,7 +146,20 @@ interface MigrationInterface
    */
   public function convertData(string $type, array $data, $pk): array;
 
-    /**
+  /**
+   * onBeforeSave event.
+   * Last possibility to change anything on the data before storing into destination database.
+   *
+   * @param   string   $type    Name of the content type
+   * @param   Table    $table   Table object to be inserted into destination
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function onBeforeSave(string $type, Table &$table): void;
+
+  /**
    * Load the a queue of ids from a specific migrateable object
    * (Optional in migration scripts, but needed if queues have to be specially treated.)
    * 
@@ -158,7 +172,7 @@ interface MigrationInterface
    */
   public function getQueue(string $type, object $migrateable=null): array;
 
-    /**
+  /**
    * Returns an associative array containing the record data from source.
    * (Optional in migration scripts, can be overwritten if required.)
    *

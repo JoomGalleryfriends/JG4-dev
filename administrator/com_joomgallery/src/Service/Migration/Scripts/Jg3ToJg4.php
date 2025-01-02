@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Filesystem\File;
@@ -569,7 +570,28 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
-   * Performs the necessary steps to migrate an image in the filesystem
+   * onBeforeSave event.
+   * Last possibility to change anything on the data before storing into destination database.
+   *
+   * @param   string   $type    Name of the content type
+   * @param   Table    $table   Table object to be inserted into destination
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function onBeforeSave(string $type, Table &$table): void
+  {
+    if($type == 'collection' && \property_exists($table, 'approveImages'))
+    {
+      $table->approveImages = true;
+    }
+
+    return;
+  }
+
+  /**
+   * Performs the neccessary steps to migrate an image in the filesystem
    *
    * @param   ImageTable   $img    ImageTable object, already stored
    * @param   array        $data   Source data received from getData()

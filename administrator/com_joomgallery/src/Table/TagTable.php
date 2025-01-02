@@ -19,6 +19,7 @@ use \Joomla\CMS\Access\Rules;
 use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Filter\OutputFilter;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\GlobalAssetTableTrait;
 
 /**
  * Tag table
@@ -29,6 +30,7 @@ use \Joomla\CMS\Filter\OutputFilter;
 class TagTable extends Table
 {
   use JoomTableTrait;
+  use GlobalAssetTableTrait;
 
   /**
    * List of images connected to this tag
@@ -212,6 +214,8 @@ class TagTable extends Table
    */
   public function delete($pk = null)
   {
+    $this->_trackAssets = false;
+    
     if($success = parent::delete($pk))
     {
       // Delete mappings if existent
@@ -281,7 +285,7 @@ class TagTable extends Table
    */
   public function removeMapping($img_id = 0)
   {
-    if(\empty($this->getId()))
+    if(empty($this->getId()))
     {
       $this->setError('Load table first.');
 

@@ -1091,4 +1091,42 @@ class JoomHelper
 
     return $list;
   }
+
+  /**
+   * Returns the pluralized form of an english word
+   *
+   * @param   string  $word   The word
+   * 
+   * @return  string  The plural form of the word
+   * 
+   * @since   4.0.0
+   */
+  public static function pluralize(string $word): string
+  {
+    // List of irregular words
+    $irregularWords = [ 'child' => 'children', 'man' => 'men', 'woman' => 'women', 'tooth' => 'teeth',
+                        'foot' => 'feet', 'person' => 'people', 'mouse' => 'mice'
+                      ];
+
+    // If the word is in the irregular list, return the plural form
+    if(\array_key_exists(\strtolower($word), $irregularWords))
+    {
+      return $irregularWords[\strtolower($word)];
+    }
+
+    // Rules for ending in 'y'
+    if(\preg_match('/[^aeiou]y$/i', $word))
+    {
+      return \preg_replace('/y$/i', 'ies', $word);
+    }
+
+    // Rules for ending in 's', 'x', 'z', 'ch', or 'sh'
+    if(\preg_match('/(s|x|z|ch|sh)$/i', $word))
+    {
+      return $word . 'es';
+    }
+
+    // Default rule: add 's'
+    return $word . 's';
+  }
 }

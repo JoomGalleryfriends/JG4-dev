@@ -17,6 +17,7 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Database\DatabaseDriver;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait;
 
 /**
  * Collection table
@@ -27,6 +28,7 @@ use \Joomla\Database\DatabaseDriver;
 class CollectionTable extends Table
 {
   use JoomTableTrait;
+  use AssetTableTrait;
 
   /**
    * List of images connected to this collection
@@ -35,6 +37,14 @@ class CollectionTable extends Table
    * @since  4.0.0
    */
   public $images = null;
+
+  /**
+   * True if new mapped images should be automatically approved 
+   *
+   * @var    bool
+   * @since  4.0.0
+   */
+  public $approveImages = false;
 
 	/**
 	 * Constructor
@@ -213,8 +223,14 @@ class CollectionTable extends Table
     {
       if(!\is_null($images) && !empty($images))
       {
+        $approved = false;
+        if($this->created_by == Factory::getApplication()->getIdentity()->id || $this->approveImages)
+        {
+          $approved = true;
+        }
+
         // Do the mapping
-        $this->addMapping($images);
+        $this->addMapping($images, $approved);
       }
     }
 
@@ -230,6 +246,8 @@ class CollectionTable extends Table
    */
   public function delete($pk = null)
   {
+    $this->_trackAssets = false;
+    
     if($success = parent::delete($pk))
     {
       // Delete mappings if existent
@@ -240,15 +258,16 @@ class CollectionTable extends Table
   }
   
   /**
-   * Map one or multiple images to the currently loaded tag.
+   * Map one or multiple images to the currently loaded collection.
    *
-   * @param   int|array  $img_id  IDs of the images to be mapped.
+   * @param   int|array  $img_id   IDs of the images to be mapped.
+   * @param   bool       $approve  True if new mappings are approved.
    *
    * @return  boolean    True on success, False on error.
    *
    * @since   4.0.0
    */
-  public function addMapping($img_id)
+  public function addMapping($img_id, $approve = false)
   {
     if(empty($this->getId()))
     {
@@ -274,6 +293,11 @@ class CollectionTable extends Table
         $mapping->imgid        = (int) $iid;
         $mapping->collectionid = (int) $this->getId();
 
+        if($approve === true)
+        {
+          $mapping->approved = 1;
+        }        
+
         try
         {
           $db->insertObject(_JOOM_TABLE_COLLECTIONS_REF, $mapping);
@@ -292,7 +316,7 @@ class CollectionTable extends Table
   }
 
   /**
-   * Remove specific or all mappings of currently loaded tag
+   * Remove specific or all mappings of currently loaded collection
    *
    * @param   int|array  $img_id   IDs of the images to be removed. (0: remove all)
    *
@@ -302,7 +326,7 @@ class CollectionTable extends Table
    */
   public function removeMapping($img_id = 0)
   {
-    if(\empty($this->getId()))
+    if(empty($this->getId()))
     {
       $this->setError('Load table first.');
 
