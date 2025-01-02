@@ -86,6 +86,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
 
     <?php if($this->getAcl()->checkACL('core.admin','joomgallery')) : ?>
       <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions', Text::_('JGLOBAL_ACTION_PERMISSIONS_LABEL', true)); ?>
+        <div class="alert alert-primary" role="alert"><?php echo Text::sprintf('COM_JOOMGALLERY_ACTION_GLOBAL_ASSET_MESSAGE', Text::_('COM_JOOMGALLERY_TAGS'), Text::_('COM_JOOMGALLERY_TAG')); ?></div>
         <?php echo $this->form->getInput('rules'); ?>
       <?php echo HTMLHelper::_('uitab.endTab'); ?>
     <?php endif; ?>
