@@ -319,6 +319,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery_collections` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
 `userid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `alias` VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT "",
 `title` VARCHAR(255) NOT NULL DEFAULT "",
@@ -366,7 +367,6 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery_users` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
 `cmsuser` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__users table.",
 `description` TEXT NOT NULL,
 `avatar` VARCHAR(255) NULL DEFAULT "",
