@@ -438,6 +438,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @param   string   $name      The name
    * @param   string   $path      The folder
    * @param   boolean  $override  Should the folder being overridden when it exists (default: true)
+   * @param   boolean  $loop      True, if we are in a recursive loop (default: false)
    *
    * @return  string   The folder name
    *
@@ -445,7 +446,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @throws  \Exception
    * @see     AdapterInterface::createFolder()
    */
-  public function createFolder(string $name, string $path, bool $override = true): string
+  public function createFolder(string $name, string $path, bool $override = true, bool $loop = false): string
   {
     $adapter = $this->getFilesystem();
     $path    = $this->cleanPath($this->adjustPath($path), '/');
@@ -456,14 +457,13 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
     catch (FileNotFoundException $e)
     {
-      // Do nothing
+      // Folder not found; proceed to create it
     }
 
-    // Check if the file exists
-    if
-    (isset($file) && !$override)
+    if (isset($file) && !$override)
     {
-      throw new FileExistsException();
+      // No need to create folders
+      throw new FileExistsException('Folder already exists: ' . $path . '/' . $name);
     }
 
     $object            = new CMSObject();
@@ -475,12 +475,49 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.folder', $object, true, $object]);
 
-    if(in_array(false, $result, true))
+    if(\in_array(false, $result, true))
     {
       throw new \Exception($object->getError());
     }
 
-    $object->name = $this->getAdapter($object->adapter)->createFolder($object->name, $object->path);
+    try
+    {
+      // Try to create folders recursively
+      $object->name = $this->getAdapter($object->adapter)->createFolder($object->name, $object->path);
+    }
+    catch (\Exception $e)
+    {
+      if(!$loop)
+      {
+        // If it doesnt work like that, try again by creating them one by one
+        $folders       = \explode('/', trim($object->path, '/'));
+        $leading_slash = \strpos($object->path, '/') === 0;
+        $currentPath   = $leading_slash ? '/' : '';
+
+        // Append the current folder to the folders array
+        $folders[] = $object->name;
+
+        foreach($folders as $folder)
+        {
+          try
+          {
+            // Create each folder one by one
+            $object->name = $this->createFolder($folder, $currentPath, $override, true);
+          }
+          catch (FileExistsException $fee)
+          {
+            // Folder already exists; no action needed
+          }
+
+          // Adjust the currently existing path
+          $currentPath .= ($currentPath === '/' ? '' : '/') . $folder;
+        }
+      }
+      else
+      {
+        throw new \Exception($e->getMessage());
+      }
+    }
 
     $this->app->triggerEvent('onContentAfterSave', ['com_media.folder', $object, true, $object]);
 
