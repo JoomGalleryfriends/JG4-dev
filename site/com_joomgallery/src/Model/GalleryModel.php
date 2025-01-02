@@ -63,6 +63,7 @@ class GalleryModel extends JoomItemModel
 		if($this->item === null)
 		{
 			$this->item = new \stdClass();
+      $this->item->id = 1;
 		}
 
 		return $this->item;
@@ -201,7 +202,7 @@ class GalleryModel extends JoomItemModel
     }
 
     // Load the number of images defined in the configuration
-    $listModel->setState('list.limit', $params['configs']->get('jg_category_view_numb_images', 15, 'int'));
+    $listModel->setState('list.limit', $params['configs']->get('jg_gallery_view_numb_images', 12, 'int'));
 
     // Apply number of images to be loaded from list in the view
     if(isset($imgform_list['limit']))
