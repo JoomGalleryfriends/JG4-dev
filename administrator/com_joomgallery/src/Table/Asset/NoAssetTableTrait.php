@@ -16,14 +16,13 @@ defined('_JEXEC') or die;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
-* Trait for Tables with only one global asset
+* Trait for Tables with no asset
 *
 * @since  4.0.0
 */
-trait GlobalAssetTableTrait
+trait NoAssetTableTrait
 {
   /**
 	 * Define a namespaced asset name for inclusion in the #__assets table
@@ -35,7 +34,7 @@ trait GlobalAssetTableTrait
 	 */
 	protected function _getAssetName($itemtype = null)
   {
-    return $this->typeAlias . '.1';
+    return parent::_getAssetName($itemtype);
   }
 
   /**
@@ -80,12 +79,14 @@ trait GlobalAssetTableTrait
 	 */
 	protected function _getAssetTitle($itemtype = null)
 	{
-    if(!$itemtype)
+    if(\property_exists($this, 'title'))
     {
-      $itemtype = \explode('.', $this->typeAlias, 2)[1];
+      return $this->title;
     }
-
-		return 'Global ' . \ucfirst(JoomHelper::pluralize($itemtype));
+    else
+    {
+      return $this->_getAssetName();
+    }    
 	}
 
 	/**

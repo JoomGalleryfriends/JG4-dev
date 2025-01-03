@@ -349,7 +349,16 @@ abstract class Migration implements MigrationInterface
     // Attempt to load the array
     try
     {
-      return $db->loadAssoc();
+      $data = $db->loadAssoc();
+
+      // Load rules
+      if($this->get('types')[$type]->get('insertRecord') && $this->params->get('with_rules', 0) > 0)
+      {
+        // load the rules and add them to the data array
+        $this->getRulesData($type, $data);
+      }
+
+      return $data;
     }
     catch(\Exception $e)
     {
@@ -360,7 +369,40 @@ abstract class Migration implements MigrationInterface
   }
 
   /**
-   * Performs the necessary steps to migrate an image in the filesystem
+   * Load the rules from the assets table and add them to data
+   *
+   * @param   string   $type   Name of the content type
+   * @param   array    $data   Source data received from getData()
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function getRulesData(string $type, array &$data)
+  {
+    if(\array_key_exists('asset_id', $data))
+    {
+      // Get db object
+      list($db, $prefix) = $this->getDB('source');
+
+      // Initialize query object
+      $query = $db->getQuery(true);
+
+      // Create the query
+      $query->select($db->quoteName('rules'))
+            ->from($db->quoteName('#__assets'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($data['asset_id']));
+
+      // Reset the query using our newly populated query object.
+      $db->setQuery($query);
+
+      // Load rules
+      $data['rules'] = $db->loadResult();
+    }
+  }
+
+  /**
+   * Performs the neccessary steps to migrate an image in the filesystem
    *
    * @param   ImageTable   $img    ImageTable object, already stored
    * @param   array        $data   Source data received from getData()
@@ -754,6 +796,11 @@ abstract class Migration implements MigrationInterface
     foreach($this->types as $key => $type)
     {
       $tables[$key] = $this->types[$key]->get('queueTablename');
+    }
+
+    if($this->params->get('with_rules', 0) > 0)
+    {
+      $tables['assets'] = '#__assets';
     }
 
     return $tables;

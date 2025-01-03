@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table\Asset;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
 
@@ -48,7 +49,14 @@ trait AssetTableTrait
 	 */
 	protected function _getAssetTitle($itemtype = null)
 	{
-		return $this->title;
+		if(\property_exists($this, 'title'))
+    {
+      return $this->title;
+    }
+    else
+    {
+      return $this->_getAssetName();
+    }
 	}
 
   /**
@@ -83,4 +91,20 @@ trait AssetTableTrait
 
 		return $assetParentId;
 	}
+
+	/**
+   * Method to set empty rules for the record based on a form.
+   * 
+   * @param   Form  $form  The form object where the rules gets extracted
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function setEmptyRules(Form $form)
+  {
+		// Add the rules for ACL
+		$rules = new Rules('{}');
+		$this->setRules($rules);
+  }
 }

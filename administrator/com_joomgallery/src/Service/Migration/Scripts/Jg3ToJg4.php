@@ -570,6 +570,31 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
+   * Load the rules from the assets table and add them to data
+   *
+   * @param   string   $type   Name of the content type
+   * @param   array    $data   Source data received from getData()
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function getRulesData(string $type, array &$data)
+  {
+    switch($type)
+    {
+      case 'category':
+        parent::getRulesData($type, $data);
+        $data['rules-image'] = '{}';
+        break;
+      
+      default:
+        // Dont migrate any rules
+        break;
+    }
+  }
+
+  /**
    * onBeforeSave event.
    * Last possibility to change anything on the data before storing into destination database.
    *
