@@ -15,13 +15,14 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
-* Trait for Tables with default assets
+* Trait for Tables with no asset
 *
 * @since  4.0.0
 */
-trait AssetTableTrait
+trait NoAssetTableTrait
 {
   /**
 	 * Define a namespaced asset name for inclusion in the #__assets table
@@ -32,50 +33,27 @@ trait AssetTableTrait
 	 * @see Joomla\CMS\Table\Table::_getAssetName
 	 */
 	protected function _getAssetName($itemtype = null)
-	{
-		$k = $this->_tbl_key;
-
-		return $this->typeAlias . '.' . (int) $this->$k;
-	}
-
-  /**
-	 * Method to return the title to use for the asset table.
-	 *
-	 * @return  string
-	 *
-   * @since 4.0.0
-	 * @see Joomla\CMS\Table\Table::_getAssetTitle
-	 */
-	protected function _getAssetTitle($itemtype = null)
-	{
-		if(\property_exists($this, 'title'))
-    {
-      return $this->title;
-    }
-    else
-    {
-      return $this->_getAssetName();
-    }
-	}
+  {
+    return parent::_getAssetName($itemtype);
+  }
 
   /**
 	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
 	 *
-	 * @param   Table    $table  Table name
+	 * @param   Table   $table  Table name
 	 * @param   integer  $id     Id
 	 *
+	 * @see Table::_getAssetParentId
+	 *
 	 * @return mixed The id on success, false on failure.
-   * 
-   * @since 4.0.0
-   * @see Joomla\CMS\Table\Table::_getAssetParentId
 	 */
-	protected function _getAssetParentId($table = null, $id = null, $itemtype = null)
+	protected function _getAssetParentId($table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
 		$assetTable = new Asset($this->getDbo());
 
-		// The item has the component as asset-parent
-		$assetTable->loadByName(_JOOM_OPTION);
+    // Load the JoomGallery global asset
+    $assetTable->loadByName(_JOOM_OPTION);
 
 		// Return the found asset-parent-id
 		if($assetTable->id)
@@ -89,6 +67,26 @@ trait AssetTableTrait
 		}
 
 		return $assetParentId;
+	}
+
+  /**
+	 * Method to return the title to use for the asset table.
+	 *
+	 * @return  string
+	 *
+   * @since 4.0.0
+	 * @see Joomla\CMS\Table\Table::_getAssetTitle
+	 */
+	protected function _getAssetTitle($itemtype = null)
+	{
+    if(\property_exists($this, 'title'))
+    {
+      return $this->title;
+    }
+    else
+    {
+      return $this->_getAssetName();
+    }    
 	}
 
 	/**
