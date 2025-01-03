@@ -136,7 +136,7 @@ class CategoriesModel extends JoomListModel
     $category = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', array());
     $this->setState('filter.category', $category);
     $exclude = $this->getUserStateFromRequest($this->context . '.filter.exclude', 'filter_exclude', array());
-    $this->setState('filter.category', $exclude);
+    $this->setState('filter.exclude', $exclude);
 
     // Force a language
 		if(!empty($forcedLanguage))
