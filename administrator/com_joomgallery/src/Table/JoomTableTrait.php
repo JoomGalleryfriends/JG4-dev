@@ -257,6 +257,41 @@ trait JoomTableTrait
   }
 
   /**
+   * Method to get the last ordering value for a group of rows defined by an SQL WHERE clause.
+   * This is useful for placing a new item first in a group of items in the table.
+   *
+   * @param   string    $where  query WHERE clause for selecting MAX(ordering).
+   * 
+   * @return  integer   The ordring number
+   * 
+   * @since   4.0.0
+   * @throws  \UnexpectedValueException
+   */
+  public function getPreviousOrder($where = '')
+  {
+    // Check if there is an ordering field set
+    if(!$this->hasField('ordering'))
+    {
+      throw new \UnexpectedValueException(sprintf('%s does not support ordering.', \get_class($this)));
+    }
+
+    // Get the largest ordering value for a given where clause.
+    $query = $this->_db->getQuery(true)
+      ->select('MIN(' . $this->_db->quoteName($this->getColumnAlias('ordering')) . ')')
+      ->from($this->_db->quoteName($this->_tbl));
+
+    if($where)
+    {
+      $query->where($where);
+    }
+
+    $this->_db->setQuery($query);
+    $max = (int) $this->_db->loadResult();
+
+    return $max - 1;
+  }
+
+  /**
 	 * Check if a field is unique
 	 *
 	 * @param   string   $field         Name of the field
