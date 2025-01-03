@@ -1061,6 +1061,9 @@ class JoomHelper
    */
   public static function checkFilesystems()
   {
+    // Load filesystem helper
+    $helper = new FilesystemHelper;
+
     // Load all used filesystems from images table
     $db = Factory::getContainer()->get(DatabaseInterface::class);
 
@@ -1073,15 +1076,25 @@ class JoomHelper
     $filesystems = $db->loadColumn();
 
     // Loop through all found filesystems
-    foreach ($filesystems as $key => $filesystem)
+    foreach ($filesystems as $filesystem)
     {
-      // Get corresponding plugin name
+      // Get corresponding names
       $plugin_name     = \explode('-', $filesystem, 2)[0];
       $plugin_fullname = 'plg_filesystem_'.$plugin_name;
+      $adapter_name    = \explode('-', $filesystem, 2)[1];
 
-      if(!PluginHelper::isEnabled('filesystem', $plugin_name))
+      // Try to get the corresponding filesystem adapter
+      try
       {
-        // Plugin is not installed or not enabled. Show warning message.
+        $adapter = $helper->getAdapter($filesystem);
+      } catch (\Exception $e)
+      {
+        $adapter = false;
+      }      
+
+      if(!$adapter)
+      {
+        // Plugin is not installed, not enabled or not correctly configured. Show warning message.
         $lang = Factory::getLanguage();
 
         if(!$lang->getPaths($plugin_fullname))
@@ -1097,7 +1110,7 @@ class JoomHelper
         $plugins_url  = Route::_('index.php?option=com_plugins&view=plugins&filter[folder]=filesystem');
         $plugin_title = Text::_($plugin_fullname);
 
-        self::getComponent()->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_PLUGIN_NOT_ENABLED', $plugin_title, $plugins_url));
+        self::getComponent()->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_PLUGIN_NOT_ENABLED', $adapter_name, $plugin_title, $plugins_url));
       }
     }
   }
