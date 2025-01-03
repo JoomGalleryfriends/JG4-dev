@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table\Asset;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
 
