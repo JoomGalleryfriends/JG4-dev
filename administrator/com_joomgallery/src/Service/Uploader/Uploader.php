@@ -207,6 +207,9 @@ abstract class Uploader implements UploaderInterface
       }
     }
 
+    // Set filesystem
+    $data['filesystem'] = $this->component->getFilesystem()->get('filesystem');
+
     // Trigger onJoomBeforeUpload
     $plugins  = $this->app->triggerEvent('onJoomBeforeUpload', array($data['filename']));
     if(in_array(false, $plugins, true))

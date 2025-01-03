@@ -1080,7 +1080,7 @@ class ImageModel extends JoomAdminModel
         }
 
         // Perform the recreation
-        if(!$this->component->getFileManager()->createImages($source, $table->filename, $table->catid))
+        if(!$this->component->getFileManager()->createImages($source, $table->filename, $table->catid, true, false, [$type]))
         {
           $this->setError($table->getError());
 

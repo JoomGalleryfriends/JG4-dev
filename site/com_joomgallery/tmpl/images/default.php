@@ -155,7 +155,7 @@ if($saveOrder && !empty($this->items))
                         <span class="icon-checkedout" aria-hidden="true"></span>
                       </button>
                     <?php endif; ?>
-                    <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $image->id, (int) $image->catid)); ?>">
+                    <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $item->id, (int) $item->catid)); ?>">
                       <?php echo $this->escape($item->title); ?>
                     </a>
                   </th>

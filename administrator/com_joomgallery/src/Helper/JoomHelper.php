@@ -21,6 +21,7 @@ use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Http\HttpFactory;
+use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
 
@@ -1049,6 +1050,69 @@ class JoomHelper
     }
 
     return new \SimpleXMLElement($xmlString);
+  }
+
+  /**
+   * Method to check whether all needed filesystem plugins are available and enabled.
+   *
+   * @return  bool
+   *
+   * @since   4.0.0
+   */
+  public static function checkFilesystems()
+  {
+    // Load filesystem helper
+    $helper = new FilesystemHelper;
+
+    // Load all used filesystems from images table
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+    $query = $db->getQuery(true)
+          ->select('DISTINCT ' .$db->quoteName('filesystem'))
+          ->from(_JOOM_TABLE_IMAGES)
+          ->where($db->quoteName('published') . ' = 1');
+
+    $db->setQuery($query);
+    $filesystems = $db->loadColumn();
+
+    // Loop through all found filesystems
+    foreach ($filesystems as $filesystem)
+    {
+      // Get corresponding names
+      $plugin_name     = \explode('-', $filesystem, 2)[0];
+      $plugin_fullname = 'plg_filesystem_'.$plugin_name;
+      $adapter_name    = \explode('-', $filesystem, 2)[1];
+
+      // Try to get the corresponding filesystem adapter
+      try
+      {
+        $adapter = $helper->getAdapter($filesystem);
+      } catch (\Exception $e)
+      {
+        $adapter = false;
+      }      
+
+      if(!$adapter)
+      {
+        // Plugin is not installed, not enabled or not correctly configured. Show warning message.
+        $lang = Factory::getLanguage();
+
+        if(!$lang->getPaths($plugin_fullname))
+        {
+          // Language file is not available
+          $langFile  = JPATH_PLUGINS . '/filesystem/' . $plugin_name;
+
+          // Try to load plugin language file
+          $lang->load($plugin_fullname);
+          $lang->load($plugin_fullname, $langFile);
+        }
+
+        $plugins_url  = Route::_('index.php?option=com_plugins&view=plugins&filter[folder]=filesystem');
+        $plugin_title = Text::_($plugin_fullname);
+
+        self::getComponent()->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_PLUGIN_NOT_ENABLED', $adapter_name, $plugin_title, $plugins_url));
+      }
+    }
   }
 
   /**
