@@ -34,6 +34,17 @@ interface ConfigInterface
   public function __construct($context = 'com_joomgallery', $id = null, $inclOwn = true);
 
   /**
+   * Writes params from database record to class properties
+   *
+   * @param   array  $params  Array of config params
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function setParamsToClass($params);
+
+  /**
    * Store the current available caches to the session
    *
    * @return  void

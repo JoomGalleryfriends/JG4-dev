@@ -56,6 +56,11 @@ class HtmlView extends JoomGalleryView
 		$this->params = $this->get('Params');
 		$this->item   = $this->get('Item');
 
+    // Load images
+    $this->item->images = new \stdClass();
+    $this->item->images->items      = $this->get('Images');
+    $this->item->images->pagination = $this->get('ImagesPagination');
+
     // Check for errors.
     if(\count($errors = $this->get('Errors')))
     {

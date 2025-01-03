@@ -26,7 +26,8 @@ extract($displayData);
  * @var   int      $num_columns     Number of columns of this layout
  * @var   string   $caption_align   Alignment class for the caption
  * @var   string   $image_class     Class to be added to the image box
- * @var   string   $image_type      Type of image to be displayed
+ * @var   string   $image_type      The imagetype used for the grid
+ * @var   string   $lightbox_type   The imagetype used for the lightbox
  * @var   string   $image_link      Type of link to be added to the image
  * @var   bool     $image_title     True to display the image title
  * @var   string   $title_link      Type of link to be added to the image title
@@ -49,8 +50,8 @@ extract($displayData);
           <?php endif; ?>
 
           <?php if($image_link == 'lightgallery') : ?>
-            <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $image_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>">
-              <img src="<?php echo JoomHelper::getImg($item, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
+            <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>">
+              <img src="<?php echo JoomHelper::getImg($item, $image_type); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
               <?php if($image_title && $layout == 'justified') : ?>
                 <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
                   <?php echo $this->escape($item->title); ?>
@@ -66,7 +67,7 @@ extract($displayData);
             </a>
           <?php elseif($image_link == 'defaultview') : ?>
             <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $item->id, (int) $item->catid)); ?>">
-              <img src="<?php echo JoomHelper::getImg($item, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
+              <img src="<?php echo JoomHelper::getImg($item, $image_type); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
               <?php if($image_title && $layout == 'justified') : ?>
                 <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
                   <?php echo $this->escape($item->title); ?>
@@ -74,7 +75,7 @@ extract($displayData);
               <?php endif; ?>
             </a>
           <?php else : ?>
-            <img src="<?php echo JoomHelper::getImg($item, 'thumbnail'); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
+            <img src="<?php echo JoomHelper::getImg($item, $image_type); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
           <?php endif; ?>
 
           <?php if($layout != 'justified') : ?>
@@ -92,7 +93,7 @@ extract($displayData);
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <?php if($image_title) : ?>
               <?php if($title_link == 'lightgallery' && $image_link != 'lightgallery') : ?>
-                <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $image_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>">
+                <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>">
                   <?php echo $this->escape($item->title); ?>
                 </a>
               <?php else : ?>

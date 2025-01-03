@@ -11,14 +11,57 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
+
+// Image params
+$image_type       = $this->params['configs']->get('jg_gallery_view_type_image', 'thumbnail', 'STRING');
+$gallery_class    = $this->params['configs']->get('jg_gallery_view_class', 'masonry', 'STRING');
+$num_columns      = $this->params['configs']->get('jg_gallery_view_num_columns', 3, 'INT');
+$image_class      = $this->params['configs']->get('jg_gallery_view_image_class', 0, 'INT');
+$justified_height = $this->params['configs']->get('jg_gallery_view_justified_height', 200, 'INT');
+$justified_gap    = $this->params['configs']->get('jg_gallery_view_justified_gap', 5, 'INT');
+$image_link       = $this->params['configs']->get('jg_gallery_view_image_link', 'defaultview', 'STRING');
+$lightbox_image   = $this->params['configs']->get('jg_category_view_lightbox_image', 'detail', 'STRING'); // Same as category view
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.site');
 $wa->useStyle('com_joomgallery.jg-icon-font');
+
+if($gallery_class == 'masonry')
+{
+  $wa->useScript('com_joomgallery.masonry');
+}
+
+if($gallery_class == 'justified')
+{
+  $wa->useScript('com_joomgallery.justified');
+  $wa->addInlineStyle('.jg-images[class*=" justified-"] .jg-image-caption-hover { right: ' . $justified_gap . 'px; }');
+}
+
+$lightbox = false;
+if($image_link == 'lightgallery')
+{
+  $lightbox = true;
+
+  $wa->useScript('com_joomgallery.lightgallery');
+  $wa->useScript('com_joomgallery.lg-thumbnail');
+  $wa->useStyle('com_joomgallery.lightgallery-bundle');
+}
+
+// Add and initialize the grid script
+$iniJS  = 'window.joomGrid = {';
+$iniJS .= '  itemid: ' . $this->item->id . ',';
+$iniJS .= '  pagination: 0,';
+$iniJS .= '  layout: "' . $gallery_class . '",';
+$iniJS .= '  num_columns: ' . $num_columns . ',';
+$iniJS .= '  lightbox: ' . ($lightbox ? 'true' : 'false') . ',';
+$iniJS .= '  justified: {height: '.$justified_height.', gap: '.$justified_gap.'}';
+$iniJS .= '};';
+
+$wa->addInlineScript($iniJS, ['position' => 'before'], [], ['com_joomgallery.joomgrid']);
+$wa->useScript('com_joomgallery.joomgrid');
 ?>
 
 <div class="com-joomgallery-gallery">
@@ -28,12 +71,34 @@ $wa->useStyle('com_joomgallery.jg-icon-font');
     </div>
   <?php endif; ?>
 
-  <p>This is the default JoomGallery-Page. In the future, this will become a beautiful image wall page with search bar and filters. A perfect entry point to your gallery.</p>
-  <ul>
-    <li><a href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id=1'); ?>">Category View</a></li>
-    <?php if($this->params['configs']->get('jg_userspace', 1, 'int') == 1): ?>
-      <li><a href="<?php echo Route::_('index.php?option=com_joomgallery&view=categories'); ?>">Categories List View</a></li>
-      <li><a href="<?php echo Route::_('index.php?option=com_joomgallery&view=images'); ?>">Images List View</a></li>
-    <?php endif; ?>
-  </ul>
+  <?php // Hint for no items ?>
+  <?php if(count($this->item->images->items) == 0) : ?>
+    <p><?php echo Text::_('No images in the gallery...') ?></p>
+  <?php else: ?>
+    <?php // Display data array for grid layout
+    $imgsData = [ 'id' => (int) $this->item->id, 'layout' => $gallery_class, 'items' => $this->item->images->items, 'num_columns' => (int) $num_columns,
+                  'caption_align' => 'center', 'image_class' => $image_class, 'image_type' => $image_type, 'lightbox_type' => $lightbox_image, 'image_link' => $image_link,
+                  'image_title' => false, 'title_link' => 'defaultview', 'image_desc' => false, 'image_date' => false,
+                  'image_author' => false, 'image_tags' => false
+                ];
+    ?>
+    <?php // Images grid ?>
+    <?php echo LayoutHelper::render('joomgallery.grids.images', $imgsData); ?>
+
+    <?php // Pagination ?>
+    <?php echo $this->item->images->pagination->getListFooter(); ?>
+  <?php endif; ?>
+
+  <script>
+    if(window.joomGrid.layout != 'justified') {
+      var loadImg = function() {
+        this.closest('.' + window.joomGrid.imgboxclass).classList.add('loaded');
+      }
+
+      let images = Array.from(document.getElementsByClassName(window.joomGrid.imgclass));
+      images.forEach(image => {
+        image.addEventListener('load', loadImg);
+      });
+    }
+  </script>
 </div>

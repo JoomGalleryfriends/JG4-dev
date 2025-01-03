@@ -169,6 +169,9 @@ class ConfigTable extends Table
     // Support for multiple subform field: jg_dynamicprocessing
     $this->subformFieldSupport($array, 'jg_dynamicprocessing');
 
+    // Support for multiple field: jg_record_hits_select
+		$this->multipleFieldSupport($array, 'jg_record_hits_select');
+
     // 
 		if(isset($array['params']) && \is_array($array['params']))
 		{
