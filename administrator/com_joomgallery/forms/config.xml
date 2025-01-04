@@ -757,7 +757,7 @@
             name="jg_category_view_numb_subcategories"
             type="number"
             default="12"
-            min="1"
+            min="0"
             max="999"
             step="1"
             label="COM_JOOMGALLERY_CONFIG_NUMB_SUBCATEGORIES"
