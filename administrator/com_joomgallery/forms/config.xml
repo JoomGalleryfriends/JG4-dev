@@ -1162,7 +1162,7 @@
         </field>
     </fieldset>
   </fieldset>
-
+  
   <field name="asset_id"
           type="hidden"
           filter="unset" />
