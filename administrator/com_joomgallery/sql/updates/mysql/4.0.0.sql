@@ -386,6 +386,7 @@ KEY `idx_user` (`cmsuser`)
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery_votes` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
 `imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `score` INT(11) NOT NULL DEFAULT 0,
 `identication` VARCHAR(255) NULL DEFAULT "",
@@ -404,6 +405,7 @@ KEY `idx_imgid` (`imgid`)
 
 CREATE TABLE IF NOT EXISTS `#__joomgallery_comments` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT "FK to the #__assets table.",
 `imgid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `title` VARCHAR(255) NOT NULL DEFAULT "",
 `description` TEXT NOT NULL,

@@ -18,6 +18,7 @@ use \Joomla\CMS\Table\Table;
 use \Joomla\Registry\Registry;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\User\UserFactoryInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\NoAssetTableTrait;
 
 /**
  * User table
@@ -28,6 +29,7 @@ use \Joomla\CMS\User\UserFactoryInterface;
 class UserTable extends Table
 {
   use JoomTableTrait;
+  use NoAssetTableTrait;
 	use MigrationTableTrait;
 
 	/**

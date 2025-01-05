@@ -13,6 +13,8 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table\Asset;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Access\Rules;
+use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
 
@@ -114,4 +116,50 @@ trait MultipleAssetsTableTrait
       return $this->title;
     }		
 	}
+
+  /**
+   * Method to set empty rules for the record based on a form.
+   * 
+   * @param   Form  $form  The form object where the rules gets extracted
+   *
+   * @return  void
+   *
+   * @since   4.0.0
+   */
+  public function setEmptyRules(Form $form)
+  {
+    $fieldsets = $form->getFieldsets();
+
+    // Default itemtype
+    $def_itemtype = \explode('.', $form->getName(), 2)[1];
+
+    foreach ($fieldsets as $key => $fieldset)
+    {
+      if(\strpos($key, 'accesscontrol') !== false)
+      {
+        $formItems = $form->getFieldset($key);
+
+        foreach ($formItems as $itemkey => $formItem)
+        {
+          if(\strpos($itemkey, 'rules') !== false)
+          {
+            // We found a rules entry in the data
+            $rulename = \strstr($itemkey, 'rules');
+            if($rulename === 'rules')
+            {
+              $itemtype = $def_itemtype;
+            }
+            else
+            {
+              $itemtype = \str_replace('rules_', '', $rulename);
+            }
+
+            // Add the rules for ACL
+            $rules = new Rules('{}');
+            $this->setRules($rules, $itemtype);
+          }
+        }
+      }
+    }
+  }
 }
