@@ -116,7 +116,11 @@ class JgtagField extends ListField
         //$data['minTermLength'] = (int) $this->comParams->get('min_term_length', 3);
         $data['minTermLength'] = 3;
 
-        return $this->getRenderer($this->layout)->render($data);
+        // Make sure the component is correctly set
+        $renderer = $this->getRenderer($this->layout);
+        $renderer->setComponent('com_joomgallery');
+
+        return $renderer->render($data);
     }
 
     /**
