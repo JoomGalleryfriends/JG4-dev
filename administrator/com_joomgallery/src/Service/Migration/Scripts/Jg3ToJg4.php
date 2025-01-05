@@ -394,7 +394,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Adjust imgid with new created images
         if(!\boolval($this->params->get('source_ids', 0)))
         {
-          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+          $data['picid'] = $this->migrateables['image']->successful->get($data['picid']);
         }
 
         break;
@@ -408,7 +408,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Adjust imgid with new created images
         if(!\boolval($this->params->get('source_ids', 0)))
         {
-          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+          $data['cmtpic'] = $this->migrateables['image']->successful->get($data['cmtpic']);
         }
 
         break;
