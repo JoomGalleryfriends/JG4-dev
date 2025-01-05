@@ -71,9 +71,7 @@ img.jg-controlpanel-logo {
 }
 .modal .modal-body {
   margin: 1rem 2rem;
-}
-.modal .modal-body {
-  margin: 1rem 2rem;
+  overflow-y: scroll;
 }
 td .modal .form-control {
   width: 100%;
