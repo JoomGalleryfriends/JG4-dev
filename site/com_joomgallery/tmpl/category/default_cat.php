@@ -41,6 +41,7 @@ $reloaded_images  = $this->params['configs']->get('jg_category_view_number_of_re
 $image_link       = $this->params['configs']->get('jg_category_view_image_link', 'defaultview', 'STRING');
 $title_link       = $this->params['configs']->get('jg_category_view_title_link', 'defaultview', 'STRING');
 $lightbox_image   = $this->params['configs']->get('jg_category_view_lightbox_image', 'detail', 'STRING');
+$thumbnails       = $this->params['configs']->get('jg_category_view_lightbox_thumbnails', 0, 'INT');
 $show_description = $this->params['configs']->get('jg_category_view_show_description', 0, 'INT');
 $show_imgdate     = $this->params['configs']->get('jg_category_view_show_imgdate', 0, 'INT');
 $show_imgauthor   = $this->params['configs']->get('jg_category_view_show_imgauthor', 0, 'INT');
@@ -99,6 +100,7 @@ $iniJS .= '  pagination: ' . $use_pagination . ',';
 $iniJS .= '  layout: "' . $category_class . '",';
 $iniJS .= '  num_columns: ' . $num_columns . ',';
 $iniJS .= '  lightbox: ' . ($lightbox ? 'true' : 'false') . ',';
+$iniJS .= '  thumbnails: ' . ($thumbnails ? 'true' : 'false') . ',';
 $iniJS .= '  justified: {height: '.$justified_height.', gap: '.$justified_gap.'}';
 $iniJS .= '};';
 

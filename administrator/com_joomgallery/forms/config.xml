@@ -963,6 +963,19 @@
             validate="options"
             showon="jg_category_view_image_link:lightgallery[OR]jg_category_view_title_link:lightgallery" />
         <field
+            name="jg_category_view_lightbox_thumbnails"
+            type="radio"
+            label="COM_JOOMGALLERY_CONFIG_CATEGORY_LIGHTBOX_THUMBNAILS"
+            description="COM_JOOMGALLERY_CONFIG_CATEGORY_LIGHTBOX_THUMBNAILS_DESC"
+            default="0"
+            layout="joomla.form.field.radio.switcher"
+            validate="options"
+            showon="jg_category_view_image_link:lightgallery[OR]jg_category_view_title_link:lightgallery"
+            >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field
             label="COM_JOOMGALLERY_CONFIG_IMAGE_INFORMATION"
             type="spacer"
             name="spacer3"
