@@ -44,7 +44,7 @@ img.jg-controlpanel-logo {
   background-color: var(--template-bg-dark-50) !important;
   border-color: var(--template-bg-dark-50) !important;
 }
-.modal .btn-primary {
+.admin .modal .btn-primary {
   background-color: var(--btn-primary-bg) !important;
 }
 .modal .btn-secondary {
