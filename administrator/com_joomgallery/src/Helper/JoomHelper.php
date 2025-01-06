@@ -345,6 +345,25 @@ class JoomHelper
     return $return;
   }
 
+  /**
+   * Checks the ACL permission for an asset on which to perform an action.
+   *
+   * @param   string   $action     The name of the action to check for permission.
+   * @param   string   $asset      The name of the asset on which to perform the action.
+   * @param   integer  $pk         The primary key of the item.
+   *
+   * @return  bool     True if the permission is granted, false otherwise
+   *
+   * @since   4.0.0
+   */
+  public static function checkACL($action, $asset='', $pk=0)
+  {
+    // Create access service
+    $acl = self::getService('Access');
+
+    return $acl->checkACL($action, $asset, $pk);
+  }
+
 	/**
 	 * Gets a list of the actions that can be performed.
    * 
