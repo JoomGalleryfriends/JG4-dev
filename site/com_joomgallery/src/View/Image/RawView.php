@@ -178,6 +178,8 @@ class RawView extends AdminRawView
 	 */
   protected function access($id)
   {
+    if($id === 'null') return true;
+
     $loaded = true;
     $access = true;
 

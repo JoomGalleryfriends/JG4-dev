@@ -463,9 +463,9 @@ class JoomHelper
 
     if(!\is_object($img))
     {
-      if(\is_numeric($img))
+      if(\is_numeric($img) || $img == 'null')
       {
-        if($img == 0)
+        if($img == 0 || $img == 'null')
         {
           // ID = 0 given
           return self::getImgZero($type, $url, $root);          
@@ -713,7 +713,7 @@ class JoomHelper
     // Create the link
     $link = 'index.php?option=' . _JOOM_OPTION . '&view=' . $view;
 
-    if($id > 0)
+    if($id > 0 || ($view == 'image' && $id >= 0))
     {
       $link .= '&id=' . $id;
     }
