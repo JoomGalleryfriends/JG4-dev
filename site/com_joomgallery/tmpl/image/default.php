@@ -11,13 +11,14 @@
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Uri\Uri;
-use \Joomla\CMS\Router\Route;
-use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Session\Session;
-use \Joomla\CMS\HTML\HTMLHelper;
-use \Joomla\CMS\User\UserFactoryInterface;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 // image params
@@ -46,72 +47,16 @@ $canDelete  = $this->getAcl()->checkACL('delete', 'com_joomgallery.image', $this
 $canCheckin = $this->getAcl()->checkACL('editstate', 'com_joomgallery.image', $this->item->id, $this->item->catid, true) || $this->item->checked_out == Factory::getUser()->id;
 $returnURL  = base64_encode(JoomHelper::getViewRoute('image', $this->item->id, $this->item->catid, $this->item->language, $this->getLayout()));
 
-function getExifDataDirect ($exifJsonString='') {
+// Tags
+$tagLayout = new FileLayout('joomgallery.content.tags');
+$tags = $tagLayout->render($this->item->tags);
 
-    $exifName2Values = [];
-    $fallBack ='not specified';
+// Metadata
+$metadataLayout = new FileLayout('joomgallery.content.metadata');
+$metadata = $metadataLayout->render($this->item->imgmetadata);
 
-    $exifName2Values ['brand'] = $fallBack;
-    $exifName2Values ['camera'] = $fallBack;
-    $exifName2Values ['software'] = $fallBack;
-    $exifName2Values ['size'] = $fallBack;
-    $exifName2Values ['date_time'] = $fallBack;
-    $exifName2Values ['width'] = $fallBack;
-    $exifName2Values ['height'] = $fallBack;
-    $exifName2Values ['aperture'] = $fallBack;
-    $exifName2Values ['shutter_speed'] = $fallBack;
-    $exifName2Values ['iso'] = $fallBack;
-    $exifName2Values ['focal_length'] = $fallBack;
-    $exifName2Values ['lens'] = $fallBack;
-
-    $exifData = json_decode($exifJsonString, true);
-
-    if ( ! empty ($exifData)) {
-
-        if ( ! empty ($exifData["exif"]["IFD0"]["Make"])) {
-            $exifName2Values ['brand'] = $exifData["exif"]["IFD0"]["Make"];
-        }
-
-        if ( ! empty ($exifData["exif"]["IFD0"]["Model"])) {
-            $exifName2Values ['camera'] = $exifData["exif"]["IFD0"]["Model"];
-        }
-
-        if ( ! empty ($exifData["exif"]["IFD0"]["Software"])) {
-            $exifName2Values ['software'] = $exifData["exif"]["IFD0"]["Software"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["FileSize"])) {
-            $exifName2Values ['size'] = $exifData["exif"]["FILE"]["FileSize"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["DateTime"])) {
-            $exifName2Values ['date_time'] = $exifData["exif"]["IFD0"]["DateTime"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["Width"])) {
-            $exifName2Values ['width'] = $exifData["exif"]["COMPUTED"]["Width"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["Height"])) {
-            $exifName2Values ['height'] = $exifData["exif"]["COMPUTED"]["Height"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["ApertureFNumber"])) {
-            $exifName2Values ['aperture'] = $exifData["exif"]["COMPUTED"]["ApertureFNumber"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["ExposureTime"])) {
-            $exifName2Values ['shutter_speed'] = $exifData["exif"]["EXIF"]["ExposureTime"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["ISOSpeedRatings"])) {
-            $exifName2Values ['iso'] = $exifData["exif"]["EXIF"]["ISOSpeedRatings"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["FocalLength"])) {
-            $exifName2Values ['focal_length'] = $exifData["exif"]["EXIF"]["FocalLength"];
-        }
-        if ( ! empty ($exifData["exif"]["IFD0"]["UndefinedTag:0xA434"])) {
-            $exifName2Values ['lens'] = $exifData["exif"]["EXIF"]["UndefinedTag:0xA434"];
-        }
-
-    }
-
-    return $exifName2Values;
-}
-
+// Custom Fields
+$fields = FieldsHelper::getFields('com_joomgallery.image', $this->item);
 ?>
 
 <?php if ($show_title) : ?>
@@ -233,22 +178,28 @@ function getExifDataDirect ($exifJsonString='') {
         <?php if ($show_tags) : ?>
           <tr>
             <th><?php echo Text::_('COM_JOOMGALLERY_TAGS'); ?></th>
-            <td><?php // todo echo $this->escape($this->item->tags); ?></td>
+            <td><?php echo $tags; ?></td>
           </tr>
         <?php endif; ?>
         <?php if ($show_metadata) : ?>
           <tr>
             <th><?php echo Text::_('COM_JOOMGALLERY_IMGMETADATA'); ?></th>
-            <td>
-              <div class="">
-                <?php $exifName2Values = getExifDataDirect ($this->item->imgmetadata); ?>
-                <?php foreach ($exifName2Values as $key => $value) : ?>
-                  <span class=""><?php echo Text::_($key); ?></span>
-                  <span class=""><?php echo $value; ?></span>
-                <?php endforeach; ?>
-              </div>
-            </td>
+            <td><?php echo $metadata; ?></td>
           </tr>
+        <?php endif; ?>
+        <?php if (count($fields) > 0) : ?>
+          <tr>
+            <th><strong><?php echo Text::_('JGLOBAL_FIELDS'); ?></strong></th>
+            <td></td>
+          </tr>
+          <?php foreach ($fields as $key => $field) : ?>
+            <?php if($field->access && $field->params->get('display') > 0) : ?>
+              <tr class="<?php echo $field->params->get('render_class'); ?>">
+                <th class="<?php echo $field->params->get('label_render_class'); ?>"><?php if($field->params->get('showlabel', true)) echo $this->escape($field->title); ?></th>
+                <td class="<?php echo $field->params->get('value_render_class'); ?>"><?php echo $this->escape($field->value); ?></td>
+              </tr>
+            <?php endif; ?>
+          <?php endforeach; ?>
         <?php endif; ?>
     </table>
 </div>
