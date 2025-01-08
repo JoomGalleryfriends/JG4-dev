@@ -394,7 +394,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Adjust imgid with new created images
         if(!\boolval($this->params->get('source_ids', 0)))
         {
-          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+          $data['picid'] = $this->migrateables['image']->successful->get($data['picid']);
         }
 
         break;
@@ -408,7 +408,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         // Adjust imgid with new created images
         if(!\boolval($this->params->get('source_ids', 0)))
         {
-          $data['imgid'] = $this->migrateables['image']->successful->get($data['id']);
+          $data['cmtpic'] = $this->migrateables['image']->successful->get($data['cmtpic']);
         }
 
         break;
@@ -567,6 +567,31 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     }
 
     return $queue;
+  }
+
+  /**
+   * Load the rules from the assets table and add them to data
+   *
+   * @param   string   $type   Name of the content type
+   * @param   array    $data   Source data received from getData()
+   * 
+   * @return  void
+   * 
+   * @since   4.0.0
+   */
+  public function getRulesData(string $type, array &$data)
+  {
+    switch($type)
+    {
+      case 'category':
+        parent::getRulesData($type, $data);
+        $data['rules-image'] = '{}';
+        break;
+      
+      default:
+        // Dont migrate any rules
+        break;
+    }
   }
 
   /**

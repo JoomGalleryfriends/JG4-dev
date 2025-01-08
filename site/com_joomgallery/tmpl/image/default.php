@@ -21,6 +21,7 @@ use \Joomla\CMS\User\UserFactoryInterface;
 use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 // image params
+$image_type        = $this->params['configs']->get('jg_detail_view_type_image', 'detail', 'STRING');
 $show_title        = $this->params['configs']->get('jg_detail_view_show_title', 0, 'INT');
 $show_category     = $this->params['configs']->get('jg_detail_view_show_category', 0, 'INT');
 $show_description  = $this->params['configs']->get('jg_detail_view_show_description', 0, 'INT');
@@ -165,7 +166,7 @@ function getExifDataDirect ($exifJsonString='') {
 <?php // Image ?>
 <figure class="figure joom-image text-center center">
   <div id="jg-loader"></div>
-  <img src="<?php echo JoomHelper::getImg($this->item, 'detail'); ?>" class="figure-img img-fluid rounded" alt="<?php echo $this->item->title; ?>" style="width:auto;" itemprop="image" loading="lazy">
+  <img src="<?php echo JoomHelper::getImg($this->item, $image_type); ?>" class="figure-img img-fluid rounded" alt="<?php echo $this->item->title; ?>" style="width:auto;" itemprop="image" loading="lazy">
   <?php if ($show_description) : ?>
     <figcaption class="figure-caption"><?php echo $this->item->description; ?></figcaption>
   <?php endif; ?>

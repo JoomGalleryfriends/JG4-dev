@@ -29,6 +29,7 @@ class CollectionTable extends Table
 {
   use JoomTableTrait;
   use AssetTableTrait;
+  use MigrationTableTrait;
 
   /**
    * List of images connected to this collection

@@ -14,17 +14,14 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Table\Asset;
 use \Joomla\CMS\Table\Table;
-use \Joomla\CMS\Access\Rules;
-use \Joomla\CMS\Access\Access;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Database\DatabaseDriver;
 use \Joomla\CMS\Event\AbstractEvent;
 use \Joomla\CMS\Versioning\VersionableTableInterface;
-use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\NoAssetTableTrait;
 
 /**
  * Image table
@@ -35,6 +32,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 class ImageTable extends Table implements VersionableTableInterface
 {
   use JoomTableTrait;
+  use NoAssetTableTrait;
 	use MigrationTableTrait;
 
 	/**
