@@ -37,8 +37,9 @@ class RawView extends JoomGalleryView
 	public function display($tpl = null)
 	{
     // Get request variables
-    $type = $this->app->input->get('type', 'thumbnail', 'word');
-    $id   = $this->app->input->get('id', 0, 'int');
+    $type  = $this->app->input->get('type', 'thumbnail', 'word');
+    $id    = $this->app->input->get('id', 0);
+    if($id !== 'null') {$id = $this->app->input->get('id', 0, 'int');}
 
     // Check access
     if(!$this->access($id))
@@ -51,9 +52,10 @@ class RawView extends JoomGalleryView
 
     // Create filesystem service
     $adapter = '';
-    if($id === 0)
+    if($id === 0 || $id === 'null')
     {
       // Force local-images adapter to load the no-image file
+      $id      = 0;
       $adapter = 'local-images';
     }
     $this->component->createFilesystem($adapter);

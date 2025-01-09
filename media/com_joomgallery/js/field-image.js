@@ -156,8 +156,7 @@
 
 
     modalClose() {
-      Joomla.Modal.getCurrent().close();
-      this.modalBody.innerHTML = '';
+      this.modal.close();
     } // Remove the iframe
 
 

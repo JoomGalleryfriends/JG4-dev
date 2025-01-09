@@ -44,6 +44,12 @@ img.jg-controlpanel-logo {
   background-color: var(--template-bg-dark-50) !important;
   border-color: var(--template-bg-dark-50) !important;
 }
+.admin .modal .btn-primary {
+  background-color: var(--btn-primary-bg) !important;
+}
+.modal .btn-secondary {
+  color: var(--white) !important;
+}
 .head-row .control-group .control-label {
   width: 150px;
 }
@@ -65,9 +71,7 @@ img.jg-controlpanel-logo {
 }
 .modal .modal-body {
   margin: 1rem 2rem;
-}
-.modal .modal-body {
-  margin: 1rem 2rem;
+  overflow-y: scroll;
 }
 td .modal .form-control {
   width: 100%;

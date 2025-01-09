@@ -301,6 +301,12 @@ class DefaultRouter extends RouterView
    */
   public function getImageId($segment, $query)
   {
+    if($segment == '0-' || $segment == 'noimage' || $segment == '0-noimage')
+    {
+      // Special case: No image with id=0
+      return 'null';
+    }
+
     $img_id = 0;
     if(\is_numeric(\explode('-', $segment, 2)[0]))
     {

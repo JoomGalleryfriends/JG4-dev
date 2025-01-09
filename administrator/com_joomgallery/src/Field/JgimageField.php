@@ -106,8 +106,11 @@ class JgimageField extends FormField
 			throw new \UnexpectedValueException(sprintf('%s has no layout assigned.', $this->name));
 		}
 
-		return $this->getRenderer($this->layout)->render($this->getLayoutData());
+		// Make sure the component is correctly set
+		$renderer = $this->getRenderer($this->layout);
+		$renderer->setComponent('com_joomgallery');
 
+		return $renderer->render($this->getLayoutData());
 	}
 
 	/**

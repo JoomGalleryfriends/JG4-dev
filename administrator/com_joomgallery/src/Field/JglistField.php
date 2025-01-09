@@ -65,7 +65,11 @@ class JglistField extends ListField
       $data['globvalue'] = $this->getGlobalValue('...');
     }
 
-    return $this->getRenderer($this->layout)->render($data);
+    // Make sure the component is correctly set
+    $renderer = $this->getRenderer($this->layout);
+    $renderer->setComponent('com_joomgallery');
+
+    return $renderer->render($data);
   }
 
   /**
