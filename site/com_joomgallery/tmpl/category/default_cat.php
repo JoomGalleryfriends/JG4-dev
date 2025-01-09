@@ -185,7 +185,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php endif; ?>
 
 <?php // Subcategories ?>
-<?php if(count($this->item->children->items) > 0) : ?>
+<?php if(count($this->item->children->items) > 0 && ($this->item->id == 1 || $numb_subcategories  > 0)) : ?>
   <?php if($this->item->parent_id > 0) : ?>
     <h3><?php echo Text::_('COM_JOOMGALLERY_SUBCATEGORIES') ?></h3>
   <?php else : ?>
