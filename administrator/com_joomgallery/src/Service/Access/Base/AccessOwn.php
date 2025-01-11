@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access\Base;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Access\Access;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
@@ -23,6 +24,13 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
  */
 class AccessOwn extends Access
 {
+  /**
+   * List of view levels ('id' => 'title')
+   *
+   * @var    array
+   */
+  protected static $viewLevelsList = array();
+
   /**
    * List of content types which do not have their own assets but uses assets
    * of its parent content types.
@@ -182,5 +190,35 @@ class AccessOwn extends Access
     }
 
     return $result;
+  }
+
+  /**
+   * Returns a list of available view levels.
+   *
+   * @return  array   List of view levels.
+   *
+   * @since   4.0.0
+   */
+  public static function getViewLevels()
+  {
+    // Only load the view levels once.
+    if(empty(self::$viewLevelsList))
+    {
+      // Get a database object.
+      $db = Factory::getDbo();
+
+      // Build the base query.
+      $query = $db->getQuery(true)
+          ->select($db->quoteName(['id', 'title']))
+          ->from($db->quoteName('#__viewlevels'));
+
+      // Set the query for execution.
+      $db->setQuery($query);
+
+      // Build the view levels array.
+      self::$viewLevelsList = $db->loadAssocList('id');
+    }
+
+    return self::$viewLevelsList;
   }
 }

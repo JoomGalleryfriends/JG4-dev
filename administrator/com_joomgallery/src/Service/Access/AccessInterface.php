@@ -44,6 +44,17 @@ interface AccessInterface
   public function checkACL(string $action, string $asset='', int $pk=0, int $parent_pk=0, bool $use_parent=false): bool;
 
   /**
+   * Check the permission to view an item based on the users allowed view levels
+   *
+   * @param   mixed   $level   The view level of which the access is allowed for this item
+   *
+   * @return  bool    True if user has the permission, false if denied
+   *
+   * @since   4.0.0
+   */
+  public function checkViewLevel($level): bool;
+
+  /**
    * Change the component option on which to check the action.
    *
    * @param   string   $option    The new option.

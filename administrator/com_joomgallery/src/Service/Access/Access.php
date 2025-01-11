@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Access;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\CMS\Access\Access as AccessBase;
@@ -158,7 +157,7 @@ class Access implements AccessInterface
    * @param   integer  $parent_pk  The primary key of the parent item.
    * @param   bool     $use_parent True to show that the given primary key is its parent key.
    *
-   * @return  void
+   * @return  bool     True if user has the permission, false if denied
    *
    * @since   4.0.0
    */
@@ -336,6 +335,45 @@ class Access implements AccessInterface
     }
 
     return $allowedRes;
+  }
+
+  /**
+   * Check the permission to view an item based on the users allowed view levels
+   *
+   * @param   mixed   $level   The view level of which the access is allowed for this item
+   *
+   * @return  bool    True if user has the permission, false if denied
+   *
+   * @since   4.0.0
+   */
+  public function checkViewLevel($level): bool
+  {
+    if(!\is_int($level))
+    {
+      if(\is_string($level) && \is_numeric($level))
+      {
+        $level = (int) $level;
+      }
+      elseif(\is_string($level))
+      {
+        foreach(AccessOwn::getViewLevels() as $viewLevel)
+        {
+          if($viewLevel['title'] === $level)
+          {
+            $level = $viewLevel['id'];
+            break;
+          }
+        }
+      }
+
+      if(!\is_int($level))
+      {
+        $this->component->addLog('Invalid access view level provided for access view level check', 'error', 'jerror');
+        throw new \Exception('Invalid access view level provided for access view level check', 1);
+      }
+    }
+
+    return \in_array($level, $this->user->getAuthorisedViewLevels());
   }
 
   /**

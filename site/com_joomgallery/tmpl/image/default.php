@@ -193,7 +193,7 @@ $fields = FieldsHelper::getFields('com_joomgallery.image', $this->item);
             <td></td>
           </tr>
           <?php foreach ($fields as $key => $field) : ?>
-            <?php if($field->access && $field->params->get('display') > 0) : ?>
+            <?php if($this->component->getAccess()->checkViewLevel($field->access) && $field->params->get('display') > 0) : ?>
               <tr class="<?php echo $field->params->get('render_class'); ?>">
                 <th class="<?php echo $field->params->get('label_render_class'); ?>"><?php if($field->params->get('showlabel', true)) echo $this->escape($field->title); ?></th>
                 <td class="<?php echo $field->params->get('value_render_class'); ?>"><?php echo $this->escape($field->value); ?></td>
