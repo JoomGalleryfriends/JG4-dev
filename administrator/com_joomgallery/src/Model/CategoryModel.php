@@ -449,7 +449,7 @@ class CategoryModel extends JoomAdminModel
           }
           
           // Check if category has subcategories (children)
-          if(!$this->getChildren($pk))
+          if($this->getChildren($pk))
           {
             $hasChildren = true;
           }
