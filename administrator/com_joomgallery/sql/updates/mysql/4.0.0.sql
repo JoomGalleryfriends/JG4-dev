@@ -169,6 +169,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `jg_category_view_images_show_title` TINYINT(1) NOT NULL DEFAULT 1,
 `jg_category_view_title_link` VARCHAR(25) NOT NULL DEFAULT "defaultview",
 `jg_category_view_lightbox_image` VARCHAR(25) NOT NULL DEFAULT "detail",
+`jg_category_view_lightbox_thumbnails` TINYINT(1) NOT NULL DEFAULT 0,
 `jg_category_view_show_description` TINYINT(1) NOT NULL DEFAULT 0,
 `jg_category_view_show_imgdate` TINYINT(1) NOT NULL DEFAULT 0,
 `jg_category_view_show_imgauthor` TINYINT(1) NOT NULL DEFAULT 0,
