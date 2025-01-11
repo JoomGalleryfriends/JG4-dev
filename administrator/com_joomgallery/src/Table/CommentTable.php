@@ -28,6 +28,7 @@ class CommentTable extends Table
 {
   use JoomTableTrait;
   use GlobalAssetTableTrait;
+  use MigrationTableTrait;
 
 	/**
 	 * Constructor

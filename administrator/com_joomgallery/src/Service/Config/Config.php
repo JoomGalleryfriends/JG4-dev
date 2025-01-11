@@ -320,7 +320,7 @@ abstract class Config extends \stdClass implements ConfigInterface
 	 *
 	 * @since   4.0.0
 	 */
-	protected function setParamsToClass($params)
+	public function setParamsToClass($params)
 	{
     foreach($params as $key => $value)
     {

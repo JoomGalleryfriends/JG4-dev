@@ -11,5 +11,5 @@
 // No direct access
 defined('_JEXEC') or die;
 
-$path = JPATH_ADMINISTRATOR . '/components/com_joomgallery/layouts/joomla/form/field/configlist.php';
-require($path);
+$path = _JOOM_PATH_ADMIN . '/layouts/joomla/form/field/configlist.php';
+require $path;

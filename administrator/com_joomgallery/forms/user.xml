@@ -53,20 +53,4 @@
            description="JGLOBAL_FIELD_CREATED_BY_DESC"
            validate="UserId" />
   </fieldset>
-  <fieldset name="accesscontrol">
-    <field name="asset_id"
-           type="hidden"
-           filter="unset" />
-
-    <field name="rules"
-           type="rules"
-           asset_field="asset_id"
-           label="JFIELD_RULES_LABEL"
-           translate_label="false"
-           filter="rules"
-           validate="rules"
-           class="inputbox"
-           component="com_joomgallery"
-           section="user" />
-  </fieldset>
 </form>

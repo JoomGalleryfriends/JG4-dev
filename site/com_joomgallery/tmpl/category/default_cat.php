@@ -23,6 +23,7 @@ use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 $subcategory_class          = $this->params['configs']->get('jg_category_view_subcategory_class', 'masonry', 'STRING');
 $subcategory_num_columns    = $this->params['configs']->get('jg_category_view_subcategory_num_columns', 3, 'INT');
 $subcategory_image_class    = $this->params['configs']->get('jg_category_view_subcategory_image_class', 0, 'INT');
+$subcategory_image_type     = $this->params['configs']->get('jg_category_view_subcategory_type_images', 'thumbnail', 'STRING');
 $numb_subcategories         = $this->params['configs']->get('jg_category_view_numb_subcategories', 12, 'INT');
 $subcategories_pagination   = $this->params['configs']->get('jg_category_view_subcategories_pagination', 0, 'INT');
 $subcategories_random_image = $this->params['configs']->get('jg_category_view_subcategories_random_image', 1, 'INT');
@@ -30,6 +31,7 @@ $subcategories_random_image = $this->params['configs']->get('jg_category_view_su
 // Image params
 $category_class   = $this->params['configs']->get('jg_category_view_class', 'masonry', 'STRING');
 $num_columns      = $this->params['configs']->get('jg_category_view_num_columns', 6, 'INT');
+$image_type       = $this->params['configs']->get('jg_category_view_type_images', 'thumbnail', 'STRING');
 $caption_align    = $this->params['configs']->get('jg_category_view_caption_align', 'right', 'STRING');
 $image_class      = $this->params['configs']->get('jg_category_view_image_class', 0, 'INT');
 $justified_height = $this->params['configs']->get('jg_category_view_justified_height', 320, 'INT');
@@ -185,7 +187,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php endif; ?>
 
 <?php // Subcategories ?>
-<?php if(count($this->item->children->items) > 0) : ?>
+<?php if(count($this->item->children->items) > 0 && ($this->item->id == 1 || $numb_subcategories  > 0)) : ?>
   <?php if($this->item->parent_id > 0) : ?>
     <h3><?php echo Text::_('COM_JOOMGALLERY_SUBCATEGORIES') ?></h3>
   <?php else : ?>
@@ -194,7 +196,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
   <?php // Display data array for layout
     $subcatData = [ 'layout' => $subcategory_class, 'items' => $this->item->children->items, 'num_columns' => (int) $subcategory_num_columns,
-                    'image_class' => $subcategory_image_class, 'random_image' => (bool) $subcategories_random_image
+                    'image_type' => $subcategory_image_type, 'image_class' => $subcategory_image_class, 'random_image' => (bool) $subcategories_random_image
                   ];
   ?>
 
@@ -226,7 +228,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
   <?php // Display data array for layout
     $imgsData = [ 'id' => (int) $this->item->id, 'layout' => $category_class, 'items' => $this->item->images->items, 'num_columns' => (int) $num_columns,
-                  'caption_align' => $caption_align, 'image_class' => $image_class, 'image_type' => $lightbox_image, 'image_link' => $image_link,
+                  'caption_align' => $caption_align, 'image_class' => $image_class, 'image_type' => $image_type, 'lightbox_type' => $lightbox_image, 'image_link' => $image_link,
                   'image_title' => (bool) $show_title, 'title_link' => $title_link, 'image_desc' => (bool) $show_description, 'image_date' => (bool) $show_imgdate,
                   'image_author' => (bool) $show_imgauthor, 'image_tags' => (bool) $show_tags
                 ];

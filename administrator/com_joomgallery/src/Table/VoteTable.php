@@ -28,6 +28,7 @@ class VoteTable extends Table
 {
   use JoomTableTrait;
   use GlobalAssetTableTrait;
+  use MigrationTableTrait;
 
 	/**
 	 * Constructor

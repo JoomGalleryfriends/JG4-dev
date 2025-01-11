@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addfieldprefix="Joomgallery\Component\Joomgallery\Administrator\Field">
   <fieldset name="general">
-    <field name="ordering"/>
-
     <field name="id"
            type="text"
            readonly="true"
            class="readonly"
            label="JGLOBAL_FIELD_ID_LABEL" />
 
-    <field name="alias"
+    <field name="imgid"
            type="text"
-           class="inputbox"
-           generator="title"
-           label="JALIAS"
-           description="JFIELD_ALIAS_DESC"
-           maxlength="255" />
+           readonly="true"
+           class="readonly"
+           label="Image ID" />
 
     <field name="title"
            type="text"
@@ -41,22 +37,20 @@
         <option value="1">JYES</option>
     </field>
 
+    <field name="approved"
+           type="list"
+           readonly="true"
+           default="0"
+           class="readonly"
+           label="COM_JOOMGALLERY_APPROVED">
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
     <field name="access"
            type="accesslevel"
            label="JFIELD_ACCESS_LABEL"
            description="JFIELD_ACCESS_DESC" />
-
-    <field name="language"
-           type="language"
-           client="administrator"
-           label="JGRID_HEADING_LANGUAGE"
-           >
-           <option value="*">JALL</option>
-		</field>
-           
-    <field name="checked_out"
-           type="hidden"
-           filter="unset" />
 
     <field name="created_time"
            type="calendar"
@@ -104,6 +98,6 @@
            validate="rules"
            class="inputbox"
            component="com_joomgallery"
-           section="tag" />
+           section="comment" />
   </fieldset>
 </form>

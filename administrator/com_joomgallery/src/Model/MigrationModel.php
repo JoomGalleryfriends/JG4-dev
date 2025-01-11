@@ -14,17 +14,16 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Event\Model;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Filesystem\Path;
-use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\Database\DatabaseFactory;
 use \Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 
@@ -1361,6 +1360,26 @@ class MigrationModel extends JoomAdminModel
       $this->component->addLog($table->getError(), 'error', 'migration');
 
       return false;
+    }
+
+    // Check that there are rules set for new records
+    if($isNew && empty($table->getRules('all')))
+    {
+      // Load form
+      Form::addFormPath(_JOOM_PATH_ADMIN . '/forms');
+      $formFactory = Factory::getContainer()->get(FormFactoryInterface::class);
+      $form        = $formFactory->createForm(_JOOM_OPTION.'.'.$type, ['control' => 'jform', 'load_data' => false]);
+      
+      // Load form xml
+      if($form->loadFile($type, false, null) == false)
+      {
+        $this->component->setError('Form::loadFile('.$type.') could not load xml file');
+        $this->component->addLog('Form::loadFile('.$type.') could not load xml file', 'error', 'migration');
+
+        return false;
+      }
+
+      $table->setEmptyRules($form);
     }
 
     // Perform the onBeforeSave migration method
