@@ -442,19 +442,31 @@ class TagsModel extends JoomListModel
 
     foreach($tags as $key => $tag)
     {
-
-      if(strpos($tag->title, '#new#') !== false)
+      if(\is_object($tag))
       {
-        $title = \str_replace('#new#', '', $tag->title);
+        $tag_title = $tag->title;
+      }
+      elseif(\is_array($tag))
+      {
+        $tag_title = $tag['title'];
+      }
+      else
+      {
+        $tag_title = $tag;
+      }
 
-        // create tag
+      if(strpos($tag_title, '#new#') !== false)
+      {
+        $tag_title = \str_replace('#new#', '', $tag_title);
+
+        // Create tag object
         $data = array();
-        $data['id']        = '0';
-        $data['title']     = $title;
-        $data['published'] = '1';
-        $data['access']    = '1';
-        $data['language']  = '*';
-        $data['description']  = '';
+        $data['id']          = '0';
+        $data['title']       = $tag_title;
+        $data['published']   = '1';
+        $data['access']      = '1';
+        $data['language']    = '*';
+        $data['description'] = '';
 
         if(!$tag_model->save($data))
         {
@@ -465,8 +477,8 @@ class TagsModel extends JoomListModel
         }
         else
         {
-          // update tags list entry on success
-          $tags[$key] = \strval($tag_model->getItem($title)->id);
+          // Update tags list entry on success
+          $tags[$key] = \strval($tag_model->getItem($tag_title)->id);
         }
       }
     }
