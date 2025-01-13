@@ -366,15 +366,16 @@ class CategoryModel extends JoomAdminModel
    */
   public function save($data)
   { 
-    $table        = $this->getTable();
-    $context      = $this->option . '.' . $this->name;
-    $app          = Factory::getApplication();
-    $isNew        = true;
-    $catMoved     = false;
-		$isCopy       = false;
-    $aliasChanged = false;
-    $hasChildren  = false;
-    $hasImages    = false;
+    $table          = $this->getTable();
+    $context        = $this->option . '.' . $this->name;
+    $app            = Factory::getApplication();
+    $isNew          = true;
+    $catMoved       = false;
+    $isCopy         = false;
+    $aliasChanged   = false;
+    $hasChildren    = false;
+    $hasImages      = false;
+    $adapterChanged = false;
 
     $key = $table->getKeyName();
     $pk  = (isset($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
@@ -459,17 +460,24 @@ class CategoryModel extends JoomAdminModel
           {
             $hasImages = true;
           }
+
+          // Check if filesystem adapter has changed
+          $old_params = \json_decode($table->params);
+          if($old_params->{'jg_filesystem'} != $data['params']['jg_filesystem'])
+          {
+            $adapterChanged = true;
+          }
         }
 
         // Check that filesystem field content is allowed
-        if(\key_exists('jg_filesystem', $data['params']) && $data['params']['jg_filesystem'] != '' && $data['parent_id'] != 1)
+        if($adapterChanged && $data['parent_id'] != 1)
         {
           // Only allowed in toplevel categories
           $this->setError(Text::_('COM_JOOMGALLERY_ERROR_FILESYSTEM_ONLY_TOP_LEVEL_CAT'));
           
           return false;
         }
-        elseif(\key_exists('jg_filesystem', $data['params']) && $data['params']['jg_filesystem'] != '' && ($hasChildren || $hasImages))
+        elseif($adapterChanged && ($hasChildren || $hasImages))
         {
           // Only allowed if there are no images and no subcategories
           $this->setError(Text::_('COM_JOOMGALLERY_ERROR_FILESYSTEM_ONLY_EMPTY_CAT'));
