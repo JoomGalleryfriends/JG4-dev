@@ -330,7 +330,13 @@ abstract class JoomAdminModel extends AdminModel
    */
   public function initBatch()
   {
+    // Store type (to avoid conflics with UCM)
+    $type = $this->type;
+
     parent::initBatch();
+
+    // Reset stored type (to avoid conflics with UCM)
+    $this->type = $type;
 
     // Get current user
     $this->user = $this->component->getMVCFactory()->getIdentity();

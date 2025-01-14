@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Site\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
+use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\User\UserFactoryInterface;
 
@@ -128,6 +129,24 @@ class ImageModel extends JoomItemModel
 		{
 			$this->item->modified_by_name = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->item->modified_by)->name;
 		}
+
+    // Adjust tags
+    if(isset($this->item->tags))
+		{
+      foreach($this->item->tags as $key => $tag)
+      {
+        if(\is_object($tag) && $tag->published < 1)
+        {
+          // Remove unpublished items
+          unset($this->item->tags->{$key});
+        }
+        elseif(\is_object($tag) && !$this->component->getAccess()->checkViewLevel($tag->access))
+        {
+          // Remove items that are not viewable for current user
+          unset($this->item->tags->{$key});
+        }
+      }
+    }
 
     // Delete unnecessary properties
 		$toDelete = array('asset_id', 'params');
