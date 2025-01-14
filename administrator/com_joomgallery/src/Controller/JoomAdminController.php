@@ -14,6 +14,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 \defined('_JEXEC') or die;
 
 use \Joomla\Input\Input;
+use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
@@ -46,6 +47,14 @@ class JoomAdminController extends BaseAdminController
    * @var     Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface
    */
   protected $acl = null;
+
+  /**
+   * The context for storing internal data, e.g. record.
+   *
+   * @var    string
+   * @since  4.0.0
+   */
+  protected $context;
 
   /**
 	 * Constructor.
@@ -111,7 +120,23 @@ class JoomAdminController extends BaseAdminController
     // Before execution of the task
     if(!empty($task))
     {
+      if(\property_exists($this, 'task'))
+      {
+        $this->task = $task;
+      }
+      
       $this->component->msgUserStateKey = 'com_joomgallery.'.$task.'.messages';
+    }
+
+    // Guess context if needed
+    if(empty($this->context))
+    {
+      $this->context = _JOOM_OPTION . '.' . $this->name;
+
+      if(\property_exists($this, 'task') && !empty($this->task))
+      {
+        $this->context .= '.' . $this->task;
+      }
     }
     
     if(!$this->component->isRawTask($this->context))

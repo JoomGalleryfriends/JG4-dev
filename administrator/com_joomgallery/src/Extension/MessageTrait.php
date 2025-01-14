@@ -44,7 +44,7 @@ trait MessageTrait
    *
    * @var array
   */
-  public $rawTasks = array('image.ajaxsave');
+  public $rawTasks = array('image.ajaxsave', 'tags.searchajax');
 
   /**
 	 * Session storage path
@@ -695,6 +695,17 @@ trait MessageTrait
 	*/
   public function isRawTask($context)
   {
+    $parts = \explode('.', $context);
+
+    // Remove the option if present
+    if(\strpos($parts[0], 'com_') !== false)
+    {
+      unset($parts[0]);
+    }
+
+    // Join the remaining parts
+    $context = \strtolower(\implode('.', $parts));
+
     if(\in_array($context, $this->rawTasks))
     {
       return true;
