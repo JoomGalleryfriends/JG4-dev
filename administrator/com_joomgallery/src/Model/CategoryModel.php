@@ -477,6 +477,13 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
+        // Handle folders if category was changed
+        if(!$isNew && ($catMoved || $aliasChanged))
+        {
+          // Douplicate old data
+          $old_table = clone $table;
+        }
+
         if($table->parent_id != $data['parent_id'] || $data['id'] == 0)
         {
           $table->setLocation($data['parent_id'], 'last-child');
@@ -524,6 +531,27 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
+        // Filesystem changes
+			  $filesystem_success = true;
+
+        if( (!$isNew && $catMoved) || (!$isNew && $aliasChanged) )
+        {
+          // Action will be performed after storing
+        }
+        else
+        {
+          // Create folders
+          $filesystem_success = $manager->createCategory($table->alias, $table->parent_id);
+        }
+
+        // Dont store the table if filesystem changes was not successful
+        if(!$filesystem_success)
+        {
+          $this->component->addError(Text::_('COM_JOOMGALLERY_ERROR_SAVE_FILESYSTEM_ERROR'));
+
+          return false;
+        }
+
         // Store the data.
         if(!$table->store())
         {
@@ -536,43 +564,48 @@ class CategoryModel extends JoomAdminModel
         // Handle folders if parent category was changed
         if(!$isNew && $catMoved)
 			  {
-          // Adjust path of subcategory records
-          if(!$this->fixChildrenPath($table, $old_path, $table->path))
-          {
-            return false;
-          }
-
           // Get path back from old location temporarily
           $table->setPathWithLocation(true);
 
           // Move folder (including files and subfolders)
-					$manager->moveCategory($table, $table->parent_id);
+          if(!$manager->moveCategory($table, $table->parent_id))
+          {
+            return false;
+          }
 
           // Reset path
           $table->setPathWithLocation(false);
-        }
-        // Handle folders if alias was changed
-        elseif(!$isNew && $aliasChanged)
-        {
+
           // Adjust path of subcategory records
           if(!$this->fixChildrenPath($table, $old_path, $table->path))
           {
             return false;
           }
-
+        }
+        // Handle folders if alias was changed
+        elseif(!$isNew && $aliasChanged)
+        {
           // Get path back from old location temporarily
           $table->setPathWithLocation(true);
 
           // Rename folder
-					$manager->renameCategory($table, $table->alias);
+          if(!$manager->renameCategory($table, $table->alias))
+          {
+            return false;
+          }
 
           // Reset path
           $table->setPathWithLocation(false);
+
+          // Adjust path of subcategory records
+          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          {
+            return false;
+          }
         }
         else
         {
-          // Create folders
-          $manager->createCategory($table->alias, $table->parent_id);
+          // Action already perfromed
         }
 
         // Handle folders if record gets copied
