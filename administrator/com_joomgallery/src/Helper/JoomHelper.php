@@ -506,7 +506,7 @@ class JoomHelper
         // Create file manager service
 			  $manager    = self::getService('FileManager', array($img->catid));
         // Create file manager service
-			  $filesystem = self::getService('Filesystem');
+			  $filesystem = self::getService('Filesystem', array($img->filesystem));
         
         // Real URL
         // Example: https://www.example.org/images/joomgallery/orig/test.jpg
