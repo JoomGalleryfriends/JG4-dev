@@ -736,7 +736,8 @@ class FileManager implements FileManagerInterface
   public function createCategory($foldername, $parent=1): bool
   {
     // Loop through all imagetypes
-    $error = false;
+    $error       = false;
+    $catsCreated = 0;
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Category path
@@ -749,14 +750,21 @@ class FileManager implements FileManagerInterface
       }
       catch(\FileExistsException $e)
       {
-        // Do nothing
+        // Category already exists. Do nothing.
       }
       catch(\Exception $e)
       {
         // Debug info
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername));
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername), 'error', 'jerror');
-        $error = true;
+        if(\strpos(\strtolower($e->getMessage()), 'file exists') !== false)
+        {
+          // Category already exists. Do nothing.
+        }
+        else
+        {
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername), 'error', 'jerror');
+          $error = true;
+        }
 
         continue;
       }
@@ -770,6 +778,9 @@ class FileManager implements FileManagerInterface
 
         continue;
       }
+
+      // Count up the # of created categories
+      $catsCreated = $catsCreated + 1;
     }
 
     if($error)
@@ -780,8 +791,11 @@ class FileManager implements FileManagerInterface
       return false;
     }
 
-    // Debug info
-    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_CATEGORY', $foldername));
+    if($catsCreated > 0)
+    {
+      // Debug info
+      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_CATEGORY', $foldername));
+    }    
 
     return true;
   }

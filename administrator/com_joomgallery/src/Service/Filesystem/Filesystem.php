@@ -309,7 +309,6 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
     catch (\Exception $e)
     {
-      $msg = $e->getMessage();
       if(\strpos(\strtolower($e->getMessage()), 'account'))
       {
         $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND'), 'error', 'jerror');
