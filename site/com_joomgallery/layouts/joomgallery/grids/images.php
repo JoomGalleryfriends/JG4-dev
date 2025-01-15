@@ -50,7 +50,7 @@ extract($displayData);
           <?php endif; ?>
 
           <?php if($image_link == 'lightgallery') : ?>
-            <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>">
+            <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>" data-thumb="<?php echo JoomHelper::getImg($item, $image_type); ?>">
               <img src="<?php echo JoomHelper::getImg($item, $image_type); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
               <?php if($image_title && $layout == 'justified') : ?>
                 <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
@@ -93,7 +93,7 @@ extract($displayData);
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <?php if($image_title) : ?>
               <?php if($title_link == 'lightgallery' && $image_link != 'lightgallery') : ?>
-                <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>">
+                <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>" data-thumb="<?php echo JoomHelper::getImg($item, $image_type); ?>">
                   <?php echo $this->escape($item->title); ?>
                 </a>
               <?php else : ?>
