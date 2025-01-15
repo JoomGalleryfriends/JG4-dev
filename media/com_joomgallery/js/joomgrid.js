@@ -37,6 +37,7 @@ var callback = function() {
 
     window.joomGrid.lightboxes[window.joomGrid.itemid] = lightGallery(lightbox, {
       selector: '.lightgallery-item',
+      exThumbImage: 'data-thumb',
       // allowMediaOverlap: true,
       thumbHeight: '50px',
       thumbMargin: 5,
