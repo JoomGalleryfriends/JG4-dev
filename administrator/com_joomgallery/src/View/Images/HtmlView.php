@@ -18,6 +18,7 @@ use \Joomla\CMS\Toolbar\Toolbar;
 use \Joomla\CMS\HTML\Helpers\Sidebar;
 use \Joomla\CMS\Toolbar\ToolbarHelper;
 use \Joomla\Component\Content\Administrator\Extension\ContentComponent;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\JoomGalleryView;
 
 /**
@@ -48,6 +49,9 @@ class HtmlView extends JoomGalleryView
 		$this->pagination    = $this->get('Pagination');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+    
+		// Check if filesystem plugins are available
+		JoomHelper::checkFilesystems();
 
 		// Check for errors.
 		if(\count($errors = $this->get('Errors')))

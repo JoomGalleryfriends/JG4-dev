@@ -45,12 +45,9 @@ class RawView extends JoomGalleryView
     if(!$this->access($id))
     {
       $this->app->redirect(Route::_('index.php', false), 403);
-    } 
+    }
 
-    // Get image path
-    $img_path = JoomHelper::getImg($id, $type, false, false);
-
-    // Create filesystem service
+    // Choose the filesystem adapter
     $adapter = '';
     if($id === 0 || $id === 'null')
     {
@@ -58,6 +55,18 @@ class RawView extends JoomGalleryView
       $id      = 0;
       $adapter = 'local-images';
     }
+    else
+    {
+      // Take the adapter from the image object
+      $img_obj = $this->get('Item');
+      $adapter = $img_obj->filesystem;
+    }
+    
+    // Get image path
+    $img_obj ? $img = $img_obj : $img = $id;
+    $img_path = JoomHelper::getImg($img, $type, false, false);
+
+    // Create filesystem service    
     $this->component->createFilesystem($adapter);
 
     // Get image resource
