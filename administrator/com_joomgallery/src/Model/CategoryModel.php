@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Plugin\PluginHelper;
@@ -570,6 +569,7 @@ class CategoryModel extends JoomAdminModel
           // Move folder (including files and subfolders)
           if(!$manager->moveCategory($table, $table->parent_id))
           {
+            $this->component->addError(Text::sprintf('COM_JOOMGALLERY_ERROR_MOVE_CATEGORY'), $manager->paths['src'], $manager->paths['dest']);
             return false;
           }
 
@@ -591,6 +591,7 @@ class CategoryModel extends JoomAdminModel
           // Rename folder
           if(!$manager->renameCategory($table, $table->alias))
           {
+            $this->component->addError(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_CATEGORY'), $manager->paths['src'], $manager->paths['dest']);
             return false;
           }
 

@@ -57,6 +57,13 @@ class FileManager implements FileManagerInterface
   protected $no_image = '/images/joomgallery/no-image.png';
 
   /**
+   * Storage for paths
+   *
+   * @var string
+   */
+  public $paths = array();
+
+  /**
    * Constructor
    * 
    * @param   int          $catid       Id of the category for which the filesystem is chosen
@@ -909,6 +916,10 @@ class FileManager implements FileManagerInterface
       $method = 'COPY';
     }
 
+    // Create path for messages
+    $this->paths['src'] = '[ROOT]'.\DIRECTORY_SEPARATOR.$this->getCatPath($cat);
+    $this->paths['dest'] = '[ROOT]'.\DIRECTORY_SEPARATOR.$this->getCatPath($cat);
+
     // Loop through all imagetypes
     $error = false;
     foreach($this->imagetypes as $key => $imagetype)
@@ -944,8 +955,8 @@ class FileManager implements FileManagerInterface
       catch(\FileNotFoundException $e)
       {
         // Folder not found
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').', '.$src_path);
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').', '.$src_path, 'error', 'jerror');
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING', $src_path));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING', $src_path), 'error', 'jerror');
         $error = true;
 
         continue;
@@ -986,6 +997,10 @@ class FileManager implements FileManagerInterface
    */
   public function renameCategory($cat, $foldername): bool
   {
+    // Create path for messages
+    $this->paths['src']  = '[ROOT]'.\DIRECTORY_SEPARATOR.$this->getCatPath($cat);
+    $this->paths['dest'] = \substr($this->paths['src'], 0, strrpos($this->paths['src'], \basename($this->paths['src']))).$foldername;
+
     // Loop through all imagetypes
     $error = false;
     foreach($this->imagetypes as $key => $imagetype)
