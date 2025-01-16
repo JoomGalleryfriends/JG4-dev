@@ -393,8 +393,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
-      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
 
       return false;
     }
@@ -445,8 +445,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
-      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
 
       return false;
     }
@@ -481,8 +481,8 @@ class FileManager implements FileManagerInterface
       catch (FileNotFoundException $e)
       {
         // File not found
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')');
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')', 'error', 'jerror');
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')', 'error', 'jerror');
 
         return false;
       }
@@ -584,8 +584,8 @@ class FileManager implements FileManagerInterface
       catch(\FileNotFoundException $e)
       {
         // File not found
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($img_src).' ('.$imagetype->typename.')');
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'.', '.\basename($img_src).' ('.$imagetype->typename.')'), 'error', 'jerror');
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($img_src).' ('.$imagetype->typename.')');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING'.', '.\basename($img_src).' ('.$imagetype->typename.')'), 'error', 'jerror');
         $error = true;
 
         continue;
@@ -606,8 +606,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
-      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
 
       return false;
     }
@@ -661,8 +661,8 @@ class FileManager implements FileManagerInterface
       catch(\FileNotFoundException $e)
       {
         // File not found
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file_orig).' ('.$imagetype->typename.')');
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file_orig).' ('.$imagetype->typename.')', 'error', 'jerror');
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file_orig).' ('.$imagetype->typename.')');
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file_orig).' ('.$imagetype->typename.')', 'error', 'jerror');
         $error = true;
 
         continue;
@@ -742,8 +742,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
-      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
 
       return false;
     }
@@ -846,8 +846,8 @@ class FileManager implements FileManagerInterface
 
     if($error)
     {
-      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
-      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
+      $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'));
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_SOME_ERRORS_IMAGEFILE'), 'error', 'jerror');
 
       return false;
     }
@@ -1019,8 +1019,8 @@ class FileManager implements FileManagerInterface
       catch(\FileNotFoundException $e)
       {
         // Folder not found
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').', '.$folder_orig);
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING').', '.$folder_orig, 'error', 'jerror');
+        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING', $folder_orig));
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FOLDER_NOT_EXISTING', $folder_orig), 'error', 'jerror');
         $error = true;
 
         continue;
@@ -1096,8 +1096,8 @@ class FileManager implements FileManagerInterface
 
         if($img === false || \is_null($img->id))
         {
-          $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error');
-          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error', 'jerror');
+          $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error');
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETIMGPATH', $img), 'error', 'jerror');
 
           return false;
         }
@@ -1122,8 +1122,8 @@ class FileManager implements FileManagerInterface
           return $this->component->getFilesystem()->cleanPath($path);
         }
 
-        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error', 'jerror');
+        $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error');
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Image'), 'error', 'jerror');
 
         return false;
       }
@@ -1188,8 +1188,8 @@ class FileManager implements FileManagerInterface
 
       if($cat === false)
       {
-        $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error');
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error', 'jerror');
+        $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error');
+        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $cat), 'error', 'jerror');
 
         return false;
       }
@@ -1229,8 +1229,8 @@ class FileManager implements FileManagerInterface
 
         if($parent === false)
         {
-          $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error');
-          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error', 'jerror');
+          $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error');
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETCATPATH', $parent), 'error', 'jerror');
 
           return false;
         }
@@ -1248,8 +1248,8 @@ class FileManager implements FileManagerInterface
     // We got nothing to work with
     else
     {
-      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error');
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error', 'jerror');
+      $this->app->enqueueMessage(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_GETPATH_NOQUERY', 'Category'), 'error', 'jerror');
 
       return false;
     }
