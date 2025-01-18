@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Plugin\PluginHelper;
@@ -32,7 +31,9 @@ use \Joomla\Component\Media\Administrator\Exception\InvalidPathException;
 use \Joomla\Component\Media\Administrator\Provider\ProviderManagerHelperTrait;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\FilesystemInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\Exception\AdapterNotFoundException;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
 * Filesystem Base Class
@@ -311,8 +312,8 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     {
       if(\strpos(\strtolower($e->getMessage()), 'account'))
       {
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND'), 'error', 'jerror');
-        throw new \Exception(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter), 'error', 'jerror');
+        throw new AdapterNotFoundException(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
       }
       elseif(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
       {
@@ -770,7 +771,37 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
-    $url = $this->getAdapter($adapter)->getUrl($path);
+    try
+    {
+      $url = $this->getAdapter($adapter)->getUrl($path);
+    }
+    catch (FileNotFoundException $e)
+    {
+      $this->component->addLog('FileNotFoundException in function getUrl in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'jerror');
+      $this->component->addLog('$adapter: ' . $adapter, 'warning', 'jerror');
+      $this->component->addLog('$path: ' . $path, 'warning', 'jerror');
+      throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
+    }
+    catch (\Exception $e)
+    {
+      if(\strpos(\strtolower($e->getMessage()), 'account'))
+      {
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter), 'error', 'jerror');
+        throw new AdapterNotFoundException(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
+      }
+      elseif(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+      {
+        $this->component->addLog('FileNotFoundException in function getUrl in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'jerror');
+        $this->component->addLog('$adapter: ' . $adapter, 'warning', 'jerror');
+        $this->component->addLog('$path: ' . $path, 'warning', 'jerror');
+        throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
+      }
+      else
+      {
+        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        throw new \Exception($e->getMessage());
+      }
+    }
 
     $event = new FetchMediaItemUrlEvent('onFetchMediaFileUrl', ['adapter' => $adapter, 'path' => $path, 'url' => $url]);
     $this->app->getDispatcher()->dispatch($event->getName(), $event);
@@ -813,8 +844,20 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $adapter = $this->getFilesystem();
     $path    = $this->cleanPath($this->adjustPath($path), '/');
 
+    try
+    {
+      $file = $this->getFile($path);
+    }
+    catch (FileNotFoundException $e)
+    {
+      # Get the 'no-image' instead
+      $adapter = 'local-images';
+      $type    = JoomHelper::getImagetypeFromPath($path);
+      $path    = $this->cleanPath($this->adjustPath(JoomHelper::getImgZero($type, false, false)), '/');
+      $file    = $this->getFile($path);
+    }
+
     // Check if it is an allowed file
-    $file = $this->getFile($path);
     if($file->type != 'file' || !$this->isAllowedFile($file->path))
     {
       $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'jerror');

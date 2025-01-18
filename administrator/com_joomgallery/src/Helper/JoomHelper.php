@@ -21,9 +21,9 @@ use \Joomla\Registry\Registry;
 use \Joomla\CMS\Access\Access;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Http\HttpFactory;
-use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
+use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 
 /**
  * JoomGallery Helper for the Backend
@@ -499,7 +499,7 @@ class JoomHelper
       {
         // Joomgallery internal URL
         // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3&catid=1
-        return Route::_(self::getViewRoute('image', $img->id, $img->catid, 'raw', $type));        
+        return Route::_(self::getViewRoute('image', $img->id, $img->catid, 'raw', $type));
       }
       else
       {
@@ -510,7 +510,14 @@ class JoomHelper
         
         // Real URL
         // Example: https://www.example.org/images/joomgallery/orig/test.jpg
-        return $filesystem->getUrl($manager->getImgPath($img, $type));
+        try
+        {
+          return $filesystem->getUrl($manager->getImgPath($img, $type));
+        }
+        catch (FileNotFoundException $e)
+        {
+          return self::getImgZero($type, $url, $root);
+        }
       }
     }
     else
@@ -1113,6 +1120,31 @@ class JoomHelper
         self::getComponent()->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_PLUGIN_NOT_ENABLED', $adapter_name, $plugin_title, $plugins_url));
       }
     }
+  }
+
+  /**
+   * Method to get the imagetype from an image path.
+   * 
+   * @param   string  $path  The image path.
+   *
+   * @return  string
+   *
+   * @since   4.0.0
+   */
+  public static function getImagetypeFromPath(string $path)
+  {
+    $path       = Path::clean($path, '/');
+    $imagetypes = JoomHelper::getRecords('imagetypes');
+
+    foreach($imagetypes as $imagetype)
+    {
+      if(\strpos($path, $imagetype->path) !== false)
+      {
+        return $imagetype->typename;
+      }
+    }
+
+    return 'thumbnail';
   }
 
   /**
