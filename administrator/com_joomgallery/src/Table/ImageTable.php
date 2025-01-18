@@ -298,8 +298,6 @@ class ImageTable extends Table implements VersionableTableInterface
     
     $success = parent::store($updateNulls);
 
-// notwendig ?? $component = Factory::getApplication()->bootComponent('com_joomgallery');
-
     if($success)
     {
       // Record successfully stored
