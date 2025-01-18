@@ -1354,16 +1354,24 @@ class FileManager implements FileManagerInterface
    */
   protected function getImagetypes()
   {
-    // get all imagetypes
+    // Get all imagetypes
     $this->imagetypes = JoomHelper::getRecords('imagetypes', $this->component);
 
-    // sort imagetypes by id descending
+    // Sort imagetypes by id descending
     $this->imagetypes = \array_reverse($this->imagetypes);
 
-    // create dictionary for imagetypes array
     foreach ($this->imagetypes as $key => $imagetype)
     {
-      $this->imagetypes_dict[$imagetype->typename] = $key;
+      // Sort out deactivated imagetypes
+      if(!(int) $imagetype->params->get('jg_imgtype', 1))
+      {
+        unset($this->imagetypes[$key]);
+      }
+      else
+      {
+        // Add activated imagetypes to dictionary
+        $this->imagetypes_dict[$imagetype->typename] = $key;
+      }      
     }
   }
 
