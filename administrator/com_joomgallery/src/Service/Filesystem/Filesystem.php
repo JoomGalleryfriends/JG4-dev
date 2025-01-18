@@ -314,7 +314,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
         $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND'), 'error', 'jerror');
         throw new \Exception(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
       }
-      elseif(\strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+      elseif(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
       {
         $this->component->addLog('FileNotFoundException in function getFile in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'jerror');
         $this->component->addLog('$adapter: ' . $adapter, 'warning', 'jerror');
@@ -459,7 +459,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
       // Folder not found; proceed to create it
     }
 
-    if (isset($file) && !$override)
+    if(isset($file) && !$override)
     {
       // No need to create folders
       throw new FileExistsException('Folder already exists: ' . $path . '/' . $name);
@@ -506,6 +506,19 @@ class Filesystem implements AdapterInterface, FilesystemInterface
           catch (FileExistsException $fee)
           {
             // Folder already exists; no action needed
+          }
+          catch (\Exception $e)
+          {
+            if(\strpos(\strtolower($e->getMessage()), 'file exists') !== false)
+            {
+              // Handle the case where the adapter does not throw a proper FileExistsException
+              // Folder already exists; no action needed
+            }
+            else
+            {
+              // Rethrow other exceptions for proper error handling
+              throw new \Exception($e->getMessage(), $e->getCode(), $e);
+            }
           }
 
           // Adjust the currently existing path

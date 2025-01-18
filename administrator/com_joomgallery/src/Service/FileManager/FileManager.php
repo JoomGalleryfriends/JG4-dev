@@ -306,12 +306,12 @@ class FileManager implements FileManagerInterface
       {
         $res = $this->component->getFilesystem()->createFolder(\basename($folder), \dirname($folder), false);
       }
-      catch(FileExistsException $e)
+      catch (FileExistsException $e)
       {
         // Folder already exists.
         $res = true;
       }
-      catch(\Exception $e)
+      catch (\Exception $e)
       {
         // Destroy the IMGtools service
         $this->component->delIMGtools();
@@ -378,7 +378,6 @@ class FileManager implements FileManagerInterface
         $error = true;
 
         continue;
-
       }
       catch (InvalidPathException $e)
       {
@@ -399,15 +398,23 @@ class FileManager implements FileManagerInterface
       catch (\Exception $e)
       {
         // Any other error during file creation
+        if(\strpos(\strtolower($e->getMessage()), 'file exists') !== false)
+        {
+          // Debug info
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_ALREADY_EXISTING', $filename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_ALREADY_EXISTING', $filename), 'error', 'jerror');
+        }
+        else
+        {
+          // Debug info
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()));
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()), 'error', 'jerror');
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename), 'error', 'jerror');
+        }
 
         // Destroy the IMGtools service
         $this->component->delIMGtools();
-
-        // Debug info
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()));
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()), 'error', 'jerror');
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename), 'error', 'jerror');
         $error = true;
 
         continue;
@@ -459,16 +466,23 @@ class FileManager implements FileManagerInterface
       }
       catch (FileNotFoundException $e)
       {
-        // Do nothing
+        // File already missing. Do nothing.
       }
       catch (\Exception $e)
       {
-        // Deletion failed
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename), 'error', 'jerror');
-        $error = true;
+        if(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+        {
+          // File already missing. Do nothing.
+        }
+        else
+        {
+          // Deletion failed
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename), 'error', 'jerror');
+          $error = true;
 
-        continue;
+          continue;
+        }        
       }
 
       // Deletion successful
@@ -520,8 +534,17 @@ class FileManager implements FileManagerInterface
       }
       catch (\Exception $e)
       {
-        $this->component->addDebug($e->getMessage());
-        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        if(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+        {
+          // File not found
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')');
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')', 'error', 'jerror');
+        }
+        else
+        {
+          $this->component->addDebug($e->getMessage());
+          $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        }        
 
         return false;
       }
