@@ -136,11 +136,10 @@ class TagsController extends JoomAdminController
 
     // Receive request data
     $filters = array(
-        'like'      => trim($this->input->get('like', null, 'string')),
-        'title'     => trim($this->input->get('title', null, 'string')),
+        'like'      => $this->input->get('like', null, 'string') ? trim($this->input->get('like', '', 'string')) : null,
+        'title'     => $this->input->get('title', null, 'string') ? trim($this->input->get('title', '', 'string')) : null,
         'flanguage' => $this->input->get('flanguage', null, 'word'),
         'published' => $this->input->get('published', 1, 'int'),
-        //'parent_id' => $this->input->get('parent_id', 0, 'int'),
         'access'    => $user->getAuthorisedViewLevels(),
     );
 
@@ -154,13 +153,10 @@ class TagsController extends JoomAdminController
     $model = $this->getModel('Tags');
     $results = $model->searchItems($filters);
 
-    //$results = TagsHelper::searchTags($filters);
-    //$results = array('Test', 'Test1', 'Test2');
-
     if($results)
     {
-        // Output a JSON object
-        echo json_encode($results);
+      // Output a JSON object
+      echo \json_encode($results);
     }
 
     $this->app->close();
