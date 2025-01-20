@@ -146,6 +146,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_configs` (
 `jg_gallery_view_ordering` VARCHAR(25) NOT NULL DEFAULT "a.hits DESC",
 `jg_gallery_view_type_image` VARCHAR(25) NOT NULL DEFAULT "thumbnail",
 `jg_gallery_view_image_link` VARCHAR(25) NOT NULL DEFAULT "detailview",
+`jg_gallery_view_categories_link` TINYINT(1) NOT NULL DEFAULT 1,
 `jg_category_view_subcategory_class` VARCHAR(25) NOT NULL DEFAULT "columns",
 `jg_category_view_subcategory_num_columns` TINYINT(1) NOT NULL DEFAULT 3,
 `jg_category_view_subcategory_image_class` TINYINT(1) NOT NULL DEFAULT 0,

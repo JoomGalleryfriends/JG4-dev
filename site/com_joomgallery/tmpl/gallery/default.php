@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 
@@ -23,6 +24,7 @@ $justified_height = $this->params['configs']->get('jg_gallery_view_justified_hei
 $justified_gap    = $this->params['configs']->get('jg_gallery_view_justified_gap', 5, 'INT');
 $image_link       = $this->params['configs']->get('jg_gallery_view_image_link', 'defaultview', 'STRING');
 $lightbox_image   = $this->params['configs']->get('jg_category_view_lightbox_image', 'detail', 'STRING'); // Same as category view
+$categories_link  = $this->params['configs']->get('jg_gallery_view_categories_link', 1, 'INT');
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
@@ -71,6 +73,14 @@ $wa->useScript('com_joomgallery.joomgrid');
     </div>
   <?php endif; ?>
 
+  <?php // Link to category overview ?>
+  <?php if($categories_link == '1') : ?>
+  <a class="jg-link btn btn-outline-primary btn-sm" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id=1'); ?>">
+    <?php echo Text::_('COM_JOOMGALLERY_GALLERY_VIEW_CATEGORIES'); ?>
+  </a>
+  <br />
+  <?php endif; ?>
+
   <?php // Hint for no items ?>
   <?php if(count($this->item->images->items) == 0) : ?>
     <p><?php echo Text::_('No images in the gallery...') ?></p>
@@ -87,6 +97,14 @@ $wa->useScript('com_joomgallery.joomgrid');
 
     <?php // Pagination ?>
     <?php echo $this->item->images->pagination->getListFooter(); ?>
+  <?php endif; ?>
+
+  <?php // Link to category overview ?>
+  <?php if($categories_link == '2') : ?>
+  <a class="jg-link btn btn-outline-primary btn-sm" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id=1'); ?>">
+    <?php echo Text::_('COM_JOOMGALLERY_GALLERY_VIEW_CATEGORIES'); ?>
+  </a>
+  <br />
   <?php endif; ?>
 
   <script>
