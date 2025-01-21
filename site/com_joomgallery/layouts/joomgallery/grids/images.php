@@ -52,6 +52,11 @@ extract($displayData);
           <?php if($image_link == 'lightgallery') : ?>
             <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>" data-thumb="<?php echo JoomHelper::getImg($item, $image_type); ?>">
               <img src="<?php echo JoomHelper::getImg($item, $image_type); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
+              <?php if($layout != 'justified' && $title_link == 'lightgallery') : ?>
+                <div class="jg-image-caption <?php echo $caption_align; ?>">
+                  <?php echo $this->escape($item->title); ?>
+                </div>
+              <?php endif; ?>
               <?php if($image_title && $layout == 'justified') : ?>
                 <div class="jg-image-caption-hover <?php echo $caption_align; ?>">
                   <?php echo $this->escape($item->title); ?>
@@ -92,7 +97,7 @@ extract($displayData);
         <?php if($layout != 'justified') : ?>
           <div class="jg-image-caption <?php echo $caption_align; ?>">
             <?php if($image_title) : ?>
-              <?php if($title_link == 'lightgallery') : ?>
+              <?php if($title_link == 'lightgallery' && $image_link != 'lightgallery') : ?>
                 <a class="lightgallery-item" href="<?php echo JoomHelper::getImg($item, $lightbox_type); ?>" data-sub-html="#jg-image-caption-<?php echo $item->id; ?>" data-thumb="<?php echo JoomHelper::getImg($item, $image_type); ?>">
                   <?php echo $this->escape($item->title); ?>
                 </a>
@@ -101,7 +106,7 @@ extract($displayData);
                   <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $item->id, (int) $item->catid)); ?>">
                     <?php echo $this->escape($item->title); ?>
                   </a>
-                <?php else : ?>
+                <?php elseif($title_link != 'lightgallery') : ?>
                   <?php echo $this->escape($item->title); ?>
                 <?php endif; ?>
               <?php endif; ?>
