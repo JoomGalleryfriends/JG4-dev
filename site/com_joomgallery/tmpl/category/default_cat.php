@@ -48,6 +48,7 @@ $show_description = $this->params['configs']->get('jg_category_view_show_descrip
 $show_imgdate     = $this->params['configs']->get('jg_category_view_show_imgdate', 0, 'INT');
 $show_imgauthor   = $this->params['configs']->get('jg_category_view_show_imgauthor', 0, 'INT');
 $show_tags        = $this->params['configs']->get('jg_category_view_show_tags', 0, 'INT');
+$browse_images_link  = $this->params['configs']->get('jg_category_view_browse_images_link', 1, 'INT');
 
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
@@ -137,7 +138,13 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   <a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->parent_id); ?>">
     <i class="jg-icon-arrow-left-alt"></i><span><?php echo Text::_('Back to: Parent Category'); ?></span>
   </a>
-  <br>
+<?php endif; ?>
+
+<?php // Browse images ?>
+<?php if($browse_images_link == '1') : ?>
+  <a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=gallery'); ?>">
+    <?php echo Text::_('COM_JOOMGALLERY_CATEGORY_VIEW_BROWSE_IMAGES'); ?>
+  </a>
 <?php endif; ?>
 
 <br>
@@ -262,6 +269,15 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
     </a>
   </div>
 <?php endif; */?>
+
+<?php // Browse images ?>
+<?php if($browse_images_link == '2') : ?>
+  <div class="center text-center">
+    <p><a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=gallery'); ?>">
+      <?php echo Text::_('COM_JOOMGALLERY_CATEGORY_VIEW_BROWSE_IMAGES'); ?>
+    </a></p>
+  </div>
+<?php endif; ?>
 
 <script>
   if(window.joomGrid.layout != 'justified') {
