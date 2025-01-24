@@ -200,13 +200,13 @@ table.itemList th.sort-cell .form-check-input {
 .jg-images[class*=" justified-"] .jg-image-thumb.end + .jg-image-caption-hover {
   right: 0;
 }
-.jg-images[class*=" justified-"] .jg-image-caption-hover, .jg-image > .jg-image-caption, .lg-sub-html > .jg-image-caption {
+.jg-images[class*=" justified-"] .jg-image-caption-hover, .jg-image > .jg-image-caption, .lg-sub-html > .jg-image-caption, .jg-image-thumb + .jg-image-caption {
   font-size: 0.875rem;
 }
 .lg-sub-html > .jg-image-description, .lg-sub-html > .jg-image-description > p {
   font-size: 0.875rem;
 }
-.jg-image > .jg-image-caption {
+.jg-image > .jg-image-caption, .jg-image-thumb + .jg-image-caption {
   padding: 0.5em 0;
 }
 .jg-image > .jg-image-caption.left, .jg-image-caption-hover.left, .lg-sub-html > .jg-image-caption.left {
