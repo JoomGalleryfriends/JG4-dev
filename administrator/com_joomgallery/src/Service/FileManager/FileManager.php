@@ -653,6 +653,12 @@ class FileManager implements FileManagerInterface
       // Create renamed image filename
       $file_new  = \substr($file_orig, 0, strrpos($file_orig, \basename($file_orig))).$filename;
 
+      if($file_orig == $file_new)
+      {
+        // New filename same as the old. Nothing to do
+        continue;
+      }
+
       // Rename file
       try
       {
