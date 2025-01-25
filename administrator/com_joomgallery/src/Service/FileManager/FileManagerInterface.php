@@ -35,34 +35,37 @@ interface FileManagerInterface
    * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
    * @param   bool                 $local_source  True if the source is a file located in a local folder (default: True)
    * @param   array                $skip          List of imagetypes to skip creation (default: [])
+   * @param   string               $logfile       Name of the logfile to use
    * 
    * @return  bool                 True on success, false otherwise
-   *
+   * 
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True, $skip=[]): bool;
+  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True, $skip=[], $logfile = 'jerror'): bool;
 
   /**
    * Deletion of image types
    *
-   * @param   object|int|string    $img    Image object, image ID or image alias
-   *
+   * @param   object|int|string    $img       Image object, image ID or image alias
+   * @param   string               $logfile   Name of the logfile to use
+   * 
    * @return  bool                 True on success, false otherwise
-   *
+   * 
    * @since   4.0.0
    */
-  public function deleteImages($img): bool;
+  public function deleteImages($img, $logfile = 'jerror'): bool;
 
   /**
    * Checks image types for existence, validity and size
    *
-   * @param   object|int|string    $img    Image object, image ID or image alias
-   *
+   * @param   object|int|string    $img       Image object, image ID or image alias
+   * @param   string               $logfile   Name of the logfile to use
+   * 
    * @return  array                List of filetype info
-   *
+   * 
    * @since   4.0.0
    */
-  public function checkImages($img): array;
+  public function checkImages($img, $logfile = 'jerror'): array;
 
   /**
    * Move image files from one category to another
@@ -71,12 +74,13 @@ interface FileManagerInterface
    * @param   object|int|string    $dest       Category object, ID or alias of the destination category
    * @param   string|false         $filename   Filename of the moved image (default: false)
    * @param   bool                 $copy       True, if you want to copy the images (default: false)
+   * @param   string               $logfile    Name of the logfile to use
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveImages($img, $dest, $filename=false, $copy=false): bool;
+  public function moveImages($img, $dest, $filename=false, $copy=false, $logfile='jerror'): bool;
 
   /**
    * Copy image files from one category to another
@@ -84,59 +88,64 @@ interface FileManagerInterface
    * @param   object|int|string    $img        Image object, image ID or image alias
    * @param   object|int|string    $dest       Category object, ID or alias of the destination category
    * @param   string|false         $filename   Filename of the moved image (default: False)
+   * @param   string               $logfile    Name of the logfile to use
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyImages($img, $dest, $filename=false): bool;
+  public function copyImages($img, $dest, $filename=false, $logfile='jerror'): bool;
 
   /**
    * Rename files of image
    *
    * @param   object|int|string   $img        Image object, image ID or image alias
    * @param   string              $filename   New filename of the image
+   * @param   string              $logfile    Name of the logfile to use
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function renameImages($img, $filename): bool;
+  public function renameImages($img, $filename, $logfile = 'jerror'): bool;
 
   /**
    * Creation of a category
    *
    * @param   string              $foldername   Name of the folder to be created
    * @param   object|int|string   $parent       Object, ID or alias of the parent category (default: 1)
-   *
+   * @param   string              $logfile      Name of the logfile to use
+   * 
    * @return  bool                True on success, false otherwise
-   *
+   * 
    * @since   4.0.0
    */
-  public function createCategory($foldername, $parent=1): bool;
+  public function createCategory($foldername, $parent=1, $logfile='jerror'): bool;
 
   /**
    * Deletion of a category
    *
    * @param   object|int|string   $cat          Object, ID or alias of the category to be deleted
    * @param   bool                $del_images   True, if you want to delete even if there are still images in it (default: false)
-   *
+   * @param   string              $logfile      Name of the logfile to use
+   * 
    * @return  bool                True on success, false otherwise
-   *
+   * 
    * @since   4.0.0
    */
-  public function deleteCategory($cat, $del_images=false): bool;
+  public function deleteCategory($cat, $del_images=false, $logfile='jerror'): bool;
 
   /**
    * Checks a category for existence, correct images and file path
    *
-   * @param   object|int|string   $cat    Object, ID or alias of the category to be checked
-   *
+   * @param   object|int|string   $cat       Object, ID or alias of the category to be checked
+   * @param   string              $logfile   Name of the logfile to use
+   * 
    * @return  array               List of folder info
-   *
+   * 
    * @since   4.0.0
    */
-  public function checkCategory($cat): array;
+  public function checkCategory($cat, $logfile='jerror'): array;
 
   /**
    * Copy category with all images from one parent category to another
@@ -144,12 +153,13 @@ interface FileManagerInterface
    * @param   object|int|string   $cat          Object, ID or alias of the category to be copied
    * @param   object|int|string   $dest         Category object, ID or alias of the destination category
    * @param   string|false        $foldername   Foldername of the moved category (default: false)
+   * @param   string              $logfile      Name of the logfile to use
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function copyCategory($cat, $dest, $foldername=false): bool;
+  public function copyCategory($cat, $dest, $foldername=false, $logfile='jerror'): bool;
 
   /**
    * Move category with all images from one parent category to another
@@ -158,24 +168,26 @@ interface FileManagerInterface
    * @param   object|int|string   $dest         Category object, ID or alias of the destination category
    * @param   string|false        $foldername   Foldername of the moved category (default: false)
    * @param   bool                $copy         True, if you want to copy the category (default: false)
+   * @param   string              $logfile      Name of the logfile to use
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function moveCategory($cat, $dest, $foldername=false, $copy=false): bool;
+  public function moveCategory($cat, $dest, $foldername=false, $copy=false, $logfile='jerror'): bool;
 
   /**
    * Rename folder of category
    *
    * @param   object|int|string   $cat          Object, ID or alias of the category to be renamed
    * @param   string              $foldername   New foldername of the category
+   * @param   string              $logfile      Name of the logfile to use
    *
    * @return  bool    true on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function renameCategory($cat, $foldername): bool;
+  public function renameCategory($cat, $foldername, $logfile='jerror'): bool;
 
   /**
    * Returns the path to an image
@@ -184,29 +196,32 @@ interface FileManagerInterface
    * @param   string                    $type      Imagetype
    * @param   object|int|string|bool    $catid     Category object, category ID, category alias or category path (default: false)
    * @param   string|bool               $filename  The filename (default: false)
-   * @param   integer                   $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
-   *
+   * @param   boolean                   $root      True to add the system root to the path
+   * @param   string                    $logfile   Name of the logfile to use
+   * 
    * @return  mixed   Path to the image on success, false otherwise
-   *
+   * 
    * @since   4.0.0
    */
-  public function getImgPath($img, $type, $catid=false, $filename=false, $root=0);
+  public function getImgPath($img, $type, $catid=false, $filename=false, $root=false, $logfile='jerror');
 
   /**
    * Returns the path to a category without root path.
    *
-   * @param   object|int|string        $cat       Category object, category ID or category alias (new categories: ID=0)
-   * @param   string|bool              $type      Imagetype if needed
-   * @param   object|int|string|bool   $parent    Parent category object, parent category ID, parent category alias or parent category path (default: false)
-   * @param   string|bool              $alias     The category alias (default: false)
-   * @param   int                      $root      The root to use / 0:no root, 1:local root, 2:storage root (default: 0)
-   *
-   *
+   * @param   object|int|string        $cat             Category object, category ID or category alias (new categories: ID=0)
+   * @param   string|bool              $type            Imagetype if needed
+   * @param   object|int|string|bool   $parent          Parent category object, parent category ID, parent category alias or parent category path (default: false)
+   * @param   string|bool              $alias           The category alias (default: false)
+   * @param   boolean                  $root            True to add the system root to the path
+   * @param   boolean                  $compatibility   Take into account the compatibility mode when creating the path
+   * @param   string                   $logfile         Name of the logfile to use
+   * 
+   * 
    * @return  mixed   Path to the category on success, false otherwise
-   *
+   * 
    * @since   4.0.0
    */
-  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=0);
+  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=false, $compatibility=true, $logfile='jerror');
 
   /**
    * Generates image filenames
@@ -227,10 +242,11 @@ interface FileManagerInterface
    * Input is a filename generated from genFilename()
    *
    * @param   string    $filename     Original filename created from genFilename()
+   * @param   string    $logfile      Name of the logfile to use
    *
    * @return  string    The generated filename
    *
    * @since   4.0.0
    */
-  public function regenFilename($filename): string;
+  public function regenFilename($filename, $logfile='jerror'): string;
 }

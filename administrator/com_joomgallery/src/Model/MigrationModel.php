@@ -868,7 +868,6 @@ class MigrationModel extends JoomAdminModel
         {
           $success = false;
           $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CONVERT_DATA');
-          $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_CONVERT_DATA'), 'error', 'migration');
         }
         else
         {
@@ -880,7 +879,6 @@ class MigrationModel extends JoomAdminModel
           {
             $success = false;
             $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_INSERT_RECORD');
-            $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_INSERT_RECORD'), 'error', 'migration');
           }
           else
           {
@@ -917,7 +915,7 @@ class MigrationModel extends JoomAdminModel
               $success = false;
               $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_'.$error_msg_end);
               $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_' . $error_msg_end), 'error', 'migration');
-              $this->component->addLog('Migration of the record cancelled! ID: ' . $new_pk, 'error', 'migration');
+              $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LOG_CONCELLED', $new_pk), 'error', 'migration');
             }
           }
         }
@@ -926,7 +924,6 @@ class MigrationModel extends JoomAdminModel
       {
         $success = false;
         $error_msg = Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_FETCH_DATA');
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_FAILED_FETCH_DATA'), 'error', 'migration');
       }
     }
 
@@ -1003,7 +1000,7 @@ class MigrationModel extends JoomAdminModel
     // Add log entry
     if($extented_log)
     {
-      $this->component->addLog('End migrate; type: ' . $type . '; source id: ' . $pk, 'info', 'migration');
+      $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_LOG_END_MIGRATE', $type, $pk), 'info', 'migration');
       $this->component->addLog('---------------------------------------------', 'info', 'migration');
     }
 
