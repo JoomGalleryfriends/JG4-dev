@@ -23,6 +23,7 @@ use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Http\HttpFactory;
 use \Joomla\CMS\Language\Multilanguage;
 use \Joomla\Database\DatabaseInterface;
+use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 
 /**
  * JoomGallery Helper for the Backend
@@ -517,18 +518,25 @@ class JoomHelper
       {
         // Joomgallery internal URL
         // Example: https://www.example.org/index.php?option=com_joomgallery&controller=images&view=image&format=raw&type=orig&id=3&catid=1
-        return Route::_(self::getViewRoute('image', $img->id, $img->catid, 'raw', $type));        
+        return Route::_(self::getViewRoute('image', $img->id, $img->catid, 'raw', $type));
       }
       else
       {
         // Create file manager service
 			  $manager    = self::getService('FileManager', array($img->catid));
         // Create file manager service
-			  $filesystem = self::getService('Filesystem');
+			  $filesystem = self::getService('Filesystem', array($img->filesystem));
         
         // Real URL
         // Example: https://www.example.org/images/joomgallery/orig/test.jpg
-        return $filesystem->getUrl($manager->getImgPath($img, $type));
+        try
+        {
+          return $filesystem->getUrl($manager->getImgPath($img, $type));
+        }
+        catch (FileNotFoundException $e)
+        {
+          return self::getImgZero($type, $url, $root);
+        }
       }
     }
     else
@@ -1068,6 +1076,94 @@ class JoomHelper
     }
 
     return new \SimpleXMLElement($xmlString);
+  }
+
+  /**
+   * Method to check whether all needed filesystem plugins are available and enabled.
+   *
+   * @return  bool
+   *
+   * @since   4.0.0
+   */
+  public static function checkFilesystems()
+  {
+    // Load filesystem helper
+    $helper = new FilesystemHelper;
+
+    // Load all used filesystems from images table
+    $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+    $query = $db->getQuery(true)
+          ->select('DISTINCT ' .$db->quoteName('filesystem'))
+          ->from(_JOOM_TABLE_IMAGES)
+          ->where($db->quoteName('published') . ' = 1');
+
+    $db->setQuery($query);
+    $filesystems = $db->loadColumn();
+
+    // Loop through all found filesystems
+    foreach ($filesystems as $filesystem)
+    {
+      // Get corresponding names
+      $plugin_name     = \explode('-', $filesystem, 2)[0];
+      $plugin_fullname = 'plg_filesystem_'.$plugin_name;
+      $adapter_name    = \explode('-', $filesystem, 2)[1];
+
+      // Try to get the corresponding filesystem adapter
+      try
+      {
+        $adapter = $helper->getAdapter($filesystem);
+      } catch (\Exception $e)
+      {
+        $adapter = false;
+      }      
+
+      if(!$adapter)
+      {
+        // Plugin is not installed, not enabled or not correctly configured. Show warning message.
+        $lang = Factory::getLanguage();
+
+        if(!$lang->getPaths($plugin_fullname))
+        {
+          // Language file is not available
+          $langFile  = JPATH_PLUGINS . '/filesystem/' . $plugin_name;
+
+          // Try to load plugin language file
+          $lang->load($plugin_fullname);
+          $lang->load($plugin_fullname, $langFile);
+        }
+
+        $plugins_url  = Route::_('index.php?option=com_plugins&view=plugins&filter[folder]=filesystem');
+        $plugin_title = Text::_($plugin_fullname);
+
+        self::getComponent()->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_PLUGIN_NOT_ENABLED', $adapter_name, $plugin_title, $plugins_url));
+      }
+    }
+  }
+
+  /**
+   * Method to get the imagetype from an image path.
+   * 
+   * @param   string  $path  The image path.
+   *
+   * @return  string
+   *
+   * @since   4.0.0
+   */
+  public static function getImagetypeFromPath(string $path)
+  {
+    $path       = Path::clean($path, '/');
+    $imagetypes = JoomHelper::getRecords('imagetypes');
+
+    foreach($imagetypes as $imagetype)
+    {
+      if(\strpos($path, $imagetype->path) !== false)
+      {
+        return $imagetype->typename;
+      }
+    }
+
+    return 'thumbnail';
   }
 
   /**

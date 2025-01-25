@@ -96,6 +96,7 @@ $tmpl    = $isModal || $app->input->get('tmpl', '', 'cmd') === 'component' ? '&t
             <?php endforeach; ?>
           </div>
         </div>
+        <div class="mt-5"><?php echo $this->form->renderField('filesystem'); ?></div>
 			</fieldset>
     </div>
     <div class="col-12 col-lg-6">

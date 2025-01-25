@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\FileManager;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
+use \Joomla\CMS\Filesystem\Path;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\FileManager\FileManagerInterface;
@@ -93,18 +94,19 @@ class FileManager implements FileManagerInterface
   /**
    * Creation of image types based on source file.
    * Source file has to be given with a full system path.
-   * 
    *
    * @param   string               $source        Source file with which the image types shall be created
    * @param   string               $filename      Name for the files to be created
    * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
-   * @param   bool                 $processing    True to create imagetypes by processing source (default: True)
+   * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
+   * @param   bool                 $local_source  True if the source is a file located in a local folder (default: True)
+   * @param   array                $skip          List of imagetypes to skip creation (default: [])
    * 
    * @return  bool                 True on success, false otherwise
    * 
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $cat=2, $processing=True): bool
+  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True, $skip=[]): bool
   {
     if(!$filename)
     {
@@ -130,6 +132,13 @@ class FileManager implements FileManagerInterface
 
       // Debug info
       $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_PROCESSING_IMAGETYPE', $imagetype->typename), true, true);
+
+      if(\in_array($imagetype->typename, $skip) || \in_array($imagetype->type_alias, $skip))
+      {
+        $this->component->addDebug(Text::_('COM_JOOMGALLERY_SERVICE_MANIPULATION_NOT_NEEDED'));
+
+        continue;
+      }
 
       // For original images: check if processing is really needed
       if( $imagetype->typename == 'original' && $processing &&
@@ -170,11 +179,40 @@ class FileManager implements FileManagerInterface
 
         // Grap resource if needed
         $isStream = false;
-        if(\strpos($this->component->getFilesystem()->getFilesystem(), 'local') === false)
+        if(\is_resource($source))
         {
-          // We are dealing with an external filesystem
-          $source   = $this->component->getFilesystem()->getResource($source);
           $isStream = true;
+        }
+        elseif(\is_string($source) && !$local_source && \strpos($this->component->getFilesystem()->getFilesystem(), 'local') === false)
+        {
+          // The path is pointing to an external filesystem
+          list($file_info, $source) = $this->component->getFilesystem()->getResource($source);
+          $isStream = true;
+        }
+        elseif(\is_string($source) && ($local_source || \strpos($this->component->getFilesystem()->getFilesystem(), 'local') !== false))
+        {
+          // The path is pointing to the local filesystem
+          $source = Path::clean($source);
+
+          if(!\file_exists($source))
+          {
+            // Add root to the path
+            $source = JPATH_ROOT.\DIRECTORY_SEPARATOR.$source;
+
+            $source = Path::clean($source);
+          }
+        }
+        else
+        {
+          // Destroy the IMGtools service
+          $this->component->delIMGtools();
+
+          // Debug info
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename), 'error', 'jerror');
+          $error = true;
+
+          continue;
         }
         
         // Read source image
@@ -266,13 +304,14 @@ class FileManager implements FileManagerInterface
       $folder = \dirname($file);
       try
       {
-        $res = $this->component->getFilesystem()->createFolder(\basename($folder), \dirname($folder));
+        $res = $this->component->getFilesystem()->createFolder(\basename($folder), \dirname($folder), false);
       }
-      catch(\FileExistsException $e)
+      catch (FileExistsException $e)
       {
-        // Do nothing
+        // Folder already exists.
+        $res = true;
       }
-      catch(\Exception $e)
+      catch (\Exception $e)
       {
         // Destroy the IMGtools service
         $this->component->delIMGtools();
@@ -339,7 +378,6 @@ class FileManager implements FileManagerInterface
         $error = true;
 
         continue;
-
       }
       catch (InvalidPathException $e)
       {
@@ -360,15 +398,23 @@ class FileManager implements FileManagerInterface
       catch (\Exception $e)
       {
         // Any other error during file creation
+        if(\strpos(\strtolower($e->getMessage()), 'file exists') !== false)
+        {
+          // Debug info
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_ALREADY_EXISTING', $filename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_ALREADY_EXISTING', $filename), 'error', 'jerror');
+        }
+        else
+        {
+          // Debug info
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()));
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()), 'error', 'jerror');
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename), 'error', 'jerror');
+        }
 
         // Destroy the IMGtools service
         $this->component->delIMGtools();
-
-        // Debug info
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()));
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename));
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_ERROR', $e->getMessage()), 'error', 'jerror');
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_IMAGETYPE', $filename, $imagetype->typename), 'error', 'jerror');
         $error = true;
 
         continue;
@@ -420,16 +466,23 @@ class FileManager implements FileManagerInterface
       }
       catch (FileNotFoundException $e)
       {
-        // Do nothing
+        // File already missing. Do nothing.
       }
       catch (\Exception $e)
       {
-        // Deletion failed
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename), 'error', 'jerror');
-        $error = true;
+        if(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+        {
+          // File already missing. Do nothing.
+        }
+        else
+        {
+          // Deletion failed
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_DELETE_IMAGETYPE', \basename($file), $imagetype->typename), 'error', 'jerror');
+          $error = true;
 
-        continue;
+          continue;
+        }        
       }
 
       // Deletion successful
@@ -481,8 +534,17 @@ class FileManager implements FileManagerInterface
       }
       catch (\Exception $e)
       {
-        $this->component->addDebug($e->getMessage());
-        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        if(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+        {
+          // File not found
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')');
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_FILE_NOT_EXISTING').', '.\basename($file).' ('.$imagetype->typename.')', 'error', 'jerror');
+        }
+        else
+        {
+          $this->component->addDebug($e->getMessage());
+          $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        }        
 
         return false;
       }
@@ -697,7 +759,8 @@ class FileManager implements FileManagerInterface
   public function createCategory($foldername, $parent=1): bool
   {
     // Loop through all imagetypes
-    $error = false;
+    $error       = false;
+    $catsCreated = 0;
     foreach($this->imagetypes as $key => $imagetype)
     {
       // Category path
@@ -710,14 +773,21 @@ class FileManager implements FileManagerInterface
       }
       catch(\FileExistsException $e)
       {
-        // Do nothing
+        // Category already exists. Do nothing.
       }
       catch(\Exception $e)
       {
         // Debug info
-        $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername));
-        $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername), 'error', 'jerror');
-        $error = true;
+        if(\strpos(\strtolower($e->getMessage()), 'file exists') !== false)
+        {
+          // Category already exists. Do nothing.
+        }
+        else
+        {
+          $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername));
+          $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_CATEGORY', $foldername), 'error', 'jerror');
+          $error = true;
+        }
 
         continue;
       }
@@ -731,6 +801,9 @@ class FileManager implements FileManagerInterface
 
         continue;
       }
+
+      // Count up the # of created categories
+      $catsCreated = $catsCreated + 1;
     }
 
     if($error)
@@ -741,8 +814,11 @@ class FileManager implements FileManagerInterface
       return false;
     }
 
-    // Debug info
-    $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_CATEGORY', $foldername));
+    if($catsCreated > 0)
+    {
+      // Debug info
+      $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_SUCCESS_CREATE_CATEGORY', $foldername));
+    }    
 
     return true;
   }

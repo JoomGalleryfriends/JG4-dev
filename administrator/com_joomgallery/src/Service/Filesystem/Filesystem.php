@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Object\CMSObject;
 use \Joomla\CMS\Plugin\PluginHelper;
@@ -32,7 +31,9 @@ use \Joomla\Component\Media\Administrator\Exception\InvalidPathException;
 use \Joomla\Component\Media\Administrator\Provider\ProviderManagerHelperTrait;
 
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\FilesystemInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\Exception\AdapterNotFoundException;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
 * Filesystem Base Class
@@ -98,7 +99,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     else
     {
       // Define filesystem adapter based on configuration 'jg_filesystem'
-      $this->component->getConfig()->get('jg_filesystem','local-images');
+      $this->filesystem = $this->component->getConfig()->get('jg_filesystem','local-images');
     }
 
     // Load language of com_media
@@ -219,7 +220,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
     else
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_FILE'), 'error', 'jerror');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_FILE'), 'error', 'filesystem');
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_CREATE_FILE'));
     }
   }
@@ -302,22 +303,28 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
     catch (FileNotFoundException $e)
     {
-      $this->component->addLog('FileNotFoundException in function getFile in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'jerror');
-      $this->component->addLog('$adapter: ' . $adapter, 'warning', 'jerror');
-      $this->component->addLog('$path: ' . $path, 'warning', 'jerror');
+      $this->component->addLog('FileNotFoundException in function getFile in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'filesystem');
+      $this->component->addLog('$adapter: ' . $adapter, 'warning', 'filesystem');
+      $this->component->addLog('$path: ' . $path, 'warning', 'filesystem');
       throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
     }
     catch (\Exception $e)
     {
-      $msg = $e->getMessage();
-      if(\strpos($e->getMessage(), 'account') !== false || \strpos($e->getMessage(), 'Account') !== false)
+      if(\strpos(\strtolower($e->getMessage()), 'account'))
       {
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND'), 'error', 'jerror');
-        throw new \Exception(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter), 'error', 'filesystem');
+        throw new AdapterNotFoundException(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
+      }
+      elseif(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+      {
+        $this->component->addLog('FileNotFoundException in function getFile in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'filesystem');
+        $this->component->addLog('$adapter: ' . $adapter, 'warning', 'filesystem');
+        $this->component->addLog('$path: ' . $path, 'warning', 'filesystem');
+        throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
       }
       else
       {
-        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        $this->component->addLog($e->getMessage(), 'error', 'filesystem');
         throw new \Exception($e->getMessage());
       }
     }
@@ -325,7 +332,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Check if it is an allowed file
     if($file->type == 'file' && !$this->isAllowedFile($file->path))
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'jerror');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'filesystem');
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
@@ -336,7 +343,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     if(isset($options['content']) && $options['content'] && $file->type == 'file')
     {
-        $resource = $this->getAdapter($adapter)->getResource($file->path);
+      list($file_info, $resource) = $this->getAdapter($adapter)->getResource($file->path);
 
         if($resource)
         {
@@ -403,7 +410,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
       if(isset($options['content']) && $options['content'] && $file->type == 'file')
       {
-        $resource = $this->getAdapter($adapter)->getResource($file->path);
+        list($file_info, $resource) = $this->getAdapter($adapter)->getResource($file->path);
 
         if($resource)
         {
@@ -431,6 +438,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @param   string   $name      The name
    * @param   string   $path      The folder
    * @param   boolean  $override  Should the folder being overridden when it exists (default: true)
+   * @param   boolean  $loop      True, if we are in a recursive loop (default: false)
    *
    * @return  string   The folder name
    *
@@ -438,7 +446,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
    * @throws  \Exception
    * @see     AdapterInterface::createFolder()
    */
-  public function createFolder(string $name, string $path, bool $override = true): string
+  public function createFolder(string $name, string $path, bool $override = true, bool $loop = false): string
   {
     $adapter = $this->getFilesystem();
     $path    = $this->cleanPath($this->adjustPath($path), '/');
@@ -449,14 +457,13 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     }
     catch (FileNotFoundException $e)
     {
-      // Do nothing
+      // Folder not found; proceed to create it
     }
 
-    // Check if the file exists
-    if
-    (isset($file) && !$override)
+    if(isset($file) && !$override)
     {
-      throw new FileExistsException();
+      // No need to create folders
+      throw new FileExistsException('Folder already exists: ' . $path . '/' . $name);
     }
 
     $object            = new CMSObject();
@@ -468,12 +475,62 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     $result = $this->app->triggerEvent('onContentBeforeSave', ['com_media.folder', $object, true, $object]);
 
-    if(in_array(false, $result, true))
+    if(\in_array(false, $result, true))
     {
       throw new \Exception($object->getError());
     }
 
-    $object->name = $this->getAdapter($object->adapter)->createFolder($object->name, $object->path);
+    try
+    {
+      // Try to create folders recursively
+      $object->name = $this->getAdapter($object->adapter)->createFolder($object->name, $object->path);
+    }
+    catch (\Exception $e)
+    {
+      if(!$loop)
+      {
+        // If it doesnt work like that, try again by creating them one by one
+        $folders       = \explode('/', trim($object->path, '/'));
+        $leading_slash = \strpos($object->path, '/') === 0;
+        $currentPath   = $leading_slash ? '/' : '';
+
+        // Append the current folder to the folders array
+        $folders[] = $object->name;
+
+        foreach($folders as $folder)
+        {
+          try
+          {
+            // Create each folder one by one
+            $object->name = $this->createFolder($folder, $currentPath, $override, true);
+          }
+          catch (FileExistsException $fee)
+          {
+            // Folder already exists; no action needed
+          }
+          catch (\Exception $e)
+          {
+            if(\strpos(\strtolower($e->getMessage()), 'file exists') !== false)
+            {
+              // Handle the case where the adapter does not throw a proper FileExistsException
+              // Folder already exists; no action needed
+            }
+            else
+            {
+              // Rethrow other exceptions for proper error handling
+              throw new \Exception($e->getMessage(), $e->getCode(), $e);
+            }
+          }
+
+          // Adjust the currently existing path
+          $currentPath .= ($currentPath === '/' ? '' : '/') . $folder;
+        }
+      }
+      else
+      {
+        throw new \Exception($e->getMessage());
+      }
+    }
 
     $this->app->triggerEvent('onContentAfterSave', ['com_media.folder', $object, true, $object]);
 
@@ -569,7 +626,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Check if it is an allowed file
     if(!$this->isAllowedFile($path . '/' . $name))
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'jerror');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'filesystem');
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
@@ -589,7 +646,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     if(in_array(false, $result, true))
     {
-      $this->component->addLog($object->getError(), 'error', 'jerror');
+      $this->component->addLog($object->getError(), 'error', 'filesystem');
       throw new \Exception($object->getError());
     }
 
@@ -620,7 +677,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Check if it is an allowed file
     if($file->type == 'file' && !$this->isAllowedFile($file->path))
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'jerror');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'filesystem');
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
@@ -638,7 +695,7 @@ class Filesystem implements AdapterInterface, FilesystemInterface
 
     if(in_array(false, $result, true))
     {
-      $this->component->addLog($object->getError(), 'error', 'jerror');
+      $this->component->addLog($object->getError(), 'error', 'filesystem');
       throw new \Exception($object->getError());
     }
 
@@ -710,11 +767,41 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     // Check if it is an allowed file
     if(!$this->isAllowedFile($path))
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'jerror');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'filesystem');
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 
-    $url = $this->getAdapter($adapter)->getUrl($path);
+    try
+    {
+      $url = $this->getAdapter($adapter)->getUrl($path);
+    }
+    catch (FileNotFoundException $e)
+    {
+      $this->component->addLog('FileNotFoundException in function getUrl in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'filesystem');
+      $this->component->addLog('$adapter: ' . $adapter, 'warning', 'filesystem');
+      $this->component->addLog('$path: ' . $path, 'warning', 'filesystem');
+      throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
+    }
+    catch (\Exception $e)
+    {
+      if(\strpos(\strtolower($e->getMessage()), 'account'))
+      {
+        $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter), 'error', 'filesystem');
+        throw new AdapterNotFoundException(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_FILESYSTEM_NOT_FOUND', $adapter));
+      }
+      elseif(\strpos(\strtolower($e->getMessage()), 'not found') !== false || \strpos(\strtolower($e->getMessage()), 'no such file') !== false)
+      {
+        $this->component->addLog('FileNotFoundException in function getUrl in Filesystem.php: ' . Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'), 'warning', 'filesystem');
+        $this->component->addLog('$adapter: ' . $adapter, 'warning', 'filesystem');
+        $this->component->addLog('$path: ' . $path, 'warning', 'filesystem');
+        throw new FileNotFoundException(Text::_('COM_JOOMGALLERY_SERVICE_ERROR_FILENOTFOUND'));
+      }
+      else
+      {
+        $this->component->addLog($e->getMessage(), 'error', 'filesystem');
+        throw new \Exception($e->getMessage());
+      }
+    }
 
     $event = new FetchMediaItemUrlEvent('onFetchMediaFileUrl', ['adapter' => $adapter, 'path' => $path, 'url' => $url]);
     $this->app->getDispatcher()->dispatch($event->getName(), $event);
@@ -757,11 +844,23 @@ class Filesystem implements AdapterInterface, FilesystemInterface
     $adapter = $this->getFilesystem();
     $path    = $this->cleanPath($this->adjustPath($path), '/');
 
+    try
+    {
+      $file = $this->getFile($path);
+    }
+    catch (FileNotFoundException $e)
+    {
+      # Get the 'no-image' instead
+      $adapter = 'local-images';
+      $type    = JoomHelper::getImagetypeFromPath($path);
+      $path    = $this->cleanPath($this->adjustPath(JoomHelper::getImgZero($type, false, false)), '/');
+      $file    = $this->getFile($path);
+    }
+
     // Check if it is an allowed file
-    $file = $this->getFile($path);
     if($file->type != 'file' || !$this->isAllowedFile($file->path))
     {
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'jerror');
+      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'), 'error', 'filesystem');
       throw new InvalidPathException(Text::_('COM_JOOMGALLERY_ERROR_UNSUPPORTED_FILE_TYPE'));
     }
 

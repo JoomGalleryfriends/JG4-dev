@@ -29,17 +29,18 @@ interface FileManagerInterface
    * Creation of image types based on source file.
    * Source file has to be given with a full system path.
    *
-   *
    * @param   string               $source        Source file with which the image types shall be created
    * @param   string               $filename      Name for the files to be created
    * @param   object|int|string    $cat           Object, ID or alias of the corresponding category (default: 2)
-   * @param   bool                 $processing    True to create imagetypes by processing source (default: True)
-   *
+   * @param   bool                 $processing    True to create imagetypes by processing source (defualt: True)
+   * @param   bool                 $local_source  True if the source is a file located in a local folder (default: True)
+   * @param   array                $skip          List of imagetypes to skip creation (default: [])
+   * 
    * @return  bool                 True on success, false otherwise
    *
    * @since   4.0.0
    */
-  public function createImages($source, $filename, $cat=2, $processing=True): bool;
+  public function createImages($source, $filename, $cat=2, $processing=True, $local_source=True, $skip=[]): bool;
 
   /**
    * Deletion of image types
