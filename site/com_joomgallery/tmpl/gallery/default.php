@@ -84,7 +84,7 @@ $wa->useScript('com_joomgallery.joomgrid');
 
   <?php // Hint for no items ?>
   <?php if(count($this->item->images->items) == 0) : ?>
-    <p><?php echo Text::_('No images in the gallery...') ?></p>
+    <p><?php echo Text::_('COM_JOOMGALLERY_GALLERY_NO_IMAGES') ?></p>
   <?php else: ?>
     <?php // Display data array for grid layout
     $imgsData = [ 'id' => (int) $this->item->id, 'layout' => $gallery_class, 'items' => $this->item->images->items, 'num_columns' => (int) $num_columns,
