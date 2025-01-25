@@ -22,6 +22,13 @@ $wa = $this->document->getWebAssetManager();
 $wa->useScript('keepalive')
 	 ->useScript('form.validate')
    ->useStyle('com_joomgallery.admin');
+
+// Add javascript to deactivate filesystem dropdown field
+if(property_exists($this, 'filesystem_js'))
+{
+  $wa->addInlineScript($this->filesystem_js);
+}
+
 HTMLHelper::_('bootstrap.tooltip');
 
 $app = Factory::getApplication();
