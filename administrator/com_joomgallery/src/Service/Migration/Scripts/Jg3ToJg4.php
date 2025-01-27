@@ -700,7 +700,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         $tmp_cat->path = \substr($cat->path, 0, strrpos($cat->path, \basename($cat->path))) . $oldName;
 
         // Rename existing folders
-        return $this->component->getFileManager()->renameCategory($tmp_cat, $newName);
+        return $this->component->getFileManager()->renameCategory($tmp_cat, $newName, 'migration');
       }
     }
     else
@@ -709,7 +709,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       if($this->params->get('new_dirs', 1) == 1)
       {
         // Create new/JG4 folder structure (based on alias)
-        return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id);
+        return $this->component->getFileManager()->createCategory($cat->alias, $cat->parent_id, 'migration');
       }
       else
       {
@@ -725,7 +725,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
           return false;
         }
 
-        return $this->component->getFileManager()->createCategory(\basename($cat->static_path), $cat->parent_id);
+        return $this->component->getFileManager()->createCategory(\basename($cat->static_path), $cat->parent_id, 'migration');
       }
     }
 
@@ -823,7 +823,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     $migrated_catid = $migrated_cats->get($img->catid);
 
     // Create imagetypes
-    return $this->component->getFileManager()->createImages($source, $img->filename, $migrated_catid);
+    return $this->component->getFileManager()->createImages($source, $img->filename, $migrated_catid, true, true, [], 'migration');
   }
 
   /**
@@ -910,7 +910,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
             {
               $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type));
               $this->component->addLog('Jg3ToJg4 - ' . 'Action File::copy: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
-              $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
+              $this->component->addLog('Jg3ToJg4 - ' . Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_TXT'), 'error', 'migration');
+              $this->component->addLog('Jg3ToJg4 - ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_PATH', \dirname($img_src)), 'error', 'migration');
               $error = true;
               continue;
             }
@@ -921,7 +922,8 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
             {
               $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type));
               $this->component->addLog('Jg3ToJg4 - ' . 'Action File::move: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
-              $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
+              $this->component->addLog('Jg3ToJg4 - ' . Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_TXT'), 'error', 'migration');
+              $this->component->addLog('Jg3ToJg4 - ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_PATH', \dirname($img_src)), 'error', 'migration');
               $error = true;
               continue;
             }
@@ -946,13 +948,15 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         {
           $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type));
           $this->component->addLog('Jg3ToJg4 - ' . 'Action copy: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_COPY_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
-          $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
+          $this->component->addLog('Jg3ToJg4 - ' . Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_TXT'), 'error', 'migration');
+          $this->component->addLog('Jg3ToJg4 - ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_PATH', \dirname($img_src)), 'error', 'migration');
         }
         else
         {
           $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type));
           $this->component->addLog('Jg3ToJg4 - ' . 'Action move: ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_ERROR_MOVE_IMAGETYPE', \basename($img_src), $type), 'error', 'migration');
-          $this->component->addLog('Jg3ToJg4 - ' . 'Check whether the file is available in the source.', 'error', 'migration');
+          $this->component->addLog('Jg3ToJg4 - ' . Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_TXT'), 'error', 'migration');
+          $this->component->addLog('Jg3ToJg4 - ' . Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_FILE_NOT_FOUND_PATH', \dirname($img_src)), 'error', 'migration');
         }
 
         $error = true;
