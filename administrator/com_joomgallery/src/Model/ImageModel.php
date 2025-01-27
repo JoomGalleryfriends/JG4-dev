@@ -534,27 +534,21 @@ class ImageModel extends JoomAdminModel
 				return false;
 			}
 
-			// Store the data.
-			if(!$table->store())
-			{
-				$this->setError($table->getError());
-        $uploader->rollback();
-
-				return false;
-			}
-
+			// Filesystem changes
+			$filesystem_success = true;
+			
       // Handle images if category was changed
 			if(!$isNew && $catMoved)
 			{
 				if($imgUploaded)
 				{
 					// Delete old images
-					$manager->deleteImages($old_table);
+					$filesystem_success = $manager->deleteImages($old_table);
 				}
 				else
 				{
 					// Move old images to new location
-					$manager->moveImages($old_table, $table->catid);
+					$filesystem_success = $manager->moveImages($old_table, $table->catid);
 				}
 			}
 
@@ -562,7 +556,7 @@ class ImageModel extends JoomAdminModel
 			if($isNew && $isCopy && !$imgUploaded)
 			{
         // Copy Images
-        $manager->copyImages($source_id, $table->catid, $table->filename);
+        $filesystem_success = $manager->copyImages($source_id, $table->catid, $table->filename);
 			}
 
       // Handle images if alias has changed
@@ -575,8 +569,32 @@ class ImageModel extends JoomAdminModel
         }
 
         // Rename files
-        $manager->renameImages($old_table, $table->filename);        
+        $filesystem_success = $manager->renameImages($old_table, $table->filename);        
       }
+
+			// Dont store the table if filesystem changes was not successful
+			if(!$filesystem_success)
+			{
+				$this->component->addError(Text::_('COM_JOOMGALLERY_ERROR_SAVE_FILESYSTEM_ERROR'));
+				if($imgUploaded)
+				{
+        	$uploader->rollback($table);
+				}
+
+				return false;
+			}
+
+			// Store the data.
+			if(!$table->store())
+			{
+				$this->setError($table->getError());
+        if($imgUploaded)
+				{
+        	$uploader->rollback($table);
+				}
+
+				return false;
+			}
 
 			// Create images
 			if($imgUploaded)
