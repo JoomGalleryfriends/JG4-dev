@@ -485,7 +485,10 @@ class ImageModel extends JoomAdminModel
 			if(!$table->bind($data))
 			{
 				$this->setError($table->getError());
-        $uploader->rollback();
+				if($imgUploaded)
+				{
+					$uploader->rollback($table);
+				}
 
 				return false;
 			}
@@ -497,10 +500,47 @@ class ImageModel extends JoomAdminModel
 			if(!$table->check())
 			{
 				$this->setError($table->getError());
-        $uploader->rollback();
+				if($imgUploaded)
+				{
+					$uploader->rollback($table);
+				}
 
 				return false;
 			}
+
+      // Cancel if file needs two filesystems to be saved
+      // Can be deleted if filesystem service supports two filesystems
+      $two_filesystems = [];
+      if($isCopy)
+      {
+        // Get source img object
+        $src_img = JoomHelper::getRecord('image', $source_id);
+
+        if($src_img->filesystem !== $table->filesystem)
+        {
+          $two_filesystems = [$src_img->filesystem, $table->filesystem];
+        }
+      }
+      elseif($catMoved)
+      {
+        // Get filesystem for new category
+        $tmp_config = new \Joomgallery\Component\Joomgallery\Administrator\Service\Config\DefaultConfig('com_joomgallery.category', $table->catid);
+
+        if($tmp_config->get('jg_filesystem','local-images') !== $table->filesystem)
+        {
+          $two_filesystems = [$table->filesystem, $tmp_config->get('jg_filesystem','local-images')];
+        }
+      }      
+      if(!empty($two_filesystems))
+      {
+        $this->component->addError(Text::sprintf('COM_JOOMGALLERY_ERROR_IMAGE_SAVE_TWO_FILESYSTEMS', $two_filesystems[0], $two_filesystems[1]));
+        if($imgUploaded)
+        {
+        	$uploader->rollback($table);
+        }
+
+        return false;
+      }
 
       // Handle images if record gets copied
 			if($isNew && $isCopy && !$imgUploaded)
