@@ -136,7 +136,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 <?php // Back to parent category ?>
 <?php if($this->item->parent_id > 0) : ?>
   <a class="jg-link btn btn-outline-primary" href="<?php echo Route::_('index.php?option=com_joomgallery&view=category&id='.(int) $this->item->parent_id); ?>">
-    <i class="jg-icon-arrow-left-alt"></i><span><?php echo Text::_('Back to: Parent Category'); ?></span>
+    <i class="jg-icon-arrow-left-alt"></i><span><?php echo Text::_('COM_JOOMGALLERY_CATEGORY_BACK_TO_PARENT'); ?></span>
   </a>
 <?php endif; ?>
 
@@ -190,7 +190,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
 <?php // Hint for no items ?>
 <?php if(count($this->item->children->items) == 0 && count($this->item->images->items) == 0) : ?>
-  <p><?php echo Text::_('No elements in this category...') ?></p>
+  <p><?php echo Text::_('COM_JOOMGALLERY_CATEGORY_NO_ELEMENTS') ?></p>
 <?php endif; ?>
 
 <?php // Subcategories ?>
