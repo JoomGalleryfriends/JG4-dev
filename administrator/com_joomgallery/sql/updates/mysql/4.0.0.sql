@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `#__joomgallery_categories` (
 `password` VARCHAR(100) NOT NULL DEFAULT "",
 `exclude_toplist` INT(1) UNSIGNED NOT NULL DEFAULT 0,
 `exclude_search` INT(1) UNSIGNED NOT NULL DEFAULT 0,
-`thumbnail` VARCHAR(255) NULL DEFAULT "",
+`thumbnail` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 `static_path` VARCHAR(2048) NOT NULL DEFAULT "",
 `params` TEXT NOT NULL,
 `language` CHAR(7) NOT NULL DEFAULT "*" COMMENT "The language code.",
