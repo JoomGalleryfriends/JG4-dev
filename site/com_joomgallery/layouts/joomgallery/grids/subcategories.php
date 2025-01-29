@@ -33,10 +33,11 @@ extract($displayData);
   <div class="jg-images <?php echo $layout; ?>-<?php echo $num_columns; ?> jg-subcategories" data-masonry="{ pollDuration: 175 }">
     <?php foreach($items as $key => $item) : ?>
       <?php
+        $img_type = $image_type;
         if($item->thumbnail == 0 && $random_image)
         {
           $item->thumbnail = $item->id;
-          $img_type = 'rnd_cat:thumbnail';
+          $img_type = 'rnd_cat:' . $image_type;
         }
       ?>
 
