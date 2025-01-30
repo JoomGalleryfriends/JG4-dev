@@ -271,7 +271,7 @@ class CategoryModel extends JoomItemModel
     $listModel->getState();
 
     // Apply preselected filters and fields selection for children
-    $this->setChildrenModelState($listModel, $fields);
+    $this->setChildrenModelState($listModel);
 
     // Get pagination
     $pagination = $listModel->getPagination();
@@ -302,7 +302,7 @@ class CategoryModel extends JoomItemModel
     $listModel->getState();
 
     // Apply preselected filters and fields selection for children
-    $this->setChildrenModelState($listModel, $fields);
+    $this->setChildrenModelState($listModel);
 
     return $listModel->getFilterForm($data, $loadData);
   }
@@ -324,7 +324,7 @@ class CategoryModel extends JoomItemModel
     $listModel->getState();
 
     // Apply preselected filters and fields selection for children
-    $this->setChildrenModelState($listModel, $fields);
+    $this->setChildrenModelState($listModel);
 
     return $listModel->getActiveFilters();
   }
