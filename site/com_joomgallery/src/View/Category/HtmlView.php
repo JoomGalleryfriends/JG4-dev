@@ -98,8 +98,6 @@ class HtmlView extends JoomGalleryView
 			$this->item->children = new \stdClass();
 			$this->item->children->items         = $this->get('Children');
 			$this->item->children->pagination    = $this->get('ChildrenPagination');
-			$this->item->children->filterForm    = $this->get('ImagesFilterForm');
-			$this->item->children->activeFilters = $this->get('ImagesActiveFilters');
 
 			// Load images
 			$this->item->images = new \stdClass();
