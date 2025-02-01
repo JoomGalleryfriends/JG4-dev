@@ -348,7 +348,7 @@ class CategoryModel extends JoomItemModel
     $listModel->getState();
 
     // Select fields to load
-    $fields = array('id', 'alias', 'catid', 'title', 'description', 'filename', 'author', 'date', 'hits', 'votes', 'votesum');
+    $fields = array('id', 'alias', 'catid', 'title', 'description', 'filename', 'filesystem', 'author', 'date', 'hits', 'votes', 'votesum');
     $fields = $this->addColumnPrefix('a', $fields);
 
     // Apply preselected filters and fields selection for images
