@@ -128,7 +128,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
 <?php // Category title ?>
 <?php if($this->item->parent_id > 0) : ?>
-  <h2><?php echo Text::_('JCATEGORY').': '.$this->escape($this->item->title); ?></h2>
+  <h2><?php echo Text::sprintf('COM_JOOMGALLERY_CATEGORY_TITLE', $this->escape($this->item->title)); ?></h2>
 <?php else : ?>
   <h2><?php echo Text::_('COM_JOOMGALLERY') ?></h2>
 <?php endif; ?>
