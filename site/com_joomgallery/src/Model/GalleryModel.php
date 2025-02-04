@@ -215,6 +215,7 @@ class GalleryModel extends JoomItemModel
     $listModel->setState('list.start', $imgform_limitstart);
 
     // Apply ordering
+    $listModel->setState('list.ordering', '');
     $listModel->setState('list.fullordering', $params['configs']->get('jg_gallery_view_ordering', 'a.hits DESC'));
   }
 
