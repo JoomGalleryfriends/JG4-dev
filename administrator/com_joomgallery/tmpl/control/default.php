@@ -294,7 +294,7 @@ function DisplayGalleryInfo($manifest)
             <?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU'); ?>
           </td>
           <td class="w-60">
-            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL'); ?>" target="_blank">joomgalleryfriends.net/instructions</a>
+            <a href="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_DOCU_URL'); ?>" target="_blank">joomgalleryfriends.net/<?php echo strtolower(Text::_('COM_JOOMGALLERY_WEBSITE_DOCU'));?></a>
           </td>
         </tr>
         <tr>
