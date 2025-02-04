@@ -162,6 +162,8 @@ table.itemList th.sort-cell .form-check-input {
   width: 100%;
   max-width: none;
 }
+.jg-images.jg-subcategories[class*=" justified-"] > .jg-image > .jg-image-thumbnail > img,
+.jg-images.jg-category[class*=" justified-"] > .jg-image > .jg-image-thumbnail > img,
 .jg-images.jg-subcategories[class*=" justified-"] > .jg-image > .jg-image-thumbnail > a > img,
 .jg-images.jg-category[class*=" justified-"] > .jg-image > .jg-image-thumbnail > a > img {
   display: none;
