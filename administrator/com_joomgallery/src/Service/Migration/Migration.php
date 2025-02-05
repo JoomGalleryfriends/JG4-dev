@@ -15,9 +15,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
+use \Joomla\Filesystem\Path;
 use \Joomla\Registry\Registry;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Filesystem\Path;
 use \Joomla\Database\DatabaseFactory;
 use \Joomla\Database\DatabaseInterface;
 use \Joomla\Component\Media\Administrator\Exception\FileNotFoundException;

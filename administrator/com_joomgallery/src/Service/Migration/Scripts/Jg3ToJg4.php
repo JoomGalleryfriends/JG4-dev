@@ -15,9 +15,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
+use \Joomla\Filesystem\Path;
+use \Joomla\Filesystem\File;
+use \Joomla\Filesystem\Folder;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Filesystem\Path;
-use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
@@ -800,6 +801,90 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
         return array();
         break;
     }
+  }
+
+  /**
+   * Delete migration source data.
+   * It's recommended to use delete source data by uninstalling source extension if possible.
+   *
+   * @return  boolean  True if successful, false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function deleteSource() 
+  {
+    // Retrieve a list of source directories involved in migration
+    $directories = $this->getSourceDirs();
+    $root        = $this->getSourceRootPath();
+
+    // Delete source directories
+    $successful = true;
+    foreach($directories as $key => $dir)
+    {
+      try
+      {
+        $successful = Folder::delete($root . $dir);
+      }
+      catch (\Exception $e)
+      {
+        $successful = false;
+      }
+
+      if(!$successful)
+      {
+        if($key == 0)
+        {
+          $this->component->addLog('The following directories could not be deleted. Try to delete them manually:', 'error', 'migration');
+        }
+
+        $this->component->addLog($dir, 'error', 'migration');
+      }
+    }
+
+    if(!$successful)
+    {
+      $this->component->setError('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DELETE_SOURCE_FOLDERS');
+    }
+
+    // Retrieve a list of source tables
+    list($db, $dbPrefix) = $this->getDB('source');
+    $tables = $this->getSourceTables();
+
+    // Delete source tables
+    $successful = true;
+    foreach($tables as $key => $tablename)
+    {
+      $query     = $db->getQuery(true);
+      $query->setQuery('DROP TABLE IF EXISTS ' . $tablename);
+
+      $db->setQuery($query);
+
+      try
+      {
+        $db->execute();
+      }
+      catch (\Exception $e)
+      {
+        $successful = false;
+      }
+
+      if(!$successful)
+      {
+        if($key == 0)
+        {
+          $this->component->addLog('The following DB tables could not be deleted. Try to delete them manually:', 'error', 'migration');
+        }
+
+        $this->component->addLog($tablename, 'error', 'migration');
+      }
+    }
+
+    if(!$successful)
+    {
+      $this->component->setError('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DELETE_SOURCE_TABLES');
+    }
+
+    return true;
   }
 
   /**

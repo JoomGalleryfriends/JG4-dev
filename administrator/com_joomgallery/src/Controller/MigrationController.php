@@ -436,11 +436,6 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
         $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_DATA_DELETE_SUCCESSFUL'), 'message');
         $this->component->addLog(Text::_('COM_JOOMGALLERY_SERVICE_MIGRATION_SOURCE_DATA_DELETE_SUCCESSFUL'), 'info', 'jerror');
       }
-      else
-      {
-        $this->app->enqueueMessage($model->getError(), 'error');
-        $this->component->addLog($model->getError(), 'error', 'jerror');
-      }
     }
 
     // Redirect to the step 4 screen.
