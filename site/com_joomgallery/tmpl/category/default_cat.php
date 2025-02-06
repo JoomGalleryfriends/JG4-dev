@@ -207,7 +207,7 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
   <?php // Subcategories grid ?>
   <?php echo LayoutHelper::render('joomgallery.grids.subcategories', $subcatData); ?>
-  <?php if($use_pagination == 0) : ?>
+  <?php if($subcategories_pagination == 0) : ?>
     <?php echo $this->item->children->pagination->getListFooter(); ?>
   <?php endif; ?>
 
