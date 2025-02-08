@@ -848,12 +848,35 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     // Retrieve a list of source tables
     list($db, $dbPrefix) = $this->getDB('source');
-    $tables = $this->getSourceTables();
+    $tables = array( '#__joomgallery',
+                     '#__joomgallery_catg',
+                     '#__joomgallery_category_details',
+                     '#__joomgallery_comments',
+                     '#__joomgallery_config',
+                     '#__joomgallery_countstop',
+                     '#__joomgallery_image_details',
+                     '#__joomgallery_maintenance',
+                     '#__joomgallery_nameshields',
+                     '#__joomgallery_orphans',
+                     '#__joomgallery_users',
+                     '#__joomgallery_users_ref',
+                     '#__joomgallery_votes'
+                    );
+
+    // add suffix, if source tables are in the same db with *_old at the end
+    $source_db_suffix = '';
+    if($this->params->get('same_db', 1))
+    {
+      $source_db_suffix = '_old';
+    }
 
     // Delete source tables
     $successful = true;
     foreach($tables as $key => $tablename)
     {
+      // add suffix to tablename
+      $tablename = $tablename . $source_db_suffix;
+
       $query     = $db->getQuery(true);
       $query->setQuery('DROP TABLE IF EXISTS ' . $tablename);
 
