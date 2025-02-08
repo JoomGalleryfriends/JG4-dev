@@ -426,6 +426,7 @@ class CategoryModel extends JoomAdminModel
           {
             $catMoved = true;
             $old_path = $table->path;
+            $old_static_path = $table->static_path;
           }
 
           // Check if the alias was changed
@@ -434,6 +435,7 @@ class CategoryModel extends JoomAdminModel
             $aliasChanged = true;
             $old_alias    = $table->alias;
             $old_path     = $table->path;
+            $old_static_path = $table->static_path;
           }
 
           // Check if the state was changed
@@ -568,6 +570,14 @@ class CategoryModel extends JoomAdminModel
           return false;
         }
 
+        // Handle paths
+        $new_path = $table->path;
+        if($this->component->getConfig()->get('jg_compatibility_mode', 0))
+        {
+          $old_path = $old_static_path;
+          $new_path = $table->path;
+        }
+
         // Handle folders if parent category was changed
         if(!$isNew && $catMoved)
 			  {
@@ -586,7 +596,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(false);
 
           // Adjust path of subcategory records
-          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          if(!$this->fixChildrenPath($table, $old_path, $new_path))
           {
             return false;
           }
@@ -609,7 +619,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(false);
 
           // Adjust path of subcategory records
-          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          if(!$this->fixChildrenPath($table, $old_path, $new_path))
           {
             return false;
           }
