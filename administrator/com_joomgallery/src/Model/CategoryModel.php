@@ -575,7 +575,7 @@ class CategoryModel extends JoomAdminModel
         if($this->component->getConfig()->get('jg_compatibility_mode', 0))
         {
           $old_path = $old_static_path;
-          $new_path = $table->path;
+          $new_path = $table->static_path;
         }
 
         // Handle folders if parent category was changed
