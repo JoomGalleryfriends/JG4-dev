@@ -68,7 +68,7 @@ class PelDataEditor {
             }
         } else if ($tag == PelTag::USER_COMMENT) {
             if ($entry == null) {
-                $entry = new PelEntryUserComment($data);
+                $entry = new PelEntryUserComment(substr($data, 8));
                 $ifd->addEntry($entry);
             } else {
                 $entry->setValue($data);

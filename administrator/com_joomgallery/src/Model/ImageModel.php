@@ -1154,8 +1154,16 @@ class ImageModel extends JoomAdminModel
       // Create the metadata service
       $this->component->createMetadata($this->component->getConfig()->get('jg_metaprocessor', 'php'));
 
-      // Perform the save using the metadata/filesystem service
-      $data = $this->component->getMetadata()->writeMetadata($path, $registry);
+	  $filesystem = $this->component->getConfig()->get('jg_filesystem', 'local-images');
+
+	  // Perform the save using the metadata/filesystem service
+	  if ($filesystem != 'local-images')
+	  {
+		$data = $this->component->getMetadata()->writeMetadata($path, $registry, true, true);
+	  } else
+	  {
+		$data = $this->component->getMetadata()->writeMetadata($path, $registry);
+	  }
 	  $this->component->getFilesystem()->createFile(basename($path), dirname($path), $data);
     }
     else
