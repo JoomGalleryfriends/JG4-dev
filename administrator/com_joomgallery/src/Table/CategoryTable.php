@@ -84,6 +84,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
+		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		$this->typeAlias = _JOOM_OPTION.'.category';
 
 		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
@@ -591,8 +592,6 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
    */
   public function getNodeTree($type = 'cpl', $self = false, $root = false)
   {
-    $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
-
     // Check if object is loaded
     if(!$this->id)
     {

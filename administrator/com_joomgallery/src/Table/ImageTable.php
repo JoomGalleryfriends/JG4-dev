@@ -42,6 +42,7 @@ class ImageTable extends Table implements VersionableTableInterface
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
+		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		$this->typeAlias = _JOOM_OPTION.'.image';
 
 		parent::__construct(_JOOM_TABLE_IMAGES, 'id', $db);

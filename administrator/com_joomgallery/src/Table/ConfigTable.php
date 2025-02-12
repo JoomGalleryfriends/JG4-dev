@@ -38,6 +38,7 @@ class ConfigTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
+		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		$this->typeAlias = _JOOM_OPTION.'.config';
 
 		parent::__construct(_JOOM_TABLE_CONFIGS, 'id', $db);

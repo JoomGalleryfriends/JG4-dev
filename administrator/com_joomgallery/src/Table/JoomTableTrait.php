@@ -36,6 +36,13 @@ trait JoomTableTrait
   public $form = false;
 
   /**
+   * JoomGallery extension class
+   * 
+   * @var JoomgalleryComponent
+   */
+  protected $component = null;
+
+  /**
    * Delete a record by id
    *
    * @param   mixed  $pk  Primary key value to delete. Optional

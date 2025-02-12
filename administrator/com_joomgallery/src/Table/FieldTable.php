@@ -27,7 +27,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait
 class FieldTable extends Table
 {
   use JoomTableTrait;
-  use AssetTableTrait
+  use AssetTableTrait;
 
 	/**
 	 * Constructor
@@ -36,6 +36,7 @@ class FieldTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
+		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		$this->typeAlias = _JOOM_OPTION.'.field';
 
 		parent::__construct(_JOOM_TABLE_FIELDS, 'id', $db);

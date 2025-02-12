@@ -35,6 +35,7 @@ class ImagetypeTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
+		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		$this->typeAlias = _JOOM_OPTION.'.imagetype';
 
 		parent::__construct(_JOOM_TABLE_IMG_TYPES, 'id', $db);

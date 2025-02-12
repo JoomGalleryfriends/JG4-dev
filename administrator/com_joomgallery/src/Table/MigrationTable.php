@@ -53,6 +53,7 @@ class MigrationTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
+		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		$this->typeAlias = _JOOM_OPTION.'.migration';
 
 		parent::__construct(_JOOM_TABLE_MIGRATION, 'id', $db);

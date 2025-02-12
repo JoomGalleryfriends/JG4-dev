@@ -37,6 +37,7 @@ class VoteTable extends Table
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
+		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		$this->typeAlias = _JOOM_OPTION.'.vote';
 
 		parent::__construct(_JOOM_TABLE_VOTES, 'id', $db);
