@@ -816,29 +816,54 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Retrieve a list of source directories involved in migration
     $directories = $this->getSourceDirs();
     $root        = $this->getSourceRootPath();
+    $dir_array   = array( array('Original', 'images/joomgallery/originals/'),
+                          array('Details', 'images/joomgallery/originals/'),
+                          array('Thumbnails', 'images/joomgallery/thumbnails/')
+                        );
 
     // Delete source directories
     $successful = true;
+    $undeleted  = array();
     foreach($directories as $key => $dir)
     {
-      try
+      if($this->params->get('same_joomla', 1) && $dir == $dir_array[$key][1] && $this->params->get('image_usage', 0) === 0)
       {
-        $successful = Folder::delete($root . $dir);
+        // Source directory corresponds to destination directory and images are directly used.
+        // Do not do anything
       }
-      catch (\Exception $e)
+      elseif($this->params->get('same_joomla', 1) && $dir == $dir_array[$key][1] && $this->params->get('image_usage', 0) !== 0)
       {
-        $successful = false;
+        // Source directory corresponds to destination directory, but images are not directly used.
+        // Do not delete anything, but display message to delete old folders manually
+        \array_push($undeleted, $dir_array[$key][0]);
       }
-
-      if(!$successful)
+      else
       {
-        if($key == 0)
+        // Source and destination directory are different.
+        try
         {
-          $this->component->addLog('The following directories could not be deleted. Try to delete them manually:', 'error', 'migration');
+          $successful = Folder::delete($root . $dir);
+        }
+        catch (\Exception $e)
+        {
+          $successful = false;
         }
 
-        $this->component->addLog($dir, 'error', 'migration');
+        if(!$successful)
+        {
+          if($key == 0)
+          {
+            $this->component->addLog('The following directories could not be deleted. Try to delete them manually:', 'error', 'migration');
+          }
+
+          $this->component->addLog($dir, 'error', 'migration');
+        }
       }
+    }
+
+    if(!empty($undeleted))
+    {
+      $this->component->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MANUALLY_DELETE_SOURCE_FOLDERS', $undeleted));
     }
 
     if(!$successful)
