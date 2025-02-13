@@ -27,15 +27,25 @@ use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\AssetTableTrait
 class FieldTable extends Table
 {
   use JoomTableTrait;
-  use AssetTableTrait
+  use AssetTableTrait;
 
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db  A database connector object
+	 * @param   JDatabase  &$db             A database connector object
+	 * @param   bool       $with_component  True to attach component object to class
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct(DatabaseDriver $db, bool $with_component = true)
 	{
+		if($with_component)
+		{
+		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+		}
+		else
+		{
+		  $this->addMessageTrait();
+		}
+    
 		$this->typeAlias = _JOOM_OPTION.'.field';
 
 		parent::__construct(_JOOM_TABLE_FIELDS, 'id', $db);
