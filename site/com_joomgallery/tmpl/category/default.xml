@@ -90,6 +90,7 @@
             />
             <field
                 name="jg_category_view_subcategories_pagination"
+                readonly="true"
                 type="jglist"
                 useglobal="true"
                 parentclass="span-3"

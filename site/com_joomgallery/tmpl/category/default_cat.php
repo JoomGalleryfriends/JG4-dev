@@ -147,8 +147,6 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
   </a>
 <?php endif; ?>
 
-<br>
-
 <?php // Edit buttons ?>
 <?php if($canEdit || $canAdd || $canDelete): ?>
   <div class="mb-3">
@@ -209,6 +207,10 @@ $returnURL  = base64_encode(JoomHelper::getViewRoute('category', $this->item->id
 
   <?php // Subcategories grid ?>
   <?php echo LayoutHelper::render('joomgallery.grids.subcategories', $subcatData); ?>
+  <?php if($subcategories_pagination == 0) : ?>
+    <?php echo $this->item->children->pagination->getListFooter(); ?>
+  <?php endif; ?>
+
 <?php endif; ?>
 
 <?php // Category ?>
