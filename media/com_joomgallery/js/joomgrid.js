@@ -75,14 +75,16 @@ var callback = function() {
 
   // Load justified for grid selected by gridclass (category images)
   if(window.joomGrid.layout == 'justified') {
+    addEventListener('load', _ => {
     const imgs = document.querySelectorAll('.' + window.joomGrid.gridclass + ' img');
     const options = {
       idealHeight: window.joomGrid.justified.height,
-      maxRowImgs: 32,
+      maxRowImgs: 16,
       rowGap: window.joomGrid.justified.gap,
       columnGap: window.joomGrid.justified.gap,
     };
     window.joomGrid.justifieds[window.joomGrid.itemid] = new ImgJust(grid, imgs, options);
+    });
   }
 
   // Infinity scroll or load more
