@@ -816,9 +816,9 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     // Retrieve a list of source directories involved in migration
     $directories = $this->getSourceDirs();
     $root        = $this->getSourceRootPath();
-    $dir_array   = array( array('Original', 'images/joomgallery/originals/'),
-                          array('Details', 'images/joomgallery/originals/'),
-                          array('Thumbnails', 'images/joomgallery/thumbnails/')
+    $dir_array   = array( array(Text::_('COM_JOOMGALLERY_ORIGINAL'), 'images/joomgallery/originals/'),
+                          array(Text::_('COM_JOOMGALLERY_DETAIL'), 'images/joomgallery/details/'),
+                          array(Text::_('COM_JOOMGALLERY_THUMBNAIL'), 'images/joomgallery/thumbnails/')
                         );
 
     // Delete source directories
