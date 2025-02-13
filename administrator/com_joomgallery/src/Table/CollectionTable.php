@@ -50,11 +50,16 @@ class CollectionTable extends Table
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db  A database connector object
+	 * @param   JDatabase  &$db             A database connector object
+	 * @param   bool       $with_component  True to attach component object to class
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct(DatabaseDriver $db, bool $with_component = true)
 	{
-		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+		if($with_component)
+		{
+		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+		}
+
 		$this->typeAlias = _JOOM_OPTION.'.collection';
 
 		parent::__construct(_JOOM_TABLE_COLLECTIONS, 'id', $db);

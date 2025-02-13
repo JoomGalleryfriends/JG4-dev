@@ -80,11 +80,16 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db  A database connector object
+	 * @param   JDatabase  &$db             A database connector object
+	 * @param   bool       $with_component  True to attach component object to class
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct(DatabaseDriver $db, bool $with_component = true)
 	{
-		$this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+		if($with_component)
+		{
+		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+		}
+		  
 		$this->typeAlias = _JOOM_OPTION.'.category';
 
 		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
@@ -368,7 +373,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     $this->path = $filesystem->cleanPath($this->path, '/');
 
     // Create static_path if compatibility mode is activated
-    if($this->component->getConfig()->get('jg_compatibility_mode', 0))
+    if(!is_null($this->component) && $this->component->getConfig()->get('jg_compatibility_mode', 0))
     {
       $this->static_path = $manager->getCatPath(0, false, $this->parent_id, $this->alias, false, true);
       $this->static_path = $filesystem->cleanPath($this->path, '/');
