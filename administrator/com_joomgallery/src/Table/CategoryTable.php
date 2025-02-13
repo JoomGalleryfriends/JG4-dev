@@ -89,6 +89,10 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
 		{
 		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		}
+		else
+		{
+		  $this->addMessageTrait();
+		}
 		  
 		$this->typeAlias = _JOOM_OPTION.'.category';
 

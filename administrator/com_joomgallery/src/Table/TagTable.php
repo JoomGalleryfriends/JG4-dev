@@ -52,6 +52,10 @@ class TagTable extends Table
 		{
 		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
 		}
+		else
+		{
+		  $this->addMessageTrait();
+		}
     
 		$this->typeAlias = _JOOM_OPTION.'.tag';
 

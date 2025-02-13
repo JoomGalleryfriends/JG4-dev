@@ -462,4 +462,37 @@ trait JoomTableTrait
     $this->form = new Form($form_name);
     $this->form->loadFile($xml_file);
   }
+
+  /**
+	 * Method to add a fake JoomGallery component class in order to use the Message functions
+	 *
+	 * @return  void
+	 */
+  protected function addMessageTrait()
+  {
+    $jgobjectClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Extension\\JoomgalleryComponent';
+
+    if(\is_null($this->component) && !\class_exists($jgobjectClass))
+    {
+      // We expect to be in a pre installed environement. Use a custom way of including the MessageTrait.
+      $msgtraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Extension\\MessageTrait';
+      $msgtrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Extension'.DIRECTORY_SEPARATOR.'MessageTrait.php';
+
+      // Manually include the MessageTrait file if it's not already available
+      if(!\trait_exists($msgtraitClass))
+      {
+        require_once $msgtrait_path;
+      }
+
+      // Create an anonymous class that uses the MessageTrait
+      $this->component = new class extends \stdClass {
+        use \Joomgallery\Component\Joomgallery\Administrator\Extension\MessageTrait;
+      };
+    }
+    else
+    {
+      // We expect to be in a post installed environment. Use the default way.
+      $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+    }
+  }
 }
