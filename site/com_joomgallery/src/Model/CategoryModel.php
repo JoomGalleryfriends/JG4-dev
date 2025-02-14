@@ -88,7 +88,7 @@ class CategoryModel extends JoomItemModel
 	 */
 	public function getItem($id = null)
 	{
-		if($this->item === null)
+		if($this->item === null || $this->item->id != $id)
 		{
 			$this->item = false;
 
