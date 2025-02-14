@@ -111,6 +111,69 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
 	}
 
   /**
+   * Execute a task by triggering a Method in the derived class.
+   *
+   * @param   string  $task    The task to perform. If no matching task is found, the '__default' task is executed, if
+   *                           defined.
+   *
+   * @return  mixed   The value returned by the called Method.
+   *
+   * @throws  Exception
+   * @since   4.2.0
+   */
+  public function execute($task)
+  {
+    // Before execution of the task
+    if(!empty($task))
+    {
+      if(\property_exists($this, 'task'))
+      {
+        $this->task = $task;
+      }
+      
+      $this->component->msgUserStateKey = 'com_joomgallery.'.$task.'.messages';
+    }
+
+    // Guess context if needed
+    if(empty($this->context))
+    {
+      $this->context = _JOOM_OPTION . '.' . $this->name;
+
+      if(\property_exists($this, 'task') && !empty($this->task))
+      {
+        $this->context .= '.' . $this->task;
+      }
+    }
+
+    if(!$this->component->isRawTask($this->context))
+    {
+      // Get messages from session
+      $this->component->msgFromSession();
+    }
+    
+
+    // execute the task
+    $res = parent::execute($task);
+
+    // After execution of the task
+    if(!$this->component->isRawTask($this->context))
+    {
+      // Print messages from session
+      if(!$this->component->msgWithhold && $res->component->error)
+      {
+        $this->component->printError();
+      }
+      elseif(!$this->component->msgWithhold)
+      {
+        $this->component->printWarning();
+        $this->component->printDebug();
+      }
+    }
+
+    return $res;
+  }
+
+  /**
    * Method to cancel a migration.
    *
    * @return  boolean  True on success, false otherwise

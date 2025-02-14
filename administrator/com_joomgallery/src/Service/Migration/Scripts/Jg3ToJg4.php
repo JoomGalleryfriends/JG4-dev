@@ -863,7 +863,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
     if(!empty($undeleted))
     {
-      $this->component->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MANUALLY_DELETE_SOURCE_FOLDERS', $undeleted));
+      $this->component->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MANUALLY_DELETE_SOURCE_FOLDERS', implode(', ', $undeleted)));
     }
 
     if(!$successful)
