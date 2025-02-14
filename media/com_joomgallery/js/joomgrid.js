@@ -74,7 +74,7 @@ var callback = function() {
   }
 
   // Load justified for grid selected by gridclass (category images)
-  if(window.joomGrid.layout == 'justified') {
+  if(window.joomGrid.layout == 'justified' && document.querySelectorAll('.justified').length > 0) {
     addEventListener('load', _ => {
     const imgs = document.querySelectorAll('.' + window.joomGrid.gridclass + ' img');
     const options = {
@@ -88,7 +88,7 @@ var callback = function() {
   }
 
   // Infinity scroll or load more
-  if(window.joomGrid.pagination == 1 || window.joomGrid.pagination == 2)
+  if(window.joomGrid.pagination == 1 && grid || window.joomGrid.pagination == 2 && grid)
   {
     const items        = Array.from(grid.getElementsByClassName(window.joomGrid.imgboxclass));
     const maxImages    = window.joomGrid.num_columns * 2;
