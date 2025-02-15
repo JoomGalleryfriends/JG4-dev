@@ -158,6 +158,35 @@ class JoomFormController extends BaseFormController
   }
 
   /**
+   * Method to get a model object, loading it if required.
+   *
+   * @param   string  $name    The model name. Optional.
+   * @param   string  $prefix  The class prefix. Optional.
+   * @param   array   $config  Configuration array for model. Optional.
+   *
+   * @return  BaseDatabaseModel  The model.
+   *
+   * @since   4.0.0
+   */
+  public function getModel($name = '', $prefix = '', $config = ['ignore_request' => true])
+  {
+    if(empty($name))
+    {
+      $parts = \explode('.', $this->context);
+      $key   = 0;
+
+      if(\strpos($parts[0], 'com_') !== false)
+      {
+        $key = 1;
+      }
+
+      $name = $parts[$key];
+    }
+
+    return parent::getModel($name, $prefix, $config);
+  }
+
+  /**
    * Method to check if you can add a new record.   *
    * Extended classes can override this if necessary.
    *
