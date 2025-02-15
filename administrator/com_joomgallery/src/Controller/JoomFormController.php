@@ -198,7 +198,15 @@ class JoomFormController extends BaseFormController
    */
   protected function allowAdd($data = [])
   {
-    switch($this->context)
+    $parts = \explode('.', $this->context);
+    $key   = 0;
+
+    if(\strpos($parts[0], 'com_') !== false)
+    {
+      $key = 1;
+    }
+
+    switch($parts[$key])
     {
       case 'category':
         if($this->task == 'add')
