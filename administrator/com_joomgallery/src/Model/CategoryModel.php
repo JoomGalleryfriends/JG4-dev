@@ -585,7 +585,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(true);
 
           // Move folder (including files and subfolders)
-          if(!$manager->moveCategory($table, $table->parent_id))
+          if(!$manager->moveCategory($old_table, $table->parent_id))
           {
             $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_MOVE_CATEGORY', $manager->paths['src'], $manager->paths['dest']));
             $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_MOVE_CATEGORY', $manager->paths['src'], $manager->paths['dest']), 'error', 'jerror');

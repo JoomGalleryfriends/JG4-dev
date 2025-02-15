@@ -380,7 +380,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     if(!is_null($this->component) && $this->component->getConfig()->get('jg_compatibility_mode', 0))
     {
       $this->static_path = $manager->getCatPath(0, false, $this->parent_id, $this->alias, false, true);
-      $this->static_path = $filesystem->cleanPath($this->path, '/');
+      $this->static_path = $filesystem->cleanPath($this->static_path, '/');
     }
 
     // Support for subform field params

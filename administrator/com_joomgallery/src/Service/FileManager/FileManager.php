@@ -1023,7 +1023,7 @@ class FileManager implements FileManagerInterface
 
     // Create path for messages
     $this->paths['src']  = '[ROOT]'.\DIRECTORY_SEPARATOR . $this->getCatPath($cat);
-    $this->paths['dest'] = '[ROOT]'.\DIRECTORY_SEPARATOR . $this->getCatPath($cat);
+    $this->paths['dest'] = '[ROOT]'.\DIRECTORY_SEPARATOR . $this->getCatPath($dest) . \DIRECTORY_SEPARATOR . \basename($this->paths['src']);
 
     // Loop through all imagetypes
     $error = false;
