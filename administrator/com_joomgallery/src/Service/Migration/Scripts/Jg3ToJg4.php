@@ -1123,7 +1123,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     $this->component->createConfig();
 
-    if($type == 'pre')
+    if($type == 'pre' && $checks->getSuccess())
     {
       // Get source db info
       list($db, $dbPrefix)            = $this->getDB('source');
@@ -1308,7 +1308,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       }
     }
 
-    if($type == 'post')
+    if($type == 'post' && $checks->getSuccess())
     {
 
     }
