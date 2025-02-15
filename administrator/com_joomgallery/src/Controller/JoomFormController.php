@@ -119,7 +119,7 @@ class JoomFormController extends BaseFormController
     }
 
     // Guess context if needed
-    if(empty($this->context))
+    if(empty($this->context) || ($this->context && \strpos($this->context, $task) === false))
     {
       $this->context = _JOOM_OPTION . '.' . $this->name;
 
