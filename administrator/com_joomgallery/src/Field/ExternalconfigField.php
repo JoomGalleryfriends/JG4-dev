@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\Filesystem\Path;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
@@ -65,7 +66,8 @@ class ExternalconfigField extends FormField
 
     // // Load external form
     $array      = \explode('.', $data['label']);
-    $config_xml = JPATH_ADMINISTRATOR . '/components/' . $array[0] . '/config.xml';
+    $option     = \preg_replace('/[^a-z0-9_]/', '', $array[0]);
+    $config_xml = Path::clean(JPATH_ADMINISTRATOR . '/components/' . $option . '/config.xml');
     $config_form = new Form($array[0].'.config');
     $config_form->loadFile($config_xml, false, '//config//fieldset');
 
