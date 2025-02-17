@@ -15,9 +15,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration\Scri
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
+use \Joomla\Filesystem\Path;
+use \Joomla\Filesystem\File;
+use \Joomla\Filesystem\Folder;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Filesystem\Path;
-use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\Component\Media\Administrator\Exception\FileExistsException;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\ImageTable;
@@ -803,6 +804,138 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   }
 
   /**
+   * Delete migration source data.
+   * It's recommended to use delete source data by uninstalling source extension if possible.
+   *
+   * @return  boolean  True if successful, false if an error occurs.
+   *
+   * @since   4.0.0
+   */
+  public function deleteSource() 
+  {
+    // Retrieve a list of source directories involved in migration
+    $directories = $this->getSourceDirs();
+    $root        = $this->getSourceRootPath();
+    $dir_array   = array( array(Text::_('COM_JOOMGALLERY_ORIGINAL'), 'images/joomgallery/originals/'),
+                          array(Text::_('COM_JOOMGALLERY_DETAIL'), 'images/joomgallery/details/'),
+                          array(Text::_('COM_JOOMGALLERY_THUMBNAIL'), 'images/joomgallery/thumbnails/')
+                        );
+
+    // Delete source directories
+    $successful = true;
+    $undeleted  = array();
+    foreach($directories as $key => $dir)
+    {
+      if($this->params->get('same_joomla', 1) && $dir == $dir_array[$key][1] && $this->params->get('image_usage', 0) === 0)
+      {
+        // Source directory corresponds to destination directory and images are directly used.
+        // Do not do anything
+      }
+      elseif($this->params->get('same_joomla', 1) && $dir == $dir_array[$key][1] && $this->params->get('image_usage', 0) !== 0)
+      {
+        // Source directory corresponds to destination directory, but images are not directly used.
+        // Do not delete anything, but display message to delete old folders manually
+        \array_push($undeleted, $dir_array[$key][0]);
+      }
+      else
+      {
+        // Source and destination directory are different.
+        try
+        {
+          $successful = Folder::delete($root . $dir);
+        }
+        catch (\Exception $e)
+        {
+          $successful = false;
+        }
+
+        if(!$successful)
+        {
+          if($key == 0)
+          {
+            $this->component->addLog('The following directories could not be deleted. Try to delete them manually:', 'error', 'migration');
+          }
+
+          $this->component->addLog($dir, 'error', 'migration');
+        }
+      }
+    }
+
+    if(!empty($undeleted))
+    {
+      $this->component->setWarning(Text::sprintf('COM_JOOMGALLERY_SERVICE_MIGRATION_MANUALLY_DELETE_SOURCE_FOLDERS', implode(', ', $undeleted)));
+    }
+
+    if(!$successful)
+    {
+      $this->component->setError('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DELETE_SOURCE_FOLDERS');
+    }
+
+    // Retrieve a list of source tables
+    list($db, $dbPrefix) = $this->getDB('source');
+    $tables = array( '#__joomgallery',
+                     '#__joomgallery_catg',
+                     '#__joomgallery_category_details',
+                     '#__joomgallery_comments',
+                     '#__joomgallery_config',
+                     '#__joomgallery_countstop',
+                     '#__joomgallery_image_details',
+                     '#__joomgallery_maintenance',
+                     '#__joomgallery_nameshields',
+                     '#__joomgallery_orphans',
+                     '#__joomgallery_users',
+                     '#__joomgallery_users_ref',
+                     '#__joomgallery_votes'
+                    );
+
+    // add suffix, if source tables are in the same db with *_old at the end
+    $source_db_suffix = '';
+    if($this->params->get('same_db', 1))
+    {
+      $source_db_suffix = '_old';
+    }
+
+    // Delete source tables
+    $successful = true;
+    foreach($tables as $key => $tablename)
+    {
+      // add suffix to tablename
+      $tablename = $tablename . $source_db_suffix;
+
+      $query     = $db->getQuery(true);
+      $query->setQuery('DROP TABLE IF EXISTS ' . $tablename);
+
+      $db->setQuery($query);
+
+      try
+      {
+        $db->execute();
+      }
+      catch (\Exception $e)
+      {
+        $successful = false;
+      }
+
+      if(!$successful)
+      {
+        if($key == 0)
+        {
+          $this->component->addLog('The following DB tables could not be deleted. Try to delete them manually:', 'error', 'migration');
+        }
+
+        $this->component->addLog($tablename, 'error', 'migration');
+      }
+    }
+
+    if(!$successful)
+    {
+      $this->component->setError('COM_JOOMGALLERY_SERVICE_MIGRATION_ERROR_DELETE_SOURCE_TABLES');
+    }
+
+    return true;
+  }
+
+  /**
    * Creation of imagetypes based on one source file.
    * Source file has to be given with a full system path.
    *
@@ -990,7 +1123,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
   {
     $this->component->createConfig();
 
-    if($type == 'pre')
+    if($type == 'pre' && $checks->getSuccess())
     {
       // Get source db info
       list($db, $dbPrefix)            = $this->getDB('source');
@@ -1175,7 +1308,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
       }
     }
 
-    if($type == 'post')
+    if($type == 'post' && $checks->getSuccess())
     {
 
     }

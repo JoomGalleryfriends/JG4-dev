@@ -44,7 +44,7 @@ trait MessageTrait
    *
    * @var array
   */
-  public $rawTasks = array('image.ajaxsave', 'tags.searchajax');
+  public $rawTasks = array('image.ajaxsave', 'tags.searchajax', 'migration.start');
 
   /**
 	 * Session storage path
