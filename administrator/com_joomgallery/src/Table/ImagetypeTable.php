@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Table;
 // No direct access
 defined('_JEXEC') or die;
 
+use \Joomla\CMS\Factory;
 use \Joomla\CMS\Table\Table;
 use \Joomla\Database\DatabaseDriver;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\Asset\GlobalAssetTableTrait;
@@ -31,10 +32,20 @@ class ImagetypeTable extends Table
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db  A database connector object
+	 * @param   JDatabase  &$db             A database connector object
+	 * @param   bool       $with_component  True to attach component object to class
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct(DatabaseDriver $db, bool $with_component = true)
 	{
+		if($with_component)
+		{
+		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+		}
+		else
+		{
+		  $this->addMessageTrait();
+		}
+    
 		$this->typeAlias = _JOOM_OPTION.'.imagetype';
 
 		parent::__construct(_JOOM_TABLE_IMG_TYPES, 'id', $db);
