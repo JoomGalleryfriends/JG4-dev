@@ -608,7 +608,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(true);
 
           // Rename folder
-          if(!$manager->renameCategory($table, $table->alias))
+          if(!$manager->renameCategory($old_table, $table->alias))
           {
             $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_CATEGORY', $manager->paths['src'], $manager->paths['dest']));
             $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_CATEGORY', $manager->paths['src'], $manager->paths['dest']), 'error', 'jerror');

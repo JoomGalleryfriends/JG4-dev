@@ -1105,7 +1105,7 @@ class FileManager implements FileManagerInterface
   {
     // Create path for messages
     $this->paths['src']  = '[ROOT]'.\DIRECTORY_SEPARATOR.$this->getCatPath($cat);
-    $this->paths['dest'] = \substr($this->paths['src'], 0, strrpos($this->paths['src'], \basename($this->paths['src']))).$foldername;
+    $this->paths['dest'] = \substr($this->paths['src'], 0, strrpos($this->paths['src'], \basename($this->paths['src']))) . $foldername;
 
     // Loop through all imagetypes
     $error = false;
@@ -1115,7 +1115,7 @@ class FileManager implements FileManagerInterface
       $folder_orig = $this->getCatPath($cat, $imagetype->typename);
 
       // Create renamed category foldername
-      $folder_new  = \substr($folder_orig, 0, strrpos($folder_orig, \basename($folder_orig))).$foldername;
+      $folder_new  = \substr($folder_orig, 0, strrpos($folder_orig, \basename($folder_orig))) . $foldername;
 
       // Rename folder
       try
