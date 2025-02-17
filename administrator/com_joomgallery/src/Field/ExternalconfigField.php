@@ -13,6 +13,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 // No direct access
 \defined('_JEXEC') or die;
 
+use \Joomla\Filesystem\Path;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
@@ -64,17 +65,19 @@ class ExternalconfigField extends FormField
     $data = $this->getLayoutData();
 
     // // Load external form
-    $array      = \explode('.', $data['label']);
-    $config_xml = JPATH_ADMINISTRATOR . '/components/' . $array[0] . '/config.xml';
-    $config_form = new Form($array[0].'.config');
+    $array       = \explode('.', $data['label']);
+    $option      = \preg_replace('/[^a-z0-9_]/', '', $array[0]);
+    $field       = \preg_replace('/[^a-z0-9_]/', '', $array[1]);
+    $config_xml  = Path::clean(JPATH_ADMINISTRATOR . '/components/' . $option . '/config.xml');
+    $config_form = new Form($option.'.config');
     $config_form->loadFile($config_xml, false, '//config//fieldset');
 
     // Add external field values
-    $this->external = $config_form->getField($array[1]);
+    $this->external = $config_form->getField($field);
 
     // Load external language
     $lang = Factory::getApplication()->getLanguage();
-    $lang->load($array[0], JPATH_ADMINISTRATOR);
+    $lang->load($option, JPATH_ADMINISTRATOR);
 
     return $res;
   }
@@ -92,12 +95,14 @@ class ExternalconfigField extends FormField
 
     // Get externalconfig
     $array  = \explode('.', $data['label']);
+    $option = \preg_replace('/[^a-z0-9_]/', '', $array[0]);
+    $field  = \preg_replace('/[^a-z0-9_]/', '', $array[1]);
 
-    $this->value       = ComponentHelper::getParams($array[0])->get($array[1]);
+    $this->value       = ComponentHelper::getParams($option)->get($field);
     $this->readonly    = true;
-    $this->description = Text::_(\strval($this->external->element->attributes()->description)) . ' ('.Text::_('COM_JOOMGALLERY_SOURCE').': '.$array[0].')';
+    $this->description = Text::_(\strval($this->external->element->attributes()->description)) . ' ('.Text::_('COM_JOOMGALLERY_SOURCE').': '.$option.')';
 
-    $html  = '<a class="btn btn-secondary inline" target="_blank" href="index.php?option=com_config&view=component&component='.$array[0].'">'.Text::_('JACTION_EDIT').'</a>';
+    $html  = '<a class="btn btn-secondary inline" target="_blank" href="index.php?option=com_config&view=component&component='.$option.'">'.Text::_('JACTION_EDIT').'</a>';
     $html .= '<input id="'.$this->id.'" disabled class="form-control sensitive-input" type="text" name="'.$this->name.'" value="'.$this->value.'" aria-describedby="'.$this->id.'-desc">';
 
     return $html;
