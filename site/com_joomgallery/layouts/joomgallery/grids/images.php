@@ -42,7 +42,7 @@ extract($displayData);
   <div class="jg-loader"></div>
   <div id="lightgallery-<?php echo $id; ?>" class="jg-images <?php echo $layout; ?>-<?php echo $num_columns; ?> jg-category" data-masonry="{ pollDuration: 175 }">
     <?php foreach($items as $key => $item) : ?>
-      
+
       <div class="jg-image">
         <div class="jg-image-thumbnail<?php if($image_class && $layout != 'justified') : ?><?php echo ' boxed'; ?><?php endif; ?>">
           <?php if($layout != 'justified') : ?>
@@ -62,14 +62,19 @@ extract($displayData);
                   <?php echo $this->escape($item->title); ?>
                 </div>
               <?php endif; ?>
+            </a>
               <?php if($image_title) : ?>
                 <div id="jg-image-caption-<?php echo $item->id; ?>" style="display: none">
                   <div class="jg-image-caption <?php echo $caption_align; ?>">
                     <?php echo $this->escape($item->title); ?>
                   </div>
+                  <?php if($image_desc) : ?>
+                    <div class="jg-image-desc <?php echo $caption_align; ?>">
+                      <?php echo $item->description; ?>
+                    </div>
+                  <?php endif; ?>
                 </div>
               <?php endif; ?>
-            </a>
           <?php elseif($image_link == 'defaultview') : ?>
             <a href="<?php echo Route::_(JoomHelper::getViewRoute('image', (int) $item->id, (int) $item->catid)); ?>">
               <img src="<?php echo JoomHelper::getImg($item, $image_type); ?>" class="jg-image-thumb" alt="<?php echo $item->title; ?>" itemprop="image" itemscope="" itemtype="https://schema.org/image"<?php if( $layout != 'justified') : ?> loading="lazy"<?php endif; ?>>
