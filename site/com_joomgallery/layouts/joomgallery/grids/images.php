@@ -63,6 +63,7 @@ extract($displayData);
                 </div>
               <?php endif; ?>
             </a>
+              <?php // lightgallery image caption via data-sub-html ?>
               <?php if($image_title) : ?>
                 <div id="jg-image-caption-<?php echo $item->id; ?>" style="display: none">
                   <div class="jg-image-caption <?php echo $caption_align; ?>">
