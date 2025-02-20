@@ -205,19 +205,19 @@ table.itemList th.sort-cell .form-check-input {
 .jg-images[class*=" justified-"] .jg-image-caption-hover, .jg-image > .jg-image-caption, .lg-sub-html > .jg-image-caption, .jg-image-thumb + .jg-image-caption {
   font-size: 0.875rem;
 }
-.lg-sub-html > .jg-image-description, .lg-sub-html > .jg-image-description > p {
+.lg-sub-html > .jg-image-desc, .lg-sub-html > .jg-image-desc > p, .lg-sub-html > .jg-image-description, .lg-sub-html > .jg-image-description > p {
   font-size: 0.875rem;
 }
 .jg-image > .jg-image-caption, .jg-image-thumb + .jg-image-caption {
   padding: 0.5em 0;
 }
-.jg-image > .jg-image-caption.left, .jg-image-caption-hover.left, .lg-sub-html > .jg-image-caption.left {
+.jg-image > .jg-image-caption.left, .jg-image-caption-hover.left, .lg-sub-html > .jg-image-caption.left, .lg-sub-html > .jg-image-desc.left {
   text-align: left;
 }
-.jg-image > .jg-image-caption.center, .jg-image-caption-hover.center, .lg-sub-html > .jg-image-caption.center {
+.jg-image > .jg-image-caption.center, .jg-image-caption-hover.center, .lg-sub-html > .jg-image-caption.center, .lg-sub-html > .jg-image-desc.center {
   text-align: center;
 }
-.jg-image > .jg-image-caption.right, .jg-image-caption-hover.right, .lg-sub-html > .jg-image-caption.right {
+.jg-image > .jg-image-caption.right, .jg-image-caption-hover.right, .lg-sub-html > .jg-image-caption.right, .lg-sub-html > .jg-image-desc.right {
   text-align: right;
 }
 .com_joomgallery .lg-container {
