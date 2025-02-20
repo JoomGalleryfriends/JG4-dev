@@ -80,20 +80,12 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db             A database connector object
-	 * @param   bool       $with_component  True to attach component object to class
+	 * @param   JDatabase  &$db               A database connector object
+	 * @param   bool       $component_exists  True if the component object class exists
 	 */
-	public function __construct(DatabaseDriver $db, bool $with_component = true)
+	public function __construct(DatabaseDriver $db, bool $component_exists = true)
 	{
-		if($with_component)
-		{
-		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
-		}
-		else
-		{
-		  $this->addMessageTrait();
-		}
-		  
+		$this->component_exists = $component_exists;
 		$this->typeAlias = _JOOM_OPTION.'.category';
 
 		parent::__construct(_JOOM_TABLE_CATEGORIES, 'id', $db);
@@ -377,7 +369,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     $this->path = $filesystem->cleanPath($this->path, '/');
 
     // Create static_path if compatibility mode is activated
-    if(!is_null($this->component) && $this->component->getConfig()->get('jg_compatibility_mode', 0))
+    if($this->getComponent()->getConfig()->get('jg_compatibility_mode', 0))
     {
       $this->static_path = $manager->getCatPath(0, false, $this->parent_id, $this->alias, false, true);
       $this->static_path = $filesystem->cleanPath($this->static_path, '/');
@@ -503,7 +495,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
       if(!$db->execute())
       {
         Factory::getApplication()->enqueueMessage(Text::_('Error create root category'), 'error');
-        $this->component->addLog(Text::_('Error create root category'), 'error', 'jerror');
+        $this->getComponent()->addLog(Text::_('Error create root category'), 'error', 'jerror');
 
         return false;
       }      
@@ -525,7 +517,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
       if($assetTable->getError())
       {
         Factory::getApplication()->enqueueMessage(Text::_('Error load asset for root category creation'), 'error');
-        $this->component->addLog(Text::_('Error load asset for root category creation'), 'error', 'jerror');
+        $this->getComponent()->addLog(Text::_('Error load asset for root category creation'), 'error', 'jerror');
 
         return false;
       }
@@ -546,7 +538,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
         if(!$assetTable->check() || !$assetTable->store(false))
         {
           Factory::getApplication()->enqueueMessage(Text::_('Error create asset for root category'), 'error');
-          $this->component->addLog(Text::_('Error create asset for root category'), 'error', 'jerror');
+          $this->getComponent()->addLog(Text::_('Error create asset for root category'), 'error', 'jerror');
 
           return false;
         }
@@ -560,7 +552,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
       if(!$db->execute())
       {
         Factory::getApplication()->enqueueMessage(Text::_('Error connect root category with asset'), 'error');
-        $this->component->addLog(Text::_('Error connect root category with asset'), 'error', 'jerror');
+        $this->getComponent()->addLog(Text::_('Error connect root category with asset'), 'error', 'jerror');
 
         return false;
       }
@@ -604,7 +596,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     // Check if object is loaded
     if(!$this->id)
     {
-      $this->component->addLog(Text::_('Table not loaded. Load table first.'), 'error', 'jerror');
+      $this->getComponent()->addLog(Text::_('Table not loaded. Load table first.'), 'error', 'jerror');
       throw new \UnexpectedValueException('Table not loaded. Load table first.');
     }
 
@@ -684,17 +676,17 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
       if($type === 'children')
       {
         $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_CHILDREN_FOUND'));
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_CHILDREN_FOUND'), 'warning', 'jerror');
+        $this->getComponent()->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_CHILDREN_FOUND'), 'warning', 'jerror');
       }
       elseif($type === 'parents')
       {
         $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_PARENT_FOUND'));
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_PARENT_FOUND'), 'error', 'jerror');
+        $this->getComponent()->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_PARENT_FOUND'), 'error', 'jerror');
       }
       else
       {
         $this->setError(Text::_('COM_JOOMGALLERY_ERROR_GETNODETREE'));
-        $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_GETNODETREE'), 'error', 'jerror');
+        $this->getComponent()->addLog(Text::_('COM_JOOMGALLERY_ERROR_GETNODETREE'), 'error', 'jerror');
       }
     }
 
@@ -716,7 +708,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     // Check if object is loaded
     if(!$this->id)
     {
-      $this->component->addLog(Text::_('Table not loaded. Load table first.'), 'error', 'jerror');
+      $this->getComponent()->addLog(Text::_('Table not loaded. Load table first.'), 'error', 'jerror');
       throw new \UnexpectedValueException('Table not loaded. Load table first.');
     }
 
@@ -743,7 +735,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     // Check if parent object is loaded
     if(!$direct && !$parent->id)
     {
-      $this->component->addLog(Text::_('Parent table not loaded. Load parent table first.'), 'error', 'jerror');
+      $this->getComponent()->addLog(Text::_('Parent table not loaded. Load parent table first.'), 'error', 'jerror');
       throw new \UnexpectedValueException('Parent table not loaded. Load parent table first.');
     }
 
@@ -809,7 +801,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
     if(!$siblings)
     {
       $this->setError(Text::_('COM_JOOMGALLERY_ERROR_NO_SIBLING_FOUND'));
-      $this->component->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_SIBLING_FOUND'), 'error', 'jerror');
+      $this->getComponent()->addLog(Text::_('COM_JOOMGALLERY_ERROR_NO_SIBLING_FOUND'), 'error', 'jerror');
     }
 
     // Loop through the sibling and add the position (left or right)
@@ -827,7 +819,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
       }
       else
       {
-        $this->component->addLog(Text::_('Unexpected sibling received.'), 'error', 'jerror');
+        $this->getComponent()->addLog(Text::_('Unexpected sibling received.'), 'error', 'jerror');
         throw new \UnexpectedValueException('Unexpected sibling received.');
       }
 

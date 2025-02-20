@@ -49,16 +49,12 @@ class MigrationTable extends Table
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db             A database connector object
-	 * @param   bool       $with_component  True to attach component object to class
+	 * @param   JDatabase  &$db               A database connector object
+	 * @param   bool       $component_exists  True if the component object class exists
 	 */
-	public function __construct(DatabaseDriver $db, bool $with_component = true)
+	public function __construct(DatabaseDriver $db, bool $component_exists = true)
 	{
-		if($with_component)
-		{
-		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
-		}
-    
+		$this->component_exists = $component_exists;
 		$this->typeAlias = _JOOM_OPTION.'.migration';
 
 		parent::__construct(_JOOM_TABLE_MIGRATION, 'id', $db);

@@ -36,11 +36,11 @@ trait JoomTableTrait
   public $form = false;
 
   /**
-   * JoomGallery extension class
-   * 
-   * @var JoomgalleryComponent
-   */
-  protected $component = null;
+   * True if we are in an environement where the component class exists
+   *
+   * @var bool
+  */
+  protected $component_exists = true;
 
   /**
    * Delete a record by id
@@ -299,6 +299,25 @@ trait JoomTableTrait
   }
 
   /**
+   * Get the component class
+   *
+   * @return  object
+   */
+  protected function getComponent(): object
+  {
+    if($this->component_exists)
+		{
+      $obj = Factory::getApplication()->bootComponent('com_joomgallery');
+		}
+		else
+		{
+		  $obj = $this->addMessageTrait();
+		}
+
+    return $obj;
+  }
+
+  /**
 	 * Check if a field is unique
 	 *
 	 * @param   string   $field         Name of the field
@@ -466,13 +485,13 @@ trait JoomTableTrait
   /**
 	 * Method to add a fake JoomGallery component class in order to use the Message functions
 	 *
-	 * @return  void
+	 * @return  object
 	 */
-  protected function addMessageTrait()
+  protected function addMessageTrait(): object
   {
     $jgobjectClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Extension\\JoomgalleryComponent';
 
-    if(\is_null($this->component) && !\class_exists($jgobjectClass))
+    if(!\class_exists($jgobjectClass))
     {
       // We expect to be in a pre installed environement. Use a custom way of including the MessageTrait.
       $msgtraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Extension\\MessageTrait';
@@ -485,14 +504,14 @@ trait JoomTableTrait
       }
 
       // Create an anonymous class that uses the MessageTrait
-      $this->component = new class extends \stdClass {
+      return new class extends \stdClass {
         use \Joomgallery\Component\Joomgallery\Administrator\Extension\MessageTrait;
       };
     }
     else
     {
       // We expect to be in a post installed environment. Use the default way.
-      $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
+      return Factory::getApplication()->bootComponent('com_joomgallery');
     }
   }
 }

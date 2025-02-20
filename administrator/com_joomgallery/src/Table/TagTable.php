@@ -43,20 +43,12 @@ class TagTable extends Table
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db             A database connector object
-	 * @param   bool       $with_component  True to attach component object to class
+	 * @param   JDatabase  &$db               A database connector object
+	 * @param   bool       $component_exists  True if the component object class exists
 	 */
-	public function __construct(DatabaseDriver $db, bool $with_component = true)
+	public function __construct(DatabaseDriver $db, bool $component_exists = true)
 	{
-		if($with_component)
-		{
-		  $this->component = Factory::getApplication()->bootComponent('com_joomgallery');
-		}
-		else
-		{
-		  $this->addMessageTrait();
-		}
-    
+		$this->component_exists = $component_exists;
 		$this->typeAlias = _JOOM_OPTION.'.tag';
 
 		parent::__construct(_JOOM_TABLE_TAGS, 'id', $db);
@@ -275,7 +267,7 @@ class TagTable extends Table
       catch(\Exception $e)
       {
         $this->setError($e->getMessage());
-        $this->component->addLog($e->getMessage(), 'error', 'jerror');
+        $this->getComponent()->addLog($e->getMessage(), 'error', 'jerror');
 
         return false;
       }
@@ -332,7 +324,7 @@ class TagTable extends Table
     catch(\Exception $e)
     {
       $this->setError($e->getMessage());
-      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+      $this->getComponent()->addLog($e->getMessage(), 'error', 'jerror');
 
       return false;
     }
