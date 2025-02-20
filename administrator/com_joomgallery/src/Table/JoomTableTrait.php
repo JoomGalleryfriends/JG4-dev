@@ -36,6 +36,13 @@ trait JoomTableTrait
   public $form = false;
 
   /**
+   * True if we are in an environement where the component class exists
+   *
+   * @var bool
+  */
+  protected $component_exists = true;
+
+  /**
    * Delete a record by id
    *
    * @param   mixed  $pk  Primary key value to delete. Optional
@@ -292,6 +299,25 @@ trait JoomTableTrait
   }
 
   /**
+   * Get the component class
+   *
+   * @return  object
+   */
+  protected function getComponent(): object
+  {
+    if($this->component_exists)
+		{
+      $obj = Factory::getApplication()->bootComponent('com_joomgallery');
+		}
+		else
+		{
+		  $obj = $this->addMessageTrait();
+		}
+
+    return $obj;
+  }
+
+  /**
 	 * Check if a field is unique
 	 *
 	 * @param   string   $field         Name of the field
@@ -454,5 +480,38 @@ trait JoomTableTrait
     // Load form
     $this->form = new Form($form_name);
     $this->form->loadFile($xml_file);
+  }
+
+  /**
+	 * Method to add a fake JoomGallery component class in order to use the Message functions
+	 *
+	 * @return  object
+	 */
+  protected function addMessageTrait(): object
+  {
+    $jgobjectClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Extension\\JoomgalleryComponent';
+
+    if(!\class_exists($jgobjectClass))
+    {
+      // We expect to be in a pre installed environement. Use a custom way of including the MessageTrait.
+      $msgtraitClass = '\\Joomgallery\\Component\\Joomgallery\\Administrator\\Extension\\MessageTrait';
+      $msgtrait_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_joomgallery'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Extension'.DIRECTORY_SEPARATOR.'MessageTrait.php';
+
+      // Manually include the MessageTrait file if it's not already available
+      if(!\trait_exists($msgtraitClass))
+      {
+        require_once $msgtrait_path;
+      }
+
+      // Create an anonymous class that uses the MessageTrait
+      return new class extends \stdClass {
+        use \Joomgallery\Component\Joomgallery\Administrator\Extension\MessageTrait;
+      };
+    }
+    else
+    {
+      // We expect to be in a post installed environment. Use the default way.
+      return Factory::getApplication()->bootComponent('com_joomgallery');
+    }
   }
 }
