@@ -1852,6 +1852,14 @@ abstract class Migration implements MigrationInterface
 
         continue;
       }
+
+      // Add a static content
+      if(\is_string($mapping[$key]) || \is_numeric($mapping[$key]))
+      {
+        $data[$key] = $mapping[$key];
+
+        continue;
+      }
     }
 
     // Make sure the primary key field is available in the data array

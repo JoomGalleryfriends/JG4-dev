@@ -318,7 +318,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
     {
       case 'category':
         // Apply mapping for category table
-        $mapping  = array( 'cid' => $id, 'asset_id' => false, 'name' => 'title', 'alias' => false, 'lft' => false, 'rgt' => false, 'level' => false,
+        $mapping  = array( 'cid' => $id, 'asset_id' => 0, 'name' => 'title', 'alias' => false, 'lft' => false, 'rgt' => false, 'level' => false,
                            'owner' => $owner, 'img_position' => false, 'catpath' => 'static_path', 'params' => array('params', false, false),
                            'allow_download' => array('params', 'jg_download', false), 'allow_comment' => array('params', 'jg_showcomment', false),
                            'allow_rating' => array('params', 'jg_showrating', false), 'allow_watermark' => array('params', 'jg_dynamic_watermark', false),
@@ -335,7 +335,7 @@ class Jg3ToJg4 extends Migration implements MigrationInterface
 
       case 'image':
         // Apply mapping for image table
-        $mapping  = array( 'id' => $id, 'asset_id' => false, 'alias' => false, 'imgtitle' => 'title', 'imgtext' => 'description', 'imgauthor' => 'author',
+        $mapping  = array( 'id' => $id, 'asset_id' => 0, 'alias' => false, 'imgtitle' => 'title', 'imgtext' => 'description', 'imgauthor' => 'author',
                            'imgdate' => 'date', 'imgfilename' => 'filename', 'imgvotes' => 'votes', 'imgvotesum' => 'votesum', 'imgthumbname' => false,
                            'owner' => $owner, 'params' => array('params', false, false)
                           );
