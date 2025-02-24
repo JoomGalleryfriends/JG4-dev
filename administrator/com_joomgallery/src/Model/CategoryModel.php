@@ -425,15 +425,12 @@ class CategoryModel extends JoomAdminModel
           if($table->parent_id != $data['parent_id'])
           {
             $catMoved = true;
-            $old_path = $table->path;
           }
 
           // Check if the alias was changed
           if($table->alias != $data['alias'])
           {
             $aliasChanged = true;
-            $old_alias    = $table->alias;
-            $old_path     = $table->path;
           }
 
           // Check if the state was changed
@@ -575,7 +572,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(true);
 
           // Move folder (including files and subfolders)
-          if(!$manager->moveCategory($table, $table->parent_id))
+          if(!$manager->moveCategory($old_table, $table->parent_id))
           {
             $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_MOVE_CATEGORY', $manager->paths['src'], $manager->paths['dest']));
             $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_MOVE_CATEGORY', $manager->paths['src'], $manager->paths['dest']), 'error', 'jerror');
@@ -586,7 +583,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(false);
 
           // Adjust path of subcategory records
-          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          if(!$this->fixChildrenPath($table, $old_table))
           {
             return false;
           }
@@ -598,7 +595,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(true);
 
           // Rename folder
-          if(!$manager->renameCategory($table, $table->alias))
+          if(!$manager->renameCategory($old_table, $table->alias))
           {
             $this->component->addDebug(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_CATEGORY', $manager->paths['src'], $manager->paths['dest']));
             $this->component->addLog(Text::sprintf('COM_JOOMGALLERY_ERROR_RENAME_CATEGORY', $manager->paths['src'], $manager->paths['dest']), 'error', 'jerror');
@@ -609,7 +606,7 @@ class CategoryModel extends JoomAdminModel
           $table->setPathWithLocation(false);
 
           // Adjust path of subcategory records
-          if(!$this->fixChildrenPath($table, $old_path, $table->path))
+          if(!$this->fixChildrenPath($table, $old_table))
           {
             return false;
           }
@@ -807,15 +804,14 @@ class CategoryModel extends JoomAdminModel
   /**
 	 * Method to adjust path of child categories based on new path
 	 *
-   * @param   Table    $table     Table object of the current category.
-   * @param   string   $old_path  The old path of the current category.
-	 * @param   string   $new_path  The new path of the current category.
+	 * @param   Table    $table      Table object of the current category.
+	 * @param   Table    $old_table  Old table object of the current category.
 	 *
 	 * @return  boolean  True if successful.
 	 *
 	 * @throws  Exception
 	 */
-  public function fixChildrenPath($table, $old_path, $new_path)
+  public function fixChildrenPath($table, $old_table)
   {
     if(\is_null($table) || empty($table->id))
     {
@@ -832,10 +828,20 @@ class CategoryModel extends JoomAdminModel
       $child_table->load($cat['id']);
 
       // Change path
-      $pos = \strpos($child_table->path, $old_path);
+      $pos = \strpos($child_table->path, $old_table->path);
       if($pos !== false) 
       {
-        $child_table->path = \substr_replace($child_table->path, $new_path, $pos, \strlen($old_path));
+        $child_table->path = \substr_replace($child_table->path, $table->path, $pos, \strlen($old_table->path));
+      }
+
+      // Change static path
+      if($this->component->getConfig()->get('jg_compatibility_mode', 0))
+      {
+        $static_pos = \strpos($child_table->static_path, $old_table->static_path);
+        if($static_pos !== false)
+        {
+          $child_table->static_path = \substr_replace($child_table->static_path, $table->static_path, $static_pos, \strlen($old_table->static_path));
+        }
       }
 
       // Store the data.

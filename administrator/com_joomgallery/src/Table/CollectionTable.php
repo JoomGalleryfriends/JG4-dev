@@ -50,10 +50,12 @@ class CollectionTable extends Table
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db  A database connector object
+	 * @param   JDatabase  &$db               A database connector object
+	 * @param   bool       $component_exists  True if the component object class exists
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct(DatabaseDriver $db, bool $component_exists = true)
 	{
+		$this->component_exists = $component_exists;
 		$this->typeAlias = _JOOM_OPTION.'.collection';
 
 		parent::__construct(_JOOM_TABLE_COLLECTIONS, 'id', $db);
@@ -306,7 +308,7 @@ class CollectionTable extends Table
         catch(\Exception $e)
         {
           $this->setError($e->getMessage());
-          $this->component->addLog($e->getMessage(), 'error', 'jerror');
+          $this->getComponent()->addLog($e->getMessage(), 'error', 'jerror');
 
           return false;
         }
@@ -364,7 +366,7 @@ class CollectionTable extends Table
     catch(\Exception $e)
     {
       $this->setError($e->getMessage());
-      $this->component->addLog($e->getMessage(), 'error', 'jerror');
+      $this->getComponent()->addLog($e->getMessage(), 'error', 'jerror');
 
       return false;
     }

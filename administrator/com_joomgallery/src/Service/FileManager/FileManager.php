@@ -58,6 +58,13 @@ class FileManager implements FileManagerInterface
   protected $no_image = '/images/joomgallery/no-image.png';
 
   /**
+   * Is compatibility mode activated?
+   *
+   * @var bool
+   */
+  protected $compatibility = false;
+
+  /**
    * Storage for paths
    *
    * @var string
@@ -84,6 +91,12 @@ class FileManager implements FileManagerInterface
 
     // Instantiate config service based on provided category
     $this->component->createConfig('com_joomgallery.category', $catid);
+
+    // Set compatibility flag
+    if($this->component->getConfig()->get('jg_compatibility_mode', 0))
+    {
+      $this->compatibility = true;
+    }
 
     // Instantiate filesystem service
     $this->component->createFilesystem($this->component->getConfig()->get('jg_filesystem','local-images'));
@@ -1009,8 +1022,8 @@ class FileManager implements FileManagerInterface
     }
 
     // Create path for messages
-    $this->paths['src'] = '[ROOT]'.\DIRECTORY_SEPARATOR.$this->getCatPath($cat);
-    $this->paths['dest'] = '[ROOT]'.\DIRECTORY_SEPARATOR.$this->getCatPath($cat);
+    $this->paths['src']  = '[ROOT]'.\DIRECTORY_SEPARATOR . $this->getCatPath($cat);
+    $this->paths['dest'] = '[ROOT]'.\DIRECTORY_SEPARATOR . $this->getCatPath($dest) . \DIRECTORY_SEPARATOR . \basename($this->paths['src']);
 
     // Loop through all imagetypes
     $error = false;
@@ -1092,7 +1105,7 @@ class FileManager implements FileManagerInterface
   {
     // Create path for messages
     $this->paths['src']  = '[ROOT]'.\DIRECTORY_SEPARATOR.$this->getCatPath($cat);
-    $this->paths['dest'] = \substr($this->paths['src'], 0, strrpos($this->paths['src'], \basename($this->paths['src']))).$foldername;
+    $this->paths['dest'] = \substr($this->paths['src'], 0, strrpos($this->paths['src'], \basename($this->paths['src']))) . $foldername;
 
     // Loop through all imagetypes
     $error = false;
@@ -1102,7 +1115,7 @@ class FileManager implements FileManagerInterface
       $folder_orig = $this->getCatPath($cat, $imagetype->typename);
 
       // Create renamed category foldername
-      $folder_new  = \substr($folder_orig, 0, strrpos($folder_orig, \basename($folder_orig))).$foldername;
+      $folder_new  = \substr($folder_orig, 0, strrpos($folder_orig, \basename($folder_orig))) . $foldername;
 
       // Rename folder
       try
@@ -1259,8 +1272,13 @@ class FileManager implements FileManagerInterface
    * 
    * @since   4.0.0
    */
-  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=false, $compatibility=true, $logfile='jerror')
+  public function getCatPath($cat, $type=false, $parent=false, $alias=false, $root=false, $compatibility=null, $logfile='jerror')
   {
+    if(is_null($compatibility))
+    {
+      $compatibility = $this->compatibility;
+    }
+
     // We got a valid category object
     if(\is_object($cat) && \property_exists($cat, 'path'))
     {

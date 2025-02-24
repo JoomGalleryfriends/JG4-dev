@@ -623,7 +623,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
       $db = Factory::getContainer()->get(DatabaseInterface::class);
       
       $tableClass::resetRootId();
-      $table = new $tableClass($db);
+      $table = new $tableClass($db, false);
     }
     else
     {
@@ -703,7 +703,7 @@ class com_joomgalleryInstallerScript extends InstallerScript
 
     if(class_exists($tableClass))
     {
-      $table = new $tableClass($db);
+      $table = new $tableClass($db, false);
     }
     else
     {

@@ -32,10 +32,12 @@ class FaultyTable extends Table
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase  &$db  A database connector object
+	 * @param   JDatabase  &$db               A database connector object
+	 * @param   bool       $component_exists  True if the component object class exists
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct(DatabaseDriver $db, bool $component_exists = true)
 	{
+		$this->component_exists = $component_exists;
 		$this->typeAlias = _JOOM_OPTION.'.faulty';
 
 		parent::__construct(_JOOM_TABLE_FAULTIES, 'id', $db);
