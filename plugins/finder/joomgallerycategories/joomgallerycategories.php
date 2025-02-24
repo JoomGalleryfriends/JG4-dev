@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @subpackage plg_finderjoomgallerycategories                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
