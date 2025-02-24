@@ -11,7 +11,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 
 \defined('JPATH_PLATFORM') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
 
 /**
 * The TUS server service

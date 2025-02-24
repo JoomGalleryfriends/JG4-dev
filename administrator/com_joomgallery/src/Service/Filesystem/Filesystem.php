@@ -32,7 +32,7 @@ use \Joomla\Component\Media\Administrator\Provider\ProviderManagerHelperTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\FilesystemInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Filesystem\Exception\AdapterNotFoundException;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 
 /**
 * Filesystem Base Class

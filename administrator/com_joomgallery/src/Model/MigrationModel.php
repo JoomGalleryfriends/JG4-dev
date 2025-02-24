@@ -22,7 +22,7 @@ use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\Database\DatabaseFactory;
 use \Joomla\CMS\Language\Multilanguage;
-use Joomla\CMS\Form\FormFactoryInterface;
+use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 

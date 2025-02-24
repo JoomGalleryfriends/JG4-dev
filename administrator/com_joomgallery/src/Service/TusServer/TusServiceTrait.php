@@ -12,7 +12,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 \defined('JPATH_PLATFORM') or die;
 
 use \Joomla\CMS\Factory;
-use Joomla\CMS\Uri\Uri;
+use \Joomla\CMS\Uri\Uri;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Server;
 

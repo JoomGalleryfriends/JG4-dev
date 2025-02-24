@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File;
-use Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\GifFrameExtractor;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools\IMGtoolsInterface;
 
