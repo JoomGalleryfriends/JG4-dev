@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -124,7 +123,7 @@ trait ServiceTrait
 	 *
 	 * @return  boolean
 	 *
-	 * @since   1.7.0
+	 * @since   4.0.0
 	 */
 	public function setProperties($properties)
 	{

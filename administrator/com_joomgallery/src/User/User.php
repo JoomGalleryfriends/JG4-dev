@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,10 +12,10 @@ namespace Joomgallery\Component\Joomgallery\Administrator\User;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\User\User as BaseUser;
 use \Joomla\CMS\Access\Access as AccessBase;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**

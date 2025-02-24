@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -29,7 +28,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Helper\ConfigHelper;
  *
  * @link   https://www.w3.org/TR/html4/interact/forms.html
  * @link   https://html.spec.whatwg.org/multipage/forms.html
- * @since  1.7.0
+ * @since  4.0.0
  */
 class ConfigForm extends Form
 {
@@ -41,7 +40,7 @@ class ConfigForm extends Form
    *
    * @return  FormField[]  The array of FormField objects in the fieldset.
    *
-   * @since   1.7.0
+   * @since   4.0.0
    * @throws  \Exception
    */
   public function getFieldset($set = null)
@@ -175,7 +174,7 @@ class ConfigForm extends Form
    *
    * @return  \SimpleXMLElement[]|boolean  Boolean false on error or array of SimpleXMLElement objects.
    *
-   * @since   1.7.0
+   * @since   4.0.0
    */
   protected function &findFieldsByFieldset($name)
   {
@@ -204,7 +203,7 @@ class ConfigForm extends Form
    *
    * @return  \SimpleXMLElement[]|boolean  Boolean false on error or array of SimpleXMLElement objects.
    *
-   * @since   1.7.0
+   * @since   4.0.0
    */
   protected function &findFieldsByAttribute($attribute, $value)
   {
@@ -235,7 +234,7 @@ class ConfigForm extends Form
    *
    * @return  ConfigForm  Form instance.
    *
-   * @since   1.7.0
+   * @since   4.0.0
    * @deprecated  5.0 Use the FormFactory service from the container
    * @throws  \InvalidArgumentException if no data provided.
    * @throws  \RuntimeException if the form could not be loaded.

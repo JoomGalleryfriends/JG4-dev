@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -17,8 +16,6 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Layout\FileLayout;
 use \Joomla\CMS\Document\HtmlDocument;
-use Joomla\CMS\WebAsset\WebAssetRegistry;
-use Joomla\CMS\WebAsset\WebAssetManager;
 use \Joomgallery\Component\Joomgallery\Administrator\Extension\ServiceTrait;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Refresher\RefresherInterface;
 

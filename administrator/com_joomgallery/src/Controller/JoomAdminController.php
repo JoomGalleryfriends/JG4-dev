@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -66,7 +65,7 @@ class JoomAdminController extends BaseAdminController
 	 * @param   CMSApplication       $app      The Application for the dispatcher
 	 * @param   Input                $input    The Input object for the request
 	 *
-	 * @since   3.0
+	 * @since   4.0.0
 	 */
 	public function __construct($config = array(), MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
 	{
@@ -102,7 +101,7 @@ class JoomAdminController extends BaseAdminController
    * @return  mixed   The value returned by the called Method.
    *
    * @throws  Exception
-   * @since   4.2.0
+   * @since   4.0.0
    */
   public function execute($task)
   {
@@ -175,7 +174,7 @@ class JoomAdminController extends BaseAdminController
    *
    * @return  BaseDatabaseModel|boolean   Model object on success; otherwise false on failure.
    *
-   * @since   3.0
+   * @since   4.0.0
    */
   protected function createModel($name, $prefix = '', $config = [])
   {
@@ -199,7 +198,7 @@ class JoomAdminController extends BaseAdminController
    *
    * @return  ViewInterface|null  View object on success; null or error result on failure.
    *
-   * @since   3.0
+   * @since   4.0.0
    * @throws  \Exception
    */
   protected function createView($name, $prefix = '', $type = '', $config = [])

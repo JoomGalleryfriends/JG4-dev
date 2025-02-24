@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,10 +12,9 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\Utilities\ArrayHelper;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Text;
+use \Joomla\Utilities\ArrayHelper;
 
 /**
  * Faulties list controller class.
@@ -57,7 +55,7 @@ class FaultiesController extends JoomAdminController
 		catch(\Exception $e)
 		{
 			Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
-			$this->component->addLog($e->getMessage()), 'warning', 'jerror');
+			$this->component->addLog($e->getMessage(), 'warning', 'jerror');
 		}
 
 		$this->setRedirect('index.php?option='._JOOM_OPTION.'&view=faulties');

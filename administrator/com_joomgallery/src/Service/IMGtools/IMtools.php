@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,8 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Text;
@@ -572,7 +569,7 @@ class IMtools extends BaseIMGtools implements IMGtoolsInterface
    *
    * @return  boolean True on success, false otherwise
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   public function resize($method, $width, $height, $cropposition=2, $unsharp=false): bool
   {

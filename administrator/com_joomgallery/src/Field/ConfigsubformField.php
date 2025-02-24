@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -25,7 +24,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\Form\ConfigForm;
  *      layout="joomla.form.field.subform.repeatable-table" groupByFieldset="false" component="com_example" client="site"
  *      label="Field Label" description="Field Description" />
  *
- * @since  3.6
+ * @since  4.0.0
  */
 class ConfigsubformField extends SubformField
 {
@@ -43,7 +42,7 @@ class ConfigsubformField extends SubformField
    * @throws  \InvalidArgumentException if no form provided.
    * @throws  \RuntimeException if the form could not be loaded.
    *
-   * @since   3.9.7
+   * @since   4.0.0
    */
   public function loadSubForm()
   {
@@ -77,7 +76,7 @@ class ConfigsubformField extends SubformField
    *
    * @return  ConfigForm[]  Array of Form instances for the rows.
    *
-   * @since   3.9.7
+   * @since   4.0.0
    */
   protected function loadSubFormData($subForm)
   {

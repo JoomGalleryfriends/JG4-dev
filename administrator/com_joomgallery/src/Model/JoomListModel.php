@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -154,7 +153,7 @@ abstract class JoomListModel extends ListModel
    *
    * @return  Table|boolean  Table object or boolean false if failed
    *
-   * @since   3.0
+   * @since   4.0.0
    */
   protected function _createTable($name, $prefix = 'Table', $config = [])
   {

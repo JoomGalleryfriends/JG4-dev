@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,7 +12,7 @@ namespace Joomgallery\Component\Joomgallery\Site\View\Image;
 // No direct access
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
+use \Joomla\Registry\Registry;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\View\Image\RawView as AdminRawView;
 

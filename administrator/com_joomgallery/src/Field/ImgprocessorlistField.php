@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -14,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Form\Field\ListField;
@@ -32,7 +30,7 @@ class ImgProcessorListField extends ListField
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.7.0
+	 * @since  4.0.0
 	 */
 	protected $type = 'imgprocessorlist';
 
@@ -41,7 +39,7 @@ class ImgProcessorListField extends ListField
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   3.7.0
+	 * @since   4.0.0
 	 */
 	protected function getOptions()
 	{
@@ -72,7 +70,7 @@ class ImgProcessorListField extends ListField
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   1.7.0
+	 * @since   4.0.0
 	 */
 	protected function getInput()
 	{

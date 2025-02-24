@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,7 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Factory;
 use \Joomla\Input\Input;
 use \Joomla\CMS\Router\Route;
@@ -41,7 +39,7 @@ class ImagesController extends JoomAdminController
 	 * @param   CMSApplication       $app      The Application for the dispatcher
 	 * @param   Input                $input    The Input object for the request
 	 *
-	 * @since   3.0
+	 * @since   4.0.0
 	 */
 	public function __construct($config = array(), MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
 	{

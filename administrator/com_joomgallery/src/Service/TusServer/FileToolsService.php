@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,10 +12,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 // No direct access
 defined('_JEXEC') or die;
 
-//use Laminas\I18n\Filter\NumberFormat;
-//use NumberFormatter;
-use \Joomla\CMS\Log\Log;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\FileNotFoundException;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\FileNotFoundException;
 
 /**
  * Service with tools for file download support
@@ -54,7 +50,7 @@ class FileToolsService
     public static function downloadFile($filePath, $fileName, $mime = '', $size = -1, $openMode = self::OPEN_MODE_ATTACHMENT)
     {
         if (!file_exists($filePath)) {
-            $this->component->addLog('File not found: ' . $filePath), 'error', 'jerror');
+            $this->component->addLog('File not found: ' . $filePath, 'error', 'jerror');
             throw new FileNotFoundException(null, 0, null, $filePath);
         }
         if (!is_readable($filePath)) {

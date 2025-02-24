@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -55,7 +54,7 @@ class ExternalconfigField extends FormField
    *
    * @return  boolean  True on success.
    *
-   * @since   1.7.0
+   * @since   4.0.0
    */
   public function setup(\SimpleXMLElement $element, $value, $group = null)
   {
@@ -113,7 +112,7 @@ class ExternalconfigField extends FormField
    *
    * @return  string  The field label markup.
    *
-   * @since   1.7.0
+   * @since   4.0.0
    */
   protected function getLabel()
   {

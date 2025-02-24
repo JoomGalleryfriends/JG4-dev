@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,7 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Response\JsonResponse;
@@ -36,7 +34,7 @@ class ImageController extends JoomFormController
 	 *
 	 * @return  boolean  True if successful, false otherwise.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function save($key = null, $urlVar = null)
 	{
@@ -254,7 +252,7 @@ class ImageController extends JoomFormController
      *
      * @return  boolean  True if access level checks pass, false otherwise.
      *
-     * @since   1.6
+     * @since   4.0.0
      */
     public function cancel($key = null)
     {

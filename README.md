@@ -1,4 +1,4 @@
-# JoomGallery v4.x (Development)
+# JoomGallery
 
 Development repository of the JoomGallery component for Joomla! 4.
 
@@ -21,14 +21,15 @@ JoomGallery is an OpenSource project and is developed by users for users. So if 
 
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2TBYDQ88VH4PW)
 
-## Code development
+## Literature
 ### Joomla 4 extension development docs
 - [Astrids Blog on Joomla 4 Extension development](https://blog.astrid-guenther.de/en/der-weg-zu-joomla4-erweiterungen/)
-- [Nicholas bokk on Joomla 4 development](https://www.dionysopoulos.me/book.html)
+- [Nicholas book on Joomla 4 development](https://www.dionysopoulos.me/book.html)
 - [Robbies video series on Joomla 4 component development](https://www.youtube.com/playlist?list=PLzio09PZm6TuXGnu-ptpVb90Szkawy9IV)
 - [Official Joomla 4 component development docs](https://docs.joomla.org/J4.x:Developing_an_MVC_Component/Introduction)
 - [Mattermost channel for Joomla developers](https://joomlacommunity.cloud.mattermost.com/main/channels/extension-development-room)
 
+## Contribute code
 ### Codestyle guide
 PHP: [Codestyle guide for PHP](docs/Codestyleguide.md)
 
@@ -58,14 +59,7 @@ https://docs.joomla.org/Setting_up_your_workstation_for_Joomla_development
    - plugins/privacy/joomgalleryimages
    - plugins/webservices/joomgallery
 4. Create symbolic links from those folders to the corresponding folders within the checked out copy of your component
-5. Remove the installed component language files within your Joomla installation
-   - administrator/language/en-GB/com_joomgallery.ini
-   - administrator/language/en-GB/com_joomgallery.exif.ini
-   - administrator/language/en-GB/com_joomgallery.iptc.ini
-   - administrator/language/en-GB/com_joomgallery.sys.ini
-   - language/en-GB/com_joomgallery.ini
-6. Create symbolic links from those files to the corresponding files within the checked out copy of your component
-7. The referenced copy of your component can be properly versioned using Git
+5. The referenced copy of your component can be properly versioned using Git
 
 **Symbolic link generator tool for windows:**
 https://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html
@@ -74,9 +68,7 @@ https://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html
 
 | Tasks area | Description |
 | ----------- | ----------- |
-| PHP Developer (Backend)| Programming the backend functionalities of the JoomGallery (Framework, MVC pattern, Services, Helpers, ...) |
-| PHP Developer (Frontend)| Programming the frontend functionalities of the JoomGallery (MVC pattern, Router, View-Objects ...)|
-| Frontend Designer | Creating the template files for the component views in the frontend (Template: Cassiopeia)|
+| PHP Developer | Programming the functionalities of the JoomGallery.|
 | Language Manager | Setting up, structuring and managing the language files for frontend and backend.|
 | Documentation | Writing instructions for the support section of the website.|
 | Testing | Testing the new code before merging them into the main project.|
@@ -92,7 +84,7 @@ https://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html
 #### Steps to reproduce the issue
 List the steps to perform in order to reproduce the issue you found
 #### Expected result
-What yould you have expected to happen?
+What would you have expected should have happen?
 #### Actual result
 What did really happen?
 #### System information

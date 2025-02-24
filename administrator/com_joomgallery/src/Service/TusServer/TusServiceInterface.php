@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -12,7 +11,7 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 
 \defined('JPATH_PLATFORM') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
 
 /**
 * The TUS server service

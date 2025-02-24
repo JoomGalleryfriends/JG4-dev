@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,19 +12,17 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\TusServer;
 // No direct access
 defined('_JEXEC') or die;
 
-use Exception;
-use Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
-use Psr\Http\Message\ResponseInterface;
+use \Joomla\CMS\Factory;
+use \Psr\Http\Message\ResponseInterface;
 
-use Joomgallery\Component\Joomgallery\Administrator\Extension\ResponseTrait;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\FileToolsService;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Abort;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\BadHeader;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\File;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Max;
-use Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Request;
+use \Joomgallery\Component\Joomgallery\Administrator\Extension\ResponseTrait;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\ServerInterface;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\FileToolsService;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Abort;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\BadHeader;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\File;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Max;
+use \Joomgallery\Component\Joomgallery\Administrator\Service\TusServer\Exception\Request;
 
 /**
  * Tus-Server v1.0.0 implementation

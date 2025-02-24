@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,12 +12,12 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 // No direct access
 \defined('_JEXEC') or die;
 
-use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomla\Input\Input;
 use \Joomla\CMS\User\CurrentUserInterface;
 use \Joomla\CMS\Application\CMSApplication;
 use \Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use \Joomla\CMS\MVC\Controller\FormController as BaseFormController;
+use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Service\Access\AccessInterface;
 
 /**
@@ -67,7 +66,7 @@ class JoomFormController extends BaseFormController
    * @param   Input                 $input        Input
    * @param   FormFactoryInterface  $formFactory  The form factory.
    *
-   * @since   3.0
+   * @since   4.0.0
    */
   public function __construct($config = [], MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null, FormFactoryInterface $formFactory = null)
   {
@@ -103,7 +102,7 @@ class JoomFormController extends BaseFormController
    * @return  mixed   The value returned by the called Method.
    *
    * @throws  Exception
-   * @since   4.2.0
+   * @since   4.0.0
    */
   public function execute($task)
   {
@@ -194,7 +193,7 @@ class JoomFormController extends BaseFormController
    *
    * @return  boolean
    *
-   * @since   1.6
+   * @since   4.0.0
    */
   protected function allowAdd($data = [])
   {
@@ -248,7 +247,7 @@ class JoomFormController extends BaseFormController
    *
    * @return  boolean
    *
-   * @since   1.6
+   * @since   4.0.0
    */
   protected function allowEdit($data = [], $key = 'id')
   {
@@ -280,7 +279,7 @@ class JoomFormController extends BaseFormController
    *
    * @return  BaseDatabaseModel|boolean   Model object on success; otherwise false on failure.
    *
-   * @since   3.0
+   * @since   4.0.0
    */
   protected function createModel($name, $prefix = '', $config = [])
   {
@@ -304,7 +303,7 @@ class JoomFormController extends BaseFormController
    *
    * @return  ViewInterface|null  View object on success; null or error result on failure.
    *
-   * @since   3.0
+   * @since   4.0.0
    * @throws  \Exception
    */
   protected function createView($name, $prefix = '', $type = '', $config = [])

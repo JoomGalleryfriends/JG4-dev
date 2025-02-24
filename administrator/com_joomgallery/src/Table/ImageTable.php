@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -115,7 +114,7 @@ class ImageTable extends Table implements VersionableTableInterface
    *
    * @return  boolean  True if successful. False if row not found.
    *
-   * @since   1.7.0
+   * @since   4.0.0
    * @throws  \InvalidArgumentException
    * @throws  \RuntimeException
    * @throws  \UnexpectedValueException
@@ -615,7 +614,7 @@ class ImageTable extends Table implements VersionableTableInterface
 	 *
 	 * @return  boolean  True on success; false if $pks is empty.
 	 *
-	 * @since   1.7.0
+	 * @since   4.0.0
 	 */
 	public function publish($pks = null, $state = 1, $userId = 0)
 	{

@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -98,7 +97,7 @@ abstract class Uploader implements UploaderInterface
    *
    * @return  void
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   public function __construct($multiple=false, $async=false)
   {
@@ -606,7 +605,7 @@ abstract class Uploader implements UploaderInterface
    *
    * @return  int       New serial number
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   protected function getSerial()
   {

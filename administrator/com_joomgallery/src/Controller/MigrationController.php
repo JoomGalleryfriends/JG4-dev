@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -15,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 use \Joomla\CMS\Factory;
 use \Joomla\Input\Input;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Response\JsonResponse;
@@ -49,7 +47,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
    * The context for storing internal data, e.g. record.
    *
    * @var    string
-   * @since  1.6
+   * @since  4.0.0
    */
   protected $context = _JOOM_OPTION.'.migration';
 
@@ -57,7 +55,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
    * The URL option for the component.
    *
    * @var    string
-   * @since  1.6
+   * @since  4.0.0
    */
   protected $option = _JOOM_OPTION;
 
@@ -65,7 +63,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
    * The prefix to use with controller messages.
    *
    * @var    string
-   * @since  1.6
+   * @since  4.0.0
    */
   protected $text_prefix = _JOOM_OPTION_UC;
 
@@ -80,7 +78,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
    * @param   Input                 $input        Input
    * @param   FormFactoryInterface  $formFactory  The form factory.
    *
-   * @since   3.0
+   * @since   4.0.0
    */
   public function __construct($config = [], MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null, FormFactoryInterface $formFactory = null)
   {
@@ -119,7 +117,7 @@ class MigrationController extends BaseController implements FormFactoryAwareInte
    * @return  mixed   The value returned by the called Method.
    *
    * @throws  Exception
-   * @since   4.2.0
+   * @since   4.0.0
    */
   public function execute($task)
   {

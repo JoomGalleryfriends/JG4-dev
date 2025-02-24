@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -201,7 +200,7 @@ class CategoryModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True if successful, false if an error occurs.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function delete(&$pks)
 	{
@@ -361,7 +360,7 @@ class CategoryModel extends JoomAdminModel
    *
    * @return  boolean  True on success, False on error.
    *
-   * @since   1.6
+   * @since   4.0.0
    */
   public function save($data)
   { 
@@ -678,7 +677,7 @@ class CategoryModel extends JoomAdminModel
 	/**
 	* Method rebuild the entire nested set tree.
 	* @return  boolean  False on failure or error, true otherwise.
-	* @since   1.6
+	* @since   4.0.0
 	*/
 	public function rebuild()
 	{
@@ -707,7 +706,7 @@ class CategoryModel extends JoomAdminModel
 	 *
 	 * @return  boolean  False on failure or error, True otherwise
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function saveorder($idArray = null, $lftArray = null)
 	{

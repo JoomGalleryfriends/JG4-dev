@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -343,7 +342,7 @@ class ImageModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True on success, False on error.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function save($data)
 	{
@@ -727,7 +726,7 @@ class ImageModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True if successful, false if an error occurs.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function delete(&$pks)
 	{
@@ -885,7 +884,7 @@ class ImageModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function changeSate(&$pks, $type='publish', $value = 1)
 	{
@@ -998,7 +997,7 @@ class ImageModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function publish(&$pks, $value = 1)
 	{

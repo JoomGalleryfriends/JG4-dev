@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -13,7 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Uploader;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File as JFile;
 use \Joomla\CMS\Filesystem\Path as JPath;
@@ -36,7 +34,7 @@ class TUSUploader extends BaseUploader implements UploaderInterface
    *
    * @return  void
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   public function __construct($multiple=false, $async=false)
   {

@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @subpackage plg_privacyjoomgalleryimages                                           **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
@@ -38,7 +37,7 @@ final class JoomgalleryOwner extends CMSPlugin implements SubscriberInterface
    *
    * @var    \JDatabaseDriver
    * 
-   * @since  1.0.0
+   * @since  4.0.0
    */
   protected $db = null;
 

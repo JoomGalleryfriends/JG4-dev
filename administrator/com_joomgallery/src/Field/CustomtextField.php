@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -20,7 +19,7 @@ use \Joomla\CMS\Form\Field\TextField;
  * Supports a one line text field.
  *
  * @link   https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search)
- * @since  1.7.0
+ * @since  4.0.0
  */
 class CustomtextField extends TextField
 {
@@ -28,7 +27,7 @@ class CustomtextField extends TextField
      * The form field type.
      *
      * @var    string
-     * @since  1.7.0
+     * @since  4.0.0
      */
     protected $type = 'customtext';
 
@@ -37,7 +36,7 @@ class CustomtextField extends TextField
      *
      * @return  array
      *
-     * @since 3.7
+     * @since   4.0.0
      */
     protected function getLayoutData()
     {

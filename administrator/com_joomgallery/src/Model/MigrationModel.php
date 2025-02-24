@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -23,7 +22,7 @@ use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Filesystem\Folder;
 use \Joomla\Database\DatabaseFactory;
 use \Joomla\CMS\Language\Multilanguage;
-use Joomla\CMS\Form\FormFactoryInterface;
+use \Joomla\CMS\Form\FormFactoryInterface;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 use \Joomgallery\Component\Joomgallery\Administrator\Table\MigrationTable;
 

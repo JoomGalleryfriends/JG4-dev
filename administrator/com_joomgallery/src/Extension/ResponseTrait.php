@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -177,7 +176,7 @@ trait ResponseTrait
    *
    * @return  $this
    *
-   * @since   1.0
+   * @since   4.0.0
    */
   private function addHeaderLine(string $name, string $value, bool $replace = true)
   {

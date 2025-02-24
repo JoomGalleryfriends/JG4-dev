@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -20,7 +19,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\User\User;
 /**
  * Factory to create MVC objects based on a namespace.
  *
- * @since  3.10.0
+ * @since  4.0.0
  */
 class MVCFactory extends MVCFactoryBase
 {

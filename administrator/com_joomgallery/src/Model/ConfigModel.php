@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -14,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\File;
@@ -337,7 +335,7 @@ class ConfigModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True on success, False on error.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function save($data)
 	{
@@ -445,7 +443,7 @@ class ConfigModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function publish(&$pks, $value = 1)
 	{

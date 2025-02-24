@@ -1,7 +1,6 @@
 <?php
 /**
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -31,7 +30,7 @@ class CategoryController extends JoomFormController
 	 *
 	 * @return  boolean  True if successful, false otherwise.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function save($key = null, $urlVar = null)
 	{

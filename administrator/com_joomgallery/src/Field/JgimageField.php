@@ -1,7 +1,6 @@
 <?php
 /** 
 ******************************************************************************************
-**   @version    4.0.0-beta1                                                                  **
 **   @package    com_joomgallery                                                        **
 **   @author     JoomGallery::ProjectTeam <team@joomgalleryfriends.net>                 **
 **   @copyright  2008 - 2025  JoomGallery::ProjectTeam                                  **
@@ -14,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\FormField;
 use \Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
@@ -30,7 +28,7 @@ class JgimageField extends FormField
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.6
+	 * @since  4.0.0
 	 */
 	public $type = 'jgimage';
 
@@ -38,7 +36,7 @@ class JgimageField extends FormField
 	 * Filtering categories
 	 *
 	 * @var   array
-	 * @since 3.5
+	 * @since 4.0.0
 	 */
 	protected $categories = null;
 
@@ -46,7 +44,7 @@ class JgimageField extends FormField
 	 * Images to exclude from the list of images
 	 *
 	 * @var   array
-	 * @since 3.5
+	 * @since 4.0.0
 	 */
 	protected $excluded = null;
 
@@ -54,7 +52,7 @@ class JgimageField extends FormField
 	 * Layout to render
 	 *
 	 * @var   string
-	 * @since 3.5
+	 * @since 4.0.0
 	 */
 	protected $layout = 'joomla.form.field.jgimage';
 
@@ -69,7 +67,7 @@ class JgimageField extends FormField
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   3.7.0
+	 * @since   4.0.0
 	 *
 	 * @see     FormField::setup()
 	 */
@@ -96,7 +94,7 @@ class JgimageField extends FormField
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getInput()
 	{
@@ -165,7 +163,7 @@ class JgimageField extends FormField
 	 *
 	 * @return  mixed  Array of filtering categories or null.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getCats()
 	{
@@ -180,7 +178,7 @@ class JgimageField extends FormField
 	 *
 	 * @return  mixed  Array of images to exclude or null to to not exclude them
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getExcluded()
 	{
