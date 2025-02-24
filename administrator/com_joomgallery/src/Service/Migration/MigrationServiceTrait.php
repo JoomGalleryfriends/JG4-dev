@@ -11,7 +11,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Uri\Uri;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Filesystem\Folder;

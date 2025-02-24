@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Messenger;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\User\UserFactoryInterface;
 use \Joomla\CMS\Mail\MailTemplate;

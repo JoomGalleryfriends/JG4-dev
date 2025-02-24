@@ -14,7 +14,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Controller;
 
 use \Joomla\CMS\Factory;
 use \Joomla\Input\Input;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Response\JsonResponse;

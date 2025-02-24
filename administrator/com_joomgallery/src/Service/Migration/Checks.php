@@ -12,7 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\Migration;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Language\Text;
 
 /**

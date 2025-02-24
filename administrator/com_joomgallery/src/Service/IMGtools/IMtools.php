@@ -12,8 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 // No direct access
 \defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Filesystem\File;
 use \Joomla\CMS\Filesystem\Path;
 use \Joomla\CMS\Language\Text;

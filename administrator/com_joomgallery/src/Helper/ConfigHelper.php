@@ -14,7 +14,6 @@ defined('_JEXEC') or die;
 
 use \Joomla\Uri\Uri;
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Form\Form;
 use \Joomla\CMS\Language\Text;
 use \Joomla\Registry\Registry;

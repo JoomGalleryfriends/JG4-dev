@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Field;
 \defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Layout\FileLayout;

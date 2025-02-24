@@ -12,7 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 // No direct access.
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
 use \Joomla\Registry\Registry;
 use \Joomla\Utilities\ArrayHelper;
 use \Joomla\CMS\Object\CMSObject;

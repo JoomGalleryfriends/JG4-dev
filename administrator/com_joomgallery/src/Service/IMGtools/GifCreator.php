@@ -12,8 +12,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Service\IMGtools;
 // No direct access
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Log\Log;
-
 /**
  * Create an animated GIF from multiple images
  *

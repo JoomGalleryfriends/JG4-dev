@@ -13,7 +13,6 @@ namespace Joomgallery\Component\Joomgallery\Administrator\Model;
 defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
-use \Joomla\CMS\Log\Log;
 use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
 
