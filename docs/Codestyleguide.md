@@ -1,5 +1,5 @@
 # Code Style Guide für die JoomGallery 4.x by JoomGalleryfriends
-Letzte Änderungen: 06.02.2022
+Letzte Änderungen: 24.02.2025
 
 ## Allgemeines
 
@@ -16,7 +16,6 @@ Letzte Änderungen: 06.02.2022
 5. Inhalt
 
 ### Datei-Header
-1. Versionsnummer
 2. Komponentenname
 3. Author
 4. Copyright
