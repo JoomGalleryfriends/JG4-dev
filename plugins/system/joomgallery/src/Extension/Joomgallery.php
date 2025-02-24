@@ -35,7 +35,7 @@ final class Joomgallery extends CMSPlugin implements SubscriberInterface
    *
    * @var    \JDatabaseDriver
    *
-   * @since  1.0.0
+   * @since  4.0.0
    */
   protected $db = null;
 

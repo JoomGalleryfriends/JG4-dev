@@ -126,7 +126,7 @@ class ConfigsController extends JoomAdminController
 	 *
 	 * @return  void
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function delete()
 	{

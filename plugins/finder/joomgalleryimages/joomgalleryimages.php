@@ -82,7 +82,7 @@ class PlgFinderJoomgalleryimages extends Adapter
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   2.5
+	 * @since   4.0.0
 	 */
 	protected function setup()
 	{

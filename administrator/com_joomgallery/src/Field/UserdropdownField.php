@@ -24,7 +24,7 @@ class UserdropdownField extends ListField
 	 * A flexible category list that respects access controls
 	 *
 	 * @var    string
-	 * @since  1.6
+	 * @since  4.0.0
 	 */
 	public $type = 'userdropdown';
 
@@ -35,7 +35,7 @@ class UserdropdownField extends ListField
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getOptions()
 	{

@@ -23,7 +23,7 @@ use \Joomla\Database\DatabaseInterface;
 /**
  * Category Edit field for JoomGallery
  *
- * @since  1.6
+ * @since  4.0.0
  */
 class JgcategorydropdownField extends ListField
 {
@@ -31,7 +31,7 @@ class JgcategorydropdownField extends ListField
 	 * A flexible category list that respects access controls
 	 *
 	 * @var    string
-	 * @since  1.6
+	 * @since  4.0.0
 	 */
 	public $type = 'jgcategorydropdown';
 
@@ -39,7 +39,7 @@ class JgcategorydropdownField extends ListField
 	 * To allow creation of new categories.
 	 *
 	 * @var    integer
-	 * @since  3.6
+	 * @since  4.0.0
 	 */
 	protected $allowAdd;
 
@@ -47,7 +47,7 @@ class JgcategorydropdownField extends ListField
 	 * Optional prefix for new categories.
 	 *
 	 * @var    string
-	 * @since  3.9.11
+	 * @since  4.0.0
 	 */
 	protected $customPrefix;
 
@@ -71,7 +71,7 @@ class JgcategorydropdownField extends ListField
 	 * @return  boolean  True on success.
 	 *
 	 * @see     FormField::setup()
-	 * @since   3.2
+	 * @since   4.0.0
 	 */
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
@@ -93,7 +93,7 @@ class JgcategorydropdownField extends ListField
 	 *
 	 * @return  mixed  The property value or null.
 	 *
-	 * @since   3.6
+	 * @since   4.0.0
 	 */
 	public function __get($name)
 	{
@@ -116,7 +116,7 @@ class JgcategorydropdownField extends ListField
 	 *
 	 * @return  void
 	 *
-	 * @since   3.6
+	 * @since   4.0.0
 	 */
 	public function __set($name, $value)
 	{
@@ -143,7 +143,7 @@ class JgcategorydropdownField extends ListField
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getOptions()
 	{
@@ -390,7 +390,7 @@ class JgcategorydropdownField extends ListField
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   3.6
+	 * @since   4.0.0
 	 */
 	protected function getInput()
 	{

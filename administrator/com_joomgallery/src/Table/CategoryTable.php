@@ -417,7 +417,7 @@ class CategoryTable extends MultipleAssetsTable implements VersionableTableInter
    *
    * @note    Since 3.0.0 this method returns void and throws an \InvalidArgumentException when an invalid position is passed.
    * @see     Nested::$_validLocations
-   * @since   1.7.0
+   * @since   4.0.0
    * @throws  \InvalidArgumentException
    */
   public function setLocation($referenceId, $position = 'after')

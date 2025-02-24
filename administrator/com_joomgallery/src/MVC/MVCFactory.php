@@ -19,7 +19,7 @@ use \Joomgallery\Component\Joomgallery\Administrator\User\User;
 /**
  * Factory to create MVC objects based on a namespace.
  *
- * @since  3.10.0
+ * @since  4.0.0
  */
 class MVCFactory extends MVCFactoryBase
 {

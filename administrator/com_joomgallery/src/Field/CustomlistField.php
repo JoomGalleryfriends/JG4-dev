@@ -18,7 +18,7 @@ use \Joomla\CMS\Form\Field\ListField;
  * Form Field class for the Joomla Platform.
  * Supports a generic list of options.
  *
- * @since  1.7.0
+ * @since  4.0.0
  */
 class CustomlistField extends ListField
 {
@@ -26,7 +26,7 @@ class CustomlistField extends ListField
      * The form field type.
      *
      * @var    string
-     * @since  1.7.0
+     * @since  4.0.0
      */
     protected $type = 'customlist';
 
@@ -35,7 +35,7 @@ class CustomlistField extends ListField
      *
      * @return  array
      *
-     * @since   3.5
+     * @since   4.0.0
      */
     protected function getLayoutData()
     {

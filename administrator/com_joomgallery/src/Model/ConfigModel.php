@@ -335,7 +335,7 @@ class ConfigModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True on success, False on error.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function save($data)
 	{
@@ -443,7 +443,7 @@ class ConfigModel extends JoomAdminModel
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function publish(&$pks, $value = 1)
 	{

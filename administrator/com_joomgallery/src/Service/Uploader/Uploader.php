@@ -97,7 +97,7 @@ abstract class Uploader implements UploaderInterface
    *
    * @return  void
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   public function __construct($multiple=false, $async=false)
   {
@@ -605,7 +605,7 @@ abstract class Uploader implements UploaderInterface
    *
    * @return  int       New serial number
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   protected function getSerial()
   {

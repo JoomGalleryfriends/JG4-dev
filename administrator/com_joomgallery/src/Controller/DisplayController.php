@@ -40,7 +40,7 @@ class DisplayController extends BaseController
    * The context for storing internal data, e.g. record.
    *
    * @var    string
-   * @since  1.6
+   * @since  4.0.0
    */
   protected $context;
 
@@ -62,7 +62,7 @@ class DisplayController extends BaseController
    * @param   CMSApplication       $app      The Application for the dispatcher
    * @param   Input                $input    Input
    *
-   * @since   3.0
+   * @since   4.0.0
    */
   public function __construct($config = array(), MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
   {

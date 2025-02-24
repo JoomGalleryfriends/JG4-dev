@@ -39,7 +39,7 @@ class ImagesController extends JoomAdminController
 	 * @param   CMSApplication       $app      The Application for the dispatcher
 	 * @param   Input                $input    The Input object for the request
 	 *
-	 * @since   3.0
+	 * @since   4.0.0
 	 */
 	public function __construct($config = array(), MVCFactoryInterface $factory = null, ?CMSApplication $app = null, ?Input $input = null)
 	{

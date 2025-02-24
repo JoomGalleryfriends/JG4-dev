@@ -34,7 +34,7 @@ class ImageController extends JoomFormController
 	 *
 	 * @return  boolean  True if successful, false otherwise.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function save($key = null, $urlVar = null)
 	{
@@ -252,7 +252,7 @@ class ImageController extends JoomFormController
      *
      * @return  boolean  True if access level checks pass, false otherwise.
      *
-     * @since   1.6
+     * @since   4.0.0
      */
     public function cancel($key = null)
     {

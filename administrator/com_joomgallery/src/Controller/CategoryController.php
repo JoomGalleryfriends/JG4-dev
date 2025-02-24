@@ -30,7 +30,7 @@ class CategoryController extends JoomFormController
 	 *
 	 * @return  boolean  True if successful, false otherwise.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function save($key = null, $urlVar = null)
 	{

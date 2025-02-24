@@ -93,7 +93,7 @@ class CategoriesController extends JoomAdminController
 	/**
 	 * Rebuild the nested set tree.
 	 * @return  boolean  False on failure or error, true on success.
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	public function rebuild()
 	{

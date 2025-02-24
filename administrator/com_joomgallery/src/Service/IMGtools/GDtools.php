@@ -647,7 +647,7 @@ class GDtools extends BaseIMGtools implements IMGtoolsInterface
    *
    * @return  boolean True on success, false otherwise
    *
-   * @since   1.0.0
+   * @since   4.0.0
    */
   public function resize($method, $width, $height, $cropposition=2, $unsharp=false): bool
   {

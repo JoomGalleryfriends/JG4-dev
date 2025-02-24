@@ -29,7 +29,7 @@ class JgcategoryField extends FormField
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.6
+	 * @since  4.0.0
 	 */
 	public $type = 'jgcategory';
 
@@ -37,7 +37,7 @@ class JgcategoryField extends FormField
 	 * Filtering category
 	 *
 	 * @var   array
-	 * @since 3.5
+	 * @since 4.0.0
 	 */
 	protected $category = null;
 
@@ -45,7 +45,7 @@ class JgcategoryField extends FormField
 	 * Category to exclude from the list of categories
 	 *
 	 * @var   array
-	 * @since 3.5
+	 * @since 4.0.0
 	 */
 	protected $excluded = null;
 
@@ -53,7 +53,7 @@ class JgcategoryField extends FormField
 	 * Layout to render
 	 *
 	 * @var   string
-	 * @since 3.5
+	 * @since 4.0.0
 	 */
 	protected $layout = 'joomla.form.field.jgcategory';
 
@@ -68,7 +68,7 @@ class JgcategoryField extends FormField
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   3.7.0
+	 * @since   4.0.0
 	 *
 	 * @see     FormField::setup()
 	 */
@@ -95,7 +95,7 @@ class JgcategoryField extends FormField
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getInput()
 	{
@@ -117,7 +117,7 @@ class JgcategoryField extends FormField
 	 *
 	 * @return  array
 	 *
-	 * @since   3.5
+	 * @since   4.0.0
 	 */
 	public function getLayoutData()
 	{
@@ -170,7 +170,7 @@ class JgcategoryField extends FormField
 	 *
 	 * @return  array
 	 *
-	 * @since   3.5
+	 * @since   4.0.0
 	 */
 	protected function getLayoutPaths()
 	{
@@ -191,7 +191,7 @@ class JgcategoryField extends FormField
 	 *
 	 * @return  mixed  Array of filtering categories or null.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getCat()
 	{
@@ -206,7 +206,7 @@ class JgcategoryField extends FormField
 	 *
 	 * @return  mixed  Array of images to exclude or null to to not exclude them
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getExcluded()
 	{

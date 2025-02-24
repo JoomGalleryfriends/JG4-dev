@@ -23,7 +23,7 @@ class JgimagetypeField extends ListField
 	 * A dropdown field with all activated imagetypes
 	 *
 	 * @var    string
-	 * @since  1.6
+	 * @since  4.0.0
 	 */
 	public $type = 'jgimagetype';
 
@@ -33,7 +33,7 @@ class JgimagetypeField extends ListField
    *
    * @return  string  The field input markup.
    *
-   * @since   3.7.0
+   * @since   4.0.0
    */
   protected function getInput()
   {
@@ -56,7 +56,7 @@ class JgimagetypeField extends ListField
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   1.6
+	 * @since   4.0.0
 	 */
 	protected function getOptions()
 	{	
