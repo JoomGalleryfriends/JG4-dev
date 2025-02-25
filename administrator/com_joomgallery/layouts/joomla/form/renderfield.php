@@ -40,8 +40,10 @@ if(isset($id) && ($id == 'jform_jg_staticprocessing' || $id == 'jform_jg_dynamic
 }
 
 $unused          = (isset($class) && strpos($class, 'unused') !== false) ? 'unused' : '';
+$hidden          = (isset($class) && strpos($class, 'hidden') !== false) ? 'hidden' : '';
 $sensitive       = (!empty($options['sensitive']) && $options['sensitive'] == true) ? true : false;
 $class           = empty($options['class']) ? '' : ' ' . $options['class'];
+$class           = empty($hidden) ? $class : $class . ' ' . $hidden;
 $rel             = empty($options['rel']) ? '' : ' ' . $options['rel'];
 $id              = ($id ?? $name) . '-desc';
 $hideLabel       = !empty($options['hiddenLabel']);
