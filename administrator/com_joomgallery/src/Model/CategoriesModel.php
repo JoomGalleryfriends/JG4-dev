@@ -120,7 +120,7 @@ class CategoriesModel extends JoomListModel
 		$this->setState('filter.published', $published);
     $level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level', '*');
 		$this->setState('filter.level', $level);
-    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
+    $language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
     $showself = $this->getUserStateFromRequest($this->context . '.filter.showself', 'filter_showself', '1');
     $this->setState('filter.showself', $showself);
