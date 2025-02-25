@@ -119,7 +119,7 @@ class ImagesModel extends JoomListModel
 		$this->setState('filter.search', $search);
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '*');
 		$this->setState('filter.published', $published);
-		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '*');
+		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
     $showunapproved = $this->getUserStateFromRequest($this->context . '.filter.showunapproved', 'filter_showunapproved', '1');
     $this->setState('filter.showunapproved', $showunapproved);
