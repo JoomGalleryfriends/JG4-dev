@@ -60,6 +60,14 @@
                hint="COM_JOOMGALLERY_COMMON_OPTION_SELECT_OWNER"
                onchange="this.form.submit();" />
 
+        <field name="language"
+               type="language"
+               label="JGRID_HEADING_LANGUAGE"
+               onchange="this.form.submit();" >
+            <option value="">JOPTION_SELECT_LANGUAGE</option>
+            <option value="*">JALL</option>
+        </field>
+
         <field
               name="exclude"
               type="jgcategorydropdown"
