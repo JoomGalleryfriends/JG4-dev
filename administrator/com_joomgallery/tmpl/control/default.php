@@ -20,6 +20,15 @@ use Joomgallery\Component\Joomgallery\Administrator\Helper\JoomHelper;
 // Import CSS & JS
 $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_joomgallery.admin');
+
+// Get language tag for donate button
+$langTag = 'US';
+$cTag    = 'USD';
+if(strpos(strtolower(Factory::getApplication()->getLanguage()->getTag()), 'de') !== false)
+{
+  $langTag = 'DE';
+  $cTag    = 'EUR';
+}
 ?>
 
 <div class="d-flex flex-row">
@@ -39,8 +48,22 @@ $wa->useStyle('com_joomgallery.admin');
           <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_LONG'); ?>
         </div>
         <div>
-          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVQBAFEZHPL2J" title="<?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?>" target="_blank">
-            <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?> <span class="icon-heart"></span></a>
+          <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="paypal">
+            <input type="hidden" name="cmd" value="_donations" />
+            <input type="hidden" name="business" value="team@joomgalleryfriends.net" />
+            <input type="hidden" name="return" value="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_URL'); ?>" />
+            <input type="hidden" name="item_name" value="https://www.joomgalleryfriends.net/" />
+            <input type="hidden" name="cancel_return" value="<?php echo Text::_('COM_JOOMGALLERY_WEBSITE_URL'); ?>" />
+            <input type="hidden" name="undefined_quantity" value="0" />
+            <input type="hidden" name="rm" value="2" />
+            <input type="hidden" name="charset" value="utf-8" />
+            <input type="hidden" name="no_shipping" value="1" />
+            <input type="hidden" name="no_note" value="0" />
+            <input type="hidden" name="currency_code" value="EUR" />
+            <input type="hidden" name="lc" value="<?php echo $langTag; ?>" />
+            <input type="hidden" name="image_url" value="https://www.joomgalleryfriends.net/images/modulbilder/logo-joomgalleryfriendskleiner.svg" />
+          </form>
+          <a href="#" onclick="document.getElementById('paypalForm').submit(); return false;"><?php echo Text::_('COM_JOOMGALLERY_HLPINFO_DONATIONS_PAYPAL'); ?> <span class="icon-heart"></span></a>
         </div>
         <div>
           <?php echo Text::_('COM_JOOMGALLERY_HLPINFO_SPONSORS'); ?><a href="mailto:team@joomgalleryfriends.net">team@joomgalleryfriends.net</a>
