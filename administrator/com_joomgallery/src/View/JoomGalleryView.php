@@ -100,6 +100,12 @@ class JoomGalleryView extends BaseHtmlView
       // We are dealing with a development version (alpha, beta, rc)
       $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_NOTE_DEVELOPMENT_VERSION'), 'warning');
     }
+
+    if($this->app->get('unicodeslugs', false))
+    {
+      // The option unicodeslugs is activated.
+      $this->app->enqueueMessage(Text::_('COM_JOOMGALLERY_ERROR_UNICODESLUGS'), 'warning');
+    }
   }
 
   /**
